@@ -1,4 +1,4 @@
-package co.oceanlabs.pssdk.asset;
+package co.oceanlabs.pssdk;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -17,13 +17,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import co.oceanlabs.pssdk.BaseRequest;
-import co.oceanlabs.pssdk.PSPrintSDK;
-
 /**
  * Created by deonbotha on 07/02/2014.
  */
-public class AssetUploadRequest {
+class AssetUploadRequest {
 
     private boolean cancelled;
     private BaseRequest registerImageURLAssetsReq, signReq;

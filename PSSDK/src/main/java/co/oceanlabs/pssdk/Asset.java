@@ -1,12 +1,9 @@
-package co.oceanlabs.pssdk.asset;
+package co.oceanlabs.pssdk;
 
 import android.content.ContentResolver;
 import android.content.Context;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import java.io.BufferedInputStream;
@@ -16,10 +13,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.Buffer;
+import java.util.Arrays;
 
 /**
  * Created by deonbotha on 06/02/2014.
@@ -298,4 +293,52 @@ public class Asset {
         t.execute();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof  Asset)) {
+            return false;
+        }
+
+        Asset a = (Asset) o;
+        if (a == this) {
+            return true;
+        }
+
+        if (a.mimeType != this.mimeType || a.type != this.type) {
+            return false;
+        }
+
+        switch (this.type) {
+            case REMOTE_URL:
+                return a.remoteURL.equals(this.remoteURL);
+            case IMAGE_URI:
+                return a.imageUri.equals(this.imageUri);
+            case IMAGE_PATH:
+                return a.imagePath.equals(this.imagePath);
+            case BITMAP_RESOURCE_ID:
+                return a.bitmapResourceId == this.bitmapResourceId;
+            case IMAGE_BYTES:
+                return Arrays.equals(a.imageBytes, this.imageBytes);
+        }
+
+        throw new IllegalStateException("should not get here");
+    }
+
+    @Override
+    public int hashCode() {
+        switch (this.type) {
+            case REMOTE_URL:
+                return this.remoteURL.hashCode();
+            case IMAGE_URI:
+                return this.imageUri.hashCode();
+            case IMAGE_PATH:
+                return this.imagePath.hashCode();
+            case BITMAP_RESOURCE_ID:
+                return bitmapResourceId;
+            case IMAGE_BYTES:
+                return Arrays.hashCode(this.imageBytes);
+        }
+
+        throw new IllegalStateException("should not get here");
+    }
 }

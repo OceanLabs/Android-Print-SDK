@@ -1,9 +1,9 @@
-package co.oceanlabs.pssdk.asset;
+package co.oceanlabs.pssdk;
 
 /**
  * Created by deonbotha on 08/02/2014.
  */
-public interface AssetGetBytesListener {
+interface AssetGetBytesListener {
     void onBytes(Asset asset, byte[] bytes);
     void onError(Asset asset, Exception ex);
 }

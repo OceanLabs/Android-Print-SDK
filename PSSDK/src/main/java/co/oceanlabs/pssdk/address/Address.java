@@ -23,6 +23,17 @@ public class Address {
         return addr;
     }
 
+    public static Address getPSTeamAddress() {
+        Address addr = new Address();
+        addr.recipientName = "Ps Team";
+        addr.line1 = "Eastcastle House";
+        addr.line2 = "27-28 Eastcastle St";
+        addr.city  = "London";
+        addr.zipOrPostalCode = "W1W 8DH";
+        addr.country = Country.getInstance("GBR");
+        return addr;
+    }
+
     String getId() {
         return addressId;
     }

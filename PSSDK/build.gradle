@@ -24,5 +24,4 @@ android {
 
 dependencies {
     compile 'com.android.support:support-v13:+'
-    compile files('libs/aws-android-sdk-1.7.1.1-s3.jar')
 }
