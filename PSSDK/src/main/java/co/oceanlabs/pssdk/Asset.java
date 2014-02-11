@@ -360,7 +360,7 @@ public class Asset implements Parcelable, Serializable {
         parcel.writeInt(bitmapResourceId);
         parcel.writeString(imagePath);
         parcel.writeInt(imageBytes == null ? 0 : imageBytes.length);
-        if (imageBytes.length > 0) {
+        if (imageBytes != null && imageBytes.length > 0) {
             parcel.writeByteArray(imageBytes);
         }
 
@@ -407,7 +407,7 @@ public class Asset implements Parcelable, Serializable {
         out.writeObject(remoteURL);
         out.writeInt(bitmapResourceId);
         out.writeObject(imagePath);
-        out.writeInt(imageBytes != null && imageBytes.length > 0 ? imageBytes.length : 0);
+        out.writeInt(imageBytes != null ? imageBytes.length : 0);
         if (imageBytes != null && imageBytes.length > 0) {
             out.write(imageBytes);
         }

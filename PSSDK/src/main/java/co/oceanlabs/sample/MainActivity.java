@@ -13,6 +13,8 @@ import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.os.Bundle;
 import android.util.Log;
@@ -64,7 +66,7 @@ public class MainActivity extends Activity {
         printOrder.addPrintJob(PrintJob.createMagnetsPrintJob(assets));
 
         Intent intent = new Intent(this, CheckoutActivity.class);
-        //intent.putExtra(CheckoutActivity.EXTRA_PRINT_ORDER, printOrder);
+        intent.putExtra(CheckoutActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder);
         startActivity(intent);
     }
 
