@@ -8,11 +8,19 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import co.oceanlabs.pssdk.address.Address;
@@ -22,13 +30,16 @@ import co.oceanlabs.pssdk.address.Address;
  */
 public class PrintOrder implements Parcelable, Serializable {
 
+    private static final String PERSISTED_PRINT_ORDERS_FILENAME = "print_orders";
+    private static final int NOT_PERSITED = -1;
+
     private static final long serialVersionUID = 0L;
 
     private Address shippingAddress;
     private String proofOfPayment;
     private String voucherCode;
     private JSONObject userData;
-    private final ArrayList<PrintJob> jobs = new ArrayList<PrintJob>();
+    private ArrayList<PrintJob> jobs = new ArrayList<PrintJob>();
 
     private boolean userSubmittedForPrinting;
     private long totalBytesWritten, totalBytesExpectedToWrite;
@@ -40,6 +51,9 @@ public class PrintOrder implements Parcelable, Serializable {
     private String receipt;
     private PrintOrderSubmissionListener submissionListener;
     private Exception lastPrintSubmissionError;
+    private int storageIdentifier = NOT_PERSITED;
+
+    public PrintOrder() {}
 
     public void setShippingAddress(Address shippingAddress) {
         this.shippingAddress = shippingAddress;
@@ -347,6 +361,7 @@ public class PrintOrder implements Parcelable, Serializable {
         p.writeValue(lastPrintSubmissionDate);
         p.writeString(receipt);
         p.writeValue(lastPrintSubmissionError);
+        p.writeInt(storageIdentifier);
     }
 
     private PrintOrder(Parcel p) {
@@ -370,6 +385,7 @@ public class PrintOrder implements Parcelable, Serializable {
         this.lastPrintSubmissionDate = (Date) p.readValue(Date.class.getClassLoader());
         this.receipt = p.readString();
         this.lastPrintSubmissionError = (Exception) p.readValue(Exception.class.getClassLoader());
+        this.storageIdentifier = p.readInt();
     }
 
     public static final Parcelable.Creator<PrintOrder> CREATOR
@@ -400,6 +416,7 @@ public class PrintOrder implements Parcelable, Serializable {
         out.writeObject(lastPrintSubmissionDate);
         out.writeObject(receipt);
         out.writeObject(lastPrintSubmissionError);
+        out.writeInt(storageIdentifier);
     }
 
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -416,8 +433,9 @@ public class PrintOrder implements Parcelable, Serializable {
         }
 
         int numJobs = in.readInt();
+        jobs = new ArrayList<PrintJob>();
         for (int i = 0; i < numJobs; ++i) {
-            this.jobs.add((PrintJob) in.readObject());
+            jobs.add((PrintJob) in.readObject());
         }
 
         userSubmittedForPrinting = in.readBoolean();
@@ -425,5 +443,91 @@ public class PrintOrder implements Parcelable, Serializable {
         lastPrintSubmissionDate = (Date) in.readObject();
         receipt = (String) in.readObject();
         lastPrintSubmissionError = (Exception) in.readObject();
+        storageIdentifier = in.readInt();
+    }
+
+    /*
+     * PrintOrder history persisting methods
+     */
+
+    public void saveToHistory(Context c) {
+        List<PrintOrder> currentOrders = getPrintOrderHistory(c);
+        if (!isSavedInHistory()) {
+            storageIdentifier = getNextStorageIdentifier(currentOrders);
+        }
+
+        ArrayList<PrintOrder> updatedOrders = new ArrayList<PrintOrder>();
+        updatedOrders.add(this);
+        for (PrintOrder order : currentOrders) {
+            if (order.storageIdentifier != storageIdentifier) {
+                updatedOrders.add(order);
+            }
+        }
+
+        persistOrdersToDisk(c, updatedOrders);
+    }
+
+    public void deleteFromHistory(Context c) {
+        if (!isSavedInHistory()) {
+            return;
+        }
+
+        List<PrintOrder> orders = getPrintOrderHistory(c);
+        Iterator<PrintOrder> iter = orders.iterator();
+        while (iter.hasNext()) {
+            PrintOrder o = iter.next();
+            if (o.storageIdentifier == storageIdentifier) {
+                iter.remove();
+                break;
+            }
+        }
+
+        persistOrdersToDisk(c, orders);
+    }
+
+    private void persistOrdersToDisk(Context c, List<PrintOrder> orders) {
+        ObjectOutputStream os = null;
+        try {
+            os = new ObjectOutputStream(new BufferedOutputStream(c.openFileOutput(PERSISTED_PRINT_ORDERS_FILENAME, Context.MODE_PRIVATE)));
+            os.writeObject(orders);
+        } catch (Exception ex) {
+            // ignore, we'll just lose this order from the history now
+        } finally {
+            try {
+                os.close();
+            } catch (Exception ex) {/* ignore */}
+        }
+    }
+
+    public boolean isSavedInHistory() {
+        return storageIdentifier != NOT_PERSITED;
+    }
+
+    public static int getNextStorageIdentifier(List<PrintOrder> orders) {
+        int nextIdentifier = 0;
+        for (int i = 0; i < orders.size(); ++i) {
+            PrintOrder o = orders.get(i);
+            if (nextIdentifier <= o.storageIdentifier) {
+                nextIdentifier = o.storageIdentifier + 1;
+            }
+        }
+        return nextIdentifier;
+    }
+
+    public static List<PrintOrder> getPrintOrderHistory(Context c) {
+        ObjectInputStream is = null;
+        try {
+            is = new ObjectInputStream(new BufferedInputStream(c.openFileInput(PERSISTED_PRINT_ORDERS_FILENAME)));
+            ArrayList<PrintOrder> orders = (ArrayList<PrintOrder>) is.readObject();
+            return orders;
+        } catch (FileNotFoundException ex) {
+            return new ArrayList<PrintOrder>();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        } finally {
+            try {
+                is.close();
+            } catch (Exception ex) { /* ignore */ }
+        }
     }
 }

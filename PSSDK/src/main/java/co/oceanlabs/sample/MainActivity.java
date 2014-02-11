@@ -98,6 +98,14 @@ public class MainActivity extends Activity {
          */
         printOrder.setProofOfPayment("PAY-fake-proof");
         printOrder.setShippingAddress(Address.getPSTeamAddress());
+
+        Log.i("psprintstudio", "presave");
+        printOrder.saveToHistory(this);
+        Log.i("psprintstudio", "postsave");
+
+        List<PrintOrder> orders = PrintOrder.getPrintOrderHistory(this);
+        Log.i("psprintstudio", orders.size() + "orders in history");
+
         final ProgressDialog dialog = ProgressDialog.show(this, null, "Uploading", true);
         printOrder.submitForPrinting(this, new PrintOrderSubmissionListener() {
             @Override

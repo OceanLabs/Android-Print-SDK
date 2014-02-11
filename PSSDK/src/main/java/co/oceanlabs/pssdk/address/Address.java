@@ -1,15 +1,27 @@
 package co.oceanlabs.pssdk.address;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by deonbotha on 29/01/2014.
  */
 public class Address implements Parcelable, Serializable {
+
+    private static final String PERSISTED_ADDRESS_BOOK_FILENAME = "address_book";
+    private static final int NOT_PERSITED = -1;
 
     private static final long serialVersionUID = 0L;
 
@@ -20,6 +32,8 @@ public class Address implements Parcelable, Serializable {
     private String stateOrCounty;
     private String zipOrPostalCode;
     private Country country;
+
+    private int storageIdentifier = NOT_PERSITED;
 
     // Partial address fields
     private String addressId;
@@ -198,5 +212,90 @@ public class Address implements Parcelable, Serializable {
         this.country = Country.getInstance((String) in.readObject());
         this.addressId = (String) in.readObject();
         this.displayName = (String) in.readObject();
+    }
+
+    /*
+     * AddressBook persisting methods
+     */
+
+    public void saveToAddressBook(Context c) {
+        List<Address> currentAddresses = getAddressBook(c);
+        if (!isSavedInAddressBook()) {
+            storageIdentifier = getNextStorageIdentifier(currentAddresses);
+        }
+
+        ArrayList<Address> updatedAddresses = new ArrayList<Address>();
+        updatedAddresses.add(this);
+        for (Address a : currentAddresses) {
+            if (a.storageIdentifier != storageIdentifier) {
+                updatedAddresses.add(a);
+            }
+        }
+
+        persistAddressesToDisk(c, updatedAddresses);
+    }
+
+    public void deleteFromAddressBook(Context c) {
+        if (!isSavedInAddressBook()) {
+            return;
+        }
+
+        List<Address> addresses = getAddressBook(c);
+        Iterator<Address> iter = addresses.iterator();
+        while (iter.hasNext()) {
+            Address o = iter.next();
+            if (o.storageIdentifier == storageIdentifier) {
+                iter.remove();
+                break;
+            }
+        }
+
+        persistAddressesToDisk(c, addresses);
+    }
+
+    private void persistAddressesToDisk(Context c, List<Address> addresses) {
+        ObjectOutputStream os = null;
+        try {
+            os = new ObjectOutputStream(new BufferedOutputStream(c.openFileOutput(PERSISTED_ADDRESS_BOOK_FILENAME, Context.MODE_PRIVATE)));
+            os.writeObject(addresses);
+        } catch (Exception ex) {
+            // ignore, we'll just lose this order from the history now
+        } finally {
+            try {
+                os.close();
+            } catch (Exception ex) {/* ignore */}
+        }
+    }
+
+    public boolean isSavedInAddressBook() {
+        return storageIdentifier != NOT_PERSITED;
+    }
+
+    public static int getNextStorageIdentifier(List<Address> addresses) {
+        int nextIdentifier = 0;
+        for (int i = 0; i < addresses.size(); ++i) {
+            Address o = addresses.get(i);
+            if (nextIdentifier <= o.storageIdentifier) {
+                nextIdentifier = o.storageIdentifier + 1;
+            }
+        }
+        return nextIdentifier;
+    }
+
+    public static List<Address> getAddressBook(Context c) {
+        ObjectInputStream is = null;
+        try {
+            is = new ObjectInputStream(new BufferedInputStream(c.openFileInput(PERSISTED_ADDRESS_BOOK_FILENAME)));
+            ArrayList<Address> addresses = (ArrayList<Address>) is.readObject();
+            return addresses;
+        } catch (FileNotFoundException ex) {
+            return new ArrayList<Address>();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        } finally {
+            try {
+                is.close();
+            } catch (Exception ex) { /* ignore */ }
+        }
     }
 }
