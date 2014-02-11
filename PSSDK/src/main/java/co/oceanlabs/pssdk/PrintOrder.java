@@ -1,11 +1,15 @@
 package co.oceanlabs.pssdk;
 
 import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,7 +20,9 @@ import co.oceanlabs.pssdk.address.Address;
 /**
  * Created by deonbotha on 09/02/2014.
  */
-public class PrintOrder {
+public class PrintOrder implements Parcelable, Serializable {
+
+    private static final long serialVersionUID = 0L;
 
     private Address shippingAddress;
     private String proofOfPayment;
@@ -149,6 +155,9 @@ public class PrintOrder {
     }
 
     public void addPrintJob(PrintJob job) {
+        if (!(job instanceof PrintsPrintJob)) {
+            throw new IllegalArgumentException("Currently only support PrintsPrintJobs, if any further jobs classes are added support for them must be added to the Parcelable interface in particular readTypedList must work ;)");
+        }
         jobs.add(job);
     }
 
@@ -319,4 +328,102 @@ public class PrintOrder {
             }
         }
     };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel p, int flags) {
+        p.writeValue(shippingAddress);
+        p.writeString(proofOfPayment);
+        p.writeString(voucherCode);
+        String userDataString = userData == null ? null : userData.toString();
+        p.writeString(userDataString);
+        p.writeTypedList(jobs);
+        p.writeValue(userSubmittedForPrinting);
+        p.writeValue(assetUploadComplete);
+        p.writeValue(lastPrintSubmissionDate);
+        p.writeString(receipt);
+        p.writeValue(lastPrintSubmissionError);
+    }
+
+    private PrintOrder(Parcel p) {
+        this.shippingAddress = (Address) p.readValue(Address.class.getClassLoader());
+        this.proofOfPayment = p.readString();
+        this.voucherCode = p.readString();
+        String userDataString = p.readString();
+        if (userDataString != null) {
+            try {
+                this.userData = new JSONObject(userDataString);
+            } catch (JSONException ex) {
+                throw new RuntimeException(ex); // will never happen ;)
+            }
+        }
+
+        ArrayList<PrintsPrintJob> jobs = new ArrayList<PrintsPrintJob>();
+        p.readTypedList(jobs, PrintsPrintJob.CREATOR);
+        this.jobs.addAll(jobs);
+        this.userSubmittedForPrinting = (Boolean) p.readValue(Boolean.class.getClassLoader());
+        this.assetUploadComplete = (Boolean) p.readValue(Boolean.class.getClassLoader());
+        this.lastPrintSubmissionDate = (Date) p.readValue(Date.class.getClassLoader());
+        this.receipt = p.readString();
+        this.lastPrintSubmissionError = (Exception) p.readValue(Exception.class.getClassLoader());
+    }
+
+    public static final Parcelable.Creator<PrintOrder> CREATOR
+            = new Parcelable.Creator<PrintOrder>() {
+        public PrintOrder createFromParcel(Parcel in) {
+            return new PrintOrder(in);
+        }
+
+        public PrintOrder[] newArray(int size) {
+            return new PrintOrder[size];
+        }
+    };
+
+    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+        out.writeObject(shippingAddress);
+        out.writeObject(proofOfPayment);
+        out.writeObject(voucherCode);
+        String userDataString = userData == null ? null : userData.toString();
+        out.writeObject(userDataString);
+
+        out.writeInt(jobs.size());
+        for (int i = 0; i < jobs.size(); ++i) {
+            out.writeObject(jobs.get(i));
+        }
+
+        out.writeBoolean(userSubmittedForPrinting);
+        out.writeBoolean(assetUploadComplete);
+        out.writeObject(lastPrintSubmissionDate);
+        out.writeObject(receipt);
+        out.writeObject(lastPrintSubmissionError);
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+        shippingAddress = (Address) in.readObject();
+        proofOfPayment = (String) in.readObject();
+        voucherCode = (String) in.readObject();
+        String userDataString = (String) in.readObject();
+        if (userDataString != null) {
+            try {
+                this.userData = new JSONObject(userDataString);
+            } catch (JSONException ex) {
+                throw new RuntimeException(ex); // will never happen ;)
+            }
+        }
+
+        int numJobs = in.readInt();
+        for (int i = 0; i < numJobs; ++i) {
+            this.jobs.add((PrintJob) in.readObject());
+        }
+
+        userSubmittedForPrinting = in.readBoolean();
+        assetUploadComplete = in.readBoolean();
+        lastPrintSubmissionDate = (Date) in.readObject();
+        receipt = (String) in.readObject();
+        lastPrintSubmissionError = (Exception) in.readObject();
+    }
 }

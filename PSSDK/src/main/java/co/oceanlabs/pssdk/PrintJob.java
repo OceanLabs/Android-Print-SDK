@@ -1,14 +1,17 @@
 package co.oceanlabs.pssdk;
 
+import android.os.Parcelable;
+
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
 /**
  * Created by deonbotha on 09/02/2014.
  */
-public abstract class PrintJob {
+public abstract class PrintJob implements Parcelable, Serializable {
     public abstract BigDecimal getCost();
     public abstract ProductType getProductType();
     public abstract int getQuantity();

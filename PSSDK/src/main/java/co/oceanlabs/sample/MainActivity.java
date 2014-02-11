@@ -10,10 +10,13 @@ import android.app.ActionBar;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +30,7 @@ import co.oceanlabs.pssdk.PrintOrder;
 import co.oceanlabs.pssdk.PrintOrderSubmissionListener;
 import co.oceanlabs.pssdk.R;
 import co.oceanlabs.pssdk.address.Address;
+import co.oceanlabs.pssdk.checkout.CheckoutActivity;
 
 public class MainActivity extends Activity {
 
@@ -43,9 +47,6 @@ public class MainActivity extends Activity {
 
     }
 
-    public void onCropButtonClicked(View view) {
-    }
-
     public void onGalleryButtonClicked(View view) {
         // in onCreate or any event where your want the user to
         // select a file
@@ -53,6 +54,18 @@ public class MainActivity extends Activity {
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PICTURE);
+    }
+
+    public void onCheckoutButtonClicked(View view) {
+        ArrayList<Asset> assets = new ArrayList<Asset>();
+        assets.add(new Asset(R.drawable.instagram1));
+
+        PrintOrder printOrder = new PrintOrder();
+        printOrder.addPrintJob(PrintJob.createMagnetsPrintJob(assets));
+
+        Intent intent = new Intent(this, CheckoutActivity.class);
+        //intent.putExtra(CheckoutActivity.EXTRA_PRINT_ORDER, printOrder);
+        startActivity(intent);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -80,7 +93,9 @@ public class MainActivity extends Activity {
         PrintOrder printOrder = new PrintOrder();
         printOrder.addPrintJob(PrintJob.createMagnetsPrintJob(assets));
 
-        // You won't ever need to do the following, it's taking care by the checkout activities but it's just here for completeness
+        /*
+         * XXX: You won't ever need to do the following, it's taking care by the checkout activities but it's just here for completeness
+         */
         printOrder.setProofOfPayment("PAY-fake-proof");
         printOrder.setShippingAddress(Address.getPSTeamAddress());
         final ProgressDialog dialog = ProgressDialog.show(this, null, "Uploading", true);

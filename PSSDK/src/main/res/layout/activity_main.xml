@@ -14,5 +14,6 @@
 
 
     <Button android:id="@+id/button_gallery" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Choose Gallery Image for Printing" android:onClick="onGalleryButtonClicked" />
-    <ImageView android:id="@+id/image_view" android:layout_width="match_parent" android:layout_height="match_parent" android:layout_below="@id/button_gallery" />
+    <Button android:id="@+id/button_checkout" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Checkout" android:layout_below="@id/button_gallery" android:onClick="onCheckoutButtonClicked" />
+    <ImageView android:id="@+id/image_view" android:layout_width="match_parent" android:layout_height="match_parent" android:layout_below="@id/button_checkout" />
 </RelativeLayout>

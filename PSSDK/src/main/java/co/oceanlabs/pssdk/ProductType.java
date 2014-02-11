@@ -18,4 +18,22 @@ public enum ProductType {
         this.value = value;
         this.defaultTemplate = defaultTemplate;
     }
+
+    public static ProductType productTypeFromTemplate(String template) {
+       if (template.equals(POSTCARD.defaultTemplate)) {
+           return POSTCARD;
+       } else if (template.equals(POLAROIDS.defaultTemplate)) {
+           return POLAROIDS;
+       } else if (template.equals(MINI_POLAROIDS.defaultTemplate)) {
+           return MINI_POLAROIDS;
+       } else if (template.equals(SQUARES.defaultTemplate)) {
+           return SQUARES;
+       } else if (template.equals(MINI_SQUARES.defaultTemplate)) {
+           return MINI_SQUARES;
+       } else if (template.equals(MAGNETS.defaultTemplate)) {
+           return MAGNETS;
+       }
+
+        throw new IllegalArgumentException("Unrecognized template: " + template);
+    }
 }

@@ -1,9 +1,18 @@
 package co.oceanlabs.pssdk.address;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.IOException;
+import java.io.Serializable;
+
 /**
  * Created by deonbotha on 29/01/2014.
  */
-public class Address {
+public class Address implements Parcelable, Serializable {
+
+    private static final long serialVersionUID = 0L;
+
     private String recipientName;
     private String line1;
     private String line2;
@@ -21,6 +30,10 @@ public class Address {
         addr.addressId = addressId;
         addr.displayName = displayName;
         return addr;
+    }
+
+    public Address() {
+
     }
 
     public static Address getPSTeamAddress() {
@@ -120,5 +133,70 @@ public class Address {
         if (country != null && country.getName().trim().length() > 0) strBuilder.append(strBuilder.length() > 0 ? ", " : "").append(country.getName());
 
         return strBuilder.toString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeString(recipientName);
+        parcel.writeString(line1);
+        parcel.writeString(line2);
+        parcel.writeString(city);
+        parcel.writeString(stateOrCounty);
+        parcel.writeString(zipOrPostalCode);
+        parcel.writeString(country.getCodeAlpha2());
+        parcel.writeString(addressId);
+        parcel.writeString(displayName);
+    }
+
+    private Address(Parcel p) {
+        this.recipientName = p.readString();
+        this.line1 = p.readString();
+        this.line2 = p.readString();
+        this.city = p.readString();
+        this.stateOrCounty = p.readString();
+        this.zipOrPostalCode = p.readString();
+        this.country = Country.getInstance(p.readString());
+        this.addressId = p.readString();
+        this.displayName = p.readString();
+    }
+
+    public static final Parcelable.Creator<Address> CREATOR
+            = new Parcelable.Creator<Address>() {
+        public Address createFromParcel(Parcel in) {
+            return new Address(in);
+        }
+
+        public Address[] newArray(int size) {
+            return new Address[size];
+        }
+    };
+
+    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+        out.writeObject(recipientName);
+        out.writeObject(line1);
+        out.writeObject(line2);
+        out.writeObject(city);
+        out.writeObject(stateOrCounty);
+        out.writeObject(zipOrPostalCode);
+        out.writeObject(country.getCodeAlpha2());
+        out.writeObject(addressId);
+        out.writeObject(displayName);
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+        this.recipientName = (String) in.readObject();
+        this.line1 = (String) in.readObject();
+        this.line2 = (String) in.readObject();
+        this.city = (String) in.readObject();
+        this.stateOrCounty = (String) in.readObject();
+        this.zipOrPostalCode = (String) in.readObject();
+        this.country = Country.getInstance((String) in.readObject());
+        this.addressId = (String) in.readObject();
+        this.displayName = (String) in.readObject();
     }
 }

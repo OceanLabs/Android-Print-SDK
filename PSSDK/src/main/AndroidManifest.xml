@@ -24,6 +24,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="co.oceanlabs.pssdk.checkout.CheckoutActivity"
+            android:label="@string/title_activity_checkout" >
+        </activity>
     </application>
 
 </manifest>

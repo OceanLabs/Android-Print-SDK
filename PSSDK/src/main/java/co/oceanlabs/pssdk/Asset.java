@@ -4,6 +4,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.webkit.MimeTypeMap;
 
 import java.io.BufferedInputStream;
@@ -13,13 +15,14 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.Arrays;
 
 /**
  * Created by deonbotha on 06/02/2014.
  */
-public class Asset {
+public class Asset implements Parcelable, Serializable {
 
     public static enum MimeType {
         JPEG("image/jpeg"),
@@ -47,12 +50,15 @@ public class Asset {
     }
 
     static enum AssetType {
+        // XXX: Add new types to end to avoid break serialization
         IMAGE_URI,
         BITMAP_RESOURCE_ID,
         IMAGE_BYTES,
         IMAGE_PATH,
         REMOTE_URL
     }
+
+    private static final long serialVersionUID = 0L;
 
     private Uri imageUri;
     private URL remoteURL;
@@ -341,4 +347,102 @@ public class Asset {
 
         throw new IllegalStateException("should not get here");
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeValue(imageUri);
+        parcel.writeValue(remoteURL);
+        parcel.writeInt(bitmapResourceId);
+        parcel.writeString(imagePath);
+        parcel.writeInt(imageBytes == null ? 0 : imageBytes.length);
+        if (imageBytes.length > 0) {
+            parcel.writeByteArray(imageBytes);
+        }
+
+        parcel.writeString(mimeType == null ? null : mimeType.getMimeTypeString());
+        parcel.writeInt(type.ordinal());
+        parcel.writeValue(uploaded);
+        parcel.writeLong(id);
+        parcel.writeValue(previewURL);
+    }
+
+    private Asset(Parcel p) {
+        imageUri = (Uri) p.readValue(Uri.class.getClassLoader());
+        remoteURL = (URL) p.readValue(URL.class.getClassLoader());
+        bitmapResourceId = p.readInt();
+        imagePath = p.readString();
+        int numImageBytes = p.readInt();
+        if (numImageBytes > 0) {
+            imageBytes = new byte[numImageBytes];
+            p.readByteArray(imageBytes);
+        }
+        String mimeTypeString = p.readString();
+        if (mimeTypeString != null) {
+            this.mimeType = MimeType.fromString(mimeTypeString);
+        }
+        type = AssetType.values()[p.readInt()];
+        uploaded = (Boolean) p.readValue(Boolean.class.getClassLoader());
+        id = p.readLong();
+        previewURL = (URL) p.readValue(URL.class.getClassLoader());
+    }
+
+    public static final Parcelable.Creator<Asset> CREATOR
+            = new Parcelable.Creator<Asset>() {
+        public Asset createFromParcel(Parcel in) {
+            return new Asset(in);
+        }
+
+        public Asset[] newArray(int size) {
+            return new Asset[size];
+        }
+    };
+
+    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+        out.writeObject(imageUri == null ? null : imageUri.toString());
+        out.writeObject(remoteURL);
+        out.writeInt(bitmapResourceId);
+        out.writeObject(imagePath);
+        out.writeInt(imageBytes != null && imageBytes.length > 0 ? imageBytes.length : 0);
+        if (imageBytes != null && imageBytes.length > 0) {
+            out.write(imageBytes);
+        }
+
+        out.writeObject(mimeType == null ? null : mimeType.getMimeTypeString());
+        out.writeInt(type.ordinal());
+        out.writeBoolean(uploaded);
+        out.writeLong(id);
+        out.writeObject(previewURL);
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+        String imageUriString = (String) in.readObject();
+        if (imageUriString != null) {
+            imageUri = Uri.parse(imageUriString);
+        }
+
+        remoteURL = (URL) in.readObject();
+        bitmapResourceId = in.readInt();
+        imagePath = (String) in.readObject();
+        int numImageBytes = in.readInt();
+        if (numImageBytes > 0) {
+            this.imageBytes = new byte[numImageBytes];
+            in.read(this.imageBytes);
+        }
+
+        String mimeTypeString = (String) in.readObject();
+        if (mimeTypeString != null) {
+            mimeType = MimeType.fromString(mimeTypeString);
+        }
+        type = AssetType.values()[in.readInt()];
+        uploaded = in.readBoolean();
+        id = in.readLong();
+        previewURL = (URL) in.readObject();
+    }
+
+
 }
