@@ -28,6 +28,10 @@
             android:name="co.oceanlabs.pssdk.checkout.CheckoutActivity"
             android:label="@string/title_activity_checkout" >
         </activity>
+        <activity
+            android:name="co.oceanlabs.pssdk.checkout.OrderReceiptActivity"
+            android:label="@string/title_activity_order_receipt" >
+        </activity>
     </application>
 
 </manifest>

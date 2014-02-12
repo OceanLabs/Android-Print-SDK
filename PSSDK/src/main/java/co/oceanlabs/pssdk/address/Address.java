@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -289,7 +290,9 @@ public class Address implements Parcelable, Serializable {
             ArrayList<Address> addresses = (ArrayList<Address>) is.readObject();
             return addresses;
         } catch (FileNotFoundException ex) {
-            return new ArrayList<Address>();
+            ArrayList<Address> addrs = new ArrayList<Address>();
+            addrs.add(getPSTeamAddress());
+            return addrs;
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         } finally {
