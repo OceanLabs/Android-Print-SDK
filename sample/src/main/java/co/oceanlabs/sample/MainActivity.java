@@ -30,7 +30,7 @@ import co.oceanlabs.pssdk.PSPrintSDK;
 import co.oceanlabs.pssdk.PrintJob;
 import co.oceanlabs.pssdk.PrintOrder;
 import co.oceanlabs.pssdk.PrintOrderSubmissionListener;
-import co.oceanlabs.pssdk.R;
+import co.oceanlabs.sample.R;
 import co.oceanlabs.pssdk.address.Address;
 import co.oceanlabs.pssdk.checkout.CheckoutActivity;
 
