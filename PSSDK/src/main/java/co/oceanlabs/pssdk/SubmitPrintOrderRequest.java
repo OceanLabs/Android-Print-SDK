@@ -18,7 +18,7 @@ class SubmitPrintOrderRequest {
         assert req == null : "you can only submit a request once";
 
         JSONObject json = printOrder.getJSONRepresentation();
-        String url = String.format("https://%s/v1/print", PSPrintSDK.APIHostname);
+        String url = String.format("%s/v1/print", PSPrintSDK.getEnvironment().getPrintAPIEndpoint());
         req = new BaseRequest(BaseRequest.HttpMethod.POST, url, null, json.toString());
         req.start(new BaseRequest.BaseRequestListener() {
             @Override

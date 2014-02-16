@@ -34,7 +34,7 @@ public class AddressSearchRequest {
             return;
         }
 
-        String url = String.format("https://%s/v1/address/search?%s", PSPrintSDK.APIHostname, queryParams);
+        String url = String.format("%s/v1/address/search?%s", PSPrintSDK.getEnvironment().getPrintAPIEndpoint(), queryParams);
         startSearch(url, listener);
     }
 
@@ -56,7 +56,7 @@ public class AddressSearchRequest {
             return;
         }
 
-        String url = String.format("https://%s/v1/address/search?%s", PSPrintSDK.APIHostname, queryParams);
+        String url = String.format("%s/v1/address/search?%s", PSPrintSDK.getEnvironment().getPrintAPIEndpoint(), queryParams);
         startSearch(url, listener);
     }
 

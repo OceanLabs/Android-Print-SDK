@@ -61,6 +61,14 @@ public class MainActivity extends Activity {
     public void onCheckoutButtonClicked(View view) {
         ArrayList<Asset> assets = new ArrayList<Asset>();
         assets.add(new Asset(R.drawable.instagram1));
+        assets.add(new Asset(R.drawable.instagram2));
+        assets.add(new Asset(R.drawable.instagram3));
+        assets.add(new Asset(R.drawable.instagram4));
+
+        try {
+            URL remoteImageURL = new URL("http://www.catster.com/files/original.jpg");
+            assets.add(new Asset(remoteImageURL));
+        } catch (Exception ex) {}
 
         PrintOrder printOrder = new PrintOrder();
         printOrder.addPrintJob(PrintJob.createMagnetsPrintJob(assets));
@@ -68,6 +76,8 @@ public class MainActivity extends Activity {
 
         Intent intent = new Intent(this, CheckoutActivity.class);
         intent.putExtra(CheckoutActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder);
+        intent.putExtra(CheckoutActivity.EXTRA_PRINT_ENVIRONMENT, CheckoutActivity.ENVIRONMENT_STAGING);
+        intent.putExtra(CheckoutActivity.EXTRA_PRINT_API_KEY, "ba171b0d91b1418fbd04f7b12af1e37e42d2cb1e");
         startActivity(intent);
     }
 
@@ -108,24 +118,6 @@ public class MainActivity extends Activity {
 
         List<PrintOrder> orders = PrintOrder.getPrintOrderHistory(this);
         Log.i("psprintstudio", orders.size() + "orders in history");
-
-        final ProgressDialog dialog = ProgressDialog.show(this, null, "Uploading", true);
-        printOrder.submitForPrinting(this, new PrintOrderSubmissionListener() {
-            @Override
-            public void onProgress(PrintOrder printOrder, int totalAssetsToUpload, long totalAssetBytesWritten, long totalAssetBytesExpectedToWrite, long totalBytesWritten, long totalBytesExpectedToWrite) {}
-
-            @Override
-            public void onSubmissionComplete(PrintOrder printOrder, String orderIdReceipt) {
-                dialog.dismiss();
-                Log.i("psprintstudio", "PrintOrder submission success with receipt: " + orderIdReceipt);
-            }
-
-            @Override
-            public void onError(PrintOrder printOrder, Exception error) {
-                dialog.dismiss();
-                Log.e("psprintstudio", "PrintOrder submission failure with error: " + error.getMessage(), error);
-            }
-        });
     }
 
     /**

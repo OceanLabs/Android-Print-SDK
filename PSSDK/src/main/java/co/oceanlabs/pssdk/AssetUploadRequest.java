@@ -119,7 +119,7 @@ class AssetUploadRequest {
             mimeTypes.append(a.getMimeType(context).getMimeTypeString());
         }
 
-        String url = String.format("https://%s/v1/asset/sign/?mime_types=%s&client_asset=true", PSPrintSDK.APIHostname, mimeTypes.toString());
+        String url = String.format("%s/v1/asset/sign/?mime_types=%s&client_asset=true", PSPrintSDK.getEnvironment().getPrintAPIEndpoint(), mimeTypes.toString());
         registerImageURLAssetsReq = new BaseRequest(BaseRequest.HttpMethod.GET, url, null, (String) null);
         registerImageURLAssetsReq.start(new BaseRequest.BaseRequestListener() {
             @Override
@@ -294,7 +294,7 @@ class AssetUploadRequest {
 
         final int expectedRegisteredAssetCount = c;
 
-        String url = String.format("https://%s/v1/asset/", PSPrintSDK.APIHostname);
+        String url = String.format("%s/v1/asset/", PSPrintSDK.getEnvironment().getPrintAPIEndpoint());
         registerImageURLAssetsReq = new BaseRequest(BaseRequest.HttpMethod.PATCH, url, null, jsonBody.toString());
         registerImageURLAssetsReq.start(new BaseRequest.BaseRequestListener() {
             @Override

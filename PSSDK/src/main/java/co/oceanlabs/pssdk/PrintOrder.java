@@ -63,9 +63,13 @@ public class PrintOrder implements Parcelable, Serializable {
         return shippingAddress;
     }
 
+    public ArrayList<PrintJob> getJobs() {
+        return jobs;
+    }
+
     public void setProofOfPayment(String proofOfPayment) {
         if (!proofOfPayment.startsWith("AP-") && !proofOfPayment.startsWith("PAY-")) {
-            throw new IllegalArgumentException("Proof of payment must be a PayPal REST payment confirmation id or a PayPal Adaptive Payment pay key i.e. PAY-... or AP-...");
+            throw new IllegalArgumentException("Proof of payment must be a PayPal REST payment confirmation id or a PayPal Adaptive PayPalCard pay key i.e. PAY-... or AP-...");
         }
 
         this.proofOfPayment = proofOfPayment;
@@ -130,7 +134,7 @@ public class PrintOrder implements Parcelable, Serializable {
     public BigDecimal getCost() {
         BigDecimal cost = new BigDecimal(0);
         for (PrintJob job : jobs) {
-            cost.add(job.getCost());
+            cost = cost.add(job.getCost());
         }
 
         return cost;
@@ -244,7 +248,7 @@ public class PrintOrder implements Parcelable, Serializable {
         }
     }
 
-    public void submitForPrinting() {
+    private void submitForPrinting() {
         if (!userSubmittedForPrinting) throw new IllegalStateException("oops");
         if (!assetUploadComplete || isAssetUploadInProgress()) throw new IllegalStateException("Oops asset upload should be complete by now");
 
@@ -288,7 +292,7 @@ public class PrintOrder implements Parcelable, Serializable {
         public void onProgress(AssetUploadRequest req, int totalAssetsUploaded, int totalAssetsToUpload, long bytesWritten, long totalAssetBytesWritten, long totalAssetBytesExpectedToWrite) {
             totalBytesWritten += bytesWritten;
             if (userSubmittedForPrinting) {
-                submissionListener.onProgress(PrintOrder.this, totalAssetsToUpload, totalAssetBytesWritten, totalAssetBytesExpectedToWrite, totalBytesWritten, totalBytesExpectedToWrite);
+                submissionListener.onProgress(PrintOrder.this, totalAssetsUploaded, totalAssetsToUpload, totalAssetBytesWritten, totalAssetBytesExpectedToWrite, totalBytesWritten, totalBytesExpectedToWrite);
             }
         }
 
@@ -336,6 +340,7 @@ public class PrintOrder implements Parcelable, Serializable {
         @Override
         public void onError(AssetUploadRequest req, Exception error) {
             assetUploadReq = null;
+            assetsToUpload = null;
             if (userSubmittedForPrinting) {
                 userSubmittedForPrinting = false; // allow the user to resubmit for printing
                 submissionListener.onError(PrintOrder.this, error);

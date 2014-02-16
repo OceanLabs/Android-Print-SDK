@@ -29,7 +29,28 @@ class PrintsPrintJob extends PrintJob {
 
     @Override
     public BigDecimal getCost() {
-        throw new UnsupportedOperationException("to implement");
+        // TODO: don't do this in the final public API, look up dynamically!
+        switch (productType) {
+            case MAGNETS: {
+                BigDecimal cost = new BigDecimal("12.50");
+                int numOrders = (assets.size() + 21) / 22;
+                return cost.multiply(new BigDecimal(numOrders));
+            }
+            case POLAROIDS:
+            case SQUARES: {
+                BigDecimal cost = new BigDecimal("12.50");
+                int numOrders = (assets.size() + 19) / 20;
+                return cost.multiply(new BigDecimal(numOrders));
+            }
+            case MINI_POLAROIDS:
+            case MINI_SQUARES: {
+                BigDecimal cost = new BigDecimal("11.50");
+                int numOrders = (assets.size() + 43) / 44;
+                return cost.multiply(new BigDecimal(numOrders));
+            }
+            default:
+                throw new AssertionError("Oops");
+        }
     }
 
     @Override

@@ -8,6 +8,12 @@
         android:minSdkVersion="14"
         android:targetSdkVersion="19" />
 
-    <application />
+    <application>
+        <activity
+            android:name="co.oceanlabs.pssdk.checkout.PaymentActivity"
+            android:label="@string/title_activity_payment"
+            android:screenOrientation="portrait">
+        </activity>
+    </application>
 
 </manifest>

@@ -9,5 +9,6 @@
     <string name="title_activity_checkout">Shipping Details</string>
     <string name="title_activity_order_receipt">OrderReceiptActivity</string>
     <string name="hello_world">Hello world!</string>
+    <string name="title_activity_payment">PaymentActivity</string>
 
 </resources>

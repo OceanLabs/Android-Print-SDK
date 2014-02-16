@@ -4,19 +4,21 @@ package co.oceanlabs.pssdk;
  * Created by deonbotha on 09/02/2014.
  */
 public enum ProductType {
-    POSTCARD(2, "ps_postcard"),
-    POLAROIDS(3, "polaroids"),
-    MINI_POLAROIDS(4, "polaroids_mini"),
-    SQUARES(5, "squares"),
-    MINI_SQUARES(6, "squares_mini"),
-    MAGNETS(7, "magnets");
+    POSTCARD(2, "ps_postcard", "Postcard"),
+    POLAROIDS(3, "polaroids", "Polaroids"),
+    MINI_POLAROIDS(4, "polaroids_mini", "Petite Polaroids"),
+    SQUARES(5, "squares", "Squares"),
+    MINI_SQUARES(6, "squares_mini", "Petite Squares"),
+    MAGNETS(7, "magnets", "Magnets");
 
     final int value;
     final String defaultTemplate;
+    final String productName; // TODO: don't do this in final public API.
 
-    private ProductType(int value, String defaultTemplate) {
+    private ProductType(int value, String defaultTemplate, String productName) {
         this.value = value;
         this.defaultTemplate = defaultTemplate;
+        this.productName = productName;
     }
 
     public static ProductType productTypeFromTemplate(String template) {
@@ -35,5 +37,9 @@ public enum ProductType {
        }
 
         throw new IllegalArgumentException("Unrecognized template: " + template);
+    }
+
+    public String getProductName() {
+        return productName;
     }
 }

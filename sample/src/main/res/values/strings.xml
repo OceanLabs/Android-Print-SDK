@@ -7,7 +7,8 @@
     <string name="title_section3">Section 3</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_checkout">Shipping Details</string>
-    <string name="title_activity_order_receipt">OrderReceiptActivity</string>
+    <string name="title_activity_order_receipt">Order Receipt</string>
+    <string name="title_activity_payment">Payment</string>
     <string name="hello_world">Hello world!</string>
 
 </resources>

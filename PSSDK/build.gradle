@@ -32,4 +32,5 @@ android {
 
 dependencies {
     compile 'com.android.support:support-v13:+'
+    compile files('libs/PayPalAndroidSDK.jar')
 }
