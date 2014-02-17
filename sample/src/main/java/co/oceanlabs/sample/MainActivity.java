@@ -1,5 +1,6 @@
 package co.oceanlabs.sample;
 
+import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -30,6 +31,9 @@ import co.oceanlabs.pssdk.PSPrintSDK;
 import co.oceanlabs.pssdk.PrintJob;
 import co.oceanlabs.pssdk.PrintOrder;
 import co.oceanlabs.pssdk.PrintOrderSubmissionListener;
+import co.oceanlabs.pssdk.payment.PayPalCard;
+import co.oceanlabs.pssdk.payment.PayPalCardChargeListener;
+import co.oceanlabs.pssdk.payment.PayPalCardVaultStorageListener;
 import co.oceanlabs.sample.R;
 import co.oceanlabs.pssdk.address.Address;
 import co.oceanlabs.pssdk.checkout.CheckoutActivity;
@@ -47,6 +51,34 @@ public class MainActivity extends Activity {
         PSPrintSDK.initialize("ba171b0d91b1418fbd04f7b12af1e37e42d2cb1e");
         imageView = (ImageView) findViewById(R.id.image_view);
 
+        if (PayPalCard.getLastUsedCard(this) != null) {
+            PayPalCard.getLastUsedCard(this).chargeCard(PayPalCard.Environment.SANDBOX, new BigDecimal("9.99"), PayPalCard.Currency.GBP, "description", new PayPalCardChargeListener() {
+
+                @Override
+                public void onChargeSuccess(PayPalCard card, String proofOfPayment) {
+                    Log.i("pssdk2", "Successfully charged card with proof: " + proofOfPayment);
+                }
+
+                @Override
+                public void onError(PayPalCard card, Exception ex) {
+                    Log.i("pssdk2", "Failed to charge card with error: " + ex.toString());
+                }
+            });
+        } else {
+            final PayPalCard card = new PayPalCard(PayPalCard.CardType.VISA, "4012888888881881", 12, 15, "123");
+            card.storeCard(PayPalCard.Environment.SANDBOX, new PayPalCardVaultStorageListener() {
+                @Override
+                public void onStoreSuccess(PayPalCard card) {
+                    Log.i("pssdk2", "Successfully stored PayPal");
+                    card.saveAsLastUsedCard(MainActivity.this);
+                }
+
+                @Override
+                public void onError(PayPalCard card, Exception ex) {
+                    Log.i("pssdk2", "Failed to store PayPal card: " + ex.toString());
+                }
+            });
+        }
     }
 
     public void onGalleryButtonClicked(View view) {
