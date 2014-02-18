@@ -15,6 +15,7 @@ public abstract class PrintJob implements Parcelable, Serializable {
     public abstract BigDecimal getCost();
     public abstract ProductType getProductType();
     public abstract int getQuantity();
+    public abstract String getTemplateName();
     abstract List<Asset> getAssetsForUploading();
     abstract JSONObject getJSONRepresentation();
 

@@ -69,6 +69,11 @@ class PrintsPrintJob extends PrintJob {
     }
 
     @Override
+    public String getTemplateName() {
+        return productType.defaultTemplate;
+    }
+
+    @Override
     JSONObject getJSONRepresentation() {
         JSONArray assets = new JSONArray();
         for (Asset a : this.assets) {

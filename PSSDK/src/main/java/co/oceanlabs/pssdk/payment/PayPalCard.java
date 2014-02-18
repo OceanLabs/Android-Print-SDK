@@ -40,6 +40,7 @@ import co.oceanlabs.pssdk.BaseRequest;
 import co.oceanlabs.pssdk.PSPrintSDK;
 import co.oceanlabs.pssdk.PSPrintSDKException;
 import co.oceanlabs.pssdk.address.Country;
+import io.card.payment.CardType;
 
 /**
  * Created by deonbotha on 16/02/2014.
@@ -52,12 +53,28 @@ public class PayPalCard implements Serializable {
         VISA("visa"),
         MASTERCARD("mastercard"),
         DISCOVER("discover"),
-        AMEX("amex");
+        AMEX("amex"),
+        UNSUPPORTED("unsupported");
 
         private final String paypalIdentifier;
 
         CardType(String paypalIdentifier) {
             this.paypalIdentifier = paypalIdentifier;
+        }
+
+        public static CardType getCardType(io.card.payment.CardType type) {
+            switch (type) {
+                case AMEX:
+                    return AMEX;
+                case MASTERCARD:
+                    return MASTERCARD;
+                case DISCOVER:
+                    return DISCOVER;
+                case VISA:
+                    return VISA;
+                default:
+                    return UNSUPPORTED;
+            }
         }
     }
 
@@ -105,6 +122,40 @@ public class PayPalCard implements Serializable {
         this.expireMonth = expireMonth;
         setExpireYear(expireYear);
         this.cvv2 = cvv2;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public String getNumberMasked() {
+        return numberMasked;
+    }
+
+    public String getLastFour() {
+        if (number != null && number.length() == 16) {
+            return number.substring(number.length() - 4);
+        } else if (numberMasked != null) {
+            return numberMasked.substring(numberMasked.length() - Math.min(4, numberMasked.length()));
+        }
+
+        return null;
+    }
+
+    public CardType getCardType() {
+        return cardType;
+    }
+
+    public int getExpireMonth() {
+        return expireMonth;
+    }
+
+    public int getExpireYear() {
+        return expireYear;
+    }
+
+    public String getCvv2() {
+        return cvv2;
     }
 
     public void setNumber(String number) {

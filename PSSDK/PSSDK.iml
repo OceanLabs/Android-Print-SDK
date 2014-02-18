@@ -72,6 +72,7 @@
     <orderEntry type="jdk" jdkName="Android API 19 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="support-v13-19.0.1" level="project" />
+    <orderEntry type="library" exported="" name="CardIONativeLibs" level="project" />
     <orderEntry type="library" exported="" name="PayPalAndroidSDK" level="project" />
     <orderEntry type="library" exported="" name="support-v4-19.0.1" level="project" />
   </component>

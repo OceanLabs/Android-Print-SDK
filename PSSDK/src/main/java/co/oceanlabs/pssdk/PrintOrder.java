@@ -24,6 +24,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import co.oceanlabs.pssdk.address.Address;
+import co.oceanlabs.pssdk.payment.CheckPromoCodeRequestListener;
+import co.oceanlabs.pssdk.payment.CheckPromoRequest;
 
 /**
  * Created by deonbotha on 09/02/2014.
@@ -52,6 +54,9 @@ public class PrintOrder implements Parcelable, Serializable {
     private PrintOrderSubmissionListener submissionListener;
     private Exception lastPrintSubmissionError;
     private int storageIdentifier = NOT_PERSITED;
+
+    private String promoCode;
+    private BigDecimal promoCodeDiscount;
 
     public PrintOrder() {}
 
@@ -135,6 +140,13 @@ public class PrintOrder implements Parcelable, Serializable {
         BigDecimal cost = new BigDecimal(0);
         for (PrintJob job : jobs) {
             cost = cost.add(job.getCost());
+        }
+
+        if (this.promoCodeDiscount != null) {
+            cost = cost.subtract(this.promoCodeDiscount);
+            if (cost.compareTo(BigDecimal.ZERO) < 0) {
+                cost = BigDecimal.ZERO;
+            }
         }
 
         return cost;
@@ -367,6 +379,8 @@ public class PrintOrder implements Parcelable, Serializable {
         p.writeString(receipt);
         p.writeValue(lastPrintSubmissionError);
         p.writeInt(storageIdentifier);
+        p.writeString(promoCode);
+        p.writeValue(promoCodeDiscount);
     }
 
     private PrintOrder(Parcel p) {
@@ -391,6 +405,8 @@ public class PrintOrder implements Parcelable, Serializable {
         this.receipt = p.readString();
         this.lastPrintSubmissionError = (Exception) p.readValue(Exception.class.getClassLoader());
         this.storageIdentifier = p.readInt();
+        this.promoCode = p.readString();
+        this.promoCodeDiscount = (BigDecimal) p.readValue(BigDecimal.class.getClassLoader());
     }
 
     public static final Parcelable.Creator<PrintOrder> CREATOR
@@ -422,6 +438,8 @@ public class PrintOrder implements Parcelable, Serializable {
         out.writeObject(receipt);
         out.writeObject(lastPrintSubmissionError);
         out.writeInt(storageIdentifier);
+        out.writeObject(promoCode);
+        out.writeObject(promoCodeDiscount);
     }
 
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -449,6 +467,47 @@ public class PrintOrder implements Parcelable, Serializable {
         receipt = (String) in.readObject();
         lastPrintSubmissionError = (Exception) in.readObject();
         storageIdentifier = in.readInt();
+        promoCode = (String) in.readObject();
+        promoCodeDiscount = (BigDecimal) in.readObject();
+    }
+
+    /*
+     * Promo code stuff
+     */
+
+    public BigDecimal getPromoCodeDiscount() {
+        return promoCodeDiscount;
+    }
+
+    public String getPromoCode() {
+        return promoCode;
+    }
+
+    public CheckPromoRequest applyPromoCode(final String promoCode, final ApplyPromoCodeListener listener) {
+        CheckPromoRequest req = new CheckPromoRequest();
+        req.checkPromoCode(promoCode, this, new CheckPromoCodeRequestListener() {
+            @Override
+            public void onDiscount(BigDecimal discount) {
+                if (promoCode != null && discount.compareTo(BigDecimal.ZERO) > 0) {
+                    PrintOrder.this.promoCode = promoCode;
+                    PrintOrder.this.promoCodeDiscount = discount;
+                }
+
+                listener.onPromoCodeApplied(PrintOrder.this, discount);
+            }
+
+            @Override
+            public void onError(Exception ex) {
+                listener.onError(PrintOrder.this, ex);
+            }
+        });
+
+        return req;
+    }
+
+    public void clearPromoCode() {
+        this.promoCode = null;
+        this.promoCodeDiscount = null;
     }
 
     /*
