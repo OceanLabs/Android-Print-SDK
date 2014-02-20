@@ -41,6 +41,7 @@ import co.oceanlabs.pssdk.checkout.CheckoutActivity;
 public class MainActivity extends Activity {
 
     private static final int SELECT_PICTURE = 1;
+    private static final int REQUEST_CODE_CHECKOUT = 2;
 
     private ImageView imageView;
 
@@ -110,18 +111,22 @@ public class MainActivity extends Activity {
         intent.putExtra(CheckoutActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder);
         intent.putExtra(CheckoutActivity.EXTRA_PRINT_ENVIRONMENT, CheckoutActivity.ENVIRONMENT_STAGING);
         intent.putExtra(CheckoutActivity.EXTRA_PRINT_API_KEY, "ba171b0d91b1418fbd04f7b12af1e37e42d2cb1e");
-        startActivity(intent);
+        startActivityForResult(intent, REQUEST_CODE_CHECKOUT);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK) {
-            if (requestCode == SELECT_PICTURE) {
-                Uri selectedImageUri = data.getData();
-                imageView.setImageURI(selectedImageUri);
-                try {
-                    createAndSubmitPrintJob(selectedImageUri);
-                } catch (MalformedURLException ex) {
-                    throw new RuntimeException(ex); // will never happen ;)
+        if (requestCode == REQUEST_CODE_CHECKOUT) {
+
+        } else {
+            if (resultCode == RESULT_OK) {
+                if (requestCode == SELECT_PICTURE) {
+                    Uri selectedImageUri = data.getData();
+                    imageView.setImageURI(selectedImageUri);
+                    try {
+                        createAndSubmitPrintJob(selectedImageUri);
+                    } catch (MalformedURLException ex) {
+                        throw new RuntimeException(ex); // will never happen ;)
+                    }
                 }
             }
         }

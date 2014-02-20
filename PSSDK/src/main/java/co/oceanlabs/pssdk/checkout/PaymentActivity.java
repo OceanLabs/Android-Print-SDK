@@ -106,7 +106,6 @@ public class PaymentActivity extends Activity {
 
         PSPrintSDK.initialize(apiKey, env);
 
-
         /*
          * Start PayPal Service
          */
@@ -132,6 +131,7 @@ public class PaymentActivity extends Activity {
         this.printEnvironment = (PSPrintSDK.Environment) savedInstanceState.getSerializable(EXTRA_PRINT_ENVIRONMENT);
         PSPrintSDK.initialize(apiKey, printEnvironment);
 
+        paypalEnvironment = PayPalCard.Environment.LIVE;
         if (printEnvironment == PSPrintSDK.Environment.STAGING || printEnvironment == PSPrintSDK.Environment.TEST) {
             paypalEnvironment = PayPalCard.Environment.SANDBOX;
         }
@@ -174,21 +174,6 @@ public class PaymentActivity extends Activity {
         } else {
             payWithNewCard();
         }
-//        NSComparisonResult result = [self.printOrder.cost compare:[NSDecimalNumber zero]];
-//        if (result == NSOrderedAscending || result == NSOrderedSame) {
-//            // The user must have a promo code which reduces this order cost to nothing, lucky user :)
-//            [self submitOrderForPrintingWithProofOfPayment:nil];
-//        } else {
-//            OLJudoPayCard *card = [OLJudoPayCard lastUsedCard];
-//            if (card == nil) {
-//                [self payWithNewCard];
-//            } else {
-//                UIActionSheet *paysheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Pay with new card", [NSString stringWithFormat:@"Pay with card ending %@", [card.numberMasked substringFromIndex:card.numberMasked.length - 4]], nil];
-//                [paysheet showInView:self.view];
-//            }
-//        }
-
-
     }
 
     private void payWithNewCard() {
@@ -326,8 +311,13 @@ public class PaymentActivity extends Activity {
             @Override
             public void onError(PrintOrder printOrder, Exception error) {
                 if (Looper.myLooper() != Looper.getMainLooper()) throw new AssertionError("Should be calling back on the main thread");
+                printOrder.saveToHistory(PaymentActivity.this);
                 dialog.dismiss();
-                showErrorDialog(error.getMessage());
+                //showErrorDialog(error.getMessage());
+
+                Intent i = new Intent(PaymentActivity.this, OrderReceiptActivity.class);
+                i.putExtra(OrderReceiptActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder);
+                startActivity(i);
             }
         });
     }
@@ -383,23 +373,6 @@ public class PaymentActivity extends Activity {
                 }
             });
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.payment, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     /**

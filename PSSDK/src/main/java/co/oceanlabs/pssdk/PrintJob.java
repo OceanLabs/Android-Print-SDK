@@ -12,6 +12,9 @@ import java.util.List;
  * Created by deonbotha on 09/02/2014.
  */
 public abstract class PrintJob implements Parcelable, Serializable {
+
+    private static final long serialVersionUID = 0L;
+
     public abstract BigDecimal getCost();
     public abstract ProductType getProductType();
     public abstract int getQuantity();

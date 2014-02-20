@@ -245,9 +245,9 @@ public class PrintOrder implements Parcelable, Serializable {
     }
 
     public void submitForPrinting(Context context, PrintOrderSubmissionListener listener) {
-        if (userSubmittedForPrinting) throw new IllegalStateException("A PrintOrder can only be submitted once unless you cancel the previous submission");
-        if (proofOfPayment == null) throw new IllegalArgumentException("You must provide a proofOfPayment before you can submit a print order");
-        if (printOrderReq != null) throw new IllegalStateException("A PrintOrder request should not already be in progress");
+        if (userSubmittedForPrinting) throw new AssertionError("A PrintOrder can only be submitted once unless you cancel the previous submission");
+        if (proofOfPayment == null) throw new AssertionError("You must provide a proofOfPayment before you can submit a print order");
+        if (printOrderReq != null) throw new AssertionError("A PrintOrder request should not already be in progress");
 
         lastPrintSubmissionDate = new Date();
         userSubmittedForPrinting = true;
@@ -354,6 +354,7 @@ public class PrintOrder implements Parcelable, Serializable {
             assetUploadReq = null;
             assetsToUpload = null;
             if (userSubmittedForPrinting) {
+                lastPrintSubmissionError = error;
                 userSubmittedForPrinting = false; // allow the user to resubmit for printing
                 submissionListener.onError(PrintOrder.this, error);
             }

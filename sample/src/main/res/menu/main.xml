@@ -3,27 +3,4 @@
     tools:context=".MainActivity" >
 
 
-    <item android:id="@+id/menu_share"
-        android:title="Share"
-        android:showAsAction="ifRoom"
-        android:actionProviderClass="android.widget.ShareActionProvider" />
-
-    <item
-        android:id="@+id/action_instagram"
-        android:orderInCategory="100"
-        android:showAsAction="always"
-        android:icon="@drawable/menu_instagram"
-        android:title="Instagram"/>
-
-    <item
-        android:id="@+id/action_uservoice"
-        android:orderInCategory="100"
-        android:showAsAction="always"
-        android:icon="@drawable/menu_uservoice"
-        android:title="UserVoice"/>
-
-    <item android:id="@+id/action_settings"
-        android:title="@string/action_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never" />
 </menu>
