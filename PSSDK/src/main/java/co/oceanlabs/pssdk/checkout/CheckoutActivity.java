@@ -4,6 +4,8 @@ import java.util.Locale;
 
 import android.app.Activity;
 import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -115,14 +117,32 @@ public class CheckoutActivity extends Activity {
         }
     }
 
+    private void showErrorDialog(String title, String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title).setMessage(message).setPositiveButton("OK", null);
+        Dialog d = builder.create();
+        d.show();
+    }
+
     public void onButtonNextClicked(View view) {
+        String email = ((TextView) findViewById(R.id.email_address_text_view)).getText().toString();
+        String phone = ((TextView) findViewById(R.id.phone_number_text_view)).getText().toString();
+
+        if (!isEmailValid(email)) {
+            showErrorDialog("Invalid Email Address", "Please enter a valid email address");
+            return;
+        }
+
+        if (phone.length() < 5) {
+            showErrorDialog("Invalid Phone Number", "Please enter a valid phone number");
+            return;
+        }
+
         Intent i = new Intent(this, PaymentActivity.class);
         i.putExtra(PaymentActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder);
         i.putExtra(PaymentActivity.EXTRA_PRINT_API_KEY, apiKey);
         i.putExtra(PaymentActivity.EXTRA_PRINT_ENVIRONMENT, getPaymentActivityEnvironment());
         startActivityForResult(i, REQUEST_CODE_PAYMENT);
-        check email;
-        check phone;
     }
 
     boolean isEmailValid(CharSequence email) {
