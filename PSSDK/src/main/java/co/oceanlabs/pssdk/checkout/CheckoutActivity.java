@@ -34,6 +34,8 @@ public class CheckoutActivity extends Activity {
     public static final String ENVIRONMENT_LIVE = "co.oceanlabs.pssdk.ENVIRONMENT_LIVE";
     public static final String ENVIRONMENT_TEST = "co.oceanlabs.pssdk.ENVIRONMENT_TEST";
 
+    private static final int REQUEST_CODE_PAYMENT = 1;
+
     private PrintOrder printOrder;
     private String apiKey;
     private PSPrintSDK.Environment environment;
@@ -73,6 +75,8 @@ public class CheckoutActivity extends Activity {
         this.apiKey = apiKey;
         this.environment = env;
         PSPrintSDK.initialize(apiKey, env);
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
@@ -92,6 +96,15 @@ public class CheckoutActivity extends Activity {
         PSPrintSDK.initialize(apiKey, environment);
     }
 
+    @Override
+    public boolean onMenuItemSelected(int featureId, MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onMenuItemSelected(featureId, item);
+    }
+
     private String getPaymentActivityEnvironment() {
         switch (environment) {
             case LIVE: return PaymentActivity.ENVIRONMENT_LIVE;
@@ -107,7 +120,23 @@ public class CheckoutActivity extends Activity {
         i.putExtra(PaymentActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder);
         i.putExtra(PaymentActivity.EXTRA_PRINT_API_KEY, apiKey);
         i.putExtra(PaymentActivity.EXTRA_PRINT_ENVIRONMENT, getPaymentActivityEnvironment());
-        startActivity(i);
+        startActivityForResult(i, REQUEST_CODE_PAYMENT);
+        check email;
+        check phone;
+    }
+
+    boolean isEmailValid(CharSequence email) {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE_PAYMENT) {
+            if (resultCode == Activity.RESULT_OK) {
+                setResult(Activity.RESULT_OK);
+                finish();
+            }
+        }
     }
 
     /**

@@ -116,7 +116,11 @@ public class MainActivity extends Activity {
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE_CHECKOUT) {
-
+            if (resultCode == Activity.RESULT_OK) {
+                Toast.makeText(this, "Successfully checked out!!!", 2000).show();
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                Toast.makeText(this, "User cancelled checkout :(", 1000).show();
+            }
         } else {
             if (resultCode == RESULT_OK) {
                 if (requestCode == SELECT_PICTURE) {

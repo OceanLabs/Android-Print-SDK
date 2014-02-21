@@ -60,6 +60,7 @@ public class PaymentActivity extends Activity {
 
     private static final int REQUEST_CODE_PAYPAL = 0;
     private static final int REQUEST_CODE_CREDITCARD = 1;
+    private static final int REQUEST_CODE_RECEIPT = 2;
 
     private PrintOrder printOrder;
     private String apiKey;
@@ -113,6 +114,14 @@ public class PaymentActivity extends Activity {
         intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_PAYPAL_ENVIRONMENT, printEnvironment.getPayPalEnvironment());
         intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_CLIENT_ID, printEnvironment.getPayPalClientId());
         startService(intent);
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+
+        if (this.paypalEnvironment == PayPalCard.Environment.SANDBOX) {
+            getActionBar().setTitle("Payment (Sandbox)");
+        } else {
+            getActionBar().setTitle("Payment");
+        }
     }
 
     @Override
@@ -143,6 +152,15 @@ public class PaymentActivity extends Activity {
         super.onDestroy();
     }
 
+    @Override
+    public boolean onMenuItemSelected(int featureId, MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onMenuItemSelected(featureId, item);
+    }
+
     public void onButtonPayWithPayPalClicked(View view) {
         PayPalPayment payment = new PayPalPayment(printOrder.getCost(), "GBP", "Product");
         Intent intent = new Intent(this, com.paypal.android.sdk.payments.PaymentActivity.class);
@@ -159,7 +177,12 @@ public class PaymentActivity extends Activity {
         final PayPalCard lastUsedCard = PayPalCard.getLastUsedCard(this);
         if (lastUsedCard != null && !lastUsedCard.hasVaultStorageExpired()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Payment Source");
+            if (this.paypalEnvironment == PayPalCard.Environment.SANDBOX) {
+                builder.setTitle("Payment Source (Sandbox)");
+            } else {
+                builder.setTitle("Payment Source");
+            }
+
             builder.setItems(new String[] {"Pay with new card", "Pay with card ending " + lastUsedCard.getLastFour()}, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int itemIndex) {
@@ -221,6 +244,7 @@ public class PaymentActivity extends Activity {
                 }
 
                 final ProgressDialog dialog = new ProgressDialog(this);
+                dialog.setCancelable(false);
                 dialog.setTitle("Processing");
                 dialog.setMessage("One moment");
                 dialog.show();
@@ -241,11 +265,15 @@ public class PaymentActivity extends Activity {
             } else {
                 // card scan cancelled
             }
+        } else if (requestCode == REQUEST_CODE_RECEIPT) {
+            setResult(Activity.RESULT_OK);
+            finish();
         }
     }
 
     private void payWithExistingCard(PayPalCard card) {
         final ProgressDialog dialog = new ProgressDialog(this);
+        dialog.setCancelable(false);
         dialog.setTitle("Processing");
         dialog.setMessage("One moment");
         dialog.show();
@@ -267,10 +295,7 @@ public class PaymentActivity extends Activity {
 
     private void showErrorDialog(String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Oops!")
-                .setMessage(message)
-                .setPositiveButton("OK", null);
-        // Create the AlertDialog object and return it
+        builder.setTitle("Oops!").setMessage(message).setPositiveButton("OK", null);
         Dialog d = builder.create();
         d.show();
     }
@@ -280,13 +305,14 @@ public class PaymentActivity extends Activity {
         printOrder.saveToHistory(this);
 
         final ProgressDialog dialog = new ProgressDialog(this);
+        dialog.setCancelable(false);
         dialog.setIndeterminate(false);
         dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         dialog.setTitle("Processing");
         dialog.setMessage("One moment...");
         dialog.setMax(100);
-
         dialog.show();
+
         printOrder.submitForPrinting(this, new PrintOrderSubmissionListener() {
             @Override
             public void onProgress(PrintOrder printOrder, int totalAssetsUploaded, int totalAssetsToUpload, long totalAssetBytesWritten, long totalAssetBytesExpectedToWrite, long totalBytesWritten, long totalBytesExpectedToWrite) {
@@ -305,7 +331,7 @@ public class PaymentActivity extends Activity {
                 dialog.dismiss();
                 Intent i = new Intent(PaymentActivity.this, OrderReceiptActivity.class);
                 i.putExtra(OrderReceiptActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder);
-                startActivity(i);
+                startActivityForResult(i, REQUEST_CODE_RECEIPT);
             }
 
             @Override
@@ -317,7 +343,7 @@ public class PaymentActivity extends Activity {
 
                 Intent i = new Intent(PaymentActivity.this, OrderReceiptActivity.class);
                 i.putExtra(OrderReceiptActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder);
-                startActivity(i);
+                startActivityForResult(i, REQUEST_CODE_RECEIPT);
             }
         });
     }
@@ -353,6 +379,7 @@ public class PaymentActivity extends Activity {
         } else {
             // Apply promo code
             final ProgressDialog dialog = new ProgressDialog(this);
+            dialog.setCancelable(false);
             dialog.setTitle("Processing");
             dialog.setMessage("Checking Code...");
             dialog.show();
@@ -417,44 +444,6 @@ public class PaymentActivity extends Activity {
         }
     }
 
-    private static class PrintOrderSummaryListAdapter extends BaseAdapter {
 
-        private final PrintOrder order;
-
-        private PrintOrderSummaryListAdapter(PrintOrder order) {
-            this.order = order;
-        }
-
-        @Override
-        public int getCount() {
-            return order.getJobs().size();
-        }
-
-        @Override
-        public Object getItem(int i) {
-            return order.getJobs().get(i);
-        }
-
-        @Override
-        public long getItemId(int i) {
-            return i;
-        }
-
-        @Override
-        public View getView(int i, View convertView, ViewGroup parent) {
-            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            View row = inflater.inflate(R.layout.order_summary_list_item, parent, false);
-            TextView itemDescription = (TextView) row.findViewById(R.id.text_view_order_item_description);
-            TextView itemCost = (TextView) row.findViewById(R.id.text_view_order_item_cost);
-
-            PrintJob job = order.getJobs().get(i);
-            itemDescription.setText(String.format("Pack of %d %s", job.getQuantity(), job.getProductType().getProductName()));
-
-            NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.UK);
-            itemCost.setText(formatter.format(job.getCost().doubleValue()));
-
-            return (row);
-        }
-    }
 
 }
