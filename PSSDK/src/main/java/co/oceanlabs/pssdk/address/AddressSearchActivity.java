@@ -123,7 +123,6 @@ public class AddressSearchActivity extends Activity implements ActionBar.OnNavig
 
             @Override
             public boolean onQueryTextChange(String query) {
-                Log.i("pssdk2", "search for " + query);
                 if (inProgressAddressSearchReq != null) {
                     inProgressAddressSearchReq.cancelSearch();
                     inProgressAddressSearchReq = null;
@@ -134,6 +133,9 @@ public class AddressSearchActivity extends Activity implements ActionBar.OnNavig
                     ListView addressSearchResults = (ListView) findViewById(R.id.list_view_address_search_results);
                     AddressSearchResultAdapter adapter = (AddressSearchResultAdapter) addressSearchResults.getAdapter();
                     adapter.setAddresses(null);
+
+                    TextView empty = (TextView) findViewById(R.id.empty);
+                    empty.setText("Search for addresses above");
                     return true;
                 }
 
@@ -228,6 +230,10 @@ public class AddressSearchActivity extends Activity implements ActionBar.OnNavig
                 }
             });
 
+            TextView empty = (TextView) rootView.findViewById(R.id.empty);
+            addressSearchResults.setEmptyView(empty);
+            empty.setText("Search for addresses above");
+
             return rootView;
         }
 
@@ -238,6 +244,10 @@ public class AddressSearchActivity extends Activity implements ActionBar.OnNavig
     }
 
     public void onMultipleChoices(AddressSearchRequest req, List<Address> options) {
+        if (options.size() == 0) {
+            TextView empty = (TextView) findViewById(R.id.empty);
+            empty.setText("No results found");
+        }
         ListView addressSearchResults = (ListView) findViewById(R.id.list_view_address_search_results);
         AddressSearchResultAdapter adapter = (AddressSearchResultAdapter) addressSearchResults.getAdapter();
         adapter.setAddresses(options);

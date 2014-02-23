@@ -11,7 +11,7 @@
     <string name="title_activity_payment">Payment</string>
     <string name="title_activity_address_book">Address Book</string>
     <string name="add_address">Add Address</string>
-    <string name="search_for_address">Lookup Address</string>
+    <string name="search_for_address">Lookup New Address</string>
     <string name="manual_add_address">Create New Address</string>
     <string name="title_activity_address_edit">Edit Address</string>
     <string name="title_activity_address_search">Lookup Address</string>

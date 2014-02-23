@@ -19,19 +19,6 @@
                 android:id="@+id/manual_add_address"
                 android:title="@string/manual_add_address"/>
 
-            <!--<item-->
-                <!--android:showAsAction="always"-->
-                <!--android:id="@+id/facebook"-->
-                <!--android:title="@string/facebook"-->
-                <!--android:icon="@drawable/ic_action_facebook"/>-->
-
-            <!--<item-->
-                <!--android:showAsAction="always"-->
-                <!--android:id="@+id/instagram"-->
-                <!--android:title="@string/instagram"-->
-                <!--android:icon="@drawable/ic_instagram"/>-->
-
-
         </menu>
     </item>
 
