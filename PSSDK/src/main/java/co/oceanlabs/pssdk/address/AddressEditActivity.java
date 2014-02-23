@@ -52,6 +52,7 @@ public class AddressEditActivity extends Activity {
                     .commit();
         }
 
+        // hide keyboard initially
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         getActionBar().setDisplayHomeAsUpEnabled(true);

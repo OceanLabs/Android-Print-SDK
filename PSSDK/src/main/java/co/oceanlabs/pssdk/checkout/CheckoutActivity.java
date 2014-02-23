@@ -1,27 +1,22 @@
 package co.oceanlabs.pssdk.checkout;
 
-import java.util.Locale;
-
 import android.app.Activity;
-import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Parcelable;
-import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import co.oceanlabs.pssdk.PSPrintSDK;
 import co.oceanlabs.pssdk.PrintOrder;
@@ -83,6 +78,9 @@ public class CheckoutActivity extends Activity {
         PSPrintSDK.initialize(apiKey, env);
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // hide keyboard initially
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
     @Override
@@ -137,6 +135,11 @@ public class CheckoutActivity extends Activity {
         String email = ((TextView) findViewById(R.id.email_address_text_view)).getText().toString();
         String phone = ((TextView) findViewById(R.id.phone_number_text_view)).getText().toString();
 
+        if (printOrder.getShippingAddress() == null) {
+            showErrorDialog("Invalid Delivery Address", "Please choose a delivery address");
+            return;
+        }
+
         if (!isEmailValid(email)) {
             showErrorDialog("Invalid Email Address", "Please enter a valid email address");
             return;
@@ -146,6 +149,18 @@ public class CheckoutActivity extends Activity {
             showErrorDialog("Invalid Phone Number", "Please enter a valid phone number");
             return;
         }
+
+        JSONObject userData = printOrder.getUserData();
+        if (userData == null) {
+            userData = new JSONObject();
+        }
+
+        try {
+            userData.put("email", email);
+            userData.put("phone", phone);
+        } catch (JSONException ex) {/* ignore */}
+        printOrder.setUserData(userData);
+        printOrder.setReceiptEmail(email);
 
         Intent i = new Intent(this, PaymentActivity.class);
         i.putExtra(PaymentActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder);

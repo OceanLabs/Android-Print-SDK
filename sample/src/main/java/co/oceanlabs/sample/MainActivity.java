@@ -105,7 +105,6 @@ public class MainActivity extends Activity {
 
         PrintOrder printOrder = new PrintOrder();
         printOrder.addPrintJob(PrintJob.createMagnetsPrintJob(assets));
-        printOrder.setShippingAddress(Address.getPSTeamAddress());
 
         Intent intent = new Intent(this, CheckoutActivity.class);
         intent.putExtra(CheckoutActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder);

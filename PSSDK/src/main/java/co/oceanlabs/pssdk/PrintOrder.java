@@ -11,11 +11,9 @@ import org.json.JSONObject;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -57,6 +55,7 @@ public class PrintOrder implements Parcelable, Serializable {
 
     private String promoCode;
     private BigDecimal promoCodeDiscount;
+    private String receiptEmail;
 
     public PrintOrder() {}
 
@@ -96,6 +95,14 @@ public class PrintOrder implements Parcelable, Serializable {
         this.userData = userData;
     }
 
+    public void setReceiptEmail(String receiptEmail) {
+        this.receiptEmail = receiptEmail;
+    }
+
+    public String getReceiptEmail() {
+        return receiptEmail;
+    }
+
     public JSONObject getUserData() {
         return userData;
     }
@@ -104,6 +111,7 @@ public class PrintOrder implements Parcelable, Serializable {
         try {
             JSONObject json = new JSONObject();
             json.put("proof_of_payment", proofOfPayment);
+            json.put("receipt_email", receiptEmail);
             if (voucherCode != null) {
                 json.put("voucher", voucherCode);
             }
@@ -382,6 +390,7 @@ public class PrintOrder implements Parcelable, Serializable {
         p.writeInt(storageIdentifier);
         p.writeString(promoCode);
         p.writeValue(promoCodeDiscount);
+        p.writeString(receiptEmail);
     }
 
     private PrintOrder(Parcel p) {
@@ -408,6 +417,7 @@ public class PrintOrder implements Parcelable, Serializable {
         this.storageIdentifier = p.readInt();
         this.promoCode = p.readString();
         this.promoCodeDiscount = (BigDecimal) p.readValue(BigDecimal.class.getClassLoader());
+        this.receiptEmail = p.readString();
     }
 
     public static final Parcelable.Creator<PrintOrder> CREATOR
@@ -441,6 +451,7 @@ public class PrintOrder implements Parcelable, Serializable {
         out.writeInt(storageIdentifier);
         out.writeObject(promoCode);
         out.writeObject(promoCodeDiscount);
+        out.writeObject(receiptEmail);
     }
 
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -470,6 +481,7 @@ public class PrintOrder implements Parcelable, Serializable {
         storageIdentifier = in.readInt();
         promoCode = (String) in.readObject();
         promoCodeDiscount = (BigDecimal) in.readObject();
+        receiptEmail = (String) in.readObject();
     }
 
     /*

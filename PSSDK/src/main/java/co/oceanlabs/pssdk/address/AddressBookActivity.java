@@ -145,6 +145,9 @@ public class AddressBookActivity extends Activity {
 
                 }
             });
+
+            TextView empty = (TextView) view.findViewById(R.id.empty);
+            addressBookList.setEmptyView(empty);
         }
 
         @Override
@@ -188,6 +191,8 @@ public class AddressBookActivity extends Activity {
             Address a = (Address) getItem(position);
             ((TextView) v.findViewById(android.R.id.text1)).setText(a.getRecipientName());
             ((TextView) v.findViewById(android.R.id.text2)).setText(a.getDisplayAddressWithoutRecipient());
+
+
             return v;
         }
     }
