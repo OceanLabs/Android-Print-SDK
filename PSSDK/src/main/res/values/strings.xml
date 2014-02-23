@@ -17,4 +17,5 @@
     <string name="title_activity_address_search">Lookup Address</string>
     <string name="action_save_address">Save Address</string>
     <string name="search_title">Search</string>
+    <string name="country_search_hint">Search Addresses</string>
 </resources>

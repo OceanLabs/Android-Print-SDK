@@ -15,6 +15,7 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:minHeight="?android:attr/listPreferredItemHeightSmall"
+        android:textColor="@android:color/white"
         />
 
 </RelativeLayout>

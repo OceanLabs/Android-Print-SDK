@@ -39,11 +39,13 @@ public class Address implements Parcelable, Serializable {
     // Partial address fields
     private String addressId;
     private String displayName;
+    private boolean searchRequiredForFullDetails;
 
     static Address createPartialAddress(String addressId, String displayName) {
         Address addr = new Address();
         addr.addressId = addressId;
         addr.displayName = displayName;
+        addr.searchRequiredForFullDetails = true;
         return addr;
     }
 
@@ -60,6 +62,10 @@ public class Address implements Parcelable, Serializable {
         addr.zipOrPostalCode = "W1W 8DH";
         addr.country = Country.getInstance("GBR");
         return addr;
+    }
+
+    public boolean isSearchRequiredForFullDetails() {
+        return searchRequiredForFullDetails;
     }
 
     String getId() {
@@ -167,6 +173,7 @@ public class Address implements Parcelable, Serializable {
         parcel.writeString(addressId);
         parcel.writeString(displayName);
         parcel.writeInt(storageIdentifier);
+        parcel.writeInt(searchRequiredForFullDetails ? 1 : 0);
     }
 
     private Address(Parcel p) {
@@ -180,6 +187,7 @@ public class Address implements Parcelable, Serializable {
         this.addressId = p.readString();
         this.displayName = p.readString();
         this.storageIdentifier = p.readInt();
+        this.searchRequiredForFullDetails = p.readInt() == 1;
     }
 
     public static final Parcelable.Creator<Address> CREATOR
@@ -204,6 +212,7 @@ public class Address implements Parcelable, Serializable {
         out.writeObject(addressId);
         out.writeObject(displayName);
         out.writeInt(storageIdentifier);
+        out.writeInt(searchRequiredForFullDetails ? 1 : 0);
     }
 
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -217,6 +226,7 @@ public class Address implements Parcelable, Serializable {
         this.addressId = (String) in.readObject();
         this.displayName = (String) in.readObject();
         this.storageIdentifier = in.readInt();
+        this.searchRequiredForFullDetails = in.readInt() == 1;
     }
 
     /*

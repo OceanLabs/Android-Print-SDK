@@ -30,12 +30,12 @@ public class AddressSearchRequest {
         try {
             queryParams = String.format("search_term=%s&country_code=%s", URLEncoder.encode(query, "utf-8"), country.getCodeAlpha3());
         } catch (UnsupportedEncodingException e) {
-            listener.onError(e);
+            listener.onError(AddressSearchRequest.this, e);
             return;
         }
 
         String url = String.format("%s/v1/address/search?%s", PSPrintSDK.getEnvironment().getPrintAPIEndpoint(), queryParams);
-        startSearch(url, listener);
+        startSearch(url, country, listener);
     }
 
     public void searchForAddress(Address address, AddressSearchRequestListener listener) {
@@ -49,18 +49,18 @@ public class AddressSearchRequest {
                     queryParams = String.format("search_term=%s&country_code=%s", URLEncoder.encode(address.getDisplayAddressWithoutRecipient(), "utf-8"), address.getCountry().getCodeAlpha3());
                 }
             } else {
-                queryParams = String.format("@address_id=%s&country_code=%s", URLEncoder.encode(address.getId(), "utf-8"), address.getCountry().getCodeAlpha3());
+                queryParams = String.format("address_id=%s&country_code=%s", URLEncoder.encode(address.getId(), "utf-8"), address.getCountry().getCodeAlpha3());
             }
         } catch (UnsupportedEncodingException ex) {
-            listener.onError(ex);
+            listener.onError(AddressSearchRequest.this, ex);
             return;
         }
 
         String url = String.format("%s/v1/address/search?%s", PSPrintSDK.getEnvironment().getPrintAPIEndpoint(), queryParams);
-        startSearch(url, listener);
+        startSearch(url, address.getCountry(), listener);
     }
 
-    private void startSearch(String url, final AddressSearchRequestListener listener) {
+    private void startSearch(String url, final Country country, final AddressSearchRequestListener listener) {
         searchRequest = new BaseRequest(BaseRequest.HttpMethod.GET, url, null, null);
         searchRequest.start(new BaseRequest.BaseRequestListener() {
             @Override
@@ -71,14 +71,16 @@ public class AddressSearchRequest {
                 JSONObject unique = json.optJSONObject("unique");
                 if (error != null) {
                     String message = error.optString("message");
-                    listener.onError(new PSPrintSDKException(message));
+                    listener.onError(AddressSearchRequest.this, new PSPrintSDKException(message));
                 } else if (choices != null) {
                     ArrayList<Address> addrs = new ArrayList<Address>();
                     for (int i = 0; i < choices.length(); ++i) {
                         JSONObject choice = choices.optJSONObject(i);
-                        addrs.add(Address.createPartialAddress(choice.optString("address_id"), choice.optString("display_address")));
+                        Address a = Address.createPartialAddress(choice.optString("address_id"), choice.optString("display_address"));
+                        a.setCountry(country);
+                        addrs.add(a);
                     }
-                    listener.onMultipleChoices(addrs);
+                    listener.onMultipleChoices(AddressSearchRequest.this, addrs);
                 } else {
                     assert unique != null : "oops this should be the only option left";
                     Address addr = new Address();
@@ -88,14 +90,14 @@ public class AddressSearchRequest {
                     addr.setStateOrCounty(unique.optString("county_state"));
                     addr.setZipOrPostalCode(unique.optString("postcode"));
                     addr.setCountry(Country.getInstance(unique.optString("country_code")));
-                    listener.onUniqueAddress(addr);
+                    listener.onUniqueAddress(AddressSearchRequest.this, addr);
                 }
             }
 
             @Override
             public void onError(Exception ex) {
                 searchRequest = null;
-                listener.onError(ex);
+                listener.onError(AddressSearchRequest.this, ex);
             }
         });
     }

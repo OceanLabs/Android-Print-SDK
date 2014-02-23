@@ -182,7 +182,7 @@ public class AddressBookActivity extends Activity {
             View v = convertView;
             if (convertView == null) {
                 LayoutInflater li = (LayoutInflater) viewGroup.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                v = li.inflate(android.R.layout.simple_list_item_2, null);
+                v = li.inflate(R.layout.address_book_list_item, null);
             }
 
             Address a = (Address) getItem(position);
