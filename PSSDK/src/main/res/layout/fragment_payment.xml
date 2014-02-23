@@ -20,7 +20,7 @@
 
         <LinearLayout android:id="@+id/container_promo_code" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="30dp" android:layout_below="@id/list_view_order_summary" android:orientation="horizontal">
             <EditText android:id="@+id/edit_text_promo_code" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Promo code" android:layout_weight="1" />
-            <Button android:id="@+id/button_apply_promo" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="0" android:text="Apply" android:background="@null" android:enabled="false" android:onClick="onButtonApplyClicked" />
+            <Button android:id="@+id/button_apply_promo" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="0" android:text="Apply" android:background="@null" android:enabled="false" android:onClick="onButtonApplyClicked" android:textColor="@color/apply_button"  />
         </LinearLayout>
 
 

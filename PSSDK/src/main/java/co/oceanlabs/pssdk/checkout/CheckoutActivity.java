@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Parcelable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -25,6 +27,10 @@ import co.oceanlabs.pssdk.address.Address;
 import co.oceanlabs.pssdk.address.AddressBookActivity;
 
 public class CheckoutActivity extends Activity {
+
+    private static final String SHIPPING_PREFERENCES = "shipping_preferences";
+    private static final String SHIPPING_PREFERENCE_EMAIL = "shipping_preferences.email";
+    private static final String SHIPPING_PREFERENCE_PHONE = "shipping_preferences.phone";
 
     public static final String EXTRA_PRINT_ORDER = "co.oceanlabs.pssdk.EXTRA_PRINT_ORDER";
     public static final String EXTRA_PRINT_ENVIRONMENT = "co.oceanlabs.pssdk.EXTRA_PRINT_ENVIRONMENT";
@@ -162,6 +168,12 @@ public class CheckoutActivity extends Activity {
         printOrder.setUserData(userData);
         printOrder.setReceiptEmail(email);
 
+        SharedPreferences settings = getSharedPreferences(SHIPPING_PREFERENCES, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString(SHIPPING_PREFERENCE_EMAIL, email);
+        editor.putString(SHIPPING_PREFERENCE_PHONE, phone);
+        editor.commit();
+
         Intent i = new Intent(this, PaymentActivity.class);
         i.putExtra(PaymentActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder);
         i.putExtra(PaymentActivity.EXTRA_PRINT_API_KEY, apiKey);
@@ -202,6 +214,22 @@ public class CheckoutActivity extends Activity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_checkout, container, false);
+
+            // Restore email address and phone number from history
+            // Restore preferences
+            SharedPreferences settings = getActivity().getSharedPreferences(SHIPPING_PREFERENCES, 0);
+            String email = settings.getString(SHIPPING_PREFERENCE_EMAIL, null);
+            String phone = settings.getString(SHIPPING_PREFERENCE_PHONE, null);
+            if (email != null) {
+                EditText emailEditText = (EditText) rootView.findViewById(R.id.email_address_text_view);
+                emailEditText.setText(email);
+            }
+
+            if (phone != null) {
+                EditText phoneEditText = (EditText) rootView.findViewById(R.id.phone_number_text_view);
+                phoneEditText.setText(phone);
+            }
+
             return rootView;
         }
     }

@@ -95,7 +95,9 @@ public class AddressSearchActivity extends Activity implements ActionBar.OnNavig
     @Override
     public boolean onNavigationItemSelected(int i, long position) {
         Country selectedCountry = Country.COUNTRIES.get((int) position);
-        searchView.setQueryHint("Search " + selectedCountry.getName());
+        if (searchView != null) {
+            searchView.setQueryHint("Search " + selectedCountry.getName());
+        }
         return true;
     }
 
