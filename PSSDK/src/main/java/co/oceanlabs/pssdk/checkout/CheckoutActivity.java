@@ -20,11 +20,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import co.oceanlabs.pssdk.PSPrintSDK;
 import co.oceanlabs.pssdk.PrintOrder;
 import co.oceanlabs.pssdk.R;
+import co.oceanlabs.pssdk.address.Address;
+import co.oceanlabs.pssdk.address.AddressBookActivity;
 
 public class CheckoutActivity extends Activity {
 
@@ -37,6 +40,7 @@ public class CheckoutActivity extends Activity {
     public static final String ENVIRONMENT_TEST = "co.oceanlabs.pssdk.ENVIRONMENT_TEST";
 
     private static final int REQUEST_CODE_PAYMENT = 1;
+    private static final int REQUEST_CODE_ADDRESS_BOOK = 2;
 
     private PrintOrder printOrder;
     private String apiKey;
@@ -107,6 +111,11 @@ public class CheckoutActivity extends Activity {
         return super.onMenuItemSelected(featureId, item);
     }
 
+    public void onButtonDeliverAddressClicked(View view) {
+        Intent i = new Intent(this, AddressBookActivity.class);
+        startActivityForResult(i, REQUEST_CODE_ADDRESS_BOOK);
+    }
+
     private String getPaymentActivityEnvironment() {
         switch (environment) {
             case LIVE: return PaymentActivity.ENVIRONMENT_LIVE;
@@ -155,6 +164,13 @@ public class CheckoutActivity extends Activity {
             if (resultCode == Activity.RESULT_OK) {
                 setResult(Activity.RESULT_OK);
                 finish();
+            }
+        } else if (requestCode == REQUEST_CODE_ADDRESS_BOOK) {
+            if (resultCode == RESULT_OK) {
+                Address address = data.getParcelableExtra(AddressBookActivity.EXTRA_ADDRESS);
+                printOrder.setShippingAddress(address);
+                Button chooseAddressButton = (Button) findViewById(R.id.address_picker_button);
+                chooseAddressButton.setText(address.toString());
             }
         }
     }

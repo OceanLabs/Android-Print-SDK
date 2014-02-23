@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="co.oceanlabs.pssdk.address.AddressSearchActivity" >
+
+    <item android:id="@+id/search"
+        android:title="@string/search_title"
+        android:icon="@android:drawable/ic_menu_search"
+        android:showAsAction="collapseActionView|ifRoom"
+        android:actionViewClass="android.widget.SearchView" />
+
+</menu>

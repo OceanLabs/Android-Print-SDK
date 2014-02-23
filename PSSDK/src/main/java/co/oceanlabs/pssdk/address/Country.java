@@ -1,5 +1,11 @@
 package co.oceanlabs.pssdk.address;
 
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.ListAdapter;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -281,6 +287,9 @@ public class Country {
     }
 
     public static Country getInstance(Locale locale) {
+        if (locale == null) {
+            throw new IllegalArgumentException("Please provide a non null locale");
+        }
         return Country.getInstance(locale.getISO3Country());
     }
 
@@ -310,6 +319,11 @@ public class Country {
 
     public String getCurrencyCode() {
         return currencyCode;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 
     @Override

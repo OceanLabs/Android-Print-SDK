@@ -9,11 +9,12 @@
     tools:context="co.oceanlabs.pssdk.checkout.CheckoutActivity$PlaceholderFragment">
 
     <ImageView android:id="@+id/checkout_progress_indicator" android:layout_width="match_parent" android:layout_height="wrap_content" android:src="@drawable/checkout_progress_indicator1" />
-    <Button android:id="@+id/address_picker_button" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_below="@id/checkout_progress_indicator" android:layout_marginTop="@dimen/activity_vertical_margin" android:text="Choose Delivery Address" />
-    <EditText android:id="@+id/email_address_text_view" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_below="@id/address_picker_button" android:layout_marginTop="@dimen/activity_vertical_margin" android:hint="Email" android:inputType="textEmailAddress" />
+    <Button android:id="@+id/address_picker_button" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_below="@id/checkout_progress_indicator" android:layout_marginTop="@dimen/activity_vertical_margin" android:text="Choose Delivery Address" android:onClick="onButtonDeliverAddressClicked" />
+    <EditText android:id="@+id/email_address_text_view" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_below="@id/address_picker_button" android:layout_marginTop="@dimen/activity_vertical_margin" android:hint="Email" android:inputType="textEmailAddress" android:maxLines="1" android:singleLine="true" />
     <TextView android:id="@+id/email_require_reason" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_below="@id/email_address_text_view" android:layout_marginTop="@dimen/activity_vertical_margin" android:text="Your email is required so that we can send you order confirmation updates" />
-    <EditText android:id="@+id/phone_number_text_view" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_below="@id/email_require_reason" android:layout_marginTop="@dimen/activity_vertical_margin" android:hint="Phone number" android:inputType="phone" />
+    <EditText android:id="@+id/phone_number_text_view" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_below="@id/email_require_reason" android:layout_marginTop="@dimen/activity_vertical_margin" android:hint="Phone number" android:inputType="phone" android:maxLines="1" android:singleLine="true" />
     <TextView android:id="@+id/phone_require_reason" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_below="@id/phone_number_text_view" android:layout_marginTop="@dimen/activity_vertical_margin" android:text="Your phone number is required in case there are any delivery issues" />
+
     <Button android:id="@+id/next_button" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_alignParentBottom="true" android:layout_marginTop="@dimen/activity_vertical_margin" android:text="Next"
         android:background="#57ae2e" android:textColor="@android:color/white" android:onClick="onButtonNextClicked" />
 

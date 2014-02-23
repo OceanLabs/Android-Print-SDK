@@ -166,6 +166,7 @@ public class Address implements Parcelable, Serializable {
         parcel.writeString(country.getCodeAlpha2());
         parcel.writeString(addressId);
         parcel.writeString(displayName);
+        parcel.writeInt(storageIdentifier);
     }
 
     private Address(Parcel p) {
@@ -178,6 +179,7 @@ public class Address implements Parcelable, Serializable {
         this.country = Country.getInstance(p.readString());
         this.addressId = p.readString();
         this.displayName = p.readString();
+        this.storageIdentifier = p.readInt();
     }
 
     public static final Parcelable.Creator<Address> CREATOR
@@ -201,6 +203,7 @@ public class Address implements Parcelable, Serializable {
         out.writeObject(country.getCodeAlpha2());
         out.writeObject(addressId);
         out.writeObject(displayName);
+        out.writeInt(storageIdentifier);
     }
 
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -213,6 +216,7 @@ public class Address implements Parcelable, Serializable {
         this.country = Country.getInstance((String) in.readObject());
         this.addressId = (String) in.readObject();
         this.displayName = (String) in.readObject();
+        this.storageIdentifier = in.readInt();
     }
 
     /*
@@ -254,7 +258,7 @@ public class Address implements Parcelable, Serializable {
         persistAddressesToDisk(c, addresses);
     }
 
-    private void persistAddressesToDisk(Context c, List<Address> addresses) {
+    private static void persistAddressesToDisk(Context c, List<Address> addresses) {
         ObjectOutputStream os = null;
         try {
             os = new ObjectOutputStream(new BufferedOutputStream(c.openFileOutput(PERSISTED_ADDRESS_BOOK_FILENAME, Context.MODE_PRIVATE)));
@@ -290,8 +294,13 @@ public class Address implements Parcelable, Serializable {
             ArrayList<Address> addresses = (ArrayList<Address>) is.readObject();
             return addresses;
         } catch (FileNotFoundException ex) {
+            // create a brand new address book
+            Address addr = getPSTeamAddress();
             ArrayList<Address> addrs = new ArrayList<Address>();
-            addrs.add(getPSTeamAddress());
+            addrs.add(addr);
+            addr.storageIdentifier = 0;
+            persistAddressesToDisk(c, addrs);
+
             return addrs;
         } catch (Exception ex) {
             throw new RuntimeException(ex);
