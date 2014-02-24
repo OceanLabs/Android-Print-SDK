@@ -166,7 +166,7 @@ public class CheckoutActivity extends Activity {
             userData.put("phone", phone);
         } catch (JSONException ex) {/* ignore */}
         printOrder.setUserData(userData);
-        printOrder.setReceiptEmail(email);
+        printOrder.setNotificationEmail(email);
 
         SharedPreferences settings = getSharedPreferences(SHIPPING_PREFERENCES, 0);
         SharedPreferences.Editor editor = settings.edit();

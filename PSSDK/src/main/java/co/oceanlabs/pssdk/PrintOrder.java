@@ -55,7 +55,8 @@ public class PrintOrder implements Parcelable, Serializable {
 
     private String promoCode;
     private BigDecimal promoCodeDiscount;
-    private String receiptEmail;
+    private String statusNotificationEmail;
+    private String statusNotificationPhone;
 
     public PrintOrder() {}
 
@@ -95,12 +96,20 @@ public class PrintOrder implements Parcelable, Serializable {
         this.userData = userData;
     }
 
-    public void setReceiptEmail(String receiptEmail) {
-        this.receiptEmail = receiptEmail;
+    public void setNotificationEmail(String receiptEmail) {
+        this.statusNotificationEmail = receiptEmail;
     }
 
-    public String getReceiptEmail() {
-        return receiptEmail;
+    public String getNotificationEmail() {
+        return statusNotificationEmail;
+    }
+
+    public void setNotificationPhoneNumber(String statusNotificationPhone) {
+        this.statusNotificationPhone = statusNotificationPhone;
+    }
+
+    public String getNotificationPhoneNumber() {
+        return statusNotificationPhone;
     }
 
     public JSONObject getUserData() {
@@ -111,7 +120,7 @@ public class PrintOrder implements Parcelable, Serializable {
         try {
             JSONObject json = new JSONObject();
             json.put("proof_of_payment", proofOfPayment);
-            json.put("receipt_email", receiptEmail);
+            json.put("receipt_email", statusNotificationEmail);
             if (voucherCode != null) {
                 json.put("voucher", voucherCode);
             }
@@ -390,7 +399,8 @@ public class PrintOrder implements Parcelable, Serializable {
         p.writeInt(storageIdentifier);
         p.writeString(promoCode);
         p.writeValue(promoCodeDiscount);
-        p.writeString(receiptEmail);
+        p.writeString(statusNotificationEmail);
+        p.writeString(statusNotificationPhone);
     }
 
     private PrintOrder(Parcel p) {
@@ -417,7 +427,8 @@ public class PrintOrder implements Parcelable, Serializable {
         this.storageIdentifier = p.readInt();
         this.promoCode = p.readString();
         this.promoCodeDiscount = (BigDecimal) p.readValue(BigDecimal.class.getClassLoader());
-        this.receiptEmail = p.readString();
+        this.statusNotificationEmail = p.readString();
+        this.statusNotificationPhone = p.readString();
     }
 
     public static final Parcelable.Creator<PrintOrder> CREATOR
@@ -451,7 +462,8 @@ public class PrintOrder implements Parcelable, Serializable {
         out.writeInt(storageIdentifier);
         out.writeObject(promoCode);
         out.writeObject(promoCodeDiscount);
-        out.writeObject(receiptEmail);
+        out.writeObject(statusNotificationEmail);
+        out.writeObject(statusNotificationPhone);
     }
 
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -481,7 +493,8 @@ public class PrintOrder implements Parcelable, Serializable {
         storageIdentifier = in.readInt();
         promoCode = (String) in.readObject();
         promoCodeDiscount = (BigDecimal) in.readObject();
-        receiptEmail = (String) in.readObject();
+        statusNotificationEmail = (String) in.readObject();
+        statusNotificationPhone = (String) in.readObject();
     }
 
     /*
