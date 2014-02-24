@@ -97,7 +97,7 @@ public class Asset implements Parcelable, Serializable {
         } else if (file.endsWith("png")) {
             this.mimeType = MimeType.PNG;
         } else {
-            throw new IllegalArgumentException("currently support URL's the identify the mime type by ending with a supported file extension i.e. '.jpeg', '.jpg' or '.png'");
+            throw new IllegalArgumentException("currently only support URL's the identify the mime type by ending with a supported file extension i.e. '.jpeg', '.jpg' or '.png' thus '" + file + "' is not valid.");
         }
     }
 
