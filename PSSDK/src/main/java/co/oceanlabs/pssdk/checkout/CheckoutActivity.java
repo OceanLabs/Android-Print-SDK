@@ -70,6 +70,10 @@ public class CheckoutActivity extends Activity {
             throw new IllegalArgumentException("You must specify a PrintOrder object extra in the intent used to start the CheckoutActivity");
         }
 
+        if (printOrder.getJobs().size() < 1) {
+            throw new IllegalArgumentException("You must specify a PrintOrder object extra that actually has some jobs for printing i.e. PrintOrder.getJobs().size() > 0");
+        }
+
         PSPrintSDK.Environment env = PSPrintSDK.Environment.LIVE;
         if (envString != null) {
             if (envString.equals(ENVIRONMENT_STAGING)) {

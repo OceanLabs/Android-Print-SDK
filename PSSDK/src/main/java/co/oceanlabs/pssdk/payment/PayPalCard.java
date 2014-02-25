@@ -90,13 +90,15 @@ public class PayPalCard implements Serializable {
     }
 
     public static enum Environment {
-        SANDBOX("api.sandbox.paypal.com"),
-        LIVE("api.paypal.com");
+        SANDBOX("api.sandbox.paypal.com", "QWE1bnNCRG50QnBveldReWtveFFYb0hGT3FzNTUxaFROdDBCOExRWFR1ZG9oOGJEMG5UMUY3MzVjX0ZoOg=="),
+        LIVE("api.paypal.com", "QVQySmZCQW1YRC1DSEdKblViMDVpazRKLUdyQ2k0WHhqWTlfZ3JmQ0ZqcmVZYUxyTnN3ajh1emh1V3lqOg==");
 
         private final String apiEndpoint;
+        private final String authToken;
 
-        Environment(String apiEndpoint) {
+        Environment(String apiEndpoint, String authToken) {
             this.apiEndpoint = apiEndpoint;
+            this.authToken = authToken;
         }
     }
 
@@ -198,7 +200,7 @@ public class PayPalCard implements Serializable {
                     return e;
                 }
 
-                req.setHeader("Authorization", "Basic QWE1bnNCRG50QnBveldReWtveFFYb0hGT3FzNTUxaFROdDBCOExRWFR1ZG9oOGJEMG5UMUY3MzVjX0ZoOg==");
+                req.setHeader("Authorization", "Basic " + env.authToken);
 
                 try {
                     HttpResponse response = httpclient.execute(req);

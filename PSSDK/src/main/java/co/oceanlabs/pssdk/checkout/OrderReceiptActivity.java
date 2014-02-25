@@ -91,7 +91,7 @@ public class OrderReceiptActivity extends Activity {
                 float progress = totalAssetsUploaded * step + (totalAssetBytesWritten / (float) totalAssetBytesExpectedToWrite) * step;
                 dialog.setProgress((int) (totalAssetsUploaded * step * 100));
                 dialog.setSecondaryProgress((int) (progress * 100));
-                dialog.setMessage(String.format("Uploading images %d/%d", totalAssetsUploaded + 1, totalAssetsToUpload));
+                dialog.setMessage("Uploading images");
             }
 
             @Override
