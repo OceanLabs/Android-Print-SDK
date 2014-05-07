@@ -1,0 +1,1 @@
+These 3rd party libraries are included here only for use when adding the Kite SDK as a library project under Eclipse. Android Studio has them listed as appropriate dependencies in the build.gradle file.
