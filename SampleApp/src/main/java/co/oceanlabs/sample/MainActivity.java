@@ -1,29 +1,22 @@
 package co.oceanlabs.sample;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 
+import co.oceanlabs.sample.R;
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Parcelable;
-import android.provider.MediaStore;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 import ly.kite.print.print.Asset;
 import ly.kite.print.print.KitePrintSDK;
 import ly.kite.print.print.PrintJob;
 import ly.kite.print.print.PrintOrder;
-import ly.kite.print.address.Address;
 import ly.kite.print.checkout.CheckoutActivity;
 
 public class MainActivity extends Activity {
