@@ -7,7 +7,7 @@ Installing the library - Eclipse
 	To have access to the Kite library, you need to import it into your workspace by going to *File -> Import -> Android -> Existing Android Code Into Workspace*. Browse for the folder where you extracted the library and then choose Finish.
 3. Associate the library as a dependency of your project:
 
-	Now that the library is in your workspace, you need to associate it as a dependency of your project. You can do this by going to your project properties, going to the 'Android' tab, and then adding the Mixpanel library in the library section.
+	Now that the library is in your workspace, you need to associate it as a dependency of your project. You can do this by going to your project properties, going to the 'Android' tab, and then adding the Kite library in the library section.
 	
 4. Add permissions to your AndroidManifest.xml:
 
