@@ -1,0 +1,25 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="ly.kite.print.address.AddressBookActivity" >
+
+    <item
+        android:id="@+id/add_address"
+        android:title="@string/add_address"
+        android:showAsAction="always"
+        android:icon="@drawable/ic_action_add">
+
+        <menu>
+            <item
+                android:showAsAction="always"
+                android:id="@+id/search_for_address"
+                android:title="@string/search_for_address"/>
+
+            <item
+                android:showAsAction="always"
+                android:id="@+id/manual_add_address"
+                android:title="@string/manual_add_address"/>
+
+        </menu>
+    </item>
+
+</menu>

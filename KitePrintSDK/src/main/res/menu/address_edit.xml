@@ -1,0 +1,9 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="ly.kite.print.address.AddressEditActivity" >
+    
+    <item android:id="@+id/action_save"
+        android:title="@string/action_save_address"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
+</menu>
