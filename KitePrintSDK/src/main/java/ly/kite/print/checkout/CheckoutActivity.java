@@ -63,7 +63,10 @@ public class CheckoutActivity extends Activity {
         this.printOrder = (PrintOrder) getIntent().getParcelableExtra(EXTRA_PRINT_ORDER);
 
         if (apiKey == null) {
-            throw new IllegalArgumentException("You must specify an API key string extra in the intent used to start the CheckoutActivity");
+        	apiKey = KitePrintSDK.getAPIKey();
+        	if (apiKey == null) {
+        		throw new IllegalArgumentException("You must specify an API key string extra in the intent used to start the CheckoutActivity or with KitePrintSDK.initialize");
+        	}
         }
 
         if (printOrder == null) {
@@ -74,12 +77,19 @@ public class CheckoutActivity extends Activity {
             throw new IllegalArgumentException("You must specify a PrintOrder object extra that actually has some jobs for printing i.e. PrintOrder.getJobs().size() > 0");
         }
 
-        KitePrintSDK.Environment env = KitePrintSDK.Environment.LIVE;
-        if (envString != null) {
+        KitePrintSDK.Environment env = null;
+        if (envString == null) {
+        	env = KitePrintSDK.getEnvironment();
+        	if (env == null) {
+        		throw new IllegalArgumentException("You must specify an environment string extra in the intent used to start the CheckoutActivity or with KitePrintSDK.initialize");
+        	}
+        } else {
             if (envString.equals(ENVIRONMENT_STAGING)) {
                 env = KitePrintSDK.Environment.STAGING;
             } else if (envString.equals(ENVIRONMENT_TEST)) {
                 env = KitePrintSDK.Environment.TEST;
+            } else {
+            	throw new IllegalArgumentException("Bad print environment extra: " + envString);
             }
         }
 

@@ -32,11 +32,10 @@ Use print to unlock hidden revenue streams and add value for your users. *In und
 * Android API Level 14 - Android 4.0 (ICE_CREAM_SANDWICH)
 
 ## Installation
+### Eclipse
+See [Installing the library - Eclipse](docs/eclipse_install.md)
 ### Android Studio / Gradle
 Coming in a ~2 days (waiting on Sonatype OSS to approve the creation of our new project)
-### Eclipse
-
-
 ## Use Cases
 
 The Kite Android Print SDK supports two primary use cases: **Managed Checkout** and **Custom Checkout**.
