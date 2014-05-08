@@ -29,55 +29,56 @@ Installing the library - Eclipse
     <uses-permission android:name="android.permission.INTERNET" />
     ```
 
-5. Add Kite, PayPal activites & services if you're using Kite's [Managed Checkout](../README.md#managed-checkout):
+5. Add Kite & PayPal's activites/services if you're using Kite's [Managed Checkout](../README.md#managed-checkout):
 
     ```xml
+    <!-- Kite Print SDK Activities: -->
     <activity
-            android:name="ly.kite.print.checkout.PaymentActivity"
-            android:label="@string/title_activity_payment"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
-            android:name="ly.kite.print.checkout.CheckoutActivity"
-            android:label="@string/title_activity_checkout"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
-            android:name="ly.kite.print.checkout.OrderReceiptActivity"
-            android:label="@string/title_activity_order_receipt"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
-            android:name="ly.kite.print.address.AddressBookActivity"
-            android:label="@string/title_activity_address_book"
-            android:screenOrientation="portrait" >
-        </activity>
+        android:name="ly.kite.checkout.PaymentActivity"
+        android:label="@string/title_activity_payment"
+        android:screenOrientation="portrait" >
+    </activity>
+    <activity
+        android:name="ly.kite.checkout.CheckoutActivity"
+        android:label="@string/title_activity_checkout"
+        android:screenOrientation="portrait" >
+    </activity>
+    <activity
+        android:name="ly.kite.checkout.OrderReceiptActivity"
+        android:label="@string/title_activity_order_receipt"
+        android:screenOrientation="portrait" >
+    </activity>
+    <activity
+        android:name="ly.kite.address.AddressBookActivity"
+        android:label="@string/title_activity_address_book"
+        android:screenOrientation="portrait" >
+    </activity>
 
-        <activity
-            android:name="ly.kite.print.address.AddressEditActivity"
-            android:label="@string/title_activity_address_edit"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" >
-        </activity>
-        <activity
-            android:name="ly.kite.print.address.AddressSearchActivity"
-            android:label="@string/title_activity_address_search"
-            android:screenOrientation="portrait" >
-        </activity>
+    <activity
+        android:name="ly.kite.address.AddressEditActivity"
+        android:label="@string/title_activity_address_edit"
+        android:screenOrientation="portrait"
+        android:windowSoftInputMode="adjustResize" >
+    </activity>
+    <activity
+        android:name="ly.kite.address.AddressSearchActivity"
+        android:label="@string/title_activity_address_search"
+        android:screenOrientation="portrait" >
+    </activity>
 
-        <!-- PayPal activites & services: -->
-        <service
-            android:name="com.paypal.android.sdk.payments.PayPalService"
-            android:exported="false" />
+    <!-- PayPal activites & services: -->
+    <service
+        android:name="com.paypal.android.sdk.payments.PayPalService"
+        android:exported="false" />
 
-        <activity android:name="com.paypal.android.sdk.payments.PaymentActivity" />
-        <activity android:name="com.paypal.android.sdk.payments.LoginActivity" />
-        <activity android:name="com.paypal.android.sdk.payments.PaymentMethodActivity" />
-        <activity android:name="com.paypal.android.sdk.payments.PaymentConfirmActivity" />
-        <activity
-            android:name="io.card.payment.CardIOActivity"
-            android:configChanges="keyboardHidden|orientation" />
-        <activity android:name="io.card.payment.DataEntryActivity" />
+    <activity android:name="com.paypal.android.sdk.payments.PaymentActivity" />
+    <activity android:name="com.paypal.android.sdk.payments.LoginActivity" />
+    <activity android:name="com.paypal.android.sdk.payments.PaymentMethodActivity" />
+    <activity android:name="com.paypal.android.sdk.payments.PaymentConfirmActivity" />
+    <activity
+        android:name="io.card.payment.CardIOActivity"
+        android:configChanges="keyboardHidden|orientation" />
+    <activity android:name="io.card.payment.DataEntryActivity" />
     ```
 
 

@@ -35,7 +35,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
+
+        <!-- Kite Print SDK Activities: -->
         <activity
 	        android:name="ly.kite.checkout.PaymentActivity"
 	        android:label="@string/title_activity_payment"
