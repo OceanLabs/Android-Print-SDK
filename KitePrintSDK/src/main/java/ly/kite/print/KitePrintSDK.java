@@ -13,9 +13,9 @@ public class KitePrintSDK {
     private static final String PAYPAL_RECIPIENT_LIVE = "deon@oceanlabs.co";
 
     public static enum Environment {
-        LIVE("https://api.psilov.eu", PaymentActivity.ENVIRONMENT_LIVE, PAYPAL_CLIENT_ID_LIVE, PAYPAL_RECIPIENT_LIVE),
-        TEST("https://api.psilov.eu", PaymentActivity.ENVIRONMENT_SANDBOX, PAYPAL_CLIENT_ID_SANDBOX, PAYPAL_RECIPIENT_SANDBOX),
-        STAGING("http://staging.api.psilov.eu", PaymentActivity.ENVIRONMENT_SANDBOX, PAYPAL_CLIENT_ID_SANDBOX, PAYPAL_RECIPIENT_SANDBOX); /* private environment intended only for Ocean Labs use, hands off :) */
+        LIVE("https://api.kite.ly", PaymentActivity.ENVIRONMENT_LIVE, PAYPAL_CLIENT_ID_LIVE, PAYPAL_RECIPIENT_LIVE),
+        TEST("https://api.kite.ly", PaymentActivity.ENVIRONMENT_SANDBOX, PAYPAL_CLIENT_ID_SANDBOX, PAYPAL_RECIPIENT_SANDBOX),
+        STAGING("http://staging.api.kite.ly", PaymentActivity.ENVIRONMENT_SANDBOX, PAYPAL_CLIENT_ID_SANDBOX, PAYPAL_RECIPIENT_SANDBOX); /* private environment intended only for Ocean Labs use, hands off :) */
 
         private final String apiEndpoint;
         private final String payPalEnvironment;
