@@ -13,11 +13,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
-import ly.kite.print.print.Asset;
-import ly.kite.print.print.KitePrintSDK;
-import ly.kite.print.print.PrintJob;
-import ly.kite.print.print.PrintOrder;
-import ly.kite.print.checkout.CheckoutActivity;
+import ly.kite.print.Asset;
+import ly.kite.print.KitePrintSDK;
+import ly.kite.print.PrintJob;
+import ly.kite.print.PrintOrder;
+import ly.kite.checkout.CheckoutActivity;
 
 public class MainActivity extends Activity {
 

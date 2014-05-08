@@ -1,6 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="ly.kite.print.address.AddressBookActivity" >
+    tools:context="ly.kite.address.AddressBookActivity" >
 
     <item
         android:id="@+id/add_address"

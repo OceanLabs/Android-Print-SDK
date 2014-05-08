@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ly.kite.print.checkout.PaymentActivity$PlaceholderFragment">
+    tools:context="ly.kite.checkout.PaymentActivity$PlaceholderFragment">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"

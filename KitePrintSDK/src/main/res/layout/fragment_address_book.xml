@@ -6,7 +6,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="ly.kite.print.address.AddressBookActivity$PlaceholderFragment">
+    tools:context="ly.kite.address.AddressBookActivity$PlaceholderFragment">
 
     <ListView android:id="@+id/list_view_address_book" android:layout_width="match_parent" android:layout_height="match_parent" />
 
