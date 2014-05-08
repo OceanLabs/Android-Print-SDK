@@ -1,6 +1,6 @@
 # Android Print SDK
 
-The [Kite](http://www.kite.ly) Android Print SDK makes it easy to add print on demand functionality to your app.
+The [Kite](https://www.kite.ly) Android Print SDK makes it easy to add print on demand functionality to your app.
 
 Harness our worldwide print and distribution network. We'll take care of all the tricky printing and postage stuff for you!
 
