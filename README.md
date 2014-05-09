@@ -37,11 +37,12 @@ See [Installing the library - Eclipse](docs/eclipse_install.md)
 ### Android Studio / Gradle
 We publish builds of our SDK to the Maven central repository as an .aar file. This file contains all of the classes, resources, and configurations that you'll need to use the library. To install the library inside Android Studio, you can simply declare it as dependecy in your build.gradle file.
 
-	```java 
-	dependencies {
-    	compile 'ly.kite:kite-print-sdk:1.+@aar'
-	}
-    ```
+```java 
+dependencies {
+    compile 'ly.kite:kite-print-sdk:1.+@aar'
+}
+```
+
 Once you've updated your build.gradle file, you can force Android Studio to sync with your new configuration by selecting *Tools -> Android -> Sync Project with Gradle Files*
 
 This should download the aar dependency at which point you'll have access to the Kite Print SDK API calls. If it cannot find the dependency, you should make sure you've specified mavenCentral() as a repository in your build.gradle
