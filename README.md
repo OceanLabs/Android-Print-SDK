@@ -37,7 +37,7 @@ See [Installing the library - Eclipse](docs/eclipse_install.md)
 ### Android Studio / Gradle
 We publish builds of our SDK to the Maven central repository as an .aar file. This file contains all of the classes, resources, and configurations that you'll need to use the library. To install the library inside Android Studio, you can simply declare it as dependecy in your build.gradle file.
 
-	```gradle 
+	```java 
 	dependencies {
     	compile 'ly.kite:kite-print-sdk:1.+@aar'
 	}
