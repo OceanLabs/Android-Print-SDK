@@ -3,10 +3,10 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.8.+'
+        classpath 'com.android.tools.build:gradle:1.0.0'
     }
 }
-apply plugin: 'android-library'
+apply plugin: 'com.android.library'
 
 repositories {
     mavenCentral()
@@ -14,7 +14,7 @@ repositories {
 
 android {
     compileSdkVersion 19
-    buildToolsVersion '19.0.0'
+    buildToolsVersion '19.1.0'
 
     defaultConfig {
         minSdkVersion 14
@@ -36,6 +36,6 @@ dependencies {
     compile files('libs/CardIONativeLibs.jar') // To generate this jar containing shared libraries see: http://ivansotof.com/2013/12/including-native-so-libraries-in-android/
 }
 
-apply from: '../maven_push.gradle'
+//apply from: '../maven_push.gradle'
 
 

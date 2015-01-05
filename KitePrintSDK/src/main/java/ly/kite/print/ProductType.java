@@ -5,8 +5,8 @@ package ly.kite.print;
  */
 public enum ProductType {
     POSTCARD(2, "ps_postcard", "Postcard"),
-    POLAROIDS(3, "polaroids", "Polaroids"),
-    MINI_POLAROIDS(4, "polaroids_mini", "Petite Polaroids"),
+    POLAROIDS(3, "polaroids", "Polaroid Style"),
+    MINI_POLAROIDS(4, "polaroids_mini", "Polaroid Style XS"),
     SQUARES(5, "squares", "Squares"),
     MINI_SQUARES(6, "squares_mini", "Petite Squares"),
     MAGNETS(7, "magnets", "Magnets");

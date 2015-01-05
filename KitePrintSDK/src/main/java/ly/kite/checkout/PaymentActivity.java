@@ -295,7 +295,9 @@ public class PaymentActivity extends Activity {
     }
 
     private void submitOrderForPrinting(String proofOfPayment) {
-        printOrder.setProofOfPayment(proofOfPayment);
+        if (proofOfPayment!=null) {
+            printOrder.setProofOfPayment(proofOfPayment);
+        }
         printOrder.saveToHistory(this);
 
         final ProgressDialog dialog = new ProgressDialog(this);
@@ -359,6 +361,14 @@ public class PaymentActivity extends Activity {
         if (printOrder.getCost().compareTo(BigDecimal.ZERO) <= 0) {
             findViewById(R.id.button_pay_with_paypal).setVisibility(View.GONE);
             payWithCreditCardButton.setText("Checkout for Free!");
+            payWithCreditCardButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    submitOrderForPrinting(null);
+                }
+            });
+
+
         } else {
             findViewById(R.id.button_pay_with_paypal).setVisibility(View.VISIBLE);
             payWithCreditCardButton.setText("Pay with Credit Card");

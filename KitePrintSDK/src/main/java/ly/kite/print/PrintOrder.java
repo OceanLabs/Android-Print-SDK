@@ -119,10 +119,17 @@ public class PrintOrder implements Parcelable, Serializable {
     JSONObject getJSONRepresentation() {
         try {
             JSONObject json = new JSONObject();
-            json.put("proof_of_payment", proofOfPayment);
+            if (proofOfPayment != null)
+            {
+                json.put("proof_of_payment", proofOfPayment);
+            }
+            else{
+                json.put("proof_of_payment","");
+            }
+
             json.put("receipt_email", statusNotificationEmail);
-            if (voucherCode != null) {
-                json.put("voucher", voucherCode);
+            if (promoCode != null) {
+                json.put("promo_code", promoCode);
             }
 
             JSONArray jobs = new JSONArray();
@@ -263,7 +270,7 @@ public class PrintOrder implements Parcelable, Serializable {
 
     public void submitForPrinting(Context context, PrintOrderSubmissionListener listener) {
         if (userSubmittedForPrinting) throw new AssertionError("A PrintOrder can only be submitted once unless you cancel the previous submission");
-        if (proofOfPayment == null) throw new AssertionError("You must provide a proofOfPayment before you can submit a print order");
+        //if (proofOfPayment == null) throw new AssertionError("You must provide a proofOfPayment before you can submit a print order");
         if (printOrderReq != null) throw new AssertionError("A PrintOrder request should not already be in progress");
 
         lastPrintSubmissionDate = new Date();
@@ -395,7 +402,7 @@ public class PrintOrder implements Parcelable, Serializable {
         p.writeValue(assetUploadComplete);
         p.writeValue(lastPrintSubmissionDate);
         p.writeString(receipt);
-        p.writeValue(lastPrintSubmissionError);
+        p.writeSerializable(lastPrintSubmissionError);
         p.writeInt(storageIdentifier);
         p.writeString(promoCode);
         p.writeValue(promoCodeDiscount);
@@ -423,7 +430,7 @@ public class PrintOrder implements Parcelable, Serializable {
         this.assetUploadComplete = (Boolean) p.readValue(Boolean.class.getClassLoader());
         this.lastPrintSubmissionDate = (Date) p.readValue(Date.class.getClassLoader());
         this.receipt = p.readString();
-        this.lastPrintSubmissionError = (Exception) p.readValue(Exception.class.getClassLoader());
+        this.lastPrintSubmissionError = (Exception) p.readSerializable();
         this.storageIdentifier = p.readInt();
         this.promoCode = p.readString();
         this.promoCodeDiscount = (BigDecimal) p.readValue(BigDecimal.class.getClassLoader());

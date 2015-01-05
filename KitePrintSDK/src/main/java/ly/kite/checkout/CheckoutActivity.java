@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Parcelable;
 import android.os.Bundle;
+//import android.telecom.Log;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,6 +27,8 @@ import ly.kite.print.PrintOrder;
 import ly.kite.R;
 import ly.kite.address.Address;
 import ly.kite.address.AddressBookActivity;
+import android.view.Window;
+
 
 public class CheckoutActivity extends Activity {
 
@@ -50,7 +54,10 @@ public class CheckoutActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+//        requestWindowFeature(Window.FEATURE_ACTION_BAR);
         setContentView(R.layout.activity_checkout);
+
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
@@ -61,6 +68,8 @@ public class CheckoutActivity extends Activity {
         String apiKey = getIntent().getStringExtra(EXTRA_PRINT_API_KEY);
         String envString = getIntent().getStringExtra(EXTRA_PRINT_ENVIRONMENT);
         this.printOrder = (PrintOrder) getIntent().getParcelableExtra(EXTRA_PRINT_ORDER);
+
+
 
         if (apiKey == null) {
         	apiKey = KitePrintSDK.getAPIKey();
@@ -88,8 +97,11 @@ public class CheckoutActivity extends Activity {
                 env = KitePrintSDK.Environment.STAGING;
             } else if (envString.equals(ENVIRONMENT_TEST)) {
                 env = KitePrintSDK.Environment.TEST;
-            } else {
-            	throw new IllegalArgumentException("Bad print environment extra: " + envString);
+            } else if (envString.equals(ENVIRONMENT_LIVE)) {
+            	env = KitePrintSDK.Environment.LIVE;//
+            }
+            else {
+                throw new IllegalArgumentException("Bad print environment extra: " + envString);
             }
         }
 
@@ -97,7 +109,9 @@ public class CheckoutActivity extends Activity {
         this.environment = env;
         KitePrintSDK.initialize(apiKey, env);
 
+
         getActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         // hide keyboard initially
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);

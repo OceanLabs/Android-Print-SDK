@@ -1,5 +1,7 @@
 package ly.kite.print;
 
+import java.io.Serializable;
+
 /**
  * Created by deonbotha on 02/02/2014.
  */
