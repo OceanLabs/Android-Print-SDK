@@ -67,6 +67,8 @@ public class KitePrintSDK {
         Currency a = Currency.getInstance(defaultLocale);
         KitePrintSDK.userCurrencyCode = a.getCurrencyCode();
 
+        syncTemplates(context);
+
     }
 
     public static String getUserCurrencyCode() {
@@ -83,6 +85,8 @@ public class KitePrintSDK {
         Locale defaultLocale = Locale.getDefault();
         Currency a = Currency.getInstance(defaultLocale);
         KitePrintSDK.userCurrencyCode = a.getCurrencyCode();
+
+        syncTemplates(context);
     }
 
 

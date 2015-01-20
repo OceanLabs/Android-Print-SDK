@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="PayPalAndroidSDK">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/KitePrintSDK/libs/PayPalAndroidSDK.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
