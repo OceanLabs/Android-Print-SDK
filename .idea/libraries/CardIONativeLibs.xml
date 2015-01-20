@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="CardIONativeLibs">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/KitePrintSDK/libs/CardIONativeLibs.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
