@@ -39,6 +39,7 @@ import ly.kite.payment.PayPalCardChargeListener;
 import ly.kite.payment.PayPalCardVaultStorageListener;
 import io.card.payment.CardIOActivity;
 import io.card.payment.CreditCard;
+import ly.kite.print.Template;
 
 public class PaymentActivity extends Activity {
 
@@ -84,7 +85,8 @@ public class PaymentActivity extends Activity {
                     .commit();
         }
 
-        KitePrintSDK.Environment env = KitePrintSDK.Environment.LIVE;
+//        KitePrintSDK.Environment env = KitePrintSDK.Environment.LIVE;
+        KitePrintSDK.Environment env = KitePrintSDK.Environment.TEST;
         this.paypalEnvironment = PayPalCard.Environment.LIVE;
         if (envString != null) {
             if (envString.equals(ENVIRONMENT_STAGING)) {
@@ -99,7 +101,7 @@ public class PaymentActivity extends Activity {
         this.apiKey = apiKey;
         this.printEnvironment = env;
 
-        KitePrintSDK.initialize(apiKey, env);
+        KitePrintSDK.initialize(apiKey, env, getApplicationContext());
 
         /*
          * Start PayPal Service
@@ -132,7 +134,7 @@ public class PaymentActivity extends Activity {
         this.printOrder = savedInstanceState.getParcelable(EXTRA_PRINT_ORDER);
         this.apiKey = savedInstanceState.getString(EXTRA_PRINT_API_KEY);
         this.printEnvironment = (KitePrintSDK.Environment) savedInstanceState.getSerializable(EXTRA_PRINT_ENVIRONMENT);
-        KitePrintSDK.initialize(apiKey, printEnvironment);
+        KitePrintSDK.initialize(apiKey, printEnvironment, getApplicationContext());
 
         paypalEnvironment = PayPalCard.Environment.LIVE;
         if (printEnvironment == KitePrintSDK.Environment.STAGING || printEnvironment == KitePrintSDK.Environment.TEST) {
@@ -156,7 +158,7 @@ public class PaymentActivity extends Activity {
     }
 
     public void onButtonPayWithPayPalClicked(View view) {
-        PayPalPayment payment = new PayPalPayment(printOrder.getCost(), "GBP", "Product");
+        PayPalPayment payment = new PayPalPayment(printOrder.getCost(), Template.getSupportedCurrency(), "Product");
         Intent intent = new Intent(this, com.paypal.android.sdk.payments.PaymentActivity.class);
         intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_PAYPAL_ENVIRONMENT, printEnvironment.getPayPalEnvironment());
         intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_CLIENT_ID, printEnvironment.getPayPalClientId());
@@ -271,7 +273,9 @@ public class PaymentActivity extends Activity {
         dialog.setTitle("Processing");
         dialog.setMessage("One moment");
         dialog.show();
-        card.chargeCard(paypalEnvironment, printOrder.getCost(), PayPalCard.Currency.GBP, "", new PayPalCardChargeListener() {
+
+
+        card.chargeCard(paypalEnvironment, printOrder.getCost(), Template.getPayPalCurrency(), "", new PayPalCardChargeListener() {
             @Override
             public void onChargeSuccess(PayPalCard card, String proofOfPayment) {
                 dialog.dismiss();

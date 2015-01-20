@@ -67,7 +67,14 @@ public class PayPalCard implements Serializable {
 
     public static enum Currency {
         GBP("GBP"),
-        USD("USD");
+        USD("USD"),
+        EUR("EUR"),
+        NZD("NZD"),
+        SGD("SGD"),
+        AUD("AUD"),
+        CAD("CAD");
+
+
 
         private final String  code;
 

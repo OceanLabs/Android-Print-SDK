@@ -298,7 +298,7 @@ public class Country {
     private final String code3;
     private final String currencyCode;
 
-    private Country(String name, String code2, String code3, String currencyCode) {
+    public Country(String name, String code2, String code3, String currencyCode) {
         this.name = name;
         this.code2 = code2;
         this.code3 = code3;

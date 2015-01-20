@@ -9,6 +9,7 @@ import android.widget.TextView;
 import java.text.NumberFormat;
 import java.util.Locale;
 
+import ly.kite.print.KitePrintSDK;
 import ly.kite.print.PrintJob;
 import ly.kite.print.PrintOrder;
 import ly.kite.R;
@@ -46,10 +47,13 @@ class PrintOrderSummaryListAdapter extends BaseAdapter {
         TextView itemDescription = (TextView) row.findViewById(R.id.text_view_order_item_description);
         TextView itemCost = (TextView) row.findViewById(R.id.text_view_order_item_cost);
 
-        PrintJob job = order.getJobs().get(i);
-        itemDescription.setText(String.format("Pack of %d %s", job.getQuantity(), job.getProductType().getProductName()));
 
-        NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.UK);
+        PrintJob job = order.getJobs().get(i);
+//        itemDescription.setText(String.format("%d x %s", job.getQuantity(), job.getProductType().getProductName()));
+        itemDescription.setText(KitePrintSDK.getOrderSummaryString());
+
+
+        NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.getDefault());
         itemCost.setText(formatter.format(job.getCost().doubleValue()));
 
         return (row);

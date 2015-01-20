@@ -58,6 +58,8 @@ public class PrintOrder implements Parcelable, Serializable {
     private String statusNotificationEmail;
     private String statusNotificationPhone;
 
+    private boolean isPostCard = false;
+
     public PrintOrder() {}
 
     public void setShippingAddress(Address shippingAddress) {
@@ -209,7 +211,7 @@ public class PrintOrder implements Parcelable, Serializable {
     }
 
     public void addPrintJob(PrintJob job) {
-        if (!(job instanceof PrintsPrintJob)) {
+        if (!(job instanceof PrintsPrintJob ||job instanceof PostcardPrintJob )) {
             throw new IllegalArgumentException("Currently only support PrintsPrintJobs, if any further jobs classes are added support for them must be added to the Parcelable interface in particular readTypedList must work ;)");
         }
         jobs.add(job);
@@ -392,6 +394,7 @@ public class PrintOrder implements Parcelable, Serializable {
 
     @Override
     public void writeToParcel(Parcel p, int flags) {
+        p.writeValue(isPostCard);
         p.writeValue(shippingAddress);
         p.writeString(proofOfPayment);
         p.writeString(voucherCode);
@@ -408,9 +411,11 @@ public class PrintOrder implements Parcelable, Serializable {
         p.writeValue(promoCodeDiscount);
         p.writeString(statusNotificationEmail);
         p.writeString(statusNotificationPhone);
+
     }
 
     private PrintOrder(Parcel p) {
+        this.isPostCard = (Boolean) p.readValue(Boolean.class.getClassLoader());
         this.shippingAddress = (Address) p.readValue(Address.class.getClassLoader());
         this.proofOfPayment = p.readString();
         this.voucherCode = p.readString();
@@ -422,10 +427,18 @@ public class PrintOrder implements Parcelable, Serializable {
                 throw new RuntimeException(ex); // will never happen ;)
             }
         }
+        if (isPostCard){
+            ArrayList<PostcardPrintJob> jobs = new ArrayList<PostcardPrintJob>();
+            p.readTypedList(jobs, PostcardPrintJob.CREATOR);
+            this.jobs.addAll(jobs);
+        }else{
+            ArrayList<PrintsPrintJob> jobs = new ArrayList<PrintsPrintJob>();
+            p.readTypedList(jobs, PrintsPrintJob.CREATOR);
+            this.jobs.addAll(jobs);
+        }
 
-        ArrayList<PrintsPrintJob> jobs = new ArrayList<PrintsPrintJob>();
-        p.readTypedList(jobs, PrintsPrintJob.CREATOR);
-        this.jobs.addAll(jobs);
+
+
         this.userSubmittedForPrinting = (Boolean) p.readValue(Boolean.class.getClassLoader());
         this.assetUploadComplete = (Boolean) p.readValue(Boolean.class.getClassLoader());
         this.lastPrintSubmissionDate = (Date) p.readValue(Date.class.getClassLoader());
@@ -450,6 +463,7 @@ public class PrintOrder implements Parcelable, Serializable {
     };
 
     private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+        out.writeBoolean(isPostCard);
         out.writeObject(shippingAddress);
         out.writeObject(proofOfPayment);
         out.writeObject(voucherCode);
@@ -474,6 +488,7 @@ public class PrintOrder implements Parcelable, Serializable {
     }
 
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+        isPostCard = in.readBoolean();
         shippingAddress = (Address) in.readObject();
         proofOfPayment = (String) in.readObject();
         voucherCode = (String) in.readObject();
@@ -626,5 +641,9 @@ public class PrintOrder implements Parcelable, Serializable {
                 is.close();
             } catch (Exception ex) { /* ignore */ }
         }
+    }
+
+    public void setPostCard(boolean isPostCard) {
+        this.isPostCard = isPostCard;
     }
 }

@@ -107,7 +107,7 @@ public class CheckoutActivity extends Activity {
 
         this.apiKey = apiKey;
         this.environment = env;
-        KitePrintSDK.initialize(apiKey, env);
+        KitePrintSDK.initialize(apiKey, env, getApplicationContext());
 
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -131,7 +131,7 @@ public class CheckoutActivity extends Activity {
         this.printOrder = savedInstanceState.getParcelable(EXTRA_PRINT_ORDER);
         this.apiKey = savedInstanceState.getString(EXTRA_PRINT_API_KEY);
         this.environment = (KitePrintSDK.Environment) savedInstanceState.getSerializable(EXTRA_PRINT_ENVIRONMENT);
-        KitePrintSDK.initialize(apiKey, environment);
+        KitePrintSDK.initialize(apiKey, environment, getApplicationContext());
     }
 
     @Override

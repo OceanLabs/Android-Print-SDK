@@ -52,6 +52,16 @@ public class Address implements Parcelable, Serializable {
 
     }
 
+    public Address(String recipientName, String line1, String line2, String city, String stateOrCounty, String zipOrPostalCode, Country country) {
+        this.recipientName = recipientName;
+        this.line1 = line1;
+        this.line2 = line2;
+        this.city = city;
+        this.stateOrCounty = stateOrCounty;
+        this.zipOrPostalCode = zipOrPostalCode;
+        this.country = country;
+    }
+
     public static AddressSearchRequest search(String query, Country country, AddressSearchRequestListener listener) {
         AddressSearchRequest req = new AddressSearchRequest();
         req.search(query, country, listener);
