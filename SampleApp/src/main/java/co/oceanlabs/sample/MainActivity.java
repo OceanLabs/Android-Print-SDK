@@ -30,7 +30,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        KitePrintSDK.initialize("ba171b0d91b1418fbd04f7b12af1e37e42d2cb1e", KitePrintSDK.Environment.TEST);
+        KitePrintSDK.initialize("ba171b0d91b1418fbd04f7b12af1e37e42d2cb1e", KitePrintSDK.Environment.TEST, MainActivity.this);
         imageView = (ImageView) findViewById(R.id.image_view);
     }
 
@@ -51,7 +51,7 @@ public class MainActivity extends Activity {
         } catch (Exception ex) {}
 
         PrintOrder printOrder = new PrintOrder();
-        printOrder.addPrintJob(PrintJob.createMagnetsPrintJob(assets));
+        printOrder.addPrintJob(PrintJob.createPrintJob(assets,"magnets"));
 
         Intent intent = new Intent(this, CheckoutActivity.class);
         intent.putExtra(CheckoutActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder);

@@ -17,10 +17,10 @@ Overview
 Sample Code
 -----------
 
-1. Initialize the SDK and provide your API Keys (these can be found in the [Credentials](https://www.kite.ly/accounts/credentials/) section of the development dashboard). You'll typically initialize the SDK once at application startup.
+1. Initialize the SDK and provide your API Keys (these can be found in the [Credentials](https://www.kite.ly/accounts/credentials/) section of the development dashboard). You'll typically initialize the SDK once at application startup. You will also need to supply a context.
 
     ```java
-    KitePrintSDK.initialize("REPLACE_WITH_YOUR_API_KEY", KitePrintSDK.Environment.TEST);
+    KitePrintSDK.initialize("REPLACE_WITH_YOUR_API_KEY", KitePrintSDK.Environment.TEST, MyActivity.this);
     ```
 
     *Note: Test/Sandbox orders will not be printed and posted. The Test/Sandbox environment is purely for testing during development. If you want to submit a real order that will be printed and posted just use your live API key and the `KitePrintSDK.Environment.Live` environment*
@@ -37,13 +37,13 @@ Sample Code
 3. Create `PrintJob`'s for every type of product you want to print in this order. A print order can have multiple print jobs attached.
 
     ```java
-    PrintJob magnets      = PrintJob.createPrintJob(assets, ProductType.MAGNETS);
-    PrintJob polaroids    = PrintJob.createPrintJob(assets, ProductType.POLAROIDS);
-    PrintJob squarePrints = PrintJob.createPrintJob(assets, ProductType.SQUARES);
+    PrintJob magnets      = PrintJob.createPrintJob(assets, ProductType.MAGNETS.getDefaultTemplate());
+    PrintJob polaroids    = PrintJob.createPrintJob(assets, ProductType.POLAROIDS.getDefaultTemplate());
+    PrintJob squarePrints = PrintJob.createPrintJob(assets, ProductType.SQUARES.getDefaultTemplate());
     ```
     
      *Note: The above shows only a small sample of the products available for printing with the SDK*
-4. Create an `OLPrintOrder` and attach the print job(s) you created in the previous step
+4. Create an `PrintOrder` and attach the print job(s) you created in the previous step
 
     ```java
     PrintOrder printOrder = new PrintOrder();
