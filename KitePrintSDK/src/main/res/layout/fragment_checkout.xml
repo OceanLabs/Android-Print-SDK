@@ -2,7 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
     tools:context="ly.kite.checkout.CheckoutActivity$PlaceholderFragment">
 
     <ScrollView android:layout_width="match_parent" android:layout_height="wrap_content">
@@ -13,16 +12,15 @@
             <TextView android:id="@+id/email_require_reason" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="@dimen/activity_vertical_margin" android:text="Your email is required so that we can send you order confirmation updates" />
             <EditText android:id="@+id/phone_number_text_view" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="@dimen/activity_vertical_margin" android:hint="Phone number" android:inputType="phone" android:maxLines="1" android:singleLine="true" />
             <TextView android:id="@+id/phone_require_reason" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="@dimen/activity_vertical_margin" android:text="Your phone number is required in case there are any delivery issues" />
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Powered by Kite.ly" android:layout_gravity="center_horizontal" android:layout_centerHorizontal="true" android:textColor="@color/light_grey" android:layout_marginTop="65dp" />
+
             <Button android:id="@+id/next_button" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_alignParentBottom="true" android:layout_marginTop="@dimen/activity_vertical_margin" android:text="Next"
                 android:background="#57ae2e" android:textColor="@android:color/white" android:onClick="onButtonNextClicked" android:visibility="invisible" />
         </LinearLayout>>
     </ScrollView>
 
-
-
     <Button android:id="@+id/next_button" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_alignParentBottom="true" android:layout_marginTop="@dimen/activity_vertical_margin" android:text="Next"
         android:background="#57ae2e" android:textColor="@android:color/white" android:onClick="onButtonNextClicked" />
-
-
 
 </RelativeLayout>

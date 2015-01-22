@@ -33,12 +33,11 @@ public class SyncTemplateRequest {
                         ArrayList<Template> templateObjects = new ArrayList<Template>();
                         for (int i = 0; i < templates.length(); ++i) {
                             JSONObject jsonObject = templates.getJSONObject(i);
-                            json.put("custom_pack_quantity",10);
                             Template template = Template.parseTemplate(templates.getJSONObject(i));
                             templateObjects.add(template);
                         }
 
-                        listener.onSyncComplete(SyncTemplateRequest.this,templateObjects);
+                        listener.onSyncComplete(SyncTemplateRequest.this, templateObjects);
 
                     } else {
                         JSONObject error = json.getJSONObject("error");
@@ -64,7 +63,5 @@ public class SyncTemplateRequest {
             req = null;
         }
     }
-
-
 
 }

@@ -27,6 +27,7 @@ import ly.kite.print.PrintJob;
 import ly.kite.print.PrintOrder;
 import ly.kite.checkout.CheckoutActivity;
 import ly.kite.print.ProductType;
+import ly.kite.print.Template;
 
 public class MainActivity extends Activity {
 
@@ -82,6 +83,8 @@ public class MainActivity extends Activity {
         }
 
         KitePrintSDK.initialize(apiKey, env, getApplicationContext());
+
+        Template.getTemplates();
 
         ProductType productType = (ProductType) productSpinner.getSelectedItem();
         PrintOrder printOrder = new PrintOrder();

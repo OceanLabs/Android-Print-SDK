@@ -11,7 +11,9 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import ly.kite.address.Address;
 
@@ -21,11 +23,8 @@ import ly.kite.address.Address;
 class PrintsPrintJob extends PrintJob {
 
     private static final long serialVersionUID = 0L;
-
-
     private ProductType productType;
     private List<Asset> assets;
-
     private String templateId;
 
 
@@ -36,12 +35,23 @@ class PrintsPrintJob extends PrintJob {
     }
 
     @Override
-    public BigDecimal getCost() {
-        int imagesPerSheet = Template.getSyncedTemplateNumberOfImages(templateId);
-        if (imagesPerSheet == 0) imagesPerSheet = 1;
-        BigDecimal cost = new BigDecimal(Template.getCostForTemplate(templateId));
-        int numOrders = ((assets.size() + (imagesPerSheet - 1))/ imagesPerSheet);
-        return cost.multiply(new BigDecimal(numOrders));
+    public BigDecimal getCost(String currencyCode) {
+        Template template = Template.getTemplate(templateId);
+        BigDecimal sheetCost = template.getCost(currencyCode);
+        int expectedQuantity = template.getQuantityPerSheet();
+
+        int numOrders = (int) Math.floor((getQuantity() + expectedQuantity - 1) / expectedQuantity);
+        return sheetCost.multiply(new BigDecimal(numOrders));
+    }
+
+    @Override
+    public Set<String> getCurrenciesSupported() {
+        Template template = Template.getTemplate(templateId);
+        if (template == null) {
+            return Collections.EMPTY_SET;
+        }
+
+        return template.getCurrenciesSupported();
     }
 
     @Override

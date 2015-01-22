@@ -4,70 +4,208 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileNotFoundException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.util.ArrayList;
-
-import ly.kite.payment.PayPalCard;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by alibros on 06/01/15.
  */
 public class Template implements Parcelable, Serializable {
 
-    private String template_id;
-    private int images_per_page;
-    private String name;
-    private ArrayList<TemplateCost> costs;
-    private int custom_pack_quantity = 0;
+    private static final String PERSISTED_TEMPLATES_FILENAME = "templates";
+    private static final String PREF_LAST_SYNC_DATE = "last_sync_date";
 
-    public Template(ArrayList<TemplateCost> costs, String name, int images_per_page, String template_id, int custom_pack_quantity) {
-        this.costs = costs;
+    private static final ArrayList<TemplateSyncListener> SYNC_LISTENERS = new ArrayList<TemplateSyncListener>();
+    private static List<Template> syncedTemplates;
+    private static Date lastSyncDate;
+
+    private final String id;
+    private final int quantityPerSheet;
+    private final String name;
+    private final Map<String, BigDecimal> costsByCurrencyCode;
+    private static SyncTemplateRequest inProgressSyncReq;
+
+
+    Template(String id, Map<String, BigDecimal> costsByCurrencyCode, String name, int quantityPerSheet) {
+        this.costsByCurrencyCode = costsByCurrencyCode;
         this.name = name;
-        this.images_per_page = images_per_page;
-        this.template_id = template_id;
-        this.custom_pack_quantity = custom_pack_quantity;
+        this.quantityPerSheet = quantityPerSheet;
+        this.id = id;
     }
 
-    public String getTemplate_id() {
-        return template_id;
+    public String getId() {
+        return id;
     }
 
-    public int getImages_per_page() {
-        return images_per_page;
+    public int getQuantityPerSheet() {
+        return quantityPerSheet;
     }
 
     public String getName() {
         return name;
     }
 
-    public ArrayList<TemplateCost> getCosts() {
-        return costs;
+    public BigDecimal getCost(String currencyCode) {
+        return costsByCurrencyCode.get(currencyCode);
     }
 
-
-    public void setTemplate_id(String template_id) {
-        this.template_id = template_id;
+    public Set<String> getCurrenciesSupported() {
+        return costsByCurrencyCode.keySet();
     }
 
-    public void setImages_per_page(int images_per_page) {
-        this.images_per_page = images_per_page;
+    static Template parseTemplate(JSONObject json) throws JSONException {
+        String name = json.getString("name");
+        int quantityPerSheet = json.optInt("images_per_page");
+        String templateId = json.getString("template_id");
+
+        Map<String, BigDecimal> costsByCurrencyCode = new HashMap<String, BigDecimal>();
+        JSONArray costsJSON = json.optJSONArray("cost");
+        for (int i = 0; i < costsJSON.length(); i++) {
+            JSONObject jsonObject = costsJSON.getJSONObject(i);
+            String amountString = jsonObject.getString("amount");
+            String currency = jsonObject.getString("currency");
+            BigDecimal amount = new BigDecimal(amountString);
+            costsByCurrencyCode.put(currency, amount);
+        }
+
+        return new Template(templateId, costsByCurrencyCode, name, quantityPerSheet);
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public static Date getLastSyncDate() {
+        getTemplates(); // this forces lastSyncDate & templates to be read from disk if currently null
+        return lastSyncDate;
     }
 
-    public void setCost(ArrayList<TemplateCost> costs) {
-        this.costs = costs;
+    public static interface TemplateSyncListener {
+        void onSuccess();
+        void onError(Exception error);
+    }
+
+    public static void sync(Context context, TemplateSyncListener listener) {
+        synchronized (SYNC_LISTENERS) {
+            SYNC_LISTENERS.add(listener);
+        }
+        sync(context);
+    }
+
+    public static void sync(Context context) {
+        if (isSyncInProgress()) {
+            return;
+        }
+
+        final Context appContext = context.getApplicationContext();
+        inProgressSyncReq = new SyncTemplateRequest();
+        inProgressSyncReq.sync(new SyncTemplateRequestListener() {
+            @Override
+            public void onSyncComplete(SyncTemplateRequest request, ArrayList<Template> templates) {
+                inProgressSyncReq = null;
+                persistTemplatesToDiskAsLatest(appContext, templates);
+                synchronized (SYNC_LISTENERS) {
+                    for (TemplateSyncListener listener : SYNC_LISTENERS) {
+                        listener.onSuccess();
+                    }
+                    SYNC_LISTENERS.clear();
+                }
+            }
+
+            @Override
+            public void onError(SyncTemplateRequest req, Exception error) {
+                inProgressSyncReq = null;
+                synchronized (SYNC_LISTENERS) {
+                    for (TemplateSyncListener listener : SYNC_LISTENERS) {
+                        listener.onError(error);
+                    }
+                    SYNC_LISTENERS.clear();
+                }
+            }
+        });
+    }
+
+    public static boolean isSyncInProgress() {
+        return inProgressSyncReq != null;
+    }
+
+    private static void persistTemplatesToDiskAsLatest(Context context, List<Template> templates) {
+        Log.i("dbotha", "persistTemplatesToDiskAsLatest with " + templates.size() + " templates");
+        syncedTemplates = templates;
+        lastSyncDate = new Date();
+
+        // Write sync date
+        SharedPreferences settings = context.getSharedPreferences(KitePrintSDK.KITE_SHARED_PREFERENCES, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putLong(PREF_LAST_SYNC_DATE, lastSyncDate.getTime());
+        editor.commit();
+
+        // Write templates
+        ObjectOutputStream os = null;
+        try {
+            os = new ObjectOutputStream(new BufferedOutputStream(context.openFileOutput(PERSISTED_TEMPLATES_FILENAME, Context.MODE_PRIVATE)));
+            os.writeObject(templates);
+        } catch (Exception ex) {
+            // ignore, we'll just lose this persist for now
+        } finally {
+            try {
+                os.close();
+            } catch (Exception ex) {/* ignore */}
+        }
+    }
+
+    public static Template getTemplate(String templateId) {
+        List<Template> templates = getTemplates();
+        for (Template template : templates) {
+            if (template.getId().equals(templateId)) {
+                return template;
+            }
+        }
+
+        throw new UnsupportedOperationException("Couldn't find template with id: " + templateId);
+    }
+
+    public static List<Template> getTemplates() {
+        if (syncedTemplates != null) {
+            return syncedTemplates;
+        }
+
+        // Try read last sync date
+        SharedPreferences settings = KitePrintSDK.getApplicationContext().getSharedPreferences(KitePrintSDK.KITE_SHARED_PREFERENCES, 0);
+        if (settings.contains(PREF_LAST_SYNC_DATE)) {
+            lastSyncDate = new Date(settings.getLong(PREF_LAST_SYNC_DATE, 0));
+        }
+
+        // Try read previously persisted templates from disk
+        ObjectInputStream is = null;
+        try {
+            is = new ObjectInputStream(new BufferedInputStream(KitePrintSDK.getApplicationContext().openFileInput(PERSISTED_TEMPLATES_FILENAME)));
+            syncedTemplates = (List<Template>) is.readObject();
+
+            Log.i("dbotha", "read Templates from disk with " + syncedTemplates.size() + " templates, sync date: " + lastSyncDate);
+            return syncedTemplates;
+        } catch (FileNotFoundException ex) {
+            return new ArrayList<Template>();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        } finally {
+            try {
+                is.close();
+            } catch (Exception ex) { /* ignore */ }
+        }
     }
 
     @Override
@@ -78,166 +216,6 @@ public class Template implements Parcelable, Serializable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
 
-    }
-
-    static Template parseTemplate(JSONObject json) throws JSONException {
-        String jname = json.getString("name");
-        int jimages_per_page = json.optInt("images_per_page");
-        int jcustom_pack_quantity = json.optInt("custom_pack_quantity");
-        String jtemplate_id = json.getString("template_id");
-        JSONArray jcost = json.optJSONArray("cost");
-        ArrayList<TemplateCost> tempCosts = new ArrayList<TemplateCost>();
-        for (int i = 0; i < jcost.length(); i++) {
-
-            JSONObject jsonObject = jcost.getJSONObject(i);
-            String amount = jsonObject.getString("amount");
-            String currency = jsonObject.getString("currency");
-
-            TemplateCost costTemp = new TemplateCost(currency,amount);
-            tempCosts.add(costTemp);
-
-
-        }
-
-        return new Template(tempCosts, jname, jimages_per_page, jtemplate_id, jcustom_pack_quantity);
-    }
-
-
-
-    public static void syncTemplates(final Context context){
-
-        SyncTemplateRequest request = new SyncTemplateRequest();
-        request.sync(new SyncTemplateRequestListener() {
-            @Override
-            public void onSyncComplete(SyncTemplateRequest request, ArrayList<Template> templates) {
-
-                SharedPreferences settings = context.getSharedPreferences("ly.kite.sharedpreferences", 0);
-                SharedPreferences.Editor editor = settings.edit();
-                Gson gson = new Gson();
-
-                String templatesJson = gson.toJson(templates);
-                editor.putString("templates",templatesJson);
-                editor.commit();
-
-                for (Template template : templates) {
-                    String json = gson.toJson(template);
-                    editor.putString(template.getTemplate_id(), json);
-                    editor.commit();
-
-                }
-
-            }
-
-            @Override
-            public void onError(SyncTemplateRequest req, Exception error) {
-
-            }
-        });
-    }
-
-    public static int getSyncedTemplateNumberOfImages(String template_id) {
-
-        SharedPreferences settings = KitePrintSDK.getAppContext().getSharedPreferences("ly.kite.sharedpreferences", 0);
-        SharedPreferences.Editor editor = settings.edit();
-        Gson gson = new Gson();
-        String json = settings.getString(template_id, "");
-        Template template = gson.fromJson(json, Template.class);
-        return template.getImages_per_page();
-    }
-
-    public static String getSupportedCurrency(){
-
-            String userCurrencyCode = KitePrintSDK.getUserCurrencyCode();
-
-            if(userCurrencyCode.equals("GBP")) {
-                return userCurrencyCode;
-
-            }else if(userCurrencyCode.equals("EUR")){
-                return userCurrencyCode;
-
-            }else if(userCurrencyCode.equals("USD")){
-                return userCurrencyCode;
-            }else if(userCurrencyCode.equals("SGD")){
-                return userCurrencyCode;
-            }else if(userCurrencyCode.equals("AUD")){
-                return userCurrencyCode;
-            }else if(userCurrencyCode.equals("NZD")){
-                return userCurrencyCode;
-            }else if(userCurrencyCode.equals("CAD")){
-                return userCurrencyCode;
-            } else {
-                return "GBP";
-            }
-
-
-    }
-
-    public static PayPalCard.Currency getPayPalCurrency(){
-
-        String userCurrencyCode = getSupportedCurrency();
-
-
-        if(userCurrencyCode.equals("GBP")) {
-            return PayPalCard.Currency.GBP;
-
-        }else if(userCurrencyCode.equals("EUR")){
-            return PayPalCard.Currency.EUR;
-
-        }else if(userCurrencyCode.equals("USD")){
-            return PayPalCard.Currency.USD;
-        }else if(userCurrencyCode.equals("SGD")){
-            return PayPalCard.Currency.SGD;
-        }else if(userCurrencyCode.equals("AUD")){
-            return PayPalCard.Currency.AUD;
-        }else if(userCurrencyCode.equals("NZD")){
-            return PayPalCard.Currency.NZD;
-        }else if(userCurrencyCode.equals("CAD")){
-            return PayPalCard.Currency.CAD;
-        } else {
-            return PayPalCard.Currency.GBP;
-        }
-
-    }
-
-
-    public static float getCostForTemplate(String template_id){
-
-        SharedPreferences settings = KitePrintSDK.getAppContext().getSharedPreferences("ly.kite.sharedpreferences", 0);
-        SharedPreferences.Editor editor = settings.edit();
-        Gson gson = new Gson();
-        String json = settings.getString(template_id, "");
-        Template template = gson.fromJson(json, Template.class);
-
-        String productCost = "0.0";
-        if (template != null) {
-            ArrayList<TemplateCost> cost = template.getCosts();
-            if (cost != null) {
-                for (TemplateCost o : cost) {
-                    String currency = o.getCurrency();
-                    if (currency.equals(getSupportedCurrency())) {
-                        productCost = o.getAmount();
-                    }
-                }
-            }
-        }
-        return Float.parseFloat(productCost);
-    }
-
-
-    public static ArrayList<Template> getSyncedTemplates(){
-
-        SharedPreferences settings = KitePrintSDK.getAppContext().getSharedPreferences("ly.kite.sharedpreferences", 0);
-        SharedPreferences.Editor editor = settings.edit();
-        Gson gson = new Gson();
-        String json = settings.getString("templates", "");
-        java.lang.reflect.Type listOfTemplates = new TypeToken<ArrayList<Template>>(){}.getType();
-        return gson.fromJson(json, listOfTemplates);
-
-    }
-
-
-    public void setCustom_pack_quantity(int custom_pack_quantity) {
-        this.custom_pack_quantity = custom_pack_quantity;
     }
 
 }

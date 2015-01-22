@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">Kite SDK</string>
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
@@ -18,4 +19,6 @@
     <string name="action_save_address">Save Address</string>
     <string name="search_title">Search</string>
     <string name="country_search_hint">Search Addresses</string>
+    <string name="title_activity_template_sync">TemplateSyncActivity</string>
+
 </resources>

@@ -28,44 +28,51 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <application >
+    <android:uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="18" />
+    <android:uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <android:uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="18" />
+
+    <application>
         <activity
-            android:name="ly.kite.checkout.PaymentActivity"
+            android:name=".checkout.PaymentActivity"
             android:label="@string/title_activity_payment"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme" >
         </activity>
         <activity
-            android:name="ly.kite.checkout.CheckoutActivity"
+            android:name=".checkout.CheckoutActivity"
             android:label="@string/title_activity_checkout"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme" >
         </activity>
         <activity
-            android:name="ly.kite.checkout.OrderReceiptActivity"
+            android:name=".checkout.OrderReceiptActivity"
             android:label="@string/title_activity_order_receipt"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme" >
         </activity>
         <activity
-            android:name="ly.kite.address.AddressBookActivity"
+            android:name=".address.AddressBookActivity"
             android:label="@string/title_activity_address_book"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme" >
         </activity>
-
         <activity
-            android:name="ly.kite.address.AddressEditActivity"
+            android:name=".address.AddressEditActivity"
             android:label="@string/title_activity_address_edit"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustResize" >
         </activity>
         <activity
-            android:name="ly.kite.address.AddressSearchActivity"
+            android:name=".address.AddressSearchActivity"
             android:label="@string/title_activity_address_search"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme" >
         </activity>
 
         <!-- PayPal activites & services: -->
@@ -73,17 +80,29 @@
             android:name="com.paypal.android.sdk.payments.PayPalService"
             android:exported="false" />
 
-        <activity android:name="com.paypal.android.sdk.payments.PaymentActivity" android:theme="@style/AppTheme"/>
-        <activity android:name="com.paypal.android.sdk.payments.LoginActivity" android:theme="@style/AppTheme"/>
-        <activity android:name="com.paypal.android.sdk.payments.PaymentMethodActivity" android:theme="@style/AppTheme"/>
-        <activity android:name="com.paypal.android.sdk.payments.PaymentConfirmActivity" android:theme="@style/AppTheme"/>
+        <activity
+            android:name="com.paypal.android.sdk.payments.PaymentActivity"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name="com.paypal.android.sdk.payments.LoginActivity"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name="com.paypal.android.sdk.payments.PaymentMethodActivity"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name="com.paypal.android.sdk.payments.PaymentConfirmActivity"
+            android:theme="@style/AppTheme" />
         <activity
             android:name="io.card.payment.CardIOActivity"
             android:configChanges="keyboardHidden|orientation"
-            android:theme="@style/AppTheme"/>
-        <activity android:name="io.card.payment.DataEntryActivity"
-            android:theme="@style/AppTheme"/>
-
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name="io.card.payment.DataEntryActivity"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".checkout.TemplateSyncActivity"
+            android:label="@string/title_activity_template_sync" >
+        </activity>
     </application>
 
 </manifest>

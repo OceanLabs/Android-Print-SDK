@@ -158,7 +158,7 @@ public class PaymentActivity extends Activity {
     }
 
     public void onButtonPayWithPayPalClicked(View view) {
-        PayPalPayment payment = new PayPalPayment(printOrder.getCost(), Template.getSupportedCurrency(), "Product");
+        PayPalPayment payment = new PayPalPayment(printOrder.getCost(printOrder.getCurrencyCode()), printOrder.getCurrencyCode(), "Product");
         Intent intent = new Intent(this, com.paypal.android.sdk.payments.PaymentActivity.class);
         intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_PAYPAL_ENVIRONMENT, printEnvironment.getPayPalEnvironment());
         intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_CLIENT_ID, printEnvironment.getPayPalClientId());
@@ -267,6 +267,26 @@ public class PaymentActivity extends Activity {
         }
     }
 
+    public static PayPalCard.Currency getPayPalCurrency(String currency) {
+        if (currency.equals("GBP")) {
+            return PayPalCard.Currency.GBP;
+        } else if(currency.equals("EUR")){
+            return PayPalCard.Currency.EUR;
+        } else if (currency.equals("USD")){
+            return PayPalCard.Currency.USD;
+        } else if (currency.equals("SGD")){
+            return PayPalCard.Currency.SGD;
+        } else if (currency.equals("AUD")){
+            return PayPalCard.Currency.AUD;
+        } else if (currency.equals("NZD")){
+            return PayPalCard.Currency.NZD;
+        } else if (currency.equals("CAD")){
+            return PayPalCard.Currency.CAD;
+        } else {
+            return PayPalCard.Currency.GBP;
+        }
+    }
+
     private void payWithExistingCard(PayPalCard card) {
         final ProgressDialog dialog = new ProgressDialog(this);
         dialog.setCancelable(false);
@@ -274,8 +294,7 @@ public class PaymentActivity extends Activity {
         dialog.setMessage("One moment");
         dialog.show();
 
-
-        card.chargeCard(paypalEnvironment, printOrder.getCost(), Template.getPayPalCurrency(), "", new PayPalCardChargeListener() {
+        card.chargeCard(paypalEnvironment, printOrder.getCost(printOrder.getCurrencyCode()), getPayPalCurrency(printOrder.getCurrencyCode()), "", new PayPalCardChargeListener() {
             @Override
             public void onChargeSuccess(PayPalCard card, String proofOfPayment) {
                 dialog.dismiss();
@@ -362,7 +381,7 @@ public class PaymentActivity extends Activity {
         }
 
         Button payWithCreditCardButton = (Button) findViewById(R.id.button_pay_with_credit_card);
-        if (printOrder.getCost().compareTo(BigDecimal.ZERO) <= 0) {
+        if (printOrder.getCost(printOrder.getCurrencyCode()).compareTo(BigDecimal.ZERO) <= 0) {
             findViewById(R.id.button_pay_with_paypal).setVisibility(View.GONE);
             payWithCreditCardButton.setText("Checkout for Free!");
             payWithCreditCardButton.setOnClickListener(new View.OnClickListener() {
@@ -397,7 +416,7 @@ public class PaymentActivity extends Activity {
                 @Override
                 public void onPromoCodeApplied(PrintOrder order, BigDecimal discount) {
                     dialog.dismiss();
-                    Toast.makeText(PaymentActivity.this, "Discount applied!", 1500).show();
+                    Toast.makeText(PaymentActivity.this, "Discount applied!", Toast.LENGTH_LONG).show();
                     updateViewsBasedOnPromoCodeChange();
                 }
 

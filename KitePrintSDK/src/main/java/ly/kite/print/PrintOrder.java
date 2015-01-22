@@ -17,11 +17,16 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 import ly.kite.address.Address;
+import ly.kite.address.Country;
 import ly.kite.payment.CheckPromoCodeRequestListener;
 import ly.kite.payment.CheckPromoRequest;
 
@@ -57,8 +62,7 @@ public class PrintOrder implements Parcelable, Serializable {
     private BigDecimal promoCodeDiscount;
     private String statusNotificationEmail;
     private String statusNotificationPhone;
-
-    private boolean isPostCard = false;
+    private String currencyCode = null;
 
     public PrintOrder() {}
 
@@ -162,10 +166,58 @@ public class PrintOrder implements Parcelable, Serializable {
         }
     }
 
-    public BigDecimal getCost() {
+    public Set<String> getCurrenciesSupported() {
+        Set<String> supported = null;
+        for (PrintJob job : jobs) {
+            Set<String> supported2 = job.getCurrenciesSupported();
+            if (supported == null) {
+                supported = supported2;
+            } else {
+                supported.retainAll(supported2);
+            }
+        }
+
+        return supported == null ? Collections.EMPTY_SET : supported;
+    }
+
+    public String getCurrencyCode() {
+        String code = currencyCode == null ? Country.getInstance(Locale.getDefault()).getCurrencyCode() : currencyCode;
+        Set<String> supportedCurrencies = getCurrenciesSupported();
+        if (supportedCurrencies.contains(currencyCode)) {
+            return code;
+        }
+
+        if (supportedCurrencies.contains("USD")) {
+            return "USD";
+        }
+
+        if (supportedCurrencies.contains("GBP")) {
+            return "GBP";
+        }
+
+        if (supportedCurrencies.contains("EUR")) {
+            return "EUR";
+        }
+
+        if (supportedCurrencies.size() == 0) {
+            throw new IllegalStateException("Please ensure that there is at least one common currency amongst PrintJobs that are added to the PrintOrder");
+        }
+
+        return supportedCurrencies.iterator().next();
+    }
+
+    public void setCurrencyCode(String currencyCode) {
+        this.currencyCode = currencyCode;
+    }
+
+    public BigDecimal getCost(String currency) {
+        if (!getCurrenciesSupported().contains(currency)) {
+            throw new IllegalStateException(currency + " is not supported by this PrintOrder. See PrintOrder.getCurrenciesSupported()");
+        }
+
         BigDecimal cost = new BigDecimal(0);
         for (PrintJob job : jobs) {
-            cost = cost.add(job.getCost());
+            cost = cost.add(job.getCost(currency));
         }
 
         if (this.promoCodeDiscount != null) {
@@ -211,9 +263,11 @@ public class PrintOrder implements Parcelable, Serializable {
     }
 
     public void addPrintJob(PrintJob job) {
-        if (!(job instanceof PrintsPrintJob ||job instanceof PostcardPrintJob )) {
-            throw new IllegalArgumentException("Currently only support PrintsPrintJobs, if any further jobs classes are added support for them must be added to the Parcelable interface in particular readTypedList must work ;)");
+        if (!(job instanceof PrintsPrintJob || job instanceof PostcardPrintJob )) {
+            throw new IllegalArgumentException("Currently only support PrintsPrintJobs & PostcardPrintJob, if any further jobs " +
+                    "classes are added support for them must be added to the Parcelable interface in particular readTypedList must work ;)");
         }
+
         jobs.add(job);
     }
 
@@ -394,13 +448,23 @@ public class PrintOrder implements Parcelable, Serializable {
 
     @Override
     public void writeToParcel(Parcel p, int flags) {
-        p.writeValue(isPostCard);
         p.writeValue(shippingAddress);
         p.writeString(proofOfPayment);
         p.writeString(voucherCode);
         String userDataString = userData == null ? null : userData.toString();
         p.writeString(userDataString);
-        p.writeTypedList(jobs);
+
+        p.writeInt(jobs.size());
+        for (PrintJob job : jobs) {
+            if (job instanceof PostcardPrintJob) {
+                p.writeInt(1);
+                job.writeToParcel(p, flags);
+            } else {
+                p.writeInt(0);
+                job.writeToParcel(p, flags);
+            }
+        }
+
         p.writeValue(userSubmittedForPrinting);
         p.writeValue(assetUploadComplete);
         p.writeValue(lastPrintSubmissionDate);
@@ -411,11 +475,10 @@ public class PrintOrder implements Parcelable, Serializable {
         p.writeValue(promoCodeDiscount);
         p.writeString(statusNotificationEmail);
         p.writeString(statusNotificationPhone);
-
+        p.writeString(currencyCode);
     }
 
     private PrintOrder(Parcel p) {
-        this.isPostCard = (Boolean) p.readValue(Boolean.class.getClassLoader());
         this.shippingAddress = (Address) p.readValue(Address.class.getClassLoader());
         this.proofOfPayment = p.readString();
         this.voucherCode = p.readString();
@@ -427,17 +490,18 @@ public class PrintOrder implements Parcelable, Serializable {
                 throw new RuntimeException(ex); // will never happen ;)
             }
         }
-        if (isPostCard){
-            ArrayList<PostcardPrintJob> jobs = new ArrayList<PostcardPrintJob>();
-            p.readTypedList(jobs, PostcardPrintJob.CREATOR);
-            this.jobs.addAll(jobs);
-        }else{
-            ArrayList<PrintsPrintJob> jobs = new ArrayList<PrintsPrintJob>();
-            p.readTypedList(jobs, PrintsPrintJob.CREATOR);
-            this.jobs.addAll(jobs);
+
+        int numJobs = p.readInt();
+        for (int i = 0; i < numJobs; ++i) {
+            boolean postcardJob = p.readInt() == 1;
+            if (postcardJob) {
+                PostcardPrintJob job = PostcardPrintJob.CREATOR.createFromParcel(p);
+                this.jobs.add(job);
+            } else {
+                PrintsPrintJob job = PrintsPrintJob.CREATOR.createFromParcel(p);
+                this.jobs.add(job);
+            }
         }
-
-
 
         this.userSubmittedForPrinting = (Boolean) p.readValue(Boolean.class.getClassLoader());
         this.assetUploadComplete = (Boolean) p.readValue(Boolean.class.getClassLoader());
@@ -449,6 +513,7 @@ public class PrintOrder implements Parcelable, Serializable {
         this.promoCodeDiscount = (BigDecimal) p.readValue(BigDecimal.class.getClassLoader());
         this.statusNotificationEmail = p.readString();
         this.statusNotificationPhone = p.readString();
+        this.currencyCode = p.readString();
     }
 
     public static final Parcelable.Creator<PrintOrder> CREATOR
@@ -463,7 +528,6 @@ public class PrintOrder implements Parcelable, Serializable {
     };
 
     private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-        out.writeBoolean(isPostCard);
         out.writeObject(shippingAddress);
         out.writeObject(proofOfPayment);
         out.writeObject(voucherCode);
@@ -485,10 +549,10 @@ public class PrintOrder implements Parcelable, Serializable {
         out.writeObject(promoCodeDiscount);
         out.writeObject(statusNotificationEmail);
         out.writeObject(statusNotificationPhone);
+        out.writeObject(currencyCode);
     }
 
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
-        isPostCard = in.readBoolean();
         shippingAddress = (Address) in.readObject();
         proofOfPayment = (String) in.readObject();
         voucherCode = (String) in.readObject();
@@ -517,6 +581,7 @@ public class PrintOrder implements Parcelable, Serializable {
         promoCodeDiscount = (BigDecimal) in.readObject();
         statusNotificationEmail = (String) in.readObject();
         statusNotificationPhone = (String) in.readObject();
+        currencyCode = (String) in.readObject();
     }
 
     /*
@@ -643,7 +708,4 @@ public class PrintOrder implements Parcelable, Serializable {
         }
     }
 
-    public void setPostCard(boolean isPostCard) {
-        this.isPostCard = isPostCard;
-    }
 }

@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Fragment;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Parcelable;
@@ -27,7 +29,13 @@ import ly.kite.print.PrintOrder;
 import ly.kite.R;
 import ly.kite.address.Address;
 import ly.kite.address.AddressBookActivity;
+import ly.kite.print.Template;
+
 import android.view.Window;
+
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+import java.util.Date;
 
 
 public class CheckoutActivity extends Activity {
@@ -69,8 +77,6 @@ public class CheckoutActivity extends Activity {
         String envString = getIntent().getStringExtra(EXTRA_PRINT_ENVIRONMENT);
         this.printOrder = (PrintOrder) getIntent().getParcelableExtra(EXTRA_PRINT_ORDER);
 
-
-
         if (apiKey == null) {
         	apiKey = KitePrintSDK.getAPIKey();
         	if (apiKey == null) {
@@ -98,9 +104,8 @@ public class CheckoutActivity extends Activity {
             } else if (envString.equals(ENVIRONMENT_TEST)) {
                 env = KitePrintSDK.Environment.TEST;
             } else if (envString.equals(ENVIRONMENT_LIVE)) {
-            	env = KitePrintSDK.Environment.LIVE;//
-            }
-            else {
+            	env = KitePrintSDK.Environment.LIVE;
+            } else {
                 throw new IllegalArgumentException("Bad print environment extra: " + envString);
             }
         }
@@ -108,10 +113,7 @@ public class CheckoutActivity extends Activity {
         this.apiKey = apiKey;
         this.environment = env;
         KitePrintSDK.initialize(apiKey, env, getApplicationContext());
-
-
         getActionBar().setDisplayHomeAsUpEnabled(true);
-
 
         // hide keyboard initially
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -203,6 +205,45 @@ public class CheckoutActivity extends Activity {
         editor.putString(SHIPPING_PREFERENCE_PHONE, phone);
         editor.commit();
 
+        Date lastSyncedDate = Template.getLastSyncDate();
+        Date dateHourAgo = new Date(System.currentTimeMillis() - (1 * 60 * 60 * 1000));
+        if (lastSyncedDate == null || lastSyncedDate.compareTo(dateHourAgo) < 0) {
+            final ProgressDialog progress = ProgressDialog.show(this, null, "Loading");
+            Template.sync(getApplicationContext(), new Template.TemplateSyncListener() {
+                @Override
+                public void onSuccess() {
+                    progress.dismiss();
+                    startPaymentActivity();
+                }
+
+                @Override
+                public void onError(Exception error) {
+                    progress.dismiss();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(CheckoutActivity.this);
+                    builder.setTitle("Oops");
+                    if (error instanceof UnknownHostException || error instanceof SocketTimeoutException) {
+                        builder.setTitle("Please check your internet connectivity and then try again");
+                    } else {
+                        builder.setTitle(error.getLocalizedMessage());
+                    }
+
+                    builder.setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            onButtonNextClicked(null);
+                        }
+                    });
+                    builder.setNegativeButton("Cancel", null);
+                    builder.show();
+                }
+            });
+        } else {
+            // templates synced recently enough to jump straight to payment
+            startPaymentActivity();
+        }
+    }
+
+    private void startPaymentActivity() {
         Intent i = new Intent(this, PaymentActivity.class);
         i.putExtra(PaymentActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder);
         i.putExtra(PaymentActivity.EXTRA_PRINT_API_KEY, apiKey);

@@ -1,15 +1,9 @@
 package ly.kite.print;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.util.Log;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.paypal.android.sdk.payments.PaymentActivity;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Currency;
 import java.util.Locale;
 
@@ -17,6 +11,8 @@ import java.util.Locale;
  * Created by deonbotha on 29/01/2014.
  */
 public class KitePrintSDK {
+
+    static final String KITE_SHARED_PREFERENCES = "ly.kite.shared_preferences";
 
     private static final String PAYPAL_CLIENT_ID_SANDBOX = "Aa5nsBDntBpozWQykoxQXoHFOqs551hTNt0B8LQXTudoh8bD0nT1F735c_Fh";
     private static final String PAYPAL_RECIPIENT_SANDBOX = "hello-facilitator@psilov.eu";
@@ -56,76 +52,34 @@ public class KitePrintSDK {
 
     private static String apiKey;
     private static Environment environment;
-    private static Context appContext;
-
-    public static void initialize(String apiKey, Context context) {
-        KitePrintSDK.apiKey = apiKey;
-        KitePrintSDK.environment = Environment.LIVE;
-        KitePrintSDK.appContext = context;
-
-        Locale defaultLocale = Locale.getDefault();
-        Currency a = Currency.getInstance(defaultLocale);
-        KitePrintSDK.userCurrencyCode = a.getCurrencyCode();
-
-        syncTemplates(context);
-
-    }
 
     public static String getUserCurrencyCode() {
         return userCurrencyCode;
     }
-
     public static String userCurrencyCode;
+
+    private static Context applicationContext;
 
     public static void initialize(String apiKey, Environment env, Context context) {
         KitePrintSDK.apiKey = apiKey;
         KitePrintSDK.environment = env;
-        KitePrintSDK.appContext = context;
-
         Locale defaultLocale = Locale.getDefault();
         Currency a = Currency.getInstance(defaultLocale);
         KitePrintSDK.userCurrencyCode = a.getCurrencyCode();
-
-        syncTemplates(context);
+        Template.sync(context.getApplicationContext());
+        applicationContext = context.getApplicationContext();
     }
 
-
-    public static void syncTemplates(Context context){
-        Template.syncTemplates(context);
+    static Context getApplicationContext() {
+        return applicationContext;
     }
-
 
     public static String getAPIKey() {
         return apiKey;
-    }
-    public static Context getAppContext() {
-        return appContext;
     }
 
     public static Environment getEnvironment() {
         return environment;
     }
-
-
-    public static void updateOrderSummaryString(String summary){
-        SharedPreferences settings = appContext.getSharedPreferences("ly.kite.sharedpreferences", 0);
-        SharedPreferences.Editor editor = settings.edit();
-        Gson gson = new Gson();
-        editor.putString("order_summary",summary);
-        editor.commit();
-    }
-
-    public static String getOrderSummaryString(){
-
-        SharedPreferences settings = KitePrintSDK.getAppContext().getSharedPreferences("ly.kite.sharedpreferences", 0);
-        SharedPreferences.Editor editor = settings.edit();
-        Gson gson = new Gson();
-        String json = settings.getString("order_summary", "");
-        return json;
-
-    }
-
-
-
 
 }

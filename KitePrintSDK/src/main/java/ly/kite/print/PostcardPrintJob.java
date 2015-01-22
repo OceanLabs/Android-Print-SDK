@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import ly.kite.address.Address;
 
@@ -78,7 +79,7 @@ public class PostcardPrintJob extends PrintJob {
 
         jsonAssets.put("photo",assets.get(0).getId());
 
-        if (assets.size()>1){
+        if (assets.size() > 1){
             jsonAssets.put("overlay_image",assets.get(1).getId());
         }
 
@@ -121,8 +122,15 @@ public class PostcardPrintJob extends PrintJob {
     }
 
     @Override
-    public BigDecimal getCost() {
-        return new BigDecimal(Template.getCostForTemplate(templateId));
+    public BigDecimal getCost(String currencyCode) {
+        Template template = Template.getTemplate(templateId);
+        return template.getCost(currencyCode);
+    }
+
+    @Override
+    public Set<String> getCurrenciesSupported() {
+        Template template = Template.getTemplate(templateId);
+        return template.getCurrenciesSupported();
     }
 
     @Override
@@ -132,7 +140,7 @@ public class PostcardPrintJob extends PrintJob {
 
     @Override
     public int getQuantity() {
-        return assets.size();
+        return 1;
     }
 
     @Override
@@ -215,15 +223,11 @@ public class PostcardPrintJob extends PrintJob {
         for (int i = 0; i < numAssets; ++i) {
             assets.add((Asset) in.readObject());
         }
+
         message = (String)in.readObject();
         address = (Address) in.readObject();
         location1 = (String)in.readObject();
         location2 = (String)in.readObject();
-
     }
-
-
-
-
 
 }

@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 import ly.kite.address.Address;
 
@@ -18,7 +19,9 @@ public abstract class PrintJob implements Parcelable, Serializable {
 
     private static final long serialVersionUID = 0L;
 
-    public abstract BigDecimal getCost();
+    public abstract BigDecimal getCost(String currencyCode);
+    public abstract Set<String> getCurrenciesSupported();
+
     public abstract ProductType getProductType();
     public abstract int getQuantity();
     public abstract String getTemplateName();
