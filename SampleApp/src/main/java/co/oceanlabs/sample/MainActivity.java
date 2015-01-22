@@ -2,43 +2,61 @@ package co.oceanlabs.sample;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import co.oceanlabs.sample.R;
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Parcelable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
+import android.widget.Switch;
 import android.widget.Toast;
 import ly.kite.print.Asset;
 import ly.kite.print.KitePrintSDK;
 import ly.kite.print.PrintJob;
 import ly.kite.print.PrintOrder;
 import ly.kite.checkout.CheckoutActivity;
+import ly.kite.print.ProductType;
 
 public class MainActivity extends Activity {
 
-    private static final int SELECT_PICTURE = 1;
+    private static final String API_KEY_TEST = "ba171b0d91b1418fbd04f7b12af1e37e42d2cb1e";
+    private static final String API_KEY_LIVE = "7c575489215d24bfb3d3df3b6df053eac83542da";
+
+    private static final int REQUEST_CODE_SELECT_PICTURE = 1;
     private static final int REQUEST_CODE_CHECKOUT = 2;
 
-    private ImageView imageView;
+    private Switch environmentSwitch;
+    private Spinner productSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        KitePrintSDK.initialize("ba171b0d91b1418fbd04f7b12af1e37e42d2cb1e", KitePrintSDK.Environment.TEST, MainActivity.this);
-        imageView = (ImageView) findViewById(R.id.image_view);
+        environmentSwitch = (Switch) findViewById(R.id.environment);
+        productSpinner = (Spinner) findViewById(R.id.spinner_product);
+
+        ArrayAdapter adapter = new ArrayAdapter<ProductType>(this, android.R.layout.simple_list_item_1, ProductType.values());
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        productSpinner.setAdapter(adapter);
+        productSpinner.setSelection(Arrays.asList(ProductType.values()).indexOf(ProductType.MAGNETS));
     }
 
     public void onGalleryButtonClicked(View view) {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PICTURE);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_CODE_SELECT_PICTURE);
     }
 
     public void onCheckoutButtonClicked(View view) {
@@ -46,12 +64,28 @@ public class MainActivity extends Activity {
         assets.add(new Asset(R.drawable.instagram1));
 
         try {
-            URL remoteImageURL = new URL("http://psps.s3.amazonaws.com/sdk_static/4.jpg");
-            assets.add(new Asset(remoteImageURL));
+            assets.add(new Asset(new URL("http://psps.s3.amazonaws.com/sdk_static/1.jpg")));
+            assets.add(new Asset(new URL("http://psps.s3.amazonaws.com/sdk_static/2.jpg")));
+            assets.add(new Asset(new URL("http://psps.s3.amazonaws.com/sdk_static/3.jpg")));
+            assets.add(new Asset(new URL("http://psps.s3.amazonaws.com/sdk_static/4.jpg")));
         } catch (Exception ex) {}
 
+        checkoutWithAssets(assets);
+    }
+
+    private void checkoutWithAssets(List<Asset> assets) {
+        String apiKey = API_KEY_TEST;
+        KitePrintSDK.Environment env = KitePrintSDK.Environment.TEST;
+        if (environmentSwitch.isChecked()) {
+            apiKey = API_KEY_LIVE;
+            env = KitePrintSDK.Environment.LIVE;
+        }
+
+        KitePrintSDK.initialize(apiKey, env, getApplicationContext());
+
+        ProductType productType = (ProductType) productSpinner.getSelectedItem();
         PrintOrder printOrder = new PrintOrder();
-        printOrder.addPrintJob(PrintJob.createPrintJob(assets,"magnets"));
+        printOrder.addPrintJob(PrintJob.createPrintJob(assets, productType));
 
         Intent intent = new Intent(this, CheckoutActivity.class);
         intent.putExtra(CheckoutActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder);
@@ -65,14 +99,13 @@ public class MainActivity extends Activity {
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 Toast.makeText(this, "User cancelled checkout :(", Toast.LENGTH_LONG).show();
             }
-        } else {
-//            if (resultCode == RESULT_OK) {
-//                if (requestCode == SELECT_PICTURE) {
-//                    Uri selectedImageUri = data.getData();
-//                    imageView.setImageURI(selectedImageUri);
-//
-//                }
-//            }
+        } else if (requestCode == REQUEST_CODE_SELECT_PICTURE) {
+            if (resultCode == RESULT_OK) {
+                Uri selectedImageUri = data.getData();
+                ArrayList<Asset> assets = new ArrayList<Asset>();
+                assets.add(new Asset(selectedImageUri));
+                checkoutWithAssets(assets);
+            }
         }
     }
 

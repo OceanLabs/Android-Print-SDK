@@ -21,7 +21,7 @@ import ly.kite.payment.PayPalCard;
 /**
  * Created by alibros on 06/01/15.
  */
-public class Template  implements Parcelable, Serializable {
+public class Template implements Parcelable, Serializable {
 
     private String template_id;
     private int images_per_page;
@@ -36,7 +36,6 @@ public class Template  implements Parcelable, Serializable {
         this.template_id = template_id;
         this.custom_pack_quantity = custom_pack_quantity;
     }
-
 
     public String getTemplate_id() {
         return template_id;
@@ -80,7 +79,6 @@ public class Template  implements Parcelable, Serializable {
     public void writeToParcel(Parcel parcel, int i) {
 
     }
-
 
     static Template parseTemplate(JSONObject json) throws JSONException {
         String jname = json.getString("name");
@@ -232,8 +230,8 @@ public class Template  implements Parcelable, Serializable {
         SharedPreferences.Editor editor = settings.edit();
         Gson gson = new Gson();
         String json = settings.getString("templates", "");
-        Type listOfTemplates = new TypeToken<ArrayList<Template>>(){}.getType();
-        return gson.fromJson(json,listOfTemplates);
+        java.lang.reflect.Type listOfTemplates = new TypeToken<ArrayList<Template>>(){}.getType();
+        return gson.fromJson(json, listOfTemplates);
 
     }
 

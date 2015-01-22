@@ -26,14 +26,6 @@ class PrintsPrintJob extends PrintJob {
     private ProductType productType;
     private List<Asset> assets;
 
-    //Postcard Specific
-    private boolean isPostCard;
-    private Address postCardAddress;
-    private String location1, location2;
-    private String message;
-
-
-
     private String templateId;
 
 
@@ -41,19 +33,6 @@ class PrintsPrintJob extends PrintJob {
         this.templateId = templateId;
         this.productType = ProductType.productTypeFromTemplate(templateId);
         this.assets = assets;
-        this.isPostCard = false;
-    }
-
-    public PrintsPrintJob(String templateId, List<Asset> assets, String message , Address address, String location1, String location2){
-        this.templateId = templateId;
-        this.productType = ProductType.productTypeFromTemplate(templateId);
-        this.assets = assets;
-        this.isPostCard = true;
-        this.postCardAddress = address;
-        this.location1 = location1;
-        this.location2 = location2;
-        this.message = message;
-
     }
 
     @Override
@@ -82,37 +61,26 @@ class PrintsPrintJob extends PrintJob {
 
     @Override
     public String getTemplateName() {
-        return productType.defaultTemplate;
+        return productType.getDefaultTemplate();
     }
 
     @Override
     JSONObject getJSONRepresentation() {
-        if (isPostCard == true){
-            PostcardPrintJob job = new PostcardPrintJob(templateId,assets.get(0),null,message,postCardAddress,location1,location2);
-            try {
-                return job.getJson();
-            } catch (JSONException e) {
-                e.printStackTrace();
-                return null;
-            }
-        } else {
-
-
-            JSONArray assets = new JSONArray();
-            for (Asset a : this.assets) {
-                assets.put("" + a.getId());
-            }
-
-            JSONObject json = new JSONObject();
-            try {
-                json.put("template_id", productType.defaultTemplate);
-                json.put("assets", assets);
-                json.put("frame_contents", new JSONObject());
-            } catch (JSONException ex) {
-                throw new RuntimeException(ex); // this should NEVER happen :)
-            }
-            return json;
+        JSONArray assets = new JSONArray();
+        for (Asset a : this.assets) {
+            assets.put("" + a.getId());
         }
+
+        JSONObject json = new JSONObject();
+        try {
+            json.put("template_id", productType.getDefaultTemplate());
+            json.put("assets", assets);
+            json.put("frame_contents", new JSONObject());
+        } catch (JSONException ex) {
+            throw new RuntimeException(ex); // this should NEVER happen :)
+        }
+
+        return json;
     }
 
     @Override
@@ -122,7 +90,7 @@ class PrintsPrintJob extends PrintJob {
 
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
-        parcel.writeString(productType.defaultTemplate);
+        parcel.writeString(productType.getDefaultTemplate());
         parcel.writeTypedList(assets);
 
     }
@@ -146,7 +114,7 @@ class PrintsPrintJob extends PrintJob {
     };
 
     private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-        out.writeObject(productType.defaultTemplate);
+        out.writeObject(productType.getDefaultTemplate());
         out.writeInt(assets.size());
         for (Asset a : assets) {
             out.writeObject(a);

@@ -71,10 +71,7 @@ public class PostcardPrintJob extends PrintJob {
 
     }
 
-
-    public JSONObject getJson() throws JSONException {
-
-
+    private JSONObject getJson() throws JSONException {
         JSONObject json = new JSONObject();
         JSONObject frameContent = new JSONObject();
         JSONObject jsonAssets = new JSONObject();
@@ -123,18 +120,14 @@ public class PostcardPrintJob extends PrintJob {
 
     }
 
-
-
     @Override
     public BigDecimal getCost() {
-
         return new BigDecimal(Template.getCostForTemplate(templateId));
-
     }
 
     @Override
     public ProductType getProductType() {
-        return ProductType.productTypeFromTemplate(templateId);
+        return ProductType.POSTCARD;
     }
 
     @Override
@@ -154,9 +147,7 @@ public class PostcardPrintJob extends PrintJob {
 
     @Override
     JSONObject getJSONRepresentation() {
-
-
-            PostcardPrintJob job = new PostcardPrintJob(templateId,assets,message,address,location1,location2);
+            PostcardPrintJob job = new PostcardPrintJob(templateId, assets,message,address,location1,location2);
 
             try {
                 return job.getJson();

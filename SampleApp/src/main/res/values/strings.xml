@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">Kite SDK</string>
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
@@ -10,5 +9,4 @@
     <string name="title_activity_order_receipt">Order Receipt</string>
     <string name="title_activity_payment">Payment</string>
     <string name="hello_world">Hello world!</string>
-
 </resources>
