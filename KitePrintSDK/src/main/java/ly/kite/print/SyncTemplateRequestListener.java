@@ -8,6 +8,6 @@ import java.util.ArrayList;
 
 
 public interface SyncTemplateRequestListener {
-    void onSyncComplete(SyncTemplateRequest request, ArrayList<Template> templates);
-    void onError(SyncTemplateRequest req, Exception error);
+    void onSyncComplete(ArrayList<Template> templates);
+    void onError(Exception error);
 }

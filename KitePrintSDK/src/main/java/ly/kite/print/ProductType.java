@@ -68,10 +68,48 @@ public enum ProductType {
             return MAGNETS;
         } else if (template.equals(SQUARE_STICKERS.defaultTemplate)) {
             return SQUARE_STICKERS;
-        } else if (template.equals(SQUARE_STICKERS.defaultTemplate)) {
-            return SQUARE_STICKERS;
+        } else if (template.equals(CIRCLE_STICKERS.defaultTemplate)) {
+            return CIRCLE_STICKERS;
+        } else if (template.equals(GREETINGS_CARDS.defaultTemplate)) {
+            return GREETINGS_CARDS;
+        } else if (template.equals(FRAMES_1X1_20CM.defaultTemplate)) {
+            return FRAMES_1X1_20CM;
+        } else if (template.equals(FRAMES_1X1_30CM.defaultTemplate)) {
+            return FRAMES_1X1_30CM;
+        } else if (template.equals(FRAMES_1X1_50CM.defaultTemplate)) {
+            return FRAMES_1X1_50CM;
+        } else if (template.equals(FRAMES_2x2_20CM.defaultTemplate)) {
+            return FRAMES_2x2_20CM;
+        } else if (template.equals(FRAMES_2x2_30CM.defaultTemplate)) {
+            return FRAMES_2x2_30CM;
+        } else if (template.equals(FRAMES_2x2_50CM.defaultTemplate)) {
+            return FRAMES_2x2_50CM;
+        } else if (template.equals(FRAMES_3x3_30CM.defaultTemplate)) {
+            return FRAMES_3x3_30CM;
+        } else if (template.equals(FRAMES_3x3_50CM.defaultTemplate)) {
+            return FRAMES_3x3_50CM;
+        } else if (template.equals(FRAMES_4x4_50CM.defaultTemplate)) {
+            return FRAMES_4x4_50CM;
         } else if (template.equals(FRAMES_2x2.defaultTemplate)) {
             return FRAMES_2x2;
+        } else if (template.equals(PHOTOS_4x6.defaultTemplate)) {
+            return PHOTOS_4x6;
+        } else if (template.equals(POSTER_A1.defaultTemplate)) {
+            return POSTER_A1;
+        } else if (template.equals(POSTER_A1_35CM.defaultTemplate)) {
+            return POSTER_A1_35CM;
+        } else if (template.equals(POSTER_A1_54CM.defaultTemplate)) {
+            return POSTER_A1_54CM;
+        } else if (template.equals(POSTER_A1_70CM.defaultTemplate)) {
+            return POSTER_A1_70CM;
+        } else if (template.equals(POSTER_A2.defaultTemplate)) {
+            return POSTER_A2;
+        } else if (template.equals(POSTER_A2_35.defaultTemplate)) {
+            return POSTER_A2_35;
+        } else if (template.equals(POSTER_A2_54.defaultTemplate)) {
+            return POSTER_A2_54;
+        } else if (template.equals(POSTER_A2_70.defaultTemplate)) {
+            return POSTER_A2_70;
         }
 
         throw new IllegalArgumentException("Unrecognized template: " + template);

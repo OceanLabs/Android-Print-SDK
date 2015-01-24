@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -23,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import ly.kite.address.Address;
 
 /**
  * Created by alibros on 06/01/15.
@@ -36,10 +39,10 @@ public class Template implements Parcelable, Serializable {
     private static List<Template> syncedTemplates;
     private static Date lastSyncDate;
 
-    private final String id;
-    private final int quantityPerSheet;
-    private final String name;
-    private final Map<String, BigDecimal> costsByCurrencyCode;
+    private String id;
+    private int quantityPerSheet;
+    private String name;
+    private Map<String, BigDecimal> costsByCurrencyCode;
     private static SyncTemplateRequest inProgressSyncReq;
 
 
@@ -114,7 +117,7 @@ public class Template implements Parcelable, Serializable {
         inProgressSyncReq = new SyncTemplateRequest();
         inProgressSyncReq.sync(new SyncTemplateRequestListener() {
             @Override
-            public void onSyncComplete(SyncTemplateRequest request, ArrayList<Template> templates) {
+            public void onSyncComplete(ArrayList<Template> templates) {
                 inProgressSyncReq = null;
                 persistTemplatesToDiskAsLatest(appContext, templates);
                 synchronized (SYNC_LISTENERS) {
@@ -126,7 +129,7 @@ public class Template implements Parcelable, Serializable {
             }
 
             @Override
-            public void onError(SyncTemplateRequest req, Exception error) {
+            public void onError(Exception error) {
                 inProgressSyncReq = null;
                 synchronized (SYNC_LISTENERS) {
                     for (TemplateSyncListener listener : SYNC_LISTENERS) {
@@ -143,7 +146,6 @@ public class Template implements Parcelable, Serializable {
     }
 
     private static void persistTemplatesToDiskAsLatest(Context context, List<Template> templates) {
-        Log.i("dbotha", "persistTemplatesToDiskAsLatest with " + templates.size() + " templates");
         syncedTemplates = templates;
         lastSyncDate = new Date();
 
@@ -175,7 +177,7 @@ public class Template implements Parcelable, Serializable {
             }
         }
 
-        throw new UnsupportedOperationException("Couldn't find template with id: " + templateId);
+        throw new KitePrintSDKException("Couldn't find Kite product template with id: '" + templateId + "'", KitePrintSDKException.ErrorCode.TEMPLATE_NOT_FOUND);
     }
 
     public static List<Template> getTemplates() {
@@ -194,8 +196,6 @@ public class Template implements Parcelable, Serializable {
         try {
             is = new ObjectInputStream(new BufferedInputStream(KitePrintSDK.getApplicationContext().openFileInput(PERSISTED_TEMPLATES_FILENAME)));
             syncedTemplates = (List<Template>) is.readObject();
-
-            Log.i("dbotha", "read Templates from disk with " + syncedTemplates.size() + " templates, sync date: " + lastSyncDate);
             return syncedTemplates;
         } catch (FileNotFoundException ex) {
             return new ArrayList<Template>();
@@ -214,8 +214,50 @@ public class Template implements Parcelable, Serializable {
     }
 
     @Override
-    public void writeToParcel(Parcel parcel, int i) {
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeString(id);
+        parcel.writeInt(quantityPerSheet);
+        parcel.writeString(name);
+        parcel.writeInt(costsByCurrencyCode.size());
+        for (String currencyCode : costsByCurrencyCode.keySet()) {
+            BigDecimal cost = costsByCurrencyCode.get(currencyCode);
+            parcel.writeString(currencyCode);
+            parcel.writeString(cost.toString());
+        }
+    }
 
+    public static final Parcelable.Creator<Template> CREATOR = new Parcelable.Creator<Template>() {
+        public Template createFromParcel(Parcel in) {
+            String id = in.readString();
+            int quantityPerSheet = in.readInt();
+            String name = in.readString();
+            int numCurrencies = in.readInt();
+            Map<String, BigDecimal> costsByCurrencyCode = new HashMap<String, BigDecimal>();
+            for (int i = 0; i < numCurrencies; ++i) {
+                String currencyCode = in.readString();
+                BigDecimal cost = new BigDecimal(in.readString());
+            }
+
+            return new Template(id, costsByCurrencyCode, name, quantityPerSheet);
+        }
+
+        public Template[] newArray(int size) {
+            return new Template[size];
+        }
+    };
+
+    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+        out.writeObject(id);
+        out.writeInt(quantityPerSheet);
+        out.writeObject(name);
+        out.writeObject(costsByCurrencyCode);
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+        id = (String) in.readObject();
+        quantityPerSheet = in.readInt();
+        name = (String) in.readObject();
+        costsByCurrencyCode = (Map<String, BigDecimal>) in.readObject();
     }
 
 }

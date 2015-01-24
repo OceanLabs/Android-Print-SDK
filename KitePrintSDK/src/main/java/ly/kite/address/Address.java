@@ -74,9 +74,9 @@ public class Address implements Parcelable, Serializable {
         return req;
     }
 
-    public static Address getPSTeamAddress() {
+    public static Address getKiteTeamAddress() {
         Address addr = new Address();
-        addr.recipientName = "Ps Team";
+        addr.recipientName = "Kite Team";
         addr.line1 = "Eastcastle House";
         addr.line2 = "27-28 Eastcastle St";
         addr.city  = "London";

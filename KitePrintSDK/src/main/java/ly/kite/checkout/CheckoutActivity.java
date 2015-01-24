@@ -11,7 +11,6 @@ import android.content.SharedPreferences;
 import android.os.Parcelable;
 import android.os.Bundle;
 //import android.telecom.Log;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,13 +24,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import ly.kite.print.KitePrintSDK;
+import ly.kite.print.KitePrintSDKException;
+import ly.kite.print.PrintJob;
 import ly.kite.print.PrintOrder;
 import ly.kite.R;
 import ly.kite.address.Address;
 import ly.kite.address.AddressBookActivity;
 import ly.kite.print.Template;
-
-import android.view.Window;
 
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
@@ -78,10 +77,10 @@ public class CheckoutActivity extends Activity {
         this.printOrder = (PrintOrder) getIntent().getParcelableExtra(EXTRA_PRINT_ORDER);
 
         if (apiKey == null) {
-        	apiKey = KitePrintSDK.getAPIKey();
-        	if (apiKey == null) {
-        		throw new IllegalArgumentException("You must specify an API key string extra in the intent used to start the CheckoutActivity or with KitePrintSDK.initialize");
-        	}
+            apiKey = KitePrintSDK.getAPIKey();
+            if (apiKey == null) {
+                throw new IllegalArgumentException("You must specify an API key string extra in the intent used to start the CheckoutActivity or with KitePrintSDK.initialize");
+            }
         }
 
         if (printOrder == null) {
@@ -94,17 +93,17 @@ public class CheckoutActivity extends Activity {
 
         KitePrintSDK.Environment env = null;
         if (envString == null) {
-        	env = KitePrintSDK.getEnvironment();
-        	if (env == null) {
-        		throw new IllegalArgumentException("You must specify an environment string extra in the intent used to start the CheckoutActivity or with KitePrintSDK.initialize");
-        	}
+            env = KitePrintSDK.getEnvironment();
+            if (env == null) {
+                throw new IllegalArgumentException("You must specify an environment string extra in the intent used to start the CheckoutActivity or with KitePrintSDK.initialize");
+            }
         } else {
             if (envString.equals(ENVIRONMENT_STAGING)) {
                 env = KitePrintSDK.Environment.STAGING;
             } else if (envString.equals(ENVIRONMENT_TEST)) {
                 env = KitePrintSDK.Environment.TEST;
             } else if (envString.equals(ENVIRONMENT_LIVE)) {
-            	env = KitePrintSDK.Environment.LIVE;
+                env = KitePrintSDK.Environment.LIVE;
             } else {
                 throw new IllegalArgumentException("Bad print environment extra: " + envString);
             }
@@ -207,7 +206,7 @@ public class CheckoutActivity extends Activity {
 
         Date lastSyncedDate = Template.getLastSyncDate();
         Date dateHourAgo = new Date(System.currentTimeMillis() - (1 * 60 * 60 * 1000));
-        if (lastSyncedDate == null || lastSyncedDate.compareTo(dateHourAgo) < 0) {
+        if (Template.isSyncInProgress() || lastSyncedDate == null || lastSyncedDate.compareTo(dateHourAgo) < 0) {
             final ProgressDialog progress = ProgressDialog.show(this, null, "Loading");
             Template.sync(getApplicationContext(), new Template.TemplateSyncListener() {
                 @Override
@@ -219,22 +218,7 @@ public class CheckoutActivity extends Activity {
                 @Override
                 public void onError(Exception error) {
                     progress.dismiss();
-                    AlertDialog.Builder builder = new AlertDialog.Builder(CheckoutActivity.this);
-                    builder.setTitle("Oops");
-                    if (error instanceof UnknownHostException || error instanceof SocketTimeoutException) {
-                        builder.setTitle("Please check your internet connectivity and then try again");
-                    } else {
-                        builder.setTitle(error.getLocalizedMessage());
-                    }
-
-                    builder.setPositiveButton("Retry", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            onButtonNextClicked(null);
-                        }
-                    });
-                    builder.setNegativeButton("Cancel", null);
-                    builder.show();
+                    showRetryTemplateSyncDialog(error);
                 }
             });
         } else {
@@ -243,7 +227,35 @@ public class CheckoutActivity extends Activity {
         }
     }
 
+    private void showRetryTemplateSyncDialog(Exception error) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(CheckoutActivity.this);
+        builder.setTitle("Oops");
+        builder.setMessage(error.getLocalizedMessage());
+        if (error instanceof UnknownHostException || error instanceof SocketTimeoutException) {
+            builder.setMessage("Please check your internet connectivity and then try again");
+        }
+
+        builder.setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                onButtonNextClicked(null);
+            }
+        });
+        builder.setNegativeButton("Cancel", null);
+        builder.show();
+    }
+
     private void startPaymentActivity() {
+        // Check we have valid templates for every printjob
+        for (PrintJob job : printOrder.getJobs()) {
+            try {
+                Template.getTemplate(job.getTemplateId());
+            } catch (Exception ex) {
+                showRetryTemplateSyncDialog(ex);
+                return;
+            }
+        }
+
         Intent i = new Intent(this, PaymentActivity.class);
         i.putExtra(PaymentActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder);
         i.putExtra(PaymentActivity.EXTRA_PRINT_API_KEY, apiKey);

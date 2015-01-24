@@ -21,6 +21,8 @@ import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.Switch;
 import android.widget.Toast;
+
+import ly.kite.address.Address;
 import ly.kite.print.Asset;
 import ly.kite.print.KitePrintSDK;
 import ly.kite.print.PrintJob;
@@ -31,7 +33,7 @@ import ly.kite.print.Template;
 
 public class MainActivity extends Activity {
 
-    private static final String API_KEY_TEST = "ba171b0d91b1418fbd04f7b12af1e37e42d2cb1e";
+    private static final String API_KEY_TEST = "c44f59bef688824056c31499d5764b579058175b";
     private static final String API_KEY_LIVE = "7c575489215d24bfb3d3df3b6df053eac83542da";
 
     private static final int REQUEST_CODE_SELECT_PICTURE = 1;
@@ -69,6 +71,7 @@ public class MainActivity extends Activity {
             assets.add(new Asset(new URL("http://psps.s3.amazonaws.com/sdk_static/2.jpg")));
             assets.add(new Asset(new URL("http://psps.s3.amazonaws.com/sdk_static/3.jpg")));
             assets.add(new Asset(new URL("http://psps.s3.amazonaws.com/sdk_static/4.jpg")));
+
         } catch (Exception ex) {}
 
         checkoutWithAssets(assets);
@@ -84,11 +87,14 @@ public class MainActivity extends Activity {
 
         KitePrintSDK.initialize(apiKey, env, getApplicationContext());
 
-        Template.getTemplates();
-
         ProductType productType = (ProductType) productSpinner.getSelectedItem();
         PrintOrder printOrder = new PrintOrder();
-        printOrder.addPrintJob(PrintJob.createPrintJob(assets, productType));
+        if (productType == ProductType.POSTCARD) {
+            printOrder.addPrintJob(PrintJob.createPostcardPrintJob("postcard",
+                    assets.get(0), "Hello World!", Address.getKiteTeamAddress()));
+        } else {
+            printOrder.addPrintJob(PrintJob.createPrintJob(assets, productType));
+        }
 
         Intent intent = new Intent(this, CheckoutActivity.class);
         intent.putExtra(CheckoutActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder);

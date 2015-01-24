@@ -23,7 +23,7 @@ public class CheckPromoRequest {
         StringBuilder templateCostBreakdown = new StringBuilder();
         for (PrintJob j : order.getJobs()) {
             if (templateCostBreakdown.length() > 0) templateCostBreakdown.append(",");
-            templateCostBreakdown.append(String.format("%s:%s", j.getTemplateName(), j.getCost(order.getCurrencyCode()).toString()));
+            templateCostBreakdown.append(String.format("%s:%s", j.getTemplateId(), j.getCost(order.getCurrencyCode()).toString()));
         }
 
         String url = String.format("%s/v1/promo_code/check?code=%s&templates=%s&currency=%s", KitePrintSDK.getEnvironment().getPrintAPIEndpoint(), promoCode, templateCostBreakdown.toString(), order.getCurrencyCode());

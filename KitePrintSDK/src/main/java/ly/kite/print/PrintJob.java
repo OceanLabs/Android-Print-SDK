@@ -24,7 +24,7 @@ public abstract class PrintJob implements Parcelable, Serializable {
 
     public abstract ProductType getProductType();
     public abstract int getQuantity();
-    public abstract String getTemplateName();
+    public abstract String getTemplateId();
     abstract List<Asset> getAssetsForUploading();
     abstract JSONObject getJSONRepresentation();
 
@@ -36,12 +36,8 @@ public abstract class PrintJob implements Parcelable, Serializable {
         return new PrintsPrintJob(templateId, assets);
     }
 
-    public static PrintJob createPostcardPrintJob(List<Asset> assets, String templateId, String message, String location1, String location2, Address address){
-        return new PostcardPrintJob(templateId,assets,message,address,location1,location2);
-    }
-
-    public static PrintJob createPostcardPrintJobWithCustomBodyStyle(List<Asset> assets, String templateId, String message, String location1, String location2, Address address, String style) {
-        return new PostcardPrintJob(templateId,assets,message,address,location1,location2, style);
+    public static PrintJob createPostcardPrintJob(String templateId, Asset frontImageAsset, String message, Address address) {
+        return new PostcardPrintJob(templateId, frontImageAsset, message, address);
     }
 
 }

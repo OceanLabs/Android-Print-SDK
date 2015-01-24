@@ -70,7 +70,7 @@ class PrintsPrintJob extends PrintJob {
     }
 
     @Override
-    public String getTemplateName() {
+    public String getTemplateId() {
         return productType.getDefaultTemplate();
     }
 
