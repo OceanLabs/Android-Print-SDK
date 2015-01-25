@@ -33,7 +33,6 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-v13:+'
     compile files('libs/PayPalAndroidSDK.jar')
     compile files('libs/CardIONativeLibs.jar')
     // To generate this jar containing shared libraries see: http://ivansotof.com/2013/12/including-native-so-libraries-in-android/
