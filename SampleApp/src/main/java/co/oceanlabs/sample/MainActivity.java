@@ -1,12 +1,16 @@
 package co.oceanlabs.sample;
 
+import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import co.oceanlabs.sample.R;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Parcelable;
@@ -33,8 +37,12 @@ import ly.kite.print.Template;
 
 public class MainActivity extends Activity {
 
-    private static final String API_KEY_TEST = "c44f59bef688824056c31499d5764b579058175b";
-    private static final String API_KEY_LIVE = "7c575489215d24bfb3d3df3b6df053eac83542da";
+    /**********************************************************************
+     * Insert your Kite API keys here. These are found under your profile
+     * by logging in to the developer portal at https://www.kite.ly
+     **********************************************************************/
+    private static final String API_KEY_TEST = "REPLACE_ME";
+    private static final String API_KEY_LIVE = "REPLACE_ME";
 
     private static final int REQUEST_CODE_SELECT_PICTURE = 1;
     private static final int REQUEST_CODE_CHECKOUT = 2;
@@ -85,12 +93,21 @@ public class MainActivity extends Activity {
             env = KitePrintSDK.Environment.LIVE;
         }
 
+        if (apiKey.equals("REPLACE_ME")) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Set API Keys");
+            builder.setMessage("Please set your Kite API keys at the top of the SampleApp's MainActivity.java. You can find these by logging into https://www.kite.ly.");
+            builder.setPositiveButton("OK", null);
+            builder.show();
+            return;
+        }
+
         KitePrintSDK.initialize(apiKey, env, getApplicationContext());
 
         ProductType productType = (ProductType) productSpinner.getSelectedItem();
         PrintOrder printOrder = new PrintOrder();
         if (productType == ProductType.POSTCARD) {
-            printOrder.addPrintJob(PrintJob.createPostcardPrintJob("postcard",
+            printOrder.addPrintJob(PrintJob.createPostcardPrintJob(ProductType.POSTCARD.getDefaultTemplate(),
                     assets.get(0), "Hello World!", Address.getKiteTeamAddress()));
         } else {
             printOrder.addPrintJob(PrintJob.createPrintJob(assets, productType));
@@ -116,23 +133,6 @@ public class MainActivity extends Activity {
                 checkoutWithAssets(assets);
             }
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-
-        return super.onOptionsItemSelected(item);
     }
 
 }
