@@ -1,0 +1,12 @@
+Create and complete ~/.gradle/gradle.properties with the follow:
+
+signing.keyId=???
+signing.password=???
+signing.secretKeyRingFile=/Users/???/.gnupg/secring.gpg
+ 
+NEXUS_USERNAME=???
+NEXUS_PASSWORD=???
+
+1. Update top level gradle.properties as appropriate. Include SNAPSHOT in VERSION_NAME to deploy debug snapshot for testing first
+2. run "./gradlew uploadArchives" to push to Maven Central
+3. Check pushed snapshot: https://oss.sonatype.org/content/repositories/snapshots/ly/kite/kite-print-sdk/
