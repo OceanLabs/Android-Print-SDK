@@ -9,7 +9,7 @@ NEXUS_PASSWORD=???
 
 1. Update top level gradle.properties as appropriate. Include SNAPSHOT in VERSION_NAME to deploy debug snapshot for testing first
 2. run "./gradlew uploadArchives" to push to Maven Central
-3. Check pushed snapshot: https://oss.sonatype.org/content/repositories/snapshots/ly/kite/kite-print-sdk/
+3. Check pushed snapshot: https://oss.sonatype.org/content/repositories/snapshots/ly/kite/kite-print-sdk/, release: http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22kite-print-sdk%22
 
 Test snapshot dependency by augmenting build.gradle with the following:
 
