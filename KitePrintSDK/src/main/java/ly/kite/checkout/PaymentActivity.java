@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -65,6 +66,7 @@ public class PaymentActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_ACTION_BAR);
         setContentView(R.layout.activity_payment);
 
         String apiKey = getIntent().getStringExtra(EXTRA_PRINT_API_KEY);
@@ -111,12 +113,13 @@ public class PaymentActivity extends Activity {
         intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_CLIENT_ID, printEnvironment.getPayPalClientId());
         startService(intent);
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-
-        if (this.paypalEnvironment == PayPalCard.Environment.SANDBOX) {
-            getActionBar().setTitle("Payment (Sandbox)");
-        } else {
-            getActionBar().setTitle("Payment");
+        if (getActionBar() != null) {
+            if (this.paypalEnvironment == PayPalCard.Environment.SANDBOX) {
+                getActionBar().setTitle("Payment (Sandbox)");
+            } else {
+                getActionBar().setTitle("Payment");
+            }
+            getActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
 

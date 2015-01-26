@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -29,6 +30,7 @@ public class OrderReceiptActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_ACTION_BAR);
         setContentView(R.layout.activity_order_receipt);
 
         this.printOrder = (PrintOrder) getIntent().getParcelableExtra(EXTRA_PRINT_ORDER);
@@ -43,7 +45,9 @@ public class OrderReceiptActivity extends Activity {
                     .commit();
         }
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getActionBar() != null) {
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         // Show an error dialog if we're arriving with a recent Payment success but we failed to successfully print the order.
         if (!printOrder.isPrinted() && getParent() instanceof PaymentActivity && printOrder.getLastPrintSubmissionError() != null) {
