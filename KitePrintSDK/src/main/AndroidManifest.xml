@@ -28,13 +28,9 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <android:uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="18" />
-    <android:uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <android:uses-permission
-        android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="18" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="18" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="18" />
 
     <application>
         <activity
@@ -99,10 +95,6 @@
         <activity
             android:name="io.card.payment.DataEntryActivity"
             android:theme="@style/AppTheme" />
-        <activity
-            android:name=".checkout.TemplateSyncActivity"
-            android:label="@string/title_activity_template_sync" >
-        </activity>
     </application>
 
 </manifest>
