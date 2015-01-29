@@ -13,12 +13,12 @@ repositories {
 }
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion '19.1.0'
+    compileSdkVersion 21
+    buildToolsVersion "21.1.2"
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 19
+        targetSdkVersion 21
         versionName project.VERSION_NAME
         versionCode Integer.parseInt(project.VERSION_CODE)
     }
@@ -35,6 +35,7 @@ android {
 dependencies {
     compile files('libs/PayPalAndroidSDK.jar')
     compile files('libs/CardIONativeLibs.jar')
+    compile 'com.android.support:appcompat-v7:21.0.3'
     // To generate this jar containing shared libraries see: http://ivansotof.com/2013/12/including-native-so-libraries-in-android/
 }
 
