@@ -2,7 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ly.kite"
     android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionName="1.0"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -37,38 +39,47 @@
             android:name=".checkout.PaymentActivity"
             android:label="@string/title_activity_payment"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" >
+            tools:replace="android:theme"
+            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"
+            >
         </activity>
         <activity
             android:name=".checkout.CheckoutActivity"
             android:label="@string/title_activity_checkout"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" >
+            tools:replace="android:theme"
+            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"
+            >
         </activity>
         <activity
             android:name=".checkout.OrderReceiptActivity"
             android:label="@string/title_activity_order_receipt"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" >
+            tools:replace="android:theme"
+            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"
+            >
         </activity>
         <activity
             android:name=".address.AddressBookActivity"
             android:label="@string/title_activity_address_book"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" >
+            tools:replace="android:theme"
+            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"  >
         </activity>
         <activity
             android:name=".address.AddressEditActivity"
             android:label="@string/title_activity_address_edit"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"
+            tools:replace="android:theme"
+            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"
             android:windowSoftInputMode="adjustResize" >
         </activity>
         <activity
             android:name=".address.AddressSearchActivity"
             android:label="@string/title_activity_address_search"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" >
+            tools:replace="android:theme"
+            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"  >
         </activity>
 
         <!-- PayPal activites & services: -->

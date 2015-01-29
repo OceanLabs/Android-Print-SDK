@@ -40,34 +40,40 @@
         <activity
 	        android:name="ly.kite.checkout.PaymentActivity"
 	        android:label="@string/title_activity_payment"
-	        android:screenOrientation="portrait" >
+	        android:screenOrientation="portrait"
+            >
 	    </activity>
 	    <activity
 	        android:name="ly.kite.checkout.CheckoutActivity"
 	        android:label="@string/title_activity_checkout"
-	        android:screenOrientation="portrait" >
+	        android:screenOrientation="portrait"
+            >
 	    </activity>
 	    <activity
 	        android:name="ly.kite.checkout.OrderReceiptActivity"
 	        android:label="@string/title_activity_order_receipt"
-	        android:screenOrientation="portrait" >
+	        android:screenOrientation="portrait"
+            >
 	    </activity>
 	    <activity
 	        android:name="ly.kite.address.AddressBookActivity"
 	        android:label="@string/title_activity_address_book"
-	        android:screenOrientation="portrait" >
+	        android:screenOrientation="portrait"
+            >
 	    </activity>
 	
 	    <activity
 	        android:name="ly.kite.address.AddressEditActivity"
 	        android:label="@string/title_activity_address_edit"
 	        android:screenOrientation="portrait"
-	        android:windowSoftInputMode="adjustResize" >
+	        android:windowSoftInputMode="adjustResize"
+            >
 	    </activity>
 	    <activity
 	        android:name="ly.kite.address.AddressSearchActivity"
 	        android:label="@string/title_activity_address_search"
-	        android:screenOrientation="portrait" >
+	        android:screenOrientation="portrait"
+            >
 	    </activity>
 	
 	    <!-- PayPal activites & services: -->
