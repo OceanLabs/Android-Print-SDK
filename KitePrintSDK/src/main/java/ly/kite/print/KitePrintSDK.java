@@ -2,8 +2,6 @@ package ly.kite.print;
 
 import android.content.Context;
 
-import com.paypal.android.sdk.payments.PaymentActivity;
-
 import java.util.Currency;
 import java.util.Locale;
 
@@ -20,33 +18,18 @@ public class KitePrintSDK {
     private static final String PAYPAL_RECIPIENT_LIVE = "deon@oceanlabs.co";
 
     public static enum Environment {
-        LIVE("https://api.kite.ly", PaymentActivity.ENVIRONMENT_LIVE, PAYPAL_CLIENT_ID_LIVE, PAYPAL_RECIPIENT_LIVE),
-        TEST("https://api.kite.ly", PaymentActivity.ENVIRONMENT_SANDBOX, PAYPAL_CLIENT_ID_SANDBOX, PAYPAL_RECIPIENT_SANDBOX),
-        STAGING("http://staging.api.kite.ly", PaymentActivity.ENVIRONMENT_SANDBOX, PAYPAL_CLIENT_ID_SANDBOX, PAYPAL_RECIPIENT_SANDBOX); /* private environment intended only for Ocean Labs use, hands off :) */
+        LIVE("https://api.kite.ly"),
+        TEST("https://api.kite.ly"),
+        STAGING("http://staging.api.kite.ly"); /* private environment intended only for Ocean Labs use, hands off :) */
 
         private final String apiEndpoint;
-        private final String payPalEnvironment;
-        private final String payPalClientId;
-        private final String payPalRecipient;
 
-        private Environment(String apiEndpoint, String payPalEnvironment, String payPalClientId, String payPalRecipient) {
+        private Environment(String apiEndpoint) {
             this.apiEndpoint = apiEndpoint;
-            this.payPalEnvironment = payPalEnvironment;
-            this.payPalClientId = payPalClientId;
-            this.payPalRecipient = payPalRecipient;
         }
 
         public String getPrintAPIEndpoint() {
             return apiEndpoint;
-        }
-        public String getPayPalClientId() {
-            return payPalClientId;
-        }
-        public String getPayPalEnvironment() {
-            return payPalEnvironment;
-        }
-        public String getPayPalReceiverEmail() {
-            return payPalRecipient;
         }
     }
 

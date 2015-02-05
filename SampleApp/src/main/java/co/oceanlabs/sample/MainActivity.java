@@ -10,6 +10,7 @@ import java.util.List;
 import co.oceanlabs.sample.R;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -27,11 +28,13 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import ly.kite.address.Address;
+import ly.kite.payment.PayPalCard;
+import ly.kite.payment.PayPalCardChargeListener;
 import ly.kite.print.Asset;
 import ly.kite.print.KitePrintSDK;
 import ly.kite.print.PrintJob;
 import ly.kite.print.PrintOrder;
-import ly.kite.checkout.CheckoutActivity;
+import ly.kite.print.PrintOrderSubmissionListener;
 import ly.kite.print.ProductType;
 import ly.kite.print.Template;
 
@@ -41,7 +44,7 @@ public class MainActivity extends Activity {
      * Insert your Kite API keys here. These are found under your profile
      * by logging in to the developer portal at https://www.kite.ly
      **********************************************************************/
-    private static final String API_KEY_TEST = "asdf";
+    private static final String API_KEY_TEST = "ba171b0d91b1418fbd04f7b12af1e37e42d2cb1e";
     private static final String API_KEY_LIVE = "REPLACE_ME";
 
     private static final int REQUEST_CODE_SELECT_PICTURE = 1;
@@ -49,6 +52,7 @@ public class MainActivity extends Activity {
 
     private Switch environmentSwitch;
     private Spinner productSpinner;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,18 +98,14 @@ public class MainActivity extends Activity {
         }
 
         if (apiKey.equals("REPLACE_ME")) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Set API Keys");
-            builder.setMessage("Please set your Kite API keys at the top of the SampleApp's MainActivity.java. You can find these by logging into https://www.kite.ly.");
-            builder.setPositiveButton("OK", null);
-            builder.show();
+            showAlert("Set API Keys", "Please set your Kite API keys at the top of the SampleApp's MainActivity.java. You can find these by logging into https://www.kite.ly.");
             return;
         }
 
         KitePrintSDK.initialize(apiKey, env, getApplicationContext());
 
         ProductType productType = (ProductType) productSpinner.getSelectedItem();
-        PrintOrder printOrder = new PrintOrder();
+        final PrintOrder printOrder = new PrintOrder();
         if (productType == ProductType.POSTCARD) {
             printOrder.addPrintJob(PrintJob.createPostcardPrintJob(ProductType.POSTCARD.getDefaultTemplate(),
                     assets.get(0), "Hello World!", Address.getKiteTeamAddress()));
@@ -113,9 +113,55 @@ public class MainActivity extends Activity {
             printOrder.addPrintJob(PrintJob.createPrintJob(assets, productType));
         }
 
-        Intent intent = new Intent(this, CheckoutActivity.class);
-        intent.putExtra(CheckoutActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder);
-        startActivityForResult(intent, REQUEST_CODE_CHECKOUT);
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Submitting Print Order");
+        progressDialog.show();
+
+        printOrder.setShippingAddress(Address.getKiteTeamAddress());
+        PayPalCard card = PayPalCard.getSandboxCard();
+        card.chargeCard(PayPalCard.Environment.SANDBOX, printOrder.getCost("GBP"), PayPalCard.Currency.GBP, "Kite Order", new PayPalCardChargeListener() {
+            @Override
+            public void onChargeSuccess(PayPalCard card, String proofOfPayment) {
+                printOrder.setProofOfPayment(proofOfPayment);
+                submitPrintOrder(printOrder);
+            }
+
+            @Override
+            public void onError(PayPalCard card, Exception ex) {
+                progressDialog.dismiss();
+                showAlert("Error", "Failed to take payment: " + ex);
+            }
+        });
+    }
+
+    private void showAlert(String title, String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title);
+        builder.setMessage(message);
+        builder.setPositiveButton("OK", null);
+        builder.show();
+    }
+
+    private void submitPrintOrder(PrintOrder printOrder) {
+        printOrder.submitForPrinting(getApplicationContext(), new PrintOrderSubmissionListener() {
+            @Override
+            public void onProgress(PrintOrder printOrder, int totalAssetsUploaded, int totalAssetsToUpload, long totalAssetBytesWritten, long totalAssetBytesExpectedToWrite, long totalBytesWritten, long totalBytesExpectedToWrite) {
+
+            }
+
+            @Override
+            public void onSubmissionComplete(PrintOrder printOrder, String orderIdReceipt) {
+                progressDialog.dismiss();
+                showAlert("Success", "Print Order Submission Success: " + orderIdReceipt);
+            }
+
+            @Override
+            public void onError(PrintOrder printOrder, Exception error) {
+                progressDialog.dismiss();
+                showAlert("Error", "Print Order Submission Failure: " + error.toString());
+            }
+        });
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

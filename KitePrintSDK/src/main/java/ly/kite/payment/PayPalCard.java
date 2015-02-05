@@ -48,21 +48,6 @@ public class PayPalCard implements Serializable {
         CardType(String paypalIdentifier) {
             this.paypalIdentifier = paypalIdentifier;
         }
-
-        public static CardType getCardType(io.card.payment.CardType type) {
-            switch (type) {
-                case AMEX:
-                    return AMEX;
-                case MASTERCARD:
-                    return MASTERCARD;
-                case DISCOVER:
-                    return DISCOVER;
-                case VISA:
-                    return VISA;
-                default:
-                    return UNSUPPORTED;
-            }
-        }
     }
 
     public static enum Currency {
@@ -110,6 +95,16 @@ public class PayPalCard implements Serializable {
 
     public PayPalCard() {
 
+    }
+
+    public static PayPalCard getSandboxCard() {
+        PayPalCard card = new PayPalCard();
+        card.setCardType(CardType.VISA);
+        card.setCvv2("123");
+        card.setExpireMonth(12);
+        card.setExpireYear(2020);
+        card.setNumber("4539584733661602");
+        return card;
     }
 
     public PayPalCard(CardType type, String number, int expireMonth, int expireYear, String cvv2) {
