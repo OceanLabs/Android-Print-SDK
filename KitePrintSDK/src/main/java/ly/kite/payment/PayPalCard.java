@@ -59,8 +59,6 @@ public class PayPalCard implements Serializable {
         AUD("AUD"),
         CAD("CAD");
 
-
-
         private final String  code;
 
         Currency(String code) {

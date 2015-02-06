@@ -18,18 +18,28 @@ public class KitePrintSDK {
     private static final String PAYPAL_RECIPIENT_LIVE = "deon@oceanlabs.co";
 
     public static enum Environment {
-        LIVE("https://api.kite.ly"),
-        TEST("https://api.kite.ly"),
-        STAGING("http://staging.api.kite.ly"); /* private environment intended only for Ocean Labs use, hands off :) */
+        LIVE("https://api.kite.ly", PAYPAL_CLIENT_ID_LIVE, PAYPAL_RECIPIENT_LIVE),
+        TEST("https://api.kite.ly", PAYPAL_CLIENT_ID_SANDBOX, PAYPAL_RECIPIENT_SANDBOX),
+        STAGING("http://staging.api.kite.ly", PAYPAL_CLIENT_ID_SANDBOX, PAYPAL_RECIPIENT_SANDBOX); /* private environment intended only for Ocean Labs use, hands off :) */
 
         private final String apiEndpoint;
+        private final String payPalClientId;
+        private final String payPalRecipient;
 
-        private Environment(String apiEndpoint) {
+        private Environment(String apiEndpoint, String payPalClientId, String payPalRecipient) {
             this.apiEndpoint = apiEndpoint;
+            this.payPalClientId = payPalClientId;
+            this.payPalRecipient = payPalRecipient;
         }
 
         public String getPrintAPIEndpoint() {
             return apiEndpoint;
+        }
+        public String getPayPalClientId() {
+            return payPalClientId;
+        }
+        public String getPayPalReceiverEmail() {
+            return payPalRecipient;
         }
     }
 
