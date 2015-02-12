@@ -15,6 +15,7 @@ import org.json.JSONTokener;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 /**
@@ -88,9 +89,9 @@ public class BaseRequest {
                     request = new HttpGet(url);
                 } else if (method == HttpMethod.POST || method == HttpMethod.PATCH) {
                     HttpPost postReq = method == HttpMethod.POST ? new HttpPost(url) : new HttpPatch(url);
-                    postReq.setHeader("Content-Type", "application/json");
+                    postReq.setHeader("Content-Type", "application/json; charset=utf-8");
                     try {
-                        postReq.setEntity(new StringEntity(body));
+                        postReq.setEntity(new StringEntity(body, "utf-8"));
                     } catch (UnsupportedEncodingException e) {
                         jsonResponse.error = e;
                         return jsonResponse;
