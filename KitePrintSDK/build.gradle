@@ -33,6 +33,10 @@ android {
             res { srcDir 'src/main/res' }
         }
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
 
 dependencies {
