@@ -34,6 +34,7 @@ import ly.kite.print.PrintOrder;
 import ly.kite.checkout.CheckoutActivity;
 import ly.kite.print.ProductType;
 import ly.kite.print.Template;
+import ly.kite.printshop.ProductHomeActivity;
 
 public class MainActivity extends Activity {
 
@@ -41,7 +42,7 @@ public class MainActivity extends Activity {
      * Insert your Kite API keys here. These are found under your profile
      * by logging in to the developer portal at https://www.kite.ly
      **********************************************************************/
-    private static final String API_KEY_TEST = "asdf";
+    private static final String API_KEY_TEST = "a45bf7f39523d31aa1ca4ecf64d422b4d810d9c4";
     private static final String API_KEY_LIVE = "REPLACE_ME";
 
     private static final int REQUEST_CODE_SELECT_PICTURE = 1;
@@ -113,7 +114,7 @@ public class MainActivity extends Activity {
             printOrder.addPrintJob(PrintJob.createPrintJob(assets, productType));
         }
 
-        Intent intent = new Intent(this, CheckoutActivity.class);
+        Intent intent = new Intent(this, ProductHomeActivity.class);
         intent.putExtra(CheckoutActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder);
         startActivityForResult(intent, REQUEST_CODE_CHECKOUT);
     }

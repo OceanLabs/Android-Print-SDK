@@ -43,6 +43,14 @@ public class Template implements Parcelable, Serializable {
     private int quantityPerSheet;
     private String name;
     private Map<String, BigDecimal> costsByCurrencyCode;
+    private boolean enabled;
+    private String coverPhotoURL;
+    private List<String> productPhotographyURLs;
+//TODO    private TemplateClass
+//    TODO private Color
+//    TODO private SizeCm
+//    TODO private SizeInches
+    private String productCode;
     private static SyncTemplateRequest inProgressSyncReq;
 
 
@@ -71,6 +79,22 @@ public class Template implements Parcelable, Serializable {
 
     public Set<String> getCurrenciesSupported() {
         return costsByCurrencyCode.keySet();
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public String getCoverPhotoURL() {
+        return coverPhotoURL;
+    }
+
+    public List<String> getProductPhotographyURLs() {
+        return productPhotographyURLs;
+    }
+
+    public String getProductCode() {
+        return productCode;
     }
 
     static Template parseTemplate(JSONObject json) throws JSONException {
