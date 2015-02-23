@@ -97,5 +97,5 @@ Logging in to our [Developer Dashboard](https://www.kite.ly/) allow's you to dyn
 
 ## License
 
-Kite Android Print SDK is available under the MIT license. See the LICENSE file for more info.
+Kite Android Print SDK is available under a modified MIT license. See the LICENSE file for more info.
 
