@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ly.kite.R;
@@ -115,8 +116,40 @@ public class ProductHomeActivity extends Activity {
         private List<Template> templates;
 
         public void setTemplates(List<Template> templates){
-            this.templates = templates;
+            this.templates = filterTemplates(templates);
             notifyDataSetInvalidated();
+        }
+
+        public List<Template> filterTemplates(List<Template> templates){
+            ArrayList<Template> templateArrayList = new ArrayList<Template>(templates);
+            boolean haveAtLeastOnePoster = false;
+            boolean haveAtLeastOneFrame = false;
+            for (int i = 0; i < templates.size(); i++){
+                Template t = templates.get(i);
+                if (t.getCoverPhotoURL() == null || t.getTemplateClass() == Template.TemplateClass.NA){
+                    templateArrayList.remove(t);
+                }
+
+                if (t.getTemplateClass() == Template.TemplateClass.Frame){
+                    if (haveAtLeastOneFrame){
+                        templateArrayList.remove(t);
+                    }
+                    else{
+                        haveAtLeastOneFrame = true;
+                    }
+                }
+
+                if (t.getTemplateClass() == Template.TemplateClass.Poster){
+                    if (haveAtLeastOnePoster){
+                        templateArrayList.remove(t);
+                    }
+                    else{
+                        haveAtLeastOnePoster = true;
+                    }
+                }
+
+            }
+            return templateArrayList;
         }
 
         @Override

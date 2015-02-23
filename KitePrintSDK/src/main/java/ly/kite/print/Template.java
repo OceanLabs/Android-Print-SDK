@@ -15,6 +15,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -31,6 +32,43 @@ import java.util.Set;
  */
 public class Template implements Parcelable, Serializable {
 
+    public enum TemplateClass implements Serializable{
+        NA, Circle, Square, Polaroid, Frame, Poster;
+
+        public String toString(){
+            switch(this){
+                case NA:
+                    return "NA";
+                case Circle:
+                    return "Circle";
+                case Square:
+                    return "Square";
+                case Polaroid:
+                    return "Polaroid";
+                case Frame:
+                    return "Frame";
+                case Poster:
+                    return "Poster";
+            }
+            return null;
+        }
+
+        public static TemplateClass getEnum(String value){
+            if(value.equalsIgnoreCase(Circle.toString()))
+                return TemplateClass.Circle;
+            else if(value.equalsIgnoreCase(Square.toString()))
+                return TemplateClass.Square;
+            else if(value.equalsIgnoreCase(Polaroid.toString()))
+                return TemplateClass.Polaroid;
+            else if(value.equalsIgnoreCase(Frame.toString()))
+                return TemplateClass.Frame;
+            else if(value.equalsIgnoreCase(Poster.toString()))
+                return TemplateClass.Poster;
+            else
+                return TemplateClass.NA;
+        }
+    }
+
     private static final String PERSISTED_TEMPLATES_FILENAME = "templates";
     private static final String PREF_LAST_SYNC_DATE = "last_sync_date";
 
@@ -46,6 +84,7 @@ public class Template implements Parcelable, Serializable {
     private String coverPhotoURL;
     private List<String> productPhotographyURLs;
     private int labelColor;
+    private TemplateClass templateClass;
 
 //TODO    private TemplateClass
 //    TODO private SizeCm
@@ -53,13 +92,15 @@ public class Template implements Parcelable, Serializable {
     private String productCode;
     private static SyncTemplateRequest inProgressSyncReq;
 
-    Template(String id, Map<String, BigDecimal> costsByCurrencyCode, String name, int quantityPerSheet, String coverPhotoURL, int labelColor) {
+    Template(String id, Map<String, BigDecimal> costsByCurrencyCode, String name, int quantityPerSheet,
+             String coverPhotoURL, int labelColor, TemplateClass templateClass) {
         this.costsByCurrencyCode = costsByCurrencyCode;
         this.name = name;
         this.quantityPerSheet = quantityPerSheet;
         this.id = id;
         this.coverPhotoURL = coverPhotoURL;
         this.labelColor = labelColor;
+        this.templateClass = templateClass;
     }
 
     public String getId() {
@@ -98,6 +139,10 @@ public class Template implements Parcelable, Serializable {
         return productPhotographyURLs;
     }
 
+    public TemplateClass getTemplateClass(){
+        return templateClass;
+    }
+
     public String getProductCode() {
         return productCode;
     }
@@ -107,6 +152,7 @@ public class Template implements Parcelable, Serializable {
         int quantityPerSheet = json.optInt("images_per_page");
         String templateId = json.getString("template_id");
         JSONObject productJSON = json.getJSONObject("product");
+        String templateClass = productJSON.getString("ios_sdk_product_class");
         String coverPhoto = productJSON.getString("ios_sdk_cover_photo");
         JSONArray imagesJSON = productJSON.optJSONArray("ios_sdk_product_shots");
         JSONArray colorJSON = productJSON.optJSONArray("ios_sdk_label_color");
@@ -129,7 +175,7 @@ public class Template implements Parcelable, Serializable {
             costsByCurrencyCode.put(currency, amount);
         }
 
-        return new Template(templateId, costsByCurrencyCode, name, quantityPerSheet, coverPhoto, color);
+        return new Template(templateId, costsByCurrencyCode, name, quantityPerSheet, coverPhoto, color, TemplateClass.getEnum(templateClass));
     }
 
     public static Date getLastSyncDate() {
@@ -241,7 +287,12 @@ public class Template implements Parcelable, Serializable {
             return syncedTemplates;
         } catch (FileNotFoundException ex) {
             return new ArrayList<Template>();
-        } catch (Exception ex) {
+        }
+        catch (InvalidClassException e){
+            Log.v("", "Saved templates format outdated.");
+            return new ArrayList<Template>();
+        }
+        catch (Exception ex) {
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -277,13 +328,14 @@ public class Template implements Parcelable, Serializable {
             int numCurrencies = in.readInt();
             String coverPhoto = in.readString();
             int labelColor = in.readInt();
+            TemplateClass templateClass = (TemplateClass) in.readSerializable();
             Map<String, BigDecimal> costsByCurrencyCode = new HashMap<String, BigDecimal>();
             for (int i = 0; i < numCurrencies; ++i) {
                 String currencyCode = in.readString();
                 BigDecimal cost = new BigDecimal(in.readString());
             }
 
-            return new Template(id, costsByCurrencyCode, name, quantityPerSheet, coverPhoto, labelColor);
+            return new Template(id, costsByCurrencyCode, name, quantityPerSheet, coverPhoto, labelColor, templateClass);
         }
 
         public Template[] newArray(int size) {
@@ -298,6 +350,7 @@ public class Template implements Parcelable, Serializable {
         out.writeObject(costsByCurrencyCode);
         out.writeObject(coverPhotoURL);
         out.writeObject(labelColor);
+        out.writeObject(templateClass);
     }
 
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -305,8 +358,9 @@ public class Template implements Parcelable, Serializable {
         quantityPerSheet = in.readInt();
         name = (String) in.readObject();
         costsByCurrencyCode = (Map<String, BigDecimal>) in.readObject();
-        coverPhotoURL = (String)in.readObject();
-        labelColor = (int)in.readObject();
+        coverPhotoURL = (String) in.readObject();
+        labelColor = (int) in.readObject();
+        templateClass = (TemplateClass) in.readObject();
     }
 
 }
