@@ -3,6 +3,7 @@ package ly.kite.printshop;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -130,9 +132,13 @@ public class ProductHomeActivity extends Activity {
                 v = li.inflate(R.layout.product_home_list_item, null);
             }
 
-            //TODO: set image, title and box color here
-            ImageView imageView = ((ImageView) v.findViewById(R.id.imageView));
+            ImageView imageView = ((ImageView) v.findViewById(R.id.productCoverImageView));
             Picasso.with(viewGroup.getContext()).load(templates.get(position).getCoverPhotoURL()).into(imageView);
+
+            TextView textView = ((TextView) v.findViewById(R.id.productNameLabel));
+            textView.setTextColor(Color.WHITE);
+            textView.setBackgroundColor(Color.BLACK);
+            textView.setText(templates.get(position).getName());
 
             return v;
         }
