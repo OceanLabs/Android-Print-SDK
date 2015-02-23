@@ -3,8 +3,10 @@ package ly.kite.printshop;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -130,8 +132,7 @@ public class ProductHomeActivity extends Activity {
 
             //TODO: set image, title and box color here
             ImageView imageView = ((ImageView) v.findViewById(R.id.imageView));
-            Picasso.with(viewGroup.getContext()).load("https://s3.amazonaws.com/sdk-static/magnets.jpg").into(imageView);
-
+            Picasso.with(viewGroup.getContext()).load(templates.get(position).getCoverPhotoURL()).into(imageView);
 
             return v;
         }
