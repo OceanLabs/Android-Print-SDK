@@ -11,6 +11,7 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -70,44 +71,14 @@ public class ProductHomeActivity extends Activity {
             ListView productHomeList = (ListView) view.findViewById(R.id.list_view_product_home);
             productHomeList.setAdapter(adapter);
 
-//            productHomeList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-//                @Override
-//                public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long position) {
-//                    final Address address = (Address) adapter.getItem((int) position);
-//                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//                    builder.setTitle(address.toString())
-//                            .setItems(new String[] {"Edit Address", "Delete Address"}, new DialogInterface.OnClickListener() {
-//                                @Override
-//                                public void onClick(DialogInterface dialogInterface, int i) {
-//                                    if (i == 0) {
-//                                        Intent intent = new Intent(getActivity(), AddressEditActivity.class);
-//                                        intent.putExtra(AddressEditActivity.EXTRA_ADDRESS, (Parcelable) address);
-//                                        startActivityForResult(intent, REQUEST_CODE_ADD_ADDRESS);
-//                                    } else if (i == 1) {
-//                                        address.deleteFromAddressBook(getActivity());
-//                                        adapter.setAddresses(Address.getAddressBook(getActivity()));
-//                                    }
-//                                }
-//                            });
-//                    builder.create().show();
-//                    return true;
-//                }
-//            });
 
-//            productHomeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//                @Override
-//                public void onItemClick(AdapterView<?> adapterView, View view, int i, long position) {
-//                    Address addr = (Address) adapter.getItem((int) position);
-//                    Intent data = new Intent();
-//                    data.putExtra(EXTRA_ADDRESS, (Parcelable) addr);
-//                    getActivity().setResult(Activity.RESULT_OK, data);
-//                    getActivity().finish();
-//
-//                }
-//            });
+            productHomeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long position) {
+                    Log.v("", "Clicked");
+                }
+            });
 
-//            TextView empty = (TextView) view.findViewById(R.id.empty);
-//            productHomeList.setEmptyView(empty);
         }
     }
 
