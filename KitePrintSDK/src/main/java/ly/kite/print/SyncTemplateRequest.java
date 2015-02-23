@@ -30,6 +30,7 @@ public class SyncTemplateRequest {
             public void onSuccess(int httpStatusCode, JSONObject json) {
                 try {
                     if (httpStatusCode >= 200 && httpStatusCode <= 299) {
+                        Log.v("", "Template Sync Completed Successfully");
                         JSONArray templates = json.getJSONArray("objects");
                         ArrayList<Template> templateObjects = new ArrayList<Template>();
                         for (int i = 0; i < templates.length(); ++i) {
@@ -47,6 +48,7 @@ public class SyncTemplateRequest {
 
                     }
                 } catch (JSONException ex) {
+                    Log.v("Error: ", ex.getLocalizedMessage());
                     listener.onError(ex);
                 }
             }

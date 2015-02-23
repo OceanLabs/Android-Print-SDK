@@ -132,13 +132,17 @@ public class ProductHomeActivity extends Activity {
                 v = li.inflate(R.layout.product_home_list_item, null);
             }
 
+            Template template = templates.get(position);
+
             ImageView imageView = ((ImageView) v.findViewById(R.id.productCoverImageView));
-            Picasso.with(viewGroup.getContext()).load(templates.get(position).getCoverPhotoURL()).into(imageView);
+            Picasso.with(viewGroup.getContext()).load(template.getCoverPhotoURL()).into(imageView);
+
+
 
             TextView textView = ((TextView) v.findViewById(R.id.productNameLabel));
             textView.setTextColor(Color.WHITE);
-            textView.setBackgroundColor(Color.BLACK);
-            textView.setText(templates.get(position).getName());
+            textView.setBackgroundColor(template.getLabelColor());
+            textView.setText(template.getName());
 
             return v;
         }

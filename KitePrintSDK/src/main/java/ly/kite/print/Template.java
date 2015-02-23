@@ -2,6 +2,7 @@ package ly.kite.print;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
@@ -25,8 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ly.kite.address.Address;
-
 /**
  * Created by alibros on 06/01/15.
  */
@@ -46,19 +45,21 @@ public class Template implements Parcelable, Serializable {
     private boolean enabled;
     private String coverPhotoURL;
     private List<String> productPhotographyURLs;
+    private int labelColor;
+
 //TODO    private TemplateClass
-//    TODO private Color
 //    TODO private SizeCm
 //    TODO private SizeInches
     private String productCode;
     private static SyncTemplateRequest inProgressSyncReq;
 
-    Template(String id, Map<String, BigDecimal> costsByCurrencyCode, String name, int quantityPerSheet, String coverPhotoURL) {
+    Template(String id, Map<String, BigDecimal> costsByCurrencyCode, String name, int quantityPerSheet, String coverPhotoURL, int labelColor) {
         this.costsByCurrencyCode = costsByCurrencyCode;
         this.name = name;
         this.quantityPerSheet = quantityPerSheet;
         this.id = id;
         this.coverPhotoURL = coverPhotoURL;
+        this.labelColor = labelColor;
     }
 
     public String getId() {
@@ -71,6 +72,10 @@ public class Template implements Parcelable, Serializable {
 
     public String getName() {
         return name;
+    }
+
+    public int getLabelColor(){
+        return labelColor;
     }
 
     public BigDecimal getCost(String currencyCode) {
@@ -103,7 +108,12 @@ public class Template implements Parcelable, Serializable {
         String templateId = json.getString("template_id");
         JSONObject productJSON = json.getJSONObject("product");
         String coverPhoto = productJSON.getString("ios_sdk_cover_photo");
-        JSONArray imagesJSON = productJSON.getJSONArray("ios_sdk_product_shots");
+        JSONArray imagesJSON = productJSON.optJSONArray("ios_sdk_product_shots");
+        JSONArray colorJSON = productJSON.optJSONArray("ios_sdk_label_color");
+        int color = Color.BLACK;
+        if (colorJSON != null) {
+            color = Color.argb(255, colorJSON.getInt(0), colorJSON.getInt(1), colorJSON.getInt(2));
+        }
         ArrayList<String> images = new ArrayList<String>();
         for (int imageIndex = 0; imageIndex < imagesJSON.length(); imageIndex++){
             images.add(imagesJSON.getString(imageIndex));
@@ -119,7 +129,7 @@ public class Template implements Parcelable, Serializable {
             costsByCurrencyCode.put(currency, amount);
         }
 
-        return new Template(templateId, costsByCurrencyCode, name, quantityPerSheet, coverPhoto);
+        return new Template(templateId, costsByCurrencyCode, name, quantityPerSheet, coverPhoto, color);
     }
 
     public static Date getLastSyncDate() {
@@ -266,13 +276,14 @@ public class Template implements Parcelable, Serializable {
             String name = in.readString();
             int numCurrencies = in.readInt();
             String coverPhoto = in.readString();
+            int labelColor = in.readInt();
             Map<String, BigDecimal> costsByCurrencyCode = new HashMap<String, BigDecimal>();
             for (int i = 0; i < numCurrencies; ++i) {
                 String currencyCode = in.readString();
                 BigDecimal cost = new BigDecimal(in.readString());
             }
 
-            return new Template(id, costsByCurrencyCode, name, quantityPerSheet, coverPhoto);
+            return new Template(id, costsByCurrencyCode, name, quantityPerSheet, coverPhoto, labelColor);
         }
 
         public Template[] newArray(int size) {
@@ -286,6 +297,7 @@ public class Template implements Parcelable, Serializable {
         out.writeObject(name);
         out.writeObject(costsByCurrencyCode);
         out.writeObject(coverPhotoURL);
+        out.writeObject(labelColor);
     }
 
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -294,6 +306,7 @@ public class Template implements Parcelable, Serializable {
         name = (String) in.readObject();
         costsByCurrencyCode = (Map<String, BigDecimal>) in.readObject();
         coverPhotoURL = (String)in.readObject();
+        labelColor = (int)in.readObject();
     }
 
 }
