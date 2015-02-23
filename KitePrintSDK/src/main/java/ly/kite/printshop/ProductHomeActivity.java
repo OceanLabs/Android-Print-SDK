@@ -175,7 +175,15 @@ public class ProductHomeActivity extends Activity {
             TextView textView = ((TextView) v.findViewById(R.id.productNameLabel));
             textView.setTextColor(Color.WHITE);
             textView.setBackgroundColor(template.getLabelColor());
-            textView.setText(template.getName());
+            if (template.getTemplateClass() == Template.TemplateClass.Frame){
+                textView.setText("Frames");
+            }
+            else if (template.getTemplateClass() == Template.TemplateClass.Poster){
+                textView.setText("Posters");
+            }
+            else {
+                textView.setText(template.getName());
+            }
 
             return v;
         }
