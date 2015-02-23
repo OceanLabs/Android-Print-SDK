@@ -48,7 +48,9 @@ public class AddressBookActivity extends Activity {
                     .commit();
         }
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getActionBar() != null) {
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     @Override

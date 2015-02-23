@@ -41,7 +41,7 @@ public class MainActivity extends Activity {
      * Insert your Kite API keys here. These are found under your profile
      * by logging in to the developer portal at https://www.kite.ly
      **********************************************************************/
-    private static final String API_KEY_TEST = "REPLACE_ME";
+    private static final String API_KEY_TEST = "asdf";
     private static final String API_KEY_LIVE = "REPLACE_ME";
 
     private static final int REQUEST_CODE_SELECT_PICTURE = 1;
