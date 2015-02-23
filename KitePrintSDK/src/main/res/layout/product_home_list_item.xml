@@ -8,6 +8,15 @@
     <ly.kite.printshop.DynamicImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/placeholderImageView"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/placeholder"
+        />
+
+    <ly.kite.printshop.DynamicImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/productCoverImageView"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"

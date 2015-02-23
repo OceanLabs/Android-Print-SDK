@@ -141,8 +141,6 @@ public class ProductHomeActivity extends Activity {
             ImageView imageView = ((ImageView) v.findViewById(R.id.productCoverImageView));
             Picasso.with(viewGroup.getContext()).load(template.getCoverPhotoURL()).into(imageView);
 
-
-
             TextView textView = ((TextView) v.findViewById(R.id.productNameLabel));
             textView.setTextColor(Color.WHITE);
             textView.setBackgroundColor(template.getLabelColor());
