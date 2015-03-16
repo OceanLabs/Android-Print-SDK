@@ -3,9 +3,11 @@ package ly.kite.printshop;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -23,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ly.kite.R;
+import ly.kite.checkout.CheckoutActivity;
+import ly.kite.print.PrintOrder;
 import ly.kite.print.Template;
 
 /**
@@ -30,11 +34,16 @@ import ly.kite.print.Template;
  */
 public class ProductHomeActivity extends Activity {
 
+    private static final int REQUEST_CODE_CHECKOUT = 2;
+
     private ProductHomeAdapter productHomeAdapter;
+    private PrintOrder printOrder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        printOrder = (PrintOrder) getIntent().getSerializableExtra(CheckoutActivity.EXTRA_PRINT_ORDER);
 
         setContentView(R.layout.activity_product_home);
 
@@ -43,7 +52,7 @@ public class ProductHomeActivity extends Activity {
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment(productHomeAdapter))
+                    .add(R.id.container, new PlaceholderFragment(productHomeAdapter, printOrder))
                     .commit();
         }
 
@@ -54,9 +63,11 @@ public class ProductHomeActivity extends Activity {
 
     public static class PlaceholderFragment extends Fragment{
         private final ProductHomeAdapter adapter;
+        private PrintOrder printOrder;
 
-        public PlaceholderFragment(ProductHomeAdapter adapter){
+        public PlaceholderFragment(ProductHomeAdapter adapter, PrintOrder printOrder){
             this.adapter = adapter;
+            this.printOrder = printOrder;
         }
 
         @Override
@@ -75,7 +86,9 @@ public class ProductHomeActivity extends Activity {
             productHomeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long position) {
-                    Log.v("", "Clicked");
+                    Intent intent = new Intent(getActivity(), ProductOverviewActivity.class);
+                    intent.putExtra(CheckoutActivity.EXTRA_PRINT_TEMPLATE, (Parcelable) adapter.getItem(i));
+                    startActivityForResult(intent, REQUEST_CODE_CHECKOUT);
                 }
             });
 

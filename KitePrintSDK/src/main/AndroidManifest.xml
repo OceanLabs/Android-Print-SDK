@@ -88,6 +88,13 @@
             tools:replace="android:theme"
             android:theme="@android:style/Theme.Holo.Light.DarkActionBar"  >
         </activity>
+        <activity
+            android:name=".printshop.ProductOverviewActivity"
+            android:label="@string/title_activity_product_overview"
+            android:screenOrientation="portrait"
+            tools:replace="android:theme"
+            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"  >
+        </activity>
 
         <!-- PayPal activites & services: -->
         <service

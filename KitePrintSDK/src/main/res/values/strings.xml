@@ -9,6 +9,7 @@
     <string name="title_activity_checkout">Shipping Details</string>
     <string name="title_activity_order_receipt">Order Receipt</string>
     <string name="title_activity_product_home">Print Shop</string>
+    <string name="title_activity_product_overview">Product</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_payment">Payment</string>
     <string name="title_activity_address_book">Address Book</string>

@@ -93,7 +93,7 @@ public class Template implements Parcelable, Serializable {
     private static SyncTemplateRequest inProgressSyncReq;
 
     Template(String id, Map<String, BigDecimal> costsByCurrencyCode, String name, int quantityPerSheet,
-             String coverPhotoURL, int labelColor, TemplateClass templateClass) {
+             String coverPhotoURL, int labelColor, TemplateClass templateClass, List<String> productPhotographyURLs) {
         this.costsByCurrencyCode = costsByCurrencyCode;
         this.name = name;
         this.quantityPerSheet = quantityPerSheet;
@@ -101,6 +101,7 @@ public class Template implements Parcelable, Serializable {
         this.coverPhotoURL = coverPhotoURL;
         this.labelColor = labelColor;
         this.templateClass = templateClass;
+        this.productPhotographyURLs = productPhotographyURLs;
     }
 
     public String getId() {
@@ -175,7 +176,7 @@ public class Template implements Parcelable, Serializable {
             costsByCurrencyCode.put(currency, amount);
         }
 
-        return new Template(templateId, costsByCurrencyCode, name, quantityPerSheet, coverPhoto, color, TemplateClass.getEnum(templateClass));
+        return new Template(templateId, costsByCurrencyCode, name, quantityPerSheet, coverPhoto, color, TemplateClass.getEnum(templateClass), images);
     }
 
     public static Date getLastSyncDate() {
@@ -313,6 +314,9 @@ public class Template implements Parcelable, Serializable {
         parcel.writeString(name);
         parcel.writeInt(costsByCurrencyCode.size());
         parcel.writeString(coverPhotoURL);
+        parcel.writeInt(labelColor);
+        parcel.writeSerializable(templateClass);
+        parcel.writeStringList(productPhotographyURLs);
         for (String currencyCode : costsByCurrencyCode.keySet()) {
             BigDecimal cost = costsByCurrencyCode.get(currencyCode);
             parcel.writeString(currencyCode);
@@ -329,13 +333,15 @@ public class Template implements Parcelable, Serializable {
             String coverPhoto = in.readString();
             int labelColor = in.readInt();
             TemplateClass templateClass = (TemplateClass) in.readSerializable();
+            List<String> productPhotographyURLs = new ArrayList<String>();
+            in.readStringList(productPhotographyURLs);
             Map<String, BigDecimal> costsByCurrencyCode = new HashMap<String, BigDecimal>();
             for (int i = 0; i < numCurrencies; ++i) {
                 String currencyCode = in.readString();
                 BigDecimal cost = new BigDecimal(in.readString());
             }
 
-            return new Template(id, costsByCurrencyCode, name, quantityPerSheet, coverPhoto, labelColor, templateClass);
+            return new Template(id, costsByCurrencyCode, name, quantityPerSheet, coverPhoto, labelColor, templateClass, productPhotographyURLs);
         }
 
         public Template[] newArray(int size) {
@@ -351,6 +357,7 @@ public class Template implements Parcelable, Serializable {
         out.writeObject(coverPhotoURL);
         out.writeObject(labelColor);
         out.writeObject(templateClass);
+        out.writeObject(productPhotographyURLs);
     }
 
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -361,6 +368,7 @@ public class Template implements Parcelable, Serializable {
         coverPhotoURL = (String) in.readObject();
         labelColor = (int) in.readObject();
         templateClass = (TemplateClass) in.readObject();
+        productPhotographyURLs = (List<String>) in.readObject();
     }
 
 }
