@@ -24,8 +24,6 @@ import ly.kite.print.Template;
 public class ProductOverviewActivity extends FragmentActivity {
     private Template template;
 
-    private static final int NUM_PAGES = 5;
-
     private ViewPager mPager;
     private PagerAdapter mPagerAdapter;
 
@@ -51,15 +49,20 @@ public class ProductOverviewActivity extends FragmentActivity {
         shippingLabel.getLayoutParams().width = width;
 
         TextView priceLabel = (TextView) findViewById(R.id.priceLabel);
-        priceLabel.setText(template.getCost("GBP").toString());
+        priceLabel.setText(template.getCost("GBP").toString()); //TODO
         priceLabel.getLayoutParams().width = width;
 
         TextView dimensionsLabel = (TextView) findViewById(R.id.dimensionsLabel);
         dimensionsLabel.getLayoutParams().width = width;
-//        dimensionsLabel.setText(template);
+        dimensionsLabel.setText("" + template.getSizeCm().x + " x " + template.getSizeCm().y);
 
         WhiteSquare whiteSquare = (WhiteSquare) findViewById(R.id.whiteSquare);
         whiteSquare.getLayoutParams().width = width;
+
+        if (getActionBar() != null) {
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().setTitle(template.getName());
+        }
     }
 
     @Override

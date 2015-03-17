@@ -3,9 +3,12 @@ package ly.kite.print;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Point;
+import android.graphics.PointF;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
+import android.util.SizeF;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -86,14 +89,15 @@ public class Template implements Parcelable, Serializable {
     private int labelColor;
     private TemplateClass templateClass;
 
-//    TODO private SizeCm
-//    TODO private SizeInches
-//    TODO private SizePx
+    private PointF sizeCm;
+    private PointF sizeInches;
+    private PointF sizePx;
     private String productCode;
     private static SyncTemplateRequest inProgressSyncReq;
 
     Template(String id, Map<String, BigDecimal> costsByCurrencyCode, String name, int quantityPerSheet,
-             String coverPhotoURL, int labelColor, TemplateClass templateClass, List<String> productPhotographyURLs) {
+             String coverPhotoURL, int labelColor, TemplateClass templateClass, List<String> productPhotographyURLs,
+             PointF sizeCm, PointF sizeInch, PointF sizePx) {
         this.costsByCurrencyCode = costsByCurrencyCode;
         this.name = name;
         this.quantityPerSheet = quantityPerSheet;
@@ -102,6 +106,9 @@ public class Template implements Parcelable, Serializable {
         this.labelColor = labelColor;
         this.templateClass = templateClass;
         this.productPhotographyURLs = productPhotographyURLs;
+        this.sizeCm = sizeCm;
+        this.sizeInches = sizeInch;
+        this.sizePx = sizePx;
     }
 
     public String getId() {
@@ -148,6 +155,18 @@ public class Template implements Parcelable, Serializable {
         return productCode;
     }
 
+    public PointF getSizeCm() {
+        return sizeCm;
+    }
+
+    public PointF getSizeInches() {
+        return sizeInches;
+    }
+
+    public PointF getSizePx() {
+        return sizePx;
+    }
+
     static Template parseTemplate(JSONObject json) throws JSONException {
         String name = json.getString("name");
         int quantityPerSheet = json.optInt("images_per_page");
@@ -161,6 +180,20 @@ public class Template implements Parcelable, Serializable {
         if (colorJSON != null) {
             color = Color.argb(255, colorJSON.getInt(0), colorJSON.getInt(1), colorJSON.getInt(2));
         }
+
+        JSONObject sizesJSON = productJSON.optJSONObject("size");
+        JSONObject cmJSON = sizesJSON.optJSONObject("cm");
+        JSONObject inchJSON = sizesJSON.optJSONObject("inch");
+        JSONObject pxJSON = sizesJSON.optJSONObject("px");
+
+        PointF sizeCm = new PointF((float)cmJSON.getDouble("width"), (float)cmJSON.getDouble("height"));
+        PointF sizeInch = new PointF((float)inchJSON.getDouble("width"), (float)inchJSON.getDouble("height"));
+        PointF sizePx = new PointF(0,0);
+
+        if (pxJSON != null) {
+            sizePx = new PointF((float) pxJSON.getDouble("width"), (float) pxJSON.getDouble("height"));
+        }
+
         ArrayList<String> images = new ArrayList<String>();
         for (int imageIndex = 0; imageIndex < imagesJSON.length(); imageIndex++){
             images.add(imagesJSON.getString(imageIndex));
@@ -176,7 +209,10 @@ public class Template implements Parcelable, Serializable {
             costsByCurrencyCode.put(currency, amount);
         }
 
-        return new Template(templateId, costsByCurrencyCode, name, quantityPerSheet, coverPhoto, color, TemplateClass.getEnum(templateClass), images);
+        return new Template(templateId, costsByCurrencyCode, name, quantityPerSheet,
+                coverPhoto, color, TemplateClass.getEnum(templateClass), images,
+                sizeCm, sizeInch, sizePx
+        );
     }
 
     public static Date getLastSyncDate() {
@@ -317,6 +353,12 @@ public class Template implements Parcelable, Serializable {
         parcel.writeInt(labelColor);
         parcel.writeSerializable(templateClass);
         parcel.writeStringList(productPhotographyURLs);
+        parcel.writeFloat(sizeCm.x);
+        parcel.writeFloat(sizeCm.y);
+        parcel.writeFloat(sizeInches.x);
+        parcel.writeFloat(sizeInches.y);
+        parcel.writeFloat(sizePx.x);
+        parcel.writeFloat(sizePx.y);
         for (String currencyCode : costsByCurrencyCode.keySet()) {
             BigDecimal cost = costsByCurrencyCode.get(currencyCode);
             parcel.writeString(currencyCode);
@@ -335,6 +377,10 @@ public class Template implements Parcelable, Serializable {
             TemplateClass templateClass = (TemplateClass) in.readSerializable();
             List<String> productPhotographyURLs = new ArrayList<String>();
             in.readStringList(productPhotographyURLs);
+            PointF sizeCm = new PointF(in.readFloat(), in.readFloat());
+            PointF sizeInch = new PointF(in.readFloat(), in.readFloat());
+            PointF sizePx = new PointF(in.readFloat(), in.readFloat());
+
             Map<String, BigDecimal> costsByCurrencyCode = new HashMap<String, BigDecimal>();
             for (int i = 0; i < numCurrencies; ++i) {
                 String currencyCode = in.readString();
@@ -342,7 +388,8 @@ public class Template implements Parcelable, Serializable {
                 costsByCurrencyCode.put(currencyCode, cost);
             }
 
-            return new Template(id, costsByCurrencyCode, name, quantityPerSheet, coverPhoto, labelColor, templateClass, productPhotographyURLs);
+            return new Template(id, costsByCurrencyCode, name, quantityPerSheet, coverPhoto, labelColor,
+                    templateClass, productPhotographyURLs, sizeCm, sizeInch, sizePx);
         }
 
         public Template[] newArray(int size) {
