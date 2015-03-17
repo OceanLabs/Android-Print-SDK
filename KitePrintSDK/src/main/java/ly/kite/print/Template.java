@@ -86,9 +86,9 @@ public class Template implements Parcelable, Serializable {
     private int labelColor;
     private TemplateClass templateClass;
 
-//TODO    private TemplateClass
 //    TODO private SizeCm
 //    TODO private SizeInches
+//    TODO private SizePx
     private String productCode;
     private static SyncTemplateRequest inProgressSyncReq;
 
@@ -339,6 +339,7 @@ public class Template implements Parcelable, Serializable {
             for (int i = 0; i < numCurrencies; ++i) {
                 String currencyCode = in.readString();
                 BigDecimal cost = new BigDecimal(in.readString());
+                costsByCurrencyCode.put(currencyCode, cost);
             }
 
             return new Template(id, costsByCurrencyCode, name, quantityPerSheet, coverPhoto, labelColor, templateClass, productPhotographyURLs);

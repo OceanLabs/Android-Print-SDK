@@ -1,102 +1,125 @@
 package ly.kite.printshop;
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.content.Context;
+import android.graphics.Point;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.ListView;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
 import ly.kite.R;
 import ly.kite.checkout.CheckoutActivity;
-import ly.kite.print.PrintOrder;
 import ly.kite.print.Template;
 
-/**
- * Created by kostas on 3/16/15.
- */
-public class ProductOverviewActivity extends Activity {
+public class ProductOverviewActivity extends FragmentActivity {
     private Template template;
+
+    private static final int NUM_PAGES = 5;
+
+    private ViewPager mPager;
+    private PagerAdapter mPagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_product_overview);
 
         template = (Template) getIntent().getSerializableExtra(CheckoutActivity.EXTRA_PRINT_TEMPLATE);
 
-        setContentView(R.layout.activity_product_overview);
+        // Instantiate a ViewPager and a PagerAdapter.
+        mPager = (ViewPager) findViewById(R.id.pager);
+        mPagerAdapter = new ProductOverviewAdapter(getSupportFragmentManager(), template);
+        mPager.setAdapter(mPagerAdapter);
 
-        if (savedInstanceState == null) {
-            getFragmentManager().beginTransaction()
-                    .add(R.id.overview_container, new PlaceholderFragment(template, new PagesAdapter(template)))
-                    .commit();
-        }
+        Display display = getWindowManager().getDefaultDisplay();
+        Point p = new Point();
+        display.getSize(p);
+        int width = p.x / 3;
 
-        if (getActionBar() != null) {
-            getActionBar().setDisplayHomeAsUpEnabled(true);
+        TextView shippingLabel = (TextView) findViewById(R.id.shippingLabel);
+        shippingLabel.setText("FREE POSTAGE");
+        shippingLabel.getLayoutParams().width = width;
+
+        TextView priceLabel = (TextView) findViewById(R.id.priceLabel);
+        priceLabel.setText(template.getCost("GBP").toString());
+        priceLabel.getLayoutParams().width = width;
+
+        TextView dimensionsLabel = (TextView) findViewById(R.id.dimensionsLabel);
+        dimensionsLabel.getLayoutParams().width = width;
+//        dimensionsLabel.setText(template);
+
+        WhiteSquare whiteSquare = (WhiteSquare) findViewById(R.id.whiteSquare);
+        whiteSquare.getLayoutParams().width = width;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mPager.getCurrentItem() == 0) {
+            // If the user is currently looking at the first step, allow the system to handle the
+            // Back button. This calls finish() on this activity and pops the back stack.
+            super.onBackPressed();
+        } else {
+            // Otherwise, select the previous step.
+            mPager.setCurrentItem(mPager.getCurrentItem() - 1);
         }
     }
 
-    public static class PlaceholderFragment extends Fragment {
+    /**
+     * A simple pager adapter that represents 5 ScreenSlidePageFragment objects, in
+     * sequence.
+     */
+    private class ProductOverviewAdapter extends FragmentStatePagerAdapter {
         private Template template;
-        private PagesAdapter adapter;
 
-        public PlaceholderFragment(Template template, PagesAdapter adapter){
-            this.adapter = adapter;
+        public ProductOverviewAdapter(FragmentManager fm, Template template) {
+            this(fm);
             this.template = template;
+        }
+
+        public ProductOverviewAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return new ScreenSlidePageFragment(template, position);
+        }
+
+        @Override
+        public int getCount() {
+            return template.getProductPhotographyURLs().size();
+        }
+    }
+
+    public static class ScreenSlidePageFragment extends Fragment {
+        private Template template;
+        int position;
+
+        public ScreenSlidePageFragment (Template template, int position){
+            this.template = template;
+            this.position = position;
         }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_product_overview, container, false);
-            return rootView;
-        }
+            ViewGroup rootView = (ViewGroup) inflater.inflate(
+                    R.layout.fragment_product_overview, container, false);
 
-        @Override
-        public void onViewCreated(View view, Bundle savedInstanceState) {
-            ViewPager pageContent = (ViewPager) view.findViewById(R.id.pager);
-            pageContent.setAdapter(adapter);
-        }
-    }
-
-    private static class PagesAdapter extends PagerAdapter {
-        private Template template;
-
-        public PagesAdapter (Template template){
-            this.template = template;
-        }
-
-        @Override
-        public boolean isViewFromObject (View view, Object object){
-            return false;
-        }
-
-        @Override
-        public int getCount(){
-            return template.getProductPhotographyURLs().size();
-        }
-
-        @Override
-        public Object instantiateItem (ViewGroup container, int position){
-            LayoutInflater li = (LayoutInflater) container.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View contentPage = li.inflate(R.layout.product_overview_content_item, null);
-            container.addView(contentPage);
-
-            ImageView imageView = ((ImageView) contentPage.findViewById(R.id.overview_imageView));
+            ImageView imageView = ((ImageView) rootView.findViewById(R.id.overview_imageView));
             Picasso.with(container.getContext()).load(template.getProductPhotographyURLs().get(position)).into(imageView);
 
-            return contentPage;
+            return rootView;
         }
     }
 }
