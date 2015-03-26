@@ -5,11 +5,8 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -110,11 +107,11 @@ public class ProductHomeActivity extends Activity {
             boolean haveAtLeastOneFrame = false;
             for (int i = 0; i < templates.size(); i++){
                 Template t = templates.get(i);
-                if (t.getCoverPhotoURL() == null || t.getTemplateClass() == Template.TemplateClass.NA){
+                if (t.getCoverPhotoURL() == null || t.getTemplateUI() == Template.TemplateUI.NA){
                     templateArrayList.remove(t);
                 }
 
-                if (t.getTemplateClass() == Template.TemplateClass.Frame){
+                if (t.getTemplateUI() == Template.TemplateUI.Frame){
                     if (haveAtLeastOneFrame){
                         templateArrayList.remove(t);
                     }
@@ -123,7 +120,7 @@ public class ProductHomeActivity extends Activity {
                     }
                 }
 
-                if (t.getTemplateClass() == Template.TemplateClass.Poster){
+                if (t.getTemplateUI() == Template.TemplateUI.Poster){
                     if (haveAtLeastOnePoster){
                         templateArrayList.remove(t);
                     }
@@ -157,10 +154,10 @@ public class ProductHomeActivity extends Activity {
             TextView textView = ((TextView) v.findViewById(R.id.productNameLabel));
             textView.setTextColor(Color.WHITE);
             textView.setBackgroundColor(template.getLabelColor());
-            if (template.getTemplateClass() == Template.TemplateClass.Frame){
+            if (template.getTemplateUI() == Template.TemplateUI.Frame){
                 textView.setText("Frames");
             }
-            else if (template.getTemplateClass() == Template.TemplateClass.Poster){
+            else if (template.getTemplateUI() == Template.TemplateUI.Poster){
                 textView.setText("Posters");
             }
             else {

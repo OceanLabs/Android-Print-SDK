@@ -3,12 +3,10 @@ package ly.kite.print;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.PointF;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
-import android.util.SizeF;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,8 +33,8 @@ import java.util.Set;
  */
 public class Template implements Parcelable, Serializable {
 
-    public enum TemplateClass implements Serializable{
-        NA, Circle, Square, Polaroid, Frame, Poster;
+    public enum TemplateUI implements Serializable{
+        NA, Circle, Rectangle, Case, Frame, Poster;
 
         public String toString(){
             switch(this){
@@ -44,10 +42,10 @@ public class Template implements Parcelable, Serializable {
                     return "NA";
                 case Circle:
                     return "Circle";
-                case Square:
-                    return "Square";
-                case Polaroid:
-                    return "Polaroid";
+                case Rectangle:
+                    return "Rectangle";
+                case Case:
+                    return "Case";
                 case Frame:
                     return "Frame";
                 case Poster:
@@ -56,19 +54,19 @@ public class Template implements Parcelable, Serializable {
             return null;
         }
 
-        public static TemplateClass getEnum(String value){
+        public static TemplateUI getEnum(String value){
             if(value.equalsIgnoreCase(Circle.toString()))
-                return TemplateClass.Circle;
-            else if(value.equalsIgnoreCase(Square.toString()))
-                return TemplateClass.Square;
-            else if(value.equalsIgnoreCase(Polaroid.toString()))
-                return TemplateClass.Polaroid;
+                return TemplateUI.Circle;
+            else if(value.equalsIgnoreCase(Rectangle.toString()))
+                return TemplateUI.Rectangle;
+            else if(value.equalsIgnoreCase(Case.toString()))
+                return TemplateUI.Case;
             else if(value.equalsIgnoreCase(Frame.toString()))
-                return TemplateClass.Frame;
+                return TemplateUI.Frame;
             else if(value.equalsIgnoreCase(Poster.toString()))
-                return TemplateClass.Poster;
+                return TemplateUI.Poster;
             else
-                return TemplateClass.NA;
+                return TemplateUI.NA;
         }
     }
 
@@ -87,7 +85,10 @@ public class Template implements Parcelable, Serializable {
     private String coverPhotoURL;
     private List<String> productPhotographyURLs;
     private int labelColor;
-    private TemplateClass templateClass;
+    private TemplateUI templateUI;
+    private String templateClass;
+    private String templateType;
+    private String classPhotoURL;
 
     private PointF sizeCm;
     private PointF sizeInches;
@@ -96,19 +97,22 @@ public class Template implements Parcelable, Serializable {
     private static SyncTemplateRequest inProgressSyncReq;
 
     Template(String id, Map<String, BigDecimal> costsByCurrencyCode, String name, int quantityPerSheet,
-             String coverPhotoURL, int labelColor, TemplateClass templateClass, List<String> productPhotographyURLs,
-             PointF sizeCm, PointF sizeInch, PointF sizePx) {
+             String coverPhotoURL, int labelColor, TemplateUI templateUI, List<String> productPhotographyURLs,
+             PointF sizeCm, PointF sizeInch, PointF sizePx, String classPhotoURL, String templateType, String templateClass) {
         this.costsByCurrencyCode = costsByCurrencyCode;
         this.name = name;
         this.quantityPerSheet = quantityPerSheet;
         this.id = id;
         this.coverPhotoURL = coverPhotoURL;
         this.labelColor = labelColor;
-        this.templateClass = templateClass;
+        this.templateUI = templateUI;
         this.productPhotographyURLs = productPhotographyURLs;
         this.sizeCm = sizeCm;
         this.sizeInches = sizeInch;
         this.sizePx = sizePx;
+        this.templateClass = templateClass;
+        this.templateType = templateType;
+        this.classPhotoURL = classPhotoURL;
     }
 
     public String getId() {
@@ -147,8 +151,8 @@ public class Template implements Parcelable, Serializable {
         return productPhotographyURLs;
     }
 
-    public TemplateClass getTemplateClass(){
-        return templateClass;
+    public TemplateUI getTemplateUI(){
+        return templateUI;
     }
 
     public String getProductCode() {
@@ -167,13 +171,28 @@ public class Template implements Parcelable, Serializable {
         return sizePx;
     }
 
+    public String getTemplateClass() {
+        return templateClass;
+    }
+
+    public String getTemplateType() {
+        return templateType;
+    }
+
+    public String getClassPhotoURL() {
+        return classPhotoURL;
+    }
+
     static Template parseTemplate(JSONObject json) throws JSONException {
         String name = json.getString("name");
         int quantityPerSheet = json.optInt("images_per_page");
         String templateId = json.getString("template_id");
         JSONObject productJSON = json.getJSONObject("product");
         String templateClass = productJSON.getString("ios_sdk_product_class");
+        String templateType = productJSON.getString("ios_sdk_product_type");
+        String uiClass = productJSON.getString("ios_sdk_ui_class");
         String coverPhoto = productJSON.getString("ios_sdk_cover_photo");
+        String classPhoto = productJSON.getString("ios_sdk_class_photo");
         JSONArray imagesJSON = productJSON.optJSONArray("ios_sdk_product_shots");
         JSONArray colorJSON = productJSON.optJSONArray("ios_sdk_label_color");
         int color = Color.BLACK;
@@ -210,8 +229,8 @@ public class Template implements Parcelable, Serializable {
         }
 
         return new Template(templateId, costsByCurrencyCode, name, quantityPerSheet,
-                coverPhoto, color, TemplateClass.getEnum(templateClass), images,
-                sizeCm, sizeInch, sizePx
+                coverPhoto, color, TemplateUI.getEnum(uiClass), images,
+                sizeCm, sizeInch, sizePx, classPhoto, templateType, templateClass
         );
     }
 
@@ -351,7 +370,7 @@ public class Template implements Parcelable, Serializable {
         parcel.writeInt(costsByCurrencyCode.size());
         parcel.writeString(coverPhotoURL);
         parcel.writeInt(labelColor);
-        parcel.writeSerializable(templateClass);
+        parcel.writeSerializable(templateUI);
         parcel.writeStringList(productPhotographyURLs);
         parcel.writeFloat(sizeCm.x);
         parcel.writeFloat(sizeCm.y);
@@ -359,6 +378,9 @@ public class Template implements Parcelable, Serializable {
         parcel.writeFloat(sizeInches.y);
         parcel.writeFloat(sizePx.x);
         parcel.writeFloat(sizePx.y);
+        parcel.writeString(templateClass);
+        parcel.writeString(templateType);
+        parcel.writeString(classPhotoURL);
         for (String currencyCode : costsByCurrencyCode.keySet()) {
             BigDecimal cost = costsByCurrencyCode.get(currencyCode);
             parcel.writeString(currencyCode);
@@ -374,12 +396,15 @@ public class Template implements Parcelable, Serializable {
             int numCurrencies = in.readInt();
             String coverPhoto = in.readString();
             int labelColor = in.readInt();
-            TemplateClass templateClass = (TemplateClass) in.readSerializable();
+            TemplateUI templateUI = (TemplateUI) in.readSerializable();
             List<String> productPhotographyURLs = new ArrayList<String>();
             in.readStringList(productPhotographyURLs);
             PointF sizeCm = new PointF(in.readFloat(), in.readFloat());
             PointF sizeInch = new PointF(in.readFloat(), in.readFloat());
             PointF sizePx = new PointF(in.readFloat(), in.readFloat());
+            String templateClass = in.readString();
+            String templateType = in.readString();
+            String classPhotoURL = in.readString();
 
             Map<String, BigDecimal> costsByCurrencyCode = new HashMap<String, BigDecimal>();
             for (int i = 0; i < numCurrencies; ++i) {
@@ -389,7 +414,7 @@ public class Template implements Parcelable, Serializable {
             }
 
             return new Template(id, costsByCurrencyCode, name, quantityPerSheet, coverPhoto, labelColor,
-                    templateClass, productPhotographyURLs, sizeCm, sizeInch, sizePx);
+                    templateUI, productPhotographyURLs, sizeCm, sizeInch, sizePx, classPhotoURL, templateType, templateClass);
         }
 
         public Template[] newArray(int size) {
@@ -404,8 +429,14 @@ public class Template implements Parcelable, Serializable {
         out.writeObject(costsByCurrencyCode);
         out.writeObject(coverPhotoURL);
         out.writeObject(labelColor);
-        out.writeObject(templateClass);
+        out.writeObject(templateUI);
         out.writeObject(productPhotographyURLs);
+        out.writeObject(sizeCm);
+        out.writeObject(sizeInches);
+        out.writeObject(sizePx);
+        out.writeObject(templateClass);
+        out.writeObject(templateType);
+        out.writeObject(classPhotoURL);
     }
 
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -415,8 +446,14 @@ public class Template implements Parcelable, Serializable {
         costsByCurrencyCode = (Map<String, BigDecimal>) in.readObject();
         coverPhotoURL = (String) in.readObject();
         labelColor = (int) in.readObject();
-        templateClass = (TemplateClass) in.readObject();
+        templateUI = (TemplateUI) in.readObject();
         productPhotographyURLs = (List<String>) in.readObject();
+        sizeCm = (PointF)in.readObject();
+        sizeInches = (PointF)in.readObject();
+        sizePx = (PointF)in.readObject();
+        templateClass = (String)in.readObject();
+        templateType = (String)in.readObject();
+        classPhotoURL = (String)in.readObject();
     }
 
 }
