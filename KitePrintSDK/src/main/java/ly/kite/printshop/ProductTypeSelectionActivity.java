@@ -64,7 +64,7 @@ public class ProductTypeSelectionActivity extends Activity {
         ArrayList<Template> filteredTemplates = new ArrayList<Template>();
         for (int i = 0; i < templates.size(); i++){
             Template t = templates.get(i);
-            if (t.getCoverPhotoURL() == null || t.getTemplateUI() == Template.TemplateUI.NA || t.getCoverPhotoURL() == null || t.getCoverPhotoURL().isEmpty()){
+            if (t.getCoverPhotoURL() == null || t.getTemplateUI() == Template.TemplateUI.NA || t.getCoverPhotoURL() == null || t.getCoverPhotoURL().isEmpty() || t.getCoverPhotoURL().equalsIgnoreCase("null")){
                 continue;
             }
 
