@@ -3,10 +3,12 @@ package ly.kite.print;
 /**
  * Created by deonbotha on 09/02/2014.
  */
+
+//TODO: Deprecated
 public enum ProductType {
     POSTCARD("ps_postcard", "Postcard"),
-    POLAROIDS("polaroids", "Case Style Prints"),
-    MINI_POLAROIDS("polaroids_mini", "Mini Case Style Prints"),
+    POLAROIDS("polaroids", "Phone_Case Style Prints"),
+    MINI_POLAROIDS("polaroids_mini", "Mini Phone_Case Style Prints"),
     SQUARES("squares", "Rectangle Prints"),
     MINI_SQUARES("squares_mini", "Mini Rectangle Prints"),
     MAGNETS("magnets", "Magnets"),

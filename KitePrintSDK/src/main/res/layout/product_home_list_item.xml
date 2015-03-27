@@ -24,9 +24,9 @@
 
     <TextView
         android:id="@+id/productNameLabel"
-        android:layout_width="170dp"
+        android:layout_width="180dp"
         android:layout_height="35dp"
-        android:textSize="18dp"
+        android:textSize="17dp"
         android:textAllCaps="true"
         android:textAlignment="gravity"
         android:gravity="center_horizontal|center_vertical"

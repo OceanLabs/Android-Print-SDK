@@ -34,7 +34,7 @@ import java.util.Set;
 public class Template implements Parcelable, Serializable {
 
     public enum TemplateUI implements Serializable{
-        NA, Circle, Rectangle, Case, Frame, Poster;
+        NA, Circle, Rectangle, Phone_Case, Frame, Poster;
 
         public String toString(){
             switch(this){
@@ -44,8 +44,8 @@ public class Template implements Parcelable, Serializable {
                     return "Circle";
                 case Rectangle:
                     return "Rectangle";
-                case Case:
-                    return "Case";
+                case Phone_Case:
+                    return "Phone_Case";
                 case Frame:
                     return "Frame";
                 case Poster:
@@ -59,8 +59,8 @@ public class Template implements Parcelable, Serializable {
                 return TemplateUI.Circle;
             else if(value.equalsIgnoreCase(Rectangle.toString()))
                 return TemplateUI.Rectangle;
-            else if(value.equalsIgnoreCase(Case.toString()))
-                return TemplateUI.Case;
+            else if(value.equalsIgnoreCase(Phone_Case.toString()))
+                return TemplateUI.Phone_Case;
             else if(value.equalsIgnoreCase(Frame.toString()))
                 return TemplateUI.Frame;
             else if(value.equalsIgnoreCase(Poster.toString()))
@@ -188,11 +188,11 @@ public class Template implements Parcelable, Serializable {
         int quantityPerSheet = json.optInt("images_per_page");
         String templateId = json.getString("template_id");
         JSONObject productJSON = json.getJSONObject("product");
-        String templateClass = productJSON.getString("ios_sdk_product_class");
-        String templateType = productJSON.getString("ios_sdk_product_type");
-        String uiClass = productJSON.getString("ios_sdk_ui_class");
-        String coverPhoto = productJSON.getString("ios_sdk_cover_photo");
-        String classPhoto = productJSON.getString("ios_sdk_class_photo");
+        String templateClass = productJSON.optString("ios_sdk_product_class");
+        String templateType = productJSON.optString("ios_sdk_product_type");
+        String uiClass = productJSON.optString("ios_sdk_ui_class");
+        String coverPhoto = productJSON.optString("ios_sdk_cover_photo");
+        String classPhoto = productJSON.optString("ios_sdk_class_photo");
         JSONArray imagesJSON = productJSON.optJSONArray("ios_sdk_product_shots");
         JSONArray colorJSON = productJSON.optJSONArray("ios_sdk_label_color");
         int color = Color.BLACK;
@@ -431,9 +431,9 @@ public class Template implements Parcelable, Serializable {
         out.writeObject(labelColor);
         out.writeObject(templateUI);
         out.writeObject(productPhotographyURLs);
-        out.writeObject(sizeCm);
-        out.writeObject(sizeInches);
-        out.writeObject(sizePx);
+//        out.writeObject(sizeCm);
+//        out.writeObject(sizeInches);
+//        out.writeObject(sizePx);
         out.writeObject(templateClass);
         out.writeObject(templateType);
         out.writeObject(classPhotoURL);
@@ -448,9 +448,9 @@ public class Template implements Parcelable, Serializable {
         labelColor = (int) in.readObject();
         templateUI = (TemplateUI) in.readObject();
         productPhotographyURLs = (List<String>) in.readObject();
-        sizeCm = (PointF)in.readObject();
-        sizeInches = (PointF)in.readObject();
-        sizePx = (PointF)in.readObject();
+//        sizeCm = (PointF)in.readObject();
+//        sizeInches = (PointF)in.readObject();
+//        sizePx = (PointF)in.readObject();
         templateClass = (String)in.readObject();
         templateType = (String)in.readObject();
         classPhotoURL = (String)in.readObject();

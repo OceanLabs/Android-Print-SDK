@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import ly.kite.R;
@@ -94,48 +96,36 @@ public class ProductHomeActivity extends Activity {
 
     private static class ProductHomeAdapter extends BaseAdapter {
 
-        private List<Template> templates;
+        private LinkedHashMap<String, List<Template>> templatesPerClass;
 
         public void setTemplates(List<Template> templates){
-            this.templates = filterTemplates(templates);
+            this.templatesPerClass = filterTemplates(templates);
             notifyDataSetInvalidated();
         }
 
-        public List<Template> filterTemplates(List<Template> templates){
-            ArrayList<Template> templateArrayList = new ArrayList<Template>(templates);
-            boolean haveAtLeastOnePoster = false;
-            boolean haveAtLeastOneFrame = false;
+        public LinkedHashMap<String, List<Template>> filterTemplates(List<Template> templates){
+            LinkedHashMap<String, List<Template>> templatesPerClass = new LinkedHashMap<String, List<Template>>();
             for (int i = 0; i < templates.size(); i++){
                 Template t = templates.get(i);
                 if (t.getCoverPhotoURL() == null || t.getTemplateUI() == Template.TemplateUI.NA){
-                    templateArrayList.remove(t);
+                    continue;
                 }
 
-                if (t.getTemplateUI() == Template.TemplateUI.Frame){
-                    if (haveAtLeastOneFrame){
-                        templateArrayList.remove(t);
-                    }
-                    else{
-                        haveAtLeastOneFrame = true;
-                    }
+                if (!templatesPerClass.keySet().contains(t.getTemplateClass())){
+                    templatesPerClass.put(t.getTemplateClass(), new ArrayList<Template>());
+                    templatesPerClass.get(t.getTemplateClass()).add(t);
                 }
-
-                if (t.getTemplateUI() == Template.TemplateUI.Poster){
-                    if (haveAtLeastOnePoster){
-                        templateArrayList.remove(t);
-                    }
-                    else{
-                        haveAtLeastOnePoster = true;
-                    }
+                else{
+                    templatesPerClass.get(t.getTemplateClass()).add(t);
                 }
 
             }
-            return templateArrayList;
+            return templatesPerClass;
         }
 
         @Override
         public int getCount(){
-            return templates.size();
+            return templatesPerClass.size();
         }
 
         @Override
@@ -146,23 +136,20 @@ public class ProductHomeActivity extends Activity {
                 v = li.inflate(R.layout.product_home_list_item, null);
             }
 
-            Template template = templates.get(position);
+            Template template = templatesPerClass.get(templatesPerClass.keySet().toArray()[position]).get(0);
 
             ImageView imageView = ((ImageView) v.findViewById(R.id.productCoverImageView));
-            Picasso.with(viewGroup.getContext()).load(template.getCoverPhotoURL()).into(imageView);
+            if (template.getClassPhotoURL() != null && !template.getClassPhotoURL().isEmpty() ) {
+                Picasso.with(viewGroup.getContext()).load(template.getClassPhotoURL()).into(imageView);
+            }
+            else{
+                Picasso.with(viewGroup.getContext()).load(template.getCoverPhotoURL()).into(imageView);
+            }
 
             TextView textView = ((TextView) v.findViewById(R.id.productNameLabel));
             textView.setTextColor(Color.WHITE);
             textView.setBackgroundColor(template.getLabelColor());
-            if (template.getTemplateUI() == Template.TemplateUI.Frame){
-                textView.setText("Frames");
-            }
-            else if (template.getTemplateUI() == Template.TemplateUI.Poster){
-                textView.setText("Posters");
-            }
-            else {
-                textView.setText(template.getName());
-            }
+            textView.setText(template.getTemplateClass());
 
             return v;
         }
@@ -174,7 +161,7 @@ public class ProductHomeActivity extends Activity {
 
         @Override
         public Object getItem(int i){
-            return templates.get(i);
+            return templatesPerClass.get(i);
 
         }
     }
