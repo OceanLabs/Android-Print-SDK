@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,27 +30,28 @@ import ly.kite.print.Template;
 /**
  * Created by kostas on 2/19/15.
  */
-public class ProductHomeActivity extends Activity {
+public class ProductTypeSelectionActivity extends Activity {
 
     private static final int REQUEST_CODE_CHECKOUT = 2;
 
-    private ProductHomeAdapter productHomeAdapter;
+    private ProductTypeAdapter productTypeAdapter;
     private PrintOrder printOrder;
+    private String templateClass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        printOrder = (PrintOrder) getIntent().getSerializableExtra(CheckoutActivity.EXTRA_PRINT_ORDER);
+        templateClass = (String) getIntent().getSerializableExtra(CheckoutActivity.EXTRA_PRINT_TEMPLATE_CLASS);
 
-        setContentView(R.layout.activity_product_home);
+        setContentView(R.layout.activity_product_type_selection);
 
-        productHomeAdapter = new ProductHomeAdapter();
-        productHomeAdapter.setTemplates(Template.getTemplates());
+        productTypeAdapter = new ProductTypeAdapter();
+        productTypeAdapter.setTemplates(filterTemplates(Template.getTemplates()));
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment(productHomeAdapter, printOrder))
+                    .add(R.id.container, new PlaceholderFragment(productTypeAdapter, printOrder))
                     .commit();
         }
 
@@ -60,11 +60,27 @@ public class ProductHomeActivity extends Activity {
         }
     }
 
+    public List<Template> filterTemplates(List<Template> templates){
+        ArrayList<Template> filteredTemplates = new ArrayList<Template>();
+        for (int i = 0; i < templates.size(); i++){
+            Template t = templates.get(i);
+            if (t.getCoverPhotoURL() == null || t.getTemplateUI() == Template.TemplateUI.NA || t.getCoverPhotoURL() == null || t.getCoverPhotoURL().isEmpty()){
+                continue;
+            }
+
+            if (t.getTemplateClass() != null && t.getTemplateClass().equals(this.templateClass)){
+                filteredTemplates.add(t);
+            }
+
+        }
+        return filteredTemplates;
+    }
+
     public static class PlaceholderFragment extends Fragment{
-        private final ProductHomeAdapter adapter;
+        private final ProductTypeAdapter adapter;
         private PrintOrder printOrder;
 
-        public PlaceholderFragment(ProductHomeAdapter adapter, PrintOrder printOrder){
+        public PlaceholderFragment(ProductTypeAdapter adapter, PrintOrder printOrder){
             this.adapter = adapter;
             this.printOrder = printOrder;
         }
@@ -72,21 +88,21 @@ public class ProductHomeActivity extends Activity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_product_home, container, false);
+            View rootView = inflater.inflate(R.layout.fragment_product_type_selection, container, false);
             return rootView;
         }
 
         @Override
         public void onViewCreated(View view, Bundle savedInstanceState) {
-            ListView productHomeList = (ListView) view.findViewById(R.id.list_view_product_home);
+            ListView productHomeList = (ListView) view.findViewById(R.id.list_view_product_type_selection);
             productHomeList.setAdapter(adapter);
 
 
             productHomeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long position) {
-                    Intent intent = new Intent(getActivity(), ProductTypeSelectionActivity.class);
-                    intent.putExtra(CheckoutActivity.EXTRA_PRINT_TEMPLATE_CLASS,  ((Template)adapter.getItem(i)).getTemplateClass());
+                    Intent intent = new Intent(getActivity(), ProductOverviewActivity.class);
+                    intent.putExtra(CheckoutActivity.EXTRA_PRINT_TEMPLATE, (Parcelable) adapter.getItem(i));
                     startActivityForResult(intent, REQUEST_CODE_CHECKOUT);
                 }
             });
@@ -94,38 +110,18 @@ public class ProductHomeActivity extends Activity {
         }
     }
 
-    private static class ProductHomeAdapter extends BaseAdapter {
+    private static class ProductTypeAdapter extends BaseAdapter {
 
-        private LinkedHashMap<String, List<Template>> templatesPerClass;
+        private List<Template> templates;
 
         public void setTemplates(List<Template> templates){
-            this.templatesPerClass = filterTemplates(templates);
+            this.templates = templates;
             notifyDataSetInvalidated();
-        }
-
-        public LinkedHashMap<String, List<Template>> filterTemplates(List<Template> templates){
-            LinkedHashMap<String, List<Template>> templatesPerClass = new LinkedHashMap<String, List<Template>>();
-            for (int i = 0; i < templates.size(); i++){
-                Template t = templates.get(i);
-                if (t.getCoverPhotoURL() == null || t.getTemplateUI() == Template.TemplateUI.NA){
-                    continue;
-                }
-
-                if (!templatesPerClass.keySet().contains(t.getTemplateClass())){
-                    templatesPerClass.put(t.getTemplateClass(), new ArrayList<Template>());
-                    templatesPerClass.get(t.getTemplateClass()).add(t);
-                }
-                else{
-                    templatesPerClass.get(t.getTemplateClass()).add(t);
-                }
-
-            }
-            return templatesPerClass;
         }
 
         @Override
         public int getCount(){
-            return templatesPerClass.size();
+            return templates.size();
         }
 
         @Override
@@ -136,20 +132,15 @@ public class ProductHomeActivity extends Activity {
                 v = li.inflate(R.layout.product_home_list_item, null);
             }
 
-            Template template = templatesPerClass.get(templatesPerClass.keySet().toArray()[position]).get(0);
+            Template template = templates.get(position);
 
             ImageView imageView = ((ImageView) v.findViewById(R.id.productCoverImageView));
-            if (template.getClassPhotoURL() != null && !template.getClassPhotoURL().isEmpty() ) {
-                Picasso.with(viewGroup.getContext()).load(template.getClassPhotoURL()).into(imageView);
-            }
-            else{
-                Picasso.with(viewGroup.getContext()).load(template.getCoverPhotoURL()).into(imageView);
-            }
+            Picasso.with(viewGroup.getContext()).load(template.getCoverPhotoURL()).into(imageView);
 
             TextView textView = ((TextView) v.findViewById(R.id.productNameLabel));
             textView.setTextColor(Color.WHITE);
             textView.setBackgroundColor(template.getLabelColor());
-            textView.setText(template.getTemplateClass());
+            textView.setText(template.getTemplateType());
 
             return v;
         }
@@ -161,7 +152,7 @@ public class ProductHomeActivity extends Activity {
 
         @Override
         public Object getItem(int i){
-            return templatesPerClass.get(templatesPerClass.keySet().toArray()[i]).get(0);
+            return templates.get(i);
 
         }
     }

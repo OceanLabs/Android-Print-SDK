@@ -176,7 +176,12 @@ public class Template implements Parcelable, Serializable {
     }
 
     public String getTemplateType() {
-        return templateType;
+        if (templateType != null && !templateType.isEmpty()) {
+            return templateType;
+        }
+        else{
+            return name;
+        }
     }
 
     public String getClassPhotoURL() {
@@ -372,12 +377,12 @@ public class Template implements Parcelable, Serializable {
         parcel.writeInt(labelColor);
         parcel.writeSerializable(templateUI);
         parcel.writeStringList(productPhotographyURLs);
-        parcel.writeFloat(sizeCm.x);
-        parcel.writeFloat(sizeCm.y);
-        parcel.writeFloat(sizeInches.x);
-        parcel.writeFloat(sizeInches.y);
-        parcel.writeFloat(sizePx.x);
-        parcel.writeFloat(sizePx.y);
+//        parcel.writeFloat(sizeCm.x);
+//        parcel.writeFloat(sizeCm.y);
+//        parcel.writeFloat(sizeInches.x);
+//        parcel.writeFloat(sizeInches.y);
+//        parcel.writeFloat(sizePx.x);
+//        parcel.writeFloat(sizePx.y);
         parcel.writeString(templateClass);
         parcel.writeString(templateType);
         parcel.writeString(classPhotoURL);
@@ -399,9 +404,9 @@ public class Template implements Parcelable, Serializable {
             TemplateUI templateUI = (TemplateUI) in.readSerializable();
             List<String> productPhotographyURLs = new ArrayList<String>();
             in.readStringList(productPhotographyURLs);
-            PointF sizeCm = new PointF(in.readFloat(), in.readFloat());
-            PointF sizeInch = new PointF(in.readFloat(), in.readFloat());
-            PointF sizePx = new PointF(in.readFloat(), in.readFloat());
+            PointF sizeCm = new PointF(0,0);//in.readFloat(), in.readFloat());
+            PointF sizeInch = new PointF(0,0);//in.readFloat(), in.readFloat());
+            PointF sizePx = new PointF(0,0);//in.readFloat(), in.readFloat());
             String templateClass = in.readString();
             String templateType = in.readString();
             String classPhotoURL = in.readString();

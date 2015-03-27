@@ -46,6 +46,7 @@ public class CheckoutActivity extends Activity {
 
     public static final String EXTRA_PRINT_ORDER = "ly.kite.EXTRA_PRINT_ORDER";
     public static final String EXTRA_PRINT_TEMPLATE = "ly.kite.EXTRA_PRINT_TEMPLATE";
+    public static final String EXTRA_PRINT_TEMPLATE_CLASS = "ly.kite.EXTRA_PRINT_TEMPLATE_CLASS";
     public static final String EXTRA_PRINT_ENVIRONMENT = "ly.kite.EXTRA_PRINT_ENVIRONMENT";
     public static final String EXTRA_PRINT_API_KEY = "ly.kite.EXTRA_PRINT_API_KEY";
 
