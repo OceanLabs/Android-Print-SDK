@@ -42,8 +42,10 @@ import javax.inject.Inject;
 //import co.oceanlabs.psprintstudio.model.*;
 //import co.oceanlabs.psprintstudio.util.ImageUtils;
 import ly.kite.R;
+import ly.kite.checkout.CheckoutActivity;
 import ly.kite.print.Asset;
 import ly.kite.print.AssetGetBytesListener;
+import ly.kite.print.Template;
 import ly.kite.printshop.Photo;
 
 import com.almeros.android.multitouch.gesturedetectors.MoveGestureDetector;
@@ -68,6 +70,7 @@ public class PhotoEditActivity extends FragmentActivity implements View.OnTouchL
     protected ImageLoader imageLoader;
 
     private Asset photo;
+    private Template template;
     private Bitmap bitmap;
 
     private Matrix matrix = new Matrix();
@@ -93,6 +96,7 @@ public class PhotoEditActivity extends FragmentActivity implements View.OnTouchL
 //        setTitleStyled(getTitle());
 
         photo = (Asset) getIntent().getSerializableExtra("photo");
+        template = (Template) getIntent().getSerializableExtra(CheckoutActivity.EXTRA_PRINT_TEMPLATE);
 
         imageView = (ImageView)findViewById(R.id.photoview);
         overlayView = findViewById(R.id.overlay);
@@ -106,6 +110,8 @@ public class PhotoEditActivity extends FragmentActivity implements View.OnTouchL
 //        }
 
         borderDrawable = new PhotoEditBorderDrawable(this);
+        PointF p = template.getSizePx().x != 0 && template.getSizePx().y != 0 ? template.getSizePx() : new PointF(1,1);
+        borderDrawable.setAspectRatio(p.y / p.x);
         overlayView.setBackgroundDrawable(borderDrawable);
 
 

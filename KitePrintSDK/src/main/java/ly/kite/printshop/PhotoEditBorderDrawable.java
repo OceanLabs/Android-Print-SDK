@@ -15,6 +15,8 @@ public class PhotoEditBorderDrawable extends Drawable {
     public final static float WINDOW_SIZE = 0.8f;
     private final static float EDGE_SIZE = 0.1f;
 
+    private float aspectRatio;
+
     private Paint paintBorder = new Paint();
     private Paint paintBorderEdge = new Paint();
     private Paint paintOverlay = new Paint();
@@ -58,16 +60,17 @@ public class PhotoEditBorderDrawable extends Drawable {
 
         // Square!
         float len = width * WINDOW_SIZE;
+        float lenY = len * aspectRatio;
         float len_2 = len / 2;
         float horiz = centerX - len_2;
-        float vert = centerY - len_2;
+        float vert = centerY - len_2 * aspectRatio;
 
         borderPath = new Path();
 
         borderPath.moveTo(horiz, vert);
         borderPath.lineTo(horiz + len, vert);
-        borderPath.lineTo(horiz + len, vert + len);
-        borderPath.lineTo(horiz, vert + len);
+        borderPath.lineTo(horiz + len, vert + lenY);
+        borderPath.lineTo(horiz, vert + lenY);
         borderPath.close();
 
         edgePath = new Path();
@@ -76,30 +79,30 @@ public class PhotoEditBorderDrawable extends Drawable {
         float off = paintBorder.getStrokeWidth() * 0.5f;
 
         // Top left
-        edgePath.moveTo(horiz + off, vert + len * EDGE_SIZE + off);
+        edgePath.moveTo(horiz + off, vert + lenY * EDGE_SIZE + off);
         edgePath.lineTo(horiz + off, vert + off);
         edgePath.lineTo(horiz + len * EDGE_SIZE + off, vert + off);
 
         // Top Right
         edgePath.moveTo(horiz + len * (1 - EDGE_SIZE) - off, vert + off);
         edgePath.lineTo(horiz + len - off, vert + off);
-        edgePath.lineTo(horiz + len - off, vert + len * EDGE_SIZE + off);
+        edgePath.lineTo(horiz + len - off, vert + lenY * EDGE_SIZE + off);
 
         // Bottom Right
-        edgePath.moveTo(horiz + len - off, vert + len * (1 - EDGE_SIZE) - off);
-        edgePath.lineTo(horiz + len - off, vert + len - off);
-        edgePath.lineTo(horiz + len * (1 - EDGE_SIZE) - off, vert + len - off);
+        edgePath.moveTo(horiz + len - off, vert + lenY * (1 - EDGE_SIZE) - off);
+        edgePath.lineTo(horiz + len - off, vert + lenY - off);
+        edgePath.lineTo(horiz + len * (1 - EDGE_SIZE) - off, vert + lenY - off);
 
         // Bottom Left
-        edgePath.moveTo(horiz + len * EDGE_SIZE + off, vert + len - off);
-        edgePath.lineTo(horiz + off, vert + len - off);
-        edgePath.lineTo(horiz + off, vert + len * (1 - EDGE_SIZE) - off);
+        edgePath.moveTo(horiz + len * EDGE_SIZE + off, vert + lenY - off);
+        edgePath.lineTo(horiz + off, vert + lenY - off);
+        edgePath.lineTo(horiz + off, vert + lenY * (1 - EDGE_SIZE) - off);
 
         // PorterDuffModes drive me crazy. let's just create 4 rects and draw our overlay inside of them.
         topRect = new RectF(0, 0, width, vert);
-        leftRect = new RectF(0, vert, horiz, vert + len);
-        bottomRect = new RectF(0, vert + len, width, height);
-        rightRect = new RectF(horiz + len, vert, width, vert + len);
+        leftRect = new RectF(0, vert, horiz, vert + lenY);
+        bottomRect = new RectF(0, vert + lenY, width, height);
+        rightRect = new RectF(horiz + len, vert, width, vert + lenY);
     }
 
     @Override
@@ -131,5 +134,13 @@ public class PhotoEditBorderDrawable extends Drawable {
     @Override
     public int getOpacity() {
         return 255;
+    }
+
+    public float getAspectRatio() {
+        return aspectRatio;
+    }
+
+    public void setAspectRatio(float aspectRatio) {
+        this.aspectRatio = aspectRatio;
     }
 }
