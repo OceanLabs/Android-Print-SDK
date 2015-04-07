@@ -25,6 +25,7 @@ import java.util.List;
 
 import ly.kite.R;
 import ly.kite.checkout.CheckoutActivity;
+import ly.kite.print.Asset;
 import ly.kite.print.PrintOrder;
 import ly.kite.print.Template;
 
@@ -36,13 +37,13 @@ public class ProductHomeActivity extends Activity {
     private static final int REQUEST_CODE_CHECKOUT = 2;
 
     private ProductHomeAdapter productHomeAdapter;
-    private PrintOrder printOrder;
+    private ArrayList<Asset> assets;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        printOrder = (PrintOrder) getIntent().getSerializableExtra(CheckoutActivity.EXTRA_PRINT_ORDER);
+        assets = (ArrayList<Asset>) getIntent().getSerializableExtra(CheckoutActivity.EXTRA_PRINT_ASSETS);
 
         setContentView(R.layout.activity_product_home);
 
@@ -51,7 +52,7 @@ public class ProductHomeActivity extends Activity {
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment(productHomeAdapter, printOrder))
+                    .add(R.id.container, new PlaceholderFragment(productHomeAdapter, assets))
                     .commit();
         }
 
@@ -62,11 +63,11 @@ public class ProductHomeActivity extends Activity {
 
     public static class PlaceholderFragment extends Fragment{
         private final ProductHomeAdapter adapter;
-        private PrintOrder printOrder;
+        private ArrayList<Asset> assets;
 
-        public PlaceholderFragment(ProductHomeAdapter adapter, PrintOrder printOrder){
+        public PlaceholderFragment(ProductHomeAdapter adapter,  ArrayList<Asset> assets){
             this.adapter = adapter;
-            this.printOrder = printOrder;
+            this.assets = assets;
         }
 
         @Override
@@ -87,6 +88,7 @@ public class ProductHomeActivity extends Activity {
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long position) {
                     Intent intent = new Intent(getActivity(), ProductTypeSelectionActivity.class);
                     intent.putExtra(CheckoutActivity.EXTRA_PRINT_TEMPLATE_CLASS,  ((Template)adapter.getItem(i)).getTemplateClass());
+                    intent.putExtra(CheckoutActivity.EXTRA_PRINT_ASSETS, assets);
                     startActivityForResult(intent, REQUEST_CODE_CHECKOUT);
                 }
             });

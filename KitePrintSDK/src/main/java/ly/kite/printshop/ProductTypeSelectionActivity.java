@@ -18,12 +18,14 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 import ly.kite.R;
 import ly.kite.checkout.CheckoutActivity;
+import ly.kite.print.Asset;
 import ly.kite.print.PrintOrder;
 import ly.kite.print.Template;
 
@@ -35,14 +37,15 @@ public class ProductTypeSelectionActivity extends Activity {
     private static final int REQUEST_CODE_CHECKOUT = 2;
 
     private ProductTypeAdapter productTypeAdapter;
-    private PrintOrder printOrder;
     private String templateClass;
+    private ArrayList<Asset> assets;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         templateClass = (String) getIntent().getSerializableExtra(CheckoutActivity.EXTRA_PRINT_TEMPLATE_CLASS);
+        assets = (ArrayList<Asset>) getIntent().getSerializableExtra(CheckoutActivity.EXTRA_PRINT_ASSETS);
 
         setContentView(R.layout.activity_product_type_selection);
 
@@ -51,7 +54,7 @@ public class ProductTypeSelectionActivity extends Activity {
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment(productTypeAdapter, printOrder))
+                    .add(R.id.container, new PlaceholderFragment(productTypeAdapter, assets))
                     .commit();
         }
 
@@ -78,11 +81,11 @@ public class ProductTypeSelectionActivity extends Activity {
 
     public static class PlaceholderFragment extends Fragment{
         private final ProductTypeAdapter adapter;
-        private PrintOrder printOrder;
+        private ArrayList<Asset> assets;
 
-        public PlaceholderFragment(ProductTypeAdapter adapter, PrintOrder printOrder){
+        public PlaceholderFragment(ProductTypeAdapter adapter, ArrayList<Asset> assets){
             this.adapter = adapter;
-            this.printOrder = printOrder;
+            this.assets = assets;
         }
 
         @Override
@@ -103,6 +106,7 @@ public class ProductTypeSelectionActivity extends Activity {
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long position) {
                     Intent intent = new Intent(getActivity(), ProductOverviewActivity.class);
                     intent.putExtra(CheckoutActivity.EXTRA_PRINT_TEMPLATE, (Parcelable) adapter.getItem(i));
+                    intent.putExtra(CheckoutActivity.EXTRA_PRINT_ASSETS, (Serializable) assets);
                     startActivityForResult(intent, REQUEST_CODE_CHECKOUT);
                 }
             });
@@ -125,7 +129,7 @@ public class ProductTypeSelectionActivity extends Activity {
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup viewGroup) {
+        public View getView(int position, final View convertView, final ViewGroup viewGroup) {
             View v = convertView;
             if (convertView == null) {
                 LayoutInflater li = (LayoutInflater) viewGroup.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);

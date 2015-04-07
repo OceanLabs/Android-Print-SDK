@@ -11,6 +11,7 @@
     <string name="title_activity_product_home">Print Shop</string>
     <string name="title_activity_product_overview">Product</string>
     <string name="title_activity_product_type">Select Size</string>
+    <string name="title_activity_single_image_review">Review</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_payment">Payment</string>
     <string name="title_activity_address_book">Address Book</string>
@@ -23,5 +24,9 @@
     <string name="search_title">Search</string>
     <string name="country_search_hint">Search Addresses</string>
     <string name="title_activity_template_sync">TemplateSyncActivity</string>
+    <string name="loading">Loading</string>
+    <string name="please_wait">Please wait</string>
+    <string name="loading_failed">Loading Failed</string>
+    <string name="saving">Saving</string>
 
 </resources>

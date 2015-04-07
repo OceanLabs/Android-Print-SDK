@@ -1,7 +1,10 @@
 package ly.kite.printshop;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -17,8 +20,12 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+
 import ly.kite.R;
 import ly.kite.checkout.CheckoutActivity;
+import ly.kite.print.Asset;
 import ly.kite.print.Template;
 
 public class ProductOverviewActivity extends FragmentActivity {
@@ -26,6 +33,7 @@ public class ProductOverviewActivity extends FragmentActivity {
 
     private ViewPager mPager;
     private PagerAdapter mPagerAdapter;
+    private ArrayList<Asset> assets;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,10 +41,11 @@ public class ProductOverviewActivity extends FragmentActivity {
         setContentView(R.layout.activity_product_overview);
 
         template = (Template) getIntent().getSerializableExtra(CheckoutActivity.EXTRA_PRINT_TEMPLATE);
+        assets = (ArrayList<Asset>) getIntent().getSerializableExtra(CheckoutActivity.EXTRA_PRINT_ASSETS);
 
         // Instantiate a ViewPager and a PagerAdapter.
         mPager = (ViewPager) findViewById(R.id.pager);
-        mPagerAdapter = new ProductOverviewAdapter(getSupportFragmentManager(), template);
+        mPagerAdapter = new ProductOverviewAdapter(getSupportFragmentManager(), template, assets);
         mPager.setAdapter(mPagerAdapter);
 
         Display display = getWindowManager().getDefaultDisplay();
@@ -83,10 +92,12 @@ public class ProductOverviewActivity extends FragmentActivity {
      */
     private class ProductOverviewAdapter extends FragmentStatePagerAdapter {
         private Template template;
+        private ArrayList<Asset> assets;
 
-        public ProductOverviewAdapter(FragmentManager fm, Template template) {
+        public ProductOverviewAdapter(FragmentManager fm, Template template, ArrayList<Asset> assets) {
             this(fm);
             this.template = template;
+            this.assets = assets;
         }
 
         public ProductOverviewAdapter(FragmentManager fm) {
@@ -95,7 +106,7 @@ public class ProductOverviewActivity extends FragmentActivity {
 
         @Override
         public Fragment getItem(int position) {
-            return new ScreenSlidePageFragment(template, position);
+            return new ScreenSlidePageFragment(template, position, assets);
         }
 
         @Override
@@ -106,11 +117,13 @@ public class ProductOverviewActivity extends FragmentActivity {
 
     public static class ScreenSlidePageFragment extends Fragment {
         private Template template;
-        int position;
+        private ArrayList<Asset> assets;
+        private int position;
 
-        public ScreenSlidePageFragment (Template template, int position){
+        public ScreenSlidePageFragment (Template template, int position, ArrayList<Asset> assets){
             this.template = template;
             this.position = position;
+            this.assets = assets;
         }
 
         @Override
@@ -119,8 +132,22 @@ public class ProductOverviewActivity extends FragmentActivity {
             ViewGroup rootView = (ViewGroup) inflater.inflate(
                     R.layout.fragment_product_overview, container, false);
 
+            final ViewGroup vg = container;
             ImageView imageView = ((ImageView) rootView.findViewById(R.id.overview_imageView));
             Picasso.with(container.getContext()).load(template.getProductPhotographyURLs().get(position)).into(imageView);
+
+            final Activity activity = getActivity();
+
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(activity, PhotoEditActivity.class);
+                    intent.putExtra(CheckoutActivity.EXTRA_PRINT_TEMPLATE, (Parcelable)template);
+                    intent.putExtra(CheckoutActivity.EXTRA_PRINT_ASSETS, assets);
+                    intent.putExtra("photo", (Serializable)assets.get(0));
+                    startActivityForResult(intent, 0);
+                }
+            });
 
             return rootView;
         }

@@ -1,5 +1,6 @@
 package co.oceanlabs.sample;
 
+import java.io.Serializable;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -72,18 +73,19 @@ public class MainActivity extends Activity {
     }
 
     public void onCheckoutButtonClicked(View view) {
-        ArrayList<Asset> assets = new ArrayList<Asset>();
-        assets.add(new Asset(R.drawable.instagram1));
-
-        try {
-            assets.add(new Asset(new URL("http://psps.s3.amazonaws.com/sdk_static/1.jpg")));
-            assets.add(new Asset(new URL("http://psps.s3.amazonaws.com/sdk_static/2.jpg")));
-            assets.add(new Asset(new URL("http://psps.s3.amazonaws.com/sdk_static/3.jpg")));
-            assets.add(new Asset(new URL("http://psps.s3.amazonaws.com/sdk_static/4.jpg")));
-
-        } catch (Exception ex) {}
-
-        checkoutWithAssets(assets);
+        Toast.makeText(this, "Not supported yet", Toast.LENGTH_SHORT).show();
+//        ArrayList<Asset> assets = new ArrayList<Asset>();
+////        assets.add(new Asset(R.drawable.instagram1));
+//
+//        try {
+//            assets.add(new Asset(new URL("http://psps.s3.amazonaws.com/sdk_static/1.jpg")));
+//            assets.add(new Asset(new URL("http://psps.s3.amazonaws.com/sdk_static/2.jpg")));
+//            assets.add(new Asset(new URL("http://psps.s3.amazonaws.com/sdk_static/3.jpg")));
+//            assets.add(new Asset(new URL("http://psps.s3.amazonaws.com/sdk_static/4.jpg")));
+//
+//        } catch (Exception ex) {}
+//
+//        checkoutWithAssets(assets);
     }
 
     private void checkoutWithAssets(List<Asset> assets) {
@@ -105,17 +107,8 @@ public class MainActivity extends Activity {
 
         KitePrintSDK.initialize(apiKey, env, getApplicationContext());
 
-        ProductType productType = (ProductType) productSpinner.getSelectedItem();
-        PrintOrder printOrder = new PrintOrder();
-        if (productType == ProductType.POSTCARD) {
-            printOrder.addPrintJob(PrintJob.createPostcardPrintJob(ProductType.POSTCARD.getDefaultTemplate(),
-                    assets.get(0), "Hello World!", Address.getKiteTeamAddress()));
-        } else {
-            printOrder.addPrintJob(PrintJob.createPrintJob(assets, productType));
-        }
-
         Intent intent = new Intent(this, ProductHomeActivity.class);
-        intent.putExtra(CheckoutActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder);
+        intent.putExtra(CheckoutActivity.EXTRA_PRINT_ASSETS, (Serializable) assets);
         startActivityForResult(intent, REQUEST_CODE_CHECKOUT);
     }
 
