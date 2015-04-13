@@ -14,11 +14,11 @@ repositories {
 
 android {
     compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    buildToolsVersion '19.1.0'
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 21
+        targetSdkVersion 19
         versionName project.VERSION_NAME
         versionCode Integer.parseInt(project.VERSION_CODE)
     }
@@ -35,7 +35,12 @@ android {
 dependencies {
     compile files('libs/PayPalAndroidSDK.jar')
     compile files('libs/CardIONativeLibs.jar')
+    compile 'com.squareup.picasso:picasso:2.5.0'
     // To generate this jar containing shared libraries see: http://ivansotof.com/2013/12/including-native-so-libraries-in-android/
+    compile 'com.android.support:support-v4:21.0.3'
+    compile 'com.android.support:appcompat-v7:21.0.3'
+    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.3'
+    compile 'javax.inject:javax.inject:1'
 }
 
 // Apply chrisbanes' excellent gradle-mvn-push recipe,

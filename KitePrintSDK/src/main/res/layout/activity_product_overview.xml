@@ -1,0 +1,74 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+
+<android.support.v4.view.ViewPager
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/pager"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />
+
+    <TextView
+        android:id="@+id/shippingLabel"
+        android:layout_width="170dp"
+        android:layout_height="45dp"
+        android:textSize="11dp"
+        android:textAllCaps="true"
+        android:textAlignment="gravity"
+        android:gravity="center_horizontal|center_vertical"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="right|bottom"
+        android:text="@string/hello_world"
+        android:background="#ff3ec79d"
+        android:textColor="@android:color/white" />
+
+    <ly.kite.printshop.WhiteSquare
+        android:id="@+id/whiteSquare"
+        android:layout_width="170dp"
+        android:layout_height="45dp"
+        android:gravity="center_horizontal|center_vertical"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="right|bottom"
+        android:background="#00000000"
+        />
+
+    <TextView
+        android:id="@+id/priceLabel"
+        android:layout_width="170dp"
+        android:layout_height="45dp"
+        android:textSize="17dp"
+        android:textAllCaps="true"
+        android:textAlignment="gravity"
+        android:gravity="center_horizontal|center_vertical"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom|left"
+        android:text="@string/hello_world"
+        android:background="#F7BE58"
+        android:textColor="@android:color/white"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/dimensionsLabel"
+        android:layout_width="170dp"
+        android:layout_height="45dp"
+        android:textSize="10dp"
+        android:textAllCaps="true"
+        android:textAlignment="gravity"
+        android:gravity="center_horizontal|center_vertical"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="center_horizontal|bottom"
+        android:text="@string/hello_world"
+        android:background="#4C88E7"
+        android:textColor="@android:color/white" />
+
+    </FrameLayout>

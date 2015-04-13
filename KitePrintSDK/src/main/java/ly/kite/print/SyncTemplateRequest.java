@@ -1,5 +1,7 @@
 package ly.kite.print;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,13 +23,14 @@ public class SyncTemplateRequest {
     public void sync(final SyncTemplateRequestListener listener) {
         assert req == null : "you can only submit a request once";
 
-        String url = String.format("%s/v1/template/", KitePrintSDK.getEnvironment().getPrintAPIEndpoint());
+        String url = String.format("%s/v1.3/template/", KitePrintSDK.getEnvironment().getPrintAPIEndpoint());
         req = new BaseRequest(BaseRequest.HttpMethod.GET, url, null, null);
         req.start(new BaseRequest.BaseRequestListener() {
             @Override
             public void onSuccess(int httpStatusCode, JSONObject json) {
                 try {
                     if (httpStatusCode >= 200 && httpStatusCode <= 299) {
+                        Log.v("", "Template Sync Completed Successfully");
                         JSONArray templates = json.getJSONArray("objects");
                         ArrayList<Template> templateObjects = new ArrayList<Template>();
                         for (int i = 0; i < templates.length(); ++i) {
@@ -45,6 +48,7 @@ public class SyncTemplateRequest {
 
                     }
                 } catch (JSONException ex) {
+                    Log.v("Error: ", ex.getLocalizedMessage());
                     listener.onError(ex);
                 }
             }
