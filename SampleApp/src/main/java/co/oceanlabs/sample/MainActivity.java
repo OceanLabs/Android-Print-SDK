@@ -73,14 +73,13 @@ public class MainActivity extends Activity {
 
     public void onCheckoutButtonClicked(View view) {
         ArrayList<Asset> assets = new ArrayList<Asset>();
-        //assets.add(new Asset(R.drawable.instagram1));
+        assets.add(new Asset(R.drawable.instagram1));
 
         try {
             assets.add(new Asset(new URL("http://psps.s3.amazonaws.com/sdk_static/1.jpg")));
             assets.add(new Asset(new URL("http://psps.s3.amazonaws.com/sdk_static/2.jpg")));
             assets.add(new Asset(new URL("http://psps.s3.amazonaws.com/sdk_static/3.jpg")));
             assets.add(new Asset(new URL("http://psps.s3.amazonaws.com/sdk_static/4.jpg")));
-
         } catch (Exception ex) {}
 
         checkoutWithAssets(assets);

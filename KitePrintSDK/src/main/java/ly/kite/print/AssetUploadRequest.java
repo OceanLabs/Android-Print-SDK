@@ -178,7 +178,7 @@ class AssetUploadRequest {
                 HttpClient httpclient = new DefaultHttpClient();
                 HttpPut request = new HttpPut(details.signedS3UploadReqURL.toString());
                 request.setHeader("Content-Type", mimeType);
-                request.setHeader("x-amz-acl", "public-read");
+                request.setHeader("x-amz-acl", "private");
                 request.setEntity(new ByteArrayEntity(bytes));
 
                 try {
