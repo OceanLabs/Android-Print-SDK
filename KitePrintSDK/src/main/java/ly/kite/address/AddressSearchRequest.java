@@ -34,7 +34,7 @@ public class AddressSearchRequest {
             return;
         }
 
-        String url = String.format("%s/v1/address/search?%s", KitePrintSDK.getEnvironment().getPrintAPIEndpoint(), queryParams);
+        String url = String.format("%s/address/search?%s", KitePrintSDK.getEnvironment().getPrintAPIEndpoint(), queryParams);
         startSearch(url, country, listener);
     }
 
@@ -56,7 +56,7 @@ public class AddressSearchRequest {
             return;
         }
 
-        String url = String.format("%s/v1/address/search?%s", KitePrintSDK.getEnvironment().getPrintAPIEndpoint(), queryParams);
+        String url = String.format("%s/address/search?%s", KitePrintSDK.getEnvironment().getPrintAPIEndpoint(), queryParams);
         startSearch(url, address.getCountry(), listener);
     }
 

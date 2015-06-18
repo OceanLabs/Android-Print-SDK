@@ -119,7 +119,7 @@ class AssetUploadRequest {
             mimeTypes.append(a.getMimeType(context).getMimeTypeString());
         }
 
-        String url = String.format("%s/v1/asset/sign/?mime_types=%s&client_asset=true", KitePrintSDK.getEnvironment().getPrintAPIEndpoint(), mimeTypes.toString());
+        String url = String.format("%s/asset/sign/?mime_types=%s&client_asset=true", KitePrintSDK.getEnvironment().getPrintAPIEndpoint(), mimeTypes.toString());
         registerImageURLAssetsReq = new BaseRequest(BaseRequest.HttpMethod.GET, url, null, (String) null);
         registerImageURLAssetsReq.start(new BaseRequest.BaseRequestListener() {
             @Override
@@ -294,7 +294,7 @@ class AssetUploadRequest {
 
         final int expectedRegisteredAssetCount = c;
 
-        String url = String.format("%s/v1/asset/", KitePrintSDK.getEnvironment().getPrintAPIEndpoint());
+        String url = String.format("%s/asset/", KitePrintSDK.getEnvironment().getPrintAPIEndpoint());
         registerImageURLAssetsReq = new BaseRequest(BaseRequest.HttpMethod.PATCH, url, null, jsonBody.toString());
         registerImageURLAssetsReq.start(new BaseRequest.BaseRequestListener() {
             @Override

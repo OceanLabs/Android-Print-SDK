@@ -10,6 +10,7 @@ import java.util.List;
 import co.oceanlabs.sample.R;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -41,7 +42,7 @@ public class MainActivity extends Activity {
      * Insert your Kite API keys here. These are found under your profile
      * by logging in to the developer portal at https://www.kite.ly
      **********************************************************************/
-    private static final String API_KEY_TEST = "REPLACE_ME";
+    private static final String API_KEY_TEST = "ba171b0d91b1418fbd04f7b12af1e37e42d2cb1e";
     private static final String API_KEY_LIVE = "REPLACE_ME";
 
     private static final int REQUEST_CODE_SELECT_PICTURE = 1;
@@ -72,7 +73,7 @@ public class MainActivity extends Activity {
 
     public void onCheckoutButtonClicked(View view) {
         ArrayList<Asset> assets = new ArrayList<Asset>();
-        assets.add(new Asset(R.drawable.instagram1));
+        //assets.add(new Asset(R.drawable.instagram1));
 
         try {
             assets.add(new Asset(new URL("http://psps.s3.amazonaws.com/sdk_static/1.jpg")));
@@ -94,18 +95,14 @@ public class MainActivity extends Activity {
         }
 
         if (apiKey.equals("REPLACE_ME")) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Set API Keys");
-            builder.setMessage("Please set your Kite API keys at the top of the SampleApp's MainActivity.java. You can find these by logging into https://www.kite.ly.");
-            builder.setPositiveButton("OK", null);
-            builder.show();
+            showError("Set API Keys", "Please set your Kite API keys at the top of the SampleApp's MainActivity.java. You can find these by logging into https://www.kite.ly.");
             return;
         }
 
         KitePrintSDK.initialize(apiKey, env, getApplicationContext());
 
         ProductType productType = (ProductType) productSpinner.getSelectedItem();
-        PrintOrder printOrder = new PrintOrder();
+        final PrintOrder printOrder = new PrintOrder();
         if (productType == ProductType.POSTCARD) {
             printOrder.addPrintJob(PrintJob.createPostcardPrintJob(ProductType.POSTCARD.getDefaultTemplate(),
                     assets.get(0), "Hello World!", Address.getKiteTeamAddress()));
@@ -113,9 +110,35 @@ public class MainActivity extends Activity {
             printOrder.addPrintJob(PrintJob.createPrintJob(assets, productType));
         }
 
-        Intent intent = new Intent(this, CheckoutActivity.class);
-        intent.putExtra(CheckoutActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder);
-        startActivityForResult(intent, REQUEST_CODE_CHECKOUT);
+
+        final ProgressDialog progress = new ProgressDialog(this);
+        progress.setTitle("Loading Templates");
+        progress.setMessage("Wait while loading...");
+        progress.show();
+
+        Template.sync(getApplicationContext(), new Template.TemplateSyncListener() {
+            @Override
+            public void onSuccess() {
+                progress.dismiss();
+                Intent intent = new Intent(MainActivity.this, CheckoutActivity.class);
+                intent.putExtra(CheckoutActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder);
+                startActivityForResult(intent, REQUEST_CODE_CHECKOUT);
+            }
+
+            @Override
+            public void onError(Exception error) {
+                progress.dismiss();
+                showError("Error Syncing Templates", error.getMessage());
+            }
+        });
+    }
+
+    private void showError(String title, String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title);
+        builder.setMessage(message);
+        builder.setPositiveButton("OK", null);
+        builder.show();
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

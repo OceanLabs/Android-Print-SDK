@@ -20,8 +20,8 @@ public class KitePrintSDK {
     private static final String PAYPAL_RECIPIENT_LIVE = "deon@oceanlabs.co";
 
     public static enum Environment {
-        LIVE("https://api.kite.ly", PaymentActivity.ENVIRONMENT_LIVE, PAYPAL_CLIENT_ID_LIVE, PAYPAL_RECIPIENT_LIVE),
-        TEST("https://api.kite.ly", PaymentActivity.ENVIRONMENT_SANDBOX, PAYPAL_CLIENT_ID_SANDBOX, PAYPAL_RECIPIENT_SANDBOX),
+        LIVE("https://api.kite.ly/v1.4", PaymentActivity.ENVIRONMENT_LIVE, PAYPAL_CLIENT_ID_LIVE, PAYPAL_RECIPIENT_LIVE),
+        TEST("https://api.kite.ly/v1.4", PaymentActivity.ENVIRONMENT_SANDBOX, PAYPAL_CLIENT_ID_SANDBOX, PAYPAL_RECIPIENT_SANDBOX),
         STAGING("http://staging.api.kite.ly", PaymentActivity.ENVIRONMENT_SANDBOX, PAYPAL_CLIENT_ID_SANDBOX, PAYPAL_RECIPIENT_SANDBOX); /* private environment intended only for Ocean Labs use, hands off :) */
 
         private final String apiEndpoint;
@@ -53,20 +53,12 @@ public class KitePrintSDK {
     private static String apiKey;
     private static Environment environment;
 
-    public static String getUserCurrencyCode() {
-        return userCurrencyCode;
-    }
-    public static String userCurrencyCode;
 
     private static Context applicationContext;
 
     public static void initialize(String apiKey, Environment env, Context context) {
         KitePrintSDK.apiKey = apiKey;
         KitePrintSDK.environment = env;
-        Locale defaultLocale = Locale.getDefault();
-        Currency a = Currency.getInstance(defaultLocale);
-        KitePrintSDK.userCurrencyCode = a.getCurrencyCode();
-        Template.sync(context.getApplicationContext());
         applicationContext = context.getApplicationContext();
     }
 

@@ -26,7 +26,7 @@ public class CheckPromoRequest {
             templateCostBreakdown.append(String.format("%s:%s", j.getTemplateId(), j.getCost(order.getCurrencyCode()).toString()));
         }
 
-        String url = String.format("%s/v1/promo_code/check?code=%s&templates=%s&currency=%s", KitePrintSDK.getEnvironment().getPrintAPIEndpoint(), promoCode, templateCostBreakdown.toString(), order.getCurrencyCode());
+        String url = String.format("%s/promo_code/check?code=%s&templates=%s&currency=%s", KitePrintSDK.getEnvironment().getPrintAPIEndpoint(), promoCode, templateCostBreakdown.toString(), order.getCurrencyCode());
         req = new BaseRequest(BaseRequest.HttpMethod.GET, url, null, null);
         req.start(new BaseRequest.BaseRequestListener() {
             @Override

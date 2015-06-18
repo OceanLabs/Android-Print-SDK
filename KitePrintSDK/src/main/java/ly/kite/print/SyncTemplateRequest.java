@@ -21,7 +21,7 @@ public class SyncTemplateRequest {
     public void sync(final SyncTemplateRequestListener listener) {
         assert req == null : "you can only submit a request once";
 
-        String url = String.format("%s/v1/template/", KitePrintSDK.getEnvironment().getPrintAPIEndpoint());
+        String url = String.format("%s/template/?limit=100", KitePrintSDK.getEnvironment().getPrintAPIEndpoint());
         req = new BaseRequest(BaseRequest.HttpMethod.GET, url, null, null);
         req.start(new BaseRequest.BaseRequestListener() {
             @Override
