@@ -183,7 +183,7 @@ public class PrintOrder implements Parcelable, Serializable {
     public String getCurrencyCode() {
         String code = currencyCode == null ? Country.getInstance(Locale.getDefault()).getCurrencyCode() : currencyCode;
         Set<String> supportedCurrencies = getCurrenciesSupported();
-        if (supportedCurrencies.contains(currencyCode)) {
+        if (supportedCurrencies.contains(code)) {
             return code;
         }
 
