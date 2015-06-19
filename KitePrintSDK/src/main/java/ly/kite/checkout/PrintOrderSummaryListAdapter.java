@@ -10,11 +10,10 @@ import java.text.NumberFormat;
 import java.util.Currency;
 import java.util.Locale;
 
-import ly.kite.print.KitePrintSDK;
 import ly.kite.print.PrintJob;
 import ly.kite.print.PrintOrder;
 import ly.kite.R;
-import ly.kite.print.Template;
+import ly.kite.print.Product;
 
 /**
  * Created by deonbotha on 20/02/2014.
@@ -51,7 +50,7 @@ class PrintOrderSummaryListAdapter extends BaseAdapter {
 
         PrintJob job = order.getJobs().get(i);
 
-        Template template = Template.getTemplate(job.getTemplateId());
+        Product template = Product.getTemplate( job.getTemplateId() );
         int quantityPerSheet = template.getQuantityPerSheet() <= 0 ? 1 : template.getQuantityPerSheet();
         int num = (int) Math.floor((job.getQuantity() + (quantityPerSheet - 1)) / quantityPerSheet);
         itemDescription.setText(String.format("%d x %d %s", num, quantityPerSheet, job.getProductType().getProductName()));

@@ -1,6 +1,7 @@
 package ly.kite.print;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -22,6 +23,14 @@ import java.util.Map;
  * Created by deonbotha on 02/02/2014.
  */
 public class BaseRequest {
+
+  private static final String LOG_TAG                          = "BaseRequest";
+
+  public  static final String ERROR_RESPONSE_JSON_OBJECT_NAME  = "error";
+  public  static final String ERROR_RESPONSE_MESSAGE_JSON_NAME = "message";
+  public  static final String ERROR_RESPONSE_CODE_JSON_NAME    = "code";
+
+
     public static interface BaseRequestListener {
         void onSuccess(int httpStatusCode, JSONObject json);
         void onError(Exception ex);
@@ -76,6 +85,7 @@ public class BaseRequest {
     }
 
     public void start(final BaseRequestListener listener) {
+
         assert requestTask == null : "Oops a request has previously been started";
 
         requestTask = new AsyncTask<Void, Void, JSONHttpResponse>() {

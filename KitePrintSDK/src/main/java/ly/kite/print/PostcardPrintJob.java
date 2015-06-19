@@ -34,13 +34,13 @@ class PostcardPrintJob extends PrintJob {
 
     @Override
     public BigDecimal getCost(String currencyCode) {
-        Template template = Template.getTemplate(templateId);
+        Product template = Product.getTemplate( templateId );
         return template.getCost(currencyCode);
     }
 
     @Override
     public Set<String> getCurrenciesSupported() {
-        Template template = Template.getTemplate(templateId);
+        Product template = Product.getTemplate( templateId );
         return template.getCurrenciesSupported();
     }
 

@@ -12,6 +12,8 @@ import java.util.Locale;
  */
 public class KitePrintSDK {
 
+    public static final String INTENT_PREFIX = "ly.kite";
+
     static final String KITE_SHARED_PREFERENCES = "ly.kite.shared_preferences";
 
     private static final String PAYPAL_CLIENT_ID_SANDBOX = "Aa5nsBDntBpozWQykoxQXoHFOqs551hTNt0B8LQXTudoh8bD0nT1F735c_Fh";

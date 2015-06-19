@@ -35,6 +35,12 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="18" />
 
     <application>
+
+        <activity
+            android:name=".shopping.ProductGroupActivity"
+            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"
+            android:launchMode="singleTop"/>
+
         <activity
             android:name=".checkout.PaymentActivity"
             android:label="@string/title_activity_payment"

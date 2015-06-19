@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,28 +24,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ly.kite.address.Address;
-
 /**
  * Created by alibros on 06/01/15.
  */
-public class Template implements Parcelable, Serializable {
+public class Product extends ProductItem implements Parcelable, Serializable {
 
     private static final String PERSISTED_TEMPLATES_FILENAME = "templates";
     private static final String PREF_LAST_SYNC_DATE = "last_sync_date";
 
     private static final ArrayList<TemplateSyncListener> SYNC_LISTENERS = new ArrayList<TemplateSyncListener>();
-    private static List<Template> syncedTemplates;
+    private static List<Product> syncedTemplates;
     private static Date lastSyncDate;
 
     private String id;
     private int quantityPerSheet;
     private String name;
     private Map<String, BigDecimal> costsByCurrencyCode;
-    private static SyncTemplateRequest inProgressSyncReq;
+    private static ProductSyncer inProgressSyncReq;
 
 
-    Template(String id, Map<String, BigDecimal> costsByCurrencyCode, String name, int quantityPerSheet) {
+    Product(String id, Map<String, BigDecimal> costsByCurrencyCode, String name, int quantityPerSheet) {
         this.costsByCurrencyCode = costsByCurrencyCode;
         this.name = name;
         this.quantityPerSheet = quantityPerSheet;
@@ -73,7 +70,7 @@ public class Template implements Parcelable, Serializable {
         return costsByCurrencyCode.keySet();
     }
 
-    static Template parseTemplate(JSONObject json) throws JSONException {
+    static Product parseTemplate(JSONObject json) throws JSONException {
         String name = json.getString("name");
         int quantityPerSheet = json.optInt("images_per_page");
         String templateId = json.getString("template_id");
@@ -88,7 +85,7 @@ public class Template implements Parcelable, Serializable {
             costsByCurrencyCode.put(currency, amount);
         }
 
-        return new Template(templateId, costsByCurrencyCode, name, quantityPerSheet);
+        return new Product(templateId, costsByCurrencyCode, name, quantityPerSheet);
     }
 
     public static Date getLastSyncDate() {
@@ -114,10 +111,10 @@ public class Template implements Parcelable, Serializable {
         }
 
         final Context appContext = context.getApplicationContext();
-        inProgressSyncReq = new SyncTemplateRequest();
-        inProgressSyncReq.sync(new SyncTemplateRequestListener() {
+        inProgressSyncReq = new ProductSyncer();
+        inProgressSyncReq.sync(new ProductSyncer.SyncListener() {
             @Override
-            public void onSyncComplete(ArrayList<Template> templates) {
+            public void onSyncComplete( ArrayList<Product> templates ) {
                 inProgressSyncReq = null;
                 persistTemplatesToDiskAsLatest(appContext, templates);
                 synchronized (SYNC_LISTENERS) {
@@ -145,7 +142,7 @@ public class Template implements Parcelable, Serializable {
         return inProgressSyncReq != null;
     }
 
-    private static void persistTemplatesToDiskAsLatest(Context context, List<Template> templates) {
+    private static void persistTemplatesToDiskAsLatest(Context context, List<Product> templates) {
         syncedTemplates = templates;
         lastSyncDate = new Date();
 
@@ -169,9 +166,9 @@ public class Template implements Parcelable, Serializable {
         }
     }
 
-    public static Template getTemplate(String templateId) {
-        List<Template> templates = getTemplates();
-        for (Template template : templates) {
+    public static Product getTemplate(String templateId) {
+        List<Product> templates = getTemplates();
+        for (Product template : templates) {
             if (template.getId().equals(templateId)) {
                 return template;
             }
@@ -180,7 +177,7 @@ public class Template implements Parcelable, Serializable {
         throw new KitePrintSDKException("Couldn't find Kite product template with id: '" + templateId + "'", KitePrintSDKException.ErrorCode.TEMPLATE_NOT_FOUND);
     }
 
-    public static List<Template> getTemplates() {
+    public static List<Product> getTemplates() {
         if (syncedTemplates != null) {
             return syncedTemplates;
         }
@@ -195,10 +192,10 @@ public class Template implements Parcelable, Serializable {
         ObjectInputStream is = null;
         try {
             is = new ObjectInputStream(new BufferedInputStream(KitePrintSDK.getApplicationContext().openFileInput(PERSISTED_TEMPLATES_FILENAME)));
-            syncedTemplates = (List<Template>) is.readObject();
+            syncedTemplates = (List<Product>) is.readObject();
             return syncedTemplates;
         } catch (FileNotFoundException ex) {
-            return new ArrayList<Template>();
+            return new ArrayList<Product>();
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         } finally {
@@ -226,8 +223,8 @@ public class Template implements Parcelable, Serializable {
         }
     }
 
-    public static final Parcelable.Creator<Template> CREATOR = new Parcelable.Creator<Template>() {
-        public Template createFromParcel(Parcel in) {
+    public static final Parcelable.Creator<Product> CREATOR = new Parcelable.Creator<Product>() {
+        public Product createFromParcel(Parcel in) {
             String id = in.readString();
             int quantityPerSheet = in.readInt();
             String name = in.readString();
@@ -238,11 +235,11 @@ public class Template implements Parcelable, Serializable {
                 BigDecimal cost = new BigDecimal(in.readString());
             }
 
-            return new Template(id, costsByCurrencyCode, name, quantityPerSheet);
+            return new Product(id, costsByCurrencyCode, name, quantityPerSheet);
         }
 
-        public Template[] newArray(int size) {
-            return new Template[size];
+        public Product[] newArray(int size) {
+            return new Product[size];
         }
     };
 

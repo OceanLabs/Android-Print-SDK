@@ -1,29 +1,20 @@
 package co.oceanlabs.sample;
 
-import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import co.oceanlabs.sample.R;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Parcelable;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -34,7 +25,8 @@ import ly.kite.print.PrintJob;
 import ly.kite.print.PrintOrder;
 import ly.kite.checkout.CheckoutActivity;
 import ly.kite.print.ProductType;
-import ly.kite.print.Template;
+import ly.kite.print.Product;
+import ly.kite.shopping.KiteShopping;
 
 public class MainActivity extends Activity {
 
@@ -85,7 +77,7 @@ public class MainActivity extends Activity {
         checkoutWithAssets(assets);
     }
 
-    private void checkoutWithAssets(List<Asset> assets) {
+    private void checkoutWithAssets(ArrayList<Asset> assets) {
         String apiKey = API_KEY_TEST;
         KitePrintSDK.Environment env = KitePrintSDK.Environment.TEST;
         if (environmentSwitch.isChecked()) {
@@ -98,38 +90,43 @@ public class MainActivity extends Activity {
             return;
         }
 
-        KitePrintSDK.initialize(apiKey, env, getApplicationContext());
+    KiteShopping.launch( apiKey, env, this, assets );
 
-        ProductType productType = (ProductType) productSpinner.getSelectedItem();
-        final PrintOrder printOrder = new PrintOrder();
-        if (productType == ProductType.POSTCARD) {
-            printOrder.addPrintJob(PrintJob.createPostcardPrintJob(ProductType.POSTCARD.getDefaultTemplate(),
-                    assets.get(0), "Hello World!", Address.getKiteTeamAddress()));
-        } else {
-            printOrder.addPrintJob(PrintJob.createPrintJob(assets, productType));
-        }
-
-
-        final ProgressDialog progress = new ProgressDialog(this);
-        progress.setTitle("Loading Templates");
-        progress.setMessage("Wait while loading...");
-        progress.show();
-
-        Template.sync(getApplicationContext(), new Template.TemplateSyncListener() {
-            @Override
-            public void onSuccess() {
-                progress.dismiss();
-                Intent intent = new Intent(MainActivity.this, CheckoutActivity.class);
-                intent.putExtra(CheckoutActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder);
-                startActivityForResult(intent, REQUEST_CODE_CHECKOUT);
-            }
-
-            @Override
-            public void onError(Exception error) {
-                progress.dismiss();
-                showError("Error Syncing Templates", error.getMessage());
-            }
-        });
+//        KitePrintSDK.initialize(apiKey, env, getApplicationContext());
+//
+//        ProductType productType = (ProductType) productSpinner.getSelectedItem();
+//        final PrintOrder printOrder = new PrintOrder();
+//        if (productType == ProductType.POSTCARD) {
+//            printOrder.addPrintJob(PrintJob.createPostcardPrintJob(ProductType.POSTCARD.getDefaultTemplate(),
+//                    assets.get(0), "Hello World!", Address.getKiteTeamAddress()));
+//        } else {
+//            printOrder.addPrintJob(PrintJob.createPrintJob(assets, productType));
+//        }
+//
+//
+//        final ProgressDialog progress = new ProgressDialog(this);
+//        progress.setTitle("Loading Templates");
+//        progress.setMessage("Wait while loading...");
+//        progress.show();
+//
+//        Product.sync( getApplicationContext(), new Product.TemplateSyncListener()
+//        {
+//        @Override
+//        public void onSuccess()
+//            {
+//            progress.dismiss();
+//            Intent intent = new Intent( MainActivity.this, CheckoutActivity.class );
+//            intent.putExtra( CheckoutActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder );
+//            startActivityForResult( intent, REQUEST_CODE_CHECKOUT );
+//            }
+//
+//        @Override
+//        public void onError(Exception error)
+//            {
+//            progress.dismiss();
+//            showError( "Error Syncing Templates", error.getMessage() );
+//            }
+//        } );
     }
 
     private void showError(String title, String message) {

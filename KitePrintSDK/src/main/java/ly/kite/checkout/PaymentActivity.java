@@ -40,7 +40,6 @@ import ly.kite.payment.PayPalCardChargeListener;
 import ly.kite.payment.PayPalCardVaultStorageListener;
 import io.card.payment.CardIOActivity;
 import io.card.payment.CreditCard;
-import ly.kite.print.Template;
 
 public class PaymentActivity extends Activity {
 

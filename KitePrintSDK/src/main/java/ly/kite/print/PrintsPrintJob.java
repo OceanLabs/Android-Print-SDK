@@ -1,6 +1,5 @@
 package ly.kite.print;
 
-import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -14,8 +13,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
-import ly.kite.address.Address;
 
 /**
  * Created by deonbotha on 09/02/2014.
@@ -36,7 +33,7 @@ class PrintsPrintJob extends PrintJob {
 
     @Override
     public BigDecimal getCost(String currencyCode) {
-        Template template = Template.getTemplate(templateId);
+        Product template = Product.getTemplate( templateId );
         BigDecimal sheetCost = template.getCost(currencyCode);
         int expectedQuantity = template.getQuantityPerSheet();
 
@@ -46,7 +43,7 @@ class PrintsPrintJob extends PrintJob {
 
     @Override
     public Set<String> getCurrenciesSupported() {
-        Template template = Template.getTemplate(templateId);
+        Product template = Product.getTemplate( templateId );
         if (template == null) {
             return Collections.EMPTY_SET;
         }

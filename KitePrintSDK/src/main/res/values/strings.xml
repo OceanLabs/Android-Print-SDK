@@ -2,6 +2,9 @@
 <resources>
 
     <string name="app_name">Kite SDK</string>
+
+    <string name="title_product_groups_activity">Print Shop</string>
+
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>
