@@ -42,6 +42,8 @@ package ly.kite.shopping;
 
 ///// Class Declaration /////
 
+import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -61,7 +63,9 @@ public class ProductItemAdaptor extends BaseAdapter
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "ProductItemAdaptor";
+  private static final String  LOG_TAG            = "ProductItemAdaptor";
+
+  private static final int     LAYOUT_RESOURCE_ID = 0;
 
 
   ////////// Static Variable(s) //////////
@@ -69,7 +73,10 @@ public class ProductItemAdaptor extends BaseAdapter
 
   ////////// Member Variable(s) //////////
 
+  private Context            mContext;
   private List<ProductItem>  mProductItemList;
+
+  private LayoutInflater     mLayoutInflator;
 
 
   ////////// Static Initialiser(s) //////////
@@ -80,9 +87,12 @@ public class ProductItemAdaptor extends BaseAdapter
 
   ////////// Constructor(s) //////////
 
-  ProductItemAdaptor( List<ProductItem> productItemList )
+  ProductItemAdaptor( Context context, List<ProductItem> productItemList )
     {
+    mContext         = context;
     mProductItemList = productItemList;
+
+    mLayoutInflator  = LayoutInflater.from( context );
     }
 
 
@@ -134,9 +144,38 @@ public class ProductItemAdaptor extends BaseAdapter
   @Override
   public View getView( int position, View convertView, ViewGroup parent )
     {
-    // TODO
+    // Either re-use the convert view, or create a new one.
 
-    return null;
+    Object          tagObject;
+    View            view;
+    ViewReferences  viewReferences;
+
+    if ( convertView != null &&
+            ( tagObject = convertView.getTag() ) != null &&
+            ( tagObject instanceof ViewReferences ) )
+      {
+      view           = convertView;
+      viewReferences = (ViewReferences)tagObject;
+      }
+    else
+      {
+      view = mLayoutInflator.inflate( LAYOUT_RESOURCE_ID, null );
+
+      viewReferences           = new ViewReferences();
+      viewReferences.dummyView = view.findViewById( 0 );  // TODO
+
+      view.setTag( viewReferences );
+      }
+
+
+    Object object = getItem( position );  // TODO
+
+
+    // Populate the view
+    //viewReferences.dummyView;  // TODO
+
+
+    return ( view );
     }
 
 
@@ -144,9 +183,13 @@ public class ProductItemAdaptor extends BaseAdapter
 
   /*****************************************************
    *
-   * ...
+   * References to views within the layout.
    *
    *****************************************************/
+  private class ViewReferences
+    {
+    View  dummyView;
+    }
 
   }
 
