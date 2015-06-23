@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * ProductItem.java
+ * MultipleCurrencyCost.java
  *
  *
  * Modified MIT License
@@ -24,7 +24,7 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.print;
+package ly.kite.shopping;
 
 
 ///// Import(s) /////
@@ -42,23 +42,29 @@ package ly.kite.print;
 
 ///// Class Declaration /////
 
+import java.math.BigDecimal;
+import java.util.Currency;
+import java.util.HashMap;
+
 /*****************************************************
  *
- * This class represents a product group or product.
+ * This class represents a cost in multiple currencies.
  *
  *****************************************************/
-public abstract class ProductItem
+public class MultipleCurrencyCost
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "ProductItem";
+  private static final String  LOG_TAG = "MultipleCurrencyCost";
 
 
   ////////// Static Variable(s) //////////
 
 
   ////////// Member Variable(s) //////////
+
+  private HashMap<Currency,SingleCurrencyCost>  mCostTable;
 
 
   ////////// Static Initialiser(s) //////////
@@ -69,14 +75,23 @@ public abstract class ProductItem
 
   ////////// Constructor(s) //////////
 
+  public MultipleCurrencyCost()
+    {
+    mCostTable = new HashMap<Currency,SingleCurrencyCost>();
+    }
+
 
   ////////// Method(s) //////////
 
   /*****************************************************
    *
-   * ...
+   * Adds a cost in a single currency.
    *
    *****************************************************/
+  public void add( SingleCurrencyCost singleCurrencyCost )
+    {
+    mCostTable.put( singleCurrencyCost.getCurrency(), singleCurrencyCost );
+    }
 
 
   ////////// Inner Class(es) //////////

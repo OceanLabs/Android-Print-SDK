@@ -13,7 +13,7 @@ import java.util.Locale;
 import ly.kite.print.PrintJob;
 import ly.kite.print.PrintOrder;
 import ly.kite.R;
-import ly.kite.print.Product;
+import ly.kite.print.Template;
 
 /**
  * Created by deonbotha on 20/02/2014.
@@ -50,7 +50,7 @@ class PrintOrderSummaryListAdapter extends BaseAdapter {
 
         PrintJob job = order.getJobs().get(i);
 
-        Product template = Product.getTemplate( job.getTemplateId() );
+        Template template = Template.getTemplate( job.getTemplateId() );
         int quantityPerSheet = template.getQuantityPerSheet() <= 0 ? 1 : template.getQuantityPerSheet();
         int num = (int) Math.floor((job.getQuantity() + (quantityPerSheet - 1)) / quantityPerSheet);
         itemDescription.setText(String.format("%d x %d %s", num, quantityPerSheet, job.getProductType().getProductName()));

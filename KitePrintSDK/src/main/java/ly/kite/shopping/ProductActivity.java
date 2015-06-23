@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * ProductGroupActivity.java
+ * ProductActivity.java
  *
  *
  * Modified MIT License
@@ -48,7 +48,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ProgressBar;
@@ -65,18 +64,19 @@ import ly.kite.print.ProductSyncer;
 
 /*****************************************************
  *
- * This class displays the product group photos and allows
- * the user to drill down to products within that group.
+ * This class displays the product photos and allows
+ * the user to drill down into the products.
  *
  *****************************************************/
-public class ProductGroupActivity extends Activity implements ProductSyncer.SyncListener, AdapterView.OnItemClickListener
+public class ProductActivity extends Activity implements ProductSyncer.SyncListener
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                      = "ProductGroupActivity";
+  private static final String  LOG_TAG                               = "ProductActivity";
 
-  private static final String  INTENT_EXTRA_NAME_ASSET_LIST = KitePrintSDK.INTENT_PREFIX + ".AssetList";
+  public  static final String  INTENT_EXTRA_NAME_ASSET_LIST          = KitePrintSDK.INTENT_PREFIX + ".AssetList";
+  public  static final String  INTENT_EXTRA_NAME_PRODUCT_GROUP_LABEL = KitePrintSDK.INTENT_PREFIX + ".ProductGroupLabel";
 
 
   ////////// Static Variable(s) //////////
@@ -84,14 +84,14 @@ public class ProductGroupActivity extends Activity implements ProductSyncer.Sync
 
   ////////// Member Variable(s) //////////
 
-  private ArrayList<Asset>         mAssetArrayList;
+  private ArrayList<Asset>  mAssetArrayList;
+  private String            mProductGroupLabel;
 
-  private GridView                 mGridView;
-  private ProgressBar              mProgressBar;
+  private GridView          mGridView;
+  private ProgressBar       mProgressBar;
 
-  private ProductSyncer            mProductSyncer;
-  private ArrayList<ProductGroup>  mProductGroupList;
-  private BaseAdapter              mGridAdaptor;
+  private ProductSyncer     mProductSyncer;
+  private BaseAdapter       mGridAdaptor;
 
 
   ////////// Static Initialiser(s) //////////
@@ -105,11 +105,12 @@ public class ProductGroupActivity extends Activity implements ProductSyncer.Sync
    * set of assets.
    *
    *****************************************************/
-  static void start( Context context, ArrayList<Asset> assetArrayList )
+  static void start( Context context, ArrayList<Asset> assetArrayList, String productGroupLabel )
     {
-    Intent intent = new Intent( context, ProductGroupActivity.class );
+    Intent intent = new Intent( context, ProductActivity.class );
 
     intent.putParcelableArrayListExtra( INTENT_EXTRA_NAME_ASSET_LIST, assetArrayList );
+    intent.putExtra( ProductActivity.INTENT_EXTRA_NAME_PRODUCT_GROUP_LABEL, productGroupLabel );
 
     context.startActivity( intent );
     }
@@ -132,7 +133,7 @@ public class ProductGroupActivity extends Activity implements ProductSyncer.Sync
     super.onCreate( savedInstanceState );
 
 
-    // Get the assets
+    // Get the assets and the product group label
 
     Intent intent = getIntent();
 
@@ -158,6 +159,16 @@ public class ProductGroupActivity extends Activity implements ProductSyncer.Sync
       return;
       }
 
+    if ( ( mProductGroupLabel = intent.getStringExtra( INTENT_EXTRA_NAME_PRODUCT_GROUP_LABEL ) ) == null )
+      {
+      Log.e( LOG_TAG, "No product group label found" );
+
+      // TODO: Display error dialog
+
+      finish();
+
+      return;
+      }
 
     // Set up the screen content
 
@@ -169,7 +180,7 @@ public class ProductGroupActivity extends Activity implements ProductSyncer.Sync
     mProgressBar = (ProgressBar)findViewById( R.id.progress_bar );
 
 
-    // Either get the last retrieved set of products, or start a new product sync.
+    // Get the last retrieved product group list
 
     mProductSyncer = ProductSyncer.getInstance();
 
@@ -207,16 +218,18 @@ public class ProductGroupActivity extends Activity implements ProductSyncer.Sync
   @Override
   public void onSyncComplete( ArrayList<ProductGroup> productGroupList )
     {
-    mProductGroupList = productGroupList;
-
     mProgressBar.setVisibility( View.GONE );
 
-    // Display the product groups
-    mGridAdaptor = new DisplayItemAdaptor( this, productGroupList );
-    mGridView.setAdapter( mGridAdaptor );
+    // Try and find a product list
 
-    // Register for item selection
-    mGridView.setOnItemClickListener( this );
+    ArrayList<Product> productList = ProductGroup.findProductsByGroupLabel( productGroupList, mProductGroupLabel );
+
+    if ( productList != null )
+      {
+      // Display the products
+      mGridAdaptor = new DisplayItemAdaptor( this, productList );
+      mGridView.setAdapter( mGridAdaptor );
+      }
     }
 
 
@@ -231,25 +244,6 @@ public class ProductGroupActivity extends Activity implements ProductSyncer.Sync
     mProgressBar.setVisibility( View.GONE );
 
     // TODO: Display an error
-    }
-
-
-  ////////// AdapterView.OnItemClickListener Method(s) //////////
-
-  /*****************************************************
-   *
-   * Called when a product group is clicked.
-   *
-   *****************************************************/
-  @Override
-  public void onItemClick( AdapterView<?> parent, View view, int position, long id )
-    {
-    // Get the product group
-    ProductGroup clickedProductGroup = mProductGroupList.get( position );
-
-    // Start the product activity, passing it the assets and the product group label (to
-    // identify it).
-    ProductActivity.start( this, mAssetArrayList, clickedProductGroup.getDisplayLabel() );
     }
 
 

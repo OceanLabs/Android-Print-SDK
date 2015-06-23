@@ -3,14 +3,11 @@ package co.oceanlabs.sample;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Parcelable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -18,14 +15,9 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import ly.kite.address.Address;
 import ly.kite.print.Asset;
 import ly.kite.print.KitePrintSDK;
-import ly.kite.print.PrintJob;
-import ly.kite.print.PrintOrder;
-import ly.kite.checkout.CheckoutActivity;
 import ly.kite.print.ProductType;
-import ly.kite.print.Product;
 import ly.kite.shopping.KiteShopping;
 
 public class MainActivity extends Activity {
@@ -41,19 +33,19 @@ public class MainActivity extends Activity {
     private static final int REQUEST_CODE_CHECKOUT = 2;
 
     private Switch environmentSwitch;
-    private Spinner productSpinner;
+    //private Spinner productSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         environmentSwitch = (Switch) findViewById(R.id.environment);
-        productSpinner = (Spinner) findViewById(R.id.spinner_product);
+        //productSpinner = (Spinner) findViewById(R.id.spinner_product);
 
-        ArrayAdapter adapter = new ArrayAdapter<ProductType>(this, android.R.layout.simple_list_item_1, ProductType.values());
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        productSpinner.setAdapter(adapter);
-        productSpinner.setSelection(Arrays.asList(ProductType.values()).indexOf(ProductType.MAGNETS));
+        //ArrayAdapter adapter = new ArrayAdapter<ProductType>(this, android.R.layout.simple_list_item_1, ProductType.values());
+        //adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //productSpinner.setAdapter(adapter);
+        //productSpinner.setSelection(Arrays.asList(ProductType.values()).indexOf(ProductType.MAGNETS));
     }
 
     public void onGalleryButtonClicked(View view) {

@@ -30,7 +30,7 @@ import ly.kite.print.PrintOrder;
 import ly.kite.R;
 import ly.kite.address.Address;
 import ly.kite.address.AddressBookActivity;
-import ly.kite.print.Product;
+import ly.kite.print.Template;
 
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
@@ -206,11 +206,11 @@ public class CheckoutActivity extends Activity {
         editor.putString(SHIPPING_PREFERENCE_PHONE, phone);
         editor.commit();
 
-        Date lastSyncedDate = Product.getLastSyncDate();
+        Date lastSyncedDate = Template.getLastSyncDate();
         Date dateHourAgo = new Date(System.currentTimeMillis() - (1 * 60 * 60 * 1000));
-        if ( Product.isSyncInProgress() || lastSyncedDate == null || lastSyncedDate.compareTo(dateHourAgo) < 0) {
+        if ( Template.isSyncInProgress() || lastSyncedDate == null || lastSyncedDate.compareTo(dateHourAgo) < 0) {
             final ProgressDialog progress = ProgressDialog.show(this, null, "Loading");
-            Product.sync( getApplicationContext(), new Product.TemplateSyncListener()
+            Template.sync( getApplicationContext(), new Template.TemplateSyncListener()
             {
             @Override
             public void onSuccess()
@@ -220,7 +220,7 @@ public class CheckoutActivity extends Activity {
                 }
 
             @Override
-            public void onError(Exception error)
+            public void onError( Exception error )
                 {
                 progress.dismiss();
                 showRetryTemplateSyncDialog( error );
@@ -254,7 +254,7 @@ public class CheckoutActivity extends Activity {
         // Check we have valid templates for every printjob
         for (PrintJob job : printOrder.getJobs()) {
             try {
-                Product.getTemplate( job.getTemplateId() );
+                Template.getTemplate( job.getTemplateId() );
             } catch (Exception ex) {
                 showRetryTemplateSyncDialog(ex);
                 return;

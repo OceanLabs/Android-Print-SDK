@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * ProductItemAdaptor.java
+ * ProductGroup.java
  *
  *
  * Modified MIT License
@@ -24,7 +24,7 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.shopping;
+package ly.kite.print;
 
 
 ///// Import(s) /////
@@ -42,30 +42,22 @@ package ly.kite.shopping;
 
 ///// Class Declaration /////
 
-import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import java.net.URL;
+import java.util.ArrayList;
 
-import java.util.List;
-
-import ly.kite.print.ProductItem;
+import ly.kite.shopping.DisplayItem;
 
 /*****************************************************
  *
- * This class is an adaptor for product groups or
- * products.
+ * This class represents a product group.
  *
  *****************************************************/
-public class ProductItemAdaptor extends BaseAdapter
+public class ProductGroup implements DisplayItem
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG            = "ProductItemAdaptor";
-
-  private static final int     LAYOUT_RESOURCE_ID = 0;
+  private static final String  LOG_TAG = "ProductGroup";
 
 
   ////////// Static Variable(s) //////////
@@ -73,10 +65,11 @@ public class ProductItemAdaptor extends BaseAdapter
 
   ////////// Member Variable(s) //////////
 
-  private Context            mContext;
-  private List<ProductItem>  mProductItemList;
+  private String              mLabel;
+  private int                 mLabelColour;
+  private URL                 mImageURL;
 
-  private LayoutInflater     mLayoutInflator;
+  private ArrayList<Product>  mProductList;
 
 
   ////////// Static Initialiser(s) //////////
@@ -84,98 +77,94 @@ public class ProductItemAdaptor extends BaseAdapter
 
   ////////// Static Method(s) //////////
 
+  /*****************************************************
+   *
+   * Returns a list of products within the group specified
+   * by the product group label.
+   *
+   *****************************************************/
+  public static ArrayList<Product> findProductsByGroupLabel( ArrayList<ProductGroup> productGroupList, String groupLabel )
+    {
+    for ( ProductGroup productGroup : productGroupList )
+      {
+      if ( productGroup.getDisplayLabel().equals( groupLabel ) ) return ( productGroup.getProductList() );
+      }
+
+    return ( null );
+    }
+
 
   ////////// Constructor(s) //////////
 
-  ProductItemAdaptor( Context context, List<ProductItem> productItemList )
+  ProductGroup( String label, int labelColour, URL imageURL )
     {
-    mContext         = context;
-    mProductItemList = productItemList;
+    mLabel       = label;
+    mLabelColour = labelColour;
+    mImageURL    = imageURL;
 
-    mLayoutInflator  = LayoutInflater.from( context );
+    mProductList = new ArrayList<Product>();
     }
 
 
-  ////////// BaseAdapter Method(s) //////////
+  ////////// DisplayItem Method(s) //////////
 
   /*****************************************************
    *
-   * Returns the number of product items.
+   * Returns the display image URL.
    *
    *****************************************************/
   @Override
-  public int getCount()
+  public URL getDisplayImageURL()
     {
-    return ( mProductItemList.size() );
-    }
-
-
-  /*****************************************************
-   *
-   * Returns the product item at the requested position.
-   *
-   *****************************************************/
-  @Override
-  public Object getItem( int position )
-    {
-    return ( mProductItemList.get( position ) );
+    return ( mImageURL );
     }
 
 
   /*****************************************************
    *
-   * Returns an id for the product item at the requested
-   * position.
+   * Returns the display label.
    *
    *****************************************************/
   @Override
-  public long getItemId( int position )
+  public String getDisplayLabel()
     {
-    return ( 0 );
+    return ( mLabel );
     }
 
 
   /*****************************************************
    *
-   * Returns the view for the product item at the requested
-   * position.
+   * Returns the display label colour.
    *
    *****************************************************/
   @Override
-  public View getView( int position, View convertView, ViewGroup parent )
+  public int getDisplayLabelColour()
     {
-    // Either re-use the convert view, or create a new one.
-
-    Object          tagObject;
-    View            view;
-    ViewReferences  viewReferences;
-
-    if ( convertView != null &&
-            ( tagObject = convertView.getTag() ) != null &&
-            ( tagObject instanceof ViewReferences ) )
-      {
-      view           = convertView;
-      viewReferences = (ViewReferences)tagObject;
-      }
-    else
-      {
-      view = mLayoutInflator.inflate( LAYOUT_RESOURCE_ID, null );
-
-      viewReferences           = new ViewReferences();
-      viewReferences.dummyView = view.findViewById( 0 );  // TODO
-
-      view.setTag( viewReferences );
-      }
+    return ( mLabelColour );
+    }
 
 
-    Object object = getItem( position );  // TODO
+  ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Adds a product to this group.
+   *
+   *****************************************************/
+  void add( Product product )
+    {
+    mProductList.add( product );
+    }
 
 
-    // Populate the view
-    //viewReferences.dummyView;  // TODO
-
-
-    return ( view );
+  /*****************************************************
+   *
+   * Returns the product list.
+   *
+   *****************************************************/
+  public ArrayList<Product> getProductList()
+    {
+    return ( mProductList );
     }
 
 
@@ -183,13 +172,9 @@ public class ProductItemAdaptor extends BaseAdapter
 
   /*****************************************************
    *
-   * References to views within the layout.
+   * ...
    *
    *****************************************************/
-  private class ViewReferences
-    {
-    View  dummyView;
-    }
 
   }
 

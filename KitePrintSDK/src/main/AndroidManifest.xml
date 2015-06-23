@@ -38,7 +38,12 @@
 
         <activity
             android:name=".shopping.ProductGroupActivity"
-            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"
+            android:theme="@style/KiteSDKTheme"
+            android:launchMode="singleTop"/>
+
+        <activity
+            android:name=".shopping.ProductActivity"
+            android:theme="@style/KiteSDKTheme"
             android:launchMode="singleTop"/>
 
         <activity
@@ -94,24 +99,18 @@
             android:exported="false" />
 
         <activity
-            android:name="com.paypal.android.sdk.payments.PaymentActivity"
-            android:theme="@style/AppTheme" />
+            android:name="com.paypal.android.sdk.payments.PaymentActivity"/>
         <activity
-            android:name="com.paypal.android.sdk.payments.LoginActivity"
-            android:theme="@style/AppTheme" />
+            android:name="com.paypal.android.sdk.payments.LoginActivity"/>
         <activity
-            android:name="com.paypal.android.sdk.payments.PaymentMethodActivity"
-            android:theme="@style/AppTheme" />
+            android:name="com.paypal.android.sdk.payments.PaymentMethodActivity"/>
         <activity
-            android:name="com.paypal.android.sdk.payments.PaymentConfirmActivity"
-            android:theme="@style/AppTheme" />
+            android:name="com.paypal.android.sdk.payments.PaymentConfirmActivity"/>
         <activity
             android:name="io.card.payment.CardIOActivity"
-            android:configChanges="keyboardHidden|orientation"
-            android:theme="@style/AppTheme" />
+            android:configChanges="keyboardHidden|orientation"/>
         <activity
-            android:name="io.card.payment.DataEntryActivity"
-            android:theme="@style/AppTheme" />
+            android:name="io.card.payment.DataEntryActivity"/>
     </application>
 
 </manifest>

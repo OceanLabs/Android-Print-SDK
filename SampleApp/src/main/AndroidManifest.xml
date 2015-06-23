@@ -26,7 +26,7 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+		android:theme="@style/android:Theme.DeviceDefault.Light">
         <activity
             android:name="co.oceanlabs.sample.MainActivity"
             android:label="@string/app_name" >

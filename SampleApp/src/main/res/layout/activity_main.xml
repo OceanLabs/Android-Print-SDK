@@ -1,21 +1,67 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    >
+    android:paddingTop="@dimen/activity_vertical_margin">
 
+    <Switch
+        android:id="@+id/environment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:textOff="Sandbox"
+        android:textOn="Live"/>
 
+    <!--
+    <Spinner
+        android:id="@+id/spinner_product"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/environment"/>
 
-    <Switch android:id="@+id/environment" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textOn="Live" android:textOff="Sandbox" android:layout_centerHorizontal="true" />
-    <Spinner android:id="@+id/spinner_product" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_below="@id/environment" android:layout_alignParentRight="true" />
-    <TextView android:id="@+id/textview_product" android:layout_alignBottom="@id/spinner_product" android:gravity="bottom" android:paddingRight="15dp" android:layout_below="@id/environment" android:layout_toLeftOf="@id/spinner_product" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Product:" />
+    <TextView
+        android:id="@+id/textview_product"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/spinner_product"
+        android:layout_below="@id/environment"
+        android:layout_toLeftOf="@id/spinner_product"
+        android:gravity="bottom"
+        android:paddingRight="15dp"
+        android:text="Product:"/>
+    -->
 
-    <Button android:layout_marginTop="20dp" android:id="@+id/button_gallery" android:layout_below="@id/spinner_product" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Print Local Photos" android:onClick="onGalleryButtonClicked" />
-    <Button android:id="@+id/button_checkout" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Print Photos at Remote URLs" android:layout_below="@id/button_gallery" android:onClick="onCheckoutButtonClicked" />
-    <ImageView android:id="@+id/image_view" android:layout_width="match_parent" android:layout_height="match_parent" android:layout_below="@id/button_checkout" />
+    <Button
+        android:id="@+id/button_gallery"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/environment"
+        android:layout_marginTop="20dp"
+        android:onClick="onGalleryButtonClicked"
+        android:text="Print Local Photos"/>
 
-    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="https://www.kite.ly" android:layout_alignParentBottom="true" android:layout_centerHorizontal="true"  />
+    <Button
+        android:id="@+id/button_checkout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/button_gallery"
+        android:onClick="onCheckoutButtonClicked"
+        android:text="Print Photos at Remote URLs"/>
+
+    <ImageView
+        android:id="@+id/image_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/button_checkout"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="https://www.kite.ly"/>
 </RelativeLayout>
