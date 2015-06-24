@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * ProductItem.java
+ * GroupOrProduct.java
  *
  *
  * Modified MIT License
@@ -50,7 +50,7 @@ import java.net.URL;
  * product groups / products screens.
  *
  *****************************************************/
-public interface DisplayItem
+public interface GroupOrProduct
   {
   ////////// Method(s) //////////
 

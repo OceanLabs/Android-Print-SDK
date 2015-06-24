@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="status_bar">#999999</color>
-    <color name="action_bar">#33f8f7f5</color>
+    <color name="status_bar">#fa999999</color>
+    <color name="action_bar">#f0f8f7f5</color>
     <color name="light_grey">#d3d3d3</color>
 </resources>

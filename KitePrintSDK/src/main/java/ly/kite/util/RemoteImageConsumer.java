@@ -73,15 +73,6 @@ public interface RemoteImageConsumer
 
   /*****************************************************
    *
-   * Called when an image is available, and was loaded
-   * from flash.
-   *
-   *****************************************************/
-  public void onImageFromLocal( Bitmap bitmap );
-
-
-  /*****************************************************
-   *
    * Called when an image is not available locally, and will
    * thus be downloaded.
    *
@@ -94,7 +85,7 @@ public interface RemoteImageConsumer
    * Called when an image is available, and was downloaded.
    *
    *****************************************************/
-  public void onImageDownloaded( Bitmap bitmap );
+  public void onImageLoaded( String sourceURL, Bitmap bitmap );
 
 
   ////////// Inner Class(es) //////////

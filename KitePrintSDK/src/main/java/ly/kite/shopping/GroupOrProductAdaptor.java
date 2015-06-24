@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * DisplayItemAdaptor.java
+ * GroupOrProductAdaptor.java
  *
  *
  * Modified MIT License
@@ -49,7 +49,7 @@ import android.widget.BaseAdapter;
 
 import ly.kite.R;
 import ly.kite.util.ImageManager;
-import ly.kite.widget.DisplayItemView;
+import ly.kite.widget.GroupOrProductView;
 
 
 ///// Class Declaration /////
@@ -60,14 +60,14 @@ import ly.kite.widget.DisplayItemView;
  * products.
  *
  *****************************************************/
-public class DisplayItemAdaptor extends BaseAdapter
+public class GroupOrProductAdaptor extends BaseAdapter
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG              = "DisplayItemAdaptor";
+  private static final String  LOG_TAG              = "GroupOrProductAdaptor";
 
-  private static final int     LAYOUT_RESOURCE_ID   = R.layout.grid_item_display_item;
+  private static final int     LAYOUT_RESOURCE_ID   = R.layout.grid_item_group_or_product;
 
   private static final String  IMAGE_CLASS_STRING   = "product_item";
 
@@ -79,11 +79,11 @@ public class DisplayItemAdaptor extends BaseAdapter
 
   ////////// Member Variable(s) //////////
 
-  private Context                      mContext;
-  private List<? extends DisplayItem>  mDisplayItemList;
+  private Context                         mContext;
+  private List<? extends GroupOrProduct>  mDisplayItemList;
 
-  private LayoutInflater               mLayoutInflator;
-  private ImageManager                 mImageManager;
+  private LayoutInflater                  mLayoutInflator;
+  private ImageManager                    mImageManager;
 
 
   ////////// Static Initialiser(s) //////////
@@ -94,7 +94,7 @@ public class DisplayItemAdaptor extends BaseAdapter
 
   ////////// Constructor(s) //////////
 
-  DisplayItemAdaptor( Context context, List<? extends DisplayItem> displayItemList )
+  GroupOrProductAdaptor( Context context, List<? extends GroupOrProduct> displayItemList )
     {
     mContext         = context;
     mDisplayItemList = displayItemList;
@@ -169,8 +169,8 @@ public class DisplayItemAdaptor extends BaseAdapter
       {
       view = mLayoutInflator.inflate( LAYOUT_RESOURCE_ID, null );
 
-      viewReferences                 = new ViewReferences();
-      viewReferences.productItemView = (DisplayItemView)view.findViewById( R.id.display_item_view );
+      viewReferences                    = new ViewReferences();
+      viewReferences.groupOrProductView = (GroupOrProductView)view.findViewById( R.id.group_or_product_view );
 
       view.setTag( viewReferences );
       }
@@ -178,15 +178,16 @@ public class DisplayItemAdaptor extends BaseAdapter
 
     // Get the item we are displaying; set the label, and request the image from the image manager. We
     // also need to set the size of the image.
-    // TODO
 
-    DisplayItem displayItem = (DisplayItem)getItem( position );
+    GroupOrProduct groupOrProduct = (GroupOrProduct)getItem( position );
 
-    viewReferences.productItemView.setAspectRatio( DEFAULT_ASPECT_RATIO );
-    viewReferences.productItemView.setLabel( displayItem.getDisplayLabel(), displayItem.getDisplayLabelColour() );
+    // TODO: If there are only two items, change the aspect ratio
+    viewReferences.groupOrProductView.setAspectRatio( DEFAULT_ASPECT_RATIO );
+    viewReferences.groupOrProductView.setLabel( groupOrProduct.getDisplayLabel(), groupOrProduct.getDisplayLabelColour() );
 
-    mImageManager.getRemoteImage( IMAGE_CLASS_STRING, displayItem.getDisplayImageURL(), parent.getHandler(), viewReferences.productItemView );
+    viewReferences.groupOrProductView.setExpectedImageURL( groupOrProduct.getDisplayImageURL().toString() );
 
+    mImageManager.getRemoteImage( IMAGE_CLASS_STRING, groupOrProduct.getDisplayImageURL(), parent.getHandler(), viewReferences.groupOrProductView );
 
 
     return ( view );
@@ -202,7 +203,7 @@ public class DisplayItemAdaptor extends BaseAdapter
    *****************************************************/
   private class ViewReferences
     {
-    DisplayItemView productItemView;
+    GroupOrProductView groupOrProductView;
     }
 
   }

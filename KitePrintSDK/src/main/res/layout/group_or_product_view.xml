@@ -12,13 +12,17 @@
     <TextView
         android:id="@+id/text_view"
         android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="@dimen/display_item_label_bottom_margin"
-        android:layout_width="@dimen/display_item_label_width"
+        android:layout_marginBottom="@dimen/group_or_product_label_bottom_margin"
+        android:layout_width="@dimen/group_or_product_label_width"
         android:layout_height="wrap_content"
-        android:padding="@dimen/display_item_label_padding"
+        android:padding="@dimen/group_or_product_label_padding"
         android:gravity="center"
         android:textColor="@android:color/white"
-        android:textSize="@dimen/display_item_label_text_size"
+        android:textSize="@dimen/group_or_product_label_text_size"
+        android:shadowColor="#30000000"
+        android:shadowDx="0"
+        android:shadowDy="1"
+        android:shadowRadius="3"
         android:visibility="invisible"/>
 
     <ProgressBar

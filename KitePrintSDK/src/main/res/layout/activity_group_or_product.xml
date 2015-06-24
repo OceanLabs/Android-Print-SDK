@@ -4,14 +4,18 @@
     android:layout_height="fill_parent"
     android:background="@android:color/white">
 
-    <GridView
+    <!-- This layout is used for both the product group and product
+         activities.
+      -->
+
+    <ly.kite.widget.HeaderFooterGridView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/grid_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:numColumns="@integer/display_item_grid_num_columns"
-        android:verticalSpacing="@dimen/display_item_grid_vertical_spacing"
-        android:horizontalSpacing="@dimen/display_item_grid_horizontal_spacing"/>
+        android:verticalSpacing="@dimen/group_or_product_grid_vertical_spacing"
+        android:horizontalSpacing="@dimen/group_or_product_grid_horizontal_spacing"/>
 
     <ProgressBar
         android:id="@+id/progress_bar"

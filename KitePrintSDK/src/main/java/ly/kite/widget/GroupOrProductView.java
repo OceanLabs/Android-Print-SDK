@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * DisplayItemView.java
+ * GroupOrProductView.java
  *
  *
  * Modified MIT License
@@ -44,13 +44,11 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.widget.FrameLayout;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -69,12 +67,12 @@ import ly.kite.util.RemoteImageConsumer;
  * appropriate.
  *
  *****************************************************/
-public class DisplayItemView extends FrameLayout implements RemoteImageConsumer
+public class GroupOrProductView extends FrameLayout implements RemoteImageConsumer
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                           = "DisplayItemView";
+  private static final String  LOG_TAG                           = "GroupOrProductView";
 
   private static final float   DEFAULT_ASPECT_RATIO              = 1.0f;
 
@@ -94,6 +92,8 @@ public class DisplayItemView extends FrameLayout implements RemoteImageConsumer
 
   private float        mWidthToHeightMultiplier;
 
+  private String       mExpectedImageURLString;
+
 
   ////////// Static Initialiser(s) //////////
 
@@ -103,21 +103,21 @@ public class DisplayItemView extends FrameLayout implements RemoteImageConsumer
 
   ////////// Constructor(s) //////////
 
-  public DisplayItemView( Context context )
+  public GroupOrProductView( Context context )
     {
     super( context );
 
     initialise( context );
     }
 
-  public DisplayItemView( Context context, AttributeSet attrs )
+  public GroupOrProductView( Context context, AttributeSet attrs )
     {
     super( context, attrs );
 
     initialise( context );
     }
 
-  public DisplayItemView( Context context, AttributeSet attrs, int defStyleAttr )
+  public GroupOrProductView( Context context, AttributeSet attrs, int defStyleAttr )
     {
     super( context, attrs, defStyleAttr );
 
@@ -125,7 +125,7 @@ public class DisplayItemView extends FrameLayout implements RemoteImageConsumer
     }
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-  public DisplayItemView( Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes )
+  public GroupOrProductView( Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes )
     {
     super( context, attrs, defStyleAttr, defStyleRes );
     }
@@ -133,40 +133,31 @@ public class DisplayItemView extends FrameLayout implements RemoteImageConsumer
 
   ////////// View Method(s) //////////
 
-//  /*****************************************************
-//   *
-//   * Called to measure the view.
-//   *
-//   *****************************************************/
-//  @Override
-//  protected void onMeasure( int widthMeasureSpec, int heightMeasureSpec )
-//    {
-//    int widthMode = MeasureSpec.getMode( widthMeasureSpec );
-//    int widthSize = MeasureSpec.getSize( widthMeasureSpec );
-//
-//    Log.d( LOG_TAG, "widthMode = " + widthMode + ", widthSize = " + widthSize );
-//
-//    setMeasuredDimension( widthSize, (int) (widthSize * mWidthToHeightMultiplier) );
-//    }
-
-
   /*****************************************************
    *
-   * Sets the layout params.
+   * Called to measure the view.
    *
    *****************************************************/
   @Override
-  public void setLayoutParams( ViewGroup.LayoutParams layoutParams )
+  protected void onMeasure( int widthMeasureSpec, int heightMeasureSpec )
     {
-    Log.d( LOG_TAG, "setLayoutParams: width = " + layoutParams.width + ", height = " + layoutParams.height );
+    // When we are called - set the image view dimensions
 
-//    if ( layoutParams instanceof GridView.LayoutParams )
-//      {
-//      GridView.LayoutParams gridViewLayoutParams = (GridView.LayoutParams)
-//      }
-    if ( layoutParams.width > 0 ) layoutParams.height = (int)( layoutParams.width * mWidthToHeightMultiplier );
+    int widthMode = MeasureSpec.getMode( widthMeasureSpec );
+    int widthSize = MeasureSpec.getSize( widthMeasureSpec );
 
-    super.setLayoutParams( layoutParams );
+    if ( widthMode == MeasureSpec.AT_MOST || widthMode == MeasureSpec.EXACTLY )
+      {
+      ViewGroup.LayoutParams imageLayoutParams = mImageView.getLayoutParams();
+
+      imageLayoutParams.width  = widthSize;
+      imageLayoutParams.height = (int)( widthSize * mWidthToHeightMultiplier );
+
+      mImageView.setLayoutParams( imageLayoutParams );
+      }
+
+
+    super.onMeasure( widthMeasureSpec, heightMeasureSpec );
     }
 
 
@@ -186,21 +177,6 @@ public class DisplayItemView extends FrameLayout implements RemoteImageConsumer
 
   /*****************************************************
    *
-   * Sets the image after it has been loaded from local
-   * storage.
-   *
-   *****************************************************/
-  @Override
-  public void onImageFromLocal( Bitmap bitmap )
-    {
-    setImage( bitmap );
-
-    fadeImageIn();
-    }
-
-
-  /*****************************************************
-   *
    * Indicates that the image is being downloaded.
    *
    *****************************************************/
@@ -215,15 +191,22 @@ public class DisplayItemView extends FrameLayout implements RemoteImageConsumer
 
   /*****************************************************
    *
-   * Sets the image after it has been downloaded.
+   * Sets the image after it has been loaded.
    *
    *****************************************************/
   @Override
-  public void onImageDownloaded( Bitmap bitmap )
+  public void onImageLoaded( String imageURLString, Bitmap bitmap )
     {
-    setImage( bitmap );
+    // Make sure the image is the one we were expecting.
+    synchronized ( this )
+      {
+      if ( mExpectedImageURLString == null || mExpectedImageURLString.equals( imageURLString ) )
+        {
+        setImage( bitmap );
 
-    fadeImageIn();
+        fadeImageIn();
+        }
+      }
     }
 
 
@@ -243,7 +226,7 @@ public class DisplayItemView extends FrameLayout implements RemoteImageConsumer
 
     LayoutInflater layoutInflater = LayoutInflater.from( context );
 
-    View view = layoutInflater.inflate( R.layout.display_item_view, this, true );
+    View view = layoutInflater.inflate( R.layout.group_or_product_view, this, true );
 
 
     // Save references to the child views
@@ -303,6 +286,20 @@ public class DisplayItemView extends FrameLayout implements RemoteImageConsumer
     setLabel( label );
 
     mTextView.setBackgroundColor( colour );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets an expected image URL.
+   *
+   *****************************************************/
+  public void setExpectedImageURL( String imageURLString )
+    {
+    synchronized ( this )
+      {
+      mExpectedImageURLString = imageURLString;
+      }
     }
 
 

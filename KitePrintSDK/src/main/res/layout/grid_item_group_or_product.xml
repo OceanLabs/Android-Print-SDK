@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ly.kite.widget.DisplayItemView
+<ly.kite.widget.GroupOrProductView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/display_item_view"
+    android:id="@+id/group_or_product_view"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"/>

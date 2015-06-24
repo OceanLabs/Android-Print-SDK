@@ -333,18 +333,7 @@ public class ImageManager
 
       for ( CallbackInfo callbackInfo : mCallbackInfoList )
         {
-        Runnable callbackCaller;
-
-        if ( imageWasFoundLocally )
-          {
-          callbackCaller = new FromLocalCallbackCaller( callbackInfo.remoteImageConsumer, bitmap );
-          }
-        else
-          {
-          callbackCaller = new DownloadedCallbackCaller( callbackInfo.remoteImageConsumer, bitmap );
-          }
-
-        callbackInfo.callbackHandler.post( callbackCaller );
+        callbackInfo.callbackHandler.post( new LoadedCallbackCaller( callbackInfo.remoteImageConsumer, mImageURLString, bitmap ) );
         }
       }
 
@@ -459,19 +448,20 @@ public class ImageManager
 
   /*****************************************************
    *
-   * A callback caller for images that were already stored
-   * locally.
+   * A callback caller for loaded images.
    *
    *****************************************************/
-  private class FromLocalCallbackCaller implements Runnable
+  private class LoadedCallbackCaller implements Runnable
     {
     private RemoteImageConsumer  mRemoteImageConsumer;
+    private String               mImageURLString;
     private Bitmap               mBitmap;
 
 
-    FromLocalCallbackCaller( RemoteImageConsumer remoteImageConsumer, Bitmap bitmap )
+    LoadedCallbackCaller( RemoteImageConsumer remoteImageConsumer, String imageURLString, Bitmap bitmap )
       {
       mRemoteImageConsumer = remoteImageConsumer;
+      mImageURLString      = imageURLString;
       mBitmap              = bitmap;
       }
 
@@ -479,33 +469,7 @@ public class ImageManager
     @Override
     public void run()
       {
-      mRemoteImageConsumer.onImageFromLocal( mBitmap );
-      }
-    }
-
-
-  /*****************************************************
-   *
-   * A callback caller for images that were downloaded.
-   *
-   *****************************************************/
-  private class DownloadedCallbackCaller implements Runnable
-    {
-    private RemoteImageConsumer  mRemoteImageConsumer;
-    private Bitmap               mBitmap;
-
-
-    DownloadedCallbackCaller( RemoteImageConsumer remoteImageConsumer, Bitmap bitmap )
-      {
-      mRemoteImageConsumer = remoteImageConsumer;
-      mBitmap              = bitmap;
-      }
-
-
-    @Override
-    public void run()
-      {
-      mRemoteImageConsumer.onImageDownloaded( mBitmap );
+      mRemoteImageConsumer.onImageLoaded( mImageURLString, mBitmap );
       }
     }
 

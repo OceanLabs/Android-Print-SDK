@@ -4,12 +4,15 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
-    <dimen name="display_item_grid_vertical_spacing">2dp</dimen>
-    <dimen name="display_item_grid_horizontal_spacing">2dp</dimen>
+    <dimen name="action_bar_home_as_up_icon_left_spacing">10dp</dimen>
+    <dimen name="action_bar_title_text_left_spacing">10dp</dimen>
 
-    <dimen name="display_item_label_bottom_margin">20dp</dimen>
-    <dimen name="display_item_label_width">200dp</dimen>
-    <dimen name="display_item_label_text_size">18sp</dimen>
-    <dimen name="display_item_label_padding">7dp</dimen>
+    <dimen name="group_or_product_grid_vertical_spacing">2dp</dimen>
+    <dimen name="group_or_product_grid_horizontal_spacing">2dp</dimen>
+
+    <dimen name="group_or_product_label_bottom_margin">20dp</dimen>
+    <dimen name="group_or_product_label_width">200dp</dimen>
+    <dimen name="group_or_product_label_text_size">18sp</dimen>
+    <dimen name="group_or_product_label_padding">7dp</dimen>
 
 </resources>

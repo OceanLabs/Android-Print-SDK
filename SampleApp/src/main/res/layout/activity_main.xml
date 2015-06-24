@@ -1,19 +1,46 @@
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin">
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical">
 
-    <Switch
-        android:id="@+id/environment"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:textOff="Sandbox"
-        android:textOn="Live"/>
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="0.3"
+            android:layout_height="fill_parent"
+            android:gravity="right|center_vertical"
+            android:padding="5dp"
+            android:text="Sandbox"/>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_weight="0.4"
+            android:layout_height="fill_parent">
+            <Switch
+                android:id="@+id/environment"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="0.3"
+            android:layout_height="fill_parent"
+            android:gravity="left|center_vertical"
+            android:padding="5dp"
+            android:text="Live"/>
+
+    </LinearLayout>
 
     <!--
     <Spinner
@@ -64,4 +91,4 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:text="https://www.kite.ly"/>
-</RelativeLayout>
+</LinearLayout>

@@ -42,7 +42,7 @@ package ly.kite.print;
 import java.net.URL;
 import java.util.ArrayList;
 
-import ly.kite.shopping.DisplayItem;
+import ly.kite.shopping.GroupOrProduct;
 import ly.kite.shopping.MultipleCurrencyCost;
 import ly.kite.shopping.ShippingCosts;
 
@@ -54,7 +54,7 @@ import ly.kite.shopping.ShippingCosts;
  * This class represents a print product.
  *
  *****************************************************/
-public class Product implements DisplayItem
+public class Product implements GroupOrProduct
   {
   ////////// Static Constant(s) //////////
 

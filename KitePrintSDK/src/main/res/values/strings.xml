@@ -5,6 +5,12 @@
 
     <string name="title_product_groups_activity">Print Shop</string>
 
+    <string name="alert_dialog_title_error_retrieving_products">Error Retrieving Products</string>
+    <string name="alert_dialog_message_error_retrieving_products">There was an error retrieving the products. If your network connectivity is OK, please check the log for more details.</string>
+
+    <string name="Cancel">Cancel</string>
+    <string name="Retry">Retry</string>
+
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>

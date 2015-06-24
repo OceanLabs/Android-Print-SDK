@@ -1,8 +1,10 @@
 <resources>
 
-    <style name="KiteSDKTheme" parent="KiteSDKThemeBase">
-        <item name="android:windowTranslucentStatus">true</item>
+    <style name="KiteSDKTheme" parent="android:Theme.Material.Light">
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:actionBarStyle">@style/KiteSDKActionBar</item>
         <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:colorPrimaryDark">@color/status_bar</item>
     </style>
 
 </resources>

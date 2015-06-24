@@ -41,23 +41,17 @@ package ly.kite.shopping;
 
 import java.util.ArrayList;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.BaseAdapter;
-import android.widget.GridView;
-import android.widget.ProgressBar;
+import android.widget.AdapterView;
 
-import ly.kite.R;
 import ly.kite.print.Asset;
 import ly.kite.print.KitePrintSDK;
 import ly.kite.print.Product;
 import ly.kite.print.ProductGroup;
-import ly.kite.print.ProductSyncer;
 
 
 ///// Class Declaration /////
@@ -68,7 +62,7 @@ import ly.kite.print.ProductSyncer;
  * the user to drill down into the products.
  *
  *****************************************************/
-public class ProductActivity extends Activity implements ProductSyncer.SyncListener
+public class ProductActivity extends GroupOrProductActivity
   {
   ////////// Static Constant(s) //////////
 
@@ -84,14 +78,9 @@ public class ProductActivity extends Activity implements ProductSyncer.SyncListe
 
   ////////// Member Variable(s) //////////
 
-  private ArrayList<Asset>  mAssetArrayList;
-  private String            mProductGroupLabel;
+  private String              mProductGroupLabel;
 
-  private GridView          mGridView;
-  private ProgressBar       mProgressBar;
-
-  private ProductSyncer     mProductSyncer;
-  private BaseAdapter       mGridAdaptor;
+  private ArrayList<Product>  mProductList;
 
 
   ////////// Static Initialiser(s) //////////
@@ -133,33 +122,9 @@ public class ProductActivity extends Activity implements ProductSyncer.SyncListe
     super.onCreate( savedInstanceState );
 
 
-    // Get the assets and the product group label
+    // Get the product group label
 
-    Intent intent = getIntent();
-
-    if ( intent == null )
-      {
-      Log.e( LOG_TAG, "No intent found" );
-
-      // TODO: Display error dialog
-
-      finish();
-
-      return;
-      }
-
-    if ( ( mAssetArrayList = intent.getParcelableArrayListExtra( INTENT_EXTRA_NAME_ASSET_LIST ) ) == null || mAssetArrayList.size() < 1 )
-      {
-      Log.e( LOG_TAG, "No asset list found" );
-
-      // TODO: Display error dialog
-
-      finish();
-
-      return;
-      }
-
-    if ( ( mProductGroupLabel = intent.getStringExtra( INTENT_EXTRA_NAME_PRODUCT_GROUP_LABEL ) ) == null )
+    if ( ( mProductGroupLabel = mIntent.getStringExtra( INTENT_EXTRA_NAME_PRODUCT_GROUP_LABEL ) ) == null )
       {
       Log.e( LOG_TAG, "No product group label found" );
 
@@ -170,41 +135,10 @@ public class ProductActivity extends Activity implements ProductSyncer.SyncListe
       return;
       }
 
-    // Set up the screen content
 
-    setContentView( R.layout.activity_product_groups );
+    setTitle( mProductGroupLabel );
 
-    setTitle( R.string.title_product_groups_activity );
-
-    mGridView    = (GridView)findViewById( R.id.grid_view );
-    mProgressBar = (ProgressBar)findViewById( R.id.progress_bar );
-
-
-    // Get the last retrieved product group list
-
-    mProductSyncer = ProductSyncer.getInstance();
-
-    mProductSyncer.getLastRetrievedProductGroupList( this );
-    }
-
-
-  /*****************************************************
-   *
-   * Called when the home action is clicked.
-   *
-   *****************************************************/
-  @Override
-  public boolean onOptionsItemSelected( MenuItem item )
-    {
-    switch ( item.getItemId() )
-      {
-      case android.R.id.home:
-        finish();
-        return ( true );
-      }
-
-
-    return ( super.onOptionsItemSelected( item ) );
+    syncProducts();
     }
 
 
@@ -222,28 +156,33 @@ public class ProductActivity extends Activity implements ProductSyncer.SyncListe
 
     // Try and find a product list
 
-    ArrayList<Product> productList = ProductGroup.findProductsByGroupLabel( productGroupList, mProductGroupLabel );
+    mProductList = ProductGroup.findProductsByGroupLabel( productGroupList, mProductGroupLabel );
 
-    if ( productList != null )
+    if ( mProductList != null )
       {
       // Display the products
-      mGridAdaptor = new DisplayItemAdaptor( this, productList );
+      mGridAdaptor = new GroupOrProductAdaptor( this, mProductList );
       mGridView.setAdapter( mGridAdaptor );
       }
     }
 
 
+  ////////// AdapterView.OnItemClickListener Method(s) //////////
+
   /*****************************************************
    *
-   * Called when the sync completes successfully.
+   * Called when a product group is clicked.
    *
    *****************************************************/
   @Override
-  public void onError( Exception error )
+  public void onItemClick( AdapterView<?> parent, View view, int position, long id )
     {
-    mProgressBar.setVisibility( View.GONE );
+    // Get the product
+    Product clickedProduct = mProductList.get( position - mGridView.getHeaderViewCount() );
 
-    // TODO: Display an error
+    // Start the product activity, passing it the assets and the product group label (to
+    // identify it).
+    //ProductActivity.start( this, mAssetArrayList, clickedProductGroup.getDisplayLabel() );
     }
 
 

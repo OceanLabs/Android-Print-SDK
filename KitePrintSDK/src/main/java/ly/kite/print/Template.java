@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ly.kite.shopping.DisplayItem;
-
 /**
  * Created by alibros on 06/01/15.
  */
