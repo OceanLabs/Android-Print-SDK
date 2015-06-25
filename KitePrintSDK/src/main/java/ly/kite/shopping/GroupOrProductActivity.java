@@ -43,6 +43,7 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
@@ -58,7 +59,7 @@ import android.widget.ProgressBar;
 import ly.kite.R;
 import ly.kite.print.Asset;
 import ly.kite.print.KitePrintSDK;
-import ly.kite.print.ProductSyncer;
+import ly.kite.print.ProductManager;
 import ly.kite.widget.HeaderFooterGridView;
 
 
@@ -70,14 +71,15 @@ import ly.kite.widget.HeaderFooterGridView;
  * product activities, and provides some common methods.
  *
  *****************************************************/
-public abstract class GroupOrProductActivity extends KiteSDKActivity implements ProductSyncer.SyncListener, AdapterView.OnItemClickListener
+public abstract class GroupOrProductActivity extends KiteSDKActivity implements ProductManager.ProductConsumer, AdapterView.OnItemClickListener
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                      = "ProductItemActivity";
+  private static final String  LOG_TAG                         = "ProductItemActivity";
 
-  private static final String  INTENT_EXTRA_NAME_ASSET_LIST = KitePrintSDK.INTENT_PREFIX + ".AssetList";
+  private static final String  INTENT_EXTRA_NAME_ASSET_LIST    = KitePrintSDK.INTENT_PREFIX + ".AssetList";
+  private static final long    MAX_ACCEPTED_PRODUCT_AGE_MILLIS = 1000 * 60 * 60;  // 1 hour
 
 
   ////////// Static Variable(s) //////////
@@ -91,7 +93,7 @@ public abstract class GroupOrProductActivity extends KiteSDKActivity implements 
   protected HeaderFooterGridView     mGridView;
   protected ProgressBar              mProgressBar;
 
-  protected ProductSyncer            mProductSyncer;
+  protected ProductManager           mProductManager;
   protected BaseAdapter              mGridAdaptor;
 
 
@@ -176,7 +178,7 @@ public abstract class GroupOrProductActivity extends KiteSDKActivity implements 
 
 
     // Sync the products
-    syncProducts();
+    getProducts();
     }
 
 
@@ -202,19 +204,15 @@ public abstract class GroupOrProductActivity extends KiteSDKActivity implements 
 
   ////////// ProductSyncer.SyncListener Method(s) //////////
 
-
-  // onSyncComplete is implemented in the child class
-
-
   /*****************************************************
    *
    * Called when the sync completes successfully.
    *
    *****************************************************/
   @Override
-  public void onError( Exception error )
+  public void onProductRetrievalError( Exception error )
     {
-    mProgressBar.setVisibility( View.GONE );
+    onSyncFinished();
 
     displayModalDialog(
             R.string.alert_dialog_title_error_retrieving_products,
@@ -231,16 +229,32 @@ public abstract class GroupOrProductActivity extends KiteSDKActivity implements 
 
   /*****************************************************
    *
-   * Syncs the products.
+   * Gets the products.
    *
    *****************************************************/
-  protected void syncProducts()
+  protected void getProducts()
     {
+    mProgressBar.setVisibility( View.VISIBLE );
+
+
     // Either get the last retrieved set of products, or start a new product sync.
 
-    mProductSyncer = ProductSyncer.getInstance();
+    mProductManager = ProductManager.getInstance();
 
-    mProductSyncer.getLastRetrievedProductGroupList( this );
+    mProductManager.getAllProducts( MAX_ACCEPTED_PRODUCT_AGE_MILLIS, this );
+    }
+
+
+  /*****************************************************
+   *
+   * Updates the UI (i.e. removes the progress spinner)
+   * when syncing has finished, regardless of whether there
+   * was an error or not.
+   *
+   *****************************************************/
+  public void onSyncFinished()
+    {
+    mProgressBar.setVisibility( View.GONE );
     }
 
 
@@ -272,7 +286,8 @@ public abstract class GroupOrProductActivity extends KiteSDKActivity implements 
 
 
     // If we are running on Lollipop onwards, the status and navigation bars are also transparent, so get their heights
-    // and adjust the spacers' heights accordingly.
+    // and adjust the spacers' heights accordingly. Note that the navigation bar is only counted if the device is in
+    // portrait orientation, since the navigation bar gets moved over to the side in landscape orientation.
 
     if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP )
       {
@@ -288,13 +303,15 @@ public abstract class GroupOrProductActivity extends KiteSDKActivity implements 
 
       // Navigation bar
 
-      int navigationBarHeightResourceId = getResources().getIdentifier( "navigation_bar_height", "dimen", "android" );
-
-      if ( navigationBarHeightResourceId > 0 )
+      if ( getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT )
         {
-        footerSpacerHeight += getResources().getDimensionPixelSize( navigationBarHeightResourceId );
-        }
+        int navigationBarHeightResourceId = getResources().getIdentifier( "navigation_bar_height", "dimen", "android" );
 
+        if ( navigationBarHeightResourceId > 0 )
+          {
+          footerSpacerHeight += getResources().getDimensionPixelSize( navigationBarHeightResourceId );
+          }
+        }
       }
 
 
@@ -338,7 +355,7 @@ public abstract class GroupOrProductActivity extends KiteSDKActivity implements 
     @Override
     public void run()
       {
-      syncProducts();
+      getProducts();
       }
     }
 

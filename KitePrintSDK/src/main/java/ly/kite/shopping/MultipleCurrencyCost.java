@@ -42,9 +42,9 @@ package ly.kite.shopping;
 
 ///// Class Declaration /////
 
-import java.math.BigDecimal;
 import java.util.Currency;
 import java.util.HashMap;
+import java.util.Set;
 
 /*****************************************************
  *
@@ -64,7 +64,8 @@ public class MultipleCurrencyCost
 
   ////////// Member Variable(s) //////////
 
-  private HashMap<Currency,SingleCurrencyCost>  mCostTable;
+  private HashMap<Currency,SingleCurrencyCost> mCurrencyCostTable;
+  private HashMap<String,SingleCurrencyCost>   mCurrencyCodeCostTable;
 
 
   ////////// Static Initialiser(s) //////////
@@ -77,7 +78,8 @@ public class MultipleCurrencyCost
 
   public MultipleCurrencyCost()
     {
-    mCostTable = new HashMap<Currency,SingleCurrencyCost>();
+    mCurrencyCostTable     = new HashMap<Currency,SingleCurrencyCost>();
+    mCurrencyCodeCostTable = new HashMap<String,SingleCurrencyCost>();
     }
 
 
@@ -90,8 +92,32 @@ public class MultipleCurrencyCost
    *****************************************************/
   public void add( SingleCurrencyCost singleCurrencyCost )
     {
-    mCostTable.put( singleCurrencyCost.getCurrency(), singleCurrencyCost );
+    mCurrencyCostTable.put( singleCurrencyCost.getCurrency(), singleCurrencyCost );
+    mCurrencyCodeCostTable.put( singleCurrencyCost.getCurrency().getCurrencyCode(), singleCurrencyCost );
     }
+
+
+  /*****************************************************
+   *
+   * Returns a the cost for a currency code.
+   *
+   *****************************************************/
+  public SingleCurrencyCost get( String currencyCode )
+    {
+    return ( mCurrencyCodeCostTable.get( currencyCode ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns all the currency codes.
+   *
+   *****************************************************/
+  public Set<String> getAllCurrencyCodes()
+    {
+    return ( mCurrencyCodeCostTable.keySet() );
+    }
+
 
 
   ////////// Inner Class(es) //////////

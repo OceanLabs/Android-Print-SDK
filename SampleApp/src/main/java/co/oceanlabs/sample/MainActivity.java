@@ -55,7 +55,7 @@ public class MainActivity extends Activity {
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_CODE_SELECT_PICTURE);
     }
 
-    public void onCheckoutButtonClicked(View view) {
+    public void onRemoteButtonClicked(View view) {
         ArrayList<Asset> assets = new ArrayList<Asset>();
         assets.add(new Asset(R.drawable.instagram1));
 
@@ -113,7 +113,7 @@ public class MainActivity extends Activity {
 //            }
 //
 //        @Override
-//        public void onError(Exception error)
+//        public void onProductRetrievalError(Exception error)
 //            {
 //            progress.dismiss();
 //            showError( "Error Syncing Templates", error.getMessage() );

@@ -41,13 +41,16 @@ package ly.kite.widget;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Animatable;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -67,7 +70,7 @@ import ly.kite.util.RemoteImageConsumer;
  * appropriate.
  *
  *****************************************************/
-public class GroupOrProductView extends FrameLayout implements RemoteImageConsumer
+public class GroupOrProductView extends FrameLayout implements RemoteImageConsumer, Animation.AnimationListener
   {
   ////////// Static Constant(s) //////////
 
@@ -86,13 +89,16 @@ public class GroupOrProductView extends FrameLayout implements RemoteImageConsum
 
   ////////// Member Variable(s) //////////
 
-  private ImageView    mImageView;
-  private TextView     mTextView;
-  private ProgressBar  mProgressBar;
+  private ImageView     mEmptyFrameImageView;
+  private ImageView     mImageView;
+  private OverlayLabel  mOverlayLabel;
+  private ProgressBar   mProgressBar;
 
-  private float        mWidthToHeightMultiplier;
+  private float         mWidthToHeightMultiplier;
 
-  private String       mExpectedImageURLString;
+  private String        mExpectedImageURLString;
+
+  private Animation     mFadeInAnimation;
 
 
   ////////// Static Initialiser(s) //////////
@@ -128,6 +134,8 @@ public class GroupOrProductView extends FrameLayout implements RemoteImageConsum
   public GroupOrProductView( Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes )
     {
     super( context, attrs, defStyleAttr, defStyleRes );
+
+    initialise( context );
     }
 
 
@@ -172,6 +180,8 @@ public class GroupOrProductView extends FrameLayout implements RemoteImageConsum
   public void onImageImmediate( Bitmap bitmap )
     {
     setImage( bitmap );
+
+    mEmptyFrameImageView.setVisibility( View.GONE );
     }
 
 
@@ -183,8 +193,9 @@ public class GroupOrProductView extends FrameLayout implements RemoteImageConsum
   @Override
   public void onImageDownloading()
     {
+    mEmptyFrameImageView.setVisibility( View.VISIBLE );
     mImageView.setVisibility( View.INVISIBLE );
-    mTextView.setVisibility( View.INVISIBLE );
+    mOverlayLabel.setVisibility( View.INVISIBLE );
     mProgressBar.setVisibility( View.VISIBLE );
     }
 
@@ -210,6 +221,48 @@ public class GroupOrProductView extends FrameLayout implements RemoteImageConsum
     }
 
 
+  ////////// Animation.AnimationListener Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when an animation starts.
+   *
+   *****************************************************/
+  @Override
+  public void onAnimationStart( Animation animation )
+    {
+    // Ignore
+    }
+
+
+  /*****************************************************
+   *
+   * Called when an animation completes.
+   *
+   *****************************************************/
+  @Override
+  public void onAnimationEnd( Animation animation )
+    {
+    // For the image fade in animation, make the empty frame invisible it has finished.
+    if ( animation == mFadeInAnimation )
+      {
+      mEmptyFrameImageView.setVisibility( View.GONE );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Called when an animation repeats.
+   *
+   *****************************************************/
+  @Override
+  public void onAnimationRepeat( Animation animation )
+    {
+    // Ignore
+    }
+
+
   ////////// Method(s) //////////
 
   /*****************************************************
@@ -230,9 +283,21 @@ public class GroupOrProductView extends FrameLayout implements RemoteImageConsum
 
 
     // Save references to the child views
-    mImageView   = (ImageView)view.findViewById( R.id.image_view );
-    mTextView    = (TextView)view.findViewById( R.id.text_view );
-    mProgressBar = (ProgressBar)view.findViewById( R.id.progress_bar );
+    mEmptyFrameImageView = (ImageView)view.findViewById( R.id.empty_frame_image_view );
+    mImageView           = (ImageView)view.findViewById( R.id.image_view );
+    mOverlayLabel        = (OverlayLabel)view.findViewById( R.id.overlay_label );
+    mProgressBar         = (ProgressBar)view.findViewById( R.id.progress_bar );
+
+
+    // Set up the overlay label
+
+    Resources resources = context.getResources();
+
+    mOverlayLabel.setCornerRadius( resources.getDimension( R.dimen.group_or_product_label_corner_radius ) );
+    mOverlayLabel.setBackgroundShadow(
+            resources.getColor( R.color.group_or_product_label_shadow_colour ),
+            resources.getDimension( R.dimen.group_or_product_label_shadow_blur_radius ),
+            resources.getDimension( R.dimen.group_or_product_label_shadow_y_offset ) );
     }
 
 
@@ -257,7 +322,6 @@ public class GroupOrProductView extends FrameLayout implements RemoteImageConsum
     mImageView.setImageBitmap( bitmap );
 
     mImageView.setVisibility( View.VISIBLE );
-    mTextView.setVisibility( View.VISIBLE );
     mProgressBar.setVisibility( View.INVISIBLE );
     }
 
@@ -269,10 +333,8 @@ public class GroupOrProductView extends FrameLayout implements RemoteImageConsum
    *****************************************************/
   public void setLabel( String label )
     {
-    mTextView.setText( label );
-
-    // We don't make the label visible until the image is visible
-    mTextView.setVisibility( View.VISIBLE );  // Test
+    mOverlayLabel.setText( label );
+    mOverlayLabel.setVisibility( View.VISIBLE );
     }
 
 
@@ -285,7 +347,7 @@ public class GroupOrProductView extends FrameLayout implements RemoteImageConsum
     {
     setLabel( label );
 
-    mTextView.setBackgroundColor( colour );
+    mOverlayLabel.setBackgroundColor( colour );
     }
 
 
@@ -310,12 +372,14 @@ public class GroupOrProductView extends FrameLayout implements RemoteImageConsum
    *****************************************************/
   private void fadeImageIn()
     {
-    AlphaAnimation fadeInAnimation = new AlphaAnimation( ALPHA_TRANSPARENT, ALPHA_OPAQUE );
-    fadeInAnimation.setDuration( FADE_IN_ANIMATION_DURATION_MILLIS );
+    mFadeInAnimation = new AlphaAnimation( ALPHA_TRANSPARENT, ALPHA_OPAQUE );
+    mFadeInAnimation.setDuration( FADE_IN_ANIMATION_DURATION_MILLIS );
 
-    mImageView.startAnimation( fadeInAnimation );
+    // We make the empty frame invisible only after the fade in animation has finished.
+    mFadeInAnimation.setAnimationListener( this );
+
+    mImageView.startAnimation( mFadeInAnimation );
     }
-
 
 
   ////////// Inner Class(es) //////////

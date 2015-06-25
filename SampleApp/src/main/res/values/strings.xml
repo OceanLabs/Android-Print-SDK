@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Kite SDK</string>
+
+    <string name="main_activity_gallery_button_text">Print Local Photos</string>
+    <string name="main_activity_remote_button_text">Print Photos at Remote URLs</string>
+
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>

@@ -155,6 +155,23 @@ public class HeaderFooterGridView extends GridView
     return mHeaderViewInfos.size();
     }
 
+
+  /*****************************************************
+   *
+   * Converts the position, as supplied to external listeners,
+   * into an adaptor index. This is useful when there are
+   * header views since the position is not particularly useful
+   * in these situations.
+   *
+   *****************************************************/
+  public int adaptorIndexFromPosition( int position )
+    {
+    // Remove the effect of the header views. We don't do any check to see
+    // if we've gone past the footers.
+    return ( position - ( getHeaderViewCount() * getNumColumns() ) );
+    }
+
+
   /**
    * Removes a previously-added header view.
    *

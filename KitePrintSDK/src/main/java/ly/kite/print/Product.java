@@ -39,12 +39,15 @@ package ly.kite.print;
 
 ///// Import(s) /////
 
+import java.math.BigDecimal;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Set;
 
 import ly.kite.shopping.GroupOrProduct;
 import ly.kite.shopping.MultipleCurrencyCost;
 import ly.kite.shopping.ShippingCosts;
+import ly.kite.shopping.SingleCurrencyCost;
 
 
 ///// Class Declaration /////
@@ -72,6 +75,7 @@ public class Product implements GroupOrProduct
   private String                  mName;
   private String                  mLabel;
   private String                  mUserJourneyType;
+  private int                     mQuantityPerSheet;
 
   private MultipleCurrencyCost    mCost;
   private ShippingCosts           mShippingCosts;
@@ -94,14 +98,15 @@ public class Product implements GroupOrProduct
 
   ////////// Constructor(s) //////////
 
-  Product( String productId, String productCode, String productName, String productLabel, int labelColour, String userJourneyType )
+  Product( String productId, String productCode, String productName, String productLabel, int labelColour, String userJourneyType, int quantityPerSheet )
     {
-    mId              = productId;
-    mCode            = productCode;
-    mName            = productName;
-    mLabel           = productLabel;
-    mLabelColour     = labelColour;
-    mUserJourneyType = userJourneyType;
+    mId               = productId;
+    mCode             = productCode;
+    mName             = productName;
+    mLabel            = productLabel;
+    mLabelColour      = labelColour;
+    mUserJourneyType  = userJourneyType;
+    mQuantityPerSheet = quantityPerSheet;
     }
 
 
@@ -140,6 +145,17 @@ public class Product implements GroupOrProduct
   public int getDisplayLabelColour()
     {
     return ( mLabelColour );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the quantity per sheet.
+   *
+   *****************************************************/
+  public int getQuantityPerSheet()
+    {
+    return ( mQuantityPerSheet );
     }
 
 
@@ -222,6 +238,32 @@ public class Product implements GroupOrProduct
     mSizeList = sizeList;
 
     return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the cost in a specific currency.
+   *
+   *****************************************************/
+  public BigDecimal getCost( String currencyCode )
+    {
+    SingleCurrencyCost cost = mCost.get( currencyCode );
+
+    if ( cost == null ) throw ( new IllegalArgumentException( "No cost found for currency " + currencyCode ) );
+
+    return ( cost.getAmount() );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a set of supported currency codes.
+   *
+   *****************************************************/
+  public Set<String> getCurrenciesSupported()
+    {
+    return ( mCost.getAllCurrencyCodes() );
     }
 
 

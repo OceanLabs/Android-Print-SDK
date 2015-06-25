@@ -101,6 +101,16 @@ public class SingleCurrencyCost
     return ( mCurrency );
     }
 
+  /*****************************************************
+   *
+   * Returns the amount.
+   *
+   *****************************************************/
+  public BigDecimal getAmount()
+    {
+    return ( mAmount );
+    }
+
 
   ////////// Inner Class(es) //////////
 

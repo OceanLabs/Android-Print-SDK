@@ -13,22 +13,21 @@ repositories {
 }
 
 android {
-    compileSdkVersion 21
+    compileSdkVersion 22
     buildToolsVersion "21.1.2"
-
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 21
+        targetSdkVersion 22
         versionName project.VERSION_NAME
-        versionCode Integer.parseInt(project.VERSION_CODE)
     }
-
     sourceSets {
         main {
-            manifest {srcFile 'src/main/AndroidManifest.xml'}
+            manifest { srcFile 'src/main/AndroidManifest.xml' }
             java { srcDir 'src/main/java' }
             res { srcDir 'src/main/res' }
         }
+    }
+    productFlavors {
     }
 }
 

@@ -14,17 +14,17 @@ repositories {
 }
 
 dependencies {
-    compile project(":KitePrintSDK")
-
+    compile project(':KitePrintSDK')
 }
 apply plugin: 'android'
 android {
-    compileSdkVersion 19
-    buildToolsVersion '19.1.0'
-
+    compileSdkVersion 22
+    buildToolsVersion '21.1.2'
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 19
+        targetSdkVersion 22
+    }
+    productFlavors {
     }
 }
 

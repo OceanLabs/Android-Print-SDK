@@ -10,9 +10,13 @@
     <dimen name="group_or_product_grid_vertical_spacing">2dp</dimen>
     <dimen name="group_or_product_grid_horizontal_spacing">2dp</dimen>
 
-    <dimen name="group_or_product_label_bottom_margin">20dp</dimen>
+    <dimen name="group_or_product_label_bottom_spacing">20dp</dimen>
     <dimen name="group_or_product_label_width">200dp</dimen>
     <dimen name="group_or_product_label_text_size">18sp</dimen>
-    <dimen name="group_or_product_label_padding">7dp</dimen>
+    <dimen name="group_or_product_label_padding_top">6dp</dimen>
+    <dimen name="group_or_product_label_padding_bottom">9dp</dimen>
+    <dimen name="group_or_product_label_corner_radius">2dp</dimen>
+    <dimen name="group_or_product_label_shadow_blur_radius">1dp</dimen>
+    <dimen name="group_or_product_label_shadow_y_offset">1dp</dimen>
 
 </resources>

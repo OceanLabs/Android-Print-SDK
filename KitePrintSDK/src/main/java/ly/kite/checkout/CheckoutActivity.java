@@ -30,11 +30,15 @@ import ly.kite.print.PrintOrder;
 import ly.kite.R;
 import ly.kite.address.Address;
 import ly.kite.address.AddressBookActivity;
-import ly.kite.print.Template;
+import ly.kite.print.Product;
+import ly.kite.print.ProductGroup;
+import ly.kite.print.ProductManager;
 
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 
 public class CheckoutActivity extends Activity {
@@ -125,7 +129,7 @@ public class CheckoutActivity extends Activity {
         super.onSaveInstanceState(outState);
         outState.putParcelable(EXTRA_PRINT_ORDER, printOrder);
         outState.putString(EXTRA_PRINT_API_KEY, apiKey);
-        outState.putSerializable(EXTRA_PRINT_ENVIRONMENT, environment);
+        outState.putSerializable( EXTRA_PRINT_ENVIRONMENT, environment );
     }
 
     @Override
@@ -206,30 +210,32 @@ public class CheckoutActivity extends Activity {
         editor.putString(SHIPPING_PREFERENCE_PHONE, phone);
         editor.commit();
 
-        Date lastSyncedDate = Template.getLastSyncDate();
-        Date dateHourAgo = new Date(System.currentTimeMillis() - (1 * 60 * 60 * 1000));
-        if ( Template.isSyncInProgress() || lastSyncedDate == null || lastSyncedDate.compareTo(dateHourAgo) < 0) {
-            final ProgressDialog progress = ProgressDialog.show(this, null, "Loading");
-            Template.sync( getApplicationContext(), new Template.TemplateSyncListener()
-            {
-            @Override
-            public void onSuccess()
-                {
-                progress.dismiss();
-                startPaymentActivity();
-                }
 
-            @Override
-            public void onError( Exception error )
-                {
-                progress.dismiss();
-                showRetryTemplateSyncDialog( error );
-                }
-            } );
-        } else {
-            // templates synced recently enough to jump straight to payment
-            startPaymentActivity();
-        }
+        // Make sure we have up-to-date products before we proceed
+
+        final ProgressDialog progress = ProgressDialog.show(this, null, "Loading");
+
+        ProductManager.getInstance().getAllProducts(
+                1 * 60 * 60 * 1000,
+                new ProductManager.ProductConsumer()
+                    {
+                    @Override
+                    public void onGotProducts( ArrayList<ProductGroup> productGroupList, HashMap<String, Product> productTable )
+                        {
+                        progress.dismiss();
+
+                        startPaymentActivity();
+                        }
+
+                    @Override
+                    public void onProductRetrievalError( Exception exception )
+                        {
+                        progress.dismiss();
+
+                        showRetryTemplateSyncDialog( exception );
+                        }
+                    }
+                );
     }
 
     private void showRetryTemplateSyncDialog(Exception error) {
@@ -254,7 +260,7 @@ public class CheckoutActivity extends Activity {
         // Check we have valid templates for every printjob
         for (PrintJob job : printOrder.getJobs()) {
             try {
-                Template.getTemplate( job.getTemplateId() );
+                ProductManager.getInstance().getProductById( job.getTemplateId() );
             } catch (Exception ex) {
                 showRetryTemplateSyncDialog(ex);
                 return;

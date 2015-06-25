@@ -33,9 +33,9 @@ class PrintsPrintJob extends PrintJob {
 
     @Override
     public BigDecimal getCost(String currencyCode) {
-        Template template = Template.getTemplate( templateId );
-        BigDecimal sheetCost = template.getCost(currencyCode);
-        int expectedQuantity = template.getQuantityPerSheet();
+        Product product = ProductManager.getInstance().getProductById( templateId );
+        BigDecimal sheetCost = product.getCost(currencyCode);
+        int expectedQuantity = product.getQuantityPerSheet();
 
         int numOrders = (int) Math.floor((getQuantity() + expectedQuantity - 1) / expectedQuantity);
         return sheetCost.multiply(new BigDecimal(numOrders));
@@ -43,12 +43,18 @@ class PrintsPrintJob extends PrintJob {
 
     @Override
     public Set<String> getCurrenciesSupported() {
-        Template template = Template.getTemplate( templateId );
-        if (template == null) {
-            return Collections.EMPTY_SET;
-        }
+        try
+            {
+            Product product = ProductManager.getInstance().getProductById( templateId );
 
-        return template.getCurrenciesSupported();
+            return product.getCurrenciesSupported();
+            }
+        catch ( IllegalArgumentException iae )
+            {
+            // Fall through
+            }
+
+    return Collections.EMPTY_SET;
     }
 
     @Override

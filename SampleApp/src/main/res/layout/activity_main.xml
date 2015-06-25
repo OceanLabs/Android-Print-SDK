@@ -8,87 +8,77 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical">
 
-    <LinearLayout
+
+    <FrameLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="0dp"
+        android:layout_weight="0.2">
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="0.3"
-            android:layout_height="fill_parent"
-            android:gravity="right|center_vertical"
-            android:padding="5dp"
-            android:text="Sandbox"/>
+        <LinearLayout
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-        <FrameLayout
-            android:layout_width="0dp"
-            android:layout_weight="0.4"
-            android:layout_height="fill_parent">
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="fill_parent"
+                android:gravity="right|center_vertical"
+                android:padding="5dp"
+                android:text="Sandbox"/>
+
             <Switch
                 android:id="@+id/environment"
-                android:layout_gravity="center"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-        </FrameLayout>
+                android:layout_height="fill_parent"
+                android:padding="10dp"/>
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="0.3"
-            android:layout_height="fill_parent"
-            android:gravity="left|center_vertical"
-            android:padding="5dp"
-            android:text="Live"/>
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="fill_parent"
+                android:gravity="left|center_vertical"
+                android:padding="5dp"
+                android:text="Live"/>
 
-    </LinearLayout>
+        </LinearLayout>
 
-    <!--
-    <Spinner
-        android:id="@+id/spinner_product"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_below="@id/environment"/>
+    </FrameLayout>
 
-    <TextView
-        android:id="@+id/textview_product"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/spinner_product"
-        android:layout_below="@id/environment"
-        android:layout_toLeftOf="@id/spinner_product"
-        android:gravity="bottom"
-        android:paddingRight="15dp"
-        android:text="Product:"/>
-    -->
 
-    <Button
-        android:id="@+id/button_gallery"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/environment"
-        android:layout_marginTop="20dp"
-        android:onClick="onGalleryButtonClicked"
-        android:text="Print Local Photos"/>
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.6">
 
-    <Button
-        android:id="@+id/button_checkout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/button_gallery"
-        android:onClick="onCheckoutButtonClicked"
-        android:text="Print Photos at Remote URLs"/>
+        <LinearLayout
+            android:layout_gravity="center"
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <Button
+                android:id="@+id/button_gallery"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onGalleryButtonClicked"
+                android:text="@string/main_activity_gallery_button_text"/>
+            <Button
+                android:id="@+id/button_remote"
+                android:layout_marginTop="50dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onRemoteButtonClicked"
+                android:text="@string/main_activity_remote_button_text"/>
+        </LinearLayout>
 
-    <ImageView
-        android:id="@+id/image_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/button_checkout"/>
+    </FrameLayout>
+
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.2"
+        android:gravity="bottom|center_horizontal"
+        android:paddingBottom="10dp"
         android:text="https://www.kite.ly"/>
+
 </LinearLayout>

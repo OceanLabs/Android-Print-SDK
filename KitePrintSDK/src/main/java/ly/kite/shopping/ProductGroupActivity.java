@@ -40,6 +40,7 @@ package ly.kite.shopping;
 ///// Import(s) /////
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.content.Context;
 import android.content.Intent;
@@ -50,6 +51,7 @@ import android.widget.AdapterView;
 import ly.kite.R;
 import ly.kite.print.Asset;
 import ly.kite.print.KitePrintSDK;
+import ly.kite.print.Product;
 import ly.kite.print.ProductGroup;
 
 
@@ -118,11 +120,11 @@ public class ProductGroupActivity extends GroupOrProductActivity
 
     setTitle( R.string.title_product_groups_activity );
 
-    syncProducts();
+    getProducts();
     }
 
 
-  ////////// ProductSyncer.SyncListener Method(s) //////////
+  ////////// ProductManager.SyncListener Method(s) //////////
 
   /*****************************************************
    *
@@ -130,11 +132,11 @@ public class ProductGroupActivity extends GroupOrProductActivity
    *
    *****************************************************/
   @Override
-  public void onSyncComplete( ArrayList<ProductGroup> productGroupList )
+  public void onGotProducts( ArrayList<ProductGroup> productGroupList, HashMap<String,Product> productTable )
     {
-    mProductGroupList = productGroupList;
+    onSyncFinished();
 
-    mProgressBar.setVisibility( View.GONE );
+    mProductGroupList = productGroupList;
 
     // Display the product groups
     mGridAdaptor = new GroupOrProductAdaptor( this, productGroupList );
@@ -156,7 +158,7 @@ public class ProductGroupActivity extends GroupOrProductActivity
   public void onItemClick( AdapterView<?> parent, View view, int position, long id )
     {
     // Get the product group
-    ProductGroup clickedProductGroup = mProductGroupList.get( position - mGridView.getHeaderViewCount() );
+    ProductGroup clickedProductGroup = mProductGroupList.get( mGridView.adaptorIndexFromPosition( position ) );
 
     // Start the product activity, passing it the assets and the product group label (to
     // identify it).
@@ -185,7 +187,7 @@ public class ProductGroupActivity extends GroupOrProductActivity
     @Override
     public void run()
       {
-      syncProducts();
+      getProducts();
       }
     }
 

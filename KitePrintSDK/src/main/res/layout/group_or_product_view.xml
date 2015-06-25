@@ -3,19 +3,29 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ImageView
+        android:id="@+id/empty_frame_image_view"
+        android:layout_gravity="center"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:scaleType="centerInside"
+        android:adjustViewBounds="true"
+        android:src="@drawable/empty_photo_frame"/>
+
+    <ImageView
         android:id="@+id/image_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:scaleType="centerCrop"
         android:visibility="invisible"/>
 
-    <TextView
-        android:id="@+id/text_view"
+    <ly.kite.widget.OverlayLabel
+        android:id="@+id/overlay_label"
         android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="@dimen/group_or_product_label_bottom_margin"
+        android:layout_marginBottom="@dimen/group_or_product_label_bottom_spacing"
         android:layout_width="@dimen/group_or_product_label_width"
         android:layout_height="wrap_content"
-        android:padding="@dimen/group_or_product_label_padding"
+        android:paddingTop="@dimen/group_or_product_label_padding_top"
+        android:paddingBottom="@dimen/group_or_product_label_padding_bottom"
         android:gravity="center"
         android:textColor="@android:color/white"
         android:textSize="@dimen/group_or_product_label_text_size"

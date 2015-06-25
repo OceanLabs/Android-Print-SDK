@@ -40,6 +40,7 @@ package ly.kite.shopping;
 ///// Import(s) /////
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.content.Context;
 import android.content.Intent;
@@ -138,11 +139,11 @@ public class ProductActivity extends GroupOrProductActivity
 
     setTitle( mProductGroupLabel );
 
-    syncProducts();
+    getProducts();
     }
 
 
-  ////////// ProductSyncer.SyncListener Method(s) //////////
+  ////////// ProductManager.SyncListener Method(s) //////////
 
   /*****************************************************
    *
@@ -150,9 +151,10 @@ public class ProductActivity extends GroupOrProductActivity
    *
    *****************************************************/
   @Override
-  public void onSyncComplete( ArrayList<ProductGroup> productGroupList )
+  public void onGotProducts( ArrayList<ProductGroup> productGroupList, HashMap<String,Product> productTable )
     {
-    mProgressBar.setVisibility( View.GONE );
+    onSyncFinished();
+
 
     // Try and find a product list
 

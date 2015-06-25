@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * ProductSyncer.java
+ * ProductManager.java
  *
  *
  * Modified MIT License
@@ -39,12 +39,15 @@ package ly.kite.print;
 
 ///// Import(s) /////
 
+import android.os.SystemClock;
 import android.util.Log;
+import android.util.Pair;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -62,18 +65,18 @@ import ly.kite.shopping.SingleCurrencyCost;
 
 /****************************************************
  *
- * This singleton class is used to retrieve a list of
- * available products from the server API.
- *
- * Created by alibros on 06/01/15.
+ * This singleton class retrieves and stores all the
+ * product groups and products from the server.
  *
  ****************************************************/
-public class ProductSyncer implements BaseRequest.BaseRequestListener
+public class ProductManager implements BaseRequest.BaseRequestListener
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings("unused")
-  private static final String LOG_TAG                               = "ProductSyncer";
+  private static final String LOG_TAG                               = "ProductManager";
+
+  public  static final long   ANY_AGE_OK                            = -1;
 
   private static final String REQUEST_FORMAT_STRING                 = "%s/template/?limit=100";
 
@@ -85,6 +88,7 @@ public class ProductSyncer implements BaseRequest.BaseRequestListener
   private static final String JSON_NAME_GROUP_IMAGE                 = "ios_sdk_class_photo";
   private static final String JSON_NAME_GROUP_LABEL                 = "ios_sdk_product_class";
   private static final String JSON_NAME_HEIGHT                      = "height";
+  private static final String JSON_NAME_IMAGES_PER_PAGE             = "images_per_page";
   private static final String JSON_NAME_INCH                        = "inch";
   private static final String JSON_NAME_LABEL_COLOUR                = "ios_sdk_label_color";
   private static final String JSON_NAME_MASK_BLEED                  = "mask_bleed";
@@ -111,15 +115,17 @@ public class ProductSyncer implements BaseRequest.BaseRequestListener
 
   ////////// Static Variable(s) //////////
 
-  private static ProductSyncer  sProductSyncer;
+  private static ProductManager sProductSyncer;
 
 
   ////////// Member Variable(s) //////////
 
-  private SyncListener             mListener;
-  private BaseRequest              mBaseRequest;
+  private BaseRequest                 mBaseRequest;
+  private ArrayList<ProductConsumer>  mProductConsumerList;
 
-  private ArrayList<ProductGroup>  mLastRetrievedProductGroupList;
+  private ArrayList<ProductGroup>     mLastRetrievedProductGroupList;
+  private HashMap<String,Product>     mLastRetrievedProductTable;
+  private long                        mLastRetrievedElapsedRealtimeMillis;
 
 
   ////////// Static Initialiser(s) //////////
@@ -132,11 +138,11 @@ public class ProductSyncer implements BaseRequest.BaseRequestListener
    * Returns an instance of the syncer.
    *
    ****************************************************/
-  public static ProductSyncer getInstance()
+  public static ProductManager getInstance()
     {
     if ( sProductSyncer == null )
       {
-      sProductSyncer = new ProductSyncer();
+      sProductSyncer = new ProductManager();
       }
 
     return ( sProductSyncer );
@@ -179,7 +185,7 @@ public class ProductSyncer implements BaseRequest.BaseRequestListener
 
     shippingCosts.add( ShippingCosts.Destination.UK,            parseShippingCost( shippingCostsJSONObject.getJSONObject( JSON_NAME_SHIPPING_DEST_UK            ) ) );
     shippingCosts.add( ShippingCosts.Destination.USA,           parseShippingCost( shippingCostsJSONObject.getJSONObject( JSON_NAME_SHIPPING_DEST_USA           ) ) );
-    shippingCosts.add( ShippingCosts.Destination.EUROPE,        parseShippingCost( shippingCostsJSONObject.getJSONObject( JSON_NAME_SHIPPING_DEST_EUROPE        ) ) );
+    shippingCosts.add( ShippingCosts.Destination.EUROPE,        parseShippingCost( shippingCostsJSONObject.getJSONObject( JSON_NAME_SHIPPING_DEST_EUROPE ) ) );
     shippingCosts.add( ShippingCosts.Destination.REST_OF_WORLD, parseShippingCost( shippingCostsJSONObject.getJSONObject( JSON_NAME_SHIPPING_DEST_REST_OF_WORLD ) ) );
 
     return ( shippingCosts );
@@ -323,10 +329,11 @@ public class ProductSyncer implements BaseRequest.BaseRequestListener
    * Parses a JSON products array.
    *
    ****************************************************/
-  private static ArrayList<ProductGroup> parseProducts( JSONArray productJSONArray )
+  private static Pair<ArrayList<ProductGroup>,HashMap<String,Product>> parseProducts( JSONArray productJSONArray )
     {
-    HashMap<String,ProductGroup> productGroupTable = new HashMap<String,ProductGroup>();
-    ArrayList<ProductGroup>      productGroupList  = new ArrayList<ProductGroup>();
+    HashMap<String,ProductGroup> productGroupTable = new HashMap<>();
+    ArrayList<ProductGroup>      productGroupList  = new ArrayList<>();
+    HashMap<String,Product>      productTable      = new HashMap<>();
 
 
     // Go through each JSON product
@@ -345,6 +352,7 @@ public class ProductSyncer implements BaseRequest.BaseRequestListener
 
         String                 productId           = productJSONObject.getString( JSON_NAME_PRODUCT_ID );
         String                 productName         = productJSONObject.getString( JSON_NAME_PRODUCT_NAME );
+        int                    imagesPerPage       = productJSONObject.getInt( JSON_NAME_IMAGES_PER_PAGE );
         MultipleCurrencyCost   cost                = parseCost( productJSONObject.getJSONArray( JSON_NAME_COST ) );
         ShippingCosts          shippingCosts       = parseShippingCosts( productJSONObject.getJSONObject( JSON_NAME_SHIPPING_COSTS ) );
 
@@ -391,12 +399,10 @@ public class ProductSyncer implements BaseRequest.BaseRequestListener
           productGroupTable.put( groupLabel, productGroup );
           }
 
-        // TODO: Get the product group
-
 
         // Create the product and add it to the product group
 
-        Product product = new Product( productId, productCode, productName, productType, labelColour, productUIClass )
+        Product product = new Product( productId, productCode, productName, productType, labelColour, productUIClass, imagesPerPage )
                 .setCost( cost )
                 .setShippingCosts( shippingCosts )
                 .setImageURLs( heroImageURL, imageURLList )
@@ -405,6 +411,10 @@ public class ProductSyncer implements BaseRequest.BaseRequestListener
                 .setSize( productSizeList );
 
         productGroup.add( product );
+
+
+        // Add the product to the product id / product table
+        productTable.put( productId, product );
         }
       catch ( Exception exception )
         {
@@ -415,13 +425,14 @@ public class ProductSyncer implements BaseRequest.BaseRequestListener
       }
 
 
-    return ( productGroupList );
+    return ( new Pair<>( productGroupList, productTable ) );
     }
 
 
   ////////// Constructor(s) //////////
 
-  private ProductSyncer()
+  // Constructor is private to ensure it is a singleton
+  private ProductManager()
     {
     }
 
@@ -430,7 +441,7 @@ public class ProductSyncer implements BaseRequest.BaseRequestListener
 
   /****************************************************
    *
-   * Called when a request completes successfully.
+   * Called when the retrieval request completes successfully.
    *
    ****************************************************/
   @Override
@@ -447,28 +458,45 @@ public class ProductSyncer implements BaseRequest.BaseRequestListener
 
         JSONArray productsJSONArray = jsonData.getJSONArray( JSON_NAME_PRODUCT_ARRAY );
 
-        ArrayList<ProductGroup> productGroupList = parseProducts( productsJSONArray );
+        Pair<ArrayList<ProductGroup>,HashMap<String,Product>> productPair = parseProducts( productsJSONArray );
 
-        mLastRetrievedProductGroupList = productGroupList;
+        ArrayList<ProductGroup> productGroupList = productPair.first;
+        HashMap<String,Product> productTable     = productPair.second;
 
-        mListener.onSyncComplete( productGroupList );
+        synchronized ( this )
+          {
+          // Save the query result
+          mLastRetrievedProductGroupList      = productGroupList;
+          mLastRetrievedProductTable          = productTable;
+          mLastRetrievedElapsedRealtimeMillis = SystemClock.elapsedRealtime();
+
+          // Pass the update products list to each of the consumers that want it
+          for ( ProductConsumer consumer : mProductConsumerList )
+            {
+            consumer.onGotProducts( productGroupList, productTable );
+            }
+
+          mBaseRequest         = null;
+          mProductConsumerList = null;
+          }
         }
       else
         {
         // Invalid HTTP response code - see if we can get an error message
 
         JSONObject errorJSONObject = jsonData.getJSONObject( BaseRequest.ERROR_RESPONSE_JSON_OBJECT_NAME );
-
         String     errorMessage    = errorJSONObject.getString( BaseRequest.ERROR_RESPONSE_MESSAGE_JSON_NAME );
         String     errorCode       = errorJSONObject.getString( BaseRequest.ERROR_RESPONSE_CODE_JSON_NAME );
 
-        mListener.onError( new KitePrintSDKException( errorMessage ) );
+        Exception exception = new KitePrintSDKException( errorMessage );
+
+        returnErrorToConsumers( exception );
         }
 
       }
     catch ( JSONException je )
       {
-      mListener.onError( je );
+      returnErrorToConsumers( je );
       }
 
     }
@@ -482,7 +510,7 @@ public class ProductSyncer implements BaseRequest.BaseRequestListener
   @Override
   public void onError( Exception exception )
     {
-    mListener.onError( exception );
+    returnErrorToConsumers( exception );
     }
 
 
@@ -490,50 +518,151 @@ public class ProductSyncer implements BaseRequest.BaseRequestListener
 
   /****************************************************
    *
-   * Syncs the available Products.
+   * Retrieves a list of all the products. Must be called on
+   * the UI thread.
    *
-   * @param listener The sync listener for the result.
+   * @param maximumAgeMillis The maximum permitted time in milliseconds
+   *                         since the last retrieval. If the value supplied
+   *                         is < 0, there is no maximum age.
+   * @param consumer         The sync listener for the result.
    *
    ****************************************************/
-  public synchronized void sync( final SyncListener listener )
+  public void getAllProducts( final long maximumAgeMillis, final ProductConsumer consumer )
     {
-    // Verify that no other sync has been started
-    assert mBaseRequest == null : "you can only submit a request once";
 
-    // Save the listener
-    mListener = listener;
+    synchronized ( this )
+      {
+      // If there is currently a retrieval in progress, always wait for the result
+
+      if ( mBaseRequest != null )
+        {
+        mProductConsumerList.add( consumer );
+
+        return;
+        }
 
 
-    // Create the request and initiate it
+      // There is no retrieval currently in progress. If there is a previously retrieved
+      // list, and that its age is OK for what we want, pass it to the consumer
+      // immediately.
 
-    String url = String.format( REQUEST_FORMAT_STRING, KitePrintSDK.getEnvironment().getPrintAPIEndpoint() );
+      if ( mLastRetrievedElapsedRealtimeMillis > 0 )
+        {
+        long minAcceptableElapsedRealtimeMillis = (
+                maximumAgeMillis >= 0
+                        ? SystemClock.elapsedRealtime() - maximumAgeMillis
+                        : 0 );
 
-    mBaseRequest = new BaseRequest( BaseRequest.HttpMethod.GET, url, null, null );
+        if ( mLastRetrievedElapsedRealtimeMillis >= minAcceptableElapsedRealtimeMillis )
+          {
+          consumer.onGotProducts( mLastRetrievedProductGroupList, mLastRetrievedProductTable );
 
+          return;
+          }
+        }
+
+
+      // We need to perform a new retrieval
+
+      String url = String.format( REQUEST_FORMAT_STRING, KitePrintSDK.getEnvironment().getPrintAPIEndpoint() );
+
+      mBaseRequest = new BaseRequest( BaseRequest.HttpMethod.GET, url, null, null );
+      mProductConsumerList = new ArrayList<ProductConsumer>();
+      mProductConsumerList.add( consumer );
+      }
+
+
+    // Kick off the retrieval
     mBaseRequest.start( this );
     }
 
 
   /****************************************************
    *
-   * Returns the last synced product group list.
+   * Retrieves a list of all the products.
    *
-   * @param listener The sync listener for the result.
+   * @param consumer The sync listener for the result.
    *
    ****************************************************/
-  public synchronized void getLastRetrievedProductGroupList( final SyncListener listener )
+  public void getAllProducts( final ProductConsumer consumer )
     {
-    // If there is no list saved - do the sync now. Otherwise call back to
-    // the listener with the saved list.
+    getAllProducts( ANY_AGE_OK, consumer );
+    }
 
-    if ( mLastRetrievedProductGroupList == null )
+
+  /****************************************************
+   *
+   * Synchronously obtains the products. We need to be able
+   * to do this because the product retrieval is asynchronous.
+   *
+   * @return The product group list, or null if they
+   *         could not be retrieved.
+   *
+   ****************************************************/
+  public Pair<ArrayList<ProductGroup>,HashMap<String,Product>> getAllProducts()
+    {
+    SynchronousProductConsumer consumer = new SynchronousProductConsumer();
+
+    Pair<ArrayList<ProductGroup>,HashMap<String,Product>> productPair = consumer.getProductPair();
+
+    if ( productPair == null ) throw ( new RuntimeException( "Unable to retrieve products" ) );
+
+    return ( productPair );
+    }
+
+
+  /****************************************************
+   *
+   * Returns a product by its id.
+   *
+   * @param id The product id.
+   *
+   * @return The product with a matching id.
+   *
+   * @throws RuntimeException If the products could not be
+   *         retrieved.
+   *
+   * @throws IllegalArgumentException If no product was found
+   *         with a matching id.
+   *
+   ****************************************************/
+  public Product getProductById( String id )
+    {
+    // Get the products synchronously
+
+    Pair<ArrayList<ProductGroup>,HashMap<String,Product>> productPair = getAllProducts();
+
+    if ( productPair == null ) return ( null );
+
+
+    // Lookup the product in the product table
+
+    Product product = productPair.second.get( id );
+
+    if ( product == null ) throw ( new IllegalArgumentException( "No product was found with the id " + id ) );
+
+    return ( product );
+    }
+
+
+  /****************************************************
+   *
+   * Returns an error to the consumers.
+   *
+   ****************************************************/
+  private synchronized void returnErrorToConsumers( Exception exception )
+    {
+    // Go through each of the consumers and notify them of the error
+
+    for ( ProductConsumer consumer : mProductConsumerList )
       {
-      sync( listener );
-
-      return;
+      consumer.onProductRetrievalError( exception );
       }
 
-    listener.onSyncComplete( mLastRetrievedProductGroupList );
+
+    // Clear the request
+    mBaseRequest         = null;
+    mProductConsumerList = null;
     }
 
 
@@ -560,10 +689,8 @@ public class ProductSyncer implements BaseRequest.BaseRequestListener
    * This interface defines a listener to the result of
    * a products request.
    *
-   * Created by alibros on 06/01/15.
-   *
    *****************************************************/
-  public interface SyncListener
+  public interface ProductConsumer
     {
     ////////// Static Constant(s) //////////
 
@@ -578,17 +705,68 @@ public class ProductSyncer implements BaseRequest.BaseRequestListener
      *                         the server.
      *
      *****************************************************/
-    void onSyncComplete( ArrayList<ProductGroup> productGroupList );
+    void onGotProducts( ArrayList<ProductGroup> productGroupList, HashMap<String,Product> productTable );
 
 
     /*****************************************************
      *
      * Called when a request results in an error.
      *
-     * @param error The exception that was thrown.
+     * @param exception The exception that was thrown.
      *
      *****************************************************/
-    void onError( Exception error );
+    void onProductRetrievalError( Exception exception );
+    }
+
+
+  /*****************************************************
+   *
+   * This class is used to turn the asynchronous product
+   * retrieval into a synchronous process.
+   *
+   *****************************************************/
+  private class SynchronousProductConsumer implements ProductConsumer
+    {
+    private Pair<ArrayList<ProductGroup>,HashMap<String,Product>>  mProductPair;
+
+
+    @Override
+    public synchronized void onGotProducts( ArrayList<ProductGroup> productGroupList, HashMap<String,Product> productTable )
+      {
+      mProductPair = new Pair<ArrayList<ProductGroup>,HashMap<String,Product>>( productGroupList, productTable );
+
+      notifyAll();
+      }
+
+
+    @Override
+    public synchronized void onProductRetrievalError( Exception exception )
+      {
+      Log.e( LOG_TAG, "Synchronous product retrieval returned error", exception );
+
+      // The product pair stays null
+
+      notifyAll();
+      }
+
+
+    synchronized Pair<ArrayList<ProductGroup>,HashMap<String,Product>> getProductPair()
+      {
+      // Kick off a retrieval now we have the monitor
+      getAllProducts( this );
+
+      // Wait for a notification
+      try
+        {
+        wait();
+        }
+      catch ( InterruptedException ie )
+        {
+        // Ignore
+        }
+
+      return ( mProductPair );
+      }
     }
 
   }
