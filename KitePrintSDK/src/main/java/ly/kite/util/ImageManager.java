@@ -178,7 +178,7 @@ public class ImageManager
    * This method should be called on the UI thread.
    *
    *****************************************************/
-  public void getRemoteImage( String imageClassString, URL imageURL, Handler callbackHandler, RemoteImageConsumer remoteImageConsumer )
+  public void getRemoteImage( String imageClassString, URL imageURL, Handler callbackHandler, IRemoteImageConsumer remoteImageConsumer )
     {
     String imageURLString = imageURL.toString();
 
@@ -244,11 +244,11 @@ public class ImageManager
    *****************************************************/
   private class CallbackInfo
     {
-    RemoteImageConsumer  remoteImageConsumer;
+    IRemoteImageConsumer remoteImageConsumer;
     Handler              callbackHandler;
 
 
-    CallbackInfo( RemoteImageConsumer remoteImageConsumer, Handler callbackHandler )
+    CallbackInfo( IRemoteImageConsumer remoteImageConsumer, Handler callbackHandler )
       {
       this.remoteImageConsumer = remoteImageConsumer;
       this.callbackHandler     = callbackHandler;
@@ -429,10 +429,10 @@ public class ImageManager
    *****************************************************/
   private class DownloadingCallbackCaller implements Runnable
     {
-    private RemoteImageConsumer  mRemoteImageConsumer;
+    private IRemoteImageConsumer mRemoteImageConsumer;
 
 
-    DownloadingCallbackCaller( RemoteImageConsumer remoteImageConsumer )
+    DownloadingCallbackCaller( IRemoteImageConsumer remoteImageConsumer )
       {
       mRemoteImageConsumer = remoteImageConsumer;
       }
@@ -453,12 +453,12 @@ public class ImageManager
    *****************************************************/
   private class LoadedCallbackCaller implements Runnable
     {
-    private RemoteImageConsumer  mRemoteImageConsumer;
+    private IRemoteImageConsumer mRemoteImageConsumer;
     private String               mImageURLString;
     private Bitmap               mBitmap;
 
 
-    LoadedCallbackCaller( RemoteImageConsumer remoteImageConsumer, String imageURLString, Bitmap bitmap )
+    LoadedCallbackCaller( IRemoteImageConsumer remoteImageConsumer, String imageURLString, Bitmap bitmap )
       {
       mRemoteImageConsumer = remoteImageConsumer;
       mImageURLString      = imageURLString;

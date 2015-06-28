@@ -44,7 +44,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Set;
 
-import ly.kite.shopping.GroupOrProduct;
+import ly.kite.shopping.IGroupOrProduct;
 import ly.kite.shopping.MultipleCurrencyCost;
 import ly.kite.shopping.ShippingCosts;
 import ly.kite.shopping.SingleCurrencyCost;
@@ -57,7 +57,7 @@ import ly.kite.shopping.SingleCurrencyCost;
  * This class represents a print product.
  *
  *****************************************************/
-public class Product implements GroupOrProduct
+public class Product implements IGroupOrProduct
   {
   ////////// Static Constant(s) //////////
 

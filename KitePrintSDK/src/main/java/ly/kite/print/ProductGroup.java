@@ -45,14 +45,14 @@ package ly.kite.print;
 import java.net.URL;
 import java.util.ArrayList;
 
-import ly.kite.shopping.GroupOrProduct;
+import ly.kite.shopping.IGroupOrProduct;
 
 /*****************************************************
  *
  * This class represents a product group.
  *
  *****************************************************/
-public class ProductGroup implements GroupOrProduct
+public class ProductGroup implements IGroupOrProduct
   {
   ////////// Static Constant(s) //////////
 

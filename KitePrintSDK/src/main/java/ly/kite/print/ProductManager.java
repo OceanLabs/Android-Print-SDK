@@ -39,6 +39,7 @@ package ly.kite.print;
 
 ///// Import(s) /////
 
+import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
 import android.util.Pair;
@@ -47,7 +48,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -56,6 +56,8 @@ import java.util.Currency;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import ly.kite.KiteSDKException;
+import ly.kite.KiteSDK;
 import ly.kite.shopping.MultipleCurrencyCost;
 import ly.kite.shopping.ShippingCosts;
 import ly.kite.shopping.SingleCurrencyCost;
@@ -120,12 +122,12 @@ public class ProductManager implements BaseRequest.BaseRequestListener
 
   ////////// Member Variable(s) //////////
 
-  private BaseRequest                 mBaseRequest;
-  private ArrayList<ProductConsumer>  mProductConsumerList;
+  private BaseRequest                               mBaseRequest;
+  private ArrayList<Pair<ProductConsumer,Handler>>  mConsumerHandlerList;
 
-  private ArrayList<ProductGroup>     mLastRetrievedProductGroupList;
-  private HashMap<String,Product>     mLastRetrievedProductTable;
-  private long                        mLastRetrievedElapsedRealtimeMillis;
+  private ArrayList<ProductGroup>                   mLastRetrievedProductGroupList;
+  private HashMap<String,Product>                   mLastRetrievedProductTable;
+  private long                                      mLastRetrievedElapsedRealtimeMillis;
 
 
   ////////// Static Initialiser(s) //////////
@@ -471,13 +473,13 @@ public class ProductManager implements BaseRequest.BaseRequestListener
           mLastRetrievedElapsedRealtimeMillis = SystemClock.elapsedRealtime();
 
           // Pass the update products list to each of the consumers that want it
-          for ( ProductConsumer consumer : mProductConsumerList )
+          for ( Pair<ProductConsumer,Handler> consumerHandlerPair : mConsumerHandlerList )
             {
-            consumer.onGotProducts( productGroupList, productTable );
+            returnProductsToConsumer( productGroupList, productTable, consumerHandlerPair );
             }
 
           mBaseRequest         = null;
-          mProductConsumerList = null;
+          mConsumerHandlerList = null;
           }
         }
       else
@@ -488,7 +490,7 @@ public class ProductManager implements BaseRequest.BaseRequestListener
         String     errorMessage    = errorJSONObject.getString( BaseRequest.ERROR_RESPONSE_MESSAGE_JSON_NAME );
         String     errorCode       = errorJSONObject.getString( BaseRequest.ERROR_RESPONSE_CODE_JSON_NAME );
 
-        Exception exception = new KitePrintSDKException( errorMessage );
+        Exception exception = new KiteSDKException( errorMessage );
 
         returnErrorToConsumers( exception );
         }
@@ -527,7 +529,7 @@ public class ProductManager implements BaseRequest.BaseRequestListener
    * @param consumer         The sync listener for the result.
    *
    ****************************************************/
-  public void getAllProducts( final long maximumAgeMillis, final ProductConsumer consumer )
+  public void getAllProducts( long maximumAgeMillis, ProductConsumer consumer, Handler callbackHandler )
     {
 
     synchronized ( this )
@@ -536,7 +538,7 @@ public class ProductManager implements BaseRequest.BaseRequestListener
 
       if ( mBaseRequest != null )
         {
-        mProductConsumerList.add( consumer );
+        mConsumerHandlerList.add( new Pair<ProductConsumer,Handler>( consumer, callbackHandler ) );
 
         return;
         }
@@ -555,20 +557,20 @@ public class ProductManager implements BaseRequest.BaseRequestListener
 
         if ( mLastRetrievedElapsedRealtimeMillis >= minAcceptableElapsedRealtimeMillis )
           {
-          consumer.onGotProducts( mLastRetrievedProductGroupList, mLastRetrievedProductTable );
+          returnProductsToConsumer( mLastRetrievedProductGroupList, mLastRetrievedProductTable, consumer, callbackHandler );
 
           return;
           }
         }
 
 
-      // We need to perform a new retrieval
+      // We need to perform a new retrieval. Create a new request, and consumer list containing the consumer.
 
-      String url = String.format( REQUEST_FORMAT_STRING, KitePrintSDK.getEnvironment().getPrintAPIEndpoint() );
+      String url = String.format( REQUEST_FORMAT_STRING, KiteSDK.getEnvironment().getPrintAPIEndpoint() );
 
-      mBaseRequest = new BaseRequest( BaseRequest.HttpMethod.GET, url, null, null );
-      mProductConsumerList = new ArrayList<ProductConsumer>();
-      mProductConsumerList.add( consumer );
+      mBaseRequest         = new BaseRequest( BaseRequest.HttpMethod.GET, url, null, null );
+      mConsumerHandlerList = new ArrayList<Pair<ProductConsumer,Handler>>();
+      mConsumerHandlerList.add( new Pair<ProductConsumer,Handler>( consumer, callbackHandler ) );
       }
 
 
@@ -581,12 +583,28 @@ public class ProductManager implements BaseRequest.BaseRequestListener
    *
    * Retrieves a list of all the products.
    *
+   * @param maximumAgeMillis The maximum permitted time in milliseconds
+   *                         since the last retrieval. If the value supplied
+   *                         is < 0, there is no maximum age.
+   * @param consumer         The sync listener for the result.
+   *
+   ****************************************************/
+  public void getAllProducts( long maximumAgeMillis, ProductConsumer consumer )
+    {
+    getAllProducts( maximumAgeMillis, consumer, null );
+    }
+
+
+  /****************************************************
+   *
+   * Retrieves a list of all the products.
+   *
    * @param consumer The sync listener for the result.
    *
    ****************************************************/
-  public void getAllProducts( final ProductConsumer consumer )
+  public void getAllProducts( ProductConsumer consumer, Handler callbackHandler )
     {
-    getAllProducts( ANY_AGE_OK, consumer );
+    getAllProducts( ANY_AGE_OK, consumer, callbackHandler );
     }
 
 
@@ -608,6 +626,41 @@ public class ProductManager implements BaseRequest.BaseRequestListener
     if ( productPair == null ) throw ( new RuntimeException( "Unable to retrieve products" ) );
 
     return ( productPair );
+    }
+
+
+  /****************************************************
+   *
+   * Passes the products to a consumer, either directly
+   * or using a handler.
+   *
+   ****************************************************/
+  private void returnProductsToConsumer( ArrayList<ProductGroup> productGroupList, HashMap<String, Product> productTable, ProductConsumer consumer, Handler callbackHandler )
+    {
+    // If no handler was supplied - return the products immediately. Otherwise post the call.
+
+    if ( callbackHandler == null )
+      {
+      consumer.onGotProducts( productGroupList, productTable );
+      }
+    else
+      {
+      ProductsCallbackRunnable callbackRunnable = new ProductsCallbackRunnable( productGroupList, productTable, consumer );
+
+      callbackHandler.post( callbackRunnable );
+      }
+    }
+
+
+  /****************************************************
+   *
+   * Passes the products to a consumer, either directly
+   * or using a handler.
+   *
+   ****************************************************/
+  private void returnProductsToConsumer( ArrayList<ProductGroup> productGroupList, HashMap<String, Product> productTable, Pair<ProductConsumer, Handler> consumerHandlerPair )
+    {
+    returnProductsToConsumer( productGroupList, productTable, consumerHandlerPair.first, consumerHandlerPair.second );
     }
 
 
@@ -647,6 +700,29 @@ public class ProductManager implements BaseRequest.BaseRequestListener
 
   /****************************************************
    *
+   * Returns an error to a consumer, either directly
+   * or using a handler.
+   *
+   ****************************************************/
+  private void returnErrorToConsumer( Exception exception, ProductConsumer consumer, Handler callbackHandler )
+    {
+    // If no handler was supplied - return the error immediately. Otherwise post the call.
+
+    if ( callbackHandler == null )
+      {
+      consumer.onProductRetrievalError( exception );
+      }
+    else
+      {
+      ErrorCallbackRunnable callbackRunnable = new ErrorCallbackRunnable( exception, consumer );
+
+      callbackHandler.post( callbackRunnable );
+      }
+    }
+
+
+  /****************************************************
+   *
    * Returns an error to the consumers.
    *
    ****************************************************/
@@ -654,15 +730,15 @@ public class ProductManager implements BaseRequest.BaseRequestListener
     {
     // Go through each of the consumers and notify them of the error
 
-    for ( ProductConsumer consumer : mProductConsumerList )
+    for ( Pair<ProductConsumer,Handler> consumerHandlerPair : mConsumerHandlerList )
       {
-      consumer.onProductRetrievalError( exception );
+      returnErrorToConsumer( exception, consumerHandlerPair.first, consumerHandlerPair.second );
       }
 
 
     // Clear the request
     mBaseRequest         = null;
-    mProductConsumerList = null;
+    mConsumerHandlerList = null;
     }
 
 
@@ -721,6 +797,60 @@ public class ProductManager implements BaseRequest.BaseRequestListener
 
   /*****************************************************
    *
+   * Passes the product details to a consumer.
+   *
+   *****************************************************/
+  private class ProductsCallbackRunnable implements Runnable
+    {
+    ArrayList<ProductGroup>   mProductGroupList;
+    HashMap<String, Product>  mProductTable;
+    ProductConsumer           mConsumer;
+
+
+    ProductsCallbackRunnable( ArrayList<ProductGroup> productGroupList, HashMap<String, Product> productTable, ProductConsumer consumer )
+      {
+      mProductGroupList = productGroupList;
+      mProductTable     = productTable;
+      mConsumer         = consumer;
+      }
+
+
+    @Override
+    public void run()
+      {
+      mConsumer.onGotProducts( mProductGroupList, mProductTable );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Returns an error to a consumer.
+   *
+   *****************************************************/
+  private class ErrorCallbackRunnable implements Runnable
+    {
+    Exception        mException;
+    ProductConsumer  mConsumer;
+
+
+    ErrorCallbackRunnable( Exception exception, ProductConsumer consumer )
+      {
+      mException = exception;
+      mConsumer  = consumer;
+      }
+
+
+    @Override
+    public void run()
+      {
+      mConsumer.onProductRetrievalError( mException );
+      }
+    }
+
+
+  /*****************************************************
+   *
    * This class is used to turn the asynchronous product
    * retrieval into a synchronous process.
    *
@@ -753,7 +883,7 @@ public class ProductManager implements BaseRequest.BaseRequestListener
     synchronized Pair<ArrayList<ProductGroup>,HashMap<String,Product>> getProductPair()
       {
       // Kick off a retrieval now we have the monitor
-      getAllProducts( this );
+      getAllProducts( this, null );
 
       // Wait for a notification
       try

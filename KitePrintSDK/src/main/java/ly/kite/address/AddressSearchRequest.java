@@ -8,8 +8,8 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import ly.kite.print.BaseRequest;
-import ly.kite.print.KitePrintSDK;
-import ly.kite.print.KitePrintSDKException;
+import ly.kite.KiteSDK;
+import ly.kite.KiteSDKException;
 
 /**
  * Created by deonbotha on 29/01/2014.
@@ -34,7 +34,7 @@ public class AddressSearchRequest {
             return;
         }
 
-        String url = String.format("%s/address/search?%s", KitePrintSDK.getEnvironment().getPrintAPIEndpoint(), queryParams);
+        String url = String.format("%s/address/search?%s", KiteSDK.getEnvironment().getPrintAPIEndpoint(), queryParams);
         startSearch(url, country, listener);
     }
 
@@ -56,7 +56,7 @@ public class AddressSearchRequest {
             return;
         }
 
-        String url = String.format("%s/address/search?%s", KitePrintSDK.getEnvironment().getPrintAPIEndpoint(), queryParams);
+        String url = String.format("%s/address/search?%s", KiteSDK.getEnvironment().getPrintAPIEndpoint(), queryParams);
         startSearch(url, address.getCountry(), listener);
     }
 
@@ -71,7 +71,7 @@ public class AddressSearchRequest {
                 JSONObject unique = json.optJSONObject("unique");
                 if (error != null) {
                     String message = error.optString("message");
-                    listener.onError(AddressSearchRequest.this, new KitePrintSDKException(message));
+                    listener.onError(AddressSearchRequest.this, new KiteSDKException(message));
                 } else if (choices != null) {
                     ArrayList<Address> addrs = new ArrayList<Address>();
                     for (int i = 0; i < choices.length(); ++i) {

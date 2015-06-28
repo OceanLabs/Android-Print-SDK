@@ -31,7 +31,7 @@ import org.json.JSONException;
 import java.math.BigDecimal;
 
 import ly.kite.print.ApplyPromoCodeListener;
-import ly.kite.print.KitePrintSDK;
+import ly.kite.KiteSDK;
 import ly.kite.print.PrintOrder;
 import ly.kite.print.PrintOrderSubmissionListener;
 import ly.kite.R;
@@ -59,7 +59,7 @@ public class PaymentActivity extends Activity {
 
     private PrintOrder printOrder;
     private String apiKey;
-    private KitePrintSDK.Environment printEnvironment;
+    private KiteSDK.Environment printEnvironment;
     private PayPalCard.Environment paypalEnvironment;
 
     @Override
@@ -87,14 +87,14 @@ public class PaymentActivity extends Activity {
         }
 
 //        KitePrintSDK.Environment env = KitePrintSDK.Environment.LIVE;
-        KitePrintSDK.Environment env = KitePrintSDK.Environment.TEST;
+        KiteSDK.Environment env = KiteSDK.Environment.TEST;
         this.paypalEnvironment = PayPalCard.Environment.LIVE;
         if (envString != null) {
             if (envString.equals(ENVIRONMENT_STAGING)) {
-                env = KitePrintSDK.Environment.STAGING;
+                env = KiteSDK.Environment.STAGING;
                 paypalEnvironment = PayPalCard.Environment.SANDBOX;
             } else if (envString.equals(ENVIRONMENT_TEST)) {
-                env = KitePrintSDK.Environment.TEST;
+                env = KiteSDK.Environment.TEST;
                 paypalEnvironment = PayPalCard.Environment.SANDBOX;
             }
         }
@@ -102,7 +102,7 @@ public class PaymentActivity extends Activity {
         this.apiKey = apiKey;
         this.printEnvironment = env;
 
-        KitePrintSDK.initialize(apiKey, env, getApplicationContext());
+        KiteSDK.initialize( apiKey, env, getApplicationContext() );
 
         /*
          * Start PayPal Service
@@ -135,11 +135,11 @@ public class PaymentActivity extends Activity {
         super.onRestoreInstanceState(savedInstanceState);
         this.printOrder = savedInstanceState.getParcelable(EXTRA_PRINT_ORDER);
         this.apiKey = savedInstanceState.getString(EXTRA_PRINT_API_KEY);
-        this.printEnvironment = (KitePrintSDK.Environment) savedInstanceState.getSerializable(EXTRA_PRINT_ENVIRONMENT);
-        KitePrintSDK.initialize(apiKey, printEnvironment, getApplicationContext());
+        this.printEnvironment = (KiteSDK.Environment) savedInstanceState.getSerializable(EXTRA_PRINT_ENVIRONMENT);
+        KiteSDK.initialize( apiKey, printEnvironment, getApplicationContext() );
 
         paypalEnvironment = PayPalCard.Environment.LIVE;
-        if (printEnvironment == KitePrintSDK.Environment.STAGING || printEnvironment == KitePrintSDK.Environment.TEST) {
+        if (printEnvironment == KiteSDK.Environment.STAGING || printEnvironment == KiteSDK.Environment.TEST) {
             paypalEnvironment = PayPalCard.Environment.SANDBOX;
         }
     }

@@ -3,6 +3,9 @@ package ly.kite.print;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import ly.kite.KiteSDKException;
+import ly.kite.KiteSDK;
+
 /**
  * Created by deonbotha on 09/02/2014.
  */
@@ -18,7 +21,7 @@ class SubmitPrintOrderRequest {
         assert req == null : "you can only submit a request once";
 
         JSONObject json = printOrder.getJSONRepresentation();
-        String url = String.format("%s/print", KitePrintSDK.getEnvironment().getPrintAPIEndpoint());
+        String url = String.format("%s/print", KiteSDK.getEnvironment().getPrintAPIEndpoint());
         req = new BaseRequest(BaseRequest.HttpMethod.POST, url, null, json.toString());
         req.start(new BaseRequest.BaseRequestListener() {
             @Override
@@ -37,7 +40,7 @@ class SubmitPrintOrderRequest {
                             String orderId = json.getString("print_order_id");
                             listener.onSubmissionComplete(SubmitPrintOrderRequest.this, orderId);
                         } else {
-                            listener.onError(SubmitPrintOrderRequest.this, new KitePrintSDKException(message));
+                            listener.onError(SubmitPrintOrderRequest.this, new KiteSDKException(message));
                         }
                     }
                 } catch (JSONException ex) {

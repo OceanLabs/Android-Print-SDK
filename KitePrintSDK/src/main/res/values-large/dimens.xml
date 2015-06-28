@@ -1,0 +1,13 @@
+<resources>
+
+    <dimen name="control_label_text_size">20sp</dimen>
+    <dimen name="label_text_size">20sp</dimen>
+
+    <dimen name="group_or_product_label_bottom_spacing">25dp</dimen>
+    <dimen name="group_or_product_label_width">300dp</dimen>
+    <dimen name="group_or_product_label_text_size">@dimen/label_text_size</dimen>
+    <dimen name="group_or_product_label_padding_top">8dp</dimen>
+    <dimen name="group_or_product_label_padding_bottom">12dp</dimen>
+    <dimen name="group_or_product_label_shadow_y_offset">1dp</dimen>
+
+</resources>

@@ -50,7 +50,7 @@ import android.widget.AdapterView;
 
 import ly.kite.R;
 import ly.kite.print.Asset;
-import ly.kite.print.KitePrintSDK;
+import ly.kite.KiteSDK;
 import ly.kite.print.Product;
 import ly.kite.print.ProductGroup;
 
@@ -63,14 +63,14 @@ import ly.kite.print.ProductGroup;
  * the user to drill down to products within that group.
  *
  *****************************************************/
-public class ProductGroupActivity extends GroupOrProductActivity
+public class ProductGroupActivity extends AGroupOrProductActivity
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
   private static final String  LOG_TAG                      = "ProductGroupActivity";
 
-  private static final String  INTENT_EXTRA_NAME_ASSET_LIST = KitePrintSDK.INTENT_PREFIX + ".AssetList";
+  private static final String  INTENT_EXTRA_NAME_ASSET_LIST = KiteSDK.INTENT_PREFIX + ".AssetList";
 
 
   ////////// Static Variable(s) //////////
@@ -92,7 +92,7 @@ public class ProductGroupActivity extends GroupOrProductActivity
    * set of assets.
    *
    *****************************************************/
-  static void start( Context context, ArrayList<Asset> assetArrayList )
+  public static void start( Context context, ArrayList<Asset> assetArrayList )
     {
     Intent intent = new Intent( context, ProductGroupActivity.class );
 
@@ -134,12 +134,12 @@ public class ProductGroupActivity extends GroupOrProductActivity
   @Override
   public void onGotProducts( ArrayList<ProductGroup> productGroupList, HashMap<String,Product> productTable )
     {
-    onSyncFinished();
+    onProductFetchFinished();
 
     mProductGroupList = productGroupList;
 
     // Display the product groups
-    mGridAdaptor = new GroupOrProductAdaptor( this, productGroupList );
+    mGridAdaptor = new GroupOrProductAdaptor( this, productGroupList, mGridView );
     mGridView.setAdapter( mGridAdaptor );
 
     // Register for item selection
@@ -157,8 +157,14 @@ public class ProductGroupActivity extends GroupOrProductActivity
   @Override
   public void onItemClick( AdapterView<?> parent, View view, int position, long id )
     {
-    // Get the product group
-    ProductGroup clickedProductGroup = mProductGroupList.get( mGridView.adaptorIndexFromPosition( position ) );
+    // Get the product group. Remember to ignore any clicks on placeholder images.
+
+    int adaptorIndex = mGridView.adaptorIndexFromPosition( position );
+
+    if ( adaptorIndex >= mProductGroupList.size() ) return;
+
+    ProductGroup clickedProductGroup = mProductGroupList.get( adaptorIndex );
+
 
     // Start the product activity, passing it the assets and the product group label (to
     // identify it).

@@ -11,6 +11,8 @@
     <string name="Cancel">Cancel</string>
     <string name="Retry">Retry</string>
 
+    <string name="group_or_product_placeholder_image_url">https://s3.amazonaws.com/sdk-static/product_photography/placeholder.png</string>
+
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>

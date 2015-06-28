@@ -24,7 +24,7 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import ly.kite.print.KitePrintSDK;
+import ly.kite.KiteSDK;
 import ly.kite.print.PrintJob;
 import ly.kite.print.PrintOrder;
 import ly.kite.R;
@@ -37,7 +37,6 @@ import ly.kite.print.ProductManager;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 
 
@@ -60,7 +59,7 @@ public class CheckoutActivity extends Activity {
 
     private PrintOrder printOrder;
     private String apiKey;
-    private KitePrintSDK.Environment environment;
+    private KiteSDK.Environment environment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +80,7 @@ public class CheckoutActivity extends Activity {
         this.printOrder = (PrintOrder) getIntent().getParcelableExtra(EXTRA_PRINT_ORDER);
 
         if (apiKey == null) {
-            apiKey = KitePrintSDK.getAPIKey();
+            apiKey = KiteSDK.getAPIKey();
             if (apiKey == null) {
                 throw new IllegalArgumentException("You must specify an API key string extra in the intent used to start the CheckoutActivity or with KitePrintSDK.initialize");
             }
@@ -95,19 +94,19 @@ public class CheckoutActivity extends Activity {
             throw new IllegalArgumentException("You must specify a PrintOrder object extra that actually has some jobs for printing i.e. PrintOrder.getJobs().size() > 0");
         }
 
-        KitePrintSDK.Environment env = null;
+        KiteSDK.Environment env = null;
         if (envString == null) {
-            env = KitePrintSDK.getEnvironment();
+            env = KiteSDK.getEnvironment();
             if (env == null) {
                 throw new IllegalArgumentException("You must specify an environment string extra in the intent used to start the CheckoutActivity or with KitePrintSDK.initialize");
             }
         } else {
             if (envString.equals(ENVIRONMENT_STAGING)) {
-                env = KitePrintSDK.Environment.STAGING;
+                env = KiteSDK.Environment.STAGING;
             } else if (envString.equals(ENVIRONMENT_TEST)) {
-                env = KitePrintSDK.Environment.TEST;
+                env = KiteSDK.Environment.TEST;
             } else if (envString.equals(ENVIRONMENT_LIVE)) {
-                env = KitePrintSDK.Environment.LIVE;
+                env = KiteSDK.Environment.LIVE;
             } else {
                 throw new IllegalArgumentException("Bad print environment extra: " + envString);
             }
@@ -115,7 +114,7 @@ public class CheckoutActivity extends Activity {
 
         this.apiKey = apiKey;
         this.environment = env;
-        KitePrintSDK.initialize(apiKey, env, getApplicationContext());
+        KiteSDK.initialize( apiKey, env, getApplicationContext() );
         if (getActionBar() != null) {
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
@@ -137,8 +136,8 @@ public class CheckoutActivity extends Activity {
         super.onRestoreInstanceState(savedInstanceState);
         this.printOrder = savedInstanceState.getParcelable(EXTRA_PRINT_ORDER);
         this.apiKey = savedInstanceState.getString(EXTRA_PRINT_API_KEY);
-        this.environment = (KitePrintSDK.Environment) savedInstanceState.getSerializable(EXTRA_PRINT_ENVIRONMENT);
-        KitePrintSDK.initialize(apiKey, environment, getApplicationContext());
+        this.environment = (KiteSDK.Environment) savedInstanceState.getSerializable(EXTRA_PRINT_ENVIRONMENT);
+        KiteSDK.initialize( apiKey, environment, getApplicationContext() );
     }
 
     @Override

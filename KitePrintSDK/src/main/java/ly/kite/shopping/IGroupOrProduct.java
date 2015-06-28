@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * KiteShopping.java
+ * IGroupOrProduct.java
  *
  *
  * Modified MIT License
@@ -39,86 +39,43 @@ package ly.kite.shopping;
 
 ///// Import(s) /////
 
-import java.util.ArrayList;
-import java.util.List;
-
-import android.content.Context;
-
-import ly.kite.print.Asset;
-import ly.kite.print.KitePrintSDK;
-
 
 ///// Class Declaration /////
 
+import java.net.URL;
+
 /*****************************************************
  *
- * This class provides entry points for the Kite
- * shopping experience.
+ * This interfaces represents a displayable item on the
+ * product groups / products screens.
  *
  *****************************************************/
-public class KiteShopping
+public interface IGroupOrProduct
   {
-  ////////// Static Constant(s) //////////
-
-  @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "KiteShopping";
-
-
-  ////////// Static Variable(s) //////////
-
-
-  ////////// Member Variable(s) //////////
-
-
-  ////////// Static Initialiser(s) //////////
-
-
-  ////////// Static Method(s) //////////
-
-  /*****************************************************
-   *
-   * Launches the shopping experience.
-   *
-   *****************************************************/
-  public static void launch( String apiKey, KitePrintSDK.Environment env, Context context, ArrayList<Asset> assetArrayList )
-    {
-    // Initialise the SDK
-    KitePrintSDK.initialize( apiKey, env, context.getApplicationContext() );
-
-    launch( context, assetArrayList );
-    }
-
-
-  /*****************************************************
-   *
-   * Launches the shopping experience.
-   *
-   *****************************************************/
-  public static void launch( Context context, ArrayList<Asset> assetArrayList )
-    {
-    ProductGroupActivity.start( context, assetArrayList );
-    }
-
-
-  ////////// Constructor(s) //////////
-
-
   ////////// Method(s) //////////
 
   /*****************************************************
    *
-   * ...
+   * Returns the display image URL.
    *
    *****************************************************/
+  public URL getDisplayImageURL();
 
-
-  ////////// Inner Class(es) //////////
 
   /*****************************************************
    *
-   * ...
+   * Returns the display label.
    *
    *****************************************************/
+  public String getDisplayLabel();
+
+
+  /*****************************************************
+   *
+   * Returns the display label colour.
+   *
+   *****************************************************/
+  public int getDisplayLabelColour();
 
   }
 

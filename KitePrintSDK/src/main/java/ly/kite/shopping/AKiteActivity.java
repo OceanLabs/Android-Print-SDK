@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * KiteSDKActivity.java
+ * AKiteActivity.java
  *
  *
  * Modified MIT License
@@ -44,6 +44,7 @@ package ly.kite.shopping;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.view.View;
@@ -53,22 +54,24 @@ import ly.kite.R;
 
 /*****************************************************
  *
- * This class is the base class for activities in the
- * Kite SDK. It provides some common functionality.
+ * This abstract class is the base class for activities
+ * in the Kite SDK. It provides some common functionality.
  *
  *****************************************************/
-public abstract class KiteSDKActivity extends Activity
+public abstract class AKiteActivity extends Activity
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "KiteSDKActivity";
+  private static final String  LOG_TAG = "AKiteActivity";
 
 
   ////////// Static Variable(s) //////////
 
 
   ////////// Member Variable(s) //////////
+
+  private Dialog  mDialog;
 
 
   ////////// Static Initialiser(s) //////////
@@ -143,11 +146,25 @@ public abstract class KiteSDKActivity extends Activity
     }
 
 
+  /*****************************************************
+   *
+   * Called when the activity is destroyed.
+   *
+   *****************************************************/
+  @Override
+  public void onDestroy()
+    {
+    super.onDestroy();
+
+    ensureDialogGone();
+    }
+
+
   ////////// Method(s) //////////
 
   /*****************************************************
    *
-   * Displays a model dialog.
+   * Displays a modal dialog.
    *
    *****************************************************/
   protected void displayModalDialog(
@@ -158,6 +175,8 @@ public abstract class KiteSDKActivity extends Activity
           int      negativeTextResourceId,
           Runnable negativeRunnable )
     {
+    ensureDialogGone();
+
     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder( this )
             .setTitle( titleTextResourceId )
             .setMessage( messageTextResourceId )
@@ -168,8 +187,27 @@ public abstract class KiteSDKActivity extends Activity
     if ( positiveTextResourceId != 0 ) alertDialogBuilder.setPositiveButton( positiveTextResourceId, callbackHandler );
     if ( negativeTextResourceId != 0 ) alertDialogBuilder.setNegativeButton( negativeTextResourceId, callbackHandler );
 
-    alertDialogBuilder.show();
+    mDialog = alertDialogBuilder.create();
+
+    mDialog.show();
     }
+
+
+  /*****************************************************
+   *
+   * Ensures any dialog is gone.
+   *
+   *****************************************************/
+  private void ensureDialogGone()
+    {
+    if ( mDialog != null )
+      {
+      mDialog.dismiss();
+
+      mDialog = null;
+      }
+    }
+
 
 
   ////////// Inner Class(es) //////////
@@ -195,7 +233,7 @@ public abstract class KiteSDKActivity extends Activity
    * accordingly.
    *
    *****************************************************/
-  private class DialogCallbackHandler implements DialogInterface.OnClickListener
+  private class DialogCallbackHandler implements DialogInterface.OnClickListener, DialogInterface.OnCancelListener
     {
     private Runnable  mPositiveRunnable;
     private Runnable  mNegativeRunnable;
@@ -224,16 +262,34 @@ public abstract class KiteSDKActivity extends Activity
 
         case DialogInterface.BUTTON_NEGATIVE:
 
-          if ( mNegativeRunnable != null )
-            {
-            mNegativeRunnable.run();
-            }
+          performNegativeAction();
 
           break;
 
         case DialogInterface.BUTTON_NEUTRAL:
 
           break;
+        }
+
+      ensureDialogGone();
+      }
+
+
+    @Override
+    public void onCancel( DialogInterface dialog )
+      {
+      // Perform the same action as the negative button
+      performNegativeAction();
+
+      ensureDialogGone();
+      }
+
+
+    private void performNegativeAction()
+      {
+      if ( mNegativeRunnable != null )
+        {
+        mNegativeRunnable.run();
         }
       }
     }

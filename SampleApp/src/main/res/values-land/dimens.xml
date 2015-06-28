@@ -1,0 +1,5 @@
+<resources>
+
+    <dimen name="main_button_spacing">15dp</dimen>
+
+</resources>

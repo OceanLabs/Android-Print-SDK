@@ -27,7 +27,7 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import ly.kite.print.KitePrintSDKException;
+import ly.kite.KiteSDKException;
 
 /**
  * Created by deonbotha on 16/02/2014.
@@ -284,7 +284,7 @@ public class PayPalCard implements Serializable {
                                     errorMessage = "Failed to make the payment. Please check your internet connectivity and try again.";
                                 }
 
-                                return new KitePrintSDKException(errorMessage);
+                                return new KiteSDKException(errorMessage);
                             }
                         } catch (Exception e) {
                             return e;
@@ -399,7 +399,7 @@ public class PayPalCard implements Serializable {
                                 String paymentId = json.getString("id");
                                 String paymentState = json.getString("state");
                                 if (!paymentState.equalsIgnoreCase("approved")) {
-                                    return new KitePrintSDKException("Your payment was not approved. Please try again.");
+                                    return new KiteSDKException("Your payment was not approved. Please try again.");
                                 }
 
                                 return paymentId;
@@ -409,7 +409,7 @@ public class PayPalCard implements Serializable {
                                     errorMessage = "Failed to make the payment. Please check your internet connectivity and try again.";
                                 }
 
-                                return new KitePrintSDKException(errorMessage);
+                                return new KiteSDKException(errorMessage);
                             }
                         } catch (Exception e) {
                             return e;

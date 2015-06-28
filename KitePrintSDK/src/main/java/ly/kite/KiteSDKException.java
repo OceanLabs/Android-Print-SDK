@@ -1,11 +1,9 @@
-package ly.kite.print;
-
-import java.io.Serializable;
+package ly.kite;
 
 /**
  * Created by deonbotha on 02/02/2014.
  */
-public class KitePrintSDKException extends RuntimeException {
+public class KiteSDKException extends RuntimeException {
 
     public static enum ErrorCode {
         GENERIC_ERROR,
@@ -14,11 +12,11 @@ public class KitePrintSDKException extends RuntimeException {
 
     private final ErrorCode code;
 
-    public KitePrintSDKException(String message) {
+    public KiteSDKException( String message ) {
         this(message, ErrorCode.GENERIC_ERROR);
     }
 
-    public KitePrintSDKException(String message, ErrorCode code) {
+    public KiteSDKException( String message, ErrorCode code ) {
         super(message);
         this.code = code;
     }

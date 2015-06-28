@@ -5,8 +5,8 @@ import org.json.JSONObject;
 import java.math.BigDecimal;
 
 import ly.kite.print.BaseRequest;
-import ly.kite.print.KitePrintSDK;
-import ly.kite.print.KitePrintSDKException;
+import ly.kite.KiteSDK;
+import ly.kite.KiteSDKException;
 import ly.kite.print.PrintJob;
 import ly.kite.print.PrintOrder;
 
@@ -26,7 +26,7 @@ public class CheckPromoRequest {
             templateCostBreakdown.append(String.format("%s:%s", j.getTemplateId(), j.getCost(order.getCurrencyCode()).toString()));
         }
 
-        String url = String.format("%s/promo_code/check?code=%s&templates=%s&currency=%s", KitePrintSDK.getEnvironment().getPrintAPIEndpoint(), promoCode, templateCostBreakdown.toString(), order.getCurrencyCode());
+        String url = String.format("%s/promo_code/check?code=%s&templates=%s&currency=%s", KiteSDK.getEnvironment().getPrintAPIEndpoint(), promoCode, templateCostBreakdown.toString(), order.getCurrencyCode());
         req = new BaseRequest(BaseRequest.HttpMethod.GET, url, null, null);
         req.start(new BaseRequest.BaseRequestListener() {
             @Override
@@ -38,7 +38,7 @@ public class CheckPromoRequest {
                     } else {
                         JSONObject error = json.getJSONObject("error");
                         String message = error.getString("message");
-                        listener.onError(new KitePrintSDKException(message));
+                        listener.onError(new KiteSDKException(message));
                     }
                 } catch (Exception ex) {
                     listener.onError(ex);

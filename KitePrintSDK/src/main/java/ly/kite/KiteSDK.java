@@ -1,18 +1,20 @@
-package ly.kite.print;
+package ly.kite;
 
 import android.content.Context;
 
 import com.paypal.android.sdk.payments.PaymentActivity;
 
-import java.util.Currency;
-import java.util.Locale;
+import java.util.ArrayList;
+
+import ly.kite.print.Asset;
+import ly.kite.shopping.ProductGroupActivity;
 
 /**
  * Created by deonbotha on 29/01/2014.
  */
-public class KitePrintSDK {
-
-    public static final String INTENT_PREFIX = "ly.kite";
+public class KiteSDK
+  {
+  public static final String INTENT_PREFIX = "ly.kite";
 
     static final String KITE_SHARED_PREFERENCES = "ly.kite.shared_preferences";
 
@@ -59,8 +61,8 @@ public class KitePrintSDK {
     private static Context applicationContext;
 
     public static void initialize(String apiKey, Environment env, Context context) {
-        KitePrintSDK.apiKey = apiKey;
-        KitePrintSDK.environment = env;
+        KiteSDK.apiKey = apiKey;
+        KiteSDK.environment = env;
         applicationContext = context.getApplicationContext();
     }
 
@@ -76,4 +78,29 @@ public class KitePrintSDK {
         return environment;
     }
 
-}
+
+  /*****************************************************
+   *
+   * Launches the shopping experience.
+   *
+   *****************************************************/
+  public static void shop( String apiKey, KiteSDK.Environment env, Context context, ArrayList<Asset> assetArrayList )
+    {
+    // Initialise the SDK
+    KiteSDK.initialize( apiKey, env, context.getApplicationContext() );
+
+    shop( context, assetArrayList );
+    }
+
+
+  /*****************************************************
+   *
+   * Launches the shopping experience.
+   *
+   *****************************************************/
+  public static void shop( Context context, ArrayList<Asset> assetArrayList )
+    {
+    ProductGroupActivity.start( context, assetArrayList );
+    }
+
+  }

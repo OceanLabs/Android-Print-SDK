@@ -39,6 +39,8 @@ package ly.kite.shopping;
 
 ///// Import(s) /////
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 import android.content.Context;
@@ -46,10 +48,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.GridView;
 
 import ly.kite.R;
 import ly.kite.util.ImageManager;
-import ly.kite.widget.GroupOrProductView;
+import ly.kite.widget.ProductImageView;
 
 
 ///// Class Declaration /////
@@ -67,7 +70,7 @@ public class GroupOrProductAdaptor extends BaseAdapter
   @SuppressWarnings( "unused" )
   private static final String  LOG_TAG              = "GroupOrProductAdaptor";
 
-  private static final int     LAYOUT_RESOURCE_ID   = R.layout.grid_item_group_or_product;
+  private static final int     LAYOUT_RESOURCE_ID   = R.layout.grid_item_product_image;
 
   private static final String  IMAGE_CLASS_STRING   = "product_item";
 
@@ -79,11 +82,17 @@ public class GroupOrProductAdaptor extends BaseAdapter
 
   ////////// Member Variable(s) //////////
 
-  private Context                         mContext;
-  private List<? extends GroupOrProduct>  mDisplayItemList;
+  private Context                          mContext;
+  private List<? extends IGroupOrProduct>  mGroupOrProductList;
+  private GridView                         mGridView;
 
-  private LayoutInflater                  mLayoutInflator;
-  private ImageManager                    mImageManager;
+  private int                              mActualItemCount;
+  private int                              mApparentItemCount;
+  private String                           mPlaceholderImageURLString;
+  private URL                              mPlaceholderImageURL;
+
+  private LayoutInflater                   mLayoutInflator;
+  private ImageManager                     mImageManager;
 
 
   ////////// Static Initialiser(s) //////////
@@ -94,13 +103,29 @@ public class GroupOrProductAdaptor extends BaseAdapter
 
   ////////// Constructor(s) //////////
 
-  GroupOrProductAdaptor( Context context, List<? extends GroupOrProduct> displayItemList )
+  GroupOrProductAdaptor( Context context, List<? extends IGroupOrProduct> displayItemList, GridView gridView )
     {
-    mContext         = context;
-    mDisplayItemList = displayItemList;
+    mContext            = context;
+    mGroupOrProductList = displayItemList;
+    mGridView           = gridView;
 
-    mLayoutInflator  = LayoutInflater.from( context );
-    mImageManager    = ImageManager.getInstance( context );
+    mLayoutInflator     = LayoutInflater.from( context );
+    mImageManager       = ImageManager.getInstance( context );
+
+    mActualItemCount    = mGroupOrProductList.size();
+
+
+    // Get the URL of the placeholder image
+
+    mPlaceholderImageURLString = context.getString( R.string.group_or_product_placeholder_image_url );
+
+    try
+      {
+      mPlaceholderImageURL = new URL( mPlaceholderImageURLString );
+      }
+    catch ( MalformedURLException mue )
+      {
+      }
     }
 
 
@@ -114,7 +139,18 @@ public class GroupOrProductAdaptor extends BaseAdapter
   @Override
   public int getCount()
     {
-    return ( mDisplayItemList.size() );
+    // We don't want to calculate the apparent item count in the constructor, because
+    // setting the number of columns for the GridView is requested after the layout has
+    // been inflated, and usually results in the adaptor being created before the change
+    // has taken effect.
+
+    int columnCount = mGridView.getNumColumns();
+
+    // We always round the number of images to be a multiple of the column count, so we can display a placeholder
+    // image in any 'missing' slots.
+    mApparentItemCount = ( columnCount > 1 ? ( ( mActualItemCount + ( columnCount / 2 ) ) / columnCount ) * columnCount: mActualItemCount );
+
+    return ( mApparentItemCount );
     }
 
 
@@ -126,7 +162,7 @@ public class GroupOrProductAdaptor extends BaseAdapter
   @Override
   public Object getItem( int position )
     {
-    return ( mDisplayItemList.get( position ) );
+    return ( position < mActualItemCount ? mGroupOrProductList.get( position ) : null );
     }
 
 
@@ -169,25 +205,42 @@ public class GroupOrProductAdaptor extends BaseAdapter
       {
       view = mLayoutInflator.inflate( LAYOUT_RESOURCE_ID, null );
 
-      viewReferences                    = new ViewReferences();
-      viewReferences.groupOrProductView = (GroupOrProductView)view.findViewById( R.id.group_or_product_view );
+      viewReferences                   = new ViewReferences();
+      viewReferences.productImageView = (ProductImageView)view.findViewById( R.id.product_image_view );
 
       view.setTag( viewReferences );
       }
 
 
     // Get the item we are displaying; set the label, and request the image from the image manager. We
-    // also need to set the size of the image.
+    // also need to set the size of the image. Show placeholders for any missing items.
 
-    GroupOrProduct groupOrProduct = (GroupOrProduct)getItem( position );
+    IGroupOrProduct groupOrProduct = (IGroupOrProduct)getItem( position );
 
-    // TODO: If there are only two items, change the aspect ratio
-    viewReferences.groupOrProductView.setAspectRatio( DEFAULT_ASPECT_RATIO );
-    viewReferences.groupOrProductView.setLabel( groupOrProduct.getDisplayLabel(), groupOrProduct.getDisplayLabelColour() );
+    viewReferences.productImageView.setAspectRatio( DEFAULT_ASPECT_RATIO );
 
-    viewReferences.groupOrProductView.setExpectedImageURL( groupOrProduct.getDisplayImageURL().toString() );
+    URL    imageURL;
+    String imageURLString;
 
-    mImageManager.getRemoteImage( IMAGE_CLASS_STRING, groupOrProduct.getDisplayImageURL(), parent.getHandler(), viewReferences.groupOrProductView );
+    if ( groupOrProduct != null )
+      {
+      viewReferences.productImageView.setLabel( groupOrProduct.getDisplayLabel(), groupOrProduct.getDisplayLabelColour() );
+
+      imageURL       = groupOrProduct.getDisplayImageURL();
+      imageURLString = imageURL.toString();
+      }
+    else
+      {
+      viewReferences.productImageView.setLabel( null );
+
+      imageURL       = mPlaceholderImageURL;
+      imageURLString = mPlaceholderImageURLString;
+      }
+
+
+    viewReferences.productImageView.setExpectedImageURL( imageURLString );
+
+    mImageManager.getRemoteImage( IMAGE_CLASS_STRING, imageURL, parent.getHandler(), viewReferences.productImageView );
 
 
     return ( view );
@@ -203,7 +256,7 @@ public class GroupOrProductAdaptor extends BaseAdapter
    *****************************************************/
   private class ViewReferences
     {
-    GroupOrProductView groupOrProductView;
+    ProductImageView productImageView;
     }
 
   }

@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * GroupOrProductView.java
+ * ProductImageView.java
  *
  *
  * Modified MIT License
@@ -43,7 +43,6 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Animatable;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -54,10 +53,10 @@ import android.view.animation.Animation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
+
+import ly.kite.util.IRemoteImageConsumer;
 
 import ly.kite.R;
-import ly.kite.util.RemoteImageConsumer;
 
 
 ///// Class Declaration /////
@@ -70,12 +69,12 @@ import ly.kite.util.RemoteImageConsumer;
  * appropriate.
  *
  *****************************************************/
-public class GroupOrProductView extends FrameLayout implements RemoteImageConsumer, Animation.AnimationListener
+public class ProductImageView extends FrameLayout implements IRemoteImageConsumer, Animation.AnimationListener
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                           = "GroupOrProductView";
+  private static final String  LOG_TAG                           = "ProductImageView";
 
   private static final float   DEFAULT_ASPECT_RATIO              = 1.0f;
 
@@ -109,21 +108,21 @@ public class GroupOrProductView extends FrameLayout implements RemoteImageConsum
 
   ////////// Constructor(s) //////////
 
-  public GroupOrProductView( Context context )
+  public ProductImageView( Context context )
     {
     super( context );
 
     initialise( context );
     }
 
-  public GroupOrProductView( Context context, AttributeSet attrs )
+  public ProductImageView( Context context, AttributeSet attrs )
     {
     super( context, attrs );
 
     initialise( context );
     }
 
-  public GroupOrProductView( Context context, AttributeSet attrs, int defStyleAttr )
+  public ProductImageView( Context context, AttributeSet attrs, int defStyleAttr )
     {
     super( context, attrs, defStyleAttr );
 
@@ -131,7 +130,7 @@ public class GroupOrProductView extends FrameLayout implements RemoteImageConsum
     }
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-  public GroupOrProductView( Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes )
+  public ProductImageView( Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes )
     {
     super( context, attrs, defStyleAttr, defStyleRes );
 
@@ -195,7 +194,6 @@ public class GroupOrProductView extends FrameLayout implements RemoteImageConsum
     {
     mEmptyFrameImageView.setVisibility( View.VISIBLE );
     mImageView.setVisibility( View.INVISIBLE );
-    mOverlayLabel.setVisibility( View.INVISIBLE );
     mProgressBar.setVisibility( View.VISIBLE );
     }
 
@@ -243,7 +241,7 @@ public class GroupOrProductView extends FrameLayout implements RemoteImageConsum
   @Override
   public void onAnimationEnd( Animation animation )
     {
-    // For the image fade in animation, make the empty frame invisible it has finished.
+    // Make the empty frame invisible only when the photo image fade in has finished
     if ( animation == mFadeInAnimation )
       {
       mEmptyFrameImageView.setVisibility( View.GONE );
@@ -279,7 +277,7 @@ public class GroupOrProductView extends FrameLayout implements RemoteImageConsum
 
     LayoutInflater layoutInflater = LayoutInflater.from( context );
 
-    View view = layoutInflater.inflate( R.layout.group_or_product_view, this, true );
+    View view = layoutInflater.inflate( R.layout.product_image_view, this, true );
 
 
     // Save references to the child views
@@ -334,7 +332,8 @@ public class GroupOrProductView extends FrameLayout implements RemoteImageConsum
   public void setLabel( String label )
     {
     mOverlayLabel.setText( label );
-    mOverlayLabel.setVisibility( View.VISIBLE );
+
+    mOverlayLabel.setVisibility( label != null ? View.VISIBLE : View.INVISIBLE );
     }
 
 

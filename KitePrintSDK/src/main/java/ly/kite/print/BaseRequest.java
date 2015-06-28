@@ -1,7 +1,6 @@
 package ly.kite.print;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -16,8 +15,9 @@ import org.json.JSONTokener;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 import java.util.Map;
+
+import ly.kite.KiteSDK;
 
 /**
  * Created by deonbotha on 02/02/2014.
@@ -116,7 +116,7 @@ public class BaseRequest {
                     }
                 }
 
-                request.setHeader("Authorization", "ApiKey " + KitePrintSDK.getAPIKey() + ":");
+                request.setHeader("Authorization", "ApiKey " + KiteSDK.getAPIKey() + ":");
 
                 try {
                     HttpResponse response = httpclient.execute(request);

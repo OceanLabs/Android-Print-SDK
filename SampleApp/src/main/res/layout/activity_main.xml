@@ -25,7 +25,8 @@
                 android:layout_height="fill_parent"
                 android:gravity="right|center_vertical"
                 android:padding="5dp"
-                android:text="Sandbox"/>
+                android:text="@string/Sandbox"
+                android:textSize="@dimen/control_label_text_size"/>
 
             <Switch
                 android:id="@+id/environment"
@@ -38,7 +39,8 @@
                 android:layout_height="fill_parent"
                 android:gravity="left|center_vertical"
                 android:padding="5dp"
-                android:text="Live"/>
+                android:text="@string/Live"
+                android:textSize="@dimen/control_label_text_size"/>
 
         </LinearLayout>
 
@@ -51,23 +53,24 @@
         android:layout_weight="0.6">
 
         <LinearLayout
+            style="@style/single_column_inset_layout"
             android:layout_gravity="center"
-            android:layout_width="280dp"
-            android:layout_height="wrap_content"
             android:orientation="vertical">
             <Button
                 android:id="@+id/button_gallery"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:onClick="onGalleryButtonClicked"
-                android:text="@string/main_activity_gallery_button_text"/>
+                android:text="@string/main_activity_gallery_button_text"
+                android:textSize="@dimen/control_label_text_size"/>
             <Button
                 android:id="@+id/button_remote"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="@dimen/main_button_spacing"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:onClick="onRemoteButtonClicked"
-                android:text="@string/main_activity_remote_button_text"/>
+                android:text="@string/main_activity_remote_button_text"
+                android:textSize="@dimen/control_label_text_size"/>
         </LinearLayout>
 
     </FrameLayout>

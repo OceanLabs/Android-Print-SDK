@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * ProductItemActivity.java
+ * AProductOrGroupActivity.java
  *
  *
  * Modified MIT License
@@ -45,10 +45,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Display;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -58,7 +63,7 @@ import android.widget.ProgressBar;
 
 import ly.kite.R;
 import ly.kite.print.Asset;
-import ly.kite.print.KitePrintSDK;
+import ly.kite.KiteSDK;
 import ly.kite.print.ProductManager;
 import ly.kite.widget.HeaderFooterGridView;
 
@@ -67,18 +72,19 @@ import ly.kite.widget.HeaderFooterGridView;
 
 /*****************************************************
  *
- * This class is the parent of both the product group and
- * product activities, and provides some common methods.
+ * This abstract class is the parent of both the product
+ * group and product activities, and provides some common
+ * methods.
  *
  *****************************************************/
-public abstract class GroupOrProductActivity extends KiteSDKActivity implements ProductManager.ProductConsumer, AdapterView.OnItemClickListener
+public abstract class AGroupOrProductActivity extends AKiteActivity implements ProductManager.ProductConsumer, AdapterView.OnItemClickListener
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                         = "ProductItemActivity";
+  private static final String  LOG_TAG                         = "AProductOrGroupActivity";
 
-  private static final String  INTENT_EXTRA_NAME_ASSET_LIST    = KitePrintSDK.INTENT_PREFIX + ".AssetList";
+  private static final String  INTENT_EXTRA_NAME_ASSET_LIST    = KiteSDK.INTENT_PREFIX + ".AssetList";
   private static final long    MAX_ACCEPTED_PRODUCT_AGE_MILLIS = 1000 * 60 * 60;  // 1 hour
 
 
@@ -110,7 +116,7 @@ public abstract class GroupOrProductActivity extends KiteSDKActivity implements 
    *****************************************************/
   static void start( Context context, ArrayList<Asset> assetArrayList )
     {
-    Intent intent = new Intent( context, GroupOrProductActivity.class );
+    Intent intent = new Intent( context, AGroupOrProductActivity.class );
 
     intent.putParcelableArrayListExtra( INTENT_EXTRA_NAME_ASSET_LIST, assetArrayList );
 
@@ -166,8 +172,6 @@ public abstract class GroupOrProductActivity extends KiteSDKActivity implements 
 
     setContentView( R.layout.activity_group_or_product );
 
-    setTitle( R.string.title_product_groups_activity );
-
     mGridView    = (HeaderFooterGridView)findViewById( R.id.grid_view );
     mProgressBar = (ProgressBar)findViewById( R.id.progress_bar );
 
@@ -175,10 +179,18 @@ public abstract class GroupOrProductActivity extends KiteSDKActivity implements 
     // Add a header view to the grid, that matches the height of the status bar + action bar. When
     // the content is at the top, it will align with the action bar.
     addHeaderFooterSpacers();
+    }
 
 
-    // Sync the products
-    getProducts();
+  /*****************************************************
+   *
+   * Called when the activity becomes visible.
+   *
+   *****************************************************/
+  @Override
+  public void onStart()
+    {
+    super.onStart();
     }
 
 
@@ -210,9 +222,9 @@ public abstract class GroupOrProductActivity extends KiteSDKActivity implements 
    *
    *****************************************************/
   @Override
-  public void onProductRetrievalError( Exception error )
+  public void onProductRetrievalError( Exception exception )
     {
-    onSyncFinished();
+    onProductFetchFinished();
 
     displayModalDialog(
             R.string.alert_dialog_title_error_retrieving_products,
@@ -221,7 +233,7 @@ public abstract class GroupOrProductActivity extends KiteSDKActivity implements 
             new SyncProductsRunnable(),
             R.string.Cancel,
             new FinishRunnable()
-    );
+      );
     }
 
 
@@ -237,7 +249,9 @@ public abstract class GroupOrProductActivity extends KiteSDKActivity implements 
     mProgressBar.setVisibility( View.VISIBLE );
 
 
-    // Either get the last retrieved set of products, or start a new product sync.
+    // Request a set of products. We supply a handler because we don't want to be called
+    // back immediately - often the GridView won't have been configured correctly yet (because
+    // when we specify the number of columns it doesn't take effect immediately).
 
     mProductManager = ProductManager.getInstance();
 
@@ -252,7 +266,7 @@ public abstract class GroupOrProductActivity extends KiteSDKActivity implements 
    * was an error or not.
    *
    *****************************************************/
-  public void onSyncFinished()
+  public void onProductFetchFinished()
     {
     mProgressBar.setVisibility( View.GONE );
     }
@@ -303,14 +317,25 @@ public abstract class GroupOrProductActivity extends KiteSDKActivity implements 
 
       // Navigation bar
 
-      if ( getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT )
-        {
-        int navigationBarHeightResourceId = getResources().getIdentifier( "navigation_bar_height", "dimen", "android" );
+//      Rect visibleFrame = new Rect();
+//      getWindow().getDecorView().getWindowVisibleDisplayFrame(visibleFrame);
+//      DisplayMetrics dm = getResources().getDisplayMetrics();
+//
+//      View rootView = getWindow().getDecorView().getRootView();
+//
+//      Point point = new Point();
+//      Display defaultDisplay = getWindow().getWindowManager().getDefaultDisplay();
+//      defaultDisplay.getSize( point );
 
-        if ( navigationBarHeightResourceId > 0 )
-          {
-          footerSpacerHeight += getResources().getDimensionPixelSize( navigationBarHeightResourceId );
-          }
+
+      int orientation = getResources().getConfiguration().orientation;
+
+      int navigationBarHeightResourceId = getResources().getIdentifier(
+              ( orientation == Configuration.ORIENTATION_PORTRAIT ? "navigation_bar_height" : "navigation_bar_height_landscape" ), "dimen", "android" );
+
+      if ( navigationBarHeightResourceId > 0 )
+        {
+        footerSpacerHeight += getResources().getDimensionPixelSize( navigationBarHeightResourceId );
         }
       }
 

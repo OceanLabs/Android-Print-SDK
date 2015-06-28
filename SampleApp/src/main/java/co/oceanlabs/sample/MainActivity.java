@@ -2,7 +2,6 @@ package co.oceanlabs.sample;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -10,15 +9,11 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
 import ly.kite.print.Asset;
-import ly.kite.print.KitePrintSDK;
-import ly.kite.print.ProductType;
-import ly.kite.shopping.KiteShopping;
+import ly.kite.KiteSDK;
 
 public class MainActivity extends Activity {
 
@@ -71,10 +66,10 @@ public class MainActivity extends Activity {
 
     private void checkoutWithAssets(ArrayList<Asset> assets) {
         String apiKey = API_KEY_TEST;
-        KitePrintSDK.Environment env = KitePrintSDK.Environment.TEST;
+        KiteSDK.Environment env = KiteSDK.Environment.TEST;
         if (environmentSwitch.isChecked()) {
             apiKey = API_KEY_LIVE;
-            env = KitePrintSDK.Environment.LIVE;
+            env = KiteSDK.Environment.LIVE;
         }
 
         if (apiKey.equals("REPLACE_ME")) {
@@ -82,7 +77,7 @@ public class MainActivity extends Activity {
             return;
         }
 
-    KiteShopping.launch( apiKey, env, this, assets );
+    KiteSDK.shop( apiKey, env, this, assets );
 
 //        KitePrintSDK.initialize(apiKey, env, getApplicationContext());
 //

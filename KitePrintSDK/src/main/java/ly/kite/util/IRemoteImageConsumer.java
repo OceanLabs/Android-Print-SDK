@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * RemoteImageConsumer.java
+ * IRemoteImageConsumer.java
  *
  *
  * Modified MIT License
@@ -57,7 +57,7 @@ import android.graphics.Bitmap;
  * </ul>
  *
  *****************************************************/
-public interface RemoteImageConsumer
+public interface IRemoteImageConsumer
   {
 
   ////////// Method(s) //////////
