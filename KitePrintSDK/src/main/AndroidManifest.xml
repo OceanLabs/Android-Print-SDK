@@ -38,12 +38,17 @@
 
         <activity
             android:name=".shopping.ProductGroupActivity"
-            android:theme="@style/KiteSDKTheme"
+            android:theme="@style/Theme.KiteSDK.GroupOrProduct"
             android:launchMode="singleTop"/>
 
         <activity
             android:name=".shopping.ProductActivity"
-            android:theme="@style/KiteSDKTheme"
+            android:theme="@style/Theme.KiteSDK.GroupOrProduct"
+            android:launchMode="singleTop"/>
+
+        <activity
+            android:name=".shopping.ProductOverviewActivity"
+            android:theme="@style/Theme.KiteSDK.ProductOverview"
             android:launchMode="singleTop"/>
 
         <activity

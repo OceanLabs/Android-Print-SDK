@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * ShippingCosts.java
+ * MultipleUnitSize.java
  *
  *
  * Modified MIT License
@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.shopping;
+package ly.kite.print;
 
 
 ///// Import(s) /////
@@ -42,22 +42,24 @@ package ly.kite.shopping;
 
 ///// Class Declaration /////
 
+import java.util.Currency;
 import java.util.HashMap;
+import java.util.Set;
+
+import ly.kite.print.SingleUnitSize;
+import ly.kite.print.UnitOfLength;
 
 /*****************************************************
  *
- * This class represents shipping costs for an item.
+ * This class represents a size in multiple units.
  *
  *****************************************************/
-public class ShippingCosts
+public class MultipleUnitSize
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                        = "ShippingCosts";
-
-  public  static final String  DESTINATION_CODE_EUROPE        = "europe";
-  public  static final String  DESTINATION_CODE_REST_OF_WORLD = "rest_of_world";
+  private static final String  LOG_TAG = "MultipleUnitSize";
 
 
   ////////// Static Variable(s) //////////
@@ -65,7 +67,7 @@ public class ShippingCosts
 
   ////////// Member Variable(s) //////////
 
-  private HashMap<String,MultipleCurrencyCost>  mDestinationCostTable;
+  private HashMap<UnitOfLength,SingleUnitSize>  mUnitSizeTable;
 
 
   ////////// Static Initialiser(s) //////////
@@ -76,9 +78,9 @@ public class ShippingCosts
 
   ////////// Constructor(s) //////////
 
-  public ShippingCosts()
+  public MultipleUnitSize()
     {
-    mDestinationCostTable = new HashMap<>();
+    mUnitSizeTable = new HashMap<>();
     }
 
 
@@ -86,28 +88,44 @@ public class ShippingCosts
 
   /*****************************************************
    *
-   * Adds a destination, together with the cost in one of more
-   * currencies.
+   * Adds a size in a single unit.
    *
    *****************************************************/
-  public void add( String destinationCode, MultipleCurrencyCost cost )
+  public void add( SingleUnitSize singleUnitSize )
     {
-    mDestinationCostTable.put( destinationCode, cost );
+    mUnitSizeTable.put( singleUnitSize.getUnit(), singleUnitSize );
     }
 
 
   /*****************************************************
    *
-   * Returns the shipping cost for a destination.
+   * Returns the size for a unit.
    *
    *****************************************************/
-  public MultipleCurrencyCost get( String destinationCode )
+  public SingleUnitSize get( UnitOfLength unit )
     {
-    return ( mDestinationCostTable.get( destinationCode ) );
+    return ( mUnitSizeTable.get( unit ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the size at a position.
+   *
+   *****************************************************/
+  public SingleUnitSize get( int position )
+    {
+    return ( mUnitSizeTable.get( position ) );
     }
 
 
   ////////// Inner Class(es) //////////
+
+  /*****************************************************
+   *
+   * ...
+   *
+   *****************************************************/
 
   }
 

@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * ProductSize.java
+ * UnitOfLength.java
  *
  *
  * Modified MIT License
@@ -42,67 +42,33 @@ package ly.kite.print;
 
 ///// Class Declaration /////
 
+import android.content.Context;
+
+import ly.kite.R;
+
 /*****************************************************
  *
- * This class represents a product size.
+ * This class defines units of length.
  *
  *****************************************************/
-public class ProductSize
+public enum UnitOfLength
   {
-  ////////// Static Constant(s) //////////
-
-  @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "ProductSize";
-
-
-  ////////// Static Variable(s) //////////
+  CENTIMETERS ( R.string.unit_centimeters ),
+  INCHES      ( R.string.unit_inches      ),
+  PIXELS      ( R.string.unit_pixels      );
 
 
-  ////////// Member Variable(s) //////////
-
-  private Units  mUnits;
-  private float  mWidth;
-  private float  mHeight;
+  private int  mPluralResourceId;
 
 
-  ////////// Static Initialiser(s) //////////
-
-
-  ////////// Static Method(s) //////////
-
-
-  ////////// Constructor(s) //////////
-
-  public ProductSize( Units units, float width, float height )
+  private UnitOfLength( int pluralResourceId )
     {
-    mUnits  = units;
-    mWidth  = width;
-    mHeight = height;
+    mPluralResourceId = pluralResourceId;
     }
 
 
-  ////////// Method(s) //////////
-
-  /*****************************************************
-   *
-   * ...
-   *
-   *****************************************************/
-
-
-  ////////// Inner Class(es) //////////
-
-  /*****************************************************
-   *
-   * A measurement unit.
-   *
-   *****************************************************/
-  public enum Units
+  public String plural( Context context )
     {
-    CENTIMETERS,
-    INCHES,
-    PIXELS;
+    return ( context.getString( mPluralResourceId ) );
     }
-
   }
-

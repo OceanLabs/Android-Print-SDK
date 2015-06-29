@@ -293,7 +293,7 @@ public class ProductImageView extends FrameLayout implements IRemoteImageConsume
 
     mOverlayLabel.setCornerRadius( resources.getDimension( R.dimen.group_or_product_label_corner_radius ) );
     mOverlayLabel.setBackgroundShadow(
-            resources.getColor( R.color.group_or_product_label_shadow_colour ),
+            resources.getColor( R.color.group_or_product_label_shadow ),
             resources.getDimension( R.dimen.group_or_product_label_shadow_blur_radius ),
             resources.getDimension( R.dimen.group_or_product_label_shadow_y_offset ) );
     }

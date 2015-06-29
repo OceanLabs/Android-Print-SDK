@@ -47,6 +47,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.res.Resources;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -63,7 +64,9 @@ public abstract class AKiteActivity extends Activity
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "AKiteActivity";
+  private   static final String  LOG_TAG                         = "AKiteActivity";
+
+  protected static final int     DONT_DISPLAY_BUTTON             = 0;
 
 
   ////////// Static Variable(s) //////////
@@ -148,6 +151,26 @@ public abstract class AKiteActivity extends Activity
 
   /*****************************************************
    *
+   * Called when the home action is clicked.
+   *
+   *****************************************************/
+  @Override
+  public boolean onOptionsItemSelected( MenuItem item )
+    {
+    switch ( item.getItemId() )
+      {
+      case android.R.id.home:
+        finish();
+        return ( true );
+      }
+
+
+    return ( super.onOptionsItemSelected( item ) );
+    }
+
+
+  /*****************************************************
+   *
    * Called when the activity is destroyed.
    *
    *****************************************************/
@@ -169,7 +192,7 @@ public abstract class AKiteActivity extends Activity
    *****************************************************/
   protected void displayModalDialog(
           int      titleTextResourceId,
-          int      messageTextResourceId,
+          String   messageText,
           int      positiveTextResourceId,
           Runnable positiveRunnable,
           int      negativeTextResourceId,
@@ -179,7 +202,7 @@ public abstract class AKiteActivity extends Activity
 
     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder( this )
             .setTitle( titleTextResourceId )
-            .setMessage( messageTextResourceId )
+            .setMessage( messageText )
             .setCancelable( true );
 
     DialogCallbackHandler callbackHandler = new DialogCallbackHandler( positiveRunnable, negativeRunnable );
@@ -190,6 +213,23 @@ public abstract class AKiteActivity extends Activity
     mDialog = alertDialogBuilder.create();
 
     mDialog.show();
+    }
+
+
+  /*****************************************************
+   *
+   * Displays a modal dialog.
+   *
+   *****************************************************/
+  protected void displayModalDialog(
+          int      titleTextResourceId,
+          int      messageTextResourceId,
+          int      positiveTextResourceId,
+          Runnable positiveRunnable,
+          int      negativeTextResourceId,
+          Runnable negativeRunnable )
+    {
+    displayModalDialog( titleTextResourceId, getString( messageTextResourceId ), positiveTextResourceId, positiveRunnable, negativeTextResourceId, negativeRunnable );
     }
 
 

@@ -3,15 +3,40 @@
 
     <string name="app_name">Kite SDK</string>
 
+    <string name="unit_centimeters">centimeters</string>
+    <string name="unit_inches">inches</string>
+    <string name="unit_pixels">pixels</string>
+
     <string name="title_product_groups_activity">Print Shop</string>
+
+    <string name="alert_dialog_title_no_intent">Error Retrieving Products</string>
+    <string name="alert_dialog_message_no_intent">There was an error retrieving the products. If your network connectivity is OK, please check the log for more details.</string>
+
+    <string name="alert_dialog_title_no_asset_list">No Asset List</string>
+    <string name="alert_dialog_message_no_asset_list">There was an error: no asset list was found. Please check the log for more details.</string>
 
     <string name="alert_dialog_title_error_retrieving_products">Error Retrieving Products</string>
     <string name="alert_dialog_message_error_retrieving_products">There was an error retrieving the products. If your network connectivity is OK, please check the log for more details.</string>
+
+    <string name="alert_dialog_title_no_product_group_label">No Product Group</string>
+    <string name="alert_dialog_message_no_product_group_label">There was an error: no product group was found. Please check the log for more details.</string>
+
+    <string name="alert_dialog_title_no_product_id">No Product Id</string>
+    <string name="alert_dialog_message_no_product_id">There was an error: no product id was found. Please check the log for more details.</string>
+
+    <string name="alert_dialog_title_product_not_found">Product Not Found</string>
+    <string name="alert_dialog_message_no_product_for_id">No product could be found matching id: %s</string>
 
     <string name="Cancel">Cancel</string>
     <string name="Retry">Retry</string>
 
     <string name="group_or_product_placeholder_image_url">https://s3.amazonaws.com/sdk-static/product_photography/placeholder.png</string>
+
+    <string name="product_quantity_format_string">PACK OF %s</string>
+    <string name="product_size_format_string">"%1$.1f x %2$.1f %3$s</string>
+
+    <string name="product_free_shipping">FREE POSTAGE</string>
+    <string name="product_shipping_format_string">Shipping: %s</string>
 
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>

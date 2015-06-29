@@ -82,10 +82,10 @@ public abstract class AGroupOrProductActivity extends AKiteActivity implements P
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                         = "AProductOrGroupActivity";
+  private   static final String  LOG_TAG                         = "AProductOrGroupActivity";
 
-  private static final String  INTENT_EXTRA_NAME_ASSET_LIST    = KiteSDK.INTENT_PREFIX + ".AssetList";
-  private static final long    MAX_ACCEPTED_PRODUCT_AGE_MILLIS = 1000 * 60 * 60;  // 1 hour
+  private   static final String  INTENT_EXTRA_NAME_ASSET_LIST    = KiteSDK.INTENT_PREFIX + ".AssetList";
+  public    static final long    MAX_ACCEPTED_PRODUCT_AGE_MILLIS = 1000 * 60 * 60;  // 1 hour
 
 
   ////////// Static Variable(s) //////////
@@ -149,7 +149,14 @@ public abstract class AGroupOrProductActivity extends AKiteActivity implements P
       {
       Log.e( LOG_TAG, "No intent found" );
 
-      // TODO: Display error dialog
+      displayModalDialog(
+              R.string.alert_dialog_title_no_intent,
+              R.string.alert_dialog_message_no_intent,
+              DONT_DISPLAY_BUTTON,
+              null,
+              R.string.Cancel,
+              new FinishRunnable()
+        );
 
       finish();
 
@@ -160,7 +167,14 @@ public abstract class AGroupOrProductActivity extends AKiteActivity implements P
       {
       Log.e( LOG_TAG, "No asset list found" );
 
-      // TODO: Display error dialog
+      displayModalDialog(
+              R.string.alert_dialog_title_no_asset_list,
+              R.string.alert_dialog_message_no_asset_list,
+              DONT_DISPLAY_BUTTON,
+              null,
+              R.string.Cancel,
+              new FinishRunnable()
+        );
 
       finish();
 
@@ -191,26 +205,6 @@ public abstract class AGroupOrProductActivity extends AKiteActivity implements P
   public void onStart()
     {
     super.onStart();
-    }
-
-
-  /*****************************************************
-   *
-   * Called when the home action is clicked.
-   *
-   *****************************************************/
-  @Override
-  public boolean onOptionsItemSelected( MenuItem item )
-    {
-    switch ( item.getItemId() )
-      {
-      case android.R.id.home:
-        finish();
-        return ( true );
-      }
-
-
-    return ( super.onOptionsItemSelected( item ) );
     }
 
 

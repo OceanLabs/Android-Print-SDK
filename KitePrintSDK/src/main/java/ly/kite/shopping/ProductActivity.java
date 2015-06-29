@@ -49,6 +49,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 
+import ly.kite.R;
 import ly.kite.print.Asset;
 import ly.kite.KiteSDK;
 import ly.kite.print.Product;
@@ -129,7 +130,14 @@ public class ProductActivity extends AGroupOrProductActivity
       {
       Log.e( LOG_TAG, "No product group label found" );
 
-      // TODO: Display error dialog
+      displayModalDialog(
+              R.string.alert_dialog_title_no_product_group_label,
+              R.string.alert_dialog_message_no_product_group_label,
+              DONT_DISPLAY_BUTTON,
+              null,
+              R.string.Cancel,
+              new FinishRunnable()
+        );
 
       finish();
 
@@ -165,6 +173,9 @@ public class ProductActivity extends AGroupOrProductActivity
       // Display the products
       mGridAdaptor = new GroupOrProductAdaptor( this, mProductList, mGridView );
       mGridView.setAdapter( mGridAdaptor );
+
+      // Register for item selection
+      mGridView.setOnItemClickListener( this );
       }
     }
 
@@ -188,7 +199,8 @@ public class ProductActivity extends AGroupOrProductActivity
     Product clickedProduct = mProductList.get( adaptorIndex );
 
 
-    // TODO: Go to product detail
+    // Launch the product overview activity
+    ProductOverviewActivity.start( this, mAssetArrayList, clickedProduct );
     }
 
 

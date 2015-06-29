@@ -112,6 +112,17 @@ public class SingleCurrencyCost
     }
 
 
+  /*****************************************************
+   *
+   * Returns the formatted.
+   *
+   *****************************************************/
+  public String getFormattedAmount()
+    {
+    return ( mFormattedAmount );
+    }
+
+
   ////////// Inner Class(es) //////////
 
   /*****************************************************

@@ -44,6 +44,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Set;
 
+import ly.kite.address.Country;
 import ly.kite.shopping.IGroupOrProduct;
 import ly.kite.shopping.MultipleCurrencyCost;
 import ly.kite.shopping.ShippingCosts;
@@ -62,7 +63,14 @@ public class Product implements IGroupOrProduct
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "Product";
+  private static final String       LOG_TAG                  = "Product";
+
+  private static final String       FALLBACK_CURRENCY_CODE_1 = "USD";
+  private static final String       FALLBACK_CURRENCY_CODE_2 = "GBP";
+  private static final String       FALLBACK_CURRENCY_CODE_3 = "EUR";
+
+  private static final UnitOfLength FALLBACK_UNIT_1          = UnitOfLength.CENTIMETERS;
+  private static final UnitOfLength FALLBACK_UNIT_2          = UnitOfLength.INCHES;
 
 
   ////////// Static Variable(s) //////////
@@ -87,7 +95,7 @@ public class Product implements IGroupOrProduct
   //private String                  mProductSubclass;
   private URL                     mMaskURL;
   private Bleed                   mMaskBleed;
-  private ArrayList<ProductSize>  mSizeList;
+  private MultipleUnitSize        mSize;
 
 
   ////////// Static Initialiser(s) //////////
@@ -163,6 +171,28 @@ public class Product implements IGroupOrProduct
 
   /*****************************************************
    *
+   * Returns the id.
+   *
+   *****************************************************/
+  public String getId()
+    {
+    return ( mId );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the name.
+   *
+   *****************************************************/
+  public String getName()
+    {
+    return ( mName );
+    }
+
+
+  /*****************************************************
+   *
    * Sets the cost.
    *
    *****************************************************/
@@ -184,6 +214,17 @@ public class Product implements IGroupOrProduct
     mShippingCosts = shippingCosts;
 
     return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the shipping costs.
+   *
+   *****************************************************/
+  public ShippingCosts getShippingCosts()
+    {
+    return ( mShippingCosts );
     }
 
 
@@ -233,11 +274,60 @@ public class Product implements IGroupOrProduct
    * Sets the size.
    *
    *****************************************************/
-  Product setSize( ArrayList<ProductSize> sizeList )
+  Product setSize( MultipleUnitSize size )
     {
-    mSizeList = sizeList;
+    mSize = size;
 
     return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the size, falling back if the size is not
+   * known in the requested units.
+   *
+   *****************************************************/
+  public SingleUnitSize getSizeWithFallback( UnitOfLength unit )
+    {
+    SingleUnitSize size;
+
+    // First try the requested unit
+    if ( ( size = mSize.get( unit            ) ) != null ) return ( size );
+
+    // Next try falling back through major currencies
+    if ( ( size = mSize.get( FALLBACK_UNIT_1 ) ) != null ) return ( size );
+    if ( ( size = mSize.get( FALLBACK_UNIT_2 ) ) != null ) return ( size );
+
+    // Lastly try and get the first supported currency
+    if ( ( size = mSize.get( 0               ) ) != null ) return ( size );
+
+    return ( null );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the cost in a specific currency, falling back
+   * if the cost is not known in the requested currency.
+   *
+   *****************************************************/
+  public SingleCurrencyCost getCostWithFallback( String currencyCode )
+    {
+    SingleCurrencyCost cost;
+
+    // First try the requested currency code
+    if ( ( cost = mCost.get( currencyCode             ) ) != null ) return ( cost );
+
+    // Next try falling back through major currencies
+    if ( ( cost = mCost.get( FALLBACK_CURRENCY_CODE_1 ) ) != null ) return ( cost );
+    if ( ( cost = mCost.get( FALLBACK_CURRENCY_CODE_2 ) ) != null ) return ( cost );
+    if ( ( cost = mCost.get( FALLBACK_CURRENCY_CODE_3 ) ) != null ) return ( cost );
+
+    // Lastly try and get the first supported currency
+    if ( ( cost = mCost.get( 0                        ) ) != null ) return ( cost );
+
+    return ( null );
     }
 
 
@@ -264,6 +354,37 @@ public class Product implements IGroupOrProduct
   public Set<String> getCurrenciesSupported()
     {
     return ( mCost.getAllCurrencyCodes() );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the shipping cost to a destination country.
+   *
+   *****************************************************/
+  public MultipleCurrencyCost getShippingCostTo( String countryCode )
+    {
+    // First see if we can find the country as a destination
+
+    MultipleCurrencyCost shippingCost = mShippingCosts.get( countryCode );
+
+    if ( shippingCost != null ) return ( shippingCost );
+
+
+    // If the country is part of Europe, try and get a European cost.
+
+    Country country = Country.getInstance( countryCode );
+
+    if ( country.isInEurope() )
+      {
+      shippingCost = mShippingCosts.get( ShippingCosts.DESTINATION_CODE_EUROPE );
+
+      if ( shippingCost != null ) return ( shippingCost );
+      }
+
+
+    // If all else fails, try and get a rest of world cost.
+    return ( mShippingCosts.get( ShippingCosts.DESTINATION_CODE_REST_OF_WORLD ) );
     }
 
 

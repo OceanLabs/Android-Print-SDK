@@ -76,43 +76,41 @@ public class ProductManager implements BaseRequest.BaseRequestListener
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings("unused")
-  private static final String LOG_TAG                               = "ProductManager";
+  private static final String  LOG_TAG                               = "ProductManager";
 
-  public  static final long   ANY_AGE_OK                            = -1;
+  private static final boolean DISPLAY_DEBUGGING                     = false;
 
-  private static final String REQUEST_FORMAT_STRING                 = "%s/template/?limit=100";
+  public  static final long    ANY_AGE_OK                            = -1;
 
-  private static final String JSON_NAME_AMOUNT                      = "amount";
-  private static final String JSON_NAME_CURRENCY                    = "currency";
-  private static final String JSON_NAME_CENTIMETERS                 = "cm";
-  private static final String JSON_NAME_COST                        = "cost";
-  private static final String JSON_NAME_FORMATTED_AMOUNT            = "formatted";
-  private static final String JSON_NAME_GROUP_IMAGE                 = "ios_sdk_class_photo";
-  private static final String JSON_NAME_GROUP_LABEL                 = "ios_sdk_product_class";
-  private static final String JSON_NAME_HEIGHT                      = "height";
-  private static final String JSON_NAME_IMAGES_PER_PAGE             = "images_per_page";
-  private static final String JSON_NAME_INCH                        = "inch";
-  private static final String JSON_NAME_LABEL_COLOUR                = "ios_sdk_label_color";
-  private static final String JSON_NAME_MASK_BLEED                  = "mask_bleed";
-  private static final String JSON_NAME_MASK_URL                    = "mask_url";
-  private static final String JSON_NAME_PIXELS                      = "px";
-  private static final String JSON_NAME_PRODUCT_ARRAY               = "objects";
-  private static final String JSON_NAME_PRODUCT_CODE                = "product_code";
-  private static final String JSON_NAME_PRODUCT_DETAIL              = "product";
-  private static final String JSON_NAME_PRODUCT_HERO_IMAGE          = "ios_sdk_cover_photo";
-  private static final String JSON_NAME_PRODUCT_ID                  = "template_id";
-  private static final String JSON_NAME_PRODUCT_NAME                = "name";
-  private static final String JSON_NAME_PRODUCT_SHOTS               = "ios_sdk_product_shots";
-  private static final String JSON_NAME_PRODUCT_SIZE                = "size";
-  private static final String JSON_NAME_PRODUCT_SUBCLASS            = "ios_sdk_product_subclass";
-  private static final String JSON_NAME_PRODUCT_TYPE                = "ios_sdk_product_type";
-  private static final String JSON_NAME_PRODUCT_UI_CLASS            = "ios_sdk_ui_class";
-  private static final String JSON_NAME_SHIPPING_COSTS              = "shipping_costs";
-  private static final String JSON_NAME_SHIPPING_DEST_UK            = "GBR";
-  private static final String JSON_NAME_SHIPPING_DEST_USA           = "USA";
-  private static final String JSON_NAME_SHIPPING_DEST_EUROPE        = "europe";
-  private static final String JSON_NAME_SHIPPING_DEST_REST_OF_WORLD = "rest_of_world";
-  private static final String JSON_NAME_WIDTH                       = "width";
+  private static final String  REQUEST_FORMAT_STRING                 = "%s/template/?limit=100";
+
+  private static final String  JSON_NAME_AMOUNT                      = "amount";
+  private static final String  JSON_NAME_CURRENCY                    = "currency";
+  private static final String  JSON_NAME_CENTIMETERS                 = "cm";
+  private static final String  JSON_NAME_COST                        = "cost";
+  private static final String  JSON_NAME_FORMATTED_AMOUNT            = "formatted";
+  private static final String  JSON_NAME_GROUP_IMAGE                 = "ios_sdk_class_photo";
+  private static final String  JSON_NAME_GROUP_LABEL                 = "ios_sdk_product_class";
+  private static final String  JSON_NAME_HEIGHT                      = "height";
+  private static final String  JSON_NAME_IMAGES_PER_PAGE             = "images_per_page";
+  private static final String  JSON_NAME_INCH                        = "inch";
+  private static final String  JSON_NAME_LABEL_COLOUR                = "ios_sdk_label_color";
+  private static final String  JSON_NAME_MASK_BLEED                  = "mask_bleed";
+  private static final String  JSON_NAME_MASK_URL                    = "mask_url";
+  private static final String  JSON_NAME_PIXELS                      = "px";
+  private static final String  JSON_NAME_PRODUCT_ARRAY               = "objects";
+  private static final String  JSON_NAME_PRODUCT_CODE                = "product_code";
+  private static final String  JSON_NAME_PRODUCT_DETAIL              = "product";
+  private static final String  JSON_NAME_PRODUCT_HERO_IMAGE          = "ios_sdk_cover_photo";
+  private static final String  JSON_NAME_PRODUCT_ID                  = "template_id";
+  private static final String  JSON_NAME_PRODUCT_NAME                = "name";
+  private static final String  JSON_NAME_PRODUCT_SHOTS               = "ios_sdk_product_shots";
+  private static final String  JSON_NAME_PRODUCT_SIZE                = "size";
+  private static final String  JSON_NAME_PRODUCT_SUBCLASS            = "ios_sdk_product_subclass";
+  private static final String  JSON_NAME_PRODUCT_TYPE                = "ios_sdk_product_type";
+  private static final String  JSON_NAME_PRODUCT_UI_CLASS            = "ios_sdk_ui_class";
+  private static final String  JSON_NAME_SHIPPING_COSTS              = "shipping_costs";
+  private static final String  JSON_NAME_WIDTH                       = "width";
 
 
   ////////// Static Variable(s) //////////
@@ -185,10 +183,18 @@ public class ProductManager implements BaseRequest.BaseRequestListener
     {
     ShippingCosts shippingCosts = new ShippingCosts();
 
-    shippingCosts.add( ShippingCosts.Destination.UK,            parseShippingCost( shippingCostsJSONObject.getJSONObject( JSON_NAME_SHIPPING_DEST_UK            ) ) );
-    shippingCosts.add( ShippingCosts.Destination.USA,           parseShippingCost( shippingCostsJSONObject.getJSONObject( JSON_NAME_SHIPPING_DEST_USA           ) ) );
-    shippingCosts.add( ShippingCosts.Destination.EUROPE,        parseShippingCost( shippingCostsJSONObject.getJSONObject( JSON_NAME_SHIPPING_DEST_EUROPE ) ) );
-    shippingCosts.add( ShippingCosts.Destination.REST_OF_WORLD, parseShippingCost( shippingCostsJSONObject.getJSONObject( JSON_NAME_SHIPPING_DEST_REST_OF_WORLD ) ) );
+
+    // The JSON shipping costs are not an array, so we need to iterate through the keys (which are the destination codes
+
+    Iterator<String> destinationCodeIterator = shippingCostsJSONObject.keys();
+
+    while ( destinationCodeIterator.hasNext() )
+      {
+      String destinationCode = destinationCodeIterator.next();
+
+      shippingCosts.add( destinationCode, parseShippingCost( shippingCostsJSONObject.getJSONObject( destinationCode ) ) );
+      }
+
 
     return ( shippingCosts );
     }
@@ -199,12 +205,12 @@ public class ProductManager implements BaseRequest.BaseRequestListener
    * Parses a JSON size.
    *
    ****************************************************/
-  private static ProductSize parseProductSize( JSONObject productSizeJSONObject, ProductSize.Units units ) throws JSONException
+  private static SingleUnitSize parseProductSize( JSONObject productSizeJSONObject, UnitOfLength unit ) throws JSONException
     {
     float width  = (float)productSizeJSONObject.getLong( JSON_NAME_WIDTH );
     float height = (float)productSizeJSONObject.getLong( JSON_NAME_HEIGHT );
 
-    return ( new ProductSize( units, width, height  ) );
+    return ( new SingleUnitSize( unit, width, height  ) );
     }
 
 
@@ -213,23 +219,23 @@ public class ProductManager implements BaseRequest.BaseRequestListener
    * Parses a JSON product size.
    *
    ****************************************************/
-  private static ArrayList<ProductSize> parseProductSize( JSONObject productSizeJSONObject ) throws JSONException
+  private static MultipleUnitSize parseProductSize( JSONObject productSizeJSONObject ) throws JSONException
     {
-    ArrayList<ProductSize> productSizeList = new ArrayList<ProductSize>();
+    MultipleUnitSize size = new MultipleUnitSize();
 
-    productSizeList.add( parseProductSize( productSizeJSONObject.getJSONObject( JSON_NAME_CENTIMETERS ), ProductSize.Units.CENTIMETERS ) );
-    productSizeList.add( parseProductSize( productSizeJSONObject.getJSONObject( JSON_NAME_INCH ),        ProductSize.Units.INCHES      ) );
+    size.add( parseProductSize( productSizeJSONObject.getJSONObject( JSON_NAME_CENTIMETERS ), UnitOfLength.CENTIMETERS ) );
+    size.add( parseProductSize( productSizeJSONObject.getJSONObject( JSON_NAME_INCH ),        UnitOfLength.INCHES      ) );
 
     try
       {
-      productSizeList.add( parseProductSize( productSizeJSONObject.getJSONObject( JSON_NAME_PIXELS ), ProductSize.Units.PIXELS ) );
+      size.add( parseProductSize( productSizeJSONObject.getJSONObject( JSON_NAME_PIXELS ), UnitOfLength.PIXELS ) );
       }
     catch ( JSONException je )
       {
       // Ignore
       }
 
-    return ( productSizeList );
+    return ( size );
     }
 
 
@@ -372,7 +378,7 @@ public class ProductManager implements BaseRequest.BaseRequestListener
         String                 productType         = productDetailJSONObject.getString( JSON_NAME_PRODUCT_TYPE );
         String                 productUIClass      = productDetailJSONObject.getString( JSON_NAME_PRODUCT_UI_CLASS );
         String                 productCode         = productDetailJSONObject.getString( JSON_NAME_PRODUCT_CODE );
-        ArrayList<ProductSize> productSizeList     = parseProductSize( productDetailJSONObject.getJSONObject( JSON_NAME_PRODUCT_SIZE ) );
+        MultipleUnitSize       size                = parseProductSize( productDetailJSONObject.getJSONObject( JSON_NAME_PRODUCT_SIZE ) );
 
 
         URL   maskURL   = null;
@@ -410,7 +416,7 @@ public class ProductManager implements BaseRequest.BaseRequestListener
                 .setImageURLs( heroImageURL, imageURLList )
                 .setLabelColour( labelColour )
                 .setMask( maskURL, maskBleed )
-                .setSize( productSizeList );
+                .setSize( size );
 
         productGroup.add( product );
 
@@ -531,6 +537,7 @@ public class ProductManager implements BaseRequest.BaseRequestListener
    ****************************************************/
   public void getAllProducts( long maximumAgeMillis, ProductConsumer consumer, Handler callbackHandler )
     {
+    if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "getAllProducts( maximumAgeMillis = " + maximumAgeMillis + ", consumer = " + consumer + ", callbackHandler = " + callbackHandler + " )" );
 
     synchronized ( this )
       {
@@ -591,7 +598,26 @@ public class ProductManager implements BaseRequest.BaseRequestListener
    ****************************************************/
   public void getAllProducts( long maximumAgeMillis, ProductConsumer consumer )
     {
+    if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "getAllProducts( maximumAgeMillis = " + maximumAgeMillis + ", consumer = " + consumer + " )" );
+
     getAllProducts( maximumAgeMillis, consumer, null );
+    }
+
+
+  /****************************************************
+   *
+   * Retrieves a list of all the products.
+   *
+   * @param consumer        The sync listener for the result.
+   * @param callbackHandler The handler to use when posting
+   *                        the callback.
+   *
+   ****************************************************/
+  public void getAllProducts( ProductConsumer consumer, Handler callbackHandler )
+    {
+    if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "getAllProducts( consumer = " + consumer + ", callbackHandler = " + callbackHandler + " )" );
+
+    getAllProducts( ANY_AGE_OK, consumer, callbackHandler );
     }
 
 
@@ -602,9 +628,11 @@ public class ProductManager implements BaseRequest.BaseRequestListener
    * @param consumer The sync listener for the result.
    *
    ****************************************************/
-  public void getAllProducts( ProductConsumer consumer, Handler callbackHandler )
+  public void getAllProducts( ProductConsumer consumer )
     {
-    getAllProducts( ANY_AGE_OK, consumer, callbackHandler );
+    if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "getAllProducts( consumer = " + consumer + " )" );
+
+    getAllProducts( ANY_AGE_OK, consumer, null );
     }
 
 
@@ -619,6 +647,8 @@ public class ProductManager implements BaseRequest.BaseRequestListener
    ****************************************************/
   public Pair<ArrayList<ProductGroup>,HashMap<String,Product>> getAllProducts()
     {
+    if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "getAllProducts()" );
+
     SynchronousProductConsumer consumer = new SynchronousProductConsumer();
 
     Pair<ArrayList<ProductGroup>,HashMap<String,Product>> productPair = consumer.getProductPair();
@@ -858,12 +888,16 @@ public class ProductManager implements BaseRequest.BaseRequestListener
   private class SynchronousProductConsumer implements ProductConsumer
     {
     private Pair<ArrayList<ProductGroup>,HashMap<String,Product>>  mProductPair;
+    private volatile boolean                                       mCallbackReceived;
 
 
     @Override
     public synchronized void onGotProducts( ArrayList<ProductGroup> productGroupList, HashMap<String,Product> productTable )
       {
-      mProductPair = new Pair<ArrayList<ProductGroup>,HashMap<String,Product>>( productGroupList, productTable );
+      if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "onGotProducts( productGroupList = " + productGroupList + ", productTable = " + productTable + " )" );
+
+      mProductPair      = new Pair<ArrayList<ProductGroup>,HashMap<String,Product>>( productGroupList, productTable );
+      mCallbackReceived = true;
 
       notifyAll();
       }
@@ -874,7 +908,9 @@ public class ProductManager implements BaseRequest.BaseRequestListener
       {
       Log.e( LOG_TAG, "Synchronous product retrieval returned error", exception );
 
+
       // The product pair stays null
+      mCallbackReceived = true;
 
       notifyAll();
       }
@@ -882,18 +918,31 @@ public class ProductManager implements BaseRequest.BaseRequestListener
 
     synchronized Pair<ArrayList<ProductGroup>,HashMap<String,Product>> getProductPair()
       {
+      if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "getProductPair()" );
+
+      mCallbackReceived = false;
+
       // Kick off a retrieval now we have the monitor
       getAllProducts( this, null );
 
-      // Wait for a notification
-      try
+      // If we haven't received the products synchronously (i.e. as an immediate callback)
+      // wait for them now.
+      while ( ! mCallbackReceived )
         {
-        wait();
+        try
+          {
+          if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "  waiting ..." );
+
+          wait();
+          }
+        catch ( InterruptedException ie )
+          {
+          // Ignore
+          }
         }
-      catch ( InterruptedException ie )
-        {
-        // Ignore
-        }
+
+
+      if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "<< getProductPair()" );
 
       return ( mProductPair );
       }

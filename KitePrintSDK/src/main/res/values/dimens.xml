@@ -22,4 +22,8 @@
     <dimen name="group_or_product_label_shadow_blur_radius">1dp</dimen>
     <dimen name="group_or_product_label_shadow_y_offset">1dp</dimen>
 
+    <dimen name="product_overview_price_text">17sp</dimen>
+    <dimen name="product_overview_quantity_size_text">10sp</dimen>
+    <dimen name="product_overview_shipping_text">11sp</dimen>
+
 </resources>

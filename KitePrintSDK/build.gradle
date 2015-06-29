@@ -35,6 +35,7 @@ dependencies {
     compile files('libs/PayPalAndroidSDK.jar')
     compile files('libs/CardIONativeLibs.jar')
     // To generate this jar containing shared libraries see: http://ivansotof.com/2013/12/including-native-so-libraries-in-android/
+    compile "com.android.support:support-v4:22.2.0"
 }
 
 // Apply chrisbanes' excellent gradle-mvn-push recipe,

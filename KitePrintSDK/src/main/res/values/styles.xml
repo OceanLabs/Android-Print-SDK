@@ -1,14 +1,20 @@
 <resources>
 
-    <style name="KiteSDKTheme" parent="android:Theme.Holo.Light">
+    <style name="Theme.KiteSDK.ActionBar" parent="android:Widget.ActionBar">
+        <item name="android:background">@color/action_bar</item>
+        <item name="android:displayOptions">homeAsUp|showTitle</item>
+    </style>
+
+    <style name="Theme.KiteSDK.GroupOrProduct" parent="android:Theme.DeviceDefault.Light">
         <item name="android:windowActionBarOverlay">true</item>
-        <item name="android:actionBarStyle">@style/KiteSDKActionBar</item>
+        <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar</item>
         <item name="android:homeAsUpIndicator">@drawable/ic_arrow_back</item>
     </style>
 
-    <style name="KiteSDKActionBar" parent="android:Widget.ActionBar">
-        <item name="android:background">@color/action_bar</item>
-        <item name="android:displayOptions">homeAsUp|showTitle</item>
+    <style name="Theme.KiteSDK.ProductOverview" parent="android:Theme.DeviceDefault.Light">
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar</item>
+        <item name="android:homeAsUpIndicator">@drawable/ic_arrow_back</item>
     </style>
 
 </resources>

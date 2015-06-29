@@ -110,6 +110,17 @@ public class MultipleCurrencyCost
 
   /*****************************************************
    *
+   * Returns the cost at a position.
+   *
+   *****************************************************/
+  public SingleCurrencyCost get( int position )
+    {
+    return ( mCurrencyCodeCostTable.get( position ) );
+    }
+
+
+  /*****************************************************
+   *
    * Returns all the currency codes.
    *
    *****************************************************/
