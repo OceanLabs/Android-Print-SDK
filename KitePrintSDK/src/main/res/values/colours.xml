@@ -5,10 +5,13 @@
     <color name="action_bar">#f0f8f7f5</color>
     <color name="light_grey">#d3d3d3</color>
 
-    <color name="group_or_product_label_shadow">#20000000</color>
+    <color name="labelled_image_label_shadow">#20000000</color>
 
-    <color name="product_overview_price_background">#fff4b147</color>
+    <color name="product_overview_content_background">#f0ffffff</color>
+    <color name="product_overview_details_background">#fff26c4f</color>
+    <color name="product_overview_price_background">#fff6ce42</color>
     <color name="product_overview_quantity_size_background">#ff3d71e1</color>
     <color name="product_overview_shipping_background">#ff36be8b</color>
+    <color name="product_overview_start_button_background">#ff8cbcbf</color>
 
 </resources>

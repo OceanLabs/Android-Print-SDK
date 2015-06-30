@@ -42,17 +42,25 @@ package ly.kite.shopping;
 
 ///// Class Declaration /////
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.math.BigDecimal;
-import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Currency;
+import java.util.HashMap;
 import java.util.Locale;
 
 import ly.kite.KiteSDK;
@@ -60,26 +68,37 @@ import ly.kite.R;
 import ly.kite.address.Country;
 import ly.kite.print.Asset;
 import ly.kite.print.Product;
+import ly.kite.print.ProductGroup;
 import ly.kite.print.ProductManager;
 import ly.kite.print.SingleUnitSize;
 import ly.kite.print.UnitOfLength;
+import ly.kite.widget.SlidingOverlayFrame;
 
 /*****************************************************
  *
  * This activity displays a product overview.
  *
  *****************************************************/
-public class ProductOverviewActivity extends AKiteActivity
+public class ProductOverviewActivity extends AKiteActivity implements View.OnClickListener
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String      LOG_TAG                           = "ProductOverviewActivity";
+  private static final String      LOG_TAG                                   = "ProductOverviewActivity";
 
-  public  static final String      INTENT_EXTRA_NAME_ASSET_LIST      = KiteSDK.INTENT_PREFIX + ".AssetList";
-  public  static final String      INTENT_EXTRA_NAME_PRODUCT_ID      = KiteSDK.INTENT_PREFIX + ".ProductId";
+  public  static final String      INTENT_EXTRA_NAME_ASSET_LIST              = KiteSDK.INTENT_PREFIX + ".AssetList";
+  public  static final String      INTENT_EXTRA_NAME_PRODUCT_ID              = KiteSDK.INTENT_PREFIX + ".ProductId";
 
-  private static final BigDecimal  BIG_DECIMAL_ZERO                  = BigDecimal.valueOf( 0 );
+  private static final BigDecimal  BIG_DECIMAL_ZERO                          = BigDecimal.valueOf( 0 );
+
+  private static final long        SLIDE_ANIMATION_DURATION_MILLIS           = 500L;
+  private static final long        OPEN_CLOSE_ICON_ANIMATION_DELAY_MILLIS    = 250L;
+  private static final long        OPEN_CLOSE_ICON_ANIMATION_DURATION_MILLIS = SLIDE_ANIMATION_DURATION_MILLIS - OPEN_CLOSE_ICON_ANIMATION_DELAY_MILLIS;
+
+  private static final float       OPEN_CLOSE_ICON_ROTATION_UP               = -180f;
+  private static final float       OPEN_CLOSE_ICON_ROTATION_DOWN             =    0f;
+
+  private static final String      BUNDLE_KEY_SLIDING_DRAWER_IS_EXPANDED     = "slidingDrawerIsExpanded";
 
 
   ////////// Static Variable(s) //////////
@@ -89,6 +108,13 @@ public class ProductOverviewActivity extends AKiteActivity
 
   private ArrayList<Asset>         mAssetArrayList;
   private Product                  mProduct;
+
+  private ViewPager                mProductImageViewPager;
+  private Button                   mOverlaidStartButton;
+  private SlidingOverlayFrame      mSlidingOverlayFrame;
+  private ImageView                mOpenCloseDrawerIconImageView;
+
+  private PagerAdapter             mProductImageAdaptor;
 
 
   ////////// Static Initialiser(s) //////////
@@ -210,15 +236,40 @@ public class ProductOverviewActivity extends AKiteActivity
       }
 
 
+    // Get any saved instance state
+
+    boolean slidingDrawerIsExpanded = false;
+
+    if ( savedInstanceState != null )
+      {
+      slidingDrawerIsExpanded = savedInstanceState.getBoolean( BUNDLE_KEY_SLIDING_DRAWER_IS_EXPANDED, false );
+      }
+
+
     // Set up the screen
 
     setTitle( mProduct.getName() );
 
-    setContentView( R.layout.activity_product_overview );
+    setContentView( R.layout.screen_product_overview );
 
+    mProductImageViewPager        = (ViewPager)findViewById( R.id.view_pager );
+    mOverlaidStartButton          = (Button)findViewById( R.id.overlaid_start_button );
+    mSlidingOverlayFrame          = (SlidingOverlayFrame)findViewById( R.id.sliding_overlay_frame );
+    mOpenCloseDrawerIconImageView = (ImageView)findViewById( R.id.open_close_drawer_icon_image_view );
     TextView priceTextView        = (TextView)findViewById( R.id.price_text_view );
-    TextView quantitySizeTextView = (TextView)findViewById( R.id.quantity_size_text_view );
-    TextView shippingTextView     = (TextView)findViewById( R.id.shipping_text_view );
+    TextView sizeTextView         = (TextView)findViewById( R.id.size_text_view );
+//    TextView shippingTextView     = (TextView)findViewById( R.id.shipping_text_view );
+
+
+    mProductImageAdaptor = new ProductImageAdaptor( this, mProduct.getImageURLList(), this );
+    mProductImageViewPager.setAdapter( mProductImageAdaptor );
+    mProductImageViewPager.setOnClickListener( this );
+
+    mOverlaidStartButton.setAlpha( slidingDrawerIsExpanded ? 0f : 1f );  // If the drawer starts open, this button needs to be invisible
+
+    mSlidingOverlayFrame.snapToExpandedState( slidingDrawerIsExpanded );
+    mSlidingOverlayFrame.setSlideAnimationDuration( SLIDE_ANIMATION_DURATION_MILLIS );
+    mOpenCloseDrawerIconImageView.setRotation( slidingDrawerIsExpanded ? OPEN_CLOSE_ICON_ROTATION_DOWN : OPEN_CLOSE_ICON_ROTATION_UP );
 
 
     // Price
@@ -228,62 +279,205 @@ public class ProductOverviewActivity extends AKiteActivity
     if ( cost != null ) priceTextView.setText( cost.getFormattedAmount() );
 
 
-    // Quantity / size
+    // Size
 
-    int quantityPerSheet = mProduct.getQuantityPerSheet();
+    SingleUnitSize size = mProduct.getSizeWithFallback( UnitOfLength.INCHES );
 
-    if ( quantityPerSheet > 1 )
+    if ( size != null )
       {
-      StringBuilder quantitySizeStringBuilder = new StringBuilder( getString( R.string.product_quantity_format_string, quantityPerSheet ) );
+      sizeTextView.setText( String.format( getString( R.string.product_size_format_string ), size.getWidth(), size.getHeight(), size.getUnit().shortString( this ) ) );
+      }
 
 
-      // Get the size
+//    // Quantity / size
+//
+//    int quantityPerSheet = mProduct.getQuantityPerSheet();
+//
+//    if ( quantityPerSheet > 1 )
+//      {
+//      StringBuilder quantitySizeStringBuilder = new StringBuilder( getString( R.string.product_quantity_format_string, quantityPerSheet ) );
+//
+//
+//
+//
+//      quantitySizeTextView.setText( quantitySizeStringBuilder.toString() );
+//      }
+//    else
+//      {
+//      quantitySizeTextView.setVisibility( View.GONE );
+//      }
+//
+//
+//    // Shipping (postage)
+//
+//    Locale locale = Locale.getDefault();
+//
+//    MultipleCurrencyCost shippingCost = mProduct.getShippingCostTo( locale.getISO3Country() );
+//
+//    if ( shippingCost != null )
+//      {
+//      // Get the cost in the default currency for the locale, and format the amount.
+//
+//      NumberFormat numberFormatter = NumberFormat.getCurrencyInstance( locale );
+//
+//      cost = shippingCost.get( numberFormatter.getCurrency().getCurrencyCode() );
+//
+//      if ( cost != null )
+//        {
+//        if ( cost.getAmount().compareTo( BIG_DECIMAL_ZERO ) != 0 )
+//          {
+//          shippingTextView.setText( getString( R.string.product_shipping_format_string, numberFormatter.format( cost.getAmount().doubleValue() ) ) );
+//          }
+//        else
+//          {
+//          // Free shipping
+//          shippingTextView.setText( R.string.product_free_shipping );
+//          }
+//        }
+//      }
 
-      SingleUnitSize size = mProduct.getSizeWithFallback( UnitOfLength.INCHES );
-
-      if ( size != null )
-        {
-        quantitySizeStringBuilder
-                .append( "\n" )
-                .append( String.format( getString( R.string.product_size_format_string ), size.getWidth(), size.getHeight(), size.getUnit().plural( this ).toUpperCase() ) );
-        }
 
 
-      quantitySizeTextView.setText( quantitySizeStringBuilder.toString() );
+    //ProductManager.getInstance().getAllProducts( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the back key is pressed.
+   *
+   *****************************************************/
+  @Override
+  public void onBackPressed()
+    {
+    // If the slider is open - close it
+    if ( mSlidingOverlayFrame.sliderIsExpanded() )
+      {
+      toggleSliderState();
+
+      return;
+      }
+
+    // Otherwise do what we would have done normally
+    super.onBackPressed();
+    }
+
+
+  /*****************************************************
+   *
+   * Called to save the state of the instance when (e.g.)
+   * killing the activity after changing orientation.
+   *
+   *****************************************************/
+  @Override
+  public void onSaveInstanceState( Bundle outState )
+    {
+    super.onSaveInstanceState( outState );
+
+    // Save the state of the sliding drawer
+    outState.putBoolean( BUNDLE_KEY_SLIDING_DRAWER_IS_EXPANDED, mSlidingOverlayFrame.sliderIsExpanded() );
+    }
+
+
+  ////////// View.OnClickListener Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when a view is clicked.
+   *
+   *****************************************************/
+  @Override
+  public void onClick( View view )
+    {
+    // All clicks are assumed to be equivalent to pressing the start button
+    onStartClicked( view );
+    }
+
+
+  ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when one of the start creating buttons is clicked.
+   *
+   *****************************************************/
+  public void onStartClicked( View view )
+    {
+    // TODO
+    Toast.makeText( this, "Not yet implemented", Toast.LENGTH_SHORT ).show();
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the details control is clicked.
+   *
+   *****************************************************/
+  public void onDetailsClicked( View view )
+    {
+    toggleSliderState();
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the details control is clicked.
+   *
+   *****************************************************/
+  private void toggleSliderState()
+    {
+    // We want to animation the following:
+    //   - Overlaid start button fade in / out
+    //   - Sliding drawer up / down
+    //   - Open / close drawer icon rotation
+
+    boolean sliderWillBeOpening = ! mSlidingOverlayFrame.sliderIsExpanded();
+
+    float startButtonInitialAlpha;
+    float startButtonFinalAlpha;
+
+    float openCloseIconInitialRotation;
+    float openCloseIconFinalRotation;
+
+    if ( sliderWillBeOpening )
+      {
+      startButtonInitialAlpha      = 1f;
+      startButtonFinalAlpha        = 0f;
+
+      openCloseIconInitialRotation = OPEN_CLOSE_ICON_ROTATION_UP;
+      openCloseIconFinalRotation   = OPEN_CLOSE_ICON_ROTATION_DOWN;
       }
     else
       {
-      quantitySizeTextView.setVisibility( View.GONE );
+      startButtonInitialAlpha      = 0f;
+      startButtonFinalAlpha        = 1f;
+
+      openCloseIconInitialRotation = OPEN_CLOSE_ICON_ROTATION_DOWN;
+      openCloseIconFinalRotation   = OPEN_CLOSE_ICON_ROTATION_UP;
       }
 
 
-    // Shipping (postage)
+    // Create the overlaid start button animation
+    Animation startButtonAnimation = new AlphaAnimation( startButtonInitialAlpha, startButtonFinalAlpha );
+    startButtonAnimation.setDuration( SLIDE_ANIMATION_DURATION_MILLIS );
+    startButtonAnimation.setFillAfter( true );
 
-    Locale locale = Locale.getDefault();
 
-    MultipleCurrencyCost shippingCost = mProduct.getShippingCostTo( locale.getISO3Country() );
+    // Create the open/close icon animation.
+    // The rotation is delayed, but will finish at the same time as the slide animation.
+    Animation openCloseIconAnimation = new RotateAnimation( openCloseIconInitialRotation, openCloseIconFinalRotation, mOpenCloseDrawerIconImageView.getWidth() * 0.5f, mOpenCloseDrawerIconImageView.getHeight() * 0.5f );
+    openCloseIconAnimation.setStartOffset( OPEN_CLOSE_ICON_ANIMATION_DELAY_MILLIS );
+    openCloseIconAnimation.setDuration( OPEN_CLOSE_ICON_ANIMATION_DURATION_MILLIS );
+    openCloseIconAnimation.setFillAfter( true );
 
-    if ( shippingCost != null )
-      {
-      // Get the cost in the default currency for the locale, and format the amount.
 
-      NumberFormat numberFormatter = NumberFormat.getCurrencyInstance( locale );
+    mOverlaidStartButton.setAlpha( 1f );              // Clear any alpha already applied
+    mOpenCloseDrawerIconImageView.setRotation( 0f );  // Clear any rotation already applied
 
-      cost = shippingCost.get( numberFormatter.getCurrency().getCurrencyCode() );
+    mSlidingOverlayFrame.animateToExpandedState( sliderWillBeOpening );
 
-      if ( cost != null )
-        {
-        if ( cost.getAmount().compareTo( BIG_DECIMAL_ZERO ) != 0 )
-          {
-          shippingTextView.setText( getString( R.string.product_shipping_format_string, numberFormatter.format( cost.getAmount().doubleValue() ) ) );
-          }
-        else
-          {
-          // Free shipping
-          shippingTextView.setText( R.string.product_free_shipping );
-          }
-        }
-      }
+    mOverlaidStartButton.startAnimation( startButtonAnimation );
+    mOpenCloseDrawerIconImageView.startAnimation( openCloseIconAnimation );
     }
 
 

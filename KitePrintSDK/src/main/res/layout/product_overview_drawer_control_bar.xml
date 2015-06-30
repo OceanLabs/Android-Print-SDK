@@ -1,0 +1,48 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="@dimen/product_overview_control_bar_height"
+    android:orientation="horizontal"
+    android:layerType="hardware"
+    android:onClick="onDetailsClicked">
+
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_weight="0.5"
+        android:layout_height="fill_parent"
+        android:background="@color/product_overview_details_background">
+        <LinearLayout
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/open_close_drawer_icon_image_view"
+                android:layout_width="@dimen/product_overview_open_drawer_icon_size"
+                android:layout_height="@dimen/product_overview_open_drawer_icon_size"
+                android:src="@drawable/close_drawer_icon"
+                android:scaleType="centerInside"/>
+            <TextView
+                android:layout_marginLeft="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:gravity="center"
+                android:textSize="@dimen/product_overview_details_text"
+                android:textColor="@android:color/white"
+                android:text="@string/Details"
+                style="@style/KiteSDKLabelStyle"/>
+        </LinearLayout>
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/price_text_view"
+        android:layout_width="0dp"
+        android:layout_weight="0.5"
+        android:layout_height="fill_parent"
+        android:background="@color/product_overview_price_background"
+        android:gravity="center"
+        android:textSize="@dimen/product_overview_price_text"
+        android:textColor="@android:color/white"
+        style="@style/KiteSDKLabelStyle"/>
+
+</LinearLayout>

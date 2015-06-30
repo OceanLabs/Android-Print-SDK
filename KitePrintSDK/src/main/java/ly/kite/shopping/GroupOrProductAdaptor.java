@@ -52,7 +52,7 @@ import android.widget.GridView;
 
 import ly.kite.R;
 import ly.kite.util.ImageManager;
-import ly.kite.widget.ProductImageView;
+import ly.kite.widget.LabelledImageView;
 
 
 ///// Class Declaration /////
@@ -206,7 +206,7 @@ public class GroupOrProductAdaptor extends BaseAdapter
       view = mLayoutInflator.inflate( LAYOUT_RESOURCE_ID, null );
 
       viewReferences                   = new ViewReferences();
-      viewReferences.productImageView = (ProductImageView)view.findViewById( R.id.product_image_view );
+      viewReferences.productImageView = (LabelledImageView)view.findViewById( R.id.product_image_view );
 
       view.setTag( viewReferences );
       }
@@ -256,7 +256,7 @@ public class GroupOrProductAdaptor extends BaseAdapter
    *****************************************************/
   private class ViewReferences
     {
-    ProductImageView productImageView;
+    LabelledImageView productImageView;
     }
 
   }

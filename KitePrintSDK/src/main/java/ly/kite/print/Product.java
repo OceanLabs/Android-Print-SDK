@@ -244,6 +244,17 @@ public class Product implements IGroupOrProduct
 
   /*****************************************************
    *
+   * Returns the image URLs.
+   *
+   *****************************************************/
+  public ArrayList<URL> getImageURLList()
+    {
+    return ( mImageURLList );
+    }
+
+
+  /*****************************************************
+   *
    * Sets the label colour.
    *
    *****************************************************/

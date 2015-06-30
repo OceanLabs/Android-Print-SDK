@@ -45,16 +45,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.Point;
-import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.Display;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
@@ -184,7 +178,7 @@ public abstract class AGroupOrProductActivity extends AKiteActivity implements P
 
     // Set up the screen content
 
-    setContentView( R.layout.activity_group_or_product );
+    setContentView( R.layout.screen_group_or_product );
 
     mGridView    = (HeaderFooterGridView)findViewById( R.id.grid_view );
     mProgressBar = (ProgressBar)findViewById( R.id.progress_bar );

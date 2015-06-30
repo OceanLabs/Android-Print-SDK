@@ -8,6 +8,8 @@
     <dimen name="group_or_product_label_text_size">@dimen/label_text_size</dimen>
     <dimen name="group_or_product_label_padding_top">8dp</dimen>
     <dimen name="group_or_product_label_padding_bottom">12dp</dimen>
-    <dimen name="group_or_product_label_shadow_y_offset">1dp</dimen>
+    <dimen name="labelled_image_label_shadow_y_offset">1dp</dimen>
+
+    <dimen name="product_overview_content_height">540dp</dimen>
 
 </resources>

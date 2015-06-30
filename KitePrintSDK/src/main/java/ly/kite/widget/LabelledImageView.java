@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * ProductImageView.java
+ * LabelledImageView.java
  *
  *
  * Modified MIT License
@@ -63,20 +63,17 @@ import ly.kite.R;
 
 /*****************************************************
  *
- * This class is a widget that displays a product item -
- * either a group or product. It allows images to be
- * supplied at a later stage, fading them in where
- * appropriate.
+ * This class is a widget that displays a image potentially
+ * with a label. It allows images to be supplied at a later
+ * stage, fading them in where appropriate.
  *
  *****************************************************/
-public class ProductImageView extends FrameLayout implements IRemoteImageConsumer, Animation.AnimationListener
+public class LabelledImageView extends FrameLayout implements IRemoteImageConsumer, Animation.AnimationListener
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                           = "ProductImageView";
-
-  private static final float   DEFAULT_ASPECT_RATIO              = 1.0f;
+  private static final String  LOG_TAG                           = "LabelledImageView";
 
   private static final long    FADE_IN_ANIMATION_DURATION_MILLIS = 300L;
   private static final float   ALPHA_TRANSPARENT                 = 0.0f;
@@ -108,21 +105,21 @@ public class ProductImageView extends FrameLayout implements IRemoteImageConsume
 
   ////////// Constructor(s) //////////
 
-  public ProductImageView( Context context )
+  public LabelledImageView( Context context )
     {
     super( context );
 
     initialise( context );
     }
 
-  public ProductImageView( Context context, AttributeSet attrs )
+  public LabelledImageView( Context context, AttributeSet attrs )
     {
     super( context, attrs );
 
     initialise( context );
     }
 
-  public ProductImageView( Context context, AttributeSet attrs, int defStyleAttr )
+  public LabelledImageView( Context context, AttributeSet attrs, int defStyleAttr )
     {
     super( context, attrs, defStyleAttr );
 
@@ -130,7 +127,7 @@ public class ProductImageView extends FrameLayout implements IRemoteImageConsume
     }
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-  public ProductImageView( Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes )
+  public LabelledImageView( Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes )
     {
     super( context, attrs, defStyleAttr, defStyleRes );
 
@@ -148,19 +145,22 @@ public class ProductImageView extends FrameLayout implements IRemoteImageConsume
   @Override
   protected void onMeasure( int widthMeasureSpec, int heightMeasureSpec )
     {
-    // When we are called - set the image view dimensions
+    // If an aspect ratio was set - set the image view dimensions
 
-    int widthMode = MeasureSpec.getMode( widthMeasureSpec );
-    int widthSize = MeasureSpec.getSize( widthMeasureSpec );
-
-    if ( widthMode == MeasureSpec.AT_MOST || widthMode == MeasureSpec.EXACTLY )
+    if ( mWidthToHeightMultiplier > 0.0001f )
       {
-      ViewGroup.LayoutParams imageLayoutParams = mImageView.getLayoutParams();
+      int widthMode = MeasureSpec.getMode( widthMeasureSpec );
+      int widthSize = MeasureSpec.getSize( widthMeasureSpec );
 
-      imageLayoutParams.width  = widthSize;
-      imageLayoutParams.height = (int)( widthSize * mWidthToHeightMultiplier );
+      if ( widthMode == MeasureSpec.AT_MOST || widthMode == MeasureSpec.EXACTLY )
+        {
+        ViewGroup.LayoutParams imageLayoutParams = mImageView.getLayoutParams();
 
-      mImageView.setLayoutParams( imageLayoutParams );
+        imageLayoutParams.width  = widthSize;
+        imageLayoutParams.height = (int)( widthSize * mWidthToHeightMultiplier );
+
+        mImageView.setLayoutParams( imageLayoutParams );
+        }
       }
 
 
@@ -270,14 +270,11 @@ public class ProductImageView extends FrameLayout implements IRemoteImageConsume
    *****************************************************/
   private void initialise( Context context )
     {
-    setAspectRatio( DEFAULT_ASPECT_RATIO );
-
-
     // Inflate the layout and attach it to this view
 
     LayoutInflater layoutInflater = LayoutInflater.from( context );
 
-    View view = layoutInflater.inflate( R.layout.product_image_view, this, true );
+    View view = layoutInflater.inflate( R.layout.labelled_image_view, this, true );
 
 
     // Save references to the child views
@@ -291,11 +288,11 @@ public class ProductImageView extends FrameLayout implements IRemoteImageConsume
 
     Resources resources = context.getResources();
 
-    mOverlayLabel.setCornerRadius( resources.getDimension( R.dimen.group_or_product_label_corner_radius ) );
+    mOverlayLabel.setCornerRadius( resources.getDimension( R.dimen.labelled_image_label_corner_radius ) );
     mOverlayLabel.setBackgroundShadow(
-            resources.getColor( R.color.group_or_product_label_shadow ),
-            resources.getDimension( R.dimen.group_or_product_label_shadow_blur_radius ),
-            resources.getDimension( R.dimen.group_or_product_label_shadow_y_offset ) );
+            resources.getColor( R.color.labelled_image_label_shadow ),
+            resources.getDimension( R.dimen.labelled_image_label_shadow_blur_radius ),
+            resources.getDimension( R.dimen.labelled_image_label_shadow_y_offset ) );
     }
 
 

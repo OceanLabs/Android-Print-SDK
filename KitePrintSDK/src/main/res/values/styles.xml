@@ -17,4 +17,11 @@
         <item name="android:homeAsUpIndicator">@drawable/ic_arrow_back</item>
     </style>
 
+    <style name="KiteSDKLabelStyle">
+        <item name="android:shadowColor">#30000000</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">3</item>
+    </style>
+
 </resources>

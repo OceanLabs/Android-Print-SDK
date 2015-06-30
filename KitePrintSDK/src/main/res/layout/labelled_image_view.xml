@@ -29,10 +29,7 @@
         android:gravity="center"
         android:textColor="@android:color/white"
         android:textSize="@dimen/group_or_product_label_text_size"
-        android:shadowColor="#30000000"
-        android:shadowDx="0"
-        android:shadowDy="1"
-        android:shadowRadius="3"
+        style="@style/KiteSDKLabelStyle"
         android:visibility="invisible"/>
 
     <ProgressBar
