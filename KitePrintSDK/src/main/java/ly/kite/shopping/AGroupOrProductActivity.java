@@ -287,7 +287,7 @@ public abstract class AGroupOrProductActivity extends AKiteActivity implements P
       }
 
 
-    // If we are running on Lollipop onwards, the status and navigation bars are also transparent, so get their heights
+    // If we are running on Lollipop onwards, the status and navigation bars are also transparent, so getCost their heights
     // and adjust the spacers' heights accordingly. Note that the navigation bar is only counted if the device is in
     // portrait orientation, since the navigation bar gets moved over to the side in landscape orientation.
 

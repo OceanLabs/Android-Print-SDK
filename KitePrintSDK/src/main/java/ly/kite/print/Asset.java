@@ -327,7 +327,7 @@ public class Asset implements Parcelable, Serializable {
                 return Arrays.equals(a.imageBytes, this.imageBytes);
         }
 
-        throw new IllegalStateException("should not get here");
+        throw new IllegalStateException("should not getCost here");
     }
 
     @Override
@@ -345,7 +345,7 @@ public class Asset implements Parcelable, Serializable {
                 return Arrays.hashCode(this.imageBytes);
         }
 
-        throw new IllegalStateException("should not get here");
+        throw new IllegalStateException("should not getCost here");
     }
 
     @Override

@@ -21,19 +21,35 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1.0"
                 android:layerType="hardware"/>
-            <Button
-                android:id="@+id/overlaid_start_button"
+            <LinearLayout
+                android:id="@+id/overlaid_components"
                 android:layout_gravity="bottom|center_horizontal"
                 android:layout_marginBottom="@dimen/product_overview_overlaid_start_button_spacing_bottom"
-                android:layout_width="@dimen/product_overview_start_button_width"
-                android:layout_height="@dimen/product_overview_start_button_height"
-                android:background="@color/product_overview_start_button_background"
-                android:gravity="center"
-                android:textSize="@dimen/control_label_text_size"
-                android:textColor="@android:color/white"
-                android:text="@string/product_overview_start_button_text"
-                style="@style/KiteSDKLabelStyle"
-                android:onClick="onStartClicked"/>
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <FrameLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/product_overview_paging_dots_spacing_bottom">
+                    <ly.kite.widget.PagingDots
+                        android:id="@+id/paging_dots"
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </FrameLayout>
+                <Button
+                    android:id="@+id/overlaid_start_button"
+                    android:layout_width="@dimen/product_overview_start_button_width"
+                    android:layout_height="@dimen/product_overview_start_button_height"
+                    android:background="@color/product_overview_start_button_background"
+                    android:gravity="center"
+                    android:textSize="@dimen/control_label_text_size"
+                    android:textColor="@android:color/white"
+                    android:text="@string/product_overview_start_button_text"
+                    style="@style/KiteSDKLabelStyle"
+                    android:onClick="onStartClicked"/>
+            </LinearLayout>
         </FrameLayout>
 
         <View

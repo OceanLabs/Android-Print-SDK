@@ -85,7 +85,7 @@ public class MainActivity extends Activity {
 //        final PrintOrder printOrder = new PrintOrder();
 //        if (productType == ProductType.POSTCARD) {
 //            printOrder.addPrintJob(PrintJob.createPostcardPrintJob(ProductType.POSTCARD.getDefaultTemplate(),
-//                    assets.get(0), "Hello World!", Address.getKiteTeamAddress()));
+//                    assets.getCost(0), "Hello World!", Address.getKiteTeamAddress()));
 //        } else {
 //            printOrder.addPrintJob(PrintJob.createPrintJob(assets, productType));
 //        }

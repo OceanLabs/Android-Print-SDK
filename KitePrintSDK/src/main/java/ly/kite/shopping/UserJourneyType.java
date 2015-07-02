@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * ShippingCosts.java
+ * UserJourneyType.java
  *
  *
  * Modified MIT License
@@ -42,30 +42,25 @@ package ly.kite.shopping;
 
 ///// Class Declaration /////
 
-import java.util.HashMap;
-
 /*****************************************************
  *
- * This class represents shipping costs for an item.
+ * This enum defines a type of user journey through the
+ * shopping process.
  *
  *****************************************************/
-public class ShippingCosts
+public enum UserJourneyType
   {
-  ////////// Static Constant(s) //////////
-
-  @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                        = "ShippingCosts";
-
-  public  static final String  DESTINATION_CODE_EUROPE        = "europe";
-  public  static final String  DESTINATION_CODE_REST_OF_WORLD = "rest_of_world";
-
-
-  ////////// Static Variable(s) //////////
+  CIRCLE,
+  FRAME,
+  GREETINGCARD,
+  PHONE_CASE,
+  PHOTOBOOK,
+  POSTCARD,
+  POSTER,
+  RECTANGLE;
 
 
   ////////// Member Variable(s) //////////
-
-  private HashMap<String,MultipleCurrencyCost>  mDestinationCostTable;
 
 
   ////////// Static Initialiser(s) //////////
@@ -76,38 +71,23 @@ public class ShippingCosts
 
   ////////// Constructor(s) //////////
 
-  public ShippingCosts()
-    {
-    mDestinationCostTable = new HashMap<>();
-    }
-
 
   ////////// Method(s) //////////
 
   /*****************************************************
    *
-   * Adds a destination, together with the cost in one of more
-   * currencies.
+   * ...
    *
    *****************************************************/
-  public void add( String destinationCode, MultipleCurrencyCost cost )
-    {
-    mDestinationCostTable.put( destinationCode, cost );
-    }
-
-
-  /*****************************************************
-   *
-   * Returns the shipping cost for a destination.
-   *
-   *****************************************************/
-  public MultipleCurrencyCost get( String destinationCode )
-    {
-    return ( mDestinationCostTable.get( destinationCode ) );
-    }
 
 
   ////////// Inner Class(es) //////////
+
+  /*****************************************************
+   *
+   * ...
+   *
+   *****************************************************/
 
   }
 

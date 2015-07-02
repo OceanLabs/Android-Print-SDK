@@ -59,8 +59,9 @@ import java.util.Iterator;
 import ly.kite.KiteSDKException;
 import ly.kite.KiteSDK;
 import ly.kite.shopping.MultipleCurrencyCost;
-import ly.kite.shopping.ShippingCosts;
+import ly.kite.shopping.MultipleDestinationShippingCosts;
 import ly.kite.shopping.SingleCurrencyCost;
+import ly.kite.shopping.UserJourneyType;
 
 
 ///// Class Declaration /////
@@ -179,9 +180,9 @@ public class ProductManager implements BaseRequest.BaseRequestListener
    * Parses JSON shipping costs.
    *
    ****************************************************/
-  private static ShippingCosts parseShippingCosts( JSONObject shippingCostsJSONObject ) throws JSONException
+  private static MultipleDestinationShippingCosts parseShippingCosts( JSONObject shippingCostsJSONObject ) throws JSONException
     {
-    ShippingCosts shippingCosts = new ShippingCosts();
+    MultipleDestinationShippingCosts shippingCosts = new MultipleDestinationShippingCosts();
 
 
     // The JSON shipping costs are not an array, so we need to iterate through the keys (which are the destination codes
@@ -207,8 +208,8 @@ public class ProductManager implements BaseRequest.BaseRequestListener
    ****************************************************/
   private static SingleUnitSize parseProductSize( JSONObject productSizeJSONObject, UnitOfLength unit ) throws JSONException
     {
-    float width  = (float)productSizeJSONObject.getLong( JSON_NAME_WIDTH );
-    float height = (float)productSizeJSONObject.getLong( JSON_NAME_HEIGHT );
+    float width  = (float)productSizeJSONObject.getDouble( JSON_NAME_WIDTH );
+    float height = (float)productSizeJSONObject.getDouble( JSON_NAME_HEIGHT );
 
     return ( new SingleUnitSize( unit, width, height  ) );
     }
@@ -314,6 +315,28 @@ public class ProductManager implements BaseRequest.BaseRequestListener
 
   /****************************************************
    *
+   * Parses a user journey type.
+   *
+   ****************************************************/
+  private static UserJourneyType parseUserJourneyType( String userJourneyTypeJSONString )
+    {
+    // At the moment, these match the names of the enum constants
+
+    try
+      {
+      return ( UserJourneyType.valueOf( userJourneyTypeJSONString ) );
+      }
+    catch ( Exception e )
+      {
+      // Fall through
+      }
+
+    return ( null );
+    }
+
+
+  /****************************************************
+   *
    * Parses a JSON cost array.
    *
    ****************************************************/
@@ -358,11 +381,11 @@ public class ProductManager implements BaseRequest.BaseRequestListener
 
         productJSONObject = productJSONArray.getJSONObject( productIndex );
 
-        String                 productId           = productJSONObject.getString( JSON_NAME_PRODUCT_ID );
-        String                 productName         = productJSONObject.getString( JSON_NAME_PRODUCT_NAME );
-        int                    imagesPerPage       = productJSONObject.getInt( JSON_NAME_IMAGES_PER_PAGE );
-        MultipleCurrencyCost   cost                = parseCost( productJSONObject.getJSONArray( JSON_NAME_COST ) );
-        ShippingCosts          shippingCosts       = parseShippingCosts( productJSONObject.getJSONObject( JSON_NAME_SHIPPING_COSTS ) );
+        String                           productId     = productJSONObject.getString( JSON_NAME_PRODUCT_ID );
+        String                           productName   = productJSONObject.getString( JSON_NAME_PRODUCT_NAME );
+        int                              imagesPerPage = productJSONObject.getInt( JSON_NAME_IMAGES_PER_PAGE );
+        MultipleCurrencyCost             cost          = parseCost( productJSONObject.getJSONArray( JSON_NAME_COST ) );
+        MultipleDestinationShippingCosts shippingCosts = parseShippingCosts( productJSONObject.getJSONObject( JSON_NAME_SHIPPING_COSTS ) );
 
 
         // Get the product detail
@@ -376,7 +399,7 @@ public class ProductManager implements BaseRequest.BaseRequestListener
         ArrayList<URL>         imageURLList        = parseProductShots( productDetailJSONObject.getJSONArray( JSON_NAME_PRODUCT_SHOTS ) );
         //String                 productSubclass     = productDetailJSONObject.getString( JSON_NAME_PRODUCT_SUBCLASS );
         String                 productType         = productDetailJSONObject.getString( JSON_NAME_PRODUCT_TYPE );
-        String                 productUIClass      = productDetailJSONObject.getString( JSON_NAME_PRODUCT_UI_CLASS );
+        UserJourneyType        userJourneyType     = parseUserJourneyType( productDetailJSONObject.getString( JSON_NAME_PRODUCT_UI_CLASS ) );
         String                 productCode         = productDetailJSONObject.getString( JSON_NAME_PRODUCT_CODE );
         MultipleUnitSize       size                = parseProductSize( productDetailJSONObject.getJSONObject( JSON_NAME_PRODUCT_SIZE ) );
 
@@ -410,7 +433,7 @@ public class ProductManager implements BaseRequest.BaseRequestListener
 
         // Create the product and add it to the product group
 
-        Product product = new Product( productId, productCode, productName, productType, labelColour, productUIClass, imagesPerPage )
+        Product product = new Product( productId, productCode, productName, productType, labelColour, userJourneyType, imagesPerPage )
                 .setCost( cost )
                 .setShippingCosts( shippingCosts )
                 .setImageURLs( heroImageURL, imageURLList )
@@ -428,7 +451,7 @@ public class ProductManager implements BaseRequest.BaseRequestListener
         {
         Log.e( LOG_TAG, "Unable to parse JSON product: " + productJSONObject, exception );
 
-        // Ignore individual errors - try and get as many products as possible
+        // Ignore individual errors - try and getCost as many products as possible
         }
       }
 
@@ -462,7 +485,7 @@ public class ProductManager implements BaseRequest.BaseRequestListener
 
       if ( httpStatusCode >= 200 && httpStatusCode <= 299 )
         {
-        // Try to get an array of products, then parse it.
+        // Try to getCost an array of products, then parse it.
 
         JSONArray productsJSONArray = jsonData.getJSONArray( JSON_NAME_PRODUCT_ARRAY );
 
@@ -490,7 +513,7 @@ public class ProductManager implements BaseRequest.BaseRequestListener
         }
       else
         {
-        // Invalid HTTP response code - see if we can get an error message
+        // Invalid HTTP response code - see if we can getCost an error message
 
         JSONObject errorJSONObject = jsonData.getJSONObject( BaseRequest.ERROR_RESPONSE_JSON_OBJECT_NAME );
         String     errorMessage    = errorJSONObject.getString( BaseRequest.ERROR_RESPONSE_MESSAGE_JSON_NAME );

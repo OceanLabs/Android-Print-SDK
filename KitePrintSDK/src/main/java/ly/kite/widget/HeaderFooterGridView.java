@@ -635,12 +635,12 @@ public class HeaderFooterGridView extends GridView
 
       if ( position < numHeadersAndPlaceholders && (position % mNumColumns != 0) )
         {
-// Placeholders get the last view type number
+// Placeholders getCost the last view type number
         return mAdapter != null ? mAdapter.getViewTypeCount() : 1;
         }
       else if ( position >= numItemsBeforeFooter && ( ( position - numItemsBeforeFooter ) % mNumColumns != 0))
         {
-// Placeholders get the last view type number
+// Placeholders getCost the last view type number
         return mAdapter != null ? mAdapter.getViewTypeCount() : 1;
         }
 

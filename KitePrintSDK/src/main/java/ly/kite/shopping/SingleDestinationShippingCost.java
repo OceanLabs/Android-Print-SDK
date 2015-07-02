@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * ProductImageAdaptor.java
+ * SingleDestinationShippingCost.java
  *
  *
  * Modified MIT License
@@ -43,32 +43,25 @@ package ly.kite.shopping;
 ///// Class Declaration /////
 
 import android.content.Context;
-import android.support.v4.view.PagerAdapter;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import java.net.URL;
-import java.util.List;
 
 import ly.kite.R;
-import ly.kite.util.ImageManager;
-import ly.kite.widget.LabelledImageView;
+import ly.kite.address.Country;
 
 /*****************************************************
  *
- * This class acts as an adaptor between product images
- * and a pager view.
+ * This class represents shipping costs for an item to
+ * a single destination.
  *
  *****************************************************/
-public class ProductImageAdaptor extends PagerAdapter
+public class SingleDestinationShippingCost
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG              = "ProductImageAdaptor";
+  private static final String  LOG_TAG                        = "SingleDestinationShippingCost";
 
-  private static final String  IMAGE_CLASS_STRING   = "product_image";
+  public  static final String  DESTINATION_CODE_EUROPE        = "europe";
+  public  static final String  DESTINATION_CODE_REST_OF_WORLD = "rest_of_world";
 
 
   ////////// Static Variable(s) //////////
@@ -76,12 +69,8 @@ public class ProductImageAdaptor extends PagerAdapter
 
   ////////// Member Variable(s) //////////
 
-  private Context               mContext;
-  private List<URL>             mImageURLList;
-  private View.OnClickListener  mOnClickListener;
-
-  private LayoutInflater        mLayoutInflator;
-  private ImageManager          mImageManager;
+  private String                mDestinationCode;
+  private MultipleCurrencyCost  mCost;
 
 
   ////////// Static Initialiser(s) //////////
@@ -92,14 +81,10 @@ public class ProductImageAdaptor extends PagerAdapter
 
   ////////// Constructor(s) //////////
 
-  ProductImageAdaptor( Context context, List<URL> imageURLList, View.OnClickListener onClickListener )
+  SingleDestinationShippingCost( String destinationCode, MultipleCurrencyCost cost )
     {
-    mContext         = context;
-    mImageURLList    = imageURLList;
-    mOnClickListener = onClickListener;
-
-    mLayoutInflator  = LayoutInflater.from( context );
-    mImageManager    = ImageManager.getInstance( context );
+    mDestinationCode = destinationCode;
+    mCost            = cost;
     }
 
 
@@ -107,72 +92,49 @@ public class ProductImageAdaptor extends PagerAdapter
 
   /*****************************************************
    *
-   * Returns the number of images.
+   * Returns the destination code.
    *
    *****************************************************/
-  @Override
-  public int getCount()
+  public String getDestinationCode()
     {
-    return ( mImageURLList.size() );
+    return ( mDestinationCode );
     }
 
 
   /*****************************************************
    *
-   * Creates a new page for the given position.
+   * Returns a displayable description for the the destination.
    *
    *****************************************************/
-  @Override
-  public Object instantiateItem( ViewGroup container, int position )
+  public String getDestinationDescription( Context context )
     {
-    // Get the image URL for the position
-    URL imageURL = mImageURLList.get( position );
+    if ( Country.UK.usesISOCode( mDestinationCode )                   ) return ( context.getString( R.string.destination_description_gbr ) );
+    if ( DESTINATION_CODE_EUROPE.equals( mDestinationCode )        ) return ( context.getString( R.string.destination_description_europe ) );
+    if ( DESTINATION_CODE_REST_OF_WORLD.equals( mDestinationCode ) ) return ( context.getString( R.string.destination_description_rest_of_world ) );
 
-
-    // Inflate the view
-
-    View view = mLayoutInflator.inflate( R.layout.product_overview_image, null );
-
-    container.addView( view );
-
-
-    // Request the image
-
-    LabelledImageView labelledImageView = (LabelledImageView)view.findViewById( R.id.labelled_image_view );
-
-    labelledImageView.setExpectedImageURL( imageURL.toString() );
-    labelledImageView.setOnClickListener( mOnClickListener );  // The view pager won't respond to click events, so we need to add them to each page
-
-    mImageManager.getRemoteImage( IMAGE_CLASS_STRING, imageURL, container.getHandler(), labelledImageView );
-
-
-    return ( view );
+    return ( mDestinationCode );
     }
 
 
   /*****************************************************
    *
-   * Returns true if the view is associated with the object.
-   * Since we return the view anyway, this is true if the
-   * view and the object are the same object.
+   * Returns the cost.
    *
    *****************************************************/
-  @Override
-  public boolean isViewFromObject( View view, Object object )
+  public MultipleCurrencyCost getCost()
     {
-    return ( view == object );
+    return ( mCost );
     }
 
 
   /*****************************************************
    *
-   * Destroys an item.
+   * Returns the cost in a currency.
    *
    *****************************************************/
-  @Override
-  public void destroyItem( ViewGroup container, int position, Object object )
+  public SingleCurrencyCost getCost( String currencyCode )
     {
-    container.removeView( (View)object );
+    return ( mCost.get( currencyCode ) );
     }
 
 
@@ -180,7 +142,7 @@ public class ProductImageAdaptor extends PagerAdapter
 
   /*****************************************************
    *
-   * ...
+   * Returns the shipping costs as a list.
    *
    *****************************************************/
 

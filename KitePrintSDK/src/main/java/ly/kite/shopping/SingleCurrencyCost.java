@@ -43,7 +43,9 @@ package ly.kite.shopping;
 ///// Class Declaration /////
 
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.Currency;
+import java.util.Locale;
 
 /*****************************************************
  *
@@ -55,7 +57,9 @@ public class SingleCurrencyCost
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "SingleCurrencyCost";
+  private static final String  LOG_TAG                     = "SingleCurrencyCost";
+
+  private static final String  FORMAL_AMOUNT_FORMAT_STRING = "$1$s $2$.2f";
 
 
   ////////// Static Variable(s) //////////
@@ -101,6 +105,18 @@ public class SingleCurrencyCost
     return ( mCurrency );
     }
 
+
+  /*****************************************************
+   *
+   * Returns the currency code.
+   *
+   *****************************************************/
+  public String getCurrencyCode()
+    {
+    return ( mCurrency.getCurrencyCode() );
+    }
+
+
   /*****************************************************
    *
    * Returns the amount.
@@ -114,12 +130,61 @@ public class SingleCurrencyCost
 
   /*****************************************************
    *
+   * Returns the amount as a double.
+   *
+   *****************************************************/
+  public double getAmountAsDouble()
+    {
+    return ( mAmount.doubleValue() );
+    }
+
+
+  /*****************************************************
+   *
    * Returns the formatted.
    *
    *****************************************************/
   public String getFormattedAmount()
     {
     return ( mFormattedAmount );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the amount as a displayable string for the
+   * supplied locale.
+   *
+   * If the currency matches the main currency for the
+   * supplied locale, then we use the number formatter
+   * to format the amount.
+   *
+   * If the currency is different, then we format
+   * the amount with the full currency code. We do this to
+   * avoid any ambiguity. For example, if we were to live in
+   * Sweden but found a cost in Danish Krone, then having an
+   * amount such as 4.00 kr would be ambiguous (because we
+   * would believe we were being quoted in Swedish Kroner).
+
+   *****************************************************/
+  public String getDisplayAmountForLocale( Locale locale )
+    {
+    // Get the currency used by the locale
+    Currency localeCurrency = Currency.getInstance( locale );
+
+
+    // If the currency matches the current locale's currency - use the number formatter
+
+    if ( mCurrency.equals( localeCurrency ) )
+      {
+      NumberFormat numberFormatter = NumberFormat.getCurrencyInstance( locale );
+
+      return ( numberFormatter.format( getAmountAsDouble() ) );
+      }
+
+
+    // Format the amount formally
+    return ( String.format( FORMAL_AMOUNT_FORMAT_STRING, mCurrency, getAmountAsDouble() ) );
     }
 
 

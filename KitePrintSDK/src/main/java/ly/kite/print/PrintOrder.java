@@ -19,7 +19,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -156,7 +155,7 @@ public class PrintOrder implements Parcelable, Serializable {
                 sajson.put("city", shippingAddress.getCity());
                 sajson.put("county_state", shippingAddress.getStateOrCounty());
                 sajson.put("postcode", shippingAddress.getZipOrPostalCode());
-                sajson.put("country_code", shippingAddress.getCountry().getCodeAlpha3());
+                sajson.put("country_code", shippingAddress.getCountry().iso3Code());
                 json.put("shipping_address", sajson);
             }
 
@@ -181,7 +180,7 @@ public class PrintOrder implements Parcelable, Serializable {
     }
 
     public String getCurrencyCode() {
-        String code = currencyCode == null ? Country.getInstance(Locale.getDefault()).getCurrencyCode() : currencyCode;
+        String code = currencyCode == null ? Country.getInstance(Locale.getDefault()).iso3CurrencyCode() : currencyCode;
         Set<String> supportedCurrencies = getCurrenciesSupported();
         if (supportedCurrencies.contains(code)) {
             return code;

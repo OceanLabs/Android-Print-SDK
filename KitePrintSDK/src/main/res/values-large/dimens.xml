@@ -3,6 +3,8 @@
     <dimen name="control_label_text_size">20sp</dimen>
     <dimen name="label_text_size">20sp</dimen>
 
+    <dimen name="paging_dot_size">10dp</dimen>
+
     <dimen name="group_or_product_label_bottom_spacing">25dp</dimen>
     <dimen name="group_or_product_label_width">300dp</dimen>
     <dimen name="group_or_product_label_text_size">@dimen/label_text_size</dimen>
@@ -10,6 +12,20 @@
     <dimen name="group_or_product_label_padding_bottom">12dp</dimen>
     <dimen name="labelled_image_label_shadow_y_offset">1dp</dimen>
 
+    <dimen name="product_overview_paging_dots_spacing_bottom">12dp</dimen>
+    <dimen name="product_overview_overlaid_start_button_spacing_bottom">20dp</dimen>
+    <dimen name="product_overview_control_bar_height">62dp</dimen>
+    <dimen name="product_overview_open_drawer_icon_size">36dp</dimen>
+    <dimen name="product_overview_details_text">22sp</dimen>
+    <dimen name="product_overview_price_text">21sp</dimen>
     <dimen name="product_overview_content_height">540dp</dimen>
+    <dimen name="product_overview_content_padding_horizontal">36dp</dimen>
+    <dimen name="product_overview_detail_title_margin_top">25dp</dimen>
+    <dimen name="product_overview_detail_title">21sp</dimen>
+    <dimen name="product_overview_detail_text_margin_top">6dp</dimen>
+    <dimen name="product_overview_detail_text">20sp</dimen>
+    <dimen name="product_overview_start_button_frame_height">100dp</dimen>
+    <dimen name="product_overview_start_button_width">250dp</dimen>
+    <dimen name="product_overview_start_button_height">62dp</dimen>
 
 </resources>

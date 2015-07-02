@@ -28,7 +28,7 @@ public class AddressSearchRequest {
     public void search(String query, Country country, AddressSearchRequestListener listener) {
         String queryParams = null;
         try {
-            queryParams = String.format("search_term=%s&country_code=%s", URLEncoder.encode(query, "utf-8"), country.getCodeAlpha3());
+            queryParams = String.format("search_term=%s&country_code=%s", URLEncoder.encode(query, "utf-8"), country.iso3Code());
         } catch (UnsupportedEncodingException e) {
             listener.onError(AddressSearchRequest.this, e);
             return;
@@ -42,14 +42,14 @@ public class AddressSearchRequest {
         String queryParams = null;
         try {
             if (address.getId() == null) {
-                if (address.getCountry().getCodeAlpha3().equals("GBR") && address.getZipOrPostalCode() != null && address.getZipOrPostalCode().length() > 0) {
+                if (address.getCountry().iso3Code().equals("GBR") && address.getZipOrPostalCode() != null && address.getZipOrPostalCode().length() > 0) {
                     String line1 = address.getLine1() == null ? "" : address.getLine1();
                     queryParams = String.format("postcode=%s&address_line_1=%s&country_code=GBR", URLEncoder.encode(address.getZipOrPostalCode(), "utf-8"), URLEncoder.encode(line1, "utf-8"));
                 } else {
-                    queryParams = String.format("search_term=%s&country_code=%s", URLEncoder.encode(address.getDisplayAddressWithoutRecipient(), "utf-8"), address.getCountry().getCodeAlpha3());
+                    queryParams = String.format("search_term=%s&country_code=%s", URLEncoder.encode(address.getDisplayAddressWithoutRecipient(), "utf-8"), address.getCountry().iso3Code());
                 }
             } else {
-                queryParams = String.format("address_id=%s&country_code=%s", URLEncoder.encode(address.getId(), "utf-8"), address.getCountry().getCodeAlpha3());
+                queryParams = String.format("address_id=%s&country_code=%s", URLEncoder.encode(address.getId(), "utf-8"), address.getCountry().iso3Code());
             }
         } catch (UnsupportedEncodingException ex) {
             listener.onError(AddressSearchRequest.this, ex);

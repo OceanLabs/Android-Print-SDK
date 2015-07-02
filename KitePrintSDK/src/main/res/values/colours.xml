@@ -14,4 +14,10 @@
     <color name="product_overview_shipping_background">#ff36be8b</color>
     <color name="product_overview_start_button_background">#ff8cbcbf</color>
 
+    <color name="product_overview_gradient_start_colour">#ffffffff</color>
+    <color name="product_overview_gradient_end_colour">#00ffffff</color>
+
+    <color name="paging_dot_unselected">#7fffffff</color>
+    <color name="paging_dot_selected">#ffffffff</color>
+
 </resources>

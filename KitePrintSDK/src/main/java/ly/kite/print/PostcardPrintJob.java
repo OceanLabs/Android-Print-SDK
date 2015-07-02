@@ -91,7 +91,7 @@ class PostcardPrintJob extends PrintJob {
         addrComponents.add(new Pair<String, String>(address.getCity(), "body-centered"));
         addrComponents.add(new Pair<String, String>(address.getStateOrCounty(), "body-centered"));
         addrComponents.add(new Pair<String, String>(address.getZipOrPostalCode(), "postcode-or-country"));
-        addrComponents.add(new Pair<String, String>(address.getCountry().getName(), "postcode-or-country"));
+        addrComponents.add(new Pair<String, String>(address.getCountry().displayName(), "postcode-or-country"));
 
         int addressComponentId = 0;
         for (Pair<String, String> addrComponent : addrComponents) {
@@ -110,7 +110,7 @@ class PostcardPrintJob extends PrintJob {
             shippingAddr.put("city", getStringOrEmptyString(address.getCity()));
             shippingAddr.put("county_state", getStringOrEmptyString(address.getStateOrCounty()));
             shippingAddr.put("postcode", getStringOrEmptyString(address.getZipOrPostalCode()));
-            shippingAddr.put("country_code", getStringOrEmptyString(address.getCountry().getCodeAlpha3()));
+            shippingAddr.put("country_code", getStringOrEmptyString(address.getCountry().iso3Code()));
         }
 
         return json;

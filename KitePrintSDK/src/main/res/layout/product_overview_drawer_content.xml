@@ -17,6 +17,8 @@
             android:paddingRight="@dimen/product_overview_content_padding_horizontal"
             android:orientation="vertical">
 
+            <!-- Description -->
+
             <TextView
                 android:layout_marginTop="@dimen/product_overview_detail_title_margin_top"
                 android:layout_width="fill_parent"
@@ -24,7 +26,11 @@
                 android:gravity="start"
                 android:textSize="@dimen/product_overview_detail_title"
                 android:textStyle="bold"
-                android:text="@string/Description"/>
+                android:text="@string/Description"
+                android:visibility="gone"/>
+
+
+            <!-- Size -->
 
             <TextView
                 android:layout_marginTop="@dimen/product_overview_detail_title_margin_top"
@@ -42,6 +48,34 @@
                 android:gravity="start"
                 android:textSize="@dimen/product_overview_detail_text"/>
 
+
+            <!-- Quantity -->
+
+            <LinearLayout
+                android:id="@+id/quantity_layout"
+                android:layout_marginTop="@dimen/product_overview_detail_title_margin_top"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:textSize="@dimen/product_overview_detail_title"
+                    android:textStyle="bold"
+                    android:text="@string/Quantity"/>
+                <TextView
+                    android:id="@+id/quantity_text_view"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:textSize="@dimen/product_overview_detail_text"/>
+            </LinearLayout>
+
+
+            <!-- Shipping -->
+
             <TextView
                 android:layout_marginTop="@dimen/product_overview_detail_title_margin_top"
                 android:layout_width="fill_parent"
@@ -50,6 +84,16 @@
                 android:textSize="@dimen/product_overview_detail_title"
                 android:textStyle="bold"
                 android:text="@string/Shipping"/>
+
+            <TextView
+                android:id="@+id/shipping_text_view"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:textSize="@dimen/product_overview_detail_text"/>
+
+
+            <!-- Quality guarantee -->
 
             <TextView
                 android:layout_marginTop="@dimen/product_overview_detail_title_margin_top"

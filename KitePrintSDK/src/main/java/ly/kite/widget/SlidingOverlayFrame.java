@@ -173,7 +173,7 @@ public class SlidingOverlayFrame extends FrameLayout implements View.OnClickList
     mRevealedView                 = new View( context );
 
 
-    // If we have attributes, try and get the ones we are interested in.
+    // If we have attributes, try and getCost the ones we are interested in.
 
     if ( attributeSet != null )
       {

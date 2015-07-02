@@ -42,7 +42,6 @@ package ly.kite.shopping;
 
 ///// Class Declaration /////
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -52,15 +51,18 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
 import android.view.animation.RotateAnimation;
+import android.view.animation.ScaleAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 import ly.kite.KiteSDK;
@@ -68,10 +70,11 @@ import ly.kite.R;
 import ly.kite.address.Country;
 import ly.kite.print.Asset;
 import ly.kite.print.Product;
-import ly.kite.print.ProductGroup;
 import ly.kite.print.ProductManager;
 import ly.kite.print.SingleUnitSize;
 import ly.kite.print.UnitOfLength;
+import ly.kite.widget.BellInterpolator;
+import ly.kite.widget.PagingDots;
 import ly.kite.widget.SlidingOverlayFrame;
 
 /*****************************************************
@@ -91,6 +94,11 @@ public class ProductOverviewActivity extends AKiteActivity implements View.OnCli
 
   private static final BigDecimal  BIG_DECIMAL_ZERO                          = BigDecimal.valueOf( 0 );
 
+  private static final long        PAGING_DOT_ANIMATION_DURATION_MILLIS      = 300L;
+  private static final float       PAGING_DOT_ANIMATION_OPAQUE               = 1.0f;
+  private static final float       PAGING_DOT_ANIMATION_TRANSLUCENT          = 0.5f;
+  private static final float       PAGING_DOT_ANIMATION_NORMAL_SCALE         = 1.0f;
+
   private static final long        SLIDE_ANIMATION_DURATION_MILLIS           = 500L;
   private static final long        OPEN_CLOSE_ICON_ANIMATION_DELAY_MILLIS    = 250L;
   private static final long        OPEN_CLOSE_ICON_ANIMATION_DURATION_MILLIS = SLIDE_ANIMATION_DURATION_MILLIS - OPEN_CLOSE_ICON_ANIMATION_DELAY_MILLIS;
@@ -109,7 +117,9 @@ public class ProductOverviewActivity extends AKiteActivity implements View.OnCli
   private ArrayList<Asset>         mAssetArrayList;
   private Product                  mProduct;
 
+  private View                     mOverlaidComponents;
   private ViewPager                mProductImageViewPager;
+  private PagingDots               mPagingDots;
   private Button                   mOverlaidStartButton;
   private SlidingOverlayFrame      mSlidingOverlayFrame;
   private ImageView                mOpenCloseDrawerIconImageView;
@@ -253,19 +263,81 @@ public class ProductOverviewActivity extends AKiteActivity implements View.OnCli
     setContentView( R.layout.screen_product_overview );
 
     mProductImageViewPager        = (ViewPager)findViewById( R.id.view_pager );
+    mOverlaidComponents           = findViewById( R.id.overlaid_components );
+    mPagingDots                   = (PagingDots)findViewById( R.id.paging_dots );
     mOverlaidStartButton          = (Button)findViewById( R.id.overlaid_start_button );
     mSlidingOverlayFrame          = (SlidingOverlayFrame)findViewById( R.id.sliding_overlay_frame );
     mOpenCloseDrawerIconImageView = (ImageView)findViewById( R.id.open_close_drawer_icon_image_view );
     TextView priceTextView        = (TextView)findViewById( R.id.price_text_view );
     TextView sizeTextView         = (TextView)findViewById( R.id.size_text_view );
-//    TextView shippingTextView     = (TextView)findViewById( R.id.shipping_text_view );
+    View     quantityLayout       = findViewById( R.id.quantity_layout );
+    TextView quantityTextView     = (TextView)findViewById( R.id.quantity_text_view );
+    TextView shippingTextView     = (TextView)findViewById( R.id.shipping_text_view );
 
 
     mProductImageAdaptor = new ProductImageAdaptor( this, mProduct.getImageURLList(), this );
     mProductImageViewPager.setAdapter( mProductImageAdaptor );
     mProductImageViewPager.setOnClickListener( this );
 
-    mOverlaidStartButton.setAlpha( slidingDrawerIsExpanded ? 0f : 1f );  // If the drawer starts open, this button needs to be invisible
+
+    // Paging dots
+
+    Animation pagingDotOutAlphaAnimation = new AlphaAnimation( PAGING_DOT_ANIMATION_OPAQUE, PAGING_DOT_ANIMATION_TRANSLUCENT );
+    pagingDotOutAlphaAnimation.setFillAfter( true );
+    pagingDotOutAlphaAnimation.setDuration( PAGING_DOT_ANIMATION_DURATION_MILLIS );
+
+    Animation pagingDotOutScaleAnimation = new ScaleAnimation(
+            0f,
+            PAGING_DOT_ANIMATION_NORMAL_SCALE,
+            0f,
+            PAGING_DOT_ANIMATION_NORMAL_SCALE,
+            Animation.RELATIVE_TO_SELF,
+            0.5f,
+            Animation.RELATIVE_TO_SELF,
+            0.5f );
+
+    pagingDotOutScaleAnimation.setFillAfter( true );
+    pagingDotOutScaleAnimation.setDuration( PAGING_DOT_ANIMATION_DURATION_MILLIS );
+    pagingDotOutScaleAnimation.setInterpolator( new BellInterpolator( 1.0f, 0.8f, true ) );
+
+    AnimationSet pagingDotOutAnimation = new AnimationSet( false );
+    pagingDotOutAnimation.addAnimation( pagingDotOutAlphaAnimation );
+    pagingDotOutAnimation.addAnimation( pagingDotOutScaleAnimation );
+    pagingDotOutAnimation.setFillAfter( true );
+
+
+    Animation pagingDotInAlphaAnimation = new AlphaAnimation( PAGING_DOT_ANIMATION_TRANSLUCENT, PAGING_DOT_ANIMATION_OPAQUE );
+    pagingDotInAlphaAnimation.setFillAfter( true );
+    pagingDotInAlphaAnimation.setDuration( PAGING_DOT_ANIMATION_DURATION_MILLIS );
+
+    Animation pagingDotInScaleAnimation = new ScaleAnimation(
+            0f,
+            PAGING_DOT_ANIMATION_NORMAL_SCALE,
+            0f,
+            PAGING_DOT_ANIMATION_NORMAL_SCALE,
+            Animation.RELATIVE_TO_SELF,
+            0.5f,
+            Animation.RELATIVE_TO_SELF,
+            0.5f );
+
+    pagingDotInScaleAnimation.setFillAfter( true );
+    pagingDotInScaleAnimation.setDuration( PAGING_DOT_ANIMATION_DURATION_MILLIS );
+    pagingDotInScaleAnimation.setInterpolator( new BellInterpolator( 1.0f, 1.2f ) );
+
+    AnimationSet pagingDotInAnimation = new AnimationSet( false );
+    pagingDotInAnimation.addAnimation( pagingDotInAlphaAnimation );
+    pagingDotInAnimation.addAnimation( pagingDotInScaleAnimation );
+    pagingDotInAnimation.setFillAfter( true );
+
+
+    mPagingDots.setProperties( mProductImageAdaptor.getCount(), R.drawable.paging_dot_unselected, R.drawable.paging_dot_selected );
+    mPagingDots.setOutAnimation( pagingDotOutAlphaAnimation );
+    mPagingDots.setInAnimation( pagingDotInAnimation );
+
+
+    mProductImageViewPager.setOnPageChangeListener( mPagingDots );
+
+    mOverlaidComponents.setAlpha( slidingDrawerIsExpanded ? 0f : 1f );  // If the drawer starts open, these components need to be invisible
 
     mSlidingOverlayFrame.snapToExpandedState( slidingDrawerIsExpanded );
     mSlidingOverlayFrame.setSlideAnimationDuration( SLIDE_ANIMATION_DURATION_MILLIS );
@@ -274,14 +346,16 @@ public class ProductOverviewActivity extends AKiteActivity implements View.OnCli
 
     // Price
 
-    SingleCurrencyCost cost = mProduct.getCostWithFallback( Country.getInstance( Locale.getDefault() ).getCurrencyCode() );
+    Locale locale = Locale.getDefault();
 
-    if ( cost != null ) priceTextView.setText( cost.getFormattedAmount() );
+    SingleCurrencyCost cost = mProduct.getCostWithFallback( locale );
+
+    if ( cost != null ) priceTextView.setText( cost.getDisplayAmountForLocale( locale ) );
 
 
     // Size
 
-    SingleUnitSize size = mProduct.getSizeWithFallback( UnitOfLength.INCHES );
+    SingleUnitSize size = mProduct.getSizeWithFallback( UnitOfLength.CENTIMETERS );
 
     if ( size != null )
       {
@@ -289,52 +363,60 @@ public class ProductOverviewActivity extends AKiteActivity implements View.OnCli
       }
 
 
-//    // Quantity / size
-//
-//    int quantityPerSheet = mProduct.getQuantityPerSheet();
-//
-//    if ( quantityPerSheet > 1 )
-//      {
-//      StringBuilder quantitySizeStringBuilder = new StringBuilder( getString( R.string.product_quantity_format_string, quantityPerSheet ) );
-//
-//
-//
-//
-//      quantitySizeTextView.setText( quantitySizeStringBuilder.toString() );
-//      }
-//    else
-//      {
-//      quantitySizeTextView.setVisibility( View.GONE );
-//      }
-//
-//
-//    // Shipping (postage)
-//
-//    Locale locale = Locale.getDefault();
-//
-//    MultipleCurrencyCost shippingCost = mProduct.getShippingCostTo( locale.getISO3Country() );
-//
-//    if ( shippingCost != null )
-//      {
-//      // Get the cost in the default currency for the locale, and format the amount.
-//
-//      NumberFormat numberFormatter = NumberFormat.getCurrencyInstance( locale );
-//
-//      cost = shippingCost.get( numberFormatter.getCurrency().getCurrencyCode() );
-//
-//      if ( cost != null )
-//        {
-//        if ( cost.getAmount().compareTo( BIG_DECIMAL_ZERO ) != 0 )
-//          {
-//          shippingTextView.setText( getString( R.string.product_shipping_format_string, numberFormatter.format( cost.getAmount().doubleValue() ) ) );
-//          }
-//        else
-//          {
-//          // Free shipping
-//          shippingTextView.setText( R.string.product_free_shipping );
-//          }
-//        }
-//      }
+    // Quantity
+
+    int quantityPerSheet = mProduct.getQuantityPerSheet();
+
+    if ( quantityPerSheet > 1 )
+      {
+      quantityLayout.setVisibility( View.VISIBLE );
+
+      quantityTextView.setText( getString( R.string.product_quantity_format_string, quantityPerSheet ) );
+      }
+    else
+      {
+      quantityLayout.setVisibility( View.GONE );
+      }
+
+
+    // Shipping (postage)
+
+    Country country = Country.getInstance( locale );
+
+    List<SingleDestinationShippingCost> sortedShippingCostList = mProduct.getSortedShippingCosts( country );
+
+    StringBuilder shippingCostsStringBuilder = new StringBuilder();
+
+    String newlineString = "";
+
+    for ( SingleDestinationShippingCost singleDestinationShippingCost : sortedShippingCostList )
+      {
+      // We want to prepend a new line for every shipping destination except the first
+
+      shippingCostsStringBuilder.append( newlineString );
+
+      newlineString = "\n";
+
+
+      // Get the cost in the default currency for the locale, and format the amount.
+
+      cost = singleDestinationShippingCost.getCost().getDefaultCostWithFallback();
+
+      if ( cost != null )
+        {
+        String formatString = getString( R.string.product_shipping_format_string );
+
+        String costString = ( cost.getAmount().compareTo( BIG_DECIMAL_ZERO ) != 0
+                ? cost.getDisplayAmountForLocale( locale )
+                : getString( R.string.product_free_shipping ) );
+
+        shippingCostsStringBuilder
+                .append( String.format( formatString, singleDestinationShippingCost.getDestinationDescription( this ), costString ) );
+        }
+
+      shippingTextView.setText( shippingCostsStringBuilder.toString() );
+      }
+
 
 
 
@@ -433,34 +515,34 @@ public class ProductOverviewActivity extends AKiteActivity implements View.OnCli
 
     boolean sliderWillBeOpening = ! mSlidingOverlayFrame.sliderIsExpanded();
 
-    float startButtonInitialAlpha;
-    float startButtonFinalAlpha;
+    float overlaidComponentsInitialAlpha;
+    float overlaidComponentsFinalAlpha;
 
     float openCloseIconInitialRotation;
     float openCloseIconFinalRotation;
 
     if ( sliderWillBeOpening )
       {
-      startButtonInitialAlpha      = 1f;
-      startButtonFinalAlpha        = 0f;
+      overlaidComponentsInitialAlpha = 1f;
+      overlaidComponentsFinalAlpha   = 0f;
 
-      openCloseIconInitialRotation = OPEN_CLOSE_ICON_ROTATION_UP;
-      openCloseIconFinalRotation   = OPEN_CLOSE_ICON_ROTATION_DOWN;
+      openCloseIconInitialRotation   = OPEN_CLOSE_ICON_ROTATION_UP;
+      openCloseIconFinalRotation     = OPEN_CLOSE_ICON_ROTATION_DOWN;
       }
     else
       {
-      startButtonInitialAlpha      = 0f;
-      startButtonFinalAlpha        = 1f;
+      overlaidComponentsInitialAlpha = 0f;
+      overlaidComponentsFinalAlpha   = 1f;
 
-      openCloseIconInitialRotation = OPEN_CLOSE_ICON_ROTATION_DOWN;
-      openCloseIconFinalRotation   = OPEN_CLOSE_ICON_ROTATION_UP;
+      openCloseIconInitialRotation   = OPEN_CLOSE_ICON_ROTATION_DOWN;
+      openCloseIconFinalRotation     = OPEN_CLOSE_ICON_ROTATION_UP;
       }
 
 
-    // Create the overlaid start button animation
-    Animation startButtonAnimation = new AlphaAnimation( startButtonInitialAlpha, startButtonFinalAlpha );
-    startButtonAnimation.setDuration( SLIDE_ANIMATION_DURATION_MILLIS );
-    startButtonAnimation.setFillAfter( true );
+    // Create the overlaid components animation
+    Animation overlaidComponentsAnimation = new AlphaAnimation( overlaidComponentsInitialAlpha, overlaidComponentsFinalAlpha );
+    overlaidComponentsAnimation.setDuration( SLIDE_ANIMATION_DURATION_MILLIS );
+    overlaidComponentsAnimation.setFillAfter( true );
 
 
     // Create the open/close icon animation.
@@ -471,12 +553,12 @@ public class ProductOverviewActivity extends AKiteActivity implements View.OnCli
     openCloseIconAnimation.setFillAfter( true );
 
 
-    mOverlaidStartButton.setAlpha( 1f );              // Clear any alpha already applied
+    mOverlaidComponents.setAlpha( 1f );               // Clear any alpha already applied
     mOpenCloseDrawerIconImageView.setRotation( 0f );  // Clear any rotation already applied
 
     mSlidingOverlayFrame.animateToExpandedState( sliderWillBeOpening );
 
-    mOverlaidStartButton.startAnimation( startButtonAnimation );
+    mOverlaidComponents.startAnimation( overlaidComponentsAnimation );
     mOpenCloseDrawerIconImageView.startAnimation( openCloseIconAnimation );
     }
 

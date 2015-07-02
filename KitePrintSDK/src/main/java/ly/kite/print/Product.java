@@ -42,13 +42,20 @@ package ly.kite.print;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Currency;
+import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import ly.kite.address.Country;
 import ly.kite.shopping.IGroupOrProduct;
 import ly.kite.shopping.MultipleCurrencyCost;
-import ly.kite.shopping.ShippingCosts;
+import ly.kite.shopping.MultipleDestinationShippingCosts;
 import ly.kite.shopping.SingleCurrencyCost;
+import ly.kite.shopping.SingleDestinationShippingCost;
+import ly.kite.shopping.UserJourneyType;
 
 
 ///// Class Declaration /////
@@ -63,14 +70,13 @@ public class Product implements IGroupOrProduct
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String       LOG_TAG                  = "Product";
+  private static final String       LOG_TAG                        = "Product";
 
-  private static final String       FALLBACK_CURRENCY_CODE_1 = "USD";
-  private static final String       FALLBACK_CURRENCY_CODE_2 = "GBP";
-  private static final String       FALLBACK_CURRENCY_CODE_3 = "EUR";
+  private static final UnitOfLength FALLBACK_UNIT_1                = UnitOfLength.CENTIMETERS;
+  private static final UnitOfLength FALLBACK_UNIT_2                = UnitOfLength.INCHES;
 
-  private static final UnitOfLength FALLBACK_UNIT_1          = UnitOfLength.CENTIMETERS;
-  private static final UnitOfLength FALLBACK_UNIT_2          = UnitOfLength.INCHES;
+  private static final String       DESTINATION_CODE_EUROPE        = "europe";
+  private static final String       DESTINATION_CODE_REST_OF_WORLD = "rest_of_world";
 
 
   ////////// Static Variable(s) //////////
@@ -82,11 +88,11 @@ public class Product implements IGroupOrProduct
   private String                  mCode;
   private String                  mName;
   private String                  mLabel;
-  private String                  mUserJourneyType;
+  private UserJourneyType         mUserJourneyType;
   private int                     mQuantityPerSheet;
 
   private MultipleCurrencyCost    mCost;
-  private ShippingCosts           mShippingCosts;
+  private MultipleDestinationShippingCosts mShippingCosts;
   //private URL                     mGroupImageURL;
   private URL                     mHeroImageURL;
   private int                     mLabelColour;
@@ -106,7 +112,7 @@ public class Product implements IGroupOrProduct
 
   ////////// Constructor(s) //////////
 
-  Product( String productId, String productCode, String productName, String productLabel, int labelColour, String userJourneyType, int quantityPerSheet )
+  Product( String productId, String productCode, String productName, String productLabel, int labelColour, UserJourneyType userJourneyType, int quantityPerSheet )
     {
     mId               = productId;
     mCode             = productCode;
@@ -209,7 +215,7 @@ public class Product implements IGroupOrProduct
    * Sets the shipping costs.
    *
    *****************************************************/
-  Product setShippingCosts( ShippingCosts shippingCosts )
+  Product setShippingCosts( MultipleDestinationShippingCosts shippingCosts )
     {
     mShippingCosts = shippingCosts;
 
@@ -222,7 +228,7 @@ public class Product implements IGroupOrProduct
    * Returns the shipping costs.
    *
    *****************************************************/
-  public ShippingCosts getShippingCosts()
+  public MultipleDestinationShippingCosts getShippingCosts()
     {
     return ( mShippingCosts );
     }
@@ -310,7 +316,7 @@ public class Product implements IGroupOrProduct
     if ( ( size = mSize.get( FALLBACK_UNIT_1 ) ) != null ) return ( size );
     if ( ( size = mSize.get( FALLBACK_UNIT_2 ) ) != null ) return ( size );
 
-    // Lastly try and get the first supported currency
+    // Lastly try and getCost the first supported currency
     if ( ( size = mSize.get( 0               ) ) != null ) return ( size );
 
     return ( null );
@@ -323,22 +329,20 @@ public class Product implements IGroupOrProduct
    * if the cost is not known in the requested currency.
    *
    *****************************************************/
-  public SingleCurrencyCost getCostWithFallback( String currencyCode )
+  public SingleCurrencyCost getCostWithFallback( String preferredCurrencyCode )
     {
-    SingleCurrencyCost cost;
+    return ( mCost.getCostWithFallback( preferredCurrencyCode ) );
+    }
 
-    // First try the requested currency code
-    if ( ( cost = mCost.get( currencyCode             ) ) != null ) return ( cost );
 
-    // Next try falling back through major currencies
-    if ( ( cost = mCost.get( FALLBACK_CURRENCY_CODE_1 ) ) != null ) return ( cost );
-    if ( ( cost = mCost.get( FALLBACK_CURRENCY_CODE_2 ) ) != null ) return ( cost );
-    if ( ( cost = mCost.get( FALLBACK_CURRENCY_CODE_3 ) ) != null ) return ( cost );
-
-    // Lastly try and get the first supported currency
-    if ( ( cost = mCost.get( 0                        ) ) != null ) return ( cost );
-
-    return ( null );
+  /*****************************************************
+   *
+   * Returns the cost in the currency for the supplied locale,
+   *
+   *****************************************************/
+  public SingleCurrencyCost getCostWithFallback( Locale locale )
+    {
+    return ( mCost.getCostWithFallback( Currency.getInstance( locale ) ) );
     }
 
 
@@ -377,25 +381,43 @@ public class Product implements IGroupOrProduct
     {
     // First see if we can find the country as a destination
 
-    MultipleCurrencyCost shippingCost = mShippingCosts.get( countryCode );
+    MultipleCurrencyCost shippingCost = mShippingCosts.getCost( countryCode );
 
     if ( shippingCost != null ) return ( shippingCost );
 
 
-    // If the country is part of Europe, try and get a European cost.
+    // If the country is part of Europe, try and getCost a European cost.
 
     Country country = Country.getInstance( countryCode );
 
     if ( country.isInEurope() )
       {
-      shippingCost = mShippingCosts.get( ShippingCosts.DESTINATION_CODE_EUROPE );
+      shippingCost = mShippingCosts.getCost( MultipleDestinationShippingCosts.DESTINATION_CODE_EUROPE );
 
       if ( shippingCost != null ) return ( shippingCost );
       }
 
 
-    // If all else fails, try and get a rest of world cost.
-    return ( mShippingCosts.get( ShippingCosts.DESTINATION_CODE_REST_OF_WORLD ) );
+    // If all else fails, try and getCost a rest of world cost.
+    return ( mShippingCosts.getCost( MultipleDestinationShippingCosts.DESTINATION_CODE_REST_OF_WORLD ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the shipping costs, but sorted by relevance
+   * to the supplied country code.
+   *
+   *****************************************************/
+  public List<SingleDestinationShippingCost> getSortedShippingCosts( Country country )
+    {
+    // Get the shipping costs as a list
+    List<SingleDestinationShippingCost> shippingCostList = mShippingCosts.asList();
+
+    // Sort the list in order of relevance
+    Collections.sort( shippingCostList, new ShippingCostRelevanceComparator( country ) );
+
+    return ( shippingCostList );
     }
 
 
@@ -403,8 +425,56 @@ public class Product implements IGroupOrProduct
 
   /*****************************************************
    *
-   * ...
+   * A shipping cost comparator. This is used to sort a
+   * list of shipping costs into relevance order.
    *
    *****************************************************/
+  private class ShippingCostRelevanceComparator implements Comparator<SingleDestinationShippingCost>
+    {
+    private Country  mCountry;
+
+
+    ShippingCostRelevanceComparator( Country country )
+      {
+      mCountry = country;
+      }
+
+
+    /*****************************************************
+     *
+     * Compares two destinations, and returns a value indicating
+     * how they should be sorted in relevance.
+     *
+     * Note that we can be a bit lazy with this, since we shouldn't
+     * have any duplicates destinations (i.e. we should never have to return 0).
+     *
+     *****************************************************/
+    @Override
+    public int compare( SingleDestinationShippingCost leftShippingCost, SingleDestinationShippingCost rightShippingCost )
+      {
+      String leftDestinationCode = leftShippingCost.getDestinationCode();
+
+      if ( mCountry != null )
+        {
+
+        }
+
+
+      // Default order if we don't know what country we're in:
+      // UK
+      // USA
+      // Any country code
+      // Europe
+      // Rest of world
+
+      if ( Country.UK.usesISOCode( leftDestinationCode )                   ) return ( -1 );
+      if ( Country.USA.usesISOCode( leftDestinationCode )                  ) return ( -1 );
+      if ( Country.existsForISOCode( leftDestinationCode )                 ) return ( -1 );
+      if ( DESTINATION_CODE_EUROPE.equals( leftDestinationCode )        ) return ( -1 );
+      if ( DESTINATION_CODE_REST_OF_WORLD.equals( leftDestinationCode ) ) return ( -1 );
+
+      return ( 1 );
+      }
+    }
 
   }
