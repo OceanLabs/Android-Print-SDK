@@ -23,6 +23,7 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 22
+        applicationId 'ly.kite.sample'
     }
     productFlavors {
     }

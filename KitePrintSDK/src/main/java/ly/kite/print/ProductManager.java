@@ -61,6 +61,7 @@ import ly.kite.KiteSDK;
 import ly.kite.shopping.MultipleCurrencyCost;
 import ly.kite.shopping.MultipleDestinationShippingCosts;
 import ly.kite.shopping.SingleCurrencyCost;
+import ly.kite.shopping.UserJourneyCoordinator;
 import ly.kite.shopping.UserJourneyType;
 
 
@@ -369,7 +370,7 @@ public class ProductManager implements BaseRequest.BaseRequestListener
 
     // Go through each JSON product
 
-    for ( int productIndex = 0; productIndex < productJSONArray.length(); productIndex ++ )
+    next_product: for ( int productIndex = 0; productIndex < productJSONArray.length(); productIndex ++ )
       {
       // Parse the product data to create a Product object, and then add it to our list.
 
@@ -416,6 +417,10 @@ public class ProductManager implements BaseRequest.BaseRequestListener
           {
           // Ignore
           }
+
+
+        // Only display products for which we have a defined user journey
+        if ( ! UserJourneyCoordinator.getInstance().isSupported( userJourneyType ) ) continue next_product;
 
 
         // See if we already have the product group. If not - create it now.

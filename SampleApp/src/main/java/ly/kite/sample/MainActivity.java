@@ -1,4 +1,4 @@
-package co.oceanlabs.sample;
+package ly.kite.sample;
 
 import java.net.URL;
 import java.util.ArrayList;
