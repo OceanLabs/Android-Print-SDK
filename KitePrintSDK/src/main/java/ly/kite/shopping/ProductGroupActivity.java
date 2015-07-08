@@ -118,8 +118,6 @@ public class ProductGroupActivity extends AGroupOrProductActivity
     {
     super.onCreate( savedInstanceState );
 
-    setTitle( R.string.title_product_groups_activity );
-
     getProducts();
     }
 

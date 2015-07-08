@@ -11,7 +11,8 @@
     <string name="unit_inches_short">in</string>
     <string name="unit_pixels_short">px</string>
 
-    <string name="title_product_groups_activity">Print Shop</string>
+    <string name="title_product_group_activity">Print Shop</string>
+    <string name="title_phone_case_activity">Create Phone Case</string>
 
     <string name="alert_dialog_title_no_intent">Error Retrieving Products</string>
     <string name="alert_dialog_message_no_intent">There was an error retrieving the products. If your network connectivity is OK, please check the log for more details.</string>
@@ -54,6 +55,8 @@
 
     <string name="quality_guarantee_text">We are confident that you will be more than happy with our products. But just in case, we offer a full refund if you are not 100% happy - even if it\'s just a bad day.</string>
     <string name="product_overview_start_button_text">Start creating</string>
+
+    <string name="product_creation_next_button_text">Next</string>
 
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>

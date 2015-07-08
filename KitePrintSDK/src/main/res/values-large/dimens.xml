@@ -24,8 +24,10 @@
     <dimen name="product_overview_detail_title">21sp</dimen>
     <dimen name="product_overview_detail_text_margin_top">6dp</dimen>
     <dimen name="product_overview_detail_text">20sp</dimen>
-    <dimen name="product_overview_start_button_frame_height">100dp</dimen>
-    <dimen name="product_overview_start_button_width">250dp</dimen>
-    <dimen name="product_overview_start_button_height">62dp</dimen>
+    <dimen name="product_overview_detail_start_button_frame_height">100dp</dimen>
+
+    <dimen name="cta_button_margin">22dp</dimen>
+    <dimen name="cta_centered_button_width">250dp</dimen>
+    <dimen name="cta_button_height">62dp</dimen>
 
 </resources>

@@ -39,10 +39,19 @@ package ly.kite.shopping;
 
 ///// Import(s) /////
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import android.content.Context;
+import android.content.Intent;
+
+import ly.kite.print.Asset;
+import ly.kite.print.Product;
+import ly.kite.shopping.journey.PhoneCaseActivity;
+
 
 ///// Class Declaration /////
-
-import java.util.HashMap;
 
 /*****************************************************
  *
@@ -122,6 +131,19 @@ public class UserJourneyCoordinator
   public boolean isSupported( UserJourneyType type )
     {
     return ( mJourneyTable.containsKey( type ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Starts the next stage in the appropriate user journey
+   * for the supplied product.
+   *
+   *****************************************************/
+  public void start( Context context, ArrayList<Asset> assetList, Product product )
+    {
+    // TODO: Test
+    PhoneCaseActivity.start( context, assetList, product );
     }
 
 

@@ -39,15 +39,9 @@
                         android:layout_height="wrap_content"/>
                 </FrameLayout>
                 <Button
+                    style="@style/KiteSDKCTACenteredButtonStyle"
                     android:id="@+id/overlaid_start_button"
-                    android:layout_width="@dimen/product_overview_start_button_width"
-                    android:layout_height="@dimen/product_overview_start_button_height"
-                    android:background="@color/product_overview_start_button_background"
-                    android:gravity="center"
-                    android:textSize="@dimen/control_label_text_size"
-                    android:textColor="@android:color/white"
                     android:text="@string/product_overview_start_button_text"
-                    style="@style/KiteSDKLabelStyle"
                     android:onClick="onStartClicked"/>
             </LinearLayout>
         </FrameLayout>

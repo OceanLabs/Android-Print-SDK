@@ -49,7 +49,7 @@ public class Asset implements Parcelable, Serializable {
         }
     }
 
-    static enum AssetType {
+    public static enum AssetType {
         // XXX: Add new types to end to avoid break serialization
         IMAGE_URI,
         BITMAP_RESOURCE_ID,
@@ -122,11 +122,16 @@ public class Asset implements Parcelable, Serializable {
         this.mimeType = mimeType;
     }
 
-    AssetType getType() {
+    public AssetType getType() {
         return type;
     }
 
-    URL getRemoteURL() {
+    public int getBitmapResourceId()
+      {
+      return ( this.bitmapResourceId );
+      }
+
+    public URL getRemoteURL() {
         return remoteURL;
     }
 

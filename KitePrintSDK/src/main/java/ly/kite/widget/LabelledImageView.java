@@ -54,7 +54,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import ly.kite.util.IRemoteImageConsumer;
+import ly.kite.util.IImageConsumer;
 
 import ly.kite.R;
 
@@ -68,7 +68,7 @@ import ly.kite.R;
  * stage, fading them in where appropriate.
  *
  *****************************************************/
-public class LabelledImageView extends FrameLayout implements IRemoteImageConsumer, Animation.AnimationListener
+public class LabelledImageView extends FrameLayout implements IImageConsumer, Animation.AnimationListener
   {
   ////////// Static Constant(s) //////////
 
@@ -92,7 +92,7 @@ public class LabelledImageView extends FrameLayout implements IRemoteImageConsum
 
   private float         mWidthToHeightMultiplier;
 
-  private String        mExpectedImageURLString;
+  private Object        mKey;
 
   private Animation     mFadeInAnimation;
 
@@ -176,7 +176,7 @@ public class LabelledImageView extends FrameLayout implements IRemoteImageConsum
    *
    *****************************************************/
   @Override
-  public void onImageImmediate( Bitmap bitmap )
+  public void onImageImmediate( Object key, Bitmap bitmap )
     {
     setImage( bitmap );
 
@@ -190,7 +190,7 @@ public class LabelledImageView extends FrameLayout implements IRemoteImageConsum
    *
    *****************************************************/
   @Override
-  public void onImageDownloading()
+  public void onImageDownloading( Object key )
     {
     mEmptyFrameImageView.setVisibility( View.VISIBLE );
     mImageView.setVisibility( View.INVISIBLE );
@@ -204,12 +204,12 @@ public class LabelledImageView extends FrameLayout implements IRemoteImageConsum
    *
    *****************************************************/
   @Override
-  public void onImageLoaded( String imageURLString, Bitmap bitmap )
+  public void onImageLoaded( Object key, Bitmap bitmap )
     {
     // Make sure the image is the one we were expecting.
     synchronized ( this )
       {
-      if ( mExpectedImageURLString == null || mExpectedImageURLString.equals( imageURLString ) )
+      if ( key == mKey )
         {
         setImage( bitmap );
 
@@ -352,11 +352,11 @@ public class LabelledImageView extends FrameLayout implements IRemoteImageConsum
    * Sets an expected image URL.
    *
    *****************************************************/
-  public void setExpectedImageURL( String imageURLString )
+  public void setKey( Object key )
     {
     synchronized ( this )
       {
-      mExpectedImageURLString = imageURLString;
+      mKey = key;
       }
     }
 

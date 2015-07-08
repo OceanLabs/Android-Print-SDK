@@ -181,8 +181,6 @@ public class ProductOverviewActivity extends AKiteActivity implements View.OnCli
               new FinishRunnable()
       );
 
-      finish();
-
       return;
       }
 
@@ -198,8 +196,6 @@ public class ProductOverviewActivity extends AKiteActivity implements View.OnCli
               R.string.Cancel,
               new FinishRunnable()
       );
-
-      finish();
 
       return;
       }
@@ -220,12 +216,10 @@ public class ProductOverviewActivity extends AKiteActivity implements View.OnCli
               new FinishRunnable()
       );
 
-      finish();
-
       return;
       }
 
-    Product mProduct = ProductManager.getInstance().getProductById( productId );
+    mProduct = ProductManager.getInstance().getProductById( productId );
 
     if ( mProduct == null )
       {
@@ -239,8 +233,6 @@ public class ProductOverviewActivity extends AKiteActivity implements View.OnCli
               R.string.Cancel,
               new FinishRunnable()
       );
-
-      finish();
 
       return;
       }
@@ -485,8 +477,9 @@ public class ProductOverviewActivity extends AKiteActivity implements View.OnCli
    *****************************************************/
   public void onStartClicked( View view )
     {
-    // TODO
-    Toast.makeText( this, "Not yet implemented", Toast.LENGTH_SHORT ).show();
+    // Start the product-specific user journey
+
+    UserJourneyCoordinator.getInstance().start( this, mAssetArrayList, mProduct );
     }
 
 

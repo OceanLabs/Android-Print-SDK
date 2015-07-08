@@ -72,8 +72,6 @@ public class GroupOrProductAdaptor extends BaseAdapter
 
   private static final int     LAYOUT_RESOURCE_ID   = R.layout.grid_item_product_image;
 
-  private static final String  IMAGE_CLASS_STRING   = "product_item";
-
   private static final float   DEFAULT_ASPECT_RATIO = 1.389f;
 
 
@@ -238,9 +236,9 @@ public class GroupOrProductAdaptor extends BaseAdapter
       }
 
 
-    viewReferences.productImageView.setExpectedImageURL( imageURLString );
+    viewReferences.productImageView.setKey( imageURL );
 
-    mImageManager.getRemoteImage( IMAGE_CLASS_STRING, imageURL, parent.getHandler(), viewReferences.productImageView );
+    mImageManager.getRemoteImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, imageURL, parent.getHandler(), viewReferences.productImageView );
 
 
     return ( view );

@@ -58,6 +58,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 
+import ly.kite.print.Asset;
+
 /*****************************************************
  *
  * This singleton class manages (downloads, saves, and caches)
@@ -178,7 +180,7 @@ public class ImageManager
    * This method should be called on the UI thread.
    *
    *****************************************************/
-  public void getRemoteImage( String imageClassString, URL imageURL, Handler callbackHandler, IRemoteImageConsumer remoteImageConsumer )
+  public void getRemoteImage( String imageClassString, Object key, URL imageURL, Handler callbackHandler, IImageConsumer imageConsumer )
     {
     String imageURLString = imageURL.toString();
 
@@ -190,7 +192,7 @@ public class ImageManager
     if ( bitmap != null )
       {
       // We don't need to use the handler since we should have been called on the UI thread.
-      remoteImageConsumer.onImageImmediate( bitmap );
+      imageConsumer.onImageImmediate( imageURL, bitmap );
 
       return;
       }
@@ -201,7 +203,7 @@ public class ImageManager
 
     ArrayList<CallbackInfo> callbackInfoList;
 
-    CallbackInfo callbackInfo = new CallbackInfo( remoteImageConsumer, callbackHandler );
+    CallbackInfo callbackInfo = new CallbackInfo( callbackHandler, imageConsumer, key );
 
     synchronized ( mInProgressTable )
       {
@@ -229,9 +231,50 @@ public class ImageManager
     // at this point. It may be that we have to introduce a size-limited pool of processors in the future
     // if this gets too silly.
 
-    Processor processor = new Processor( imageClassString, imageURL, imageURLString, callbackInfoList );
+    Processor processor = new Processor( imageClassString, key, imageURL, imageURLString, callbackInfoList );
 
     new Thread( processor ).start();
+    }
+
+
+  /*****************************************************
+   *
+   * Requests an image from a remote URL.
+   *
+   *****************************************************/
+  public void getRemoteImage( String imageClassString, URL imageURL, Handler callbackHandler, IImageConsumer imageConsumer )
+    {
+    getRemoteImage( imageClassString, imageURL, imageURL, callbackHandler, imageConsumer );
+    }
+
+
+  /*****************************************************
+   *
+   * Requests an image from an asset.
+   *
+   *****************************************************/
+  public void getImage( String imageClassString, Asset asset, Handler callbackHandler, IImageConsumer imageConsumer )
+    {
+    switch ( asset.getType() )
+      {
+      case IMAGE_URI:          break;
+
+      case BITMAP_RESOURCE_ID:
+
+        // For assets from resources - load and return the bitmap immediately
+        // TODO: Load the bitmap on a different thread, and return it
+        imageConsumer.onImageImmediate( asset, BitmapFactory.decodeResource( mContext.getResources(), asset.getBitmapResourceId() ) );
+        return;
+
+      case IMAGE_BYTES:        break;
+      case IMAGE_PATH:         break;
+
+      case REMOTE_URL:
+        getRemoteImage( imageClassString, asset, asset.getRemoteURL(), callbackHandler, imageConsumer );
+        return;
+      }
+
+    throw ( new UnsupportedOperationException( "Asset type not yet supported" ) );
     }
 
 
@@ -244,14 +287,16 @@ public class ImageManager
    *****************************************************/
   private class CallbackInfo
     {
-    IRemoteImageConsumer remoteImageConsumer;
-    Handler              callbackHandler;
+    Handler        callbackHandler;
+    IImageConsumer remoteImageConsumer;
+    Object         key;
 
 
-    CallbackInfo( IRemoteImageConsumer remoteImageConsumer, Handler callbackHandler )
+    CallbackInfo( Handler callbackHandler, IImageConsumer remoteImageConsumer, Object key )
       {
-      this.remoteImageConsumer = remoteImageConsumer;
       this.callbackHandler     = callbackHandler;
+      this.remoteImageConsumer = remoteImageConsumer;
+      this.key                 = key;
       }
     }
 
@@ -264,14 +309,16 @@ public class ImageManager
   private class Processor implements Runnable
     {
     private String                   mImageClassString;
+    private Object                   mKey;
     private URL                      mImageURL;
     private String                   mImageURLString;
     private ArrayList<CallbackInfo>  mCallbackInfoList;
 
 
-    Processor( String imageClassString, URL imageURL, String imageURLString, ArrayList<CallbackInfo>  callbackInfoList )
+    Processor( String imageClassString, Object key, URL imageURL, String imageURLString, ArrayList<CallbackInfo>  callbackInfoList )
       {
       mImageClassString = imageClassString;
+      mKey              = key;
       mImageURL         = imageURL;
       mImageURLString   = imageURLString;
       mCallbackInfoList = callbackInfoList;
@@ -333,7 +380,7 @@ public class ImageManager
 
       for ( CallbackInfo callbackInfo : mCallbackInfoList )
         {
-        callbackInfo.callbackHandler.post( new LoadedCallbackCaller( callbackInfo.remoteImageConsumer, mImageURLString, bitmap ) );
+        callbackInfo.callbackHandler.post( new LoadedCallbackCaller( callbackInfo.remoteImageConsumer, mKey, bitmap ) );
         }
       }
 
@@ -351,7 +398,7 @@ public class ImageManager
       // Notify each of the consumers that the image is being downloaded
       for ( CallbackInfo callbackInfo : mCallbackInfoList )
         {
-        callbackInfo.callbackHandler.post( new DownloadingCallbackCaller( callbackInfo.remoteImageConsumer ) );
+        callbackInfo.callbackHandler.post( new DownloadingCallbackCaller( callbackInfo.remoteImageConsumer, callbackInfo.key ) );
         }
 
 
@@ -429,19 +476,21 @@ public class ImageManager
    *****************************************************/
   private class DownloadingCallbackCaller implements Runnable
     {
-    private IRemoteImageConsumer mRemoteImageConsumer;
+    private IImageConsumer  mRemoteImageConsumer;
+    private Object          mKey;
 
 
-    DownloadingCallbackCaller( IRemoteImageConsumer remoteImageConsumer )
+    DownloadingCallbackCaller( IImageConsumer remoteImageConsumer, Object key )
       {
       mRemoteImageConsumer = remoteImageConsumer;
+      mKey                 = key;
       }
 
 
     @Override
     public void run()
       {
-      mRemoteImageConsumer.onImageDownloading();
+      mRemoteImageConsumer.onImageDownloading( mKey );
       }
     }
 
@@ -453,15 +502,15 @@ public class ImageManager
    *****************************************************/
   private class LoadedCallbackCaller implements Runnable
     {
-    private IRemoteImageConsumer mRemoteImageConsumer;
-    private String               mImageURLString;
-    private Bitmap               mBitmap;
+    private IImageConsumer mRemoteImageConsumer;
+    private Object         mKey;
+    private Bitmap         mBitmap;
 
 
-    LoadedCallbackCaller( IRemoteImageConsumer remoteImageConsumer, String imageURLString, Bitmap bitmap )
+    LoadedCallbackCaller( IImageConsumer remoteImageConsumer, Object key, Bitmap bitmap )
       {
       mRemoteImageConsumer = remoteImageConsumer;
-      mImageURLString      = imageURLString;
+      mKey                 = key;
       mBitmap              = bitmap;
       }
 
@@ -469,7 +518,7 @@ public class ImageManager
     @Override
     public void run()
       {
-      mRemoteImageConsumer.onImageLoaded( mImageURLString, mBitmap );
+      mRemoteImageConsumer.onImageLoaded( mKey, mBitmap );
       }
     }
 

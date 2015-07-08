@@ -68,6 +68,8 @@ public abstract class AKiteActivity extends Activity
 
   protected static final int     DONT_DISPLAY_BUTTON             = 0;
 
+  protected static final String  IMAGE_CLASS_STRING_PRODUCT_ITEM = "product_item";
+
 
   ////////// Static Variable(s) //////////
 
@@ -200,12 +202,13 @@ public abstract class AKiteActivity extends Activity
     {
     ensureDialogGone();
 
+    DialogCallbackHandler callbackHandler = new DialogCallbackHandler( positiveRunnable, negativeRunnable );
+
     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder( this )
             .setTitle( titleTextResourceId )
             .setMessage( messageText )
-            .setCancelable( true );
-
-    DialogCallbackHandler callbackHandler = new DialogCallbackHandler( positiveRunnable, negativeRunnable );
+            .setCancelable( true )
+            .setOnCancelListener( callbackHandler );
 
     if ( positiveTextResourceId != 0 ) alertDialogBuilder.setPositiveButton( positiveTextResourceId, callbackHandler );
     if ( negativeTextResourceId != 0 ) alertDialogBuilder.setNegativeButton( negativeTextResourceId, callbackHandler );
@@ -259,6 +262,10 @@ public abstract class AKiteActivity extends Activity
    *****************************************************/
   protected class FinishRunnable implements Runnable
     {
+    public FinishRunnable()
+      {
+      }
+
     @Override
     public void run()
       {

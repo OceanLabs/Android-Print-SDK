@@ -63,10 +63,10 @@ public class Bleed
 
   ////////// Member Variable(s) //////////
 
-  private int  mTopPixels;
-  private int  mLeftPixels;
-  private int  mRightPixels;
-  private int  mBottomPixels;
+  public int  topPixels;
+  public int  leftPixels;
+  public int  rightPixels;
+  public int  bottomPixels;
 
 
   ////////// Static Initialiser(s) //////////
@@ -79,10 +79,10 @@ public class Bleed
 
   public Bleed( int topPixels, int rightPixels, int bottomPixels, int leftPixels )
     {
-    mTopPixels    = topPixels;
-    mLeftPixels   = leftPixels;
-    mRightPixels  = rightPixels;
-    mBottomPixels = bottomPixels;
+    this.topPixels    = topPixels;
+    this.leftPixels   = leftPixels;
+    this.rightPixels  = rightPixels;
+    this.bottomPixels = bottomPixels;
     }
 
 

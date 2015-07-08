@@ -39,6 +39,7 @@
         <activity
             android:name=".shopping.ProductGroupActivity"
             android:theme="@style/Theme.KiteSDK.GroupOrProduct"
+            android:label="@string/title_product_group_activity"
             android:launchMode="singleTop"/>
 
         <activity
@@ -51,6 +52,12 @@
             android:theme="@style/Theme.KiteSDK.ProductOverview"
             android:launchMode="singleTop"
             android:hardwareAccelerated="true"/>
+
+        <activity
+            android:name=".shopping.journey.PhoneCaseActivity"
+            android:theme="@style/Theme.KiteSDK.PhoneCase"
+            android:label="@string/title_phone_case_activity"
+            android:launchMode="singleTop"/>
 
         <activity
             android:name=".checkout.PaymentActivity"

@@ -152,8 +152,6 @@ public abstract class AGroupOrProductActivity extends AKiteActivity implements P
               new FinishRunnable()
         );
 
-      finish();
-
       return;
       }
 
@@ -169,8 +167,6 @@ public abstract class AGroupOrProductActivity extends AKiteActivity implements P
               R.string.Cancel,
               new FinishRunnable()
         );
-
-      finish();
 
       return;
       }

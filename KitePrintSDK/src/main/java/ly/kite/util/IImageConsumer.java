@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * IRemoteImageConsumer.java
+ * IImageConsumer.java
  *
  *
  * Modified MIT License
@@ -46,18 +46,18 @@ import android.graphics.Bitmap;
 
 /*****************************************************
  *
- * This interface defines a remote image consumer. This
- * is used by classes that use remote (i.e. network
- * based) images, and is used to return the image to
- * the consumer. The particular method used to return
- * the image indicates where the image was sourced from:
+ * This interface defines an image consumer. This
+ * is used by classes that use local / remote images,
+ * and is used to return the image to the consumer.
+ * The particular method used to return the image indicates
+ * where the image was sourced from:
  * <ul>
  *   <li>Loaded from local flash</li>
  *   <li>Downloaded from the remote server</li>
  * </ul>
  *
  *****************************************************/
-public interface IRemoteImageConsumer
+public interface IImageConsumer
   {
 
   ////////// Method(s) //////////
@@ -68,7 +68,7 @@ public interface IRemoteImageConsumer
    * from flash.
    *
    *****************************************************/
-  public void onImageImmediate( Bitmap bitmap );
+  public void onImageImmediate( Object key, Bitmap bitmap );
 
 
   /*****************************************************
@@ -77,7 +77,7 @@ public interface IRemoteImageConsumer
    * thus be downloaded.
    *
    *****************************************************/
-  public void onImageDownloading();
+  public void onImageDownloading( Object key );
 
 
   /*****************************************************
@@ -85,7 +85,7 @@ public interface IRemoteImageConsumer
    * Called when an image is available, and was downloaded.
    *
    *****************************************************/
-  public void onImageLoaded( String sourceURL, Bitmap bitmap );
+  public void onImageLoaded( Object key, Bitmap bitmap );
 
 
   ////////// Inner Class(es) //////////

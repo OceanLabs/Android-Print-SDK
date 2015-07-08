@@ -1,0 +1,28 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <ly.kite.widget.MaskedRemoteImageView
+        android:id="@+id/masked_remote_image_view"
+        android:layout_margin="20dp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.0"/>
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.0"
+        android:padding="@dimen/cta_button_margin">
+
+        <Button
+            style="@style/KiteSDKCTAOffsetButtonStyle"
+            android:layout_gravity="right|center_vertical"
+            android:text="@string/product_creation_next_button_text"
+            android:onClick="onNextClicked"/>
+
+    </FrameLayout>
+
+</LinearLayout>
