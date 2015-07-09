@@ -62,15 +62,15 @@ public class Address implements Parcelable, Serializable {
         this.country = country;
     }
 
-    public static AddressSearchRequest search(String query, Country country, AddressSearchRequestListener listener) {
+    public static AddressSearchRequest search( Context context, String query, Country country, AddressSearchRequestListener listener) {
         AddressSearchRequest req = new AddressSearchRequest();
-        req.search(query, country, listener);
+        req.search( context, query, country, listener);
         return req;
     }
 
-    public static AddressSearchRequest search(Address address, AddressSearchRequestListener listener) {
+    public static AddressSearchRequest search ( Context context, Address address, AddressSearchRequestListener listener) {
         AddressSearchRequest req = new AddressSearchRequest();
-        req.search(address, listener);
+        req.search(context, address, listener);
         return req;
     }
 

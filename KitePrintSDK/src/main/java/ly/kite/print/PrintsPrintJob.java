@@ -19,21 +19,20 @@ import java.util.Set;
  */
 class PrintsPrintJob extends PrintJob {
 
-    private static final long serialVersionUID = 0L;
-    private ProductType productType;
-    private List<Asset> assets;
-    private String templateId;
+    private static final long serialVersionUID = 1L;
+    private List<Asset> mAssetList;
 
 
-    public PrintsPrintJob(String templateId, List<Asset> assets){
-        this.templateId = templateId;
-        this.productType = ProductType.productTypeFromTemplate(templateId);
-        this.assets = assets;
+  public PrintsPrintJob( Product product, List<Asset> assetList )
+    {
+    super( product );
+
+    this.mAssetList = assetList;
     }
 
     @Override
     public BigDecimal getCost(String currencyCode) {
-        Product product = ProductManager.getInstance().getProductById( templateId );
+        Product product = getProduct();
         BigDecimal sheetCost = product.getCost(currencyCode);
         int expectedQuantity = product.getQuantityPerSheet();
 
@@ -45,7 +44,7 @@ class PrintsPrintJob extends PrintJob {
     public Set<String> getCurrenciesSupported() {
         try
             {
-            Product product = ProductManager.getInstance().getProductById( templateId );
+            Product product = getProduct();
 
             return product.getCurrenciesSupported();
             }
@@ -57,36 +56,36 @@ class PrintsPrintJob extends PrintJob {
     return Collections.EMPTY_SET;
     }
 
-    @Override
-    public ProductType getProductType() {
-        return productType;
-    }
+//    @Override
+//    public ProductType getProductType() {
+//        return productType;
+//    }
 
     @Override
     public int getQuantity() {
-        return assets.size();
+        return mAssetList.size();
     }
 
     @Override
     List<Asset> getAssetsForUploading() {
-        return assets;
+        return mAssetList;
     }
 
-    @Override
-    public String getTemplateId() {
-        return productType.getDefaultTemplate();
-    }
+//    @Override
+//    public String getProductId() {
+//        return productType.getDefaultTemplate();
+//    }
 
     @Override
     JSONObject getJSONRepresentation() {
         JSONArray assets = new JSONArray();
-        for (Asset a : this.assets) {
+        for (Asset a : this.mAssetList ) {
             assets.put("" + a.getId());
         }
 
         JSONObject json = new JSONObject();
         try {
-            json.put("template_id", productType.getDefaultTemplate());
+            json.put("template_id", getProductId());
             json.put("assets", assets);
             json.put("frame_contents", new JSONObject());
         } catch (JSONException ex) {
@@ -103,16 +102,15 @@ class PrintsPrintJob extends PrintJob {
 
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
-        parcel.writeString(productType.getDefaultTemplate());
-        parcel.writeTypedList(assets);
+        super.writeToParcel( parcel, flags );
+        parcel.writeTypedList( mAssetList );
 
     }
 
     private PrintsPrintJob(Parcel parcel) {
-        this.productType = ProductType.productTypeFromTemplate(parcel.readString());
-        this.templateId = productType.getDefaultTemplate();
-        this.assets = new ArrayList<Asset>();
-        parcel.readTypedList(assets, Asset.CREATOR);
+        super( ProductCache.getDirtyInstance().getProductById( parcel.readString() ) );
+        this.mAssetList = new ArrayList<Asset>();
+        parcel.readTypedList( mAssetList, Asset.CREATOR);
     }
 
     public static final Parcelable.Creator<PrintsPrintJob> CREATOR
@@ -126,21 +124,20 @@ class PrintsPrintJob extends PrintJob {
         }
     };
 
-    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-        out.writeObject(productType.getDefaultTemplate());
-        out.writeInt(assets.size());
-        for (Asset a : assets) {
+    protected void writeObject(java.io.ObjectOutputStream out) throws IOException {
+        super.writeObject( out );
+        out.writeInt( mAssetList.size() );
+        for (Asset a : mAssetList ) {
             out.writeObject(a);
         }
     }
 
-    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
-        productType = ProductType.productTypeFromTemplate((String) in.readObject());
-        templateId = productType.getDefaultTemplate();
+    protected void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readObject( in );
         int numAssets = in.readInt();
-        assets = new ArrayList<Asset>(numAssets);
+        mAssetList = new ArrayList<Asset>(numAssets);
         for (int i = 0; i < numAssets; ++i) {
-            assets.add((Asset) in.readObject());
+            mAssetList.add( (Asset) in.readObject() );
         }
     }
 

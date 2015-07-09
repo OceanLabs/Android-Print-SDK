@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * ProductManager.java
+ * ProductCache.java
  *
  *
  * Modified MIT License
@@ -39,6 +39,7 @@ package ly.kite.print;
 
 ///// Import(s) /////
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
@@ -73,12 +74,12 @@ import ly.kite.shopping.UserJourneyType;
  * product groups and products from the server.
  *
  ****************************************************/
-public class ProductManager implements BaseRequest.BaseRequestListener
+public class ProductCache implements BaseRequest.BaseRequestListener
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings("unused")
-  private static final String  LOG_TAG                               = "ProductManager";
+  private static final String  LOG_TAG                               = "ProductCache";
 
   private static final boolean DISPLAY_DEBUGGING                     = false;
 
@@ -117,10 +118,12 @@ public class ProductManager implements BaseRequest.BaseRequestListener
 
   ////////// Static Variable(s) //////////
 
-  private static ProductManager sProductSyncer;
+  private static ProductCache sProductCache;
 
 
   ////////// Member Variable(s) //////////
+
+  private Context                                   mContext;
 
   private BaseRequest                               mBaseRequest;
   private ArrayList<Pair<ProductConsumer,Handler>>  mConsumerHandlerList;
@@ -137,17 +140,25 @@ public class ProductManager implements BaseRequest.BaseRequestListener
 
   /****************************************************
    *
-   * Returns an instance of the syncer.
+   * Returns an instance of the manager.
    *
    ****************************************************/
-  public static ProductManager getInstance()
+  public static ProductCache getInstance( Context context )
     {
-    if ( sProductSyncer == null )
+    if ( sProductCache == null )
       {
-      sProductSyncer = new ProductManager();
+      sProductCache = new ProductCache( context );
       }
 
-    return ( sProductSyncer );
+    return (sProductCache);
+    }
+
+
+  // This is a dirty hack until we can come up with a better way of doing
+  // this.
+  public static ProductCache getDirtyInstance()
+    {
+    return (sProductCache);
     }
 
 
@@ -468,8 +479,9 @@ public class ProductManager implements BaseRequest.BaseRequestListener
   ////////// Constructor(s) //////////
 
   // Constructor is private to ensure it is a singleton
-  private ProductManager()
+  private ProductCache( Context context )
     {
+    mContext = context;
     }
 
 
@@ -601,9 +613,9 @@ public class ProductManager implements BaseRequest.BaseRequestListener
 
       // We need to perform a new retrieval. Create a new request, and consumer list containing the consumer.
 
-      String url = String.format( REQUEST_FORMAT_STRING, KiteSDK.getEnvironment().getPrintAPIEndpoint() );
+      String url = String.format( REQUEST_FORMAT_STRING, KiteSDK.getInstance( mContext ).getPrintAPIEndpoint() );
 
-      mBaseRequest         = new BaseRequest( BaseRequest.HttpMethod.GET, url, null, null );
+      mBaseRequest         = new BaseRequest( mContext, BaseRequest.HttpMethod.GET, url, null, null );
       mConsumerHandlerList = new ArrayList<Pair<ProductConsumer,Handler>>();
       mConsumerHandlerList.add( new Pair<ProductConsumer,Handler>( consumer, callbackHandler ) );
       }

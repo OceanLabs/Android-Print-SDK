@@ -84,24 +84,21 @@ public class Product implements IGroupOrProduct
 
   ////////// Member Variable(s) //////////
 
-  private String                  mId;
-  private String                  mCode;
-  private String                  mName;
-  private String                  mLabel;
-  private UserJourneyType         mUserJourneyType;
-  private int                     mQuantityPerSheet;
+  private String                            mId;
+  private String                            mCode;
+  private String                            mName;
+  private String                            mLabel;
+  private UserJourneyType                   mUserJourneyType;
+  private int                               mQuantityPerSheet;
 
-  private MultipleCurrencyCost    mCost;
-  private MultipleDestinationShippingCosts mShippingCosts;
-  //private URL                     mGroupImageURL;
-  private URL                     mHeroImageURL;
-  private int                     mLabelColour;
-  //private String                  mGroupLabel;
-  private ArrayList<URL>          mImageURLList;
-  //private String                  mProductSubclass;
-  private URL                     mMaskURL;
-  private Bleed                   mMaskBleed;
-  private MultipleUnitSize        mSize;
+  private MultipleCurrencyCost              mCost;
+  private MultipleDestinationShippingCosts  mShippingCosts;
+  private URL                               mHeroImageURL;
+  private int                               mLabelColour;
+  private ArrayList<URL>                    mImageURLList;
+  private URL                               mMaskURL;
+  private Bleed                             mMaskBleed;
+  private MultipleUnitSize                  mSize;
 
 
   ////////// Static Initialiser(s) //////////

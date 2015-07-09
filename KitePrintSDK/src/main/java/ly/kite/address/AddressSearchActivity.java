@@ -138,7 +138,7 @@ public class AddressSearchActivity extends Activity implements ActionBar.OnNavig
 
                 inProgressAddressSearchReq = new AddressSearchRequest();
                 Country c = Country.values()[ getActionBar().getSelectedNavigationIndex() ];
-                inProgressAddressSearchReq.search(query, c, AddressSearchActivity.this);
+                inProgressAddressSearchReq.search(AddressSearchActivity.this, query, c, AddressSearchActivity.this);
                 return true;
             }
         });
@@ -178,7 +178,7 @@ public class AddressSearchActivity extends Activity implements ActionBar.OnNavig
         });
 
         inProgressAddressSearchReq = new AddressSearchRequest();
-        inProgressAddressSearchReq.search(address, new AddressSearchRequestListener() {
+        inProgressAddressSearchReq.search(AddressSearchActivity.this, address, new AddressSearchRequestListener() {
             @Override
             public void onMultipleChoices(AddressSearchRequest req, List<Address> options) {
                 dialog.dismiss();

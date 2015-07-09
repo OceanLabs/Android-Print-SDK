@@ -226,7 +226,8 @@ public class MaskedImageView extends View implements GestureDetector.OnGestureLi
 
     // If we got an up event, then we need to make sure that the mask is still filled by
     // the image.
-    if ( event.getActionMasked() == MotionEvent.ACTION_UP )
+    if ( event.getActionMasked() == MotionEvent.ACTION_UP &&
+         mImageToBlendTargetRect != null )
       {
       // If we need to shift the image horizontally - start an animation to
       // shift the image left or right.
@@ -570,7 +571,7 @@ public class MaskedImageView extends View implements GestureDetector.OnGestureLi
     float halfScaledImageHeight = scaledImageHeight * 0.5f;
 
     mImageToBlendSourceRect = new Rect( 0, 0, unscaledImageWidth, unscaledImageHeight );
-    mImageToBlendTargetRect = new RectF( halfBlendHeight - halfScaledImageWidth, halfBlendHeight - halfScaledImageHeight, halfBlendHeight + halfScaledImageWidth, halfBlendHeight + halfScaledImageHeight );
+    mImageToBlendTargetRect = new RectF( halfBlendWidth - halfScaledImageWidth, halfBlendHeight - halfScaledImageHeight, halfBlendWidth + halfScaledImageWidth, halfBlendHeight + halfScaledImageHeight );
 
 
     mImageMinScaleFactor = mImageScaleFactor;
@@ -586,6 +587,50 @@ public class MaskedImageView extends View implements GestureDetector.OnGestureLi
   public boolean bothBitmapsAvailable()
     {
     return ( mImageBitmap != null && mMaskBitmap != null );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a copy of the image, which has been cropped
+   * to the mask.
+   *
+   *****************************************************/
+  public Bitmap getImageCroppedToMask()
+    {
+    // We need to calculate the bounds of the scaled mask plus
+    // bleed on the unscaled image.
+
+    // Start by determining the bounds of the mask plus bleed within
+    // the scaled image. (We know it's within because the image
+    // always fills the blend are entirely, so its bounds must be
+    // at or outside the blend area).
+
+    float scaledLeft   = - mImageToBlendTargetRect.left;
+    float scaledTop    = - mImageToBlendTargetRect.top;
+    float scaledRight  = scaledLeft + mBlendToViewSourceRect.right;
+    float scaledBottom = scaledTop  + mBlendToViewSourceRect.bottom;
+
+
+    // Scale the values up to the actual image size
+    float unscaledLeft   = scaledLeft / mImageScaleFactor;
+    float unscaledTop    = scaledTop / mImageScaleFactor;
+    float unscaledRight  = scaledRight / mImageScaleFactor;
+    float unscaledBottom = scaledBottom / mImageScaleFactor;
+
+
+    // Create a bitmap-backed canvas and draw the cropped image into it.
+
+    Bitmap croppedImageBitmap = Bitmap.createBitmap( (int)( unscaledRight - unscaledLeft ), (int)( unscaledBottom - unscaledTop ), Bitmap.Config.ARGB_8888 );
+    Canvas canvas = new Canvas( croppedImageBitmap );
+
+    Rect  sourceRect = new Rect( (int)unscaledLeft, (int)unscaledTop, (int)unscaledRight, (int)unscaledBottom );
+    RectF targetRect = new RectF( 0f, 0f, croppedImageBitmap.getWidth(), croppedImageBitmap.getHeight() );
+
+    canvas.drawBitmap( croppedImageBitmap, sourceRect, targetRect, null );
+
+
+    return ( croppedImageBitmap );
     }
 
 

@@ -20,13 +20,13 @@ import ly.kite.address.Address;
  */
 class PostcardPrintJob extends PrintJob {
 
-    private String templateId;
     private Asset frontImageAsset;
     private String message;
     private Address address;
 
-    public PostcardPrintJob(String templateId, Asset frontImageAsset, String message, Address address) {
-        this.templateId = templateId;
+    public PostcardPrintJob( Product product, Asset frontImageAsset, String message, Address address) {
+        super( product );
+
         this.frontImageAsset = frontImageAsset;
         this.message = message;
         this.address = address;
@@ -34,20 +34,18 @@ class PostcardPrintJob extends PrintJob {
 
     @Override
     public BigDecimal getCost(String currencyCode) {
-        Product product = ProductManager.getInstance().getProductById( templateId );
-        return product.getCost(currencyCode);
+        return getProduct().getCost(currencyCode);
     }
 
     @Override
     public Set<String> getCurrenciesSupported() {
-        Product product = ProductManager.getInstance().getProductById( templateId );
-        return product.getCurrenciesSupported();
+        return getProduct().getCurrenciesSupported();
     }
 
-    @Override
-    public ProductType getProductType() {
-        return ProductType.POSTCARD;
-    }
+//    @Override
+//    public ProductType getProductType() {
+//        return ProductType.POSTCARD;
+//    }
 
     @Override
     public int getQuantity() {
@@ -61,10 +59,10 @@ class PostcardPrintJob extends PrintJob {
         return assets;
     }
 
-    @Override
-    public String getTemplateId() {
-        return templateId;
-    }
+//    @Override
+//    public String getProductId() {
+//        return templateId;
+//    }
 
     private static String getStringOrEmptyString(String val) {
         return val == null ? "" : val;
@@ -72,7 +70,7 @@ class PostcardPrintJob extends PrintJob {
 
     private JSONObject getJSON() throws JSONException{
         JSONObject json = new JSONObject();
-        json.put("template_id", templateId);
+        json.put("template_id", getProductId() );
 
         JSONObject assets = new JSONObject();
         json.put("assets", assets);
@@ -132,14 +130,14 @@ class PostcardPrintJob extends PrintJob {
 
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
-        parcel.writeString(templateId);
+        super.writeToParcel( parcel, flags );
         parcel.writeParcelable(frontImageAsset, flags);
         parcel.writeString(message);
         parcel.writeParcelable(address, flags);
     }
 
     private PostcardPrintJob(Parcel parcel) {
-        this.templateId = parcel.readString();
+        super( ProductCache.getDirtyInstance().getProductById( parcel.readString() ) );
         this.frontImageAsset = parcel.readParcelable(Asset.class.getClassLoader());
         this.message = parcel.readString();
         this.address = (Address)parcel.readParcelable(Address.class.getClassLoader());
@@ -156,15 +154,15 @@ class PostcardPrintJob extends PrintJob {
         }
     };
 
-    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-        out.writeObject(templateId);
+    protected void writeObject(java.io.ObjectOutputStream out) throws IOException {
+        super.writeObject( out );
         out.writeObject(frontImageAsset);
         out.writeObject(message);
         out.writeObject(address);
     }
 
-    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
-        templateId = (String)in.readObject();
+    protected void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readObject( in );
         frontImageAsset = (Asset) in.readObject();
         message = (String)in.readObject();
         address = (Address) in.readObject();

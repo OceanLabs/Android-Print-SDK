@@ -232,6 +232,16 @@ public class MaskedRemoteImageView extends FrameLayout implements IImageConsumer
     }
 
 
+  /*****************************************************
+   *
+   * Returns the masked image view.
+   *
+   *****************************************************/
+  public MaskedImageView getMaskedImageView()
+    {
+    return ( mMaskedImageView );
+    }
+
 
   ////////// Inner Class(es) //////////
 

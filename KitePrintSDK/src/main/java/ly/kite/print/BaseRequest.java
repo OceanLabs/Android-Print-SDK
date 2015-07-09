@@ -1,5 +1,6 @@
 package ly.kite.print;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
 import org.apache.http.HttpResponse;
@@ -64,13 +65,15 @@ public class BaseRequest {
         private JSONObject json;
     }
 
+    private final Context mContext;
     private final HttpMethod method;
     private final String url;
     private final Map<String, String> headers;
     private final String body;
     private AsyncTask<Void, Void, JSONHttpResponse> requestTask;
 
-    public BaseRequest(HttpMethod method, String url, Map<String, String> headers, String body) {
+    public BaseRequest(Context context, HttpMethod method, String url, Map<String, String> headers, String body) {
+        mContext = context;
         this.method = method;
         this.url = url;
         this.headers = headers;
@@ -116,7 +119,7 @@ public class BaseRequest {
                     }
                 }
 
-                request.setHeader("Authorization", "ApiKey " + KiteSDK.getAPIKey() + ":");
+                request.setHeader("Authorization", "ApiKey " + KiteSDK.getInstance( mContext ).getAPIKey() + ":");
 
                 try {
                     HttpResponse response = httpclient.execute(request);

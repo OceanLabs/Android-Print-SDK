@@ -32,6 +32,7 @@
     <string name="alert_dialog_title_product_not_found">Product Not Found</string>
     <string name="alert_dialog_message_no_product_for_id">No product could be found matching id: %s</string>
 
+    <string name="Add_photo">Add photo</string>
     <string name="Cancel">Cancel</string>
     <string name="Description">Description</string>
     <string name="Details">Details</string>

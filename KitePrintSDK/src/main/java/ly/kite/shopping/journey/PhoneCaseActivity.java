@@ -41,9 +41,11 @@ package ly.kite.shopping.journey;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 
 import java.net.URL;
@@ -51,10 +53,13 @@ import java.util.ArrayList;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
+import ly.kite.checkout.CheckoutActivity;
 import ly.kite.print.Asset;
 import ly.kite.print.Bleed;
+import ly.kite.print.PrintJob;
+import ly.kite.print.PrintOrder;
 import ly.kite.print.Product;
-import ly.kite.print.ProductManager;
+import ly.kite.print.ProductCache;
 import ly.kite.shopping.AKiteActivity;
 import ly.kite.util.ImageManager;
 import ly.kite.widget.MaskedRemoteImageView;
@@ -182,7 +187,7 @@ public class PhoneCaseActivity extends AKiteActivity
       return;
       }
 
-    Product mProduct = ProductManager.getInstance().getProductById( productId );
+    mProduct = ProductCache.getInstance( this ).getProductById( productId );
 
     if ( mProduct == null )
       {
@@ -225,6 +230,49 @@ public class PhoneCaseActivity extends AKiteActivity
     }
 
 
+  /*****************************************************
+   *
+   * Called the first time the options menu is created.
+   *
+   *****************************************************/
+// Uncomment once we implement the add photo functionality
+//  @Override
+//  public boolean onCreateOptionsMenu( Menu menu )
+//    {
+//    MenuInflater menuInflator = getMenuInflater();
+//
+//    menuInflator.inflate( R.menu.add_photo, menu );
+//
+//    return ( true );
+//    }
+
+
+  /*****************************************************
+   *
+   * Called when an item in the options menu is selected.
+   *
+   *****************************************************/
+  @Override
+  public boolean onOptionsItemSelected( MenuItem item )
+    {
+    // See what menu item was selected
+
+    int itemId = item.getItemId();
+
+    if ( itemId == R.id.add_photo )
+      {
+      ///// Add photo /////
+
+      // TODO:
+
+      return ( true );
+      }
+
+
+    return ( super.onOptionsItemSelected( item ) );
+    }
+
+
   ////////// Method(s) //////////
 
   /*****************************************************
@@ -234,6 +282,19 @@ public class PhoneCaseActivity extends AKiteActivity
    *****************************************************/
   public void onNextClicked( View view )
     {
+    // Create a print order from the cropped image, then start
+    // the checkout activity.
+
+    PrintOrder printOrder = new PrintOrder();
+
+    Bitmap croppedImageBitmap = mMaskedRemoteImageView.getMaskedImageView().getImageCroppedToMask();
+
+    Asset croppedImageAsset = Asset.create( croppedImageBitmap );
+
+    printOrder.addPrintJob( PrintJob.createPrintJob( mProduct, croppedImageAsset ) );
+
+
+    CheckoutActivity.start( this, printOrder, ACTIVITY_REQUEST_CODE_CHECKOUT );
     }
 
 

@@ -14,7 +14,7 @@ import ly.kite.print.PrintJob;
 import ly.kite.print.PrintOrder;
 import ly.kite.R;
 import ly.kite.print.Product;
-import ly.kite.print.ProductManager;
+import ly.kite.print.ProductCache;
 
 /**
  * Created by deonbotha on 20/02/2014.
@@ -49,12 +49,12 @@ class PrintOrderSummaryListAdapter extends BaseAdapter {
         TextView itemDescription = (TextView) row.findViewById(R.id.text_view_order_item_description);
         TextView itemCost = (TextView) row.findViewById(R.id.text_view_order_item_cost);
 
-        PrintJob job = order.getJobs().get(i);
+    PrintJob job = order.getJobs().get(i);
 
-        Product product = ProductManager.getInstance().getProductById( job.getTemplateId() );
+        Product product = ProductCache.getInstance( parent.getContext() ).getProductById( job.getProductId() );
         int quantityPerSheet = product.getQuantityPerSheet() <= 0 ? 1 : product.getQuantityPerSheet();
         int num = (int) Math.floor((job.getQuantity() + (quantityPerSheet - 1)) / quantityPerSheet);
-        itemDescription.setText(String.format("%d x %d %s", num, quantityPerSheet, job.getProductType().getProductName()));
+        itemDescription.setText(String.format("%d x %d %s", num, quantityPerSheet, job.getProduct().getName()));
         NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.getDefault());
         formatter.setCurrency(Currency.getInstance(order.getCurrencyCode()));
         itemCost.setText(formatter.format(job.getCost(order.getCurrencyCode()).doubleValue()));

@@ -58,7 +58,7 @@ import android.widget.ProgressBar;
 import ly.kite.R;
 import ly.kite.print.Asset;
 import ly.kite.KiteSDK;
-import ly.kite.print.ProductManager;
+import ly.kite.print.ProductCache;
 import ly.kite.widget.HeaderFooterGridView;
 
 
@@ -71,7 +71,7 @@ import ly.kite.widget.HeaderFooterGridView;
  * methods.
  *
  *****************************************************/
-public abstract class AGroupOrProductActivity extends AKiteActivity implements ProductManager.ProductConsumer, AdapterView.OnItemClickListener
+public abstract class AGroupOrProductActivity extends AKiteActivity implements ProductCache.ProductConsumer, AdapterView.OnItemClickListener
   {
   ////////// Static Constant(s) //////////
 
@@ -93,7 +93,7 @@ public abstract class AGroupOrProductActivity extends AKiteActivity implements P
   protected HeaderFooterGridView     mGridView;
   protected ProgressBar              mProgressBar;
 
-  protected ProductManager           mProductManager;
+  protected ProductCache mProductManager;
   protected BaseAdapter              mGridAdaptor;
 
 
@@ -237,7 +237,7 @@ public abstract class AGroupOrProductActivity extends AKiteActivity implements P
     // back immediately - often the GridView won't have been configured correctly yet (because
     // when we specify the number of columns it doesn't take effect immediately).
 
-    mProductManager = ProductManager.getInstance();
+    mProductManager = ProductCache.getInstance( this );
 
     mProductManager.getAllProducts( MAX_ACCEPTED_PRODUCT_AGE_MILLIS, this );
     }

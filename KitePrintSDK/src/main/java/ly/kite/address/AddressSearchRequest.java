@@ -1,5 +1,7 @@
 package ly.kite.address;
 
+import android.content.Context;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -25,7 +27,7 @@ public class AddressSearchRequest {
         }
     }
 
-    public void search(String query, Country country, AddressSearchRequestListener listener) {
+    public void search( Context context, String query, Country country, AddressSearchRequestListener listener) {
         String queryParams = null;
         try {
             queryParams = String.format("search_term=%s&country_code=%s", URLEncoder.encode(query, "utf-8"), country.iso3Code());
@@ -34,11 +36,11 @@ public class AddressSearchRequest {
             return;
         }
 
-        String url = String.format("%s/address/search?%s", KiteSDK.getEnvironment().getPrintAPIEndpoint(), queryParams);
-        startSearch(url, country, listener);
+        String url = String.format("%s/address/search?%s", KiteSDK.getInstance( context ).getPrintAPIEndpoint(), queryParams);
+        startSearch(context, url, country, listener);
     }
 
-    public void search(Address address, AddressSearchRequestListener listener) {
+    public void search(Context context, Address address, AddressSearchRequestListener listener) {
         String queryParams = null;
         try {
             if (address.getId() == null) {
@@ -56,12 +58,12 @@ public class AddressSearchRequest {
             return;
         }
 
-        String url = String.format("%s/address/search?%s", KiteSDK.getEnvironment().getPrintAPIEndpoint(), queryParams);
-        startSearch(url, address.getCountry(), listener);
+        String url = String.format("%s/address/search?%s", KiteSDK.getInstance( context ).getPrintAPIEndpoint(), queryParams);
+        startSearch(context, url, address.getCountry(), listener);
     }
 
-    private void startSearch(String url, final Country country, final AddressSearchRequestListener listener) {
-        searchRequest = new BaseRequest(BaseRequest.HttpMethod.GET, url, null, null);
+    private void startSearch(Context context, String url, final Country country, final AddressSearchRequestListener listener) {
+        searchRequest = new BaseRequest(context, BaseRequest.HttpMethod.GET, url, null, null);
         searchRequest.start(new BaseRequest.BaseRequestListener() {
             @Override
             public void onSuccess(int httpStatusCode, JSONObject json) {

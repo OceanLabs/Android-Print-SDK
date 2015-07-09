@@ -363,7 +363,8 @@ public class ImageManager
 
         bitmap = BitmapFactory.decodeFile( imageFilePath );
 
-        mImageTable.put( mImageURLString, bitmap );
+        // TODO: Disable im-memory caching until we implement aging
+        //mImageTable.put( mImageURLString, bitmap );
         }
       finally
         {

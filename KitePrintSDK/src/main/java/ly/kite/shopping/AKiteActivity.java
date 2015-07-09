@@ -47,11 +47,15 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.res.Resources;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import ly.kite.KiteSDK;
 import ly.kite.R;
+import ly.kite.print.ProductCache;
 
 /*****************************************************
  *
@@ -69,6 +73,8 @@ public abstract class AKiteActivity extends Activity
   protected static final int     DONT_DISPLAY_BUTTON             = 0;
 
   protected static final String  IMAGE_CLASS_STRING_PRODUCT_ITEM = "product_item";
+
+  protected static final int     ACTIVITY_REQUEST_CODE_CHECKOUT = 1;
 
 
   ////////// Static Variable(s) //////////
@@ -89,6 +95,21 @@ public abstract class AKiteActivity extends Activity
 
 
   ////////// Activity Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when the activity is created.
+   *
+   *****************************************************/
+  @Override
+  public void onCreate( Bundle savedInstanceState )
+    {
+    super.onCreate( savedInstanceState );
+
+    // TODO: Fix this dirty hack
+    ProductCache.getInstance( this );
+    }
+
 
   /*****************************************************
    *

@@ -57,10 +57,8 @@ import android.view.animation.ScaleAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.math.BigDecimal;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -70,7 +68,7 @@ import ly.kite.R;
 import ly.kite.address.Country;
 import ly.kite.print.Asset;
 import ly.kite.print.Product;
-import ly.kite.print.ProductManager;
+import ly.kite.print.ProductCache;
 import ly.kite.print.SingleUnitSize;
 import ly.kite.print.UnitOfLength;
 import ly.kite.widget.BellInterpolator;
@@ -219,7 +217,7 @@ public class ProductOverviewActivity extends AKiteActivity implements View.OnCli
       return;
       }
 
-    mProduct = ProductManager.getInstance().getProductById( productId );
+    mProduct = ProductCache.getInstance( this ).getProductById( productId );
 
     if ( mProduct == null )
       {

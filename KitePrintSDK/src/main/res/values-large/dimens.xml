@@ -28,6 +28,7 @@
 
     <dimen name="cta_button_margin">22dp</dimen>
     <dimen name="cta_centered_button_width">250dp</dimen>
+    <dimen name="cta_offset_button_width">175dp</dimen>
     <dimen name="cta_button_height">62dp</dimen>
 
 </resources>

@@ -32,7 +32,7 @@ import ly.kite.address.Address;
 import ly.kite.address.AddressBookActivity;
 import ly.kite.print.Product;
 import ly.kite.print.ProductGroup;
-import ly.kite.print.ProductManager;
+import ly.kite.print.ProductCache;
 
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
@@ -61,6 +61,17 @@ public class CheckoutActivity extends Activity {
     private String apiKey;
     private KiteSDK.Environment environment;
 
+
+    public static void start( Activity activity, PrintOrder printOrder, int requestCode )
+      {
+      Intent intent = new Intent( activity, CheckoutActivity.class );
+
+      intent.putExtra( EXTRA_PRINT_ORDER, (Parcelable)printOrder );
+
+      activity.startActivityForResult( intent, requestCode );
+      }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,7 +91,7 @@ public class CheckoutActivity extends Activity {
         this.printOrder = (PrintOrder) getIntent().getParcelableExtra(EXTRA_PRINT_ORDER);
 
         if (apiKey == null) {
-            apiKey = KiteSDK.getAPIKey();
+            apiKey = KiteSDK.getInstance( this ).getAPIKey();
             if (apiKey == null) {
                 throw new IllegalArgumentException("You must specify an API key string extra in the intent used to start the CheckoutActivity or with KitePrintSDK.initialize");
             }
@@ -96,7 +107,7 @@ public class CheckoutActivity extends Activity {
 
         KiteSDK.Environment env = null;
         if (envString == null) {
-            env = KiteSDK.getEnvironment();
+            env = KiteSDK.getInstance( this ).getEnvironment();
             if (env == null) {
                 throw new IllegalArgumentException("You must specify an environment string extra in the intent used to start the CheckoutActivity or with KitePrintSDK.initialize");
             }
@@ -114,7 +125,7 @@ public class CheckoutActivity extends Activity {
 
         this.apiKey = apiKey;
         this.environment = env;
-        KiteSDK.initialize( apiKey, env, getApplicationContext() );
+        KiteSDK.getInstance( this ).setEnvironment( apiKey, env );
         if (getActionBar() != null) {
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
@@ -137,7 +148,7 @@ public class CheckoutActivity extends Activity {
         this.printOrder = savedInstanceState.getParcelable(EXTRA_PRINT_ORDER);
         this.apiKey = savedInstanceState.getString(EXTRA_PRINT_API_KEY);
         this.environment = (KiteSDK.Environment) savedInstanceState.getSerializable(EXTRA_PRINT_ENVIRONMENT);
-        KiteSDK.initialize( apiKey, environment, getApplicationContext() );
+        KiteSDK.getInstance( this ).setEnvironment( apiKey, environment );
     }
 
     @Override
@@ -214,9 +225,9 @@ public class CheckoutActivity extends Activity {
 
         final ProgressDialog progress = ProgressDialog.show(this, null, "Loading");
 
-        ProductManager.getInstance().getAllProducts(
+        ProductCache.getInstance( this ).getAllProducts(
                 1 * 60 * 60 * 1000,
-                new ProductManager.ProductConsumer()
+                new ProductCache.ProductConsumer()
                     {
                     @Override
                     public void onGotProducts( ArrayList<ProductGroup> productGroupList, HashMap<String, Product> productTable )
@@ -256,10 +267,11 @@ public class CheckoutActivity extends Activity {
     }
 
     private void startPaymentActivity() {
+
         // Check we have valid templates for every printjob
         for (PrintJob job : printOrder.getJobs()) {
             try {
-                ProductManager.getInstance().getProductById( job.getTemplateId() );
+                ProductCache.getInstance( this ).getProductById( job.getProductId() );
             } catch (Exception ex) {
                 showRetryTemplateSyncDialog(ex);
                 return;

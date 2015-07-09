@@ -32,19 +32,17 @@ public class AddressBookActivity extends Activity {
     public static final String EXTRA_ADDRESS = "ly.kite.EXTRA_ADDRESS";
 
     private static final int REQUEST_CODE_ADD_ADDRESS = 0;
-    private AddressBookAdapter addressBookAdapter;
+
+    private PlaceholderFragment mPlaceholderFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_address_book);
-
-        addressBookAdapter = new AddressBookAdapter();
-        addressBookAdapter.setAddresses(Address.getAddressBook(this));
+        setContentView( R.layout.activity_address_book );
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment(addressBookAdapter))
+                    .add(R.id.container, mPlaceholderFragment = new PlaceholderFragment() )
                     .commit();
         }
 
@@ -84,21 +82,41 @@ public class AddressBookActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE_ADD_ADDRESS && resultCode == RESULT_OK) {
             Address a = data.getParcelableExtra(AddressEditActivity.EXTRA_ADDRESS);
-            a.saveToAddressBook(this);
-            addressBookAdapter.setAddresses(Address.getAddressBook(this));
+            a.saveToAddressBook( this );
+
+            if ( mPlaceholderFragment != null ) mPlaceholderFragment.setAddresses( Address.getAddressBook( this ) );
         }
     }
 
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    // TODO: Remove inner class fragment
+    public static class PlaceholderFragment extends Fragment
+      {
 
-        private final AddressBookAdapter adapter;
+      private AddressBookAdapter addressBookAdapter;
 
-        public PlaceholderFragment(AddressBookAdapter adapter) {
-            this.adapter = adapter;
+      @Override
+      public void onCreate( Bundle savedInstanceState )
+        {
+        super.onCreate( savedInstanceState );
+
+        addressBookAdapter = new AddressBookAdapter();
+        addressBookAdapter.setAddresses( Address.getAddressBook( getActivity() ) );
         }
+
+
+      void setAddresses( List<Address> addressList )
+        {
+        addressBookAdapter.setAddresses( addressList );
+        }
+
+    //private final AddressBookAdapter adapter;
+
+//        public PlaceholderFragment(AddressBookAdapter adapter) {
+//            this.adapter = adapter;
+//        }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -110,12 +128,12 @@ public class AddressBookActivity extends Activity {
         @Override
         public void onViewCreated(View view, Bundle savedInstanceState) {
             ListView addressBookList = (ListView) view.findViewById(R.id.list_view_address_book);
-            addressBookList.setAdapter(adapter);
+            addressBookList.setAdapter(addressBookAdapter);
 
             addressBookList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long position) {
-                    final Address address = (Address) adapter.getItem((int) position);
+                    final Address address = (Address) addressBookAdapter.getItem((int) position);
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                     builder.setTitle(address.toString())
                             .setItems(new String[] {"Edit Address", "Delete Address"}, new DialogInterface.OnClickListener() {
@@ -127,7 +145,7 @@ public class AddressBookActivity extends Activity {
                                         startActivityForResult(intent, REQUEST_CODE_ADD_ADDRESS);
                                     } else if (i == 1) {
                                         address.deleteFromAddressBook(getActivity());
-                                        adapter.setAddresses(Address.getAddressBook(getActivity()));
+                                    addressBookAdapter.setAddresses(Address.getAddressBook(getActivity()));
                                     }
                                 }
                             });
@@ -139,7 +157,7 @@ public class AddressBookActivity extends Activity {
             addressBookList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long position) {
-                    Address addr = (Address) adapter.getItem((int) position);
+                    Address addr = (Address) addressBookAdapter.getItem((int) position);
                     Intent data = new Intent();
                     data.putExtra(EXTRA_ADDRESS, (Parcelable) addr);
                     getActivity().setResult(Activity.RESULT_OK, data);
@@ -174,7 +192,7 @@ public class AddressBookActivity extends Activity {
 
         @Override
         public Object getItem(int i) {
-            return addresses.get(i);
+            return addresses.get( i );
         }
 
         @Override

@@ -2,6 +2,7 @@ package ly.kite.print;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Parcel;
@@ -23,6 +24,8 @@ import java.util.Arrays;
  * Created by deonbotha on 06/02/2014.
  */
 public class Asset implements Parcelable, Serializable {
+
+    private static final int BITMAP_TO_JPEG_QUALITY = 100;
 
     public static enum MimeType {
         JPEG("image/jpeg"),
@@ -73,6 +76,30 @@ public class Asset implements Parcelable, Serializable {
     // The next two are only valid once an asset has been uploaded to the server
     private long id;
     private URL previewURL;
+
+
+  /*****************************************************
+   *
+   * Creates and returns a new asset from a bitmap. Due
+   * to the way assets are used (i.e. they are uploaded
+   * via HTTP, we have to encode the bitmap to (e.g.) JPEG
+   * and store it that way.
+   *
+   *****************************************************/
+  public static Asset create( Bitmap bitmap )
+    {
+    // Compress the bitmap into JPEG format and write into
+    // a byte buffer.
+
+    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+    bitmap.compress( Bitmap.CompressFormat.JPEG, BITMAP_TO_JPEG_QUALITY, byteArrayOutputStream );
+
+
+    // Create a new asset from the JPEG data
+    return ( new Asset( byteArrayOutputStream.toByteArray(), MimeType.JPEG ) );
+    }
+
 
     public Asset(Uri uri) {
         if (!uri.getScheme().equalsIgnoreCase("content") /*&& !uri.getScheme().equalsIgnoreCase("http") && !uri.getScheme().equalsIgnoreCase("https")*/) {

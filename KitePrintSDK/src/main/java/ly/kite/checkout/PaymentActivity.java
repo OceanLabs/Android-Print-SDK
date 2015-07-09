@@ -30,6 +30,7 @@ import org.json.JSONException;
 
 import java.math.BigDecimal;
 
+import ly.kite.address.AddressBookActivity;
 import ly.kite.print.ApplyPromoCodeListener;
 import ly.kite.KiteSDK;
 import ly.kite.print.PrintOrder;
@@ -82,7 +83,7 @@ public class PaymentActivity extends Activity {
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment(printOrder))
+                    .add(R.id.container, PlaceholderFragment.newInstance( printOrder ))
                     .commit();
         }
 
@@ -102,7 +103,7 @@ public class PaymentActivity extends Activity {
         this.apiKey = apiKey;
         this.printEnvironment = env;
 
-        KiteSDK.initialize( apiKey, env, getApplicationContext() );
+        KiteSDK.getInstance( this ).setEnvironment( apiKey, env );
 
         /*
          * Start PayPal Service
@@ -133,10 +134,10 @@ public class PaymentActivity extends Activity {
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        this.printOrder = savedInstanceState.getParcelable(EXTRA_PRINT_ORDER);
+        this.printOrder = savedInstanceState.getParcelable( EXTRA_PRINT_ORDER );
         this.apiKey = savedInstanceState.getString(EXTRA_PRINT_API_KEY);
         this.printEnvironment = (KiteSDK.Environment) savedInstanceState.getSerializable(EXTRA_PRINT_ENVIRONMENT);
-        KiteSDK.initialize( apiKey, printEnvironment, getApplicationContext() );
+        KiteSDK.getInstance( this ).setEnvironment( apiKey, printEnvironment );
 
         paypalEnvironment = PayPalCard.Environment.LIVE;
         if (printEnvironment == KiteSDK.Environment.STAGING || printEnvironment == KiteSDK.Environment.TEST) {
@@ -323,7 +324,7 @@ public class PaymentActivity extends Activity {
         if (proofOfPayment!=null) {
             printOrder.setProofOfPayment(proofOfPayment);
         }
-        printOrder.saveToHistory(this);
+        //printOrder.saveToHistory(this);
 
         final ProgressDialog dialog = new ProgressDialog(this);
         dialog.setCancelable(false);
@@ -348,7 +349,7 @@ public class PaymentActivity extends Activity {
             @Override
             public void onSubmissionComplete(PrintOrder printOrder, String orderIdReceipt) {
                 if (Looper.myLooper() != Looper.getMainLooper()) throw new AssertionError("Should be calling back on the main thread");
-                printOrder.saveToHistory(PaymentActivity.this);
+                //printOrder.saveToHistory(PaymentActivity.this);
                 dialog.dismiss();
                 Intent i = new Intent(PaymentActivity.this, OrderReceiptActivity.class);
                 i.putExtra(OrderReceiptActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder);
@@ -358,7 +359,7 @@ public class PaymentActivity extends Activity {
             @Override
             public void onError(PrintOrder printOrder, Exception error) {
                 if (Looper.myLooper() != Looper.getMainLooper()) throw new AssertionError("Should be calling back on the main thread");
-                printOrder.saveToHistory(PaymentActivity.this);
+                //printOrder.saveToHistory(PaymentActivity.this);
                 dialog.dismiss();
                 //showErrorDialog(error.getMessage());
 
@@ -414,7 +415,7 @@ public class PaymentActivity extends Activity {
             dialog.show();
 
             String promoCode = ((EditText) findViewById(R.id.edit_text_promo_code)).getText().toString();
-            printOrder.applyPromoCode(promoCode, new ApplyPromoCodeListener() {
+            printOrder.applyPromoCode( this, promoCode, new ApplyPromoCodeListener() {
                 @Override
                 public void onPromoCodeApplied(PrintOrder order, BigDecimal discount) {
                     dialog.dismiss();
@@ -434,15 +435,38 @@ public class PaymentActivity extends Activity {
     /**
      * A placeholder fragment containing a simple view.
      */
+    // TODO: Remove inner fragment
     public static class PlaceholderFragment extends Fragment {
 
-        private final PrintOrder printOrder;
+        final static String BUNDLE_KEY_PRINT_ORDER = "printOrder";
 
-        public PlaceholderFragment(PrintOrder printOrder) {
-            this.printOrder = printOrder;
-        }
+        private PrintOrder printOrder;
+
+
+        static PlaceholderFragment newInstance( PrintOrder printOrder )
+          {
+          Bundle argumentBundle = new Bundle();
+
+          argumentBundle.putParcelable( BUNDLE_KEY_PRINT_ORDER, printOrder );
+
+          PlaceholderFragment placeholderFragment = new PlaceholderFragment();
+          placeholderFragment.setArguments( argumentBundle );
+
+          return ( placeholderFragment );
+          }
+
 
         @Override
+        public void onCreate( Bundle savedInstanceState )
+          {
+          super.onCreate( savedInstanceState );
+
+          Bundle argumentBundle = getArguments();
+
+          this.printOrder = (PrintOrder)argumentBundle.getParcelable( BUNDLE_KEY_PRINT_ORDER );
+          }
+
+
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_payment, container, false);
             return rootView;

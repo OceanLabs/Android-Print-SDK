@@ -96,7 +96,7 @@ public class OrderReceiptActivity extends Activity {
             @Override
             public void onSubmissionComplete(PrintOrder printOrder, String orderIdReceipt) {
                 if (Looper.myLooper() != Looper.getMainLooper()) throw new AssertionError("Should be calling back on the main thread");
-                printOrder.saveToHistory(OrderReceiptActivity.this);
+                //printOrder.saveToHistory(OrderReceiptActivity.this);
                 dialog.dismiss();
 
                 Button retryPrintButton = (Button) findViewById(R.id.button_retry_print);
