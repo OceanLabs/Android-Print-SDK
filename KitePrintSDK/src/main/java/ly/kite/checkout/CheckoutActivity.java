@@ -57,7 +57,13 @@ public class CheckoutActivity extends Activity {
     private static final int REQUEST_CODE_PAYMENT = 1;
     private static final int REQUEST_CODE_ADDRESS_BOOK = 2;
 
-    private PrintOrder printOrder;
+    // The print order, if it contains image assets, is too larger to be passed
+    // in an intent - we get a TransactionTooLargeException. So we need to pass
+    // it as a static variable.
+    // TODO: Determine a better way of doing this.
+    private static PrintOrder sPrintOrder;
+
+    private PrintOrder mPrintOrder;
     private String apiKey;
     private KiteSDK.Environment environment;
 
@@ -66,7 +72,9 @@ public class CheckoutActivity extends Activity {
       {
       Intent intent = new Intent( activity, CheckoutActivity.class );
 
-      intent.putExtra( EXTRA_PRINT_ORDER, (Parcelable)printOrder );
+      // TODO: Determine a better way of doing this.
+      sPrintOrder = printOrder;
+      //intent.putExtra( EXTRA_PRINT_ORDER, (Parcelable)mPrintOrder );
 
       activity.startActivityForResult( intent, requestCode );
       }
@@ -88,7 +96,10 @@ public class CheckoutActivity extends Activity {
 
         String apiKey = getIntent().getStringExtra(EXTRA_PRINT_API_KEY);
         String envString = getIntent().getStringExtra(EXTRA_PRINT_ENVIRONMENT);
-        this.printOrder = (PrintOrder) getIntent().getParcelableExtra(EXTRA_PRINT_ORDER);
+
+        // TODO: Determine a better way of doing this.
+        //this.mPrintOrder = (PrintOrder) getIntent().getParcelableExtra(EXTRA_PRINT_ORDER);
+        mPrintOrder = sPrintOrder;
 
         if (apiKey == null) {
             apiKey = KiteSDK.getInstance( this ).getAPIKey();
@@ -97,11 +108,11 @@ public class CheckoutActivity extends Activity {
             }
         }
 
-        if (printOrder == null) {
+        if ( mPrintOrder == null) {
             throw new IllegalArgumentException("You must specify a PrintOrder object extra in the intent used to start the CheckoutActivity");
         }
 
-        if (printOrder.getJobs().size() < 1) {
+        if ( mPrintOrder.getJobs().size() < 1) {
             throw new IllegalArgumentException("You must specify a PrintOrder object extra that actually has some jobs for printing i.e. PrintOrder.getJobs().size() > 0");
         }
 
@@ -137,7 +148,7 @@ public class CheckoutActivity extends Activity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(EXTRA_PRINT_ORDER, printOrder);
+        outState.putParcelable(EXTRA_PRINT_ORDER, mPrintOrder );
         outState.putString(EXTRA_PRINT_API_KEY, apiKey);
         outState.putSerializable( EXTRA_PRINT_ENVIRONMENT, environment );
     }
@@ -145,7 +156,7 @@ public class CheckoutActivity extends Activity {
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        this.printOrder = savedInstanceState.getParcelable(EXTRA_PRINT_ORDER);
+        this.mPrintOrder = savedInstanceState.getParcelable(EXTRA_PRINT_ORDER);
         this.apiKey = savedInstanceState.getString(EXTRA_PRINT_API_KEY);
         this.environment = (KiteSDK.Environment) savedInstanceState.getSerializable(EXTRA_PRINT_ENVIRONMENT);
         KiteSDK.getInstance( this ).setEnvironment( apiKey, environment );
@@ -186,7 +197,7 @@ public class CheckoutActivity extends Activity {
         String email = ((TextView) findViewById(R.id.email_address_text_view)).getText().toString();
         String phone = ((TextView) findViewById(R.id.phone_number_text_view)).getText().toString();
 
-        if (printOrder.getShippingAddress() == null) {
+        if ( mPrintOrder.getShippingAddress() == null) {
             showErrorDialog("Invalid Delivery Address", "Please choose a delivery address");
             return;
         }
@@ -201,7 +212,7 @@ public class CheckoutActivity extends Activity {
             return;
         }
 
-        JSONObject userData = printOrder.getUserData();
+        JSONObject userData = mPrintOrder.getUserData();
         if (userData == null) {
             userData = new JSONObject();
         }
@@ -210,9 +221,9 @@ public class CheckoutActivity extends Activity {
             userData.put("email", email);
             userData.put("phone", phone);
         } catch (JSONException ex) {/* ignore */}
-        printOrder.setUserData(userData);
-        printOrder.setNotificationEmail(email);
-        printOrder.setNotificationPhoneNumber(phone);
+        mPrintOrder.setUserData( userData );
+        mPrintOrder.setNotificationEmail( email );
+        mPrintOrder.setNotificationPhoneNumber( phone );
 
         SharedPreferences settings = getSharedPreferences(SHIPPING_PREFERENCES, 0);
         SharedPreferences.Editor editor = settings.edit();
@@ -269,7 +280,7 @@ public class CheckoutActivity extends Activity {
     private void startPaymentActivity() {
 
         // Check we have valid templates for every printjob
-        for (PrintJob job : printOrder.getJobs()) {
+        for (PrintJob job : mPrintOrder.getJobs()) {
             try {
                 ProductCache.getInstance( this ).getProductById( job.getProductId() );
             } catch (Exception ex) {
@@ -278,11 +289,12 @@ public class CheckoutActivity extends Activity {
             }
         }
 
-        Intent i = new Intent(this, PaymentActivity.class);
-        i.putExtra(PaymentActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder);
-        i.putExtra(PaymentActivity.EXTRA_PRINT_API_KEY, apiKey);
-        i.putExtra(PaymentActivity.EXTRA_PRINT_ENVIRONMENT, getPaymentActivityEnvironment());
-        startActivityForResult(i, REQUEST_CODE_PAYMENT);
+        PaymentActivity.start( this, mPrintOrder, apiKey, getPaymentActivityEnvironment(),  REQUEST_CODE_PAYMENT );
+//        Intent i = new Intent(this, PaymentActivity.class);
+//        i.putExtra(PaymentActivity.EXTRA_PRINT_ORDER, (Parcelable) mPrintOrder );
+//        i.putExtra(PaymentActivity.EXTRA_PRINT_API_KEY, apiKey);
+//        i.putExtra(PaymentActivity.EXTRA_PRINT_ENVIRONMENT, getPaymentActivityEnvironment());
+//        startActivityForResult(i, REQUEST_CODE_PAYMENT);
     }
 
     boolean isEmailValid(CharSequence email) {
@@ -299,7 +311,7 @@ public class CheckoutActivity extends Activity {
         } else if (requestCode == REQUEST_CODE_ADDRESS_BOOK) {
             if (resultCode == RESULT_OK) {
                 Address address = data.getParcelableExtra(AddressBookActivity.EXTRA_ADDRESS);
-                printOrder.setShippingAddress(address);
+                mPrintOrder.setShippingAddress( address );
                 Button chooseAddressButton = (Button) findViewById(R.id.address_picker_button);
                 chooseAddressButton.setText(address.toString());
             }

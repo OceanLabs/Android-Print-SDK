@@ -199,16 +199,6 @@ public class MaskedImageView extends View implements GestureDetector.OnGestureLi
 
       canvas.drawBitmap( mBlendBitmap, mBlendToViewSourceRect, mBlendToViewTargetRect, null );
       }
-//    else
-//      {
-//      if ( mImageTargetRect != null )
-//        {
-//        canvas.drawBitmap( mImageBitmap, mImageToBlendSourceRect, mImageTargetRect, null );
-//        }
-//      }
-
-    //if ( mMaskTargetRect != null ) canvas.drawBitmap( mMaskBitmap, mMaskToBlendSourceRect, mMaskTargetRect, null );
-    //if ( mImageTargetRect != null ) canvas.drawBitmap( mImageBitmap, mImageToBlendSourceRect, mImageTargetRect, null );
     }
 
 
@@ -619,16 +609,8 @@ public class MaskedImageView extends View implements GestureDetector.OnGestureLi
     float unscaledBottom = scaledBottom / mImageScaleFactor;
 
 
-    // Create a bitmap-backed canvas and draw the cropped image into it.
-
-    Bitmap croppedImageBitmap = Bitmap.createBitmap( (int)( unscaledRight - unscaledLeft ), (int)( unscaledBottom - unscaledTop ), Bitmap.Config.ARGB_8888 );
-    Canvas canvas = new Canvas( croppedImageBitmap );
-
-    Rect  sourceRect = new Rect( (int)unscaledLeft, (int)unscaledTop, (int)unscaledRight, (int)unscaledBottom );
-    RectF targetRect = new RectF( 0f, 0f, croppedImageBitmap.getWidth(), croppedImageBitmap.getHeight() );
-
-    canvas.drawBitmap( croppedImageBitmap, sourceRect, targetRect, null );
-
+    // Create a new bitmap containing just the cropped part
+    Bitmap croppedImageBitmap = Bitmap.createBitmap( mImageBitmap, (int)unscaledLeft, (int)unscaledTop, (int)( unscaledRight - unscaledLeft ), (int)( unscaledBottom - unscaledTop ) );
 
     return ( croppedImageBitmap );
     }

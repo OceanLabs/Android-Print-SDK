@@ -30,7 +30,6 @@ import org.json.JSONException;
 
 import java.math.BigDecimal;
 
-import ly.kite.address.AddressBookActivity;
 import ly.kite.print.ApplyPromoCodeListener;
 import ly.kite.KiteSDK;
 import ly.kite.print.PrintOrder;
@@ -58,10 +57,30 @@ public class PaymentActivity extends Activity {
     private static final int REQUEST_CODE_CREDITCARD = 1;
     private static final int REQUEST_CODE_RECEIPT = 2;
 
-    private PrintOrder printOrder;
+  // The print order, if it contains image assets, is too larger to be passed
+  // in an intent - we get a TransactionTooLargeException. So we need to pass
+  // it as a static variable.
+  // TODO: Determine a better way of doing this.
+  private static PrintOrder sPrintOrder;
+
+    private PrintOrder mPrintOrder;
     private String apiKey;
     private KiteSDK.Environment printEnvironment;
     private PayPalCard.Environment paypalEnvironment;
+
+  public static void start( Activity activity, PrintOrder printOrder, String apiKey, String environmentName, int requestCode )
+    {
+    Intent intent = new Intent( activity, PaymentActivity.class );
+
+    // TODO: Determine a better way of doing this.
+    sPrintOrder = printOrder;
+
+    //intent.putExtra(PaymentActivity.EXTRA_PRINT_ORDER, (Parcelable) mPrintOrder );
+    intent.putExtra( PaymentActivity.EXTRA_PRINT_API_KEY, apiKey );
+    intent.putExtra( PaymentActivity.EXTRA_PRINT_ENVIRONMENT, environmentName );
+
+    activity.startActivityForResult( intent, requestCode );
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,19 +90,22 @@ public class PaymentActivity extends Activity {
 
         String apiKey = getIntent().getStringExtra(EXTRA_PRINT_API_KEY);
         String envString = getIntent().getStringExtra(EXTRA_PRINT_ENVIRONMENT);
-        this.printOrder = (PrintOrder) getIntent().getParcelableExtra(EXTRA_PRINT_ORDER);
+
+    // TODO: Determine a better way of doing this.
+    //this.mPrintOrder = (PrintOrder) getIntent().getParcelableExtra(EXTRA_PRINT_ORDER);
+    mPrintOrder = sPrintOrder;
 
         if (apiKey == null) {
             throw new IllegalArgumentException("You must specify an API key string extra in the intent used to start the PaymentActivity");
         }
 
-        if (printOrder == null) {
+        if ( mPrintOrder == null) {
             throw new IllegalArgumentException("You must specify a PrintOrder object extra in the intent used to start the PaymentActivity");
         }
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.container, PlaceholderFragment.newInstance( printOrder ))
+                    .add(R.id.container, PlaceholderFragment.newInstance( mPrintOrder ))
                     .commit();
         }
 
@@ -126,7 +148,7 @@ public class PaymentActivity extends Activity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(EXTRA_PRINT_ORDER, printOrder);
+        outState.putParcelable(EXTRA_PRINT_ORDER, mPrintOrder );
         outState.putString(EXTRA_PRINT_API_KEY, apiKey);
         outState.putSerializable(EXTRA_PRINT_ENVIRONMENT, printEnvironment);
     }
@@ -134,7 +156,7 @@ public class PaymentActivity extends Activity {
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        this.printOrder = savedInstanceState.getParcelable( EXTRA_PRINT_ORDER );
+        this.mPrintOrder = savedInstanceState.getParcelable( EXTRA_PRINT_ORDER );
         this.apiKey = savedInstanceState.getString(EXTRA_PRINT_API_KEY);
         this.printEnvironment = (KiteSDK.Environment) savedInstanceState.getSerializable(EXTRA_PRINT_ENVIRONMENT);
         KiteSDK.getInstance( this ).setEnvironment( apiKey, printEnvironment );
@@ -161,7 +183,7 @@ public class PaymentActivity extends Activity {
     }
 
     public void onButtonPayWithPayPalClicked(View view) {
-        PayPalPayment payment = new PayPalPayment(printOrder.getCost(printOrder.getCurrencyCode()), printOrder.getCurrencyCode(), "Product");
+        PayPalPayment payment = new PayPalPayment( mPrintOrder.getCost( mPrintOrder.getCurrencyCode()), mPrintOrder.getCurrencyCode(), "Product");
         Intent intent = new Intent(this, com.paypal.android.sdk.payments.PaymentActivity.class);
         intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_PAYPAL_ENVIRONMENT, printEnvironment.getPayPalEnvironment());
         intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_CLIENT_ID, printEnvironment.getPayPalClientId());
@@ -297,20 +319,23 @@ public class PaymentActivity extends Activity {
         dialog.setMessage("One moment");
         dialog.show();
 
-        card.chargeCard(paypalEnvironment, printOrder.getCost(printOrder.getCurrencyCode()), getPayPalCurrency(printOrder.getCurrencyCode()), "", new PayPalCardChargeListener() {
-            @Override
-            public void onChargeSuccess(PayPalCard card, String proofOfPayment) {
-                dialog.dismiss();
-                submitOrderForPrinting(proofOfPayment);
-                card.saveAsLastUsedCard(PaymentActivity.this);
+        card.chargeCard( paypalEnvironment, mPrintOrder.getCost( mPrintOrder.getCurrencyCode() ), getPayPalCurrency( mPrintOrder.getCurrencyCode() ), "", new PayPalCardChargeListener()
+        {
+        @Override
+        public void onChargeSuccess( PayPalCard card, String proofOfPayment )
+            {
+            dialog.dismiss();
+            submitOrderForPrinting( proofOfPayment );
+            card.saveAsLastUsedCard( PaymentActivity.this );
             }
 
-            @Override
-            public void onError(PayPalCard card, Exception ex) {
-                dialog.dismiss();
-                showErrorDialog(ex.getMessage());
+        @Override
+        public void onError( PayPalCard card, Exception ex )
+            {
+            dialog.dismiss();
+            showErrorDialog( ex.getMessage() );
             }
-        });
+        } );
     }
 
     private void showErrorDialog(String message) {
@@ -322,9 +347,9 @@ public class PaymentActivity extends Activity {
 
     private void submitOrderForPrinting(String proofOfPayment) {
         if (proofOfPayment!=null) {
-            printOrder.setProofOfPayment(proofOfPayment);
+            mPrintOrder.setProofOfPayment( proofOfPayment );
         }
-        //printOrder.saveToHistory(this);
+        //mPrintOrder.saveToHistory(this);
 
         final ProgressDialog dialog = new ProgressDialog(this);
         dialog.setCancelable(false);
@@ -335,46 +360,53 @@ public class PaymentActivity extends Activity {
         dialog.setMax(100);
         dialog.show();
 
-        printOrder.submitForPrinting(this, new PrintOrderSubmissionListener() {
-            @Override
-            public void onProgress(PrintOrder printOrder, int totalAssetsUploaded, int totalAssetsToUpload, long totalAssetBytesWritten, long totalAssetBytesExpectedToWrite, long totalBytesWritten, long totalBytesExpectedToWrite) {
-                if (Looper.myLooper() != Looper.getMainLooper()) throw new AssertionError("Should be calling back on the main thread");
-                final float step = (1.0f / totalAssetsToUpload);
-                float progress = totalAssetsUploaded * step + (totalAssetBytesWritten / (float) totalAssetBytesExpectedToWrite) * step;
-                dialog.setProgress((int) (totalAssetsUploaded * step * 100));
-                dialog.setSecondaryProgress((int) (progress * 100));
-                dialog.setMessage("Uploading images");
+        mPrintOrder.submitForPrinting( this, new PrintOrderSubmissionListener()
+        {
+        @Override
+        public void onProgress( PrintOrder printOrder, int totalAssetsUploaded, int totalAssetsToUpload, long totalAssetBytesWritten, long totalAssetBytesExpectedToWrite, long totalBytesWritten, long totalBytesExpectedToWrite )
+            {
+            if ( Looper.myLooper() != Looper.getMainLooper() )
+                throw new AssertionError( "Should be calling back on the main thread" );
+            final float step = (1.0f / totalAssetsToUpload);
+            float progress = totalAssetsUploaded * step + (totalAssetBytesWritten / (float) totalAssetBytesExpectedToWrite) * step;
+            dialog.setProgress( (int) (totalAssetsUploaded * step * 100) );
+            dialog.setSecondaryProgress( (int) (progress * 100) );
+            dialog.setMessage( "Uploading images" );
             }
 
-            @Override
-            public void onSubmissionComplete(PrintOrder printOrder, String orderIdReceipt) {
-                if (Looper.myLooper() != Looper.getMainLooper()) throw new AssertionError("Should be calling back on the main thread");
-                //printOrder.saveToHistory(PaymentActivity.this);
-                dialog.dismiss();
-                Intent i = new Intent(PaymentActivity.this, OrderReceiptActivity.class);
-                i.putExtra(OrderReceiptActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder);
-                startActivityForResult(i, REQUEST_CODE_RECEIPT);
+        @Override
+        public void onSubmissionComplete( PrintOrder printOrder, String orderIdReceipt )
+            {
+            if ( Looper.myLooper() != Looper.getMainLooper() )
+                throw new AssertionError( "Should be calling back on the main thread" );
+            //mPrintOrder.saveToHistory(PaymentActivity.this);
+            dialog.dismiss();
+            Intent i = new Intent( PaymentActivity.this, OrderReceiptActivity.class );
+            i.putExtra( OrderReceiptActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder );
+            startActivityForResult( i, REQUEST_CODE_RECEIPT );
             }
 
-            @Override
-            public void onError(PrintOrder printOrder, Exception error) {
-                if (Looper.myLooper() != Looper.getMainLooper()) throw new AssertionError("Should be calling back on the main thread");
-                //printOrder.saveToHistory(PaymentActivity.this);
-                dialog.dismiss();
-                //showErrorDialog(error.getMessage());
+        @Override
+        public void onError( PrintOrder printOrder, Exception error )
+            {
+            if ( Looper.myLooper() != Looper.getMainLooper() )
+                throw new AssertionError( "Should be calling back on the main thread" );
+            //mPrintOrder.saveToHistory(PaymentActivity.this);
+            dialog.dismiss();
+            //showErrorDialog(error.getMessage());
 
-                Intent i = new Intent(PaymentActivity.this, OrderReceiptActivity.class);
-                i.putExtra(OrderReceiptActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder);
-                startActivityForResult(i, REQUEST_CODE_RECEIPT);
+            Intent i = new Intent( PaymentActivity.this, OrderReceiptActivity.class );
+            i.putExtra( OrderReceiptActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder );
+            startActivityForResult( i, REQUEST_CODE_RECEIPT );
             }
-        });
+        } );
     }
 
     private void updateViewsBasedOnPromoCodeChange() {
         Button applyButton = (Button) findViewById(R.id.button_apply_promo);
         EditText promoText = (EditText) findViewById(R.id.edit_text_promo_code);
-        if (printOrder.getPromoCode() != null) {
-            promoText.setText(printOrder.getPromoCode());
+        if ( mPrintOrder.getPromoCode() != null) {
+            promoText.setText( mPrintOrder.getPromoCode());
             promoText.setEnabled(false);
             applyButton.setText("Clear");
         } else {
@@ -384,7 +416,7 @@ public class PaymentActivity extends Activity {
         }
 
         Button payWithCreditCardButton = (Button) findViewById(R.id.button_pay_with_credit_card);
-        if (printOrder.getCost(printOrder.getCurrencyCode()).compareTo(BigDecimal.ZERO) <= 0) {
+        if ( mPrintOrder.getCost( mPrintOrder.getCurrencyCode()).compareTo(BigDecimal.ZERO) <= 0) {
             findViewById(R.id.button_pay_with_paypal).setVisibility(View.GONE);
             payWithCreditCardButton.setText("Checkout for Free!");
             payWithCreditCardButton.setOnClickListener(new View.OnClickListener() {
@@ -402,9 +434,9 @@ public class PaymentActivity extends Activity {
     }
 
     public void onButtonApplyClicked(View view) {
-        if (printOrder.getPromoCode() != null) {
+        if ( mPrintOrder.getPromoCode() != null) {
             // Clear promo code
-            printOrder.clearPromoCode();
+            mPrintOrder.clearPromoCode();
             updateViewsBasedOnPromoCodeChange();
         } else {
             // Apply promo code
@@ -415,7 +447,7 @@ public class PaymentActivity extends Activity {
             dialog.show();
 
             String promoCode = ((EditText) findViewById(R.id.edit_text_promo_code)).getText().toString();
-            printOrder.applyPromoCode( this, promoCode, new ApplyPromoCodeListener() {
+            mPrintOrder.applyPromoCode( this, promoCode, new ApplyPromoCodeListener() {
                 @Override
                 public void onPromoCodeApplied(PrintOrder order, BigDecimal discount) {
                     dialog.dismiss();
@@ -438,7 +470,7 @@ public class PaymentActivity extends Activity {
     // TODO: Remove inner fragment
     public static class PlaceholderFragment extends Fragment {
 
-        final static String BUNDLE_KEY_PRINT_ORDER = "printOrder";
+        final static String BUNDLE_KEY_PRINT_ORDER = "mPrintOrder";
 
         private PrintOrder printOrder;
 
