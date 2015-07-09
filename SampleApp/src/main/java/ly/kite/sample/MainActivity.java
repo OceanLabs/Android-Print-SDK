@@ -15,70 +15,88 @@ import android.widget.Toast;
 import ly.kite.print.Asset;
 import ly.kite.KiteSDK;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity
+  {
 
-    /**********************************************************************
-     * Insert your Kite API keys here. These are found under your profile
-     * by logging in to the developer portal at https://www.kite.ly
-     **********************************************************************/
-    private static final String API_KEY_TEST = "ba171b0d91b1418fbd04f7b12af1e37e42d2cb1e";
-    //private static final String API_KEY_TEST = "0453d74be957c1eb510fc2d580007294cdc31a79";  // Masks with bleed
-    private static final String API_KEY_LIVE = "REPLACE_ME";
+  /**********************************************************************
+   * Insert your Kite API keys here. These are found under your profile
+   * by logging in to the developer portal at https://www.kite.ly
+   **********************************************************************/
+  private static final String API_KEY_TEST = "ba171b0d91b1418fbd04f7b12af1e37e42d2cb1e";
 
-    private static final int REQUEST_CODE_SELECT_PICTURE = 1;
-    private static final int REQUEST_CODE_CHECKOUT = 2;
+  private static final String API_KEY_LIVE = "REPLACE_ME";
 
-    private Switch environmentSwitch;
-    //private Spinner productSpinner;
+  private static final int REQUEST_CODE_SELECT_PICTURE = 1;
+  private static final int REQUEST_CODE_CHECKOUT = 2;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        environmentSwitch = (Switch) findViewById(R.id.environment);
-        //productSpinner = (Spinner) findViewById(R.id.spinner_product);
+  private Switch environmentSwitch;
+  //private Spinner productSpinner;
 
-        //ArrayAdapter adapter = new ArrayAdapter<ProductType>(this, android.R.layout.simple_list_item_1, ProductType.values());
-        //adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        //productSpinner.setAdapter(adapter);
-        //productSpinner.setSelection(Arrays.asList(ProductType.values()).indexOf(ProductType.MAGNETS));
+  @Override
+  protected void onCreate( Bundle savedInstanceState )
+    {
+    super.onCreate( savedInstanceState );
+    setContentView( R.layout.activity_main );
+    environmentSwitch = (Switch) findViewById( R.id.environment );
+    //productSpinner = (Spinner) findViewById(R.id.spinner_product);
+
+    //ArrayAdapter adapter = new ArrayAdapter<ProductType>(this, android.R.layout.simple_list_item_1, ProductType.values());
+    //adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    //productSpinner.setAdapter(adapter);
+    //productSpinner.setSelection(Arrays.asList(ProductType.values()).indexOf(ProductType.MAGNETS));
     }
 
-    public void onGalleryButtonClicked(View view) {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_CODE_SELECT_PICTURE);
+  public void onGalleryButtonClicked( View view )
+    {
+    Intent intent = new Intent();
+    intent.setType( "image/*" );
+    intent.setAction( Intent.ACTION_GET_CONTENT );
+    startActivityForResult( Intent.createChooser( intent, "Select Picture" ), REQUEST_CODE_SELECT_PICTURE );
     }
 
-    public void onRemoteButtonClicked(View view) {
-        ArrayList<Asset> assets = new ArrayList<Asset>();
-        assets.add(new Asset(R.drawable.instagram1));
+  public void onRemoteButtonClicked( View view )
+    {
+    ArrayList<Asset> assets = new ArrayList<Asset>();
+    assets.add( new Asset( R.drawable.instagram1 ) );
 
-        try {
-            assets.add(new Asset(new URL("http://psps.s3.amazonaws.com/sdk_static/1.jpg")));
-            assets.add(new Asset(new URL("http://psps.s3.amazonaws.com/sdk_static/2.jpg")));
-            assets.add(new Asset(new URL("http://psps.s3.amazonaws.com/sdk_static/3.jpg")));
-            assets.add(new Asset(new URL("http://psps.s3.amazonaws.com/sdk_static/4.jpg")));
-        } catch (Exception ex) {}
+    try
+      {
+      assets.add( new Asset( new URL( "http://psps.s3.amazonaws.com/sdk_static/1.jpg" ) ) );
+      assets.add( new Asset( new URL( "http://psps.s3.amazonaws.com/sdk_static/2.jpg" ) ) );
+      assets.add( new Asset( new URL( "http://psps.s3.amazonaws.com/sdk_static/3.jpg" ) ) );
+      assets.add( new Asset( new URL( "http://psps.s3.amazonaws.com/sdk_static/4.jpg" ) ) );
+      }
+    catch ( Exception ex )
+      {
+      }
 
-        checkoutWithAssets(assets);
+    checkoutWithAssets( assets );
     }
 
-    private void checkoutWithAssets(ArrayList<Asset> assets) {
-        String apiKey = API_KEY_TEST;
-        KiteSDK.Environment env = KiteSDK.Environment.TEST;
-        if (environmentSwitch.isChecked()) {
-            apiKey = API_KEY_LIVE;
-            env = KiteSDK.Environment.LIVE;
-        }
+  private void checkoutWithAssets( ArrayList<Asset> assets )
+    {
+    String               apiKey;
+    KiteSDK.Environment  environment;
 
-        if (apiKey.equals("REPLACE_ME")) {
-            showError("Set API Keys", "Please set your Kite API keys at the top of the SampleApp's MainActivity.java. You can find these by logging into https://www.kite.ly.");
-            return;
-        }
+    if ( environmentSwitch.isChecked() )
+      {
+      apiKey      = API_KEY_LIVE;
+      environment = KiteSDK.Environment.LIVE;
+      }
+    else
+      {
+      apiKey      = API_KEY_TEST;
+      environment = KiteSDK.Environment.TEST;
+      }
 
-    KiteSDK.shop( apiKey, env, this, assets );
+
+    if ( apiKey.equals( "REPLACE_ME" ) )
+      {
+      showError( "Set API Keys", "Please set your Kite API keys at the top of the SampleApp's MainActivity.java. You can find these by logging into https://www.kite.ly." );
+      return;
+      }
+
+    KiteSDK.shop( this, apiKey, environment, assets );
 
 //        KitePrintSDK.initialize(apiKey, env, getApplicationContext());
 //
@@ -117,29 +135,38 @@ public class MainActivity extends Activity {
 //        } );
     }
 
-    private void showError(String title, String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(title);
-        builder.setMessage(message);
-        builder.setPositiveButton("OK", null);
-        builder.show();
+  private void showError( String title, String message )
+    {
+    AlertDialog.Builder builder = new AlertDialog.Builder( this );
+    builder.setTitle( title );
+    builder.setMessage( message );
+    builder.setPositiveButton( "OK", null );
+    builder.show();
     }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CODE_CHECKOUT) {
-            if (resultCode == Activity.RESULT_OK) {
-                Toast.makeText(this, "User successfully checked out!", Toast.LENGTH_LONG).show();
-            } else if (resultCode == Activity.RESULT_CANCELED) {
-                Toast.makeText(this, "User cancelled checkout :(", Toast.LENGTH_LONG).show();
-            }
-        } else if (requestCode == REQUEST_CODE_SELECT_PICTURE) {
-            if (resultCode == RESULT_OK) {
-                Uri selectedImageUri = data.getData();
-                ArrayList<Asset> assets = new ArrayList<Asset>();
-                assets.add(new Asset(selectedImageUri));
-                checkoutWithAssets(assets);
-            }
+  public void onActivityResult( int requestCode, int resultCode, Intent data )
+    {
+    if ( requestCode == REQUEST_CODE_CHECKOUT )
+      {
+      if ( resultCode == Activity.RESULT_OK )
+        {
+        Toast.makeText( this, "User successfully checked out!", Toast.LENGTH_LONG ).show();
         }
+      else if ( resultCode == Activity.RESULT_CANCELED )
+        {
+        Toast.makeText( this, "User cancelled checkout :(", Toast.LENGTH_LONG ).show();
+        }
+      }
+    else if ( requestCode == REQUEST_CODE_SELECT_PICTURE )
+      {
+      if ( resultCode == RESULT_OK )
+        {
+        Uri selectedImageUri = data.getData();
+        ArrayList<Asset> assets = new ArrayList<Asset>();
+        assets.add( new Asset( selectedImageUri ) );
+        checkoutWithAssets( assets );
+        }
+      }
     }
 
-}
+  }
