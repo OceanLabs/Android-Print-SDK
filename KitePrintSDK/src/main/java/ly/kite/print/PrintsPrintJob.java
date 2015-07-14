@@ -108,7 +108,8 @@ class PrintsPrintJob extends PrintJob {
     }
 
     private PrintsPrintJob(Parcel parcel) {
-        super( ProductCache.getDirtyInstance().getProductById( parcel.readString() ) );
+        //super( ProductCache.getDirtyInstance().getProductById( parcel.readString() ) );
+        super( parcel );
         this.mAssetList = new ArrayList<Asset>();
         parcel.readTypedList( mAssetList, Asset.CREATOR);
     }
@@ -124,21 +125,21 @@ class PrintsPrintJob extends PrintJob {
         }
     };
 
-    protected void writeObject(java.io.ObjectOutputStream out) throws IOException {
-        super.writeObject( out );
-        out.writeInt( mAssetList.size() );
-        for (Asset a : mAssetList ) {
-            out.writeObject(a);
-        }
-    }
-
-    protected void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readObject( in );
-        int numAssets = in.readInt();
-        mAssetList = new ArrayList<Asset>(numAssets);
-        for (int i = 0; i < numAssets; ++i) {
-            mAssetList.add( (Asset) in.readObject() );
-        }
-    }
+//    protected void writeObject(java.io.ObjectOutputStream out) throws IOException {
+//        super.writeObject( out );
+//        out.writeInt( mAssetList.size() );
+//        for (Asset a : mAssetList ) {
+//            out.writeObject(a);
+//        }
+//    }
+//
+//    protected void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+//        super.readObject( in );
+//        int numAssets = in.readInt();
+//        mAssetList = new ArrayList<Asset>(numAssets);
+//        for (int i = 0; i < numAssets; ++i) {
+//            mAssetList.add( (Asset) in.readObject() );
+//        }
+//    }
 
 }

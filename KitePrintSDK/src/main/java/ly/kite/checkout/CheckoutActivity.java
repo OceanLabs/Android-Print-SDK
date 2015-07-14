@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.os.Parcelable;
 import android.os.Bundle;
 //import android.telecom.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,6 +26,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import ly.kite.KiteSDK;
+import ly.kite.analytics.Analytics;
 import ly.kite.print.PrintJob;
 import ly.kite.print.PrintOrder;
 import ly.kite.R;
@@ -42,6 +44,8 @@ import java.util.HashMap;
 
 public class CheckoutActivity extends Activity {
 
+    private static final long  MAXIMUM_PRODUCT_AGE_MILLIS = 1 * 60 * 60 * 1000;
+
     private static final String SHIPPING_PREFERENCES = "shipping_preferences";
     private static final String SHIPPING_PREFERENCE_EMAIL = "shipping_preferences.email";
     private static final String SHIPPING_PREFERENCE_PHONE = "shipping_preferences.phone";
@@ -57,12 +61,6 @@ public class CheckoutActivity extends Activity {
     private static final int REQUEST_CODE_PAYMENT = 1;
     private static final int REQUEST_CODE_ADDRESS_BOOK = 2;
 
-    // The print order, if it contains image assets, is too larger to be passed
-    // in an intent - we get a TransactionTooLargeException. So we need to pass
-    // it as a static variable.
-    // TODO: Determine a better way of doing this.
-    private static PrintOrder sPrintOrder;
-
     private PrintOrder mPrintOrder;
     private String apiKey;
     private KiteSDK.Environment environment;
@@ -72,9 +70,7 @@ public class CheckoutActivity extends Activity {
       {
       Intent intent = new Intent( activity, CheckoutActivity.class );
 
-      // TODO: Determine a better way of doing this.
-      sPrintOrder = printOrder;
-      //intent.putExtra( EXTRA_PRINT_ORDER, (Parcelable)mPrintOrder );
+      intent.putExtra( EXTRA_PRINT_ORDER, (Parcelable)printOrder );
 
       activity.startActivityForResult( intent, requestCode );
       }
@@ -98,8 +94,7 @@ public class CheckoutActivity extends Activity {
         String envString = getIntent().getStringExtra(EXTRA_PRINT_ENVIRONMENT);
 
         // TODO: Determine a better way of doing this.
-        //this.mPrintOrder = (PrintOrder) getIntent().getParcelableExtra(EXTRA_PRINT_ORDER);
-        mPrintOrder = sPrintOrder;
+        mPrintOrder = (PrintOrder) getIntent().getParcelableExtra(EXTRA_PRINT_ORDER);
 
         if (apiKey == null) {
             apiKey = KiteSDK.getInstance( this ).getAPIKey();
@@ -143,6 +138,12 @@ public class CheckoutActivity extends Activity {
 
         // hide keyboard initially
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+
+    if ( savedInstanceState == null )
+      {
+      Analytics.getInstance( this ).trackShippingScreenViewed( mPrintOrder, Analytics.VARIANT_JSON_PROPERTY_VALUE_CLASSIC_PLUS_ADDRESS_SEARCH, true );
+      }
     }
 
     @Override
@@ -237,7 +238,7 @@ public class CheckoutActivity extends Activity {
         final ProgressDialog progress = ProgressDialog.show(this, null, "Loading");
 
         ProductCache.getInstance( this ).getAllProducts(
-                1 * 60 * 60 * 1000,
+                MAXIMUM_PRODUCT_AGE_MILLIS,
                 new ProductCache.ProductConsumer()
                     {
                     @Override
@@ -262,7 +263,7 @@ public class CheckoutActivity extends Activity {
     private void showRetryTemplateSyncDialog(Exception error) {
         AlertDialog.Builder builder = new AlertDialog.Builder(CheckoutActivity.this);
         builder.setTitle("Oops");
-        builder.setMessage(error.getLocalizedMessage());
+        builder.setMessage( error.getLocalizedMessage() );
         if (error instanceof UnknownHostException || error instanceof SocketTimeoutException) {
             builder.setMessage("Please check your internet connectivity and then try again");
         }
@@ -280,14 +281,24 @@ public class CheckoutActivity extends Activity {
     private void startPaymentActivity() {
 
         // Check we have valid templates for every printjob
-        for (PrintJob job : mPrintOrder.getJobs()) {
-            try {
-                ProductCache.getInstance( this ).getProductById( job.getProductId() );
-            } catch (Exception ex) {
-                showRetryTemplateSyncDialog(ex);
-                return;
+
+        try
+          {
+          // This will return null if there are no products, or they are out of date, but that's
+          // OK because we catch any exceptions.
+          Pair<ArrayList<ProductGroup>,HashMap<String,Product>> productPair = ProductCache.getInstance( this ).getCachedProducts( MAXIMUM_PRODUCT_AGE_MILLIS );
+
+          // Go through every print job and check that we can get a product from the product id
+          for ( PrintJob job : mPrintOrder.getJobs() )
+            {
+            String productId = productPair.second.get( job.getProduct().getId() ).getId();
             }
-        }
+          }
+        catch ( Exception exception )
+          {
+          showRetryTemplateSyncDialog( exception );
+          return;
+          }
 
         PaymentActivity.start( this, mPrintOrder, apiKey, getPaymentActivityEnvironment(),  REQUEST_CODE_PAYMENT );
 //        Intent i = new Intent(this, PaymentActivity.class);

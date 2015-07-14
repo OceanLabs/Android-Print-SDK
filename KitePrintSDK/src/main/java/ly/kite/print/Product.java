@@ -39,6 +39,9 @@ package ly.kite.print;
 
 ///// Import(s) /////
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.math.BigDecimal;
 import java.net.URL;
 import java.util.ArrayList;
@@ -65,7 +68,7 @@ import ly.kite.shopping.UserJourneyType;
  * This class represents a print product.
  *
  *****************************************************/
-public class Product implements IGroupOrProduct
+public class Product implements Parcelable, IGroupOrProduct
   {
   ////////// Static Constant(s) //////////
 
@@ -80,6 +83,20 @@ public class Product implements IGroupOrProduct
 
 
   ////////// Static Variable(s) //////////
+
+  public static final Parcelable.Creator<Product> CREATOR =
+    new Parcelable.Creator<Product>()
+      {
+      public Product createFromParcel( Parcel sourceParcel )
+        {
+        return ( new Product( sourceParcel ) );
+        }
+
+      public Product[] newArray( int size )
+        {
+        return ( new Product[ size ] );
+        }
+      };
 
 
   ////////// Member Variable(s) //////////
@@ -121,7 +138,95 @@ public class Product implements IGroupOrProduct
     }
 
 
-  ////////// DisplayItem Method(s) //////////
+  // Constructor used by parcelable interface
+  private Product( Parcel sourceParcel )
+    {
+    mId               = sourceParcel.readString();
+    mCode             = sourceParcel.readString();
+    mName             = sourceParcel.readString();
+    mLabel            = sourceParcel.readString();
+
+    String userJourneyString = sourceParcel.readString();
+    mUserJourneyType  = ( userJourneyString != null ? UserJourneyType.valueOf( userJourneyString ) : null );
+
+    mQuantityPerSheet = sourceParcel.readInt();
+    mCost             = (MultipleCurrencyCost)sourceParcel.readParcelable( MultipleCurrencyCost.class.getClassLoader() );
+    mShippingCosts    = (MultipleDestinationShippingCosts)sourceParcel.readParcelable( MultipleDestinationShippingCosts.class.getClassLoader() );
+    mHeroImageURL     = (URL)sourceParcel.readSerializable();
+    mLabelColour      = sourceParcel.readInt();
+
+
+    int imageURLCount = sourceParcel.readInt();
+
+    mImageURLList = new ArrayList<URL>();
+
+    for ( int index = 0; index < imageURLCount; index ++ )
+      {
+      mImageURLList.add( (URL)sourceParcel.readSerializable() );
+      }
+
+
+    mMaskURL          = (URL)sourceParcel.readSerializable();
+    mMaskBleed        = (Bleed)sourceParcel.readParcelable( Bleed.class.getClassLoader() );
+    mSize             = (MultipleUnitSize)sourceParcel.readParcelable( MultipleUnitSize.class.getClassLoader() );
+    }
+
+
+  ////////// Parcelable Method(s) //////////
+
+  /*****************************************************
+   *
+   * Describes the contents of this parcelable.
+   *
+   *****************************************************/
+  @Override
+  public int describeContents()
+    {
+    return ( 0 );
+    }
+
+
+  /*****************************************************
+   *
+   * Write the contents of this product to a parcel.
+   *
+   *****************************************************/
+  @Override
+  public void writeToParcel( Parcel targetParcel, int flags )
+    {
+    targetParcel.writeString( mId );
+    targetParcel.writeString( mCode );
+    targetParcel.writeString( mName );
+    targetParcel.writeString( mLabel );
+    targetParcel.writeString( mUserJourneyType != null ? mUserJourneyType.name() : null );
+    targetParcel.writeInt( mQuantityPerSheet );
+    targetParcel.writeParcelable( mCost, flags );
+    targetParcel.writeParcelable( mShippingCosts, flags );
+    targetParcel.writeSerializable( mHeroImageURL );
+    targetParcel.writeInt( mLabelColour );
+
+    if ( mImageURLList != null )
+      {
+      targetParcel.writeInt( mImageURLList.size() );
+
+      for ( URL imageURL : mImageURLList )
+        {
+        targetParcel.writeSerializable( imageURL );
+        }
+      }
+    else
+      {
+      targetParcel.writeInt( 0 );
+      }
+
+    targetParcel.writeSerializable( mMaskURL );
+
+    targetParcel.writeParcelable( mMaskBleed, flags );
+    targetParcel.writeParcelable( mSize, flags );
+    }
+
+
+  ////////// GroupOrProduct Method(s) //////////
 
   /*****************************************************
    *

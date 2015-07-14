@@ -30,6 +30,7 @@ import org.json.JSONException;
 
 import java.math.BigDecimal;
 
+import ly.kite.analytics.Analytics;
 import ly.kite.print.ApplyPromoCodeListener;
 import ly.kite.KiteSDK;
 import ly.kite.print.PrintOrder;
@@ -143,6 +144,12 @@ public class PaymentActivity extends Activity {
             }
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
+
+
+    if ( savedInstanceState == null )
+        {
+        Analytics.getInstance( this ).trackPaymentScreenViewed( mPrintOrder );
+        }
     }
 
     @Override
@@ -235,6 +242,9 @@ public class PaymentActivity extends Activity {
             if (resultCode == Activity.RESULT_OK) {
                 PaymentConfirmation confirm = data.getParcelableExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_RESULT_CONFIRMATION);
                 if (confirm != null) {
+
+                    Analytics.getInstance( this ).trackPaymentCompleted( mPrintOrder, Analytics.PAYMENT_METHOD_PAYPAL );
+
                     try {
                         String proofOfPayment = confirm.toJSONObject().getJSONObject("proof_of_payment").getJSONObject("adaptive_payment").getString("pay_key");
                         submitOrderForPrinting(proofOfPayment);
@@ -324,6 +334,8 @@ public class PaymentActivity extends Activity {
         @Override
         public void onChargeSuccess( PayPalCard card, String proofOfPayment )
             {
+            Analytics.getInstance( PaymentActivity.this ).trackPaymentCompleted( mPrintOrder, Analytics.PAYMENT_METHOD_CREDIT_CARD );
+
             dialog.dismiss();
             submitOrderForPrinting( proofOfPayment );
             card.saveAsLastUsedCard( PaymentActivity.this );
@@ -384,6 +396,8 @@ public class PaymentActivity extends Activity {
             Intent i = new Intent( PaymentActivity.this, OrderReceiptActivity.class );
             i.putExtra( OrderReceiptActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder );
             startActivityForResult( i, REQUEST_CODE_RECEIPT );
+
+            Analytics.getInstance( PaymentActivity.this ).trackOrderSubmission( printOrder );
             }
 
         @Override

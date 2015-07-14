@@ -49,6 +49,7 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import ly.kite.R;
+import ly.kite.analytics.Analytics;
 import ly.kite.print.Asset;
 import ly.kite.KiteSDK;
 import ly.kite.print.Product;
@@ -119,6 +120,11 @@ public class ProductGroupActivity extends AGroupOrProductActivity
     super.onCreate( savedInstanceState );
 
     getProducts();
+
+    if ( savedInstanceState == null )
+      {
+      Analytics.getInstance( this ).trackSDKLoaded( Analytics.ENTRY_POINT_JSON_PROPERTY_VALUE_HOME_SCREEN );
+      }
     }
 
 

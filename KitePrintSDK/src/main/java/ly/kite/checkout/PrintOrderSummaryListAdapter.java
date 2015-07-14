@@ -49,12 +49,19 @@ class PrintOrderSummaryListAdapter extends BaseAdapter {
         TextView itemDescription = (TextView) row.findViewById(R.id.text_view_order_item_description);
         TextView itemCost = (TextView) row.findViewById(R.id.text_view_order_item_cost);
 
-    PrintJob job = order.getJobs().get(i);
+        PrintJob job = order.getJobs().get(i);
 
-        Product product = ProductCache.getInstance( parent.getContext() ).getProductById( job.getProductId() );
+        Product product = job.getProduct();
+
         int quantityPerSheet = product.getQuantityPerSheet() <= 0 ? 1 : product.getQuantityPerSheet();
         int num = (int) Math.floor((job.getQuantity() + (quantityPerSheet - 1)) / quantityPerSheet);
-        itemDescription.setText(String.format("%d x %d %s", num, quantityPerSheet, job.getProduct().getName()));
+        String productName = job.getProduct().getName();
+
+        itemDescription.setText(
+            quantityPerSheet > 1
+                ? String.format("%d x %d %s", num, quantityPerSheet, productName )
+                : String.format( "%d x %s", num, productName ) );
+
         NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.getDefault());
         formatter.setCurrency(Currency.getInstance(order.getCurrencyCode()));
         itemCost.setText(formatter.format(job.getCost(order.getCurrencyCode()).doubleValue()));

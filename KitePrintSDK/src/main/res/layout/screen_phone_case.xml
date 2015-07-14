@@ -2,7 +2,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/product_creation_background">
 
     <ly.kite.widget.MaskedRemoteImageView
         android:id="@+id/masked_remote_image_view"

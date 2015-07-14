@@ -2,12 +2,12 @@
 <manifest
 	xmlns:android="http://schemas.android.com/apk/res/android"
     package="ly.kite.sample"
-    android:versionCode="100"
-    android:versionName="1.0" >
+    android:versionCode="106"
+    android:versionName="1.6" >
 
     <uses-sdk
         android:minSdkVersion="14"
-        android:targetSdkVersion="19" />
+        android:targetSdkVersion="22" />
 
 	<!-- hardware features (Used by Card.IO for credit card scanning in the Kite Managed Checkout) -->
 	<uses-feature android:name="android.hardware.camera" android:required="false" />
@@ -91,6 +91,9 @@
 	        android:configChanges="keyboardHidden|orientation" />
 	    <activity android:name="io.card.payment.DataEntryActivity" />
 
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="a20b9e9795a45b9206a841b1ee086c15a2b5b39b" />
     </application>
 
 </manifest>

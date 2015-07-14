@@ -42,6 +42,9 @@ package ly.kite.print;
 
 ///// Class Declaration /////
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.Set;
@@ -54,7 +57,7 @@ import ly.kite.print.UnitOfLength;
  * This class represents a size in multiple units.
  *
  *****************************************************/
-public class MultipleUnitSize
+public class MultipleUnitSize implements Parcelable
   {
   ////////// Static Constant(s) //////////
 
@@ -63,6 +66,20 @@ public class MultipleUnitSize
 
 
   ////////// Static Variable(s) //////////
+
+  public static final Parcelable.Creator<MultipleUnitSize> CREATOR =
+    new Parcelable.Creator<MultipleUnitSize>()
+      {
+      public MultipleUnitSize createFromParcel( Parcel sourceParcel )
+        {
+        return ( new MultipleUnitSize( sourceParcel ) );
+        }
+
+      public MultipleUnitSize[] newArray( int size )
+        {
+        return ( new MultipleUnitSize[ size ] );
+        }
+      };
 
 
   ////////// Member Variable(s) //////////
@@ -81,6 +98,51 @@ public class MultipleUnitSize
   public MultipleUnitSize()
     {
     mUnitSizeTable = new HashMap<>();
+    }
+
+
+  // Constructor used by parcelable interface
+  private MultipleUnitSize( Parcel sourceParcel )
+    {
+    this();
+
+    int count = sourceParcel.readInt();
+
+    for ( int index = 0; index < count; index ++ )
+      {
+      add( (SingleUnitSize)sourceParcel.readParcelable( SingleUnitSize.class.getClassLoader() ) );
+      }
+    }
+
+
+  ////////// Parcelable Method(s) //////////
+
+  /*****************************************************
+   *
+   * Describes the contents of this parcelable.
+   *
+   *****************************************************/
+  @Override
+  public int describeContents()
+    {
+    return ( 0 );
+    }
+
+
+  /*****************************************************
+   *
+   * Write the contents of this product to a parcel.
+   *
+   *****************************************************/
+  @Override
+  public void writeToParcel( Parcel targetParcel, int flags )
+    {
+    targetParcel.writeInt( mUnitSizeTable.size() );
+
+    for ( SingleUnitSize singleUnitSize : mUnitSizeTable.values() )
+      {
+      targetParcel.writeParcelable( singleUnitSize, flags );
+      }
     }
 
 

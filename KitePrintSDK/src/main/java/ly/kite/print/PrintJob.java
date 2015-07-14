@@ -17,7 +17,7 @@ import ly.kite.address.Address;
 /**
  * Created by deonbotha on 09/02/2014.
  */
-public abstract class PrintJob implements Parcelable, Serializable {
+public abstract class PrintJob implements Parcelable {
 
     private static final long serialVersionUID = 1L;
 
@@ -34,6 +34,12 @@ public abstract class PrintJob implements Parcelable, Serializable {
       {
       mProduct = product;
       }
+
+
+  protected PrintJob( Parcel sourceParcel )
+    {
+    mProduct = Product.CREATOR.createFromParcel( sourceParcel );
+    }
 
 
   public static PrintJob createPrintJob( Product product, Asset asset )
@@ -67,18 +73,18 @@ public abstract class PrintJob implements Parcelable, Serializable {
   @Override
   public void writeToParcel( Parcel parcel, int flags )
     {
-    parcel.writeString( getProductId() );
+    mProduct.writeToParcel( parcel, flags );
     }
 
-  protected void writeObject(java.io.ObjectOutputStream out) throws IOException
-    {
-    out.writeObject( (String)getProductId() );
-    }
-
-
-  protected void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
-    {
-    mProduct = ProductCache.getDirtyInstance().getProductById( (String)in.readObject() );
-    }
+//  protected void writeObject(java.io.ObjectOutputStream out) throws IOException
+//    {
+//    out.writeObject( (String)getProductId() );
+//    }
+//
+//
+//  protected void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
+//    {
+//    mProduct = ProductCache.getDirtyInstance().getProductById( (String)in.readObject() );
+//    }
 
 }

@@ -39,13 +39,15 @@ package ly.kite.shopping;
 
 ///// Import(s) /////
 
-
-///// Class Declaration /////
-
 import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import ly.kite.R;
 import ly.kite.address.Country;
+
+
+///// Class Declaration /////
 
 /*****************************************************
  *
@@ -53,7 +55,7 @@ import ly.kite.address.Country;
  * a single destination.
  *
  *****************************************************/
-public class SingleDestinationShippingCost
+public class SingleDestinationShippingCost implements Parcelable
   {
   ////////// Static Constant(s) //////////
 
@@ -65,6 +67,20 @@ public class SingleDestinationShippingCost
 
 
   ////////// Static Variable(s) //////////
+
+  public static final Parcelable.Creator<SingleDestinationShippingCost> CREATOR =
+    new Parcelable.Creator<SingleDestinationShippingCost>()
+      {
+      public SingleDestinationShippingCost createFromParcel( Parcel sourceParcel )
+        {
+        return ( new SingleDestinationShippingCost( sourceParcel ) );
+        }
+
+      public SingleDestinationShippingCost[] newArray( int size )
+        {
+        return ( new SingleDestinationShippingCost[ size ] );
+        }
+      };
 
 
   ////////// Member Variable(s) //////////
@@ -85,6 +101,41 @@ public class SingleDestinationShippingCost
     {
     mDestinationCode = destinationCode;
     mCost            = cost;
+    }
+
+
+  // Constructor used by parcelable interface
+  private SingleDestinationShippingCost( Parcel sourceParcel )
+    {
+    mDestinationCode = sourceParcel.readString();
+    mCost            = (MultipleCurrencyCost)sourceParcel.readParcelable( MultipleCurrencyCost.class.getClassLoader() );
+    }
+
+
+  ////////// Parcelable Method(s) //////////
+
+  /*****************************************************
+   *
+   * Describes the contents of this parcelable.
+   *
+   *****************************************************/
+  @Override
+  public int describeContents()
+    {
+    return ( 0 );
+    }
+
+
+  /*****************************************************
+   *
+   * Write the contents of this product to a parcel.
+   *
+   *****************************************************/
+  @Override
+  public void writeToParcel( Parcel targetParcel, int flags )
+    {
+    targetParcel.writeString( mDestinationCode );
+    targetParcel.writeParcelable( mCost, flags );
     }
 
 

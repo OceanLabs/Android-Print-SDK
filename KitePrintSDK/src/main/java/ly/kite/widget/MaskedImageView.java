@@ -109,9 +109,12 @@ public class MaskedImageView extends View implements GestureDetector.OnGestureLi
   private float                 mImageScaleFactor;
   private float                 mImageMaxScaleFactor;
 
+  private Paint                 mMaskToBlendPaint;
+  private Paint                 mImageToBlendPaint;
+  private Paint                 mBlendToViewPaint;
+
   private Bitmap                mBlendBitmap;
   private Canvas                mBlendCanvas;
-  private Paint                 mBlendPaint;
 
   private GestureDetector       mGestureDetector;
   private ScaleGestureDetector  mScaleGestureDetector;
@@ -189,15 +192,15 @@ public class MaskedImageView extends View implements GestureDetector.OnGestureLi
 
     if ( mMaskToBlendTargetRect != null )
       {
-      mBlendCanvas.drawColor( 0x00000000 );
-      mBlendCanvas.drawBitmap( mMaskBitmap, mMaskToBlendSourceRect, mMaskToBlendTargetRect, null );
+      mBlendCanvas.drawColor( 0x00ffffff );
+      mBlendCanvas.drawBitmap( mMaskBitmap, mMaskToBlendSourceRect, mMaskToBlendTargetRect, mMaskToBlendPaint );
 
       if ( mImageToBlendTargetRect != null )
         {
-        mBlendCanvas.drawBitmap( mImageBitmap, mImageToBlendSourceRect, mImageToBlendTargetRect, mBlendPaint );
+        mBlendCanvas.drawBitmap( mImageBitmap, mImageToBlendSourceRect, mImageToBlendTargetRect, mImageToBlendPaint );
         }
 
-      canvas.drawBitmap( mBlendBitmap, mBlendToViewSourceRect, mBlendToViewTargetRect, null );
+      canvas.drawBitmap( mBlendBitmap, mBlendToViewSourceRect, mBlendToViewTargetRect, mBlendToViewPaint );
       }
     }
 
@@ -375,8 +378,21 @@ public class MaskedImageView extends View implements GestureDetector.OnGestureLi
    *****************************************************/
   private void initialise( Context context )
     {
-    mBlendPaint = new Paint();
-    mBlendPaint.setXfermode( new PorterDuffXfermode( PorterDuff.Mode.SRC_IN ) );
+    // TODO: We need to play around with these to remove the mask artifacts
+
+    mMaskToBlendPaint = new Paint();
+    mMaskToBlendPaint.setAntiAlias( true );
+    mMaskToBlendPaint.setFilterBitmap( true );
+    mMaskToBlendPaint.setDither( true );
+
+    mImageToBlendPaint = new Paint();
+    mImageToBlendPaint.setXfermode( new PorterDuffXfermode( PorterDuff.Mode.SRC_IN ) );
+    mImageToBlendPaint.setAntiAlias( true );
+    mImageToBlendPaint.setFilterBitmap( true );
+    mImageToBlendPaint.setDither( true );
+
+    mBlendToViewPaint = new Paint();
+    mBlendToViewPaint.setXfermode( new PorterDuffXfermode( PorterDuff.Mode.SRC_OVER ) );
 
     // Monitor both panning and zooming
     mGestureDetector      = new GestureDetector( context, this );
@@ -590,6 +606,10 @@ public class MaskedImageView extends View implements GestureDetector.OnGestureLi
     {
     // We need to calculate the bounds of the scaled mask plus
     // bleed on the unscaled image.
+
+    // Make sure we have the dimensions we need
+    if ( mImageToBlendTargetRect == null || mBlendToViewSourceRect == null ) return ( null );
+
 
     // Start by determining the bounds of the mask plus bleed within
     // the scaled image. (We know it's within because the image

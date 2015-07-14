@@ -39,6 +39,9 @@ package ly.kite.print;
 
 ///// Import(s) /////
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import ly.kite.print.UnitOfLength;
 
 
@@ -49,7 +52,7 @@ import ly.kite.print.UnitOfLength;
  * This class represents a size in a length unit.
  *
  *****************************************************/
-public class SingleUnitSize
+public class SingleUnitSize implements Parcelable
   {
   ////////// Static Constant(s) //////////
 
@@ -58,6 +61,20 @@ public class SingleUnitSize
 
 
   ////////// Static Variable(s) //////////
+
+  public static final Parcelable.Creator<SingleUnitSize> CREATOR =
+    new Parcelable.Creator<SingleUnitSize>()
+      {
+      public SingleUnitSize createFromParcel( Parcel sourceParcel )
+        {
+        return ( new SingleUnitSize( sourceParcel ) );
+        }
+
+      public SingleUnitSize[] newArray( int size )
+        {
+        return ( new SingleUnitSize[ size ] );
+        }
+      };
 
 
   ////////// Member Variable(s) //////////
@@ -80,6 +97,43 @@ public class SingleUnitSize
     mUnit   = unit;
     mWidth  = width;
     mHeight = height;
+    }
+
+
+  // Constructor used by parcelable interface
+  private SingleUnitSize( Parcel sourceParcel )
+    {
+    mUnit   = UnitOfLength.valueOf( sourceParcel.readString() );
+    mWidth  = sourceParcel.readFloat();
+    mHeight = sourceParcel.readFloat();
+    }
+
+
+  ////////// Parcelable Method(s) //////////
+
+  /*****************************************************
+   *
+   * Describes the contents of this parcelable.
+   *
+   *****************************************************/
+  @Override
+  public int describeContents()
+    {
+    return ( 0 );
+    }
+
+
+  /*****************************************************
+   *
+   * Write the contents of this product to a parcel.
+   *
+   *****************************************************/
+  @Override
+  public void writeToParcel( Parcel targetParcel, int flags )
+    {
+    targetParcel.writeString( mUnit.name() );
+    targetParcel.writeFloat( mWidth );
+    targetParcel.writeFloat( mHeight );
     }
 
 

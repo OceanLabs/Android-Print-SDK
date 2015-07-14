@@ -150,16 +150,16 @@ public class ProductCache implements BaseRequest.BaseRequestListener
       sProductCache = new ProductCache( context );
       }
 
-    return (sProductCache);
+    return ( sProductCache );
     }
 
 
   // This is a dirty hack until we can come up with a better way of doing
   // this.
-  public static ProductCache getDirtyInstance()
-    {
-    return (sProductCache);
-    }
+//  public static ProductCache getDirtyInstance()
+//    {
+//    return (sProductCache);
+//    }
 
 
   /****************************************************
@@ -678,24 +678,27 @@ public class ProductCache implements BaseRequest.BaseRequestListener
 
   /****************************************************
    *
-   * Synchronously obtains the products. We need to be able
-   * to do this because the product retrieval is asynchronous.
+   * Returns any cached products if they are not too old.
    *
-   * @return The product group list, or null if they
-   *         could not be retrieved.
+   * @return The product group list and product table, or
+   *         null if there are no up-to-date products.
    *
    ****************************************************/
-  public Pair<ArrayList<ProductGroup>,HashMap<String,Product>> getAllProducts()
+  public Pair<ArrayList<ProductGroup>,HashMap<String,Product>> getCachedProducts( long maximumAgeMillis )
     {
-    if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "getAllProducts()" );
+    if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "getCachedProducts( maximumAgeMillis = " + maximumAgeMillis + " )" );
 
-    SynchronousProductConsumer consumer = new SynchronousProductConsumer();
+    long minAcceptableElapsedRealtimeMillis = (
+            maximumAgeMillis >= 0
+                    ? SystemClock.elapsedRealtime() - maximumAgeMillis
+                    : 0 );
 
-    Pair<ArrayList<ProductGroup>,HashMap<String,Product>> productPair = consumer.getProductPair();
+    if ( mLastRetrievedElapsedRealtimeMillis >= minAcceptableElapsedRealtimeMillis )
+      {
+      return ( new Pair<ArrayList<ProductGroup>,HashMap<String,Product>>( mLastRetrievedProductGroupList, mLastRetrievedProductTable ) );
+      }
 
-    if ( productPair == null ) throw ( new RuntimeException( "Unable to retrieve products" ) );
-
-    return ( productPair );
+    return ( null );
     }
 
 
@@ -749,23 +752,23 @@ public class ProductCache implements BaseRequest.BaseRequestListener
    *         with a matching id.
    *
    ****************************************************/
-  public Product getProductById( String id )
-    {
-    // Get the products synchronously
-
-    Pair<ArrayList<ProductGroup>,HashMap<String,Product>> productPair = getAllProducts();
-
-    if ( productPair == null ) return ( null );
-
-
-    // Lookup the product in the product table
-
-    Product product = productPair.second.get( id );
-
-    if ( product == null ) throw ( new IllegalArgumentException( "No product was found with the id " + id ) );
-
-    return ( product );
-    }
+//  public Product getProductById( String id )
+//    {
+//    // Get the products synchronously
+//
+//    Pair<ArrayList<ProductGroup>,HashMap<String,Product>> productPair = getAllProducts();
+//
+//    if ( productPair == null ) return ( null );
+//
+//
+//    // Lookup the product in the product table
+//
+//    Product product = productPair.second.get( id );
+//
+//    if ( product == null ) throw ( new IllegalArgumentException( "No product was found with the id " + id ) );
+//
+//    return ( product );
+//    }
 
 
   /****************************************************
@@ -919,73 +922,73 @@ public class ProductCache implements BaseRequest.BaseRequestListener
     }
 
 
-  /*****************************************************
-   *
-   * This class is used to turn the asynchronous product
-   * retrieval into a synchronous process.
-   *
-   *****************************************************/
-  private class SynchronousProductConsumer implements ProductConsumer
-    {
-    private Pair<ArrayList<ProductGroup>,HashMap<String,Product>>  mProductPair;
-    private volatile boolean                                       mCallbackReceived;
-
-
-    @Override
-    public synchronized void onGotProducts( ArrayList<ProductGroup> productGroupList, HashMap<String,Product> productTable )
-      {
-      if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "onGotProducts( productGroupList = " + productGroupList + ", productTable = " + productTable + " )" );
-
-      mProductPair      = new Pair<ArrayList<ProductGroup>,HashMap<String,Product>>( productGroupList, productTable );
-      mCallbackReceived = true;
-
-      notifyAll();
-      }
-
-
-    @Override
-    public synchronized void onProductRetrievalError( Exception exception )
-      {
-      Log.e( LOG_TAG, "Synchronous product retrieval returned error", exception );
-
-
-      // The product pair stays null
-      mCallbackReceived = true;
-
-      notifyAll();
-      }
-
-
-    synchronized Pair<ArrayList<ProductGroup>,HashMap<String,Product>> getProductPair()
-      {
-      if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "getProductPair()" );
-
-      mCallbackReceived = false;
-
-      // Kick off a retrieval now we have the monitor
-      getAllProducts( this, null );
-
-      // If we haven't received the products synchronously (i.e. as an immediate callback)
-      // wait for them now.
-      while ( ! mCallbackReceived )
-        {
-        try
-          {
-          if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "  waiting ..." );
-
-          wait();
-          }
-        catch ( InterruptedException ie )
-          {
-          // Ignore
-          }
-        }
-
-
-      if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "<< getProductPair()" );
-
-      return ( mProductPair );
-      }
-    }
+//  /*****************************************************
+//   *
+//   * This class is used to turn the asynchronous product
+//   * retrieval into a synchronous process.
+//   *
+//   *****************************************************/
+//  private class SynchronousProductConsumer implements ProductConsumer
+//    {
+//    private Pair<ArrayList<ProductGroup>,HashMap<String,Product>>  mProductPair;
+//    private volatile boolean                                       mCallbackReceived;
+//
+//
+//    @Override
+//    public synchronized void onGotProducts( ArrayList<ProductGroup> productGroupList, HashMap<String,Product> productTable )
+//      {
+//      if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "onGotProducts( productGroupList = " + productGroupList + ", productTable = " + productTable + " )" );
+//
+//      mProductPair      = new Pair<ArrayList<ProductGroup>,HashMap<String,Product>>( productGroupList, productTable );
+//      mCallbackReceived = true;
+//
+//      notifyAll();
+//      }
+//
+//
+//    @Override
+//    public synchronized void onProductRetrievalError( Exception exception )
+//      {
+//      Log.e( LOG_TAG, "Synchronous product retrieval returned error", exception );
+//
+//
+//      // The product pair stays null
+//      mCallbackReceived = true;
+//
+//      notifyAll();
+//      }
+//
+//
+//    synchronized Pair<ArrayList<ProductGroup>,HashMap<String,Product>> getProductPair()
+//      {
+//      if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "getProductPair()" );
+//
+//      mCallbackReceived = false;
+//
+//      // Kick off a retrieval now we have the monitor
+//      getAllProducts( this, null );
+//
+//      // If we haven't received the products synchronously (i.e. as an immediate callback)
+//      // wait for them now.
+//      while ( ! mCallbackReceived )
+//        {
+//        try
+//          {
+//          if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "  waiting ..." );
+//
+//          wait();
+//          }
+//        catch ( InterruptedException ie )
+//          {
+//          // Ignore
+//          }
+//        }
+//
+//
+//      if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "<< getProductPair()" );
+//
+//      return ( mProductPair );
+//      }
+//    }
 
   }

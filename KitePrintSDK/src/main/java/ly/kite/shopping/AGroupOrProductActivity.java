@@ -208,6 +208,9 @@ public abstract class AGroupOrProductActivity extends AKiteActivity implements P
   @Override
   public void onProductRetrievalError( Exception exception )
     {
+    // Don't do anything if the activity is no longer visible
+    if ( ! mActivityIsVisible ) return;
+
     onProductFetchFinished();
 
     displayModalDialog(

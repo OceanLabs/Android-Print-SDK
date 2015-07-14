@@ -42,6 +42,9 @@ package ly.kite.shopping;
 
 ///// Class Declaration /////
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.Locale;
@@ -54,7 +57,7 @@ import ly.kite.address.Country;
  * This class represents a cost in multiple currencies.
  *
  *****************************************************/
-public class MultipleCurrencyCost
+public class MultipleCurrencyCost implements Parcelable
   {
   ////////// Static Constant(s) //////////
 
@@ -67,6 +70,20 @@ public class MultipleCurrencyCost
 
 
   ////////// Static Variable(s) //////////
+
+  public static final Parcelable.Creator<MultipleCurrencyCost> CREATOR =
+    new Parcelable.Creator<MultipleCurrencyCost>()
+      {
+      public MultipleCurrencyCost createFromParcel( Parcel sourceParcel )
+        {
+        return ( new MultipleCurrencyCost( sourceParcel ) );
+        }
+
+      public MultipleCurrencyCost[] newArray( int size )
+        {
+        return ( new MultipleCurrencyCost[ size ] );
+        }
+      };
 
 
   ////////// Member Variable(s) //////////
@@ -87,6 +104,56 @@ public class MultipleCurrencyCost
     {
     mCurrencyCostTable     = new HashMap<Currency,SingleCurrencyCost>();
     mCurrencyCodeCostTable = new HashMap<String,SingleCurrencyCost>();
+    }
+
+
+  // Constructor used by parcelable interface
+  private MultipleCurrencyCost( Parcel parcel )
+    {
+    this();
+
+
+    // The costs are preceded by a count
+
+    int count = parcel.readInt();
+
+    for ( int index = 0; index < count; index ++ )
+      {
+      add( (SingleCurrencyCost)parcel.readParcelable( SingleCurrencyCost.class.getClassLoader() ) );
+      }
+    }
+
+
+  ////////// Parcelable Method(s) //////////
+
+  /*****************************************************
+   *
+   * Describes the contents.
+   *
+   *****************************************************/
+  @Override
+  public int describeContents()
+    {
+    return ( 0 );
+    }
+
+
+  /*****************************************************
+   *
+   * Write the contents to a parcel.
+   *
+   *****************************************************/
+  @Override
+  public void writeToParcel( Parcel targetParcel, int flags )
+    {
+    // Write the count and all the entries to the parcel
+
+    targetParcel.writeInt( mCurrencyCostTable.size() );
+
+    for ( SingleCurrencyCost singleCurrencyCost : mCurrencyCodeCostTable.values() )
+      {
+      targetParcel.writeParcelable( singleCurrencyCost, flags );
+      }
     }
 
 

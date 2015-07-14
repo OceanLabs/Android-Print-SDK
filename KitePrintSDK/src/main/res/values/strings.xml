@@ -26,11 +26,11 @@
     <string name="alert_dialog_title_no_product_group_label">No Product Group</string>
     <string name="alert_dialog_message_no_product_group_label">There was an error: no product group was found. Please check the log for more details.</string>
 
-    <string name="alert_dialog_title_no_product_id">No Product Id</string>
-    <string name="alert_dialog_message_no_product_id">There was an error: no product id was found. Please check the log for more details.</string>
-
     <string name="alert_dialog_title_product_not_found">Product Not Found</string>
-    <string name="alert_dialog_message_no_product_for_id">No product could be found matching id: %s</string>
+    <string name="alert_dialog_message_product_not_found">No product could be found. Please check the log for more details.</string>
+
+    <string name="alert_dialog_title_create_order">Create Order</string>
+    <string name="alert_dialog_message_no_cropped_image_asset">There was an internal error - Kite was unable to create a cropped image asset.</string>
 
     <string name="Add_photo">Add photo</string>
     <string name="Cancel">Cancel</string>

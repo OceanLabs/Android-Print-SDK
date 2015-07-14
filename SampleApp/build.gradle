@@ -1,20 +1,27 @@
 buildscript {
     repositories {
         mavenCentral()
+        maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
 
         classpath 'com.android.tools.build:gradle:1+'
+        classpath 'io.fabric.tools:gradle:1.+'
     }
 }
 apply plugin: 'android'
+apply plugin: 'io.fabric'
 
 repositories {
     mavenCentral()
+    maven { url 'https://maven.fabric.io/public' }
 }
 
 dependencies {
     compile project(':KitePrintSDK')
+    compile('com.crashlytics.sdk.android:crashlytics:2.4.0@aar') {
+        transitive = true;
+    }
 }
 apply plugin: 'android'
 android {

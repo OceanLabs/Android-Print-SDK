@@ -137,7 +137,8 @@ class PostcardPrintJob extends PrintJob {
     }
 
     private PostcardPrintJob(Parcel parcel) {
-        super( ProductCache.getDirtyInstance().getProductById( parcel.readString() ) );
+        //super( ProductCache.getDirtyInstance().getProductById( parcel.readString() ) );
+        super( parcel );
         this.frontImageAsset = parcel.readParcelable(Asset.class.getClassLoader());
         this.message = parcel.readString();
         this.address = (Address)parcel.readParcelable(Address.class.getClassLoader());
@@ -154,18 +155,18 @@ class PostcardPrintJob extends PrintJob {
         }
     };
 
-    protected void writeObject(java.io.ObjectOutputStream out) throws IOException {
-        super.writeObject( out );
-        out.writeObject(frontImageAsset);
-        out.writeObject(message);
-        out.writeObject(address);
-    }
-
-    protected void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readObject( in );
-        frontImageAsset = (Asset) in.readObject();
-        message = (String)in.readObject();
-        address = (Address) in.readObject();
-    }
+//    protected void writeObject(java.io.ObjectOutputStream out) throws IOException {
+//        super.writeObject( out );
+//        out.writeObject(frontImageAsset);
+//        out.writeObject(message);
+//        out.writeObject(address);
+//    }
+//
+//    protected void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+//        super.readObject( in );
+//        frontImageAsset = (Asset) in.readObject();
+//        message = (String)in.readObject();
+//        address = (Address) in.readObject();
+//    }
 
 }

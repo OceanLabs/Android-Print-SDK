@@ -39,19 +39,22 @@ package ly.kite.shopping;
 
 ///// Import(s) /////
 
-
-///// Class Declaration /////
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+
+
+///// Class Declaration /////
 
 /*****************************************************
  *
  * This class represents shipping costs for an item.
  *
  *****************************************************/
-public class MultipleDestinationShippingCosts
+public class MultipleDestinationShippingCosts implements Parcelable
   {
   ////////// Static Constant(s) //////////
 
@@ -63,6 +66,20 @@ public class MultipleDestinationShippingCosts
 
 
   ////////// Static Variable(s) //////////
+
+  public static final Parcelable.Creator<MultipleDestinationShippingCosts> CREATOR =
+    new Parcelable.Creator<MultipleDestinationShippingCosts>()
+      {
+      public MultipleDestinationShippingCosts createFromParcel( Parcel sourceParcel )
+        {
+        return ( new MultipleDestinationShippingCosts( sourceParcel ) );
+        }
+
+      public MultipleDestinationShippingCosts[] newArray( int size )
+        {
+        return ( new MultipleDestinationShippingCosts[ size ] );
+        }
+      };
 
 
   ////////// Member Variable(s) //////////
@@ -84,7 +101,64 @@ public class MultipleDestinationShippingCosts
     }
 
 
+  // Constructor used by parcelable interface
+  private MultipleDestinationShippingCosts( Parcel sourceParcel )
+    {
+    this();
+
+    int count = sourceParcel.readInt();
+
+    for ( int index = 0; index < count; index ++ )
+      {
+      add( (SingleDestinationShippingCost)sourceParcel.readParcelable( SingleDestinationShippingCost.class.getClassLoader() ) );
+      }
+    }
+
+
+  ////////// Parcelable Method(s) //////////
+
+  /*****************************************************
+   *
+   * Describes the contents of this parcelable.
+   *
+   *****************************************************/
+  @Override
+  public int describeContents()
+    {
+    return ( 0 );
+    }
+
+
+  /*****************************************************
+   *
+   * Write the contents of this product to a parcel.
+   *
+   *****************************************************/
+  @Override
+  public void writeToParcel( Parcel targetParcel, int flags )
+    {
+    targetParcel.writeInt( mDestinationCostTable.size() );
+
+    for ( SingleDestinationShippingCost singleDestinationShippingCost : mDestinationCostTable.values() )
+      {
+      targetParcel.writeParcelable( singleDestinationShippingCost, flags );
+      }
+    }
+
+
   ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Adds a destination, together with the cost in one of more
+   * currencies.
+   *
+   *****************************************************/
+  public void add( SingleDestinationShippingCost singleDestinationShippingCost )
+    {
+    mDestinationCostTable.put( singleDestinationShippingCost.getDestinationCode(), singleDestinationShippingCost );
+    }
+
 
   /*****************************************************
    *
@@ -94,7 +168,7 @@ public class MultipleDestinationShippingCosts
    *****************************************************/
   public void add( String destinationCode, MultipleCurrencyCost cost )
     {
-    mDestinationCostTable.put( destinationCode, new SingleDestinationShippingCost( destinationCode, cost ) );
+    add( new SingleDestinationShippingCost( destinationCode, cost ) );
     }
 
 
@@ -122,11 +196,6 @@ public class MultipleDestinationShippingCosts
 
   ////////// Inner Class(es) //////////
 
-  /*****************************************************
-   *
-   * Returns the shipping costs as a list.
-   *
-   *****************************************************/
 
   }
 

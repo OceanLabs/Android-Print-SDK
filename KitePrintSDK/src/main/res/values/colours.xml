@@ -26,5 +26,6 @@
     <color name="paging_dot_selected">#ffffffff</color>
 
     <color name="product_creation_next_button_background">#ff8cbcbf</color>
+    <color name="product_creation_background">#ffeeeeee</color>
 
 </resources>

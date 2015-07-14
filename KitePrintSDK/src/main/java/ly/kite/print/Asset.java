@@ -7,6 +7,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
+import android.util.Pair;
 import android.webkit.MimeTypeMap;
 
 import java.io.BufferedInputStream;
@@ -14,18 +16,31 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.UUID;
+
+import ly.kite.util.ImageManager;
 
 /**
  * Created by deonbotha on 06/02/2014.
  */
 public class Asset implements Parcelable, Serializable {
 
+    private static final String LOG_TAG = "Asset";
+
     private static final int BITMAP_TO_JPEG_QUALITY = 100;
+
+    public  static final String JPEG_FILE_EXTENSION_PRIMARY   = "jpg";
+    public  static final String JPEG_FILE_EXTENSION_SECONDARY = "jpeg";
+    public  static final String PNG_FILE_EXTENSION            = "png";
+
+    public  static final String IMAGE_CLASS_STRING_ASSET      = "asset";
+
 
     public static enum MimeType {
         JPEG("image/jpeg"),
@@ -78,26 +93,116 @@ public class Asset implements Parcelable, Serializable {
     private URL previewURL;
 
 
+//  /*****************************************************
+//   *
+//   * Creates and returns a new asset from a bitmap. Due
+//   * to the way assets are used (i.e. they are uploaded
+//   * via HTTP, we have to encode the bitmap to (e.g.) JPEG
+//   * and store it that way.
+//   *
+//   *****************************************************/
+//  public static Asset create( Bitmap bitmap )
+//    {
+//    // Compress the bitmap into JPEG format and write into
+//    // a byte buffer.
+//
+//    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//
+//    bitmap.compress( Bitmap.CompressFormat.JPEG, BITMAP_TO_JPEG_QUALITY, byteArrayOutputStream );
+//
+//
+//    // Create a new asset from the JPEG data
+//    return ( new Asset( byteArrayOutputStream.toByteArray(), MimeType.JPEG ) );
+//    }
+
+
   /*****************************************************
    *
-   * Creates and returns a new asset from a bitmap. Due
-   * to the way assets are used (i.e. they are uploaded
-   * via HTTP, we have to encode the bitmap to (e.g.) JPEG
-   * and store it that way.
+   * Clears any cached asset image files.
    *
    *****************************************************/
-  public static Asset create( Bitmap bitmap )
+  public static void clearCachedImages( Context context )
     {
-    // Compress the bitmap into JPEG format and write into
-    // a byte buffer.
+    // Get the image cache directory
 
-    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+    String imageCacheDirectoryPath = ImageManager.getInstance( context ).getImageDirectoryPath( IMAGE_CLASS_STRING_ASSET );
 
-    bitmap.compress( Bitmap.CompressFormat.JPEG, BITMAP_TO_JPEG_QUALITY, byteArrayOutputStream );
+    File imageCacheDirectory = new File( imageCacheDirectoryPath );
 
 
-    // Create a new asset from the JPEG data
-    return ( new Asset( byteArrayOutputStream.toByteArray(), MimeType.JPEG ) );
+    // Go through all the files and delete them
+
+    File[] imageFiles = imageCacheDirectory.listFiles();
+
+    if ( imageFiles != null )
+      {
+      for ( File imageFile : imageCacheDirectory.listFiles() )
+        {
+        imageFile.delete();
+        }
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Creates a new asset from a bitmap, but writes it out
+   * to a file. The file path is automatically generated.
+   *
+   *****************************************************/
+  public static Asset createAsCachedFile( Context context, Bitmap bitmap )
+    {
+    // Generate a random file name within the cache
+    Pair<String,String> imageDirectoryAndFilePath = ImageManager.getInstance( context ).getImageDirectoryAndFilePath( IMAGE_CLASS_STRING_ASSET, UUID.randomUUID().toString() );
+
+    File imageDirectory = new File( imageDirectoryAndFilePath.first );
+
+    imageDirectory.mkdirs();
+
+    return ( createAsCachedFile( bitmap, imageDirectoryAndFilePath.second + "." + Asset.JPEG_FILE_EXTENSION_PRIMARY ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Creates a new asset from a bitmap, but writes it out
+   * to a file.
+   *
+   *****************************************************/
+  public static Asset createAsCachedFile( Bitmap bitmap, String filePath )
+    {
+    // Write the bitmap to the file
+
+    FileOutputStream fos = null;
+
+    try
+      {
+      fos = new FileOutputStream( filePath );
+
+      bitmap.compress( Bitmap.CompressFormat.JPEG, BITMAP_TO_JPEG_QUALITY, fos );
+
+      return ( new Asset( filePath ) );
+      }
+    catch ( Exception exception )
+      {
+      Log.e( LOG_TAG, "Unable to write bitmap to file" );
+      }
+    finally
+      {
+      if ( fos != null )
+        {
+        try
+          {
+          fos.close();
+          }
+        catch ( IOException e )
+          {
+          e.printStackTrace();
+          }
+        }
+      }
+
+    return ( null );
     }
 
 

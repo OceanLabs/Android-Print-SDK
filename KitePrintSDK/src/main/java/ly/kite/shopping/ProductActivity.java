@@ -50,6 +50,7 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import ly.kite.R;
+import ly.kite.analytics.Analytics;
 import ly.kite.print.Asset;
 import ly.kite.KiteSDK;
 import ly.kite.print.Product;
@@ -148,6 +149,11 @@ public class ProductActivity extends AGroupOrProductActivity
     setTitle( mProductGroupLabel );
 
     getProducts();
+
+    if ( savedInstanceState == null )
+      {
+      Analytics.getInstance( this ).trackProductSelectionScreenViewed();
+      }
     }
 
 

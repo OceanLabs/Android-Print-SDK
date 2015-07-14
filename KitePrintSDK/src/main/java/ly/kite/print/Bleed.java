@@ -39,6 +39,9 @@ package ly.kite.print;
 
 ///// Import(s) /////
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.math.BigDecimal;
 import java.util.Currency;
 
@@ -50,7 +53,7 @@ import java.util.Currency;
  * This class represents a bleed.
  *
  *****************************************************/
-public class Bleed
+public class Bleed implements Parcelable
   {
   ////////// Static Constant(s) //////////
 
@@ -59,6 +62,20 @@ public class Bleed
 
 
   ////////// Static Variable(s) //////////
+
+  public static final Parcelable.Creator<Bleed> CREATOR =
+    new Parcelable.Creator<Bleed>()
+      {
+      public Bleed createFromParcel( Parcel sourceParcel )
+        {
+        return ( new Bleed( sourceParcel ) );
+        }
+
+      public Bleed[] newArray( int size )
+        {
+        return ( new Bleed[ size ] );
+        }
+      };
 
 
   ////////// Member Variable(s) //////////
@@ -83,6 +100,45 @@ public class Bleed
     this.leftPixels   = leftPixels;
     this.rightPixels  = rightPixels;
     this.bottomPixels = bottomPixels;
+    }
+
+
+  // Constructor used by parcelable interface
+  private Bleed( Parcel sourceParcel )
+    {
+    this.topPixels    = sourceParcel.readInt();
+    this.leftPixels   = sourceParcel.readInt();
+    this.rightPixels  = sourceParcel.readInt();
+    this.bottomPixels = sourceParcel.readInt();
+    }
+
+
+  ////////// Parcelable Method(s) //////////
+
+  /*****************************************************
+   *
+   * Describes the contents of this parcelable.
+   *
+   *****************************************************/
+  @Override
+  public int describeContents()
+    {
+    return ( 0 );
+    }
+
+
+  /*****************************************************
+   *
+   * Write the contents of this product to a parcel.
+   *
+   *****************************************************/
+  @Override
+  public void writeToParcel( Parcel targetParcel, int flags )
+    {
+    targetParcel.writeInt( this.topPixels );
+    targetParcel.writeInt( this.leftPixels );
+    targetParcel.writeInt( this.rightPixels );
+    targetParcel.writeInt( this.bottomPixels );
     }
 
 

@@ -42,6 +42,9 @@ package ly.kite.shopping;
 
 ///// Class Declaration /////
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.Currency;
@@ -52,7 +55,7 @@ import java.util.Locale;
  * This class represents a cost in a single currency.
  *
  *****************************************************/
-public class SingleCurrencyCost
+public class SingleCurrencyCost implements Parcelable
   {
   ////////// Static Constant(s) //////////
 
@@ -63,6 +66,20 @@ public class SingleCurrencyCost
 
 
   ////////// Static Variable(s) //////////
+
+  public static final Parcelable.Creator<SingleCurrencyCost> CREATOR =
+    new Parcelable.Creator<SingleCurrencyCost>()
+      {
+      public SingleCurrencyCost createFromParcel( Parcel sourceParcel )
+        {
+        return ( new SingleCurrencyCost( sourceParcel ) );
+        }
+
+      public SingleCurrencyCost[] newArray( int size )
+        {
+        return ( new SingleCurrencyCost[ size ] );
+        }
+      };
 
 
   ////////// Member Variable(s) //////////
@@ -87,9 +104,47 @@ public class SingleCurrencyCost
     mFormattedAmount = formattedAmount;
     }
 
+
   public SingleCurrencyCost( Currency currency, BigDecimal amount )
     {
     this ( currency, amount, null );
+    }
+
+
+  // Constructor used by parcelable interface
+  private SingleCurrencyCost( Parcel parcel )
+    {
+    mCurrency        = (Currency)parcel.readSerializable();
+    mAmount          = (BigDecimal)parcel.readSerializable();
+    mFormattedAmount = parcel.readString();
+    }
+
+
+  ////////// Parcelable Method(s) //////////
+
+  /*****************************************************
+   *
+   * Describes the contents.
+   *
+   *****************************************************/
+  @Override
+  public int describeContents()
+    {
+    return ( 0 );
+    }
+
+
+  /*****************************************************
+   *
+   * Write the contents to a parcel.
+   *
+   *****************************************************/
+  @Override
+  public void writeToParcel( Parcel targetParcel, int flags )
+    {
+    targetParcel.writeSerializable( mCurrency );
+    targetParcel.writeSerializable( mAmount );
+    targetParcel.writeString( mFormattedAmount );
     }
 
 

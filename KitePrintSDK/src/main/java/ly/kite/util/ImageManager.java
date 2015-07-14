@@ -47,6 +47,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.util.Log;
+import android.util.Pair;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -59,6 +60,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 
 import ly.kite.print.Asset;
+import ly.kite.print.AssetGetBytesListener;
 
 /*****************************************************
  *
@@ -172,6 +174,33 @@ public class ImageManager
 
   /*****************************************************
    *
+   * Returns an image directory path.
+   *
+   *****************************************************/
+  public String getImageDirectoryPath( String imageClassString )
+    {
+    return ( mCacheDirectory.getPath() + File.separator + toSafeString( imageClassString ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns an image directory path and file path.
+   *
+   *****************************************************/
+  public Pair<String,String> getImageDirectoryAndFilePath( String imageClassString, String imageIdentifier )
+    {
+    // Construct the directory and file paths. The file path is: "<cache-directory>/<image-class-string>/<image-url-string>"
+    // The image class string and image URL string are first converted into 'safe' strings.
+    String imageDirectoryPath = getImageDirectoryPath( imageClassString );
+    String imageFilePath      = imageDirectoryPath + File.separator + toSafeString( imageIdentifier );
+
+    return ( new Pair<String,String>( imageDirectoryPath, imageFilePath ) );
+    }
+
+
+  /*****************************************************
+   *
    * Requests an image. The image will be returned through
    * the RemoteImageConsumer interface either immediately,
    * if the image is already held in memory, or at a later
@@ -257,24 +286,23 @@ public class ImageManager
     {
     switch ( asset.getType() )
       {
-      case IMAGE_URI:          break;
-
+      case IMAGE_URI:
+      case IMAGE_BYTES:
+      case IMAGE_PATH:
       case BITMAP_RESOURCE_ID:
 
-        // For assets from resources - load and return the bitmap immediately
-        // TODO: Load the bitmap on a different thread, and return it
-        imageConsumer.onImageImmediate( asset, BitmapFactory.decodeResource( mContext.getResources(), asset.getBitmapResourceId() ) );
-        return;
+        // Get the image bytes - this calls back later on the UI thread
 
-      case IMAGE_BYTES:        break;
-      case IMAGE_PATH:         break;
+        asset.getBytes( mContext, new AssetBytesCallback( callbackHandler, imageConsumer ) );
+
+        return;
 
       case REMOTE_URL:
         getRemoteImage( imageClassString, asset, asset.getRemoteURL(), callbackHandler, imageConsumer );
         return;
       }
 
-    throw ( new UnsupportedOperationException( "Asset type not yet supported" ) );
+    throw ( new UnsupportedOperationException( "Cannot get image from unknown asset type: " + asset.getType() ) );
     }
 
 
@@ -333,10 +361,10 @@ public class ImageManager
     @Override
     public void run()
       {
-      // Construct the directory and file paths. The file path is: "<cache-directory>/<image-class-string>/<image-url-string>"
-      // The image class string and image URL string are first converted into 'safe' strings.
-      String imageDirectoryPath = mCacheDirectory.getPath() + File.separator + toSafeString( mImageClassString );
-      String imageFilePath      = imageDirectoryPath + File.separator + toSafeString( mImageURLString );
+      Pair<String,String> directoryAndFilePath = getImageDirectoryAndFilePath( mImageClassString, mImageURLString );
+
+      String imageDirectoryPath = directoryAndFilePath.first;
+      String imageFilePath      = directoryAndFilePath.second;
 
 
       boolean imageWasFoundLocally = false;
@@ -363,7 +391,7 @@ public class ImageManager
 
         bitmap = BitmapFactory.decodeFile( imageFilePath );
 
-        // TODO: Disable im-memory caching until we implement aging
+        // TODO: Re-enable in-memory caching when we implement aging
         //mImageTable.put( mImageURLString, bitmap );
         }
       finally
@@ -523,4 +551,56 @@ public class ImageManager
       }
     }
 
+
+  /*****************************************************
+   *
+   * A listener for asset image bytes.
+   *
+   *****************************************************/
+  private class AssetBytesCallback implements AssetGetBytesListener
+    {
+    private Handler         mCallbackHandler;
+    private IImageConsumer  mImageConsumer;
+
+
+    AssetBytesCallback( Handler callbackHandler, IImageConsumer imageConsumer )
+      {
+      mCallbackHandler = callbackHandler;
+      mImageConsumer   = imageConsumer;
+      }
+
+
+    @Override
+    public void onBytes( Asset asset, byte[] bytes )
+      {
+      try
+        {
+        // Decode the bytes into a bitmap
+        Bitmap bitmap = BitmapFactory.decodeByteArray( bytes, 0, bytes.length );
+
+        // If we don't have a handler - call the consumer immediately. Otherwise
+        // post the callback caller on the supplied handler.
+
+        if ( mCallbackHandler == null )
+          {
+          mImageConsumer.onImageLoaded( asset, bitmap );
+          }
+        else
+          {
+          mCallbackHandler.post( new LoadedCallbackCaller( mImageConsumer, asset, bitmap ) );
+          }
+        }
+      catch ( Exception exception )
+        {
+        Log.e( LOG_TAG, "Unable to decode asset bytes", exception );
+        }
+      }
+
+
+    @Override
+    public void onError( Asset asset, Exception exception )
+      {
+      Log.e( LOG_TAG, "Unable to get bytes for asset", exception );
+      }
+    }
   }

@@ -66,6 +66,7 @@ import java.util.Locale;
 import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.address.Country;
+import ly.kite.analytics.Analytics;
 import ly.kite.print.Asset;
 import ly.kite.print.Product;
 import ly.kite.print.ProductCache;
@@ -87,8 +88,8 @@ public class ProductOverviewActivity extends AKiteActivity implements View.OnCli
   @SuppressWarnings( "unused" )
   private static final String      LOG_TAG                                   = "ProductOverviewActivity";
 
-  public  static final String      INTENT_EXTRA_NAME_ASSET_LIST              = KiteSDK.INTENT_PREFIX + ".AssetList";
-  public  static final String      INTENT_EXTRA_NAME_PRODUCT_ID              = KiteSDK.INTENT_PREFIX + ".ProductId";
+  public  static final String      INTENT_EXTRA_NAME_ASSET_LIST              = KiteSDK.INTENT_PREFIX + ".assetList";
+  public  static final String      INTENT_EXTRA_NAME_PRODUCT                 = KiteSDK.INTENT_PREFIX + ".product";
 
   private static final BigDecimal  BIG_DECIMAL_ZERO                          = BigDecimal.valueOf( 0 );
 
@@ -140,7 +141,7 @@ public class ProductOverviewActivity extends AKiteActivity implements View.OnCli
     Intent intent = new Intent( context, ProductOverviewActivity.class );
 
     intent.putParcelableArrayListExtra( INTENT_EXTRA_NAME_ASSET_LIST, assetArrayList );
-    intent.putExtra( INTENT_EXTRA_NAME_PRODUCT_ID, product.getId() );
+    intent.putExtra( INTENT_EXTRA_NAME_PRODUCT, product );
 
     context.startActivity( intent );
     }
@@ -199,33 +200,15 @@ public class ProductOverviewActivity extends AKiteActivity implements View.OnCli
       }
 
 
-    String productId = intent.getStringExtra( INTENT_EXTRA_NAME_PRODUCT_ID );
-
-    if ( productId == null )
-      {
-      Log.e( LOG_TAG, "No product id found" );
-
-      displayModalDialog(
-              R.string.alert_dialog_title_no_product_id,
-              R.string.alert_dialog_message_no_product_id,
-              DONT_DISPLAY_BUTTON,
-              null,
-              R.string.Cancel,
-              new FinishRunnable()
-      );
-
-      return;
-      }
-
-    mProduct = ProductCache.getInstance( this ).getProductById( productId );
+    mProduct = (Product)intent.getParcelableExtra( INTENT_EXTRA_NAME_PRODUCT );
 
     if ( mProduct == null )
       {
-      Log.e( LOG_TAG, "No product found for id " + productId );
+      Log.e( LOG_TAG, "No product found" );
 
       displayModalDialog(
               R.string.alert_dialog_title_product_not_found,
-              getString( R.string.alert_dialog_message_no_product_for_id, productId ),
+              getString( R.string.alert_dialog_message_product_not_found ),
               DONT_DISPLAY_BUTTON,
               null,
               R.string.Cancel,
@@ -408,9 +391,10 @@ public class ProductOverviewActivity extends AKiteActivity implements View.OnCli
       }
 
 
-
-
-    //ProductManager.getInstance().getAllProducts( this );
+    if ( savedInstanceState == null )
+      {
+      Analytics.getInstance( this ).trackProductOverviewScreenViewed( mProduct );
+      }
     }
 
 

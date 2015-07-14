@@ -53,6 +53,7 @@ import java.util.ArrayList;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
+import ly.kite.analytics.Analytics;
 import ly.kite.checkout.CheckoutActivity;
 import ly.kite.print.Asset;
 import ly.kite.print.Bleed;
@@ -80,8 +81,8 @@ public class PhoneCaseActivity extends AKiteActivity
   @SuppressWarnings( "unused" )
   private static final String      LOG_TAG                      = "PhoneCaseActivity";
 
-  public  static final String      INTENT_EXTRA_NAME_ASSET_LIST = KiteSDK.INTENT_PREFIX + ".AssetList";
-  public  static final String      INTENT_EXTRA_NAME_PRODUCT_ID = KiteSDK.INTENT_PREFIX + ".ProductId";
+  public  static final String      INTENT_EXTRA_NAME_ASSET_LIST = KiteSDK.INTENT_PREFIX + ".assetList";
+  public  static final String      INTENT_EXTRA_NAME_PRODUCT    = KiteSDK.INTENT_PREFIX + ".product";
 
 
   ////////// Static Variable(s) //////////
@@ -110,7 +111,7 @@ public class PhoneCaseActivity extends AKiteActivity
     Intent intent = new Intent( context, PhoneCaseActivity.class );
 
     intent.putParcelableArrayListExtra( INTENT_EXTRA_NAME_ASSET_LIST, assetArrayList );
-    intent.putExtra( INTENT_EXTRA_NAME_PRODUCT_ID, product.getId() );
+    intent.putExtra( INTENT_EXTRA_NAME_PRODUCT, product );
 
     context.startActivity( intent );
     }
@@ -169,33 +170,15 @@ public class PhoneCaseActivity extends AKiteActivity
       }
 
 
-    String productId = intent.getStringExtra( INTENT_EXTRA_NAME_PRODUCT_ID );
-
-    if ( productId == null )
-      {
-      Log.e( LOG_TAG, "No product id found" );
-
-      displayModalDialog(
-              R.string.alert_dialog_title_no_product_id,
-              R.string.alert_dialog_message_no_product_id,
-              DONT_DISPLAY_BUTTON,
-              null,
-              R.string.Cancel,
-              new FinishRunnable()
-      );
-
-      return;
-      }
-
-    mProduct = ProductCache.getInstance( this ).getProductById( productId );
+    mProduct = (Product)intent.getParcelableExtra( INTENT_EXTRA_NAME_PRODUCT );
 
     if ( mProduct == null )
       {
-      Log.e( LOG_TAG, "No product found for id " + productId );
+      Log.e( LOG_TAG, "No product found" );
 
       displayModalDialog(
               R.string.alert_dialog_title_product_not_found,
-              getString( R.string.alert_dialog_message_no_product_for_id, productId ),
+              getString( R.string.alert_dialog_message_product_not_found ),
               DONT_DISPLAY_BUTTON,
               null,
               R.string.Cancel,
@@ -227,6 +210,13 @@ public class PhoneCaseActivity extends AKiteActivity
 
     imageManager.getImage( IMAGE_CLASS_STRING_PRODUCT_ITEM, asset, handler, mMaskedRemoteImageView );
     imageManager.getRemoteImage( IMAGE_CLASS_STRING_PRODUCT_ITEM, maskURL, handler, mMaskedRemoteImageView );
+
+
+    // TODO: Create a common superclass of all create product activities
+    if ( savedInstanceState == null )
+      {
+      Analytics.getInstance( this ).trackCreateProductScreenViewed( mProduct );
+      }
     }
 
 
@@ -285,11 +275,46 @@ public class PhoneCaseActivity extends AKiteActivity
     // Create a print order from the cropped image, then start
     // the checkout activity.
 
-    PrintOrder printOrder = new PrintOrder();
-
     Bitmap croppedImageBitmap = mMaskedRemoteImageView.getMaskedImageView().getImageCroppedToMask();
 
-    Asset croppedImageAsset = Asset.create( croppedImageBitmap );
+
+    // Sometimes users can hit the next button before we've actually got all the images, so check
+    // for this.
+
+    if ( croppedImageBitmap == null )
+      {
+      Log.w( LOG_TAG, "Cropped image not yet available" );
+
+      return;
+      }
+
+
+    // Create the cropped image asset as a file, so we don't hit problems with transaction sizes
+    // when passing assets through intents.
+
+    Asset.clearCachedImages( this );
+
+    Asset croppedImageAsset = Asset.createAsCachedFile( this, croppedImageBitmap );
+
+    if ( croppedImageAsset == null )
+      {
+      Log.e( LOG_TAG, "Could not create cropped image asset" );
+
+      displayModalDialog(
+              R.string.alert_dialog_title_create_order,
+              R.string.alert_dialog_message_no_cropped_image_asset,
+              DONT_DISPLAY_BUTTON,
+              null,
+              R.string.Cancel,
+              null );
+
+      return;
+      }
+
+
+    // Create the print order
+
+    PrintOrder printOrder = new PrintOrder();
 
     printOrder.addPrintJob( PrintJob.createPrintJob( mProduct, croppedImageAsset ) );
 

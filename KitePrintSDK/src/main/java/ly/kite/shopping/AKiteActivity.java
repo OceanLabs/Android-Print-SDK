@@ -53,6 +53,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.io.FileOutputStream;
+
 import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.print.ProductCache;
@@ -82,7 +84,9 @@ public abstract class AKiteActivity extends Activity
 
   ////////// Member Variable(s) //////////
 
-  private Dialog  mDialog;
+  protected boolean  mActivityIsVisible;
+
+  private   Dialog   mDialog;
 
 
   ////////// Static Initialiser(s) //////////
@@ -174,6 +178,20 @@ public abstract class AKiteActivity extends Activity
 
   /*****************************************************
    *
+   * Called when the activity becomes visible.
+   *
+   *****************************************************/
+  @Override
+  public void onStart()
+    {
+    super.onStart();
+
+    mActivityIsVisible = true;
+    }
+
+
+  /*****************************************************
+   *
    * Called when the home action is clicked.
    *
    *****************************************************/
@@ -194,12 +212,28 @@ public abstract class AKiteActivity extends Activity
 
   /*****************************************************
    *
+   * Called when the activity is no longer visible.
+   *
+   *****************************************************/
+  @Override
+  public void onStop()
+    {
+    mActivityIsVisible = false;
+
+    super.onStop();
+    }
+
+
+  /*****************************************************
+   *
    * Called when the activity is destroyed.
    *
    *****************************************************/
   @Override
   public void onDestroy()
     {
+    mActivityIsVisible = false;
+
     super.onDestroy();
 
     ensureDialogGone();
@@ -221,6 +255,9 @@ public abstract class AKiteActivity extends Activity
           int      negativeTextResourceId,
           Runnable negativeRunnable )
     {
+    // Don't do anything if the activity is no longer visible
+    if ( ! mActivityIsVisible ) return;
+
     ensureDialogGone();
 
     DialogCallbackHandler callbackHandler = new DialogCallbackHandler( positiveRunnable, negativeRunnable );
