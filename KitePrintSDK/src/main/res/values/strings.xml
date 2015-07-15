@@ -59,6 +59,8 @@
 
     <string name="product_creation_next_button_text">Next</string>
 
+    <string name="address_book_empty">Address Book Empty</string>
+
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>

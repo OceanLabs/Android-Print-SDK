@@ -49,7 +49,11 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.util.SparseArray;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -74,13 +78,16 @@ public class MaskedImageView extends View implements GestureDetector.OnGestureLi
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                          = "MaskedImageView";
+  private static final String  LOG_TAG                               = "MaskedImageView";
 
-  private static final float FLOAT_ZERO_THRESHOLD               = 0.0001f;
+  private static final String  BUNDLE_KEY_PARENT_STATE               = "imageToBlendTargetRect";
+  private static final String  BUNDLE_KEY_IMAGE_TO_BLEND_TARGET_RECT = "imageToBlendTargetRect";
 
-  private static final float MAX_IMAGE_ZOOM                     = 3.0f;
+  private static final float FLOAT_ZERO_THRESHOLD                    = 0.0001f;
 
-  private static final long  FLY_BACK_ANIMATION_DURATION_MILLIS = 150L;
+  private static final float MAX_IMAGE_ZOOM                          = 3.0f;
+
+  private static final long  FLY_BACK_ANIMATION_DURATION_MILLIS      = 150L;
 
 
   ////////// Static Variable(s) //////////
@@ -577,7 +584,18 @@ public class MaskedImageView extends View implements GestureDetector.OnGestureLi
     float halfScaledImageHeight = scaledImageHeight * 0.5f;
 
     mImageToBlendSourceRect = new Rect( 0, 0, unscaledImageWidth, unscaledImageHeight );
-    mImageToBlendTargetRect = new RectF( halfBlendWidth - halfScaledImageWidth, halfBlendHeight - halfScaledImageHeight, halfBlendWidth + halfScaledImageWidth, halfBlendHeight + halfScaledImageHeight );
+
+
+    // If we have an already calculated target rect for the image, try and keep it. This stops
+    // the image location resetting when we go back to it.
+    if ( mImageToBlendTargetRect       == null ||
+         mImageToBlendTargetRect.left   > 0 ||
+         mImageToBlendTargetRect.top    > 0 ||
+         mImageToBlendTargetRect.right  < ( blendWidth - 1 ) ||
+         mImageToBlendTargetRect.bottom < ( blendHeight - 1 ) )
+      {
+      mImageToBlendTargetRect = new RectF( halfBlendWidth - halfScaledImageWidth, halfBlendHeight - halfScaledImageHeight, halfBlendWidth + halfScaledImageWidth, halfBlendHeight + halfScaledImageHeight );
+      }
 
 
     mImageMinScaleFactor = mImageScaleFactor;

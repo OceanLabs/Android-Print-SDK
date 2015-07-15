@@ -1,5 +1,7 @@
 package ly.kite.sample;
 
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -36,6 +38,7 @@ public class MainActivity extends Activity
   protected void onCreate( Bundle savedInstanceState )
     {
     super.onCreate( savedInstanceState );
+    Fabric.with(this, new Crashlytics());
     setContentView( R.layout.activity_main );
     environmentSwitch = (Switch) findViewById( R.id.environment );
     //productSpinner = (Spinner) findViewById(R.id.spinner_product);
