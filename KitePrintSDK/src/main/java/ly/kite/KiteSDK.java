@@ -72,10 +72,19 @@ public class KiteSDK
   private static final String SHARED_PREFERENCES_KEY_API_KEY          = "api_key";
   private static final String SHARED_PREFERENCES_KEY_ENVIRONMENT_NAME = "environment_name";
 
-  private static final String PAYPAL_CLIENT_ID_SANDBOX = "Aa5nsBDntBpozWQykoxQXoHFOqs551hTNt0B8LQXTudoh8bD0nT1F735c_Fh";
-  private static final String PAYPAL_RECIPIENT_SANDBOX = "hello-facilitator@psilov.eu";
-  private static final String PAYPAL_CLIENT_ID_LIVE = "AT2JfBAmXD-CHGJnUb05ik4J-GrCi4XxjY9_grfCFjreYaLrNswj8uzhuWyj";
-  private static final String PAYPAL_RECIPIENT_LIVE = "deon@oceanlabs.co";
+
+  //private static final String PAYPAL_CLIENT_ID_SANDBOX = "Aa5nsBDntBpozWQykoxQXoHFOqs551hTNt0B8LQXTudoh8bD0nT1F735c_Fh";
+  public static final String PAYPAL_CLIENT_ID_SANDBOX = "AcEcBRDxqcCKiikjm05FyD4Sfi4pkNP98AYN67sr3_yZdBe23xEk0qhdhZLM";
+
+  //private static final String PAYPAL_RECIPIENT_SANDBOX = "hello-facilitator@psilov.eu";
+  public static final String PAYPAL_RECIPIENT_SANDBOX = "sandbox-merchant@kite.ly";
+
+
+  //private static final String PAYPAL_CLIENT_ID_LIVE = "AT2JfBAmXD-CHGJnUb05ik4J-GrCi4XxjY9_grfCFjreYaLrNswj8uzhuWyj";
+  public static final String PAYPAL_CLIENT_ID_LIVE = "ASYVBBCHF_KwVUstugKy4qvpQaPlUeE_5beKRJHpIP2d3SA_jZrsaUDTmLQY";
+
+  //private static final String PAYPAL_RECIPIENT_LIVE = "deon@oceanlabs.co";
+  public static final String PAYPAL_RECIPIENT_LIVE = "hello@kite.ly";
 
 
   public static final String INTENT_PREFIX = "ly.kite";
@@ -268,9 +277,9 @@ public class KiteSDK
    *****************************************************/
   public static enum Environment
     {
-    LIVE( "https://api.kite.ly/v1.4", PaymentActivity.ENVIRONMENT_LIVE, PAYPAL_CLIENT_ID_LIVE, PAYPAL_RECIPIENT_LIVE ),
-    TEST( "https://api.kite.ly/v1.4", PaymentActivity.ENVIRONMENT_SANDBOX, PAYPAL_CLIENT_ID_SANDBOX, PAYPAL_RECIPIENT_SANDBOX ),
-    STAGING( "http://staging.api.kite.ly", PaymentActivity.ENVIRONMENT_SANDBOX, PAYPAL_CLIENT_ID_SANDBOX, PAYPAL_RECIPIENT_SANDBOX ); /* private environment intended only for Ocean Labs use, hands off :) */
+    LIVE    ( "https://api.kite.ly/v1.4",   PaymentActivity.ENVIRONMENT_LIVE,    PAYPAL_CLIENT_ID_LIVE,    PAYPAL_RECIPIENT_LIVE ),
+    TEST    ( "https://api.kite.ly/v1.4",   PaymentActivity.ENVIRONMENT_SANDBOX, PAYPAL_CLIENT_ID_SANDBOX, PAYPAL_RECIPIENT_SANDBOX ),
+    STAGING ( "http://staging.api.kite.ly", PaymentActivity.ENVIRONMENT_SANDBOX, PAYPAL_CLIENT_ID_SANDBOX, PAYPAL_RECIPIENT_SANDBOX ); /* private environment intended only for Ocean Labs use, hands off :) */
 
     private final String  mAPIEndpoint;
     private final String  mPayPalEnvironment;
