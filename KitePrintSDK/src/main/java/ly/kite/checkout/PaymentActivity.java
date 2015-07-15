@@ -12,6 +12,7 @@ import android.os.Looper;
 import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,9 +23,11 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.paypal.android.sdk.payments.PayPalConfiguration;
 import com.paypal.android.sdk.payments.PayPalPayment;
 import com.paypal.android.sdk.payments.PayPalService;
 import com.paypal.android.sdk.payments.PaymentConfirmation;
+import com.paypal.android.sdk.payments.ProofOfPayment;
 
 import org.json.JSONException;
 
@@ -43,6 +46,8 @@ import io.card.payment.CardIOActivity;
 import io.card.payment.CreditCard;
 
 public class PaymentActivity extends Activity {
+
+  private static final String LOG_TAG = "PaymentActivity";
 
     public static final String EXTRA_PRINT_ORDER = "ly.kite.EXTRA_PRINT_ORDER";
     public static final String EXTRA_PRINT_ENVIRONMENT = "ly.kite.EXTRA_PRINT_ENVIRONMENT";
@@ -131,9 +136,16 @@ public class PaymentActivity extends Activity {
         /*
          * Start PayPal Service
          */
-        Intent intent = new Intent(this, PayPalService.class);
-        intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_PAYPAL_ENVIRONMENT, printEnvironment.getPayPalEnvironment());
-        intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_CLIENT_ID, printEnvironment.getPayPalClientId());
+
+        PayPalConfiguration payPalConfiguration = new PayPalConfiguration()
+                .clientId( printEnvironment.getPayPalClientId() )
+                .environment( printEnvironment.getPayPalEnvironment() );
+
+        Intent intent = new Intent( this, PayPalService.class );
+        intent.putExtra( PayPalService.EXTRA_PAYPAL_CONFIGURATION, payPalConfiguration );
+        //intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_PAYPAL_ENVIRONMENT, printEnvironment.getPayPalEnvironment());
+        //intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_CLIENT_ID, printEnvironment.getPayPalClientId());
+
         startService(intent);
 
         if (getActionBar() != null) {
@@ -156,7 +168,7 @@ public class PaymentActivity extends Activity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(EXTRA_PRINT_ORDER, mPrintOrder );
-        outState.putString(EXTRA_PRINT_API_KEY, apiKey);
+        outState.putString( EXTRA_PRINT_API_KEY, apiKey );
         outState.putSerializable(EXTRA_PRINT_ENVIRONMENT, printEnvironment);
     }
 
@@ -190,15 +202,25 @@ public class PaymentActivity extends Activity {
     }
 
     public void onButtonPayWithPayPalClicked(View view) {
-        PayPalPayment payment = new PayPalPayment( mPrintOrder.getCost( mPrintOrder.getCurrencyCode()), mPrintOrder.getCurrencyCode(), "Product");
-        Intent intent = new Intent(this, com.paypal.android.sdk.payments.PaymentActivity.class);
-        intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_PAYPAL_ENVIRONMENT, printEnvironment.getPayPalEnvironment());
-        intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_CLIENT_ID, printEnvironment.getPayPalClientId());
-        intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_PAYER_ID, "<someuser@somedomain.com>");
-        intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_RECEIVER_EMAIL, printEnvironment.getPayPalReceiverEmail());
-        intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_PAYMENT, payment);
-        intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_SKIP_CREDIT_CARD, true);
-        startActivityForResult(intent, REQUEST_CODE_PAYPAL);
+
+//        intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_PAYPAL_ENVIRONMENT, printEnvironment.getPayPalEnvironment());
+//        intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_CLIENT_ID, printEnvironment.getPayPalClientId());
+//        intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_PAYER_ID, "<someuser@somedomain.com>");
+//        intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_RECEIVER_EMAIL, printEnvironment.getPayPalReceiverEmail());
+//        intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_PAYMENT, payment);
+//        intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_SKIP_CREDIT_CARD, true);
+
+    PayPalPayment payment = new PayPalPayment(
+            mPrintOrder.getCost( mPrintOrder.getCurrencyCode() ),
+            mPrintOrder.getCurrencyCode(),
+            "Product",
+            PayPalPayment.PAYMENT_INTENT_SALE );
+
+    Intent intent = new Intent(this, com.paypal.android.sdk.payments.PaymentActivity.class );
+
+    intent.putExtra( com.paypal.android.sdk.payments.PaymentActivity.EXTRA_PAYMENT, payment );
+
+    startActivityForResult( intent, REQUEST_CODE_PAYPAL );
     }
 
     public void onButtonPayWithCreditCardClicked(View view) {
@@ -229,7 +251,7 @@ public class PaymentActivity extends Activity {
 
     private void payWithNewCard() {
         Intent scanIntent = new Intent(this, CardIOActivity.class);
-        scanIntent.putExtra(CardIOActivity.EXTRA_APP_TOKEN, CARD_IO_TOKEN);
+        //scanIntent.putExtra(CardIOActivity.EXTRA_APP_TOKEN, CARD_IO_TOKEN);
         scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_EXPIRY, true);
         scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_CVV, true);
         scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_POSTAL_CODE, false);
@@ -240,18 +262,45 @@ public class PaymentActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE_PAYPAL) {
             if (resultCode == Activity.RESULT_OK) {
-                PaymentConfirmation confirm = data.getParcelableExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_RESULT_CONFIRMATION);
-                if (confirm != null) {
+
+                PaymentConfirmation paymentConfirmation = data.getParcelableExtra( com.paypal.android.sdk.payments.PaymentActivity.EXTRA_RESULT_CONFIRMATION );
+
+                if (paymentConfirmation != null) {
 
                     Analytics.getInstance( this ).trackPaymentCompleted( mPrintOrder, Analytics.PAYMENT_METHOD_PAYPAL );
 
                     try {
-                        String proofOfPayment = confirm.toJSONObject().getJSONObject("proof_of_payment").getJSONObject("adaptive_payment").getString("pay_key");
-                        submitOrderForPrinting(proofOfPayment);
-                    } catch (JSONException e) {
-                        showErrorDialog(e.getMessage());
+
+                      ProofOfPayment proofOfPayment = paymentConfirmation.getProofOfPayment();
+
+                      if ( proofOfPayment != null )
+                          {
+                          String paymentId = proofOfPayment.getPaymentId();
+
+                          //String proofOfPayment = paymentConfirmation.toJSONObject().getJSONObject("proof_of_payment").getJSONObject("adaptive_payment").getString( "pay_key" );
+
+                          if ( paymentId != null )
+                              {
+                              submitOrderForPrinting( paymentId );
+                              }
+                          else
+                              {
+                              showErrorDialog( "No payment id found in proof of payment" );
+                              }
+                          }
+                      else
+                          {
+                          showErrorDialog( "No proof of payment found in payment confirmation" );
+                          }
+
+                    } catch ( Exception exception ) {
+                        showErrorDialog( exception.getMessage() );
                     }
                 }
+            else
+                    {
+                    showErrorDialog( "No payment confirmation received from PayPal" );
+                    }
             }
         } else if (requestCode == REQUEST_CODE_CREDITCARD) {
             if (data != null && data.hasExtra(CardIOActivity.EXTRA_SCAN_RESULT)) {
