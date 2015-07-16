@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.shopping;
+package ly.kite.product;
 
 
 ///// Import(s) /////
@@ -92,7 +92,7 @@ public class ProductImageAdaptor extends PagerAdapter
 
   ////////// Constructor(s) //////////
 
-  ProductImageAdaptor( Context context, List<URL> imageURLList, View.OnClickListener onClickListener )
+  public ProductImageAdaptor( Context context, List<URL> imageURLList, View.OnClickListener onClickListener )
     {
     mContext         = context;
     mImageURLList    = imageURLList;

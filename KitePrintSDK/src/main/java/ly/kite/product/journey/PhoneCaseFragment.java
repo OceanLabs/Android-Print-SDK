@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * PhoneCaseActivity.java
+ * PhoneCaseFragment.java
  *
  *
  * Modified MIT License
@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.shopping.journey;
+package ly.kite.product.journey;
 
 
 ///// Import(s) /////
@@ -45,8 +45,11 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -60,8 +63,7 @@ import ly.kite.print.Bleed;
 import ly.kite.print.PrintJob;
 import ly.kite.print.PrintOrder;
 import ly.kite.print.Product;
-import ly.kite.print.ProductCache;
-import ly.kite.shopping.AKiteActivity;
+import ly.kite.product.AKiteActivity;
 import ly.kite.util.ImageManager;
 import ly.kite.widget.MaskedRemoteImageView;
 
@@ -74,15 +76,15 @@ import ly.kite.widget.MaskedRemoteImageView;
  * case design using an image.
  *
  *****************************************************/
-public class PhoneCaseActivity extends AKiteActivity
+public class PhoneCaseFragment extends AJourneyFragment implements View.OnClickListener
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String      LOG_TAG                      = "PhoneCaseActivity";
+  private static final String      LOG_TAG                      = "PhoneCaseFragment";
 
-  public  static final String      INTENT_EXTRA_NAME_ASSET_LIST = KiteSDK.INTENT_PREFIX + ".assetList";
-  public  static final String      INTENT_EXTRA_NAME_PRODUCT    = KiteSDK.INTENT_PREFIX + ".product";
+  public  static final String      BUNDLE_KEY_ASSET_LIST = "assetList";
+  public  static final String      BUNDLE_KEY_PRODUCT    = "product";
 
 
   ////////// Static Variable(s) //////////
@@ -94,6 +96,7 @@ public class PhoneCaseActivity extends AKiteActivity
   private Product                mProduct;
 
   private MaskedRemoteImageView  mMaskedRemoteImageView;
+  private Button                 mNextButton;
 
 
   ////////// Static Initialiser(s) //////////
@@ -103,17 +106,20 @@ public class PhoneCaseActivity extends AKiteActivity
 
   /*****************************************************
    *
-   * Convenience method for starting this activity.
+   * Creates a new instance of this fragment.
    *
    *****************************************************/
-  public static void start( Context context, ArrayList<Asset> assetArrayList, Product product )
+  public static PhoneCaseFragment newInstance( ArrayList<Asset> assetArrayList, Product product )
     {
-    Intent intent = new Intent( context, PhoneCaseActivity.class );
+    PhoneCaseFragment fragment = new PhoneCaseFragment();
 
-    intent.putParcelableArrayListExtra( INTENT_EXTRA_NAME_ASSET_LIST, assetArrayList );
-    intent.putExtra( INTENT_EXTRA_NAME_PRODUCT, product );
+    Bundle arguments = new Bundle();
+    arguments.putParcelableArrayList( BUNDLE_KEY_ASSET_LIST, assetArrayList );
+    arguments.putParcelable( BUNDLE_KEY_PRODUCT, product );
 
-    context.startActivity( intent );
+    fragment.setArguments( arguments );
+
+    return ( fragment );
     }
 
 
@@ -135,88 +141,61 @@ public class PhoneCaseActivity extends AKiteActivity
 
     // Get the assets and product
 
-    Intent intent = getIntent();
+    Bundle arguments = getArguments();
 
-    if ( intent == null )
+    if ( arguments == null )
       {
-      Log.e( LOG_TAG, "No intent found" );
+      Log.e( LOG_TAG, "No arguments found" );
 
-      displayModalDialog(
-              R.string.alert_dialog_title_no_intent,
-              R.string.alert_dialog_message_no_intent,
-              DONT_DISPLAY_BUTTON,
+      mKiteActivity.displayModalDialog(
+              R.string.alert_dialog_title_no_arguments,
+              R.string.alert_dialog_message_no_arguments,
+              AKiteActivity.DONT_DISPLAY_BUTTON,
               null,
               R.string.Cancel,
-              new FinishRunnable()
+              mKiteActivity.new FinishRunnable()
       );
 
       return;
       }
 
-    if ( ( mAssetArrayList = intent.getParcelableArrayListExtra( INTENT_EXTRA_NAME_ASSET_LIST ) ) == null || mAssetArrayList.size() < 1 )
+    if ( ( mAssetArrayList = arguments.getParcelableArrayList( BUNDLE_KEY_ASSET_LIST ) ) == null || mAssetArrayList.size() < 1 )
       {
       Log.e( LOG_TAG, "No asset list found" );
 
-      displayModalDialog(
+      mKiteActivity.displayModalDialog(
               R.string.alert_dialog_title_no_asset_list,
               R.string.alert_dialog_message_no_asset_list,
-              DONT_DISPLAY_BUTTON,
+              AKiteActivity.DONT_DISPLAY_BUTTON,
               null,
               R.string.Cancel,
-              new FinishRunnable()
+              mKiteActivity.new FinishRunnable()
       );
 
       return;
       }
 
 
-    mProduct = (Product)intent.getParcelableExtra( INTENT_EXTRA_NAME_PRODUCT );
+    mProduct = arguments.getParcelable( BUNDLE_KEY_PRODUCT );
 
     if ( mProduct == null )
       {
       Log.e( LOG_TAG, "No product found" );
 
-      displayModalDialog(
+      mKiteActivity.displayModalDialog(
               R.string.alert_dialog_title_product_not_found,
-              getString( R.string.alert_dialog_message_product_not_found ),
-              DONT_DISPLAY_BUTTON,
+              R.string.alert_dialog_message_product_not_found,
+              AKiteActivity.DONT_DISPLAY_BUTTON,
               null,
               R.string.Cancel,
-              new FinishRunnable()
+              mKiteActivity.new FinishRunnable()
       );
 
       return;
       }
 
 
-    // Set up the screen
-
-    setContentView( R.layout.screen_phone_case );
-
-    mMaskedRemoteImageView = (MaskedRemoteImageView)findViewById( R.id.masked_remote_image_view );
-
-
-    // Request the image and mask
-
-    ImageManager imageManager = ImageManager.getInstance( this );
-    Handler      handler      = new Handler();
-
-    Asset        asset        = mAssetArrayList.get( 0 );
-    URL          maskURL      = mProduct.getMaskURL();
-    Bleed        maskBleed    = mProduct.getMaskBleed();
-
-    mMaskedRemoteImageView.setImageKey( asset );
-    mMaskedRemoteImageView.setMaskDetails( maskURL, maskBleed );
-
-    imageManager.getImage( IMAGE_CLASS_STRING_PRODUCT_ITEM, asset, handler, mMaskedRemoteImageView );
-    imageManager.getRemoteImage( IMAGE_CLASS_STRING_PRODUCT_ITEM, maskURL, handler, mMaskedRemoteImageView );
-
-
-    // TODO: Create a common superclass of all create product activities
-    if ( savedInstanceState == null )
-      {
-      Analytics.getInstance( this ).trackCreateProductScreenViewed( mProduct );
-      }
+    //this.setHasOptionsMenu( true );
     }
 
 
@@ -235,6 +214,50 @@ public class PhoneCaseActivity extends AKiteActivity
 //
 //    return ( true );
 //    }
+
+
+  /*****************************************************
+   *
+   * Returns the content view for this fragment
+   *
+   *****************************************************/
+  @Override
+  public View onCreateView( LayoutInflater layoutInflator, ViewGroup container, Bundle savedInstanceState )
+    {
+    View view = layoutInflator.inflate( R.layout.screen_phone_case, container, false );
+
+    mMaskedRemoteImageView = (MaskedRemoteImageView)view.findViewById( R.id.masked_remote_image_view );
+    mNextButton            = (Button)view.findViewById( R.id.next_button );
+
+
+    // Request the image and mask
+
+    ImageManager imageManager = ImageManager.getInstance( mKiteActivity );
+    Handler      handler      = new Handler();
+
+    Asset        asset        = mAssetArrayList.get( 0 );
+    URL          maskURL      = mProduct.getMaskURL();
+    Bleed        maskBleed    = mProduct.getMaskBleed();
+
+    mMaskedRemoteImageView.setImageKey( asset );
+    mMaskedRemoteImageView.setMaskDetails( maskURL, maskBleed );
+
+    imageManager.getImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, asset, handler, mMaskedRemoteImageView );
+    imageManager.getRemoteImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, maskURL, handler, mMaskedRemoteImageView );
+
+
+    // TODO: Create a common superclass of all create product activities
+    if ( savedInstanceState == null )
+      {
+      Analytics.getInstance( mKiteActivity ).trackCreateProductScreenViewed( mProduct );
+      }
+
+
+    mNextButton.setOnClickListener( this );
+
+
+    return ( view );
+    }
 
 
   /*****************************************************
@@ -263,6 +286,25 @@ public class PhoneCaseActivity extends AKiteActivity
     }
 
 
+  ////////// View.OnClickListener Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when something is clicked.
+   *
+   *****************************************************/
+  @Override
+  public void onClick( View view )
+    {
+    if ( view == mNextButton )
+      {
+      ///// Next /////
+
+      onNext();
+      }
+    }
+
+
   ////////// Method(s) //////////
 
   /*****************************************************
@@ -270,7 +312,7 @@ public class PhoneCaseActivity extends AKiteActivity
    * Called when the Next button is clicked.
    *
    *****************************************************/
-  public void onNextClicked( View view )
+  private void onNext()
     {
     // Create a print order from the cropped image, then start
     // the checkout activity.
@@ -292,18 +334,18 @@ public class PhoneCaseActivity extends AKiteActivity
     // Create the cropped image asset as a file, so we don't hit problems with transaction sizes
     // when passing assets through intents.
 
-    Asset.clearCachedImages( this );
+    Asset.clearCachedImages( mKiteActivity );
 
-    Asset croppedImageAsset = Asset.createAsCachedFile( this, croppedImageBitmap );
+    Asset croppedImageAsset = Asset.createAsCachedFile( mKiteActivity, croppedImageBitmap );
 
     if ( croppedImageAsset == null )
       {
       Log.e( LOG_TAG, "Could not create cropped image asset" );
 
-      displayModalDialog(
+      mKiteActivity.displayModalDialog(
               R.string.alert_dialog_title_create_order,
               R.string.alert_dialog_message_no_cropped_image_asset,
-              DONT_DISPLAY_BUTTON,
+              AKiteActivity.DONT_DISPLAY_BUTTON,
               null,
               R.string.Cancel,
               null );
@@ -312,14 +354,11 @@ public class PhoneCaseActivity extends AKiteActivity
       }
 
 
-    // Create the print order
-
-    PrintOrder printOrder = new PrintOrder();
-
-    printOrder.addPrintJob( PrintJob.createPrintJob( mProduct, croppedImageAsset ) );
-
-
-    CheckoutActivity.start( this, printOrder, ACTIVITY_REQUEST_CODE_CHECKOUT );
+    // Call back to the activity
+    if ( mKiteActivity instanceof ICallback )
+      {
+      ( (ICallback)mKiteActivity ).pcOnCreated( mProduct, croppedImageAsset );
+      }
     }
 
 
@@ -327,9 +366,13 @@ public class PhoneCaseActivity extends AKiteActivity
 
   /*****************************************************
    *
-   * ...
+   * A callback interface.
    *
    *****************************************************/
+  public interface ICallback
+    {
+    public void pcOnCreated( Product product, Asset imageAsset );
+    }
 
   }
 

@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * ProductOverviewActivity.java
+ * ProductOverviewFragment.java
  *
  *
  * Modified MIT License
@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.shopping;
+package ly.kite.product.journey;
 
 
 ///// Import(s) /////
@@ -42,13 +42,13 @@ package ly.kite.shopping;
 
 ///// Class Declaration /////
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
@@ -59,53 +59,52 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.address.Country;
 import ly.kite.analytics.Analytics;
-import ly.kite.print.Asset;
 import ly.kite.print.Product;
-import ly.kite.print.ProductCache;
 import ly.kite.print.SingleUnitSize;
 import ly.kite.print.UnitOfLength;
+import ly.kite.product.AKiteActivity;
+import ly.kite.product.ProductImageAdaptor;
+import ly.kite.product.SingleCurrencyCost;
+import ly.kite.product.SingleDestinationShippingCost;
 import ly.kite.widget.BellInterpolator;
 import ly.kite.widget.PagingDots;
 import ly.kite.widget.SlidingOverlayFrame;
 
 /*****************************************************
  *
- * This activity displays a product overview.
+ * This fragment displays a product overview.
  *
  *****************************************************/
-public class ProductOverviewActivity extends AKiteActivity implements View.OnClickListener
+public class ProductOverviewFragment extends AJourneyFragment implements View.OnClickListener
   {
   ////////// Static Constant(s) //////////
 
-  @SuppressWarnings( "unused" )
-  private static final String      LOG_TAG                                   = "ProductOverviewActivity";
+  @SuppressWarnings("unused")
+  public static final String TAG = "ProductOverviewFragment";
 
-  public  static final String      INTENT_EXTRA_NAME_ASSET_LIST              = KiteSDK.INTENT_PREFIX + ".assetList";
-  public  static final String      INTENT_EXTRA_NAME_PRODUCT                 = KiteSDK.INTENT_PREFIX + ".product";
+  public static final String BUNDLE_KEY_PRODUCT = "product";
 
-  private static final BigDecimal  BIG_DECIMAL_ZERO                          = BigDecimal.valueOf( 0 );
+  private static final BigDecimal BIG_DECIMAL_ZERO = BigDecimal.valueOf( 0 );
 
-  private static final long        PAGING_DOT_ANIMATION_DURATION_MILLIS      = 300L;
-  private static final float       PAGING_DOT_ANIMATION_OPAQUE               = 1.0f;
-  private static final float       PAGING_DOT_ANIMATION_TRANSLUCENT          = 0.5f;
-  private static final float       PAGING_DOT_ANIMATION_NORMAL_SCALE         = 1.0f;
+  private static final long PAGING_DOT_ANIMATION_DURATION_MILLIS = 300L;
+  private static final float PAGING_DOT_ANIMATION_OPAQUE = 1.0f;
+  private static final float PAGING_DOT_ANIMATION_TRANSLUCENT = 0.5f;
+  private static final float PAGING_DOT_ANIMATION_NORMAL_SCALE = 1.0f;
 
-  private static final long        SLIDE_ANIMATION_DURATION_MILLIS           = 500L;
-  private static final long        OPEN_CLOSE_ICON_ANIMATION_DELAY_MILLIS    = 250L;
-  private static final long        OPEN_CLOSE_ICON_ANIMATION_DURATION_MILLIS = SLIDE_ANIMATION_DURATION_MILLIS - OPEN_CLOSE_ICON_ANIMATION_DELAY_MILLIS;
+  private static final long SLIDE_ANIMATION_DURATION_MILLIS = 500L;
+  private static final long OPEN_CLOSE_ICON_ANIMATION_DELAY_MILLIS = 250L;
+  private static final long OPEN_CLOSE_ICON_ANIMATION_DURATION_MILLIS = SLIDE_ANIMATION_DURATION_MILLIS - OPEN_CLOSE_ICON_ANIMATION_DELAY_MILLIS;
 
-  private static final float       OPEN_CLOSE_ICON_ROTATION_UP               = -180f;
-  private static final float       OPEN_CLOSE_ICON_ROTATION_DOWN             =    0f;
+  private static final float OPEN_CLOSE_ICON_ROTATION_UP = -180f;
+  private static final float OPEN_CLOSE_ICON_ROTATION_DOWN = 0f;
 
-  private static final String      BUNDLE_KEY_SLIDING_DRAWER_IS_EXPANDED     = "slidingDrawerIsExpanded";
+  private static final String BUNDLE_KEY_SLIDING_DRAWER_IS_EXPANDED = "slidingDrawerIsExpanded";
 
 
   ////////// Static Variable(s) //////////
@@ -113,17 +112,18 @@ public class ProductOverviewActivity extends AKiteActivity implements View.OnCli
 
   ////////// Member Variable(s) //////////
 
-  private ArrayList<Asset>         mAssetArrayList;
-  private Product                  mProduct;
+  private Product              mProduct;
 
-  private View                     mOverlaidComponents;
-  private ViewPager                mProductImageViewPager;
-  private PagingDots               mPagingDots;
-  private Button                   mOverlaidStartButton;
-  private SlidingOverlayFrame      mSlidingOverlayFrame;
-  private ImageView                mOpenCloseDrawerIconImageView;
+  private View                 mOverlaidComponents;
+  private ViewPager            mProductImageViewPager;
+  private PagingDots           mPagingDots;
+  private Button               mOverlaidStartButton;
+  private SlidingOverlayFrame  mSlidingOverlayFrame;
+  private View                 mDrawerControlLayout;
+  private ImageView            mOpenCloseDrawerIconImageView;
+  private Button               mContentStartButton;
 
-  private PagerAdapter             mProductImageAdaptor;
+  private PagerAdapter         mProductImageAdaptor;
 
 
   ////////// Static Initialiser(s) //////////
@@ -133,17 +133,20 @@ public class ProductOverviewActivity extends AKiteActivity implements View.OnCli
 
   /*****************************************************
    *
-   * Convenience method for starting this activity.
+   * Creates a new instance of this fragment.
    *
    *****************************************************/
-  static void start( Context context, ArrayList<Asset> assetArrayList, Product product )
+  public static ProductOverviewFragment newInstance( Product product )
     {
-    Intent intent = new Intent( context, ProductOverviewActivity.class );
+    ProductOverviewFragment fragment = new ProductOverviewFragment();
 
-    intent.putParcelableArrayListExtra( INTENT_EXTRA_NAME_ASSET_LIST, assetArrayList );
-    intent.putExtra( INTENT_EXTRA_NAME_PRODUCT, product );
+    Bundle arguments = new Bundle();
 
-    context.startActivity( intent );
+    arguments.putParcelable( BUNDLE_KEY_PRODUCT, product );
+
+    fragment.setArguments( arguments );
+
+    return (fragment);
     }
 
 
@@ -154,7 +157,7 @@ public class ProductOverviewActivity extends AKiteActivity implements View.OnCli
 
   /*****************************************************
    *
-   * Called when the activity is created.
+   * Called when the fragment is created.
    *
    *****************************************************/
   @Override
@@ -163,94 +166,93 @@ public class ProductOverviewActivity extends AKiteActivity implements View.OnCli
     super.onCreate( savedInstanceState );
 
 
-    // Get the assets and product
+    // Get the product
 
-    Intent intent = getIntent();
+    Bundle arguments = getArguments();
 
-    if ( intent == null )
+    if ( arguments == null )
       {
-      Log.e( LOG_TAG, "No intent found" );
+      Log.e( TAG, "No arguments found" );
 
-      displayModalDialog(
-              R.string.alert_dialog_title_no_intent,
-              R.string.alert_dialog_message_no_intent,
-              DONT_DISPLAY_BUTTON,
+      mKiteActivity.displayModalDialog(
+              R.string.alert_dialog_title_no_arguments,
+              R.string.alert_dialog_message_no_arguments,
+              AKiteActivity.DONT_DISPLAY_BUTTON,
               null,
               R.string.Cancel,
-              new FinishRunnable()
-      );
-
-      return;
-      }
-
-    if ( ( mAssetArrayList = intent.getParcelableArrayListExtra( INTENT_EXTRA_NAME_ASSET_LIST ) ) == null || mAssetArrayList.size() < 1 )
-      {
-      Log.e( LOG_TAG, "No asset list found" );
-
-      displayModalDialog(
-              R.string.alert_dialog_title_no_asset_list,
-              R.string.alert_dialog_message_no_asset_list,
-              DONT_DISPLAY_BUTTON,
-              null,
-              R.string.Cancel,
-              new FinishRunnable()
+              mKiteActivity.new FinishRunnable()
       );
 
       return;
       }
 
 
-    mProduct = (Product)intent.getParcelableExtra( INTENT_EXTRA_NAME_PRODUCT );
+    mProduct = (Product) arguments.getParcelable( BUNDLE_KEY_PRODUCT );
 
     if ( mProduct == null )
       {
-      Log.e( LOG_TAG, "No product found" );
+      Log.e( TAG, "No product found" );
 
-      displayModalDialog(
+      mKiteActivity.displayModalDialog(
               R.string.alert_dialog_title_product_not_found,
-              getString( R.string.alert_dialog_message_product_not_found ),
-              DONT_DISPLAY_BUTTON,
+              R.string.alert_dialog_message_product_not_found,
+              AKiteActivity.DONT_DISPLAY_BUTTON,
               null,
               R.string.Cancel,
-              new FinishRunnable()
+              mKiteActivity.new FinishRunnable()
       );
 
       return;
       }
 
 
-    // Get any saved instance state
+    mKiteActivity.setTitle( mProduct.getName() );
+    }
 
+
+  /*****************************************************
+   *
+   * Returns the content view for this fragment
+   *
+   *****************************************************/
+  @Override
+  public View onCreateView( LayoutInflater layoutInflator, ViewGroup container, Bundle savedInstanceState )
+    {
     boolean slidingDrawerIsExpanded = false;
+
+    // Get any saved instance state
 
     if ( savedInstanceState != null )
       {
       slidingDrawerIsExpanded = savedInstanceState.getBoolean( BUNDLE_KEY_SLIDING_DRAWER_IS_EXPANDED, false );
       }
+    else
+      {
+      Analytics.getInstance( mKiteActivity ).trackProductOverviewScreenViewed( mProduct );
+      }
 
 
     // Set up the screen
 
-    setTitle( mProduct.getName() );
+    View view = layoutInflator.inflate( R.layout.screen_product_overview, container, false );
 
-    setContentView( R.layout.screen_product_overview );
+    mProductImageViewPager        = (ViewPager) view.findViewById( R.id.view_pager );
+    mOverlaidComponents           = view.findViewById( R.id.overlaid_components );
+    mPagingDots                   = (PagingDots) view.findViewById( R.id.paging_dots );
+    mOverlaidStartButton          = (Button) view.findViewById( R.id.overlaid_start_button );
+    mSlidingOverlayFrame          = (SlidingOverlayFrame) view.findViewById( R.id.sliding_overlay_frame );
+    mDrawerControlLayout          = view.findViewById( R.id.drawer_control_layout );
+    mOpenCloseDrawerIconImageView = (ImageView) view.findViewById( R.id.open_close_drawer_icon_image_view );
+    mContentStartButton           = (Button)view.findViewById( R.id.content_start_button );
+    TextView priceTextView        = (TextView) view.findViewById( R.id.price_text_view );
+    TextView sizeTextView         = (TextView) view.findViewById( R.id.size_text_view );
+    View quantityLayout           = view.findViewById( R.id.quantity_layout );
+    TextView quantityTextView     = (TextView) view.findViewById( R.id.quantity_text_view );
+    TextView shippingTextView     = (TextView) view.findViewById( R.id.shipping_text_view );
 
-    mProductImageViewPager        = (ViewPager)findViewById( R.id.view_pager );
-    mOverlaidComponents           = findViewById( R.id.overlaid_components );
-    mPagingDots                   = (PagingDots)findViewById( R.id.paging_dots );
-    mOverlaidStartButton          = (Button)findViewById( R.id.overlaid_start_button );
-    mSlidingOverlayFrame          = (SlidingOverlayFrame)findViewById( R.id.sliding_overlay_frame );
-    mOpenCloseDrawerIconImageView = (ImageView)findViewById( R.id.open_close_drawer_icon_image_view );
-    TextView priceTextView        = (TextView)findViewById( R.id.price_text_view );
-    TextView sizeTextView         = (TextView)findViewById( R.id.size_text_view );
-    View     quantityLayout       = findViewById( R.id.quantity_layout );
-    TextView quantityTextView     = (TextView)findViewById( R.id.quantity_text_view );
-    TextView shippingTextView     = (TextView)findViewById( R.id.shipping_text_view );
 
-
-    mProductImageAdaptor = new ProductImageAdaptor( this, mProduct.getImageURLList(), this );
+    mProductImageAdaptor = new ProductImageAdaptor( mKiteActivity, mProduct.getImageURLList(), this );
     mProductImageViewPager.setAdapter( mProductImageAdaptor );
-    mProductImageViewPager.setOnClickListener( this );
 
 
     // Paging dots
@@ -332,7 +334,7 @@ public class ProductOverviewActivity extends AKiteActivity implements View.OnCli
 
     if ( size != null )
       {
-      sizeTextView.setText( String.format( getString( R.string.product_size_format_string ), size.getWidth(), size.getHeight(), size.getUnit().shortString( this ) ) );
+      sizeTextView.setText( String.format( getString( R.string.product_size_format_string ), size.getWidth(), size.getHeight(), size.getUnit().shortString( mKiteActivity ) ) );
       }
 
 
@@ -379,43 +381,47 @@ public class ProductOverviewActivity extends AKiteActivity implements View.OnCli
         {
         String formatString = getString( R.string.product_shipping_format_string );
 
-        String costString = ( cost.getAmount().compareTo( BIG_DECIMAL_ZERO ) != 0
+        String costString = (cost.getAmount().compareTo( BIG_DECIMAL_ZERO ) != 0
                 ? cost.getDisplayAmountForLocale( locale )
-                : getString( R.string.product_free_shipping ) );
+                : getString( R.string.product_free_shipping ));
 
         shippingCostsStringBuilder
-                .append( String.format( formatString, singleDestinationShippingCost.getDestinationDescription( this ), costString ) );
+                .append( String.format( formatString, singleDestinationShippingCost.getDestinationDescription( mKiteActivity ), costString ) );
         }
 
       shippingTextView.setText( shippingCostsStringBuilder.toString() );
       }
 
 
-    if ( savedInstanceState == null )
-      {
-      Analytics.getInstance( this ).trackProductOverviewScreenViewed( mProduct );
-      }
+    mProductImageViewPager.setOnClickListener( this );
+    mDrawerControlLayout.setOnClickListener( this );
+    mOverlaidStartButton.setOnClickListener( this );
+    mContentStartButton.setOnClickListener( this );
+
+
+    return ( view );
     }
 
 
   /*****************************************************
    *
-   * Called when the back key is pressed.
+   * Called when the back key is pressed. The fragment
+   * can either intercept it, or ignore it - in which case
+   * the default behaviour is performed.
    *
    *****************************************************/
   @Override
-  public void onBackPressed()
+  public boolean onBackPressIntercepted()
     {
     // If the slider is open - close it
     if ( mSlidingOverlayFrame.sliderIsExpanded() )
       {
       toggleSliderState();
 
-      return;
+      return ( true );
       }
 
-    // Otherwise do what we would have done normally
-    super.onBackPressed();
+    return ( false );
     }
 
 
@@ -431,7 +437,10 @@ public class ProductOverviewActivity extends AKiteActivity implements View.OnCli
     super.onSaveInstanceState( outState );
 
     // Save the state of the sliding drawer
-    outState.putBoolean( BUNDLE_KEY_SLIDING_DRAWER_IS_EXPANDED, mSlidingOverlayFrame.sliderIsExpanded() );
+    if ( mSlidingOverlayFrame != null )
+      {
+      outState.putBoolean( BUNDLE_KEY_SLIDING_DRAWER_IS_EXPANDED, mSlidingOverlayFrame.sliderIsExpanded() );
+      }
     }
 
 
@@ -445,8 +454,17 @@ public class ProductOverviewActivity extends AKiteActivity implements View.OnCli
   @Override
   public void onClick( View view )
     {
-    // All clicks are assumed to be equivalent to pressing the start button
-    onStartClicked( view );
+    // Anything that's not the drawer control is assumed to be
+    // one of the start buttons.
+
+    if ( view == mDrawerControlLayout )
+      {
+      toggleSliderState();
+      }
+    else
+      {
+      onCreateProduct();
+      }
     }
 
 
@@ -457,22 +475,13 @@ public class ProductOverviewActivity extends AKiteActivity implements View.OnCli
    * Called when one of the start creating buttons is clicked.
    *
    *****************************************************/
-  public void onStartClicked( View view )
+  public void onCreateProduct()
     {
-    // Start the product-specific user journey
-
-    UserJourneyCoordinator.getInstance().start( this, mAssetArrayList, mProduct );
-    }
-
-
-  /*****************************************************
-   *
-   * Called when the details control is clicked.
-   *
-   *****************************************************/
-  public void onDetailsClicked( View view )
-    {
-    toggleSliderState();
+    // Call back to the activity
+    if ( mKiteActivity instanceof ICallback )
+      {
+      ( (ICallback)mKiteActivity ).poOnCreateProduct( mProduct );
+      }
     }
 
 
@@ -542,9 +551,13 @@ public class ProductOverviewActivity extends AKiteActivity implements View.OnCli
 
   /*****************************************************
    *
-   * ...
+   * A callback interface.
    *
    *****************************************************/
+  public interface ICallback
+    {
+    public void poOnCreateProduct( Product product );
+    }
 
   }
 

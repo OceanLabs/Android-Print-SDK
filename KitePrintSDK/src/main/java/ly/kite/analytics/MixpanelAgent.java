@@ -151,7 +151,7 @@ public class MixpanelAgent implements BaseRequest.BaseRequestListener
 
     byte[] jsonBytes = eventJSONObject.toString().getBytes();
 
-    //Log.d( LOG_TAG, "JSON request:\n" + eventJSONObject.toString() );
+    //Log.d( TAG, "JSON request:\n" + eventJSONObject.toString() );
 
     String base64EncodedJSON = Base64.encodeToString( jsonBytes, Base64.NO_WRAP | Base64.URL_SAFE );
 

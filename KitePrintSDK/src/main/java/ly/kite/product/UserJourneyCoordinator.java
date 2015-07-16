@@ -34,21 +34,20 @@
 
 ///// Package Declaration /////
 
-package ly.kite.shopping;
+package ly.kite.product;
 
 
 ///// Import(s) /////
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import android.content.Context;
-import android.content.Intent;
 
 import ly.kite.print.Asset;
 import ly.kite.print.Product;
-import ly.kite.shopping.journey.PhoneCaseActivity;
+import ly.kite.product.journey.AJourneyFragment;
+import ly.kite.product.journey.PhoneCaseFragment;
 
 
 ///// Class Declaration /////
@@ -140,10 +139,9 @@ public class UserJourneyCoordinator
    * for the supplied product.
    *
    *****************************************************/
-  public void start( Context context, ArrayList<Asset> assetList, Product product )
+  public AJourneyFragment getFragment( Context context, ArrayList<Asset> assetList, Product product )
     {
-    // TODO: Test
-    PhoneCaseActivity.start( context, assetList, product );
+    return ( PhoneCaseFragment.newInstance( assetList, product ) );
     }
 
 
@@ -160,13 +158,6 @@ public class UserJourneyCoordinator
     private Class<?>[]       mUIClasses;
 
 
-//    Journey( UserJourneyType type, Class<?>[] uiClasses )
-//      {
-//      mType      = type;
-//      mUIClasses = uiClasses;
-//      }
-
-
     Journey( UserJourneyType type, Class<?>... uiClasses )
       {
       mType      = type;
@@ -174,7 +165,7 @@ public class UserJourneyCoordinator
       }
 
 
-    UserJourneyType getTYpe()
+    UserJourneyType getType()
       {
       return ( mType );
       }

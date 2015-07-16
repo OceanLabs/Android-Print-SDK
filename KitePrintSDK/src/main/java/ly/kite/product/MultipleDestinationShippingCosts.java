@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.shopping;
+package ly.kite.product;
 
 
 ///// Import(s) /////

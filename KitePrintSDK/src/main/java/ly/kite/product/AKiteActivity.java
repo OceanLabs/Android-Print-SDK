@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.shopping;
+package ly.kite.product;
 
 
 ///// Import(s) /////
@@ -48,14 +48,10 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.io.FileOutputStream;
-
-import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.print.ProductCache;
 
@@ -72,9 +68,9 @@ public abstract class AKiteActivity extends Activity
   @SuppressWarnings( "unused" )
   private   static final String  LOG_TAG                         = "AKiteActivity";
 
-  protected static final int     DONT_DISPLAY_BUTTON             = 0;
+  public    static final int     DONT_DISPLAY_BUTTON             = 0;
 
-  protected static final String  IMAGE_CLASS_STRING_PRODUCT_ITEM = "product_item";
+  public    static final String  IMAGE_CLASS_STRING_PRODUCT_ITEM = "product_item";
 
   protected static final int     ACTIVITY_REQUEST_CODE_CHECKOUT = 1;
 
@@ -282,7 +278,7 @@ public abstract class AKiteActivity extends Activity
    * Displays a modal dialog.
    *
    *****************************************************/
-  protected void displayModalDialog(
+  public void displayModalDialog(
           int      titleTextResourceId,
           int      messageTextResourceId,
           int      positiveTextResourceId,
@@ -318,7 +314,7 @@ public abstract class AKiteActivity extends Activity
    * A runnable that exits the current activity.
    *
    *****************************************************/
-  protected class FinishRunnable implements Runnable
+  public class FinishRunnable implements Runnable
     {
     public FinishRunnable()
       {

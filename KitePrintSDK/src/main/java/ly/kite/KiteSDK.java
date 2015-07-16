@@ -47,9 +47,8 @@ import android.util.Log;
 
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 
-import ly.kite.checkout.PaymentActivity;
 import ly.kite.print.Asset;
-import ly.kite.shopping.ProductGroupActivity;
+import ly.kite.product.ProductCreationActivity;
 
 
 ///// Class Declaration /////
@@ -181,11 +180,11 @@ public class KiteSDK
    * shopping experience.
    *
    *****************************************************/
-  public static void shop( Context context, String apiKey, KiteSDK.Environment environment, ArrayList<Asset> assetArrayList )
+  public static void startFromProductCreation( Context context, String apiKey, KiteSDK.Environment environment, ArrayList<Asset> assetArrayList )
     {
     KiteSDK kiteSDK = getInstance( context, apiKey, environment );
 
-    kiteSDK.shop( context, assetArrayList );
+    kiteSDK.startFromProductCreation( context, assetArrayList );
     }
 
 
@@ -253,10 +252,11 @@ public class KiteSDK
    * Launches the shopping experience.
    *
    *****************************************************/
-  public void shop( Context context, ArrayList<Asset> assetArrayList )
+  public void startFromProductCreation( Context context, ArrayList<Asset> assetArrayList )
     {
     // We use the activity context here, not the application context
-    ProductGroupActivity.start( context, assetArrayList );
+    //ProductGroupActivity.start( context, assetArrayList );
+    ProductCreationActivity.start( context, assetArrayList );
     }
 
 

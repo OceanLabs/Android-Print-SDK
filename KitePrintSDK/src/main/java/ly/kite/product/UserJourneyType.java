@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * IGroupOrProduct.java
+ * UserJourneyType.java
  *
  *
  * Modified MIT License
@@ -24,7 +24,7 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.shopping;
+package ly.kite.product;
 
 
 ///// Import(s) /////
@@ -42,40 +42,52 @@ package ly.kite.shopping;
 
 ///// Class Declaration /////
 
-import java.net.URL;
-
 /*****************************************************
  *
- * This interfaces represents a displayable item on the
- * product groups / products screens.
+ * This enum defines a type of user journey through the
+ * shopping process.
  *
  *****************************************************/
-public interface IGroupOrProduct
+public enum UserJourneyType
   {
+  CIRCLE,
+  FRAME,
+  GREETINGCARD,
+  PHONE_CASE,
+  PHOTOBOOK,
+  POSTCARD,
+  POSTER,
+  RECTANGLE;
+
+
+  ////////// Member Variable(s) //////////
+
+
+  ////////// Static Initialiser(s) //////////
+
+
+  ////////// Static Method(s) //////////
+
+
+  ////////// Constructor(s) //////////
+
+
   ////////// Method(s) //////////
 
   /*****************************************************
    *
-   * Returns the display image URL.
+   * ...
    *
    *****************************************************/
-  public URL getDisplayImageURL();
 
+
+  ////////// Inner Class(es) //////////
 
   /*****************************************************
    *
-   * Returns the display label.
+   * ...
    *
    *****************************************************/
-  public String getDisplayLabel();
-
-
-  /*****************************************************
-   *
-   * Returns the display label colour.
-   *
-   *****************************************************/
-  public int getDisplayLabelColour();
 
   }
 

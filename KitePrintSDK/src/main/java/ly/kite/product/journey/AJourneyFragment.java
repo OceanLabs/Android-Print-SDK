@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * UserJourneyType.java
+ * AJourneyFragment.java
  *
  *
  * Modified MIT License
@@ -34,33 +34,41 @@
 
 ///// Package Declaration /////
 
-package ly.kite.shopping;
+package ly.kite.product.journey;
 
 
 ///// Import(s) /////
+
+import android.app.Activity;
+import android.app.Fragment;
+
+import ly.kite.product.AKiteActivity;
 
 
 ///// Class Declaration /////
 
 /*****************************************************
  *
- * This enum defines a type of user journey through the
- * shopping process.
+ * This is the parent class of user journey fragments.
  *
  *****************************************************/
-public enum UserJourneyType
+abstract public class AJourneyFragment extends Fragment
   {
-  CIRCLE,
-  FRAME,
-  GREETINGCARD,
-  PHONE_CASE,
-  PHOTOBOOK,
-  POSTCARD,
-  POSTER,
-  RECTANGLE;
+  ////////// Static Constant(s) //////////
+
+  @SuppressWarnings( "unused" )
+  public  static final String  TAG                             = "AJourneyFragment";
+
+  public  static final long    MAX_ACCEPTED_PRODUCT_AGE_MILLIS = 1000 * 60 * 60;  // 1 hour
+
+
+  ////////// Static Variable(s) //////////
 
 
   ////////// Member Variable(s) //////////
+
+  protected AKiteActivity  mKiteActivity;
+  protected boolean        mIsVisible;
 
 
   ////////// Static Initialiser(s) //////////
@@ -72,13 +80,63 @@ public enum UserJourneyType
   ////////// Constructor(s) //////////
 
 
+  ////////// Fragment Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when the fragment is attached to an activity.
+   *
+   *****************************************************/
+  @Override
+  public void onAttach( Activity activity )
+    {
+    super.onAttach( activity );
+
+    mKiteActivity = (AKiteActivity)activity;
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the fragment becomes visible.
+   *
+   *****************************************************/
+  @Override
+  public void onStart()
+    {
+    super.onStart();
+
+    mIsVisible = true;
+    }
+
+
+  /*****************************************************
+   *
+   * Called after the fragment is no longer visible.
+   *
+   *****************************************************/
+  @Override
+  public void onStop()
+    {
+    super.onStop();
+
+    mIsVisible = false;
+    }
+
+
   ////////// Method(s) //////////
 
   /*****************************************************
    *
-   * ...
+   * Called when the back key is pressed. The fragment
+   * can either intercept it, or ignore it - in which case
+   * the default behaviour is performed.
    *
    *****************************************************/
+  public boolean onBackPressIntercepted()
+    {
+    return ( false );
+    }
 
 
   ////////// Inner Class(es) //////////

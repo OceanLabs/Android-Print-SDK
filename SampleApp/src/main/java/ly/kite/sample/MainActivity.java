@@ -24,7 +24,8 @@ public class MainActivity extends Activity
    * Insert your Kite API keys here. These are found under your profile
    * by logging in to the developer portal at https://www.kite.ly
    **********************************************************************/
-  private static final String API_KEY_TEST = "ba171b0d91b1418fbd04f7b12af1e37e42d2cb1e";
+  //private static final String API_KEY_TEST = "ba171b0d91b1418fbd04f7b12af1e37e42d2cb1e";
+  private static final String API_KEY_TEST = "0453d74be957c1eb510fc2d580007294cdc31a79"; // Photobox
 
   private static final String API_KEY_LIVE = "REPLACE_ME";
 
@@ -99,7 +100,7 @@ public class MainActivity extends Activity
       return;
       }
 
-    KiteSDK.shop( this, apiKey, environment, assets );
+    KiteSDK.startFromProductCreation( this, apiKey, environment, assets );
 
 //        KitePrintSDK.initialize(apiKey, env, getApplicationContext());
 //

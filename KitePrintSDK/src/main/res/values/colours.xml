@@ -7,6 +7,8 @@
     <color name="translucent_action_bar">#f0f8f7f5</color>
     <color name="opaque_action_bar">#fff8f7f5</color>
 
+    <color name="opaque_navigation_bar">#ff999999</color>
+
     <color name="light_grey">#d3d3d3</color>
 
     <color name="labelled_image_label_shadow">#20000000</color>

@@ -53,12 +53,12 @@ import java.util.Locale;
 import java.util.Set;
 
 import ly.kite.address.Country;
-import ly.kite.shopping.IGroupOrProduct;
-import ly.kite.shopping.MultipleCurrencyCost;
-import ly.kite.shopping.MultipleDestinationShippingCosts;
-import ly.kite.shopping.SingleCurrencyCost;
-import ly.kite.shopping.SingleDestinationShippingCost;
-import ly.kite.shopping.UserJourneyType;
+import ly.kite.product.IGroupOrProduct;
+import ly.kite.product.MultipleCurrencyCost;
+import ly.kite.product.MultipleDestinationShippingCosts;
+import ly.kite.product.SingleCurrencyCost;
+import ly.kite.product.SingleDestinationShippingCost;
+import ly.kite.product.UserJourneyType;
 
 
 ///// Class Declaration /////
@@ -226,7 +226,7 @@ public class Product implements Parcelable, IGroupOrProduct
     }
 
 
-  ////////// GroupOrProduct Method(s) //////////
+  ////////// IGroupOrProduct Method(s) //////////
 
   /*****************************************************
    *

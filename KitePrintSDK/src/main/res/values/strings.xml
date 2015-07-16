@@ -17,6 +17,9 @@
     <string name="alert_dialog_title_no_intent">Error Retrieving Products</string>
     <string name="alert_dialog_message_no_intent">There was an error retrieving the products. If your network connectivity is OK, please check the log for more details.</string>
 
+    <string name="alert_dialog_title_no_arguments">No Arguments</string>
+    <string name="alert_dialog_message_no_arguments">There was an error: no arguments were passed to the fragment. Please check the log for more details.</string>
+
     <string name="alert_dialog_title_no_asset_list">No Asset List</string>
     <string name="alert_dialog_message_no_asset_list">There was an error: no asset list was found. Please check the log for more details.</string>
 

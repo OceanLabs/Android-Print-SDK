@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * ProductGroupActivity.java
+ * ChooseProductFragment.java
  *
  *
  * Modified MIT License
@@ -34,52 +34,52 @@
 
 ///// Package Declaration /////
 
-package ly.kite.shopping;
+package ly.kite.product.journey;
 
 
 ///// Import(s) /////
 
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
-
 import ly.kite.R;
 import ly.kite.analytics.Analytics;
-import ly.kite.print.Asset;
-import ly.kite.KiteSDK;
 import ly.kite.print.Product;
 import ly.kite.print.ProductGroup;
+import ly.kite.product.GroupOrProductAdaptor;
 
 
 ///// Class Declaration /////
 
 /*****************************************************
  *
- * This class displays the product group photos and allows
- * the user to drill down to products within that group.
+ * This fragment allows the user to choose a product.
  *
  *****************************************************/
-public class ProductGroupActivity extends AGroupOrProductActivity
+public class ChooseProductFragment extends AGroupOrProductFragment
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                      = "ProductGroupActivity";
+  public  static final String TAG                      = "ChooseProductFragment";
 
-  private static final String  INTENT_EXTRA_NAME_ASSET_LIST = KiteSDK.INTENT_PREFIX + ".AssetList";
-
+  private static final String BUNDLE_KEY_PRODUCT_GROUP = "productGroup";
 
   ////////// Static Variable(s) //////////
 
 
   ////////// Member Variable(s) //////////
 
-  private ArrayList<ProductGroup>  mProductGroupList;
+  private ProductGroup        mProductGroup;
+
+  private ArrayList<Product>  mProductList;
 
 
   ////////// Static Initialiser(s) //////////
@@ -89,29 +89,31 @@ public class ProductGroupActivity extends AGroupOrProductActivity
 
   /*****************************************************
    *
-   * Convenience method for starting this activity with a
-   * set of assets.
+   * Creates and returns a new instance of this fragment.
    *
    *****************************************************/
-  public static void start( Context context, ArrayList<Asset> assetArrayList )
+  public static ChooseProductFragment newInstance( ProductGroup productGroup )
     {
-    Intent intent = new Intent( context, ProductGroupActivity.class );
+    ChooseProductFragment fragment = new ChooseProductFragment();
 
-    intent.putParcelableArrayListExtra( INTENT_EXTRA_NAME_ASSET_LIST, assetArrayList );
+    Bundle argumentBundle = new Bundle();
 
-    context.startActivity( intent );
+    argumentBundle.putParcelable( BUNDLE_KEY_PRODUCT_GROUP, productGroup );
+
+    fragment.setArguments( argumentBundle );
+
+    return ( fragment );
     }
-
 
 
   ////////// Constructor(s) //////////
 
 
-  ////////// Activity Method(s) //////////
+  ////////// AGroupOrProductFragment Method(s) //////////
 
   /*****************************************************
    *
-   * Called when the activity is created.
+   * Called when the fragment is created.
    *
    *****************************************************/
   @Override
@@ -119,12 +121,45 @@ public class ProductGroupActivity extends AGroupOrProductActivity
     {
     super.onCreate( savedInstanceState );
 
-    getProducts();
+
+    // Try to get the product group from the arguments
+
+    Bundle arguments = getArguments();
+
+    if ( arguments != null )
+      {
+      mProductGroup = (ProductGroup)arguments.getParcelable( BUNDLE_KEY_PRODUCT_GROUP );
+
+      if ( mProductGroup != null )
+        {
+        mKiteActivity.setTitle( mProductGroup.getDisplayLabel() );
+        }
+      else
+        {
+        Log.e( TAG, "No product group found in arguments" );
+        }
+
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the content view for this fragment
+   *
+   *****************************************************/
+  @Override
+  public View onCreateView( LayoutInflater layoutInflator, ViewGroup container, Bundle savedInstanceState )
+    {
+    // Get the parent grid view
+    View view = super.onCreateView( layoutInflator, container, savedInstanceState );
 
     if ( savedInstanceState == null )
       {
-      Analytics.getInstance( this ).trackSDKLoaded( Analytics.ENTRY_POINT_JSON_PROPERTY_VALUE_HOME_SCREEN );
+      Analytics.getInstance( mKiteActivity ).trackProductSelectionScreenViewed();
       }
+
+    return ( view );
     }
 
 
@@ -140,14 +175,20 @@ public class ProductGroupActivity extends AGroupOrProductActivity
     {
     onProductFetchFinished();
 
-    mProductGroupList = productGroupList;
 
-    // Display the product groups
-    mGridAdaptor = new GroupOrProductAdaptor( this, productGroupList, mGridView );
-    mGridView.setAdapter( mGridAdaptor );
+    // Try and find a product list
 
-    // Register for item selection
-    mGridView.setOnItemClickListener( this );
+    mProductList = ProductGroup.findProductsByGroupLabel( productGroupList, mProductGroup.getDisplayLabel() );
+
+    if ( mProductList != null )
+      {
+      // Display the products
+      mGridAdaptor = new GroupOrProductAdaptor( mKiteActivity, mProductList, mGridView );
+      mGridView.setAdapter( mGridAdaptor );
+
+      // Register for item selection
+      mGridView.setOnItemClickListener( this );
+      }
     }
 
 
@@ -165,40 +206,29 @@ public class ProductGroupActivity extends AGroupOrProductActivity
 
     int adaptorIndex = mGridView.adaptorIndexFromPosition( position );
 
-    if ( adaptorIndex >= mProductGroupList.size() ) return;
+    if ( adaptorIndex >= mProductList.size() ) return;
 
-    ProductGroup clickedProductGroup = mProductGroupList.get( adaptorIndex );
+    Product chosenProduct = mProductList.get( adaptorIndex );
 
 
-    // Start the product activity, passing it the assets and the product group label (to
-    // identify it).
-    ProductActivity.start( this, mAssetArrayList, clickedProductGroup.getDisplayLabel() );
+    // Call back to the activity
+    if ( mKiteActivity instanceof ICallback )
+      {
+      ( (ICallback)mKiteActivity ).pOnProductChosen( chosenProduct );
+      }
     }
-
-
-  ////////// Method(s) //////////
-
-  /*****************************************************
-   *
-   * ...
-   *
-   *****************************************************/
 
 
   ////////// Inner Class(es) //////////
 
   /*****************************************************
    *
-   * Starts a product sync.
+   * The callback interface for this fragment.
    *
    *****************************************************/
-  private class SyncProductsRunnable implements Runnable
+  public interface ICallback
     {
-    @Override
-    public void run()
-      {
-      getProducts();
-      }
+    public void pOnProductChosen( Product product );
     }
 
   }

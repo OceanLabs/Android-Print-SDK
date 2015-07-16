@@ -2,7 +2,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+    android:fitsSystemWindows="true">
 
 
     <LinearLayout
@@ -41,8 +42,7 @@
                 <Button
                     style="@style/KiteSDKCTACenteredButtonStyle"
                     android:id="@+id/overlaid_start_button"
-                    android:text="@string/product_overview_start_button_text"
-                    android:onClick="onStartClicked"/>
+                    android:text="@string/product_overview_start_button_text"/>
             </LinearLayout>
         </FrameLayout>
 

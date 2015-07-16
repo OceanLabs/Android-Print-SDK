@@ -42,17 +42,20 @@ package ly.kite.print;
 
 ///// Class Declaration /////
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.net.URL;
 import java.util.ArrayList;
 
-import ly.kite.shopping.IGroupOrProduct;
+import ly.kite.product.IGroupOrProduct;
 
 /*****************************************************
  *
  * This class represents a product group.
  *
  *****************************************************/
-public class ProductGroup implements IGroupOrProduct
+public class ProductGroup implements Parcelable, IGroupOrProduct
   {
   ////////// Static Constant(s) //////////
 
@@ -61,6 +64,20 @@ public class ProductGroup implements IGroupOrProduct
 
 
   ////////// Static Variable(s) //////////
+
+  public static final Parcelable.Creator<ProductGroup> CREATOR =
+    new Parcelable.Creator<ProductGroup>()
+      {
+      public ProductGroup createFromParcel( Parcel sourceParcel )
+        {
+        return ( new ProductGroup( sourceParcel ) );
+        }
+
+      public ProductGroup[] newArray( int size )
+        {
+        return ( new ProductGroup[ size ] );
+        }
+      };
 
 
   ////////// Member Variable(s) //////////
@@ -102,11 +119,52 @@ public class ProductGroup implements IGroupOrProduct
     mLabelColour = labelColour;
     mImageURL    = imageURL;
 
-    mProductList = new ArrayList<Product>();
+    mProductList = new ArrayList<>();
     }
 
 
-  ////////// DisplayItem Method(s) //////////
+  // Constructor used by parcelable interface
+  private ProductGroup( Parcel sourceParcel )
+    {
+    mLabel       = sourceParcel.readString();
+    mLabelColour = sourceParcel.readInt();
+    mImageURL    = (URL)sourceParcel.readSerializable();
+
+    mProductList = new ArrayList<>();
+    sourceParcel.readTypedList( mProductList, Product.CREATOR );
+    }
+
+
+  ////////// Parcelable Method(s) //////////
+
+  /*****************************************************
+   *
+   * Describes the contents of this parcelable.
+   *
+   *****************************************************/
+  @Override
+  public int describeContents()
+    {
+    return ( 0 );
+    }
+
+
+  /*****************************************************
+   *
+   * Write the contents of this product to a parcel.
+   *
+   *****************************************************/
+  @Override
+  public void writeToParcel( Parcel targetParcel, int flags )
+    {
+    targetParcel.writeString( mLabel );
+    targetParcel.writeInt( mLabelColour );
+    targetParcel.writeSerializable( mImageURL );
+    targetParcel.writeTypedList( mProductList );
+    }
+
+
+  ////////// IGroupOrProduct Method(s) //////////
 
   /*****************************************************
    *

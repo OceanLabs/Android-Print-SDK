@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * BellInterpolator.java
+ * IGroupOrProduct.java
  *
  *
  * Modified MIT License
@@ -24,7 +24,7 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
@@ -34,92 +34,48 @@
 
 ///// Package Declaration /////
 
-package ly.kite.widget;
+package ly.kite.product;
 
 
 ///// Import(s) /////
 
-import android.util.Log;
-import android.view.animation.Interpolator;
-
 
 ///// Class Declaration /////
 
+import java.net.URL;
+
 /*****************************************************
  *
- * This class is an interpolator that exhibits a bump or
- * dip, in the shape of a bell curve, around 0.5.
+ * This interfaces represents a displayable item on the
+ * product groups / products screens.
  *
  *****************************************************/
-public class BellInterpolator implements Interpolator
+public interface IGroupOrProduct
   {
-  ////////// Static Constant(s) //////////
-
-  @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG             = "BellInterpolator";
-
-
-  ////////// Static Variable(s) //////////
-
-
-  ////////// Member Variable(s) //////////
-
-  private float    mBaseValue;
-  private double   mConstantMultiplier;
-  private double   mExponentMultiplier;
-  //private boolean  mShowDebugOutput;
-
-
-  ////////// Static Initialiser(s) //////////
-
-
-  ////////// Static Method(s) //////////
-
-
-  ////////// Constructor(s) //////////
-
-  public BellInterpolator( float baseValue, float midValue, boolean showDebugOutput )
-    {
-    mBaseValue          = baseValue;
-    mConstantMultiplier = midValue;
-    mExponentMultiplier = 4f * Math.log( baseValue / midValue );
-    //mShowDebugOutput    = showDebugOutput;
-    }
-
-
-  public BellInterpolator( float baseValue, float midValue )
-    {
-    this( baseValue, midValue, false );
-    }
-
-
-  ////////// Interpolator Method(s) //////////
+  ////////// Method(s) //////////
 
   /*****************************************************
    *
-   * Return the interpolated value.
+   * Returns the display image URL.
    *
    *****************************************************/
-  @Override
-  public float getInterpolation( float input )
-    {
-    float xMinusHalf = input - 0.5f;
+  public URL getDisplayImageURL();
 
-    float interpolation = (float)( mConstantMultiplier * Math.exp( mExponentMultiplier * ( xMinusHalf * xMinusHalf ) ) );
-
-    //if ( mShowDebugOutput ) Log.d( TAG, "f(" + input + ") = " + interpolation );
-
-    return ( interpolation );
-    }
-
-
-  ////////// Inner Class(es) //////////
 
   /*****************************************************
    *
-   * ...
+   * Returns the display label.
    *
    *****************************************************/
+  public String getDisplayLabel();
+
+
+  /*****************************************************
+   *
+   * Returns the display label colour.
+   *
+   *****************************************************/
+  public int getDisplayLabelColour();
 
   }
 

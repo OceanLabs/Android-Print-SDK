@@ -142,9 +142,9 @@
 
         <Button
             style="@style/KiteSDKCTACenteredButtonStyle"
+            android:id="@+id/content_start_button"
             android:layout_gravity="center"
-            android:text="@string/product_overview_start_button_text"
-            android:onClick="onStartClicked"/>
+            android:text="@string/product_overview_start_button_text"/>
 
     </FrameLayout>
 

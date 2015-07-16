@@ -59,11 +59,11 @@ import java.util.Iterator;
 
 import ly.kite.KiteSDKException;
 import ly.kite.KiteSDK;
-import ly.kite.shopping.MultipleCurrencyCost;
-import ly.kite.shopping.MultipleDestinationShippingCosts;
-import ly.kite.shopping.SingleCurrencyCost;
-import ly.kite.shopping.UserJourneyCoordinator;
-import ly.kite.shopping.UserJourneyType;
+import ly.kite.product.MultipleCurrencyCost;
+import ly.kite.product.MultipleDestinationShippingCosts;
+import ly.kite.product.SingleCurrencyCost;
+import ly.kite.product.UserJourneyCoordinator;
+import ly.kite.product.UserJourneyType;
 
 
 ///// Class Declaration /////
@@ -937,7 +937,7 @@ public class ProductCache implements BaseRequest.BaseRequestListener
 //    @Override
 //    public synchronized void onGotProducts( ArrayList<ProductGroup> productGroupList, HashMap<String,Product> productTable )
 //      {
-//      if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "onGotProducts( productGroupList = " + productGroupList + ", productTable = " + productTable + " )" );
+//      if ( DISPLAY_DEBUGGING ) Log.d( TAG, "onGotProducts( productGroupList = " + productGroupList + ", productTable = " + productTable + " )" );
 //
 //      mProductPair      = new Pair<ArrayList<ProductGroup>,HashMap<String,Product>>( productGroupList, productTable );
 //      mCallbackReceived = true;
@@ -949,7 +949,7 @@ public class ProductCache implements BaseRequest.BaseRequestListener
 //    @Override
 //    public synchronized void onProductRetrievalError( Exception exception )
 //      {
-//      Log.e( LOG_TAG, "Synchronous product retrieval returned error", exception );
+//      Log.e( TAG, "Synchronous product retrieval returned error", exception );
 //
 //
 //      // The product pair stays null
@@ -961,7 +961,7 @@ public class ProductCache implements BaseRequest.BaseRequestListener
 //
 //    synchronized Pair<ArrayList<ProductGroup>,HashMap<String,Product>> getProductPair()
 //      {
-//      if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "getProductPair()" );
+//      if ( DISPLAY_DEBUGGING ) Log.d( TAG, "getProductPair()" );
 //
 //      mCallbackReceived = false;
 //
@@ -974,7 +974,7 @@ public class ProductCache implements BaseRequest.BaseRequestListener
 //        {
 //        try
 //          {
-//          if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "  waiting ..." );
+//          if ( DISPLAY_DEBUGGING ) Log.d( TAG, "  waiting ..." );
 //
 //          wait();
 //          }
@@ -985,7 +985,7 @@ public class ProductCache implements BaseRequest.BaseRequestListener
 //        }
 //
 //
-//      if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "<< getProductPair()" );
+//      if ( DISPLAY_DEBUGGING ) Log.d( TAG, "<< getProductPair()" );
 //
 //      return ( mProductPair );
 //      }
