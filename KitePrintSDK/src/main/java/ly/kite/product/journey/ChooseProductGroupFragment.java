@@ -149,9 +149,14 @@ public class ChooseProductGroupFragment extends AGroupOrProductFragment
 
     mProductGroupList = productGroupList;
 
+
     // Display the product groups
+
     mGridAdaptor = new GroupOrProductAdaptor( mKiteActivity, productGroupList, mGridView );
     mGridView.setAdapter( mGridAdaptor );
+
+    onRestoreManagedAdaptorViewPosition();
+
 
     // Register for item selection
     mGridView.setOnItemClickListener( this );
@@ -168,6 +173,9 @@ public class ChooseProductGroupFragment extends AGroupOrProductFragment
   @Override
   public void onItemClick( AdapterView<?> parent, View view, int position, long id )
     {
+    onSaveManagedAdaptorViewPosition( position );
+
+
     // Get the product group. Remember to ignore any clicks on placeholder images.
 
     int adaptorIndex = mGridView.adaptorIndexFromPosition( position );

@@ -41,6 +41,8 @@ package ly.kite.product.journey;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.os.Bundle;
+import android.widget.AdapterView;
 
 import ly.kite.print.SingleUnitSize;
 import ly.kite.print.UnitOfLength;
@@ -59,13 +61,15 @@ abstract public class AJourneyFragment extends Fragment
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  public  static final String  TAG                               = "AJourneyFragment";
+  public  static final String  TAG                                      = "AJourneyFragment";
 
-  public  static final long    MAX_ACCEPTED_PRODUCT_AGE_MILLIS   = 1000 * 60 * 60;  // 1 hour
+  private static final String  BUNDLE_KEY_MANAGED_ADAPTOR_VIEW_POSITION = "managedAdaptorViewPosition";
 
-  private static final float   MINIMUM_SENSIBLE_SIZE_CENTIMETERS = 0.5f;
-  private static final float   MINIMUM_SENSIBLE_SIZE_INCHES      = 0.2f;
-  private static final float   MINIMUM_SENSIBLE_SIZE_PIXELS      = 10f;
+  public  static final long    MAX_ACCEPTED_PRODUCT_AGE_MILLIS          = 1000 * 60 * 60;  // 1 hour
+
+  private static final float   MINIMUM_SENSIBLE_SIZE_CENTIMETERS        = 0.5f;
+  private static final float   MINIMUM_SENSIBLE_SIZE_INCHES             = 0.2f;
+  private static final float   MINIMUM_SENSIBLE_SIZE_PIXELS             = 10f;
 
 
 
@@ -74,8 +78,11 @@ abstract public class AJourneyFragment extends Fragment
 
   ////////// Member Variable(s) //////////
 
-  protected AKiteActivity  mKiteActivity;
-  protected boolean        mIsVisible;
+  protected AKiteActivity   mKiteActivity;
+  protected boolean         mIsVisible;
+
+  private   AdapterView<?>  mManagedAdaptorView;
+  private   int             mManagedAdaptorViewPosition;
 
 
   ////////// Static Initialiser(s) //////////
@@ -88,6 +95,26 @@ abstract public class AJourneyFragment extends Fragment
 
 
   ////////// Fragment Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when the fragment is created.
+   *
+   *****************************************************/
+  @Override
+  public void onCreate( Bundle savedInstanceState )
+    {
+    super.onCreate( savedInstanceState );
+
+
+    // See if we have saved any managed adaptor view position
+
+    if ( savedInstanceState != null )
+      {
+      mManagedAdaptorViewPosition = savedInstanceState.getInt( BUNDLE_KEY_MANAGED_ADAPTOR_VIEW_POSITION );
+      }
+    }
+
 
   /*****************************************************
    *
@@ -131,7 +158,38 @@ abstract public class AJourneyFragment extends Fragment
     }
 
 
+  /*****************************************************
+   *
+   * Called to save the fragment's state.
+   *
+   *****************************************************/
+  @Override
+  public void onSaveInstanceState( Bundle outState )
+    {
+    super.onSaveInstanceState( outState );
+
+    // If we are managing an adaptor view - save its state in the bundle
+    if ( mManagedAdaptorView != null )
+      {
+      outState.putInt( BUNDLE_KEY_MANAGED_ADAPTOR_VIEW_POSITION, mManagedAdaptorView.getFirstVisiblePosition() );
+      }
+    }
+
+
   ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Sets an adaptor view who's position we want to maintain
+   * when changing orientation, or when leaving / coming
+   * back to this screen.
+   *
+   *****************************************************/
+  protected void setManagedAdaptorView( AdapterView adaptorView )
+    {
+    mManagedAdaptorView = adaptorView;
+    }
+
 
   /*****************************************************
    *
@@ -143,6 +201,48 @@ abstract public class AJourneyFragment extends Fragment
   public boolean onBackPressIntercepted()
     {
     return ( false );
+    }
+
+
+  /*****************************************************
+   *
+   * Saves an adapter view position.
+   *
+   *****************************************************/
+  protected void onSaveManagedAdaptorViewPosition( int position )
+    {
+    mManagedAdaptorViewPosition = position;
+    }
+
+
+  /*****************************************************
+   *
+   * Saves an adapter view position.
+   *
+   *****************************************************/
+  protected void onSaveManagedAdaptorViewPosition()
+    {
+    if ( mManagedAdaptorView != null )
+      {
+      onSaveManagedAdaptorViewPosition( mManagedAdaptorView.getFirstVisiblePosition() );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the adaptor is set up.
+   *
+   *****************************************************/
+  protected void onRestoreManagedAdaptorViewPosition()
+    {
+    if ( mManagedAdaptorView != null )
+      {
+      if ( mManagedAdaptorViewPosition >= 0 && mManagedAdaptorViewPosition < mManagedAdaptorView.getCount() )
+        {
+        mManagedAdaptorView.setSelection( mManagedAdaptorViewPosition );
+        }
+      }
     }
 
 

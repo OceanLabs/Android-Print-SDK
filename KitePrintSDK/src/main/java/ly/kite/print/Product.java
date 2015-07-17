@@ -41,6 +41,7 @@ package ly.kite.print;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -542,7 +543,7 @@ public class Product implements Parcelable, IGroupOrProduct
     // Sort the list in order of relevance
     Collections.sort( shippingCostList, new ShippingCostRelevanceComparator( country ) );
 
-    return (shippingCostList);
+    return ( shippingCostList );
     }
 
 
@@ -636,11 +637,18 @@ public class Product implements Parcelable, IGroupOrProduct
     @Override
     public int compare( SingleDestinationShippingCost leftShippingCost, SingleDestinationShippingCost rightShippingCost )
       {
-      String leftDestinationCode = leftShippingCost.getDestinationCode();
+      String leftDestinationCode  = leftShippingCost.getDestinationCode();
+      String rightDestinationCode = rightShippingCost.getDestinationCode();
 
+
+      int returnValue = 1;
 
       // Always put the country we're in first
-      if ( mCountry != null && mCountry.usesISOCode( leftDestinationCode ) ) return ( -1 );
+      if ( mCountry != null )
+        {
+        if      ( mCountry.usesISOCode( leftDestinationCode  ) ) returnValue = -1;
+        else if ( mCountry.usesISOCode( rightDestinationCode ) ) returnValue = +1;
+        }
 
 
       // Default order if we don't know what country we're in:
@@ -650,13 +658,24 @@ public class Product implements Parcelable, IGroupOrProduct
       // Europe
       // Rest of world
 
-      if ( Country.UK.usesISOCode( leftDestinationCode )                ) return ( -1 );
-      if ( Country.USA.usesISOCode( leftDestinationCode )               ) return ( -1 );
-      if ( Country.existsForISOCode( leftDestinationCode )              ) return ( -1 );
-      if ( DESTINATION_CODE_EUROPE.equals( leftDestinationCode )        ) return ( -1 );
-      if ( DESTINATION_CODE_REST_OF_WORLD.equals( leftDestinationCode ) ) return ( -1 );
+      else if ( Country.UK.usesISOCode( leftDestinationCode )                 ) returnValue = -1;
+      else if ( Country.UK.usesISOCode( rightDestinationCode )                ) returnValue = +1;
 
-      return ( 1 );
+      else if ( Country.USA.usesISOCode( leftDestinationCode )                ) returnValue = -1;
+      else if ( Country.USA.usesISOCode( rightDestinationCode )               ) returnValue = +1;
+
+      else if ( Country.existsForISOCode( leftDestinationCode )               ) returnValue = -1;
+      else if ( Country.existsForISOCode( rightDestinationCode )              ) returnValue = +1;
+
+      else if ( DESTINATION_CODE_EUROPE.equals( leftDestinationCode )         ) returnValue = -1;
+      else if ( DESTINATION_CODE_EUROPE.equals( rightDestinationCode )        ) returnValue = +1;
+
+      else if ( DESTINATION_CODE_REST_OF_WORLD.equals( leftDestinationCode )  ) returnValue = -1;
+      else if ( DESTINATION_CODE_REST_OF_WORLD.equals( rightDestinationCode ) ) returnValue = +1;
+
+      //Log.d( LOG_TAG, "Compare: " + leftDestinationCode + "/" + rightDestinationCode + " = " + returnValue );
+
+      return ( returnValue );
       }
     }
 

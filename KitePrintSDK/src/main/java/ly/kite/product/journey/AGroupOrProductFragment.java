@@ -86,7 +86,7 @@ abstract public class AGroupOrProductFragment extends AJourneyFragment implement
   protected HeaderFooterGridView  mGridView;
   protected ProgressBar           mProgressBar;
 
-  protected ProductLoader mProductCache;
+  protected ProductLoader         mProductLoader;
   protected BaseAdapter           mGridAdaptor;
 
 
@@ -100,6 +100,18 @@ abstract public class AGroupOrProductFragment extends AJourneyFragment implement
 
 
   ////////// Fragment Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when the fragment is created.
+   *
+   *****************************************************/
+  @Override
+  public void onCreate( Bundle savedInstanceState )
+    {
+    super.onCreate( savedInstanceState );
+    }
+
 
   /*****************************************************
    *
@@ -122,10 +134,45 @@ abstract public class AGroupOrProductFragment extends AJourneyFragment implement
     //addHeaderFooterSpacers();
 
 
-    getProducts();
+    setManagedAdaptorView( mGridView );
 
 
     return ( view );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the fragment becomes visible.
+   *
+   *****************************************************/
+  @Override
+  public void onStart()
+    {
+    super.onStart();
+
+
+    getProducts();
+    }
+
+
+  /*****************************************************
+   *
+   * Called after the fragment is no longer visible.
+   *
+   *****************************************************/
+  @Override
+  public void onStop()
+    {
+    super.onStop();
+
+
+    // Clear out the stored images to reduce memory usage
+    // when not on this screen.
+
+    mGridView.setAdapter( null );
+
+    mGridAdaptor = null;
     }
 
 
@@ -145,14 +192,14 @@ abstract public class AGroupOrProductFragment extends AJourneyFragment implement
     onProductFetchFinished();
 
     mKiteActivity.displayModalDialog
-      (
-      R.string.alert_dialog_title_error_retrieving_products,
-      R.string.alert_dialog_message_error_retrieving_products,
-      R.string.Retry,
-      new SyncProductsRunnable(),
-      R.string.Cancel,
-      mKiteActivity.new FinishRunnable()
-      );
+            (
+                    R.string.alert_dialog_title_error_retrieving_products,
+                    R.string.alert_dialog_message_error_retrieving_products,
+                    R.string.Retry,
+                    new SyncProductsRunnable(),
+                    R.string.Cancel,
+                    mKiteActivity.new FinishRunnable()
+            );
     }
 
 
@@ -172,9 +219,9 @@ abstract public class AGroupOrProductFragment extends AJourneyFragment implement
     // back immediately - often the GridView won't have been configured correctly yet (because
     // when we specify the number of columns it doesn't take effect immediately).
 
-    mProductCache = ProductLoader.getInstance( mKiteActivity );
+    mProductLoader = ProductLoader.getInstance( mKiteActivity );
 
-    mProductCache.getAllProducts( MAX_ACCEPTED_PRODUCT_AGE_MILLIS, this );
+    mProductLoader.getAllProducts( MAX_ACCEPTED_PRODUCT_AGE_MILLIS, this );
     }
 
 
@@ -406,7 +453,7 @@ abstract public class AGroupOrProductFragment extends AJourneyFragment implement
     @Override
     public Object getItem( int position )
       {
-      return ( position < mActualItemCount ? mGroupOrProductList.get( position ) : null );
+      return ( position >= 0 && position < mActualItemCount ? mGroupOrProductList.get( position ) : null );
       }
 
 

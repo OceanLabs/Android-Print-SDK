@@ -252,10 +252,6 @@ public class ProductOverviewFragment extends AJourneyFragment implements View.On
     TextView shippingTextView     = (TextView) view.findViewById( R.id.shipping_text_view );
 
 
-    mProductImageAdaptor = new ProductImageAdaptor( mKiteActivity, mProduct.getImageURLList(), this );
-    mProductImageViewPager.setAdapter( mProductImageAdaptor );
-
-
     // Paging dots
 
     Animation pagingDotOutAlphaAnimation = new AlphaAnimation( PAGING_DOT_ANIMATION_OPAQUE, PAGING_DOT_ANIMATION_TRANSLUCENT );
@@ -306,7 +302,7 @@ public class ProductOverviewFragment extends AJourneyFragment implements View.On
     pagingDotInAnimation.setFillAfter( true );
 
 
-    mPagingDots.setProperties( mProductImageAdaptor.getCount(), R.drawable.paging_dot_unselected, R.drawable.paging_dot_selected );
+    mPagingDots.setProperties( mProduct.getImageURLList().size(), R.drawable.paging_dot_unselected, R.drawable.paging_dot_selected );
     mPagingDots.setOutAnimation( pagingDotOutAlphaAnimation );
     mPagingDots.setInAnimation( pagingDotInAnimation );
 
@@ -412,6 +408,23 @@ public class ProductOverviewFragment extends AJourneyFragment implements View.On
 
   /*****************************************************
    *
+   * Called when the fragment becomes visible.
+   *
+   *****************************************************/
+  @Override
+  public void onStart()
+    {
+    super.onStart();
+
+
+    // Set the the product image gallery
+    mProductImageAdaptor = new ProductImageAdaptor( mKiteActivity, mProduct.getImageURLList(), this );
+    mProductImageViewPager.setAdapter( mProductImageAdaptor );
+    }
+
+
+  /*****************************************************
+   *
    * Called when the back key is pressed. The fragment
    * can either intercept it, or ignore it - in which case
    * the default behaviour is performed.
@@ -434,8 +447,28 @@ public class ProductOverviewFragment extends AJourneyFragment implements View.On
 
   /*****************************************************
    *
+   * Called after the fragment is no longer visible.
+   *
+   *****************************************************/
+  @Override
+  public void onStop()
+    {
+    super.onStop();
+
+
+    // Clear out the stored images to reduce memory usage
+    // when not on this screen.
+
+    mProductImageViewPager.setAdapter( null );
+
+    mProductImageAdaptor = null;
+    }
+
+
+  /*****************************************************
+   *
    * Called to save the state of the instance when (e.g.)
-   * killing the activity after changing orientation.
+   * changing orientation.
    *
    *****************************************************/
   @Override
