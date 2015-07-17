@@ -32,21 +32,26 @@
 
             <!-- Size -->
 
-            <TextView
+            <LinearLayout
+                android:id="@+id/size_layout"
                 android:layout_marginTop="@dimen/product_overview_detail_title_margin_top"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:gravity="start"
-                android:textSize="@dimen/product_overview_detail_title"
-                android:textStyle="bold"
-                android:text="@string/Size"/>
-
-            <TextView
-                android:id="@+id/size_text_view"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="start"
-                android:textSize="@dimen/product_overview_detail_text"/>
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:textSize="@dimen/product_overview_detail_title"
+                    android:textStyle="bold"
+                    android:text="@string/Size"/>
+                <TextView
+                    android:id="@+id/size_text_view"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:textSize="@dimen/product_overview_detail_text"/>
+            </LinearLayout>
 
 
             <!-- Quantity -->

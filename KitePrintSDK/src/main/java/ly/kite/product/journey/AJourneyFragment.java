@@ -42,6 +42,8 @@ package ly.kite.product.journey;
 import android.app.Activity;
 import android.app.Fragment;
 
+import ly.kite.print.SingleUnitSize;
+import ly.kite.print.UnitOfLength;
 import ly.kite.product.AKiteActivity;
 
 
@@ -57,9 +59,14 @@ abstract public class AJourneyFragment extends Fragment
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  public  static final String  TAG                             = "AJourneyFragment";
+  public  static final String  TAG                               = "AJourneyFragment";
 
-  public  static final long    MAX_ACCEPTED_PRODUCT_AGE_MILLIS = 1000 * 60 * 60;  // 1 hour
+  public  static final long    MAX_ACCEPTED_PRODUCT_AGE_MILLIS   = 1000 * 60 * 60;  // 1 hour
+
+  private static final float   MINIMUM_SENSIBLE_SIZE_CENTIMETERS = 0.5f;
+  private static final float   MINIMUM_SENSIBLE_SIZE_INCHES      = 0.2f;
+  private static final float   MINIMUM_SENSIBLE_SIZE_PIXELS      = 10f;
+
 
 
   ////////// Static Variable(s) //////////
@@ -135,6 +142,51 @@ abstract public class AJourneyFragment extends Fragment
    *****************************************************/
   public boolean onBackPressIntercepted()
     {
+    return ( false );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns true, if the dimension is a sensible product
+   * size, false otherwise.
+   *
+   *****************************************************/
+  public boolean isSensibleProductSize( SingleUnitSize size )
+    {
+    if ( size == null ) return ( false );
+
+    UnitOfLength unit = size.getUnit();
+
+    float minimumSensibleSize = 1f;
+
+    switch ( unit )
+      {
+      case CENTIMETERS:
+        minimumSensibleSize = MINIMUM_SENSIBLE_SIZE_CENTIMETERS;
+        break;
+
+      case INCHES:
+        minimumSensibleSize = MINIMUM_SENSIBLE_SIZE_INCHES;
+        break;
+
+      case PIXELS:
+        minimumSensibleSize = MINIMUM_SENSIBLE_SIZE_PIXELS;
+        break;
+
+      default:
+      }
+
+
+    // Check that both dimensions are sensible
+
+    if ( size.getWidth() >= minimumSensibleSize  &&
+         size.getHeight() >= minimumSensibleSize )
+      {
+      return ( true );
+      }
+
+
     return ( false );
     }
 

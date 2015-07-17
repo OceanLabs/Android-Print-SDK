@@ -42,7 +42,6 @@ package ly.kite.product;
 
 ///// Class Declaration /////
 
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
@@ -184,7 +183,7 @@ public class ProductCreationActivity extends AKiteActivity implements FragmentMa
 
 
     // Set up the screen content
-    setContentView( R.layout.screen_product_selection );
+    setContentView( R.layout.screen_product_creation );
 
 
     // Listen for changes to the fragment back stack

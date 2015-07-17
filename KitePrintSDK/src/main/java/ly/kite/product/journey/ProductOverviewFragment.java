@@ -86,25 +86,25 @@ public class ProductOverviewFragment extends AJourneyFragment implements View.On
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings("unused")
-  public static final String TAG = "ProductOverviewFragment";
+  public static final String      TAG                                       = "ProductOverviewFragment";
 
-  public static final String BUNDLE_KEY_PRODUCT = "product";
+  public static final String      BUNDLE_KEY_PRODUCT                        = "product";
 
-  private static final BigDecimal BIG_DECIMAL_ZERO = BigDecimal.valueOf( 0 );
+  private static final BigDecimal BIG_DECIMAL_ZERO                          = BigDecimal.valueOf( 0 );
 
-  private static final long PAGING_DOT_ANIMATION_DURATION_MILLIS = 300L;
-  private static final float PAGING_DOT_ANIMATION_OPAQUE = 1.0f;
-  private static final float PAGING_DOT_ANIMATION_TRANSLUCENT = 0.5f;
-  private static final float PAGING_DOT_ANIMATION_NORMAL_SCALE = 1.0f;
+  private static final long       PAGING_DOT_ANIMATION_DURATION_MILLIS      = 300L;
+  private static final float      PAGING_DOT_ANIMATION_OPAQUE               = 1.0f;
+  private static final float      PAGING_DOT_ANIMATION_TRANSLUCENT          = 0.5f;
+  private static final float      PAGING_DOT_ANIMATION_NORMAL_SCALE         = 1.0f;
 
-  private static final long SLIDE_ANIMATION_DURATION_MILLIS = 500L;
-  private static final long OPEN_CLOSE_ICON_ANIMATION_DELAY_MILLIS = 250L;
-  private static final long OPEN_CLOSE_ICON_ANIMATION_DURATION_MILLIS = SLIDE_ANIMATION_DURATION_MILLIS - OPEN_CLOSE_ICON_ANIMATION_DELAY_MILLIS;
+  private static final long       SLIDE_ANIMATION_DURATION_MILLIS           = 500L;
+  private static final long       OPEN_CLOSE_ICON_ANIMATION_DELAY_MILLIS    = 250L;
+  private static final long       OPEN_CLOSE_ICON_ANIMATION_DURATION_MILLIS = SLIDE_ANIMATION_DURATION_MILLIS - OPEN_CLOSE_ICON_ANIMATION_DELAY_MILLIS;
 
-  private static final float OPEN_CLOSE_ICON_ROTATION_UP = -180f;
-  private static final float OPEN_CLOSE_ICON_ROTATION_DOWN = 0f;
+  private static final float      OPEN_CLOSE_ICON_ROTATION_UP               = -180f;
+  private static final float      OPEN_CLOSE_ICON_ROTATION_DOWN             = 0f;
 
-  private static final String BUNDLE_KEY_SLIDING_DRAWER_IS_EXPANDED = "slidingDrawerIsExpanded";
+  private static final String     BUNDLE_KEY_SLIDING_DRAWER_IS_EXPANDED     = "slidingDrawerIsExpanded";
 
 
   ////////// Static Variable(s) //////////
@@ -245,8 +245,9 @@ public class ProductOverviewFragment extends AJourneyFragment implements View.On
     mOpenCloseDrawerIconImageView = (ImageView) view.findViewById( R.id.open_close_drawer_icon_image_view );
     mContentStartButton           = (Button)view.findViewById( R.id.content_start_button );
     TextView priceTextView        = (TextView) view.findViewById( R.id.price_text_view );
+    View     sizeLayout           = view.findViewById( R.id.size_layout );
     TextView sizeTextView         = (TextView) view.findViewById( R.id.size_text_view );
-    View quantityLayout           = view.findViewById( R.id.quantity_layout );
+    View     quantityLayout       = view.findViewById( R.id.quantity_layout );
     TextView quantityTextView     = (TextView) view.findViewById( R.id.quantity_text_view );
     TextView shippingTextView     = (TextView) view.findViewById( R.id.shipping_text_view );
 
@@ -332,9 +333,15 @@ public class ProductOverviewFragment extends AJourneyFragment implements View.On
 
     SingleUnitSize size = mProduct.getSizeWithFallback( UnitOfLength.CENTIMETERS );
 
-    if ( size != null )
+    if ( isSensibleProductSize( size ) )
       {
+      sizeLayout.setVisibility( View.VISIBLE );
+
       sizeTextView.setText( String.format( getString( R.string.product_size_format_string ), size.getWidth(), size.getHeight(), size.getUnit().shortString( mKiteActivity ) ) );
+      }
+    else
+      {
+      sizeLayout.setVisibility( View.GONE );
       }
 
 
