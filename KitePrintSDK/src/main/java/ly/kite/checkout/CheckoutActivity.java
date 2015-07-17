@@ -34,7 +34,7 @@ import ly.kite.address.Address;
 import ly.kite.address.AddressBookActivity;
 import ly.kite.print.Product;
 import ly.kite.print.ProductGroup;
-import ly.kite.print.ProductCache;
+import ly.kite.print.ProductLoader;
 
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
@@ -237,9 +237,9 @@ public class CheckoutActivity extends Activity {
 
         final ProgressDialog progress = ProgressDialog.show(this, null, "Loading");
 
-        ProductCache.getInstance( this ).getAllProducts(
+        ProductLoader.getInstance( this ).getAllProducts(
                 MAXIMUM_PRODUCT_AGE_MILLIS,
-                new ProductCache.ProductConsumer()
+                new ProductLoader.ProductConsumer()
                     {
                     @Override
                     public void onGotProducts( ArrayList<ProductGroup> productGroupList, HashMap<String, Product> productTable )
@@ -286,7 +286,7 @@ public class CheckoutActivity extends Activity {
           {
           // This will return null if there are no products, or they are out of date, but that's
           // OK because we catch any exceptions.
-          Pair<ArrayList<ProductGroup>,HashMap<String,Product>> productPair = ProductCache.getInstance( this ).getCachedProducts( MAXIMUM_PRODUCT_AGE_MILLIS );
+          Pair<ArrayList<ProductGroup>,HashMap<String,Product>> productPair = ProductLoader.getInstance( this ).getCachedProducts( MAXIMUM_PRODUCT_AGE_MILLIS );
 
           // Go through every print job and check that we can get a product from the product id
           for ( PrintJob job : mPrintOrder.getJobs() )

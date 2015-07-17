@@ -45,8 +45,10 @@ package ly.kite.print;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Collection;
 import java.util.Currency;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import ly.kite.print.SingleUnitSize;
@@ -178,6 +180,17 @@ public class MultipleUnitSize implements Parcelable
   public SingleUnitSize get( int position )
     {
     return ( mUnitSizeTable.get( position ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a list of the sizes.
+   *
+   *****************************************************/
+  public Collection<SingleUnitSize> getAll()
+    {
+    return ( mUnitSizeTable.values() );
     }
 
 

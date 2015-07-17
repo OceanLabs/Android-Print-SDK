@@ -10,22 +10,4 @@
         <item name="android:navigationBarColor">@color/opaque_navigation_bar</item>
     </style>
 
-    <style name="Theme.KiteSDK.GroupOrProduct" parent="android:Theme.DeviceDefault.Light">
-        <item name="android:windowActionBarOverlay">true</item>
-        <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar.Translucent</item>
-        <item name="android:windowTranslucentNavigation">true</item>
-        <item name="android:colorPrimaryDark">@color/translucent_status_bar</item>
-    </style>
-
-    <style name="Theme.KiteSDK.ProductOverview" parent="android:Theme.DeviceDefault.Light">
-        <item name="android:windowActionBarOverlay">true</item>
-        <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar.Translucent</item>
-        <item name="android:colorPrimaryDark">@color/translucent_status_bar</item>
-    </style>
-
-    <style name="Theme.KiteSDK.PhoneCase" parent="android:Theme.DeviceDefault.Light">
-        <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar.Opaque</item>
-        <item name="android:colorPrimaryDark">@color/translucent_status_bar</item>
-    </style>
-
 </resources>

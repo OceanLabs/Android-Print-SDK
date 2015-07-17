@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * ImageManager.java
+ * ImageLoader.java
  *
  *
  * Modified MIT License
@@ -75,19 +75,19 @@ import ly.kite.print.AssetGetBytesListener;
  *   - Images may also be stored in memory.
  *
  *****************************************************/
-public class ImageManager
+public class ImageLoader
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "ImageManager";
+  private static final String  LOG_TAG = "ImageLoader";
 
   private static final int     DOWNLOAD_BUFFER_SIZE_IN_BYTES = 8192;  // 8 KB
 
 
   ////////// Static Variable(s) //////////
 
-  private static ImageManager  sImageManager;
+  private static ImageLoader sImageManager;
 
 
   ////////// Member Variable(s) //////////
@@ -113,11 +113,11 @@ public class ImageManager
    * Returns an instance of the image manager.
    *
    *****************************************************/
-  public static ImageManager getInstance( Context context )
+  public static ImageLoader getInstance( Context context )
     {
     if ( sImageManager == null )
       {
-      sImageManager = new ImageManager( context );
+      sImageManager = new ImageLoader( context );
       }
 
     return ( sImageManager );
@@ -160,7 +160,7 @@ public class ImageManager
 
   ////////// Constructor(s) //////////
 
-  private ImageManager( Context context )
+  private ImageLoader( Context context )
     {
     mContext         = context;
     mCacheDirectory  = context.getCacheDir();

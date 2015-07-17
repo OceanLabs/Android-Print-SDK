@@ -52,7 +52,7 @@ import java.net.URL;
 import java.util.List;
 
 import ly.kite.R;
-import ly.kite.util.ImageManager;
+import ly.kite.util.ImageLoader;
 import ly.kite.widget.LabelledImageView;
 
 /*****************************************************
@@ -81,7 +81,7 @@ public class ProductImageAdaptor extends PagerAdapter
   private View.OnClickListener  mOnClickListener;
 
   private LayoutInflater        mLayoutInflator;
-  private ImageManager          mImageManager;
+  private ImageLoader mImageManager;
 
 
   ////////// Static Initialiser(s) //////////
@@ -99,7 +99,7 @@ public class ProductImageAdaptor extends PagerAdapter
     mOnClickListener = onClickListener;
 
     mLayoutInflator  = LayoutInflater.from( context );
-    mImageManager    = ImageManager.getInstance( context );
+    mImageManager    = ImageLoader.getInstance( context );
     }
 
 

@@ -72,7 +72,7 @@ public class Product implements Parcelable, IGroupOrProduct
   {
   ////////// Static Constant(s) //////////
 
-  @SuppressWarnings( "unused" )
+  @SuppressWarnings("unused")
   private static final String       LOG_TAG                        = "Product";
 
   private static final UnitOfLength FALLBACK_UNIT_1                = UnitOfLength.CENTIMETERS;
@@ -85,18 +85,18 @@ public class Product implements Parcelable, IGroupOrProduct
   ////////// Static Variable(s) //////////
 
   public static final Parcelable.Creator<Product> CREATOR =
-    new Parcelable.Creator<Product>()
-      {
-      public Product createFromParcel( Parcel sourceParcel )
-        {
-        return ( new Product( sourceParcel ) );
-        }
+          new Parcelable.Creator<Product>()
+          {
+          public Product createFromParcel( Parcel sourceParcel )
+            {
+            return (new Product( sourceParcel ));
+            }
 
-      public Product[] newArray( int size )
-        {
-        return ( new Product[ size ] );
-        }
-      };
+          public Product[] newArray( int size )
+            {
+            return (new Product[ size ]);
+            }
+          };
 
 
   ////////// Member Variable(s) //////////
@@ -128,12 +128,12 @@ public class Product implements Parcelable, IGroupOrProduct
 
   Product( String productId, String productCode, String productName, String productLabel, int labelColour, UserJourneyType userJourneyType, int quantityPerSheet )
     {
-    mId               = productId;
-    mCode             = productCode;
-    mName             = productName;
-    mLabel            = productLabel;
-    mLabelColour      = labelColour;
-    mUserJourneyType  = userJourneyType;
+    mId = productId;
+    mCode = productCode;
+    mName = productName;
+    mLabel = productLabel;
+    mLabelColour = labelColour;
+    mUserJourneyType = userJourneyType;
     mQuantityPerSheet = quantityPerSheet;
     }
 
@@ -141,18 +141,18 @@ public class Product implements Parcelable, IGroupOrProduct
   // Constructor used by parcelable interface
   private Product( Parcel sourceParcel )
     {
-    mId               = sourceParcel.readString();
-    mCode             = sourceParcel.readString();
-    mName             = sourceParcel.readString();
-    mLabel            = sourceParcel.readString();
+    mId    = sourceParcel.readString();
+    mCode  = sourceParcel.readString();
+    mName  = sourceParcel.readString();
+    mLabel = sourceParcel.readString();
 
     String userJourneyString = sourceParcel.readString();
-    mUserJourneyType  = ( userJourneyString != null ? UserJourneyType.valueOf( userJourneyString ) : null );
+    mUserJourneyType  = (userJourneyString != null ? UserJourneyType.valueOf( userJourneyString ) : null);
 
     mQuantityPerSheet = sourceParcel.readInt();
-    mCost             = (MultipleCurrencyCost)sourceParcel.readParcelable( MultipleCurrencyCost.class.getClassLoader() );
-    mShippingCosts    = (MultipleDestinationShippingCosts)sourceParcel.readParcelable( MultipleDestinationShippingCosts.class.getClassLoader() );
-    mHeroImageURL     = (URL)sourceParcel.readSerializable();
+    mCost             = (MultipleCurrencyCost) sourceParcel.readParcelable( MultipleCurrencyCost.class.getClassLoader() );
+    mShippingCosts    = (MultipleDestinationShippingCosts) sourceParcel.readParcelable( MultipleDestinationShippingCosts.class.getClassLoader() );
+    mHeroImageURL     = (URL) sourceParcel.readSerializable();
     mLabelColour      = sourceParcel.readInt();
 
 
@@ -160,15 +160,15 @@ public class Product implements Parcelable, IGroupOrProduct
 
     mImageURLList = new ArrayList<URL>();
 
-    for ( int index = 0; index < imageURLCount; index ++ )
+    for ( int index = 0; index < imageURLCount; index++ )
       {
-      mImageURLList.add( (URL)sourceParcel.readSerializable() );
+      mImageURLList.add( (URL) sourceParcel.readSerializable() );
       }
 
 
-    mMaskURL          = (URL)sourceParcel.readSerializable();
-    mMaskBleed        = (Bleed)sourceParcel.readParcelable( Bleed.class.getClassLoader() );
-    mSize             = (MultipleUnitSize)sourceParcel.readParcelable( MultipleUnitSize.class.getClassLoader() );
+    mMaskURL = (URL) sourceParcel.readSerializable();
+    mMaskBleed = (Bleed) sourceParcel.readParcelable( Bleed.class.getClassLoader() );
+    mSize = (MultipleUnitSize) sourceParcel.readParcelable( MultipleUnitSize.class.getClassLoader() );
     }
 
 
@@ -182,7 +182,7 @@ public class Product implements Parcelable, IGroupOrProduct
   @Override
   public int describeContents()
     {
-    return ( 0 );
+    return (0);
     }
 
 
@@ -236,7 +236,7 @@ public class Product implements Parcelable, IGroupOrProduct
   @Override
   public URL getDisplayImageURL()
     {
-    return ( mHeroImageURL );
+    return (mHeroImageURL);
     }
 
 
@@ -248,7 +248,7 @@ public class Product implements Parcelable, IGroupOrProduct
   @Override
   public String getDisplayLabel()
     {
-    return ( mLabel );
+    return (mLabel);
     }
 
 
@@ -260,7 +260,7 @@ public class Product implements Parcelable, IGroupOrProduct
   @Override
   public int getDisplayLabelColour()
     {
-    return ( mLabelColour );
+    return (mLabelColour);
     }
 
 
@@ -271,7 +271,7 @@ public class Product implements Parcelable, IGroupOrProduct
    *****************************************************/
   public int getQuantityPerSheet()
     {
-    return ( mQuantityPerSheet );
+    return (mQuantityPerSheet);
     }
 
 
@@ -284,7 +284,7 @@ public class Product implements Parcelable, IGroupOrProduct
    *****************************************************/
   public String getId()
     {
-    return ( mId );
+    return (mId);
     }
 
 
@@ -295,7 +295,7 @@ public class Product implements Parcelable, IGroupOrProduct
    *****************************************************/
   public String getName()
     {
-    return ( mName );
+    return (mName);
     }
 
 
@@ -308,7 +308,7 @@ public class Product implements Parcelable, IGroupOrProduct
     {
     mCost = cost;
 
-    return ( this );
+    return (this);
     }
 
 
@@ -321,7 +321,7 @@ public class Product implements Parcelable, IGroupOrProduct
     {
     mShippingCosts = shippingCosts;
 
-    return ( this );
+    return (this);
     }
 
 
@@ -332,7 +332,7 @@ public class Product implements Parcelable, IGroupOrProduct
    *****************************************************/
   public MultipleDestinationShippingCosts getShippingCosts()
     {
-    return ( mShippingCosts );
+    return (mShippingCosts);
     }
 
 
@@ -346,7 +346,7 @@ public class Product implements Parcelable, IGroupOrProduct
     mHeroImageURL = heroImageURL;
     mImageURLList = imageURLList;
 
-    return ( this );
+    return (this);
     }
 
 
@@ -357,7 +357,7 @@ public class Product implements Parcelable, IGroupOrProduct
    *****************************************************/
   public ArrayList<URL> getImageURLList()
     {
-    return ( mImageURLList );
+    return (mImageURLList);
     }
 
 
@@ -370,7 +370,7 @@ public class Product implements Parcelable, IGroupOrProduct
     {
     mLabelColour = labelColour;
 
-    return ( this );
+    return (this);
     }
 
 
@@ -381,10 +381,10 @@ public class Product implements Parcelable, IGroupOrProduct
    *****************************************************/
   Product setMask( URL url, Bleed bleed )
     {
-    mMaskURL   = url;
+    mMaskURL = url;
     mMaskBleed = bleed;
 
-    return ( this );
+    return (this);
     }
 
 
@@ -395,7 +395,7 @@ public class Product implements Parcelable, IGroupOrProduct
    *****************************************************/
   public URL getMaskURL()
     {
-    return ( mMaskURL );
+    return (mMaskURL);
     }
 
 
@@ -406,7 +406,7 @@ public class Product implements Parcelable, IGroupOrProduct
    *****************************************************/
   public Bleed getMaskBleed()
     {
-    return ( mMaskBleed );
+    return (mMaskBleed);
     }
 
 
@@ -419,7 +419,7 @@ public class Product implements Parcelable, IGroupOrProduct
     {
     mSize = size;
 
-    return ( this );
+    return (this);
     }
 
 
@@ -434,16 +434,16 @@ public class Product implements Parcelable, IGroupOrProduct
     SingleUnitSize size;
 
     // First try the requested unit
-    if ( ( size = mSize.get( unit            ) ) != null ) return ( size );
+    if ( (size = mSize.get( unit )) != null ) return (size);
 
     // Next try falling back through major currencies
-    if ( ( size = mSize.get( FALLBACK_UNIT_1 ) ) != null ) return ( size );
-    if ( ( size = mSize.get( FALLBACK_UNIT_2 ) ) != null ) return ( size );
+    if ( (size = mSize.get( FALLBACK_UNIT_1 )) != null ) return (size);
+    if ( (size = mSize.get( FALLBACK_UNIT_2 )) != null ) return (size);
 
     // Lastly try and getCost the first supported currency
-    if ( ( size = mSize.get( 0               ) ) != null ) return ( size );
+    if ( (size = mSize.get( 0 )) != null ) return (size);
 
-    return ( null );
+    return (null);
     }
 
 
@@ -455,7 +455,7 @@ public class Product implements Parcelable, IGroupOrProduct
    *****************************************************/
   public SingleCurrencyCost getCostWithFallback( String preferredCurrencyCode )
     {
-    return ( mCost.getCostWithFallback( preferredCurrencyCode ) );
+    return (mCost.getCostWithFallback( preferredCurrencyCode ));
     }
 
 
@@ -466,7 +466,7 @@ public class Product implements Parcelable, IGroupOrProduct
    *****************************************************/
   public SingleCurrencyCost getCostWithFallback( Locale locale )
     {
-    return ( mCost.getCostWithFallback( Currency.getInstance( locale ) ) );
+    return (mCost.getCostWithFallback( Currency.getInstance( locale ) ));
     }
 
 
@@ -479,9 +479,10 @@ public class Product implements Parcelable, IGroupOrProduct
     {
     SingleCurrencyCost cost = mCost.get( currencyCode );
 
-    if ( cost == null ) throw ( new IllegalArgumentException( "No cost found for currency " + currencyCode ) );
+    if ( cost == null )
+      throw (new IllegalArgumentException( "No cost found for currency " + currencyCode ));
 
-    return ( cost.getAmount() );
+    return (cost.getAmount());
     }
 
 
@@ -492,7 +493,7 @@ public class Product implements Parcelable, IGroupOrProduct
    *****************************************************/
   public Set<String> getCurrenciesSupported()
     {
-    return ( mCost.getAllCurrencyCodes() );
+    return (mCost.getAllCurrencyCodes());
     }
 
 
@@ -507,7 +508,7 @@ public class Product implements Parcelable, IGroupOrProduct
 
     MultipleCurrencyCost shippingCost = mShippingCosts.getCost( countryCode );
 
-    if ( shippingCost != null ) return ( shippingCost );
+    if ( shippingCost != null ) return (shippingCost);
 
 
     // If the country is part of Europe, try and getCost a European cost.
@@ -518,12 +519,12 @@ public class Product implements Parcelable, IGroupOrProduct
       {
       shippingCost = mShippingCosts.getCost( MultipleDestinationShippingCosts.DESTINATION_CODE_EUROPE );
 
-      if ( shippingCost != null ) return ( shippingCost );
+      if ( shippingCost != null ) return (shippingCost);
       }
 
 
     // If all else fails, try and getCost a rest of world cost.
-    return ( mShippingCosts.getCost( MultipleDestinationShippingCosts.DESTINATION_CODE_REST_OF_WORLD ) );
+    return (mShippingCosts.getCost( MultipleDestinationShippingCosts.DESTINATION_CODE_REST_OF_WORLD ));
     }
 
 
@@ -541,7 +542,66 @@ public class Product implements Parcelable, IGroupOrProduct
     // Sort the list in order of relevance
     Collections.sort( shippingCostList, new ShippingCostRelevanceComparator( country ) );
 
-    return ( shippingCostList );
+    return (shippingCostList);
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a log-displayable string representing this
+   * product.
+   *
+   *****************************************************/
+  public String toLogString()
+    {
+
+//    private String mId;
+//    private String mCode;
+//    private String mName;
+//    private String mLabel;
+//    private UserJourneyType mUserJourneyType;
+//    private int mQuantityPerSheet;
+//
+//    private MultipleCurrencyCost              mCost;
+//    private MultipleDestinationShippingCosts  mShippingCosts;
+//    private URL                               mHeroImageURL;
+//    private int                               mLabelColour;
+//    private ArrayList<URL>                    mImageURLList;
+//    private URL                               mMaskURL;
+//    private Bleed                             mMaskBleed;
+//    private MultipleUnitSize                  mSize;
+
+    StringBuilder stringBuilder = new StringBuilder();
+
+    stringBuilder.append( "Id                 : " ).append( mId ).append( "\n" );
+    stringBuilder.append( "Code               : " ).append( mCode ).append( "\n" );
+    stringBuilder.append( "Name               : " ).append( mName ).append( "\n" );
+    stringBuilder.append( "Label              : " ).append( mLabel ).append( "\n" );
+    stringBuilder.append( "User Journey Type  : " ).append( mUserJourneyType.name() ).append( "\n" );
+    stringBuilder.append( "Quantity Per Sheet : " ).append( mQuantityPerSheet ).append( "\n" );
+
+    stringBuilder.append( "  ..." ).append( "\n" );
+
+    stringBuilder.append( "Mask URL           : " ).append( mMaskURL != null ? mMaskURL.toString() : null ).append( "\n" );
+
+    stringBuilder.append( "  ..." ).append( "\n" );
+
+    stringBuilder.append( "Sizes:" ).append( "\n" );
+
+    for ( SingleUnitSize singleUnitSize : mSize.getAll() )
+      {
+      stringBuilder
+              .append( "  " )
+              .append( singleUnitSize.getWidth() )
+              .append( " x " )
+              .append( singleUnitSize.getHeight() )
+              .append( " " )
+              .append( singleUnitSize.getUnit().name() )
+              .append( "\n" );
+      }
+
+
+    return ( stringBuilder.toString() );
     }
 
 
@@ -578,10 +638,9 @@ public class Product implements Parcelable, IGroupOrProduct
       {
       String leftDestinationCode = leftShippingCost.getDestinationCode();
 
-      if ( mCountry != null )
-        {
 
-        }
+      // Always put the country we're in first
+      if ( mCountry != null && mCountry.usesISOCode( leftDestinationCode ) ) return ( -1 );
 
 
       // Default order if we don't know what country we're in:
@@ -591,9 +650,9 @@ public class Product implements Parcelable, IGroupOrProduct
       // Europe
       // Rest of world
 
-      if ( Country.UK.usesISOCode( leftDestinationCode )                   ) return ( -1 );
-      if ( Country.USA.usesISOCode( leftDestinationCode )                  ) return ( -1 );
-      if ( Country.existsForISOCode( leftDestinationCode )                 ) return ( -1 );
+      if ( Country.UK.usesISOCode( leftDestinationCode )                ) return ( -1 );
+      if ( Country.USA.usesISOCode( leftDestinationCode )               ) return ( -1 );
+      if ( Country.existsForISOCode( leftDestinationCode )              ) return ( -1 );
       if ( DESTINATION_CODE_EUROPE.equals( leftDestinationCode )        ) return ( -1 );
       if ( DESTINATION_CODE_REST_OF_WORLD.equals( leftDestinationCode ) ) return ( -1 );
 

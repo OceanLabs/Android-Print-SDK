@@ -194,12 +194,16 @@ public class MaskedImageView extends View implements GestureDetector.OnGestureLi
   @Override
   public void onDraw( Canvas canvas )
     {
-    // If we only have the mask then just draw it as normal. If we have
-    // the image as well then combine it with the mask.
+    // The mask can be different colours (such as white / red) but we are only
+    // interested in its alpha.
+    // The rules on colours / alphas are as follows:
+    //   - Where the mask is transparent, the background is always visible
+    //   - Mask + image    => image colour is displayed
+    //   - Mask (no image) => white
 
     if ( mMaskToBlendTargetRect != null )
       {
-      mBlendCanvas.drawColor( 0x00ffffff );
+      mBlendCanvas.drawColor( 0xffffffff );
       mBlendCanvas.drawBitmap( mMaskBitmap, mMaskToBlendSourceRect, mMaskToBlendTargetRect, mMaskToBlendPaint );
 
       if ( mImageToBlendTargetRect != null )
@@ -388,18 +392,19 @@ public class MaskedImageView extends View implements GestureDetector.OnGestureLi
     // TODO: We need to play around with these to remove the mask artifacts
 
     mMaskToBlendPaint = new Paint();
+    mMaskToBlendPaint.setXfermode( new PorterDuffXfermode( PorterDuff.Mode.DST_ATOP ) );
     mMaskToBlendPaint.setAntiAlias( true );
     mMaskToBlendPaint.setFilterBitmap( true );
-    mMaskToBlendPaint.setDither( true );
+    //mMaskToBlendPaint.setDither( true );
 
     mImageToBlendPaint = new Paint();
-    mImageToBlendPaint.setXfermode( new PorterDuffXfermode( PorterDuff.Mode.SRC_IN ) );
+    mImageToBlendPaint.setXfermode( new PorterDuffXfermode( PorterDuff.Mode.SRC_ATOP ) );
     mImageToBlendPaint.setAntiAlias( true );
     mImageToBlendPaint.setFilterBitmap( true );
-    mImageToBlendPaint.setDither( true );
+    //mImageToBlendPaint.setDither( true );
 
     mBlendToViewPaint = new Paint();
-    mBlendToViewPaint.setXfermode( new PorterDuffXfermode( PorterDuff.Mode.SRC_OVER ) );
+    //mBlendToViewPaint.setXfermode( new PorterDuffXfermode( PorterDuff.Mode.SRC_OVER ) );
 
     // Monitor both panning and zooming
     mGestureDetector      = new GestureDetector( context, this );

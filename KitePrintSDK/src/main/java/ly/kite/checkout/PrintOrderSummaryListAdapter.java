@@ -14,7 +14,6 @@ import ly.kite.print.PrintJob;
 import ly.kite.print.PrintOrder;
 import ly.kite.R;
 import ly.kite.print.Product;
-import ly.kite.print.ProductCache;
 
 /**
  * Created by deonbotha on 20/02/2014.

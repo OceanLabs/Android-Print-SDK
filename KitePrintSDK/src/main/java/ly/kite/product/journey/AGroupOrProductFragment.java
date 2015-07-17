@@ -40,11 +40,7 @@ package ly.kite.product.journey;
 ///// Import(s) /////
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.TypedValue;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,10 +54,10 @@ import java.net.URL;
 import java.util.List;
 
 import ly.kite.R;
-import ly.kite.print.ProductCache;
+import ly.kite.print.ProductLoader;
 import ly.kite.product.AKiteActivity;
 import ly.kite.product.IGroupOrProduct;
-import ly.kite.util.ImageManager;
+import ly.kite.util.ImageLoader;
 import ly.kite.widget.HeaderFooterGridView;
 import ly.kite.widget.LabelledImageView;
 
@@ -74,7 +70,7 @@ import ly.kite.widget.LabelledImageView;
  * Product fragments.
  *
  *****************************************************/
-abstract public class AGroupOrProductFragment extends AJourneyFragment implements ProductCache.ProductConsumer, AdapterView.OnItemClickListener
+abstract public class AGroupOrProductFragment extends AJourneyFragment implements ProductLoader.ProductConsumer, AdapterView.OnItemClickListener
   {
   ////////// Static Constant(s) //////////
 
@@ -90,7 +86,7 @@ abstract public class AGroupOrProductFragment extends AJourneyFragment implement
   protected HeaderFooterGridView  mGridView;
   protected ProgressBar           mProgressBar;
 
-  protected ProductCache          mProductCache;
+  protected ProductLoader mProductCache;
   protected BaseAdapter           mGridAdaptor;
 
 
@@ -176,7 +172,7 @@ abstract public class AGroupOrProductFragment extends AJourneyFragment implement
     // back immediately - often the GridView won't have been configured correctly yet (because
     // when we specify the number of columns it doesn't take effect immediately).
 
-    mProductCache = ProductCache.getInstance( mKiteActivity );
+    mProductCache = ProductLoader.getInstance( mKiteActivity );
 
     mProductCache.getAllProducts( MAX_ACCEPTED_PRODUCT_AGE_MILLIS, this );
     }
@@ -340,7 +336,7 @@ abstract public class AGroupOrProductFragment extends AJourneyFragment implement
     private URL mPlaceholderImageURL;
 
     private LayoutInflater                   mLayoutInflator;
-    private ImageManager mImageManager;
+    private ImageLoader mImageManager;
 
 
     ////////// Static Initialiser(s) //////////
@@ -358,7 +354,7 @@ abstract public class AGroupOrProductFragment extends AJourneyFragment implement
       mGridView           = gridView;
 
       mLayoutInflator     = LayoutInflater.from( context );
-      mImageManager       = ImageManager.getInstance( context );
+      mImageManager       = ImageLoader.getInstance( context );
 
       mActualItemCount    = mGroupOrProductList.size();
 

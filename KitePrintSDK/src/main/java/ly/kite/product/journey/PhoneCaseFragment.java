@@ -39,8 +39,6 @@ package ly.kite.product.journey;
 
 ///// Import(s) /////
 
-import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
@@ -54,17 +52,13 @@ import android.widget.Button;
 import java.net.URL;
 import java.util.ArrayList;
 
-import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.analytics.Analytics;
-import ly.kite.checkout.CheckoutActivity;
 import ly.kite.print.Asset;
 import ly.kite.print.Bleed;
-import ly.kite.print.PrintJob;
-import ly.kite.print.PrintOrder;
 import ly.kite.print.Product;
 import ly.kite.product.AKiteActivity;
-import ly.kite.util.ImageManager;
+import ly.kite.util.ImageLoader;
 import ly.kite.widget.MaskedRemoteImageView;
 
 
@@ -232,7 +226,7 @@ public class PhoneCaseFragment extends AJourneyFragment implements View.OnClickL
 
     // Request the image and mask
 
-    ImageManager imageManager = ImageManager.getInstance( mKiteActivity );
+    ImageLoader imageManager = ImageLoader.getInstance( mKiteActivity );
     Handler      handler      = new Handler();
 
     Asset        asset        = mAssetArrayList.get( 0 );

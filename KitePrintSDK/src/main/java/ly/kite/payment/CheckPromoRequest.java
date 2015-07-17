@@ -11,7 +11,6 @@ import ly.kite.KiteSDK;
 import ly.kite.KiteSDKException;
 import ly.kite.print.PrintJob;
 import ly.kite.print.PrintOrder;
-import ly.kite.print.ProductCache;
 
 /**
  * Created by deonbotha on 17/02/2014.

@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * ProductCache.java
+ * ProductLoader.java
  *
  *
  * Modified MIT License
@@ -74,12 +74,12 @@ import ly.kite.product.UserJourneyType;
  * product groups and products from the server.
  *
  ****************************************************/
-public class ProductCache implements BaseRequest.BaseRequestListener
+public class ProductLoader implements BaseRequest.BaseRequestListener
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings("unused")
-  private static final String  LOG_TAG                               = "ProductCache";
+  private static final String  LOG_TAG                               = "ProductLoader";
 
   private static final boolean DISPLAY_DEBUGGING                     = false;
 
@@ -118,7 +118,7 @@ public class ProductCache implements BaseRequest.BaseRequestListener
 
   ////////// Static Variable(s) //////////
 
-  private static ProductCache sProductCache;
+  private static ProductLoader sProductCache;
 
 
   ////////// Member Variable(s) //////////
@@ -143,11 +143,11 @@ public class ProductCache implements BaseRequest.BaseRequestListener
    * Returns an instance of the manager.
    *
    ****************************************************/
-  public static ProductCache getInstance( Context context )
+  public static ProductLoader getInstance( Context context )
     {
     if ( sProductCache == null )
       {
-      sProductCache = new ProductCache( context );
+      sProductCache = new ProductLoader( context );
       }
 
     return ( sProductCache );
@@ -156,7 +156,7 @@ public class ProductCache implements BaseRequest.BaseRequestListener
 
   // This is a dirty hack until we can come up with a better way of doing
   // this.
-//  public static ProductCache getDirtyInstance()
+//  public static ProductLoader getDirtyInstance()
 //    {
 //    return (sProductCache);
 //    }
@@ -430,8 +430,28 @@ public class ProductCache implements BaseRequest.BaseRequestListener
           }
 
 
+        // Create the product and display it
+
+        Product product = new Product( productId, productCode, productName, productType, labelColour, userJourneyType, imagesPerPage )
+                .setCost( cost )
+                .setShippingCosts( shippingCosts )
+                .setImageURLs( heroImageURL, imageURLList )
+                .setLabelColour( labelColour )
+                .setMask( maskURL, maskBleed )
+                .setSize( size );
+
+        Log.i( LOG_TAG, "-- Found product --" );
+        Log.i( LOG_TAG, product.toLogString() );
+
+
+
         // Only display products for which we have a defined user journey
-        if ( ! UserJourneyCoordinator.getInstance().isSupported( userJourneyType ) ) continue next_product;
+        if ( ! UserJourneyCoordinator.getInstance().isSupported( userJourneyType ) )
+          {
+          Log.i( LOG_TAG, "-- Product discarded: no user journey --" );
+
+          continue next_product;
+          }
 
 
         // See if we already have the product group. If not - create it now.
@@ -447,18 +467,8 @@ public class ProductCache implements BaseRequest.BaseRequestListener
           }
 
 
-        // Create the product and add it to the product group
-
-        Product product = new Product( productId, productCode, productName, productType, labelColour, userJourneyType, imagesPerPage )
-                .setCost( cost )
-                .setShippingCosts( shippingCosts )
-                .setImageURLs( heroImageURL, imageURLList )
-                .setLabelColour( labelColour )
-                .setMask( maskURL, maskBleed )
-                .setSize( size );
-
+        // Add the product to its group
         productGroup.add( product );
-
 
         // Add the product to the product id / product table
         productTable.put( productId, product );
@@ -479,7 +489,7 @@ public class ProductCache implements BaseRequest.BaseRequestListener
   ////////// Constructor(s) //////////
 
   // Constructor is private to ensure it is a singleton
-  private ProductCache( Context context )
+  private ProductLoader( Context context )
     {
     mContext = context;
     }

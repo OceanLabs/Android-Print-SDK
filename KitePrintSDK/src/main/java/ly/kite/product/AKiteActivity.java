@@ -53,7 +53,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import ly.kite.R;
-import ly.kite.print.ProductCache;
+import ly.kite.print.ProductLoader;
 
 /*****************************************************
  *
@@ -107,7 +107,7 @@ public abstract class AKiteActivity extends Activity
     super.onCreate( savedInstanceState );
 
     // TODO: Fix this dirty hack
-    ProductCache.getInstance( this );
+    ProductLoader.getInstance( this );
     }
 
 

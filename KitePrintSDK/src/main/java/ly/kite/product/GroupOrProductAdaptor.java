@@ -51,7 +51,7 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 
 import ly.kite.R;
-import ly.kite.util.ImageManager;
+import ly.kite.util.ImageLoader;
 import ly.kite.widget.LabelledImageView;
 
 
@@ -90,7 +90,7 @@ public class GroupOrProductAdaptor extends BaseAdapter
   private URL                              mPlaceholderImageURL;
 
   private LayoutInflater                   mLayoutInflator;
-  private ImageManager                     mImageManager;
+  private ImageLoader mImageManager;
 
 
   ////////// Static Initialiser(s) //////////
@@ -108,7 +108,7 @@ public class GroupOrProductAdaptor extends BaseAdapter
     mGridView           = gridView;
 
     mLayoutInflator     = LayoutInflater.from( context );
-    mImageManager       = ImageManager.getInstance( context );
+    mImageManager       = ImageLoader.getInstance( context );
 
     mActualItemCount    = mGroupOrProductList.size();
 

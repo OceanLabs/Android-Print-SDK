@@ -24,7 +24,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.UUID;
 
-import ly.kite.util.ImageManager;
+import ly.kite.util.ImageLoader;
 
 /**
  * Created by deonbotha on 06/02/2014.
@@ -125,7 +125,7 @@ public class Asset implements Parcelable, Serializable {
     {
     // Get the image cache directory
 
-    String imageCacheDirectoryPath = ImageManager.getInstance( context ).getImageDirectoryPath( IMAGE_CLASS_STRING_ASSET );
+    String imageCacheDirectoryPath = ImageLoader.getInstance( context ).getImageDirectoryPath( IMAGE_CLASS_STRING_ASSET );
 
     File imageCacheDirectory = new File( imageCacheDirectoryPath );
 
@@ -153,7 +153,7 @@ public class Asset implements Parcelable, Serializable {
   public static Asset createAsCachedFile( Context context, Bitmap bitmap )
     {
     // Generate a random file name within the cache
-    Pair<String,String> imageDirectoryAndFilePath = ImageManager.getInstance( context ).getImageDirectoryAndFilePath( IMAGE_CLASS_STRING_ASSET, UUID.randomUUID().toString() );
+    Pair<String,String> imageDirectoryAndFilePath = ImageLoader.getInstance( context ).getImageDirectoryAndFilePath( IMAGE_CLASS_STRING_ASSET, UUID.randomUUID().toString() );
 
     File imageDirectory = new File( imageDirectoryAndFilePath.first );
 
