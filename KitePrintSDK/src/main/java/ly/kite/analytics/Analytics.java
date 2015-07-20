@@ -50,6 +50,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Currency;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -174,7 +175,8 @@ public class Analytics
   private Context     mContext;
 
   private String      mCachedUniqueUserId;
-  private JSONObject  mCachedPropertiesJSONObject;
+  private HashMap<String,Object> mCachedPropertiesMap;
+  //private JSONObject  mCachedPropertiesJSONObject;
 
 
   ////////// Static Initialiser(s) //////////
@@ -385,11 +387,17 @@ public class Analytics
 
   /*****************************************************
    *
-   * Returns a cached, or creates a new, JSON properties
-   * object.
+   * Returns a JSON object containing the standard properties
+   * that we upload with every event.
    *
    * The same properties are uploaded with every analytics
-   * event, so it makes sense to cache them.
+   * event, so it makes sense to cache them. However, we don't
+   * want to return the actual cached properties object, as
+   * every time we add more properties, they leak into all the
+   * events.
+   *
+   * So we create the properties as a map, and then copy them
+   * into a new JSON object.
    *
    *****************************************************/
   private JSONObject getPropertiesJSONObject()
@@ -397,57 +405,50 @@ public class Analytics
     // If we haven't already create the properties object - do
     // so now.
 
-    if ( mCachedPropertiesJSONObject == null )
+    if ( mCachedPropertiesMap == null )
       {
-      mCachedPropertiesJSONObject = new JSONObject();
+      mCachedPropertiesMap = new HashMap<>();
 
-      try
+      mCachedPropertiesMap.put( JSON_PROPERTY_NAME_API_TOKEN,        MixpanelAgent.API_TOKEN );
+      mCachedPropertiesMap.put( JSON_PROPERTY_NAME_UNIQUE_USER_ID,   getUniqueUserId() );
+      mCachedPropertiesMap.put( JSON_PROPERTY_NAME_APP_ID,           mContext.getPackageName() );
+      mCachedPropertiesMap.put( JSON_PROPERTY_NAME_APP_NAME,         mContext.getString( mContext.getApplicationInfo().labelRes ) );
+      mCachedPropertiesMap.put( JSON_PROPERTY_NAME_APP_VERSION,      BuildConfig.VERSION_NAME );
+      mCachedPropertiesMap.put( JSON_PROPERTY_NAME_PLATFORM,         PLATFORM_JSON_PROPERTY_VALUE_ANDROID );
+      mCachedPropertiesMap.put( JSON_PROPERTY_NAME_PLATFORM_VERSION, Build.VERSION.RELEASE );
+      mCachedPropertiesMap.put( JSON_PROPERTY_NAME_MODEL,            Build.MODEL );
+
+
+      DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
+
+      mCachedPropertiesMap.put( JSON_PROPERTY_NAME_SCREEN_WIDTH,     displayMetrics.widthPixels );
+      mCachedPropertiesMap.put( JSON_PROPERTY_NAME_SCREEN_HEIGHT,    displayMetrics.heightPixels );
+
+
+      KiteSDK             kiteSDK     = KiteSDK.getInstance( mContext );
+      KiteSDK.Environment environment = kiteSDK.getEnvironment();
+
+      String environmentString;
+
+      switch ( environment )
         {
-        mCachedPropertiesJSONObject.put( JSON_PROPERTY_NAME_API_TOKEN,        MixpanelAgent.API_TOKEN );
-        mCachedPropertiesJSONObject.put( JSON_PROPERTY_NAME_UNIQUE_USER_ID,   getUniqueUserId() );
-        mCachedPropertiesJSONObject.put( JSON_PROPERTY_NAME_APP_ID,           mContext.getPackageName() );
-        mCachedPropertiesJSONObject.put( JSON_PROPERTY_NAME_APP_NAME,         mContext.getString( mContext.getApplicationInfo().labelRes ) );
-        mCachedPropertiesJSONObject.put( JSON_PROPERTY_NAME_APP_VERSION,      BuildConfig.VERSION_NAME );
-        mCachedPropertiesJSONObject.put( JSON_PROPERTY_NAME_PLATFORM,         PLATFORM_JSON_PROPERTY_VALUE_ANDROID );
-        mCachedPropertiesJSONObject.put( JSON_PROPERTY_NAME_PLATFORM_VERSION, Build.VERSION.RELEASE );
-        mCachedPropertiesJSONObject.put( JSON_PROPERTY_NAME_MODEL,            Build.MODEL );
-
-
-        DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
-
-        mCachedPropertiesJSONObject.put( JSON_PROPERTY_NAME_SCREEN_WIDTH,     displayMetrics.widthPixels );
-        mCachedPropertiesJSONObject.put( JSON_PROPERTY_NAME_SCREEN_HEIGHT,    displayMetrics.heightPixels );
-
-
-        KiteSDK             kiteSDK     = KiteSDK.getInstance( mContext );
-        KiteSDK.Environment environment = kiteSDK.getEnvironment();
-
-        String environmentString;
-
-        switch ( environment )
-          {
-          case LIVE:    environmentString = ENVIRONMENT_JSON_PROPERTY_VALUE_LIVE;    break;
-          case TEST:    environmentString = ENVIRONMENT_JSON_PROPERTY_VALUE_TESTING; break;
-          case STAGING: environmentString = ENVIRONMENT_JSON_PROPERTY_VALUE_STAGING; break;
-          default:      environmentString = ENVIRONMENT_JSON_PROPERTY_VALUE_UNKNOWN; break;
-          }
-
-        mCachedPropertiesJSONObject.put( JSON_PROPERTY_NAME_ENVIRONMENT,      environmentString );
-
-        mCachedPropertiesJSONObject.put( JSON_PROPERTY_NAME_API_KEY,          kiteSDK.getAPIKey() );
-
-
-        mCachedPropertiesJSONObject.put( JSON_PROPERTY_NAME_KITE_SDK_VERSION, KiteSDK.SDK_VERSION );
-        mCachedPropertiesJSONObject.put( JSON_PROPERTY_NAME_LOCALE_COUNTRY,   Locale.getDefault().getCountry() );
-        }
-      catch ( JSONException je )
-        {
-        Log.e( LOG_TAG, "Error setting JSON properties", je );
+        case LIVE:    environmentString = ENVIRONMENT_JSON_PROPERTY_VALUE_LIVE;    break;
+        case TEST:    environmentString = ENVIRONMENT_JSON_PROPERTY_VALUE_TESTING; break;
+        case STAGING: environmentString = ENVIRONMENT_JSON_PROPERTY_VALUE_STAGING; break;
+        default:      environmentString = ENVIRONMENT_JSON_PROPERTY_VALUE_UNKNOWN; break;
         }
 
+      mCachedPropertiesMap.put( JSON_PROPERTY_NAME_ENVIRONMENT,      environmentString );
+
+      mCachedPropertiesMap.put( JSON_PROPERTY_NAME_API_KEY,          kiteSDK.getAPIKey() );
+
+
+      mCachedPropertiesMap.put( JSON_PROPERTY_NAME_KITE_SDK_VERSION, KiteSDK.SDK_VERSION );
+      mCachedPropertiesMap.put( JSON_PROPERTY_NAME_LOCALE_COUNTRY,   Locale.getDefault().getCountry() );
       }
 
-    return ( mCachedPropertiesJSONObject );
+
+    return ( new JSONObject( mCachedPropertiesMap ) );
     }
 
 

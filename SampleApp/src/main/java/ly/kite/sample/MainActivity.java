@@ -19,15 +19,16 @@ import ly.kite.KiteSDK;
 
 public class MainActivity extends Activity
   {
+  private static final String NON_REPLACED_API_KEY = "REPLACE_ME";
 
   /**********************************************************************
    * Insert your Kite API keys here. These are found under your profile
    * by logging in to the developer portal at https://www.kite.ly
    **********************************************************************/
-  //private static final String API_KEY_TEST = "ba171b0d91b1418fbd04f7b12af1e37e42d2cb1e";
-  private static final String API_KEY_TEST = "0453d74be957c1eb510fc2d580007294cdc31a79"; // Photobox
 
-  private static final String API_KEY_LIVE = "REPLACE_ME";
+  private static final String API_KEY_TEST = NON_REPLACED_API_KEY;
+
+  private static final String API_KEY_LIVE = NON_REPLACED_API_KEY;
 
   private static final int REQUEST_CODE_SELECT_PICTURE = 1;
   private static final int REQUEST_CODE_CHECKOUT = 2;
@@ -42,12 +43,6 @@ public class MainActivity extends Activity
     Fabric.with(this, new Crashlytics());
     setContentView( R.layout.activity_main );
     environmentSwitch = (Switch) findViewById( R.id.environment );
-    //productSpinner = (Spinner) findViewById(R.id.spinner_product);
-
-    //ArrayAdapter adapter = new ArrayAdapter<ProductType>(this, android.R.layout.simple_list_item_1, ProductType.values());
-    //adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-    //productSpinner.setAdapter(adapter);
-    //productSpinner.setSelection(Arrays.asList(ProductType.values()).indexOf(ProductType.MAGNETS));
     }
 
   public void onGalleryButtonClicked( View view )
@@ -94,49 +89,13 @@ public class MainActivity extends Activity
       }
 
 
-    if ( apiKey.equals( "REPLACE_ME" ) )
+    if ( apiKey.equals( NON_REPLACED_API_KEY ) )
       {
       showError( "Set API Keys", "Please set your Kite API keys at the top of the SampleApp's MainActivity.java. You can find these by logging into https://www.kite.ly." );
       return;
       }
 
-    KiteSDK.startFromProductCreation( this, apiKey, environment, assets );
-
-//        KitePrintSDK.initialize(apiKey, env, getApplicationContext());
-//
-//        ProductType productType = (ProductType) productSpinner.getSelectedItem();
-//        final PrintOrder printOrder = new PrintOrder();
-//        if (productType == ProductType.POSTCARD) {
-//            printOrder.addPrintJob(PrintJob.createPostcardPrintJob(ProductType.POSTCARD.getDefaultTemplate(),
-//                    assets.getCost(0), "Hello World!", Address.getKiteTeamAddress()));
-//        } else {
-//            printOrder.addPrintJob(PrintJob.createPrintJob(assets, productType));
-//        }
-//
-//
-//        final ProgressDialog progress = new ProgressDialog(this);
-//        progress.setTitle("Loading Templates");
-//        progress.setMessage("Wait while loading...");
-//        progress.show();
-//
-//        Product.sync( getApplicationContext(), new Product.TemplateSyncListener()
-//        {
-//        @Override
-//        public void onSuccess()
-//            {
-//            progress.dismiss();
-//            Intent intent = new Intent( MainActivity.this, CheckoutActivity.class );
-//            intent.putExtra( CheckoutActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder );
-//            startActivityForResult( intent, REQUEST_CODE_CHECKOUT );
-//            }
-//
-//        @Override
-//        public void onProductRetrievalError(Exception error)
-//            {
-//            progress.dismiss();
-//            showError( "Error Syncing Templates", error.getMessage() );
-//            }
-//        } );
+    KiteSDK.startFromProductSelection( this, apiKey, environment, assets );
     }
 
   private void showError( String title, String message )

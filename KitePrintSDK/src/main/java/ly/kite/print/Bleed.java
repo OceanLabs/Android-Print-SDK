@@ -146,9 +146,22 @@ public class Bleed implements Parcelable
 
   /*****************************************************
    *
-   * ...
+   * Creates a string representation of this bleed.
    *
    *****************************************************/
+  @Override
+  public String toString()
+    {
+    StringBuilder stringBuilder = new StringBuilder();
+
+    stringBuilder
+            .append( "{ topPixels = " ).append( this.topPixels )
+            .append( ", leftPixels = " ).append( this.leftPixels )
+            .append( ", rightPixels = " ).append( this.rightPixels )
+            .append( ", bottomPixels = " ).append( this.bottomPixels ).append( " }" );
+
+    return ( stringBuilder.toString() );
+    }
 
 
   ////////// Inner Class(es) //////////

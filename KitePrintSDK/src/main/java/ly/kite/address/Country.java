@@ -39,7 +39,7 @@ package ly.kite.address;
 
 ///// Import(s) /////
 
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Locale;
 
 
@@ -52,8 +52,8 @@ import java.util.Locale;
  *****************************************************/
 public enum Country
   {
-    ALAND_ISLANDS                     ( "Ã…land Islands", "AX", "ALA", "EUR", true ),
-    AFGANISTAN                        ( "Afghanistan", "AF", "AFG", "AFN", false ),
+    ALAND_ISLANDS                     ( "Åland Islands", "AX", "ALA", "EUR", true ),
+    AFGHANISTAN                       ( "Afghanistan", "AF", "AFG", "AFN", false ),
     ALBANIA                           ( "Albania", "AL", "ALB", "ALL", true ),
     ALGERIA                           ( "Algeria", "DZ", "DZA", "DZD", false ),
     AMERICAN_SAMOA                    ( "American Samoa", "AS", "ASM", "USD", false ),
@@ -86,7 +86,7 @@ public enum Country
     BRITISH_INDIAN_OCEAN_TERRITORY    ( "British Indian Ocean Territory", "IO", "IOT", "USD", false ),
     BRUNEI_DARUSSALAM                 ( "Brunei Darussalam", "BN", "BRN", "BND", false ),
     BULGARIA                          ( "Bulgaria", "BG", "BGR", "BGN", true ),
-    BURKINO_FASO                      ( "Burkina Faso", "BF", "BFA", "XOF", false ),
+    BURKINA_FASO                      ( "Burkina Faso", "BF", "BFA", "XOF", false ),
     BURUNDI                           ( "Burundi", "BI", "BDI", "BIF", false ),
     CAMBODIA                          ( "Cambodia", "KH", "KHM", "KHR", false ),
     CAMEROON                          ( "Cameroon", "CM", "CMR", "XAF", false ),
@@ -107,10 +107,10 @@ public enum Country
     COSTA_RICA                        ( "Costa Rica", "CR", "CRI", "CRC", false ),
     CROATIA                           ( "Croatia", "HR", "HRV", "HRK", true ),
     CUBA                              ( "Cuba", "CU", "CUB", "CUP", false ),
-    CURACAO                           ( "CuraÃ§ao", "CW", "CUW", "ANG", false ),
+    CURACAO                           ( "Curaçao", "CW", "CUW", "ANG", false ),
     CYPRUS                            ( "Cyprus", "CY", "CYP", "EUR", false ),
     CZECH_REPUBLIC                    ( "Czech Republic", "CZ", "CZE", "CZK", true ),
-    IVORY_COAST                       ( "CÃ´te d'Ivoire", "CI", "CIV", "XOF", false ),
+    IVORY_COAST                       ( "Côte d'Ivoire", "CI", "CIV", "XOF", false ),
     DENMARK                           ( "Denmark", "DK", "DNK", "DKK", true ),
     DJIBOUTI                          ( "Djibouti", "DJ", "DJI", "DJF", false ),
     DOMINICA                          ( "Dominica", "DM", "DMA", "XCD", false ),
@@ -233,8 +233,8 @@ public enum Country
     ROMANIA                           ( "Romania", "RO", "ROU", "RON", true ),
     RUSSIA                            ( "Russian Federation", "RU", "RUS", "RUB", true ),
     RWANDA                            ( "Rwanda", "RW", "RWA", "RWF", false ),
-    REUNION                           ( "RÃ©union", "RE", "REU", "EUR", false ),
-    SAINT_BARTS                       ( "Saint BarthÃ©lemy", "BL", "BLM", "EUR", false ),
+    REUNION                           ( "Réunion", "RE", "REU", "EUR", false ),
+    SAINT_BARTS                       ( "Saint Barthélemy", "BL", "BLM", "EUR", false ),
     SAINT_HELENA                      ( "Saint Helena, Ascension and Tristan da Cunha", "SH", "SHN", "SHP", false ),
     SAINT_KITTS_AND_NEVIS             ( "Saint Kitts and Nevis", "KN", "KNA", "XCD", false ),
     SAINT_LUCIA                       ( "Saint Lucia", "LC", "LCA", "XCD", false ),
@@ -303,12 +303,12 @@ public enum Country
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "TemplateClass";
+  private static final String  LOG_TAG = "Country";
 
 
   ////////// Static Variable(s) //////////
 
-  private static Hashtable<String,Country>  sCodeCountryTable;
+  private static HashMap<String,Country>  sCodeCountryTable;
 
 
   ////////// Member Variable(s) //////////
@@ -324,7 +324,7 @@ public enum Country
 
   static
     {
-    sCodeCountryTable = new Hashtable<>();
+    sCodeCountryTable = new HashMap<>();
 
     for ( Country country : values() )
       {

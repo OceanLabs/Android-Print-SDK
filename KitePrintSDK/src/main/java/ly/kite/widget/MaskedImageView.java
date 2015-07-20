@@ -49,11 +49,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
-import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.util.AttributeSet;
-import android.util.SparseArray;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -80,9 +76,6 @@ public class MaskedImageView extends View implements GestureDetector.OnGestureLi
   @SuppressWarnings( "unused" )
   private static final String  LOG_TAG                               = "MaskedImageView";
 
-  private static final String  BUNDLE_KEY_PARENT_STATE               = "imageToBlendTargetRect";
-  private static final String  BUNDLE_KEY_IMAGE_TO_BLEND_TARGET_RECT = "imageToBlendTargetRect";
-
   private static final float FLOAT_ZERO_THRESHOLD                    = 0.0001f;
 
   private static final float MAX_IMAGE_ZOOM                          = 3.0f;
@@ -107,15 +100,16 @@ public class MaskedImageView extends View implements GestureDetector.OnGestureLi
   private Rect                  mImageToBlendSourceRect;
 
   private RectF                 mMaskToBlendTargetRect;
-  private RectF                 mImageToBlendTargetRect;
+  private RectF                 mImageToBlendTargetRectF;
 
   private Rect                  mBlendToViewSourceRect;
-  private RectF                 mBlendToViewTargetRect;
+  private RectF                 mBlendToViewTargetRectF;
 
   private float                 mImageMinScaleFactor;
   private float                 mImageScaleFactor;
   private float                 mImageMaxScaleFactor;
 
+  private Paint                 mBlendBackgroundPaint;
   private Paint                 mMaskToBlendPaint;
   private Paint                 mImageToBlendPaint;
   private Paint                 mBlendToViewPaint;
@@ -203,15 +197,22 @@ public class MaskedImageView extends View implements GestureDetector.OnGestureLi
 
     if ( mMaskToBlendTargetRect != null )
       {
-      mBlendCanvas.drawColor( 0xffffffff );
+      // We don't need to clear the canvas since we are always drawing the mask in the same place
+
+      // Draw white where the mask will be (which may be smaller than the blend area if there is a bleed).
+      mBlendCanvas.drawRect( mMaskToBlendTargetRect, mBlendBackgroundPaint );
+
+      // Blend the mask with the white, using the mask alpha and the white colour
       mBlendCanvas.drawBitmap( mMaskBitmap, mMaskToBlendSourceRect, mMaskToBlendTargetRect, mMaskToBlendPaint );
 
-      if ( mImageToBlendTargetRect != null )
+      // Blend the image with the white mask
+      if ( mImageToBlendTargetRectF != null )
         {
-        mBlendCanvas.drawBitmap( mImageBitmap, mImageToBlendSourceRect, mImageToBlendTargetRect, mImageToBlendPaint );
+        mBlendCanvas.drawBitmap( mImageBitmap, mImageToBlendSourceRect, mImageToBlendTargetRectF, mImageToBlendPaint );
         }
 
-      canvas.drawBitmap( mBlendBitmap, mBlendToViewSourceRect, mBlendToViewTargetRect, mBlendToViewPaint );
+      // Draw the blended image to the actual view canvas
+      canvas.drawBitmap( mBlendBitmap, mBlendToViewSourceRect, mBlendToViewTargetRectF, mBlendToViewPaint );
       }
     }
 
@@ -231,31 +232,31 @@ public class MaskedImageView extends View implements GestureDetector.OnGestureLi
     // If we got an up event, then we need to make sure that the mask is still filled by
     // the image.
     if ( event.getActionMasked() == MotionEvent.ACTION_UP &&
-         mImageToBlendTargetRect != null )
+         mImageToBlendTargetRectF != null )
       {
       // If we need to shift the image horizontally - start an animation to
       // shift the image left or right.
 
-      if ( mImageToBlendTargetRect.left > 0f )
+      if ( mImageToBlendTargetRectF.left > 0f )
         {
-        new HorizontalImageAnimator( mImageToBlendTargetRect.left, 0, mImageToBlendTargetRect.width() ).start();
+        new HorizontalImageAnimator( mImageToBlendTargetRectF.left, 0, mImageToBlendTargetRectF.width() ).start();
         }
-      else if ( mImageToBlendTargetRect.right < mBlendToViewSourceRect.right )
+      else if ( mImageToBlendTargetRectF.right < mBlendToViewSourceRect.right )
         {
-        new HorizontalImageAnimator( mImageToBlendTargetRect.left, mImageToBlendTargetRect.left + ( mBlendToViewSourceRect.right - mImageToBlendTargetRect.right ), mImageToBlendTargetRect.width() ).start();
+        new HorizontalImageAnimator( mImageToBlendTargetRectF.left, mImageToBlendTargetRectF.left + ( mBlendToViewSourceRect.right - mImageToBlendTargetRectF.right ), mImageToBlendTargetRectF.width() ).start();
         }
 
 
       // If we need to shift the image horizontally - start an animation to
       // shift the image up or down.
 
-      if ( mImageToBlendTargetRect.top > 0f )
+      if ( mImageToBlendTargetRectF.top > 0f )
         {
-        new VerticalImageAnimator( mImageToBlendTargetRect.top, 0, mImageToBlendTargetRect.height() ).start();
+        new VerticalImageAnimator( mImageToBlendTargetRectF.top, 0, mImageToBlendTargetRectF.height() ).start();
         }
-      else if ( mImageToBlendTargetRect.bottom < mBlendToViewSourceRect.bottom )
+      else if ( mImageToBlendTargetRectF.bottom < mBlendToViewSourceRect.bottom )
         {
-        new VerticalImageAnimator( mImageToBlendTargetRect.top, mImageToBlendTargetRect.top + ( mBlendToViewSourceRect.bottom - mImageToBlendTargetRect.bottom ), mImageToBlendTargetRect.height() ).start();
+        new VerticalImageAnimator( mImageToBlendTargetRectF.top, mImageToBlendTargetRectF.top + ( mBlendToViewSourceRect.bottom - mImageToBlendTargetRectF.bottom ), mImageToBlendTargetRectF.height() ).start();
         }
 
       }
@@ -298,14 +299,14 @@ public class MaskedImageView extends View implements GestureDetector.OnGestureLi
   public boolean onScroll( MotionEvent e1, MotionEvent e2, float distanceX, float distanceY )
     {
     // Only do something if we are drawing the image
-    if ( mImageToBlendTargetRect == null ) return ( false );
+    if ( mImageToBlendTargetRectF == null ) return ( false );
 
 
-    mImageToBlendTargetRect.left   -= distanceX;
-    mImageToBlendTargetRect.right  -= distanceX;
+    mImageToBlendTargetRectF.left   -= distanceX;
+    mImageToBlendTargetRectF.right  -= distanceX;
 
-    mImageToBlendTargetRect.top    -= distanceY;
-    mImageToBlendTargetRect.bottom -= distanceY;
+    mImageToBlendTargetRectF.top    -= distanceY;
+    mImageToBlendTargetRectF.bottom -= distanceY;
 
 
     invalidate();
@@ -337,7 +338,7 @@ public class MaskedImageView extends View implements GestureDetector.OnGestureLi
   public boolean onScale( ScaleGestureDetector detector )
     {
     // Only do something if we are drawing the image
-    if ( mImageToBlendTargetRect == null ) return ( false );
+    if ( mImageToBlendTargetRectF == null ) return ( false );
 
 
     // Get the focus point for the scale
@@ -345,8 +346,8 @@ public class MaskedImageView extends View implements GestureDetector.OnGestureLi
     float viewFocusY = detector.getFocusY();
 
     // Work out the image focus point
-    float imageFocusX = ( viewFocusX - mImageToBlendTargetRect.left ) / mImageScaleFactor;
-    float imageFocusY = ( viewFocusY - mImageToBlendTargetRect.top  ) / mImageScaleFactor;
+    float imageFocusX = ( viewFocusX - mImageToBlendTargetRectF.left ) / mImageScaleFactor;
+    float imageFocusY = ( viewFocusY - mImageToBlendTargetRectF.top  ) / mImageScaleFactor;
 
 
     setImageScaleFactor( mImageScaleFactor * detector.getScaleFactor() );
@@ -354,10 +355,10 @@ public class MaskedImageView extends View implements GestureDetector.OnGestureLi
 
     // Work out the new bounds - keeping the image focus point in the same place
 
-    mImageToBlendTargetRect.left   = ( viewFocusX - ( imageFocusX * mImageScaleFactor ) );
-    mImageToBlendTargetRect.right  = ( viewFocusX + ( ( mImageBitmap.getWidth() - imageFocusX ) * mImageScaleFactor ) );
-    mImageToBlendTargetRect.top    = ( viewFocusY - ( imageFocusY * mImageScaleFactor ) );
-    mImageToBlendTargetRect.bottom = ( viewFocusY + ( ( mImageBitmap.getHeight() - imageFocusY ) * mImageScaleFactor ) );
+    mImageToBlendTargetRectF.left   = ( viewFocusX - ( imageFocusX * mImageScaleFactor ) );
+    mImageToBlendTargetRectF.right  = ( viewFocusX + ( ( mImageBitmap.getWidth() - imageFocusX ) * mImageScaleFactor ) );
+    mImageToBlendTargetRectF.top    = ( viewFocusY - ( imageFocusY * mImageScaleFactor ) );
+    mImageToBlendTargetRectF.bottom = ( viewFocusY + ( ( mImageBitmap.getHeight() - imageFocusY ) * mImageScaleFactor ) );
 
 
     invalidate();
@@ -389,7 +390,8 @@ public class MaskedImageView extends View implements GestureDetector.OnGestureLi
    *****************************************************/
   private void initialise( Context context )
     {
-    // TODO: We need to play around with these to remove the mask artifacts
+    mBlendBackgroundPaint = new Paint();
+    mBlendBackgroundPaint.setColor( 0xffffffff );
 
     mMaskToBlendPaint = new Paint();
     mMaskToBlendPaint.setXfermode( new PorterDuffXfermode( PorterDuff.Mode.DST_ATOP ) );
@@ -550,11 +552,14 @@ public class MaskedImageView extends View implements GestureDetector.OnGestureLi
 
 
     mMaskToBlendSourceRect = new Rect( 0, 0, unscaledMaskWidth, unscaledMaskHeight );
-    mMaskToBlendTargetRect = new RectF( halfBlendWidth - halfScaledMaskWidth, halfBlendHeight - halfScaledMaskHeight, halfBlendWidth + halfScaledMaskWidth, halfBlendHeight + halfScaledMaskHeight );
-
+    mMaskToBlendTargetRect = new RectF(
+            Math.round( halfBlendWidth - halfScaledMaskWidth ),
+            Math.round( halfBlendHeight - halfScaledMaskHeight ),
+            Math.round( halfBlendWidth + halfScaledMaskWidth ),
+            Math.round( halfBlendHeight + halfScaledMaskHeight ) );
 
     mBlendToViewSourceRect = new Rect( 0, 0, (int)blendWidth, (int)blendHeight );
-    mBlendToViewTargetRect = new RectF( halfViewWidth - halfBlendWidth, halfViewHeight - halfBlendHeight, halfViewWidth + halfBlendWidth, halfViewHeight + halfBlendHeight );
+    mBlendToViewTargetRectF = new RectF( halfViewWidth - halfBlendWidth, halfViewHeight - halfBlendHeight, halfViewWidth + halfBlendWidth, halfViewHeight + halfBlendHeight );
 
 
     // Create the bitmap-backed canvas for blending the mask and image
@@ -593,13 +598,13 @@ public class MaskedImageView extends View implements GestureDetector.OnGestureLi
 
     // If we have an already calculated target rect for the image, try and keep it. This stops
     // the image location resetting when we go back to it.
-    if ( mImageToBlendTargetRect       == null ||
-         mImageToBlendTargetRect.left   > 0 ||
-         mImageToBlendTargetRect.top    > 0 ||
-         mImageToBlendTargetRect.right  < ( blendWidth - 1 ) ||
-         mImageToBlendTargetRect.bottom < ( blendHeight - 1 ) )
+    if ( mImageToBlendTargetRectF == null ||
+         mImageToBlendTargetRectF.left   > 0 ||
+         mImageToBlendTargetRectF.top    > 0 ||
+         mImageToBlendTargetRectF.right  < ( blendWidth - 1 ) ||
+         mImageToBlendTargetRectF.bottom < ( blendHeight - 1 ) )
       {
-      mImageToBlendTargetRect = new RectF( halfBlendWidth - halfScaledImageWidth, halfBlendHeight - halfScaledImageHeight, halfBlendWidth + halfScaledImageWidth, halfBlendHeight + halfScaledImageHeight );
+      mImageToBlendTargetRectF = new RectF( halfBlendWidth - halfScaledImageWidth, halfBlendHeight - halfScaledImageHeight, halfBlendWidth + halfScaledImageWidth, halfBlendHeight + halfScaledImageHeight );
       }
 
 
@@ -631,7 +636,7 @@ public class MaskedImageView extends View implements GestureDetector.OnGestureLi
     // bleed on the unscaled image.
 
     // Make sure we have the dimensions we need
-    if ( mImageToBlendTargetRect == null || mBlendToViewSourceRect == null ) return ( null );
+    if ( mImageToBlendTargetRectF == null || mBlendToViewSourceRect == null ) return ( null );
 
 
     // Start by determining the bounds of the mask plus bleed within
@@ -639,8 +644,8 @@ public class MaskedImageView extends View implements GestureDetector.OnGestureLi
     // always fills the blend are entirely, so its bounds must be
     // at or outside the blend area).
 
-    float scaledLeft   = - mImageToBlendTargetRect.left;
-    float scaledTop    = - mImageToBlendTargetRect.top;
+    float scaledLeft   = - mImageToBlendTargetRectF.left;
+    float scaledTop    = - mImageToBlendTargetRectF.top;
     float scaledRight  = scaledLeft + mBlendToViewSourceRect.right;
     float scaledBottom = scaledTop  + mBlendToViewSourceRect.bottom;
 
@@ -681,8 +686,8 @@ public class MaskedImageView extends View implements GestureDetector.OnGestureLi
     @Override
     public void onSetValue( float value )
       {
-      mImageToBlendTargetRect.left  = (int)value;
-      mImageToBlendTargetRect.right = mImageToBlendTargetRect.left + mWidth;
+      mImageToBlendTargetRectF.left  = (int)value;
+      mImageToBlendTargetRectF.right = mImageToBlendTargetRectF.left + mWidth;
 
       invalidate();
       }
@@ -710,8 +715,8 @@ public class MaskedImageView extends View implements GestureDetector.OnGestureLi
     @Override
     public void onSetValue( float value )
       {
-      mImageToBlendTargetRect.top  = (int)value;
-      mImageToBlendTargetRect.bottom = mImageToBlendTargetRect.top + mHeight;
+      mImageToBlendTargetRectF.top  = (int)value;
+      mImageToBlendTargetRectF.bottom = mImageToBlendTargetRectF.top + mHeight;
 
       invalidate();
       }

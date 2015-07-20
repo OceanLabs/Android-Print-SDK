@@ -584,6 +584,7 @@ public class Product implements Parcelable, IGroupOrProduct
     stringBuilder.append( "  ..." ).append( "\n" );
 
     stringBuilder.append( "Mask URL           : " ).append( mMaskURL != null ? mMaskURL.toString() : null ).append( "\n" );
+    stringBuilder.append( "Mask Bleed         : " ).append( mMaskBleed != null ? mMaskBleed.toString() : null ).append( "\n" );
 
     stringBuilder.append( "  ..." ).append( "\n" );
 
