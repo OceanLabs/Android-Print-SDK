@@ -8,18 +8,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -414,7 +408,7 @@ public class PrintOrder implements Parcelable, Serializable {
             // sanity check all assets are uploaded
             for (PrintJob job : jobs) {
                 for (Asset a : job.getAssetsForUploading()) {
-                    if (!a.isUploaded()) {
+                    if (!a.hasBeenUploaded()) {
                         throw new AssertionError("oops all assets should have been uploaded");
                     }
                 }

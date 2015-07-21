@@ -26,7 +26,9 @@ public class MainActivity extends Activity
    * by logging in to the developer portal at https://www.kite.ly
    **********************************************************************/
 
-  private static final String API_KEY_TEST = NON_REPLACED_API_KEY;
+  //private static final String API_KEY_TEST = NON_REPLACED_API_KEY;
+  private static final String API_KEY_TEST = "ba171b0d91b1418fbd04f7b12af1e37e42d2cb1e"; // Test
+  //private static final String API_KEY_TEST = "0453d74be957c1eb510fc2d580007294cdc31a79"; // Photobox
 
   private static final String API_KEY_LIVE = NON_REPLACED_API_KEY;
 

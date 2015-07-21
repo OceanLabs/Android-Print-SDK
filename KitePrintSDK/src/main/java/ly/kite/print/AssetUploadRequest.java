@@ -125,7 +125,7 @@ class AssetUploadRequest {
                 mimeTypes.append(",");
             }
 
-            mimeTypes.append(a.getMimeType(context).getMimeTypeString());
+            mimeTypes.append(a.getMimeType(context).getmMIMETypeString());
         }
 
         String url = String.format("%s/asset/sign/?mime_types=%s&client_asset=true", KiteSDK.getInstance( context ).getPrintAPIEndpoint(), mimeTypes.toString());
@@ -180,7 +180,7 @@ class AssetUploadRequest {
             throw new IllegalStateException("Attempting to kick off asset upload on a thread that is not the main thread");
         }
 
-        final String mimeType = details.asset.getMimeType(context).getMimeTypeString();
+        final String mimeType = details.asset.getMimeType(context).getmMIMETypeString();
         AsyncTask<Void, Void, Exception> uploadTask = new AsyncTask<Void, Void, Exception>() {
             @Override
             protected Exception doInBackground(Void... voids) {
@@ -292,7 +292,7 @@ class AssetUploadRequest {
                     JSONObject o = new JSONObject();
                     o.put("url", asset.getRemoteURL().toString());
                     o.put("client_asset", true);
-                    o.put("mime_type", asset.getMimeType(context).getMimeTypeString());
+                    o.put("mime_type", asset.getMimeType(context).getmMIMETypeString());
                     objects.put(o);
                 }
             }
