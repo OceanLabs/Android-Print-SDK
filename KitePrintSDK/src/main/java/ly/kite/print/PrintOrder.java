@@ -622,15 +622,4 @@ public class PrintOrder implements Parcelable, Serializable {
         this.promoCodeDiscount = null;
     }
 
-    public static int getNextStorageIdentifier(List<PrintOrder> orders) {
-        int nextIdentifier = 0;
-        for (int i = 0; i < orders.size(); ++i) {
-            PrintOrder o = orders.get(i);
-            if (nextIdentifier <= o.storageIdentifier) {
-                nextIdentifier = o.storageIdentifier + 1;
-            }
-        }
-        return nextIdentifier;
-    }
-
 }

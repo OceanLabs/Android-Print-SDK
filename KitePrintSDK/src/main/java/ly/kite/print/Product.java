@@ -555,23 +555,6 @@ public class Product implements Parcelable, IGroupOrProduct
    *****************************************************/
   public String toLogString()
     {
-
-//    private String mId;
-//    private String mCode;
-//    private String mName;
-//    private String mLabel;
-//    private UserJourneyType mUserJourneyType;
-//    private int mQuantityPerSheet;
-//
-//    private MultipleCurrencyCost              mCost;
-//    private MultipleDestinationShippingCosts  mShippingCosts;
-//    private URL                               mHeroImageURL;
-//    private int                               mLabelColour;
-//    private ArrayList<URL>                    mImageURLList;
-//    private URL                               mMaskURL;
-//    private Bleed                             mMaskBleed;
-//    private MultipleUnitSize                  mSize;
-
     StringBuilder stringBuilder = new StringBuilder();
 
     stringBuilder.append( "Id                 : " ).append( mId ).append( "\n" );
@@ -617,6 +600,9 @@ public class Product implements Parcelable, IGroupOrProduct
    *****************************************************/
   private class ShippingCostRelevanceComparator implements Comparator<SingleDestinationShippingCost>
     {
+    private static final boolean DEBUG_COMPARISONS = false;
+
+
     private Country  mCountry;
 
 
@@ -632,7 +618,8 @@ public class Product implements Parcelable, IGroupOrProduct
      * how they should be sorted in relevance.
      *
      * Note that we can be a bit lazy with this, since we shouldn't
-     * have any duplicates destinations (i.e. we should never have to return 0).
+     * have any duplicate destinations (i.e. we should never have to
+     * return 0).
      *
      *****************************************************/
     @Override
@@ -674,7 +661,8 @@ public class Product implements Parcelable, IGroupOrProduct
       else if ( DESTINATION_CODE_REST_OF_WORLD.equals( leftDestinationCode )  ) returnValue = -1;
       else if ( DESTINATION_CODE_REST_OF_WORLD.equals( rightDestinationCode ) ) returnValue = +1;
 
-      //Log.d( LOG_TAG, "Compare: " + leftDestinationCode + "/" + rightDestinationCode + " = " + returnValue );
+
+      if ( DEBUG_COMPARISONS ) Log.d( LOG_TAG, "Compare: " + leftDestinationCode + "/" + rightDestinationCode + " = " + returnValue );
 
       return ( returnValue );
       }

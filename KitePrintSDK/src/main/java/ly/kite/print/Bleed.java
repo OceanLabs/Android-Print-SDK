@@ -80,10 +80,10 @@ public class Bleed implements Parcelable
 
   ////////// Member Variable(s) //////////
 
-  public int  topPixels;
-  public int  leftPixels;
-  public int  rightPixels;
-  public int  bottomPixels;
+  final public int  topPixels;
+  final public int  leftPixels;
+  final public int  rightPixels;
+  final public int  bottomPixels;
 
 
   ////////// Static Initialiser(s) //////////

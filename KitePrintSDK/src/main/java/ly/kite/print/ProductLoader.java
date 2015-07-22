@@ -154,14 +154,6 @@ public class ProductLoader implements BaseRequest.BaseRequestListener
     }
 
 
-  // This is a dirty hack until we can come up with a better way of doing
-  // this.
-//  public static ProductLoader getDirtyInstance()
-//    {
-//    return (sProductCache);
-//    }
-
-
   /****************************************************
    *
    * Parses a JSON shipping cost.
@@ -749,40 +741,6 @@ public class ProductLoader implements BaseRequest.BaseRequestListener
 
   /****************************************************
    *
-   * Returns a product by its id.
-   *
-   * @param id The product id.
-   *
-   * @return The product with a matching id.
-   *
-   * @throws RuntimeException If the products could not be
-   *         retrieved.
-   *
-   * @throws IllegalArgumentException If no product was found
-   *         with a matching id.
-   *
-   ****************************************************/
-//  public Product getProductById( String id )
-//    {
-//    // Get the products synchronously
-//
-//    Pair<ArrayList<ProductGroup>,HashMap<String,Product>> productPair = getAllProducts();
-//
-//    if ( productPair == null ) return ( null );
-//
-//
-//    // Lookup the product in the product table
-//
-//    Product product = productPair.second.get( id );
-//
-//    if ( product == null ) throw ( new IllegalArgumentException( "No product was found with the id " + id ) );
-//
-//    return ( product );
-//    }
-
-
-  /****************************************************
-   *
    * Returns an error to a consumer, either directly
    * or using a handler.
    *
@@ -930,75 +888,5 @@ public class ProductLoader implements BaseRequest.BaseRequestListener
       mConsumer.onProductRetrievalError( mException );
       }
     }
-
-
-//  /*****************************************************
-//   *
-//   * This class is used to turn the asynchronous product
-//   * retrieval into a synchronous process.
-//   *
-//   *****************************************************/
-//  private class SynchronousProductConsumer implements ProductConsumer
-//    {
-//    private Pair<ArrayList<ProductGroup>,HashMap<String,Product>>  mProductPair;
-//    private volatile boolean                                       mCallbackReceived;
-//
-//
-//    @Override
-//    public synchronized void onGotProducts( ArrayList<ProductGroup> productGroupList, HashMap<String,Product> productTable )
-//      {
-//      if ( DISPLAY_DEBUGGING ) Log.d( TAG, "onGotProducts( productGroupList = " + productGroupList + ", productTable = " + productTable + " )" );
-//
-//      mProductPair      = new Pair<ArrayList<ProductGroup>,HashMap<String,Product>>( productGroupList, productTable );
-//      mCallbackReceived = true;
-//
-//      notifyAll();
-//      }
-//
-//
-//    @Override
-//    public synchronized void onProductRetrievalError( Exception exception )
-//      {
-//      Log.e( TAG, "Synchronous product retrieval returned error", exception );
-//
-//
-//      // The product pair stays null
-//      mCallbackReceived = true;
-//
-//      notifyAll();
-//      }
-//
-//
-//    synchronized Pair<ArrayList<ProductGroup>,HashMap<String,Product>> getProductPair()
-//      {
-//      if ( DISPLAY_DEBUGGING ) Log.d( TAG, "getProductPair()" );
-//
-//      mCallbackReceived = false;
-//
-//      // Kick off a retrieval now we have the monitor
-//      getAllProducts( this, null );
-//
-//      // If we haven't received the products synchronously (i.e. as an immediate callback)
-//      // wait for them now.
-//      while ( ! mCallbackReceived )
-//        {
-//        try
-//          {
-//          if ( DISPLAY_DEBUGGING ) Log.d( TAG, "  waiting ..." );
-//
-//          wait();
-//          }
-//        catch ( InterruptedException ie )
-//          {
-//          // Ignore
-//          }
-//        }
-//
-//
-//      if ( DISPLAY_DEBUGGING ) Log.d( TAG, "<< getProductPair()" );
-//
-//      return ( mProductPair );
-//      }
-//    }
 
   }

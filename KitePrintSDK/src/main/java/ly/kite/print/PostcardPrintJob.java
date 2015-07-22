@@ -42,11 +42,6 @@ class PostcardPrintJob extends PrintJob {
         return getProduct().getCurrenciesSupported();
     }
 
-//    @Override
-//    public ProductType getProductType() {
-//        return ProductType.POSTCARD;
-//    }
-
     @Override
     public int getQuantity() {
         return 1;
@@ -58,11 +53,6 @@ class PostcardPrintJob extends PrintJob {
         assets.add(frontImageAsset);
         return assets;
     }
-
-//    @Override
-//    public String getProductId() {
-//        return templateId;
-//    }
 
     private static String getStringOrEmptyString(String val) {
         return val == null ? "" : val;
@@ -154,19 +144,5 @@ class PostcardPrintJob extends PrintJob {
             return new PostcardPrintJob[size];
         }
     };
-
-//    protected void writeObject(java.io.ObjectOutputStream out) throws IOException {
-//        super.writeObject( out );
-//        out.writeObject(frontImageAsset);
-//        out.writeObject(message);
-//        out.writeObject(address);
-//    }
-//
-//    protected void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
-//        super.readObject( in );
-//        frontImageAsset = (Asset) in.readObject();
-//        message = (String)in.readObject();
-//        address = (Address) in.readObject();
-//    }
 
 }

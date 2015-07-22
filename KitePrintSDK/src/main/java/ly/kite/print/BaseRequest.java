@@ -18,6 +18,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
+import ly.kite.BuildConfig;
 import ly.kite.KiteSDK;
 
 /**
@@ -119,9 +120,12 @@ public class BaseRequest {
                     }
                 }
 
-                request.setHeader("Authorization", "ApiKey " + KiteSDK.getInstance( mContext ).getAPIKey() + ":");
+                request.setHeader( "Authorization", "ApiKey " + KiteSDK.getInstance( mContext ).getAPIKey() + ":");
+                request.setHeader( "User-Agent",    "Kite SDK Android v" + BuildConfig.VERSION_NAME );
+                request.setHeader( "X-App-Package",  mContext.getPackageName() );
+                request.setHeader( "X-App-Name",     mContext.getString( mContext.getApplicationInfo().labelRes ) );
 
-                try {
+            try {
                     HttpResponse response = httpclient.execute(request);
                     BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
                     StringBuilder builder = new StringBuilder();

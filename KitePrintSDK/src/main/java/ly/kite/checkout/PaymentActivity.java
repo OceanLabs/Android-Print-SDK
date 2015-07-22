@@ -63,12 +63,6 @@ public class PaymentActivity extends Activity {
     private static final int REQUEST_CODE_CREDITCARD = 1;
     private static final int REQUEST_CODE_RECEIPT = 2;
 
-  // The print order, if it contains image assets, is too larger to be passed
-  // in an intent - we get a TransactionTooLargeException. So we need to pass
-  // it as a static variable.
-  // TODO: Determine a better way of doing this.
-  private static PrintOrder sPrintOrder;
-
     private PrintOrder mPrintOrder;
     private String apiKey;
     private KiteSDK.Environment printEnvironment;
@@ -78,10 +72,7 @@ public class PaymentActivity extends Activity {
     {
     Intent intent = new Intent( activity, PaymentActivity.class );
 
-    // TODO: Determine a better way of doing this.
-    sPrintOrder = printOrder;
-
-    //intent.putExtra(PaymentActivity.EXTRA_PRINT_ORDER, (Parcelable) mPrintOrder );
+    intent.putExtra(PaymentActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder );
     intent.putExtra( PaymentActivity.EXTRA_PRINT_API_KEY, apiKey );
     intent.putExtra( PaymentActivity.EXTRA_PRINT_ENVIRONMENT, environmentName );
 
@@ -97,9 +88,7 @@ public class PaymentActivity extends Activity {
         String apiKey = getIntent().getStringExtra(EXTRA_PRINT_API_KEY);
         String envString = getIntent().getStringExtra(EXTRA_PRINT_ENVIRONMENT);
 
-    // TODO: Determine a better way of doing this.
-    //this.mPrintOrder = (PrintOrder) getIntent().getParcelableExtra(EXTRA_PRINT_ORDER);
-    mPrintOrder = sPrintOrder;
+    this.mPrintOrder = (PrintOrder) getIntent().getParcelableExtra(EXTRA_PRINT_ORDER);
 
         if (apiKey == null) {
             throw new IllegalArgumentException("You must specify an API key string extra in the intent used to start the PaymentActivity");
@@ -143,8 +132,6 @@ public class PaymentActivity extends Activity {
 
         Intent intent = new Intent( this, PayPalService.class );
         intent.putExtra( PayPalService.EXTRA_PAYPAL_CONFIGURATION, payPalConfiguration );
-        //intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_PAYPAL_ENVIRONMENT, printEnvironment.getPayPalEnvironment());
-        //intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_CLIENT_ID, printEnvironment.getPayPalClientId());
 
         startService(intent);
 
@@ -203,13 +190,7 @@ public class PaymentActivity extends Activity {
 
     public void onButtonPayWithPayPalClicked(View view) {
 
-//        intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_PAYPAL_ENVIRONMENT, printEnvironment.getPayPalEnvironment());
-//        intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_CLIENT_ID, printEnvironment.getPayPalClientId());
-//        intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_PAYER_ID, "<someuser@somedomain.com>");
-//        intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_RECEIVER_EMAIL, printEnvironment.getPayPalReceiverEmail());
-//        intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_PAYMENT, payment);
-//        intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_SKIP_CREDIT_CARD, true);
-
+    // TODO: See if we can remove the credit card payment option
     PayPalPayment payment = new PayPalPayment(
             mPrintOrder.getCost( mPrintOrder.getCurrencyCode() ),
             mPrintOrder.getCurrencyCode(),

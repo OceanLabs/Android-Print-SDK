@@ -76,15 +76,4 @@ public abstract class PrintJob implements Parcelable {
     mProduct.writeToParcel( parcel, flags );
     }
 
-//  protected void writeObject(java.io.ObjectOutputStream out) throws IOException
-//    {
-//    out.writeObject( (String)getProductId() );
-//    }
-//
-//
-//  protected void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
-//    {
-//    mProduct = ProductCache.getDirtyInstance().getProductById( (String)in.readObject() );
-//    }
-
 }

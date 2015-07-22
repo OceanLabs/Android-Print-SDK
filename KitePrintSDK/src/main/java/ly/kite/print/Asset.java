@@ -33,7 +33,7 @@ public class Asset implements Parcelable, Serializable {
 
     private static final String LOG_TAG = "Asset";
 
-    private static final int BITMAP_TO_JPEG_QUALITY = 100;
+    private static final int BITMAP_TO_JPEG_QUALITY = 80;
 
     public  static final String JPEG_FILE_EXTENSION_PRIMARY   = "jpg";
     public  static final String JPEG_FILE_EXTENSION_SECONDARY = "jpeg";
@@ -91,29 +91,6 @@ public class Asset implements Parcelable, Serializable {
     // The next two are only valid once an asset has been uploaded to the server
     private long id;
     private URL previewURL;
-
-
-//  /*****************************************************
-//   *
-//   * Creates and returns a new asset from a bitmap. Due
-//   * to the way assets are used (i.e. they are uploaded
-//   * via HTTP, we have to encode the bitmap to (e.g.) JPEG
-//   * and store it that way.
-//   *
-//   *****************************************************/
-//  public static Asset create( Bitmap bitmap )
-//    {
-//    // Compress the bitmap into JPEG format and write into
-//    // a byte buffer.
-//
-//    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-//
-//    bitmap.compress( Bitmap.CompressFormat.JPEG, BITMAP_TO_JPEG_QUALITY, byteArrayOutputStream );
-//
-//
-//    // Create a new asset from the JPEG data
-//    return ( new Asset( byteArrayOutputStream.toByteArray(), MimeType.JPEG ) );
-//    }
 
 
   /*****************************************************
