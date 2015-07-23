@@ -1,21 +1,87 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    >
+    android:orientation="vertical">
 
 
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.2">
 
-    <Switch android:id="@+id/environment" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textOn="Live" android:textOff="Sandbox" android:layout_centerHorizontal="true" />
-    <Spinner android:id="@+id/spinner_product" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_below="@id/environment" android:layout_alignParentRight="true" />
-    <TextView android:id="@+id/textview_product" android:layout_alignBottom="@id/spinner_product" android:gravity="bottom" android:paddingRight="15dp" android:layout_below="@id/environment" android:layout_toLeftOf="@id/spinner_product" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Product:" />
+        <LinearLayout
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-    <Button android:layout_marginTop="20dp" android:id="@+id/button_gallery" android:layout_below="@id/spinner_product" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Print Local Photos" android:onClick="onGalleryButtonClicked" />
-    <Button android:id="@+id/button_checkout" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Print Photos at Remote URLs" android:layout_below="@id/button_gallery" android:onClick="onCheckoutButtonClicked" />
-    <ImageView android:id="@+id/image_view" android:layout_width="match_parent" android:layout_height="match_parent" android:layout_below="@id/button_checkout" />
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="fill_parent"
+                android:gravity="right|center_vertical"
+                android:padding="5dp"
+                android:text="@string/Sandbox"
+                android:textSize="@dimen/control_label_text_size"/>
 
-    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="https://www.kite.ly" android:layout_alignParentBottom="true" android:layout_centerHorizontal="true"  />
-</RelativeLayout>
+            <Switch
+                android:id="@+id/environment"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:padding="10dp"/>
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="fill_parent"
+                android:gravity="left|center_vertical"
+                android:padding="5dp"
+                android:text="@string/Live"
+                android:textSize="@dimen/control_label_text_size"/>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.6">
+
+        <LinearLayout
+            style="@style/single_column_inset_layout"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+            <Button
+                android:id="@+id/button_gallery"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onGalleryButtonClicked"
+                android:text="@string/main_activity_gallery_button_text"
+                android:textSize="@dimen/control_label_text_size"/>
+            <Button
+                android:id="@+id/button_remote"
+                android:layout_marginTop="@dimen/main_button_spacing"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onRemoteButtonClicked"
+                android:text="@string/main_activity_remote_button_text"
+                android:textSize="@dimen/control_label_text_size"/>
+        </LinearLayout>
+
+    </FrameLayout>
+
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.2"
+        android:gravity="bottom|center_horizontal"
+        android:paddingBottom="10dp"
+        android:text="https://www.kite.ly"/>
+
+</LinearLayout>

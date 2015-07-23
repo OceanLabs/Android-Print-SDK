@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
     package="ly.kite"
-    android:versionCode="1"
+    android:versionCode="100"
     android:versionName="1.0"
-    xmlns:tools="http://schemas.android.com/tools"
-    >
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-sdk
         android:minSdkVersion="14"
-        android:targetSdkVersion="19" />
+        android:targetSdkVersion="22" />
 
     <!-- hardware features (Used by Card.IO for credit card scanning in the Managed Checkout) -->
     <uses-feature
@@ -35,6 +35,12 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="18" />
 
     <application>
+
+        <activity
+            android:name=".product.ProductCreationActivity"
+            android:theme="@style/Theme.KiteSDK.ProductSelection"
+            android:launchMode="singleTop"/>
+
         <activity
             android:name=".checkout.PaymentActivity"
             android:label="@string/title_activity_payment"
@@ -88,24 +94,18 @@
             android:exported="false" />
 
         <activity
-            android:name="com.paypal.android.sdk.payments.PaymentActivity"
-            android:theme="@style/AppTheme" />
+            android:name="com.paypal.android.sdk.payments.PaymentActivity"/>
         <activity
-            android:name="com.paypal.android.sdk.payments.LoginActivity"
-            android:theme="@style/AppTheme" />
+            android:name="com.paypal.android.sdk.payments.LoginActivity"/>
         <activity
-            android:name="com.paypal.android.sdk.payments.PaymentMethodActivity"
-            android:theme="@style/AppTheme" />
+            android:name="com.paypal.android.sdk.payments.PaymentMethodActivity"/>
         <activity
-            android:name="com.paypal.android.sdk.payments.PaymentConfirmActivity"
-            android:theme="@style/AppTheme" />
+            android:name="com.paypal.android.sdk.payments.PaymentConfirmActivity"/>
         <activity
             android:name="io.card.payment.CardIOActivity"
-            android:configChanges="keyboardHidden|orientation"
-            android:theme="@style/AppTheme" />
+            android:configChanges="keyboardHidden|orientation"/>
         <activity
-            android:name="io.card.payment.DataEntryActivity"
-            android:theme="@style/AppTheme" />
+            android:name="io.card.payment.DataEntryActivity"/>
     </application>
 
 </manifest>

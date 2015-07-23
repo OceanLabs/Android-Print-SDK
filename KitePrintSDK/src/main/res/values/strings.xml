@@ -2,6 +2,68 @@
 <resources>
 
     <string name="app_name">Kite SDK</string>
+
+    <string name="unit_centimeters">centimeters</string>
+    <string name="unit_inches">inches</string>
+    <string name="unit_pixels">pixels</string>
+
+    <string name="unit_centimeters_short">cm</string>
+    <string name="unit_inches_short">in</string>
+    <string name="unit_pixels_short">px</string>
+
+    <string name="title_product_group_activity">Print Shop</string>
+    <string name="title_phone_case_activity">Create Phone Case</string>
+
+    <string name="alert_dialog_title_no_intent">Internal Error</string>
+    <string name="alert_dialog_message_no_intent">There was an error: no intent was passed to the fragment. Please check the log for more details.</string>
+
+    <string name="alert_dialog_title_no_arguments">Internal Error</string>
+    <string name="alert_dialog_message_no_arguments">There was an error: no arguments were passed to the fragment. Please check the log for more details.</string>
+
+    <string name="alert_dialog_title_no_asset_list">Internal Error</string>
+    <string name="alert_dialog_message_no_asset_list">There was an error: no asset list was found. Please check the log for more details.</string>
+
+    <string name="alert_dialog_title_error_retrieving_products">Error Retrieving Products</string>
+    <string name="alert_dialog_message_error_retrieving_products">There was an error retrieving the products. Please check that you have a network connection, and/or the log for more details</string>
+
+    <string name="alert_dialog_title_no_product_group_label">No Product Group</string>
+    <string name="alert_dialog_message_no_product_group_label">There was an error: no product group was found. Please check the log for more details.</string>
+
+    <string name="alert_dialog_title_product_not_found">Product Not Found</string>
+    <string name="alert_dialog_message_product_not_found">No product could be found. Please check the log for more details.</string>
+
+    <string name="alert_dialog_title_create_order">Create Order</string>
+    <string name="alert_dialog_message_no_cropped_image_asset">There was an internal error - Kite was unable to create a cropped image asset.</string>
+
+    <string name="Add_photo">Add photo</string>
+    <string name="Cancel">Cancel</string>
+    <string name="Description">Description</string>
+    <string name="Details">Details</string>
+    <string name="Quality_Guarantee">Quality Guarantee</string>
+    <string name="Quantity">Quantity</string>
+    <string name="Retry">Retry</string>
+    <string name="Shipping">Shipping</string>
+    <string name="Size">Size</string>
+
+    <string name="destination_description_gbr">UK</string>
+    <string name="destination_description_europe">Europe</string>
+    <string name="destination_description_rest_of_world">Rest of world</string>
+
+    <string name="group_or_product_placeholder_image_url">https://s3.amazonaws.com/sdk-static/product_photography/placeholder.png</string>
+
+    <string name="product_quantity_format_string">Pack of %d</string>
+    <string name="product_size_format_string">%1$.2f x %2$.2f %3$s</string>
+
+    <string name="product_shipping_format_string">%1$s: %2$s</string>
+    <string name="product_free_shipping">free</string>
+
+    <string name="quality_guarantee_text">We are confident that you will be more than happy with our products. But just in case, we offer a full refund if you are not 100% happy - even if it\'s just a bad day.</string>
+    <string name="product_overview_start_button_text">Start creating</string>
+
+    <string name="product_creation_next_button_text">Next</string>
+
+    <string name="address_book_empty">Address Book Empty</string>
+
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>

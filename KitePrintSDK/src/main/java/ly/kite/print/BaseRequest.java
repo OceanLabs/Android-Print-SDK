@@ -1,5 +1,6 @@
 package ly.kite.print;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
 import org.apache.http.HttpResponse;
@@ -15,13 +16,23 @@ import org.json.JSONTokener;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 import java.util.Map;
+
+import ly.kite.BuildConfig;
+import ly.kite.KiteSDK;
 
 /**
  * Created by deonbotha on 02/02/2014.
  */
 public class BaseRequest {
+
+  private static final String LOG_TAG                          = "BaseRequest";
+
+  public  static final String ERROR_RESPONSE_JSON_OBJECT_NAME  = "error";
+  public  static final String ERROR_RESPONSE_MESSAGE_JSON_NAME = "message";
+  public  static final String ERROR_RESPONSE_CODE_JSON_NAME    = "code";
+
+
     public static interface BaseRequestListener {
         void onSuccess(int httpStatusCode, JSONObject json);
         void onError(Exception ex);
@@ -55,13 +66,15 @@ public class BaseRequest {
         private JSONObject json;
     }
 
+    private final Context mContext;
     private final HttpMethod method;
     private final String url;
     private final Map<String, String> headers;
     private final String body;
     private AsyncTask<Void, Void, JSONHttpResponse> requestTask;
 
-    public BaseRequest(HttpMethod method, String url, Map<String, String> headers, String body) {
+    public BaseRequest(Context context, HttpMethod method, String url, Map<String, String> headers, String body) {
+        mContext = context;
         this.method = method;
         this.url = url;
         this.headers = headers;
@@ -76,6 +89,7 @@ public class BaseRequest {
     }
 
     public void start(final BaseRequestListener listener) {
+
         assert requestTask == null : "Oops a request has previously been started";
 
         requestTask = new AsyncTask<Void, Void, JSONHttpResponse>() {
@@ -106,9 +120,12 @@ public class BaseRequest {
                     }
                 }
 
-                request.setHeader("Authorization", "ApiKey " + KitePrintSDK.getAPIKey() + ":");
+                request.setHeader( "Authorization", "ApiKey " + KiteSDK.getInstance( mContext ).getAPIKey() + ":");
+                request.setHeader( "User-Agent",    "Kite SDK Android v" + BuildConfig.VERSION_NAME );
+                request.setHeader( "X-App-Package",  mContext.getPackageName() );
+                request.setHeader( "X-App-Name",     mContext.getString( mContext.getApplicationInfo().labelRes ) );
 
-                try {
+            try {
                     HttpResponse response = httpclient.execute(request);
                     BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
                     StringBuilder builder = new StringBuilder();

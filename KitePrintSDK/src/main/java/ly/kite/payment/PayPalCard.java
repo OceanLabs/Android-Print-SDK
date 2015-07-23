@@ -2,6 +2,7 @@ package ly.kite.payment;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Base64;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -27,7 +28,8 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import ly.kite.print.KitePrintSDKException;
+import ly.kite.KiteSDK;
+import ly.kite.KiteSDKException;
 
 /**
  * Created by deonbotha on 16/02/2014.
@@ -84,8 +86,9 @@ public class PayPalCard implements Serializable {
     }
 
     public static enum Environment {
-        SANDBOX("api.sandbox.paypal.com", "QWE1bnNCRG50QnBveldReWtveFFYb0hGT3FzNTUxaFROdDBCOExRWFR1ZG9oOGJEMG5UMUY3MzVjX0ZoOg=="),
-        LIVE("api.paypal.com", "QVQySmZCQW1YRC1DSEdKblViMDVpazRKLUdyQ2k0WHhqWTlfZ3JmQ0ZqcmVZYUxyTnN3ajh1emh1V3lqOg==");
+
+        SANDBOX ( "api.sandbox.paypal.com", KiteSDK.PAYPAL_CLIENT_ID_SANDBOX, "" ),
+        LIVE    ( "api.paypal.com",         KiteSDK.PAYPAL_CLIENT_ID_LIVE,    "" );
 
         private final String apiEndpoint;
         private final String authToken;
@@ -94,6 +97,12 @@ public class PayPalCard implements Serializable {
             this.apiEndpoint = apiEndpoint;
             this.authToken = authToken;
         }
+
+    Environment( String apiEndpoint, String clientId, String password )
+      {
+      this( apiEndpoint, Base64.encodeToString( ( clientId + ":" + password ).getBytes(), Base64.NO_WRAP ) );
+      }
+
     }
 
     private static final long serialVersionUID = 0L;
@@ -284,7 +293,7 @@ public class PayPalCard implements Serializable {
                                     errorMessage = "Failed to make the payment. Please check your internet connectivity and try again.";
                                 }
 
-                                return new KitePrintSDKException(errorMessage);
+                                return new KiteSDKException(errorMessage);
                             }
                         } catch (Exception e) {
                             return e;
@@ -399,7 +408,7 @@ public class PayPalCard implements Serializable {
                                 String paymentId = json.getString("id");
                                 String paymentState = json.getString("state");
                                 if (!paymentState.equalsIgnoreCase("approved")) {
-                                    return new KitePrintSDKException("Your payment was not approved. Please try again.");
+                                    return new KiteSDKException("Your payment was not approved. Please try again.");
                                 }
 
                                 return paymentId;
@@ -409,7 +418,7 @@ public class PayPalCard implements Serializable {
                                     errorMessage = "Failed to make the payment. Please check your internet connectivity and try again.";
                                 }
 
-                                return new KitePrintSDKException(errorMessage);
+                                return new KiteSDKException(errorMessage);
                             }
                         } catch (Exception e) {
                             return e;

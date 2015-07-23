@@ -58,10 +58,10 @@ public class AddressSearchActivity extends Activity implements ActionBar.OnNavig
                         this,
                         R.layout.country_spinner_item,
                         android.R.id.text1,
-                        Country.COUNTRIES),
+                        Country.values() ),
                 this);
 
-        int selected = Country.COUNTRIES.indexOf(Country.getInstance(Locale.getDefault()));
+        int selected = Country.getInstance(Locale.getDefault()).ordinal();
         actionBar.setSelectedNavigationItem(selected);
         actionBar.setDisplayHomeAsUpEnabled(true);
 
@@ -89,9 +89,9 @@ public class AddressSearchActivity extends Activity implements ActionBar.OnNavig
 
     @Override
     public boolean onNavigationItemSelected(int i, long position) {
-        Country selectedCountry = Country.COUNTRIES.get((int) position);
+        Country selectedCountry = Country.values()[ (int)position ];
         if (searchView != null) {
-            searchView.setQueryHint("Search " + selectedCountry.getName());
+            searchView.setQueryHint("Search " + selectedCountry.displayName());
         }
         return true;
     }
@@ -109,8 +109,8 @@ public class AddressSearchActivity extends Activity implements ActionBar.OnNavig
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.address_search, menu);
         searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-        Country c = Country.COUNTRIES.get(getActionBar().getSelectedNavigationIndex());
-        searchView.setQueryHint("Search " + c.getName());
+        Country c = Country.values()[ getActionBar().getSelectedNavigationIndex() ];
+        searchView.setQueryHint("Search " + c.displayName());
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -137,8 +137,8 @@ public class AddressSearchActivity extends Activity implements ActionBar.OnNavig
                 }
 
                 inProgressAddressSearchReq = new AddressSearchRequest();
-                Country c = Country.COUNTRIES.get(getActionBar().getSelectedNavigationIndex());
-                inProgressAddressSearchReq.search(query, c, AddressSearchActivity.this);
+                Country c = Country.values()[ getActionBar().getSelectedNavigationIndex() ];
+                inProgressAddressSearchReq.search(AddressSearchActivity.this, query, c, AddressSearchActivity.this);
                 return true;
             }
         });
@@ -178,7 +178,7 @@ public class AddressSearchActivity extends Activity implements ActionBar.OnNavig
         });
 
         inProgressAddressSearchReq = new AddressSearchRequest();
-        inProgressAddressSearchReq.search(address, new AddressSearchRequestListener() {
+        inProgressAddressSearchReq.search(AddressSearchActivity.this, address, new AddressSearchRequestListener() {
             @Override
             public void onMultipleChoices(AddressSearchRequest req, List<Address> options) {
                 dialog.dismiss();

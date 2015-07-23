@@ -1,0 +1,10 @@
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/add_photo"
+        android:title="@string/Add_photo"
+        android:showAsAction="ifRoom"
+        android:icon="@drawable/ic_add_photo"/>
+
+</menu>

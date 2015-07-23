@@ -13,29 +13,30 @@ repositories {
 }
 
 android {
-    compileSdkVersion 21
+    compileSdkVersion 22
     buildToolsVersion "21.1.2"
-
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 21
-        versionName project.VERSION_NAME
-        versionCode Integer.parseInt(project.VERSION_CODE)
+        targetSdkVersion 22
+        versionName '1.0'
+        versionCode 100
     }
-
     sourceSets {
         main {
-            manifest {srcFile 'src/main/AndroidManifest.xml'}
+            manifest { srcFile 'src/main/AndroidManifest.xml' }
             java { srcDir 'src/main/java' }
             res { srcDir 'src/main/res' }
         }
     }
+    productFlavors {
+    }
 }
 
 dependencies {
-    compile files('libs/PayPalAndroidSDK.jar')
+    compile files('libs/PayPalAndroidSDK-2.9.10.jar')
     compile files('libs/CardIONativeLibs.jar')
     // To generate this jar containing shared libraries see: http://ivansotof.com/2013/12/including-native-so-libraries-in-android/
+    compile 'com.android.support:support-v4:22.2.0'
 }
 
 // Apply chrisbanes' excellent gradle-mvn-push recipe,
@@ -45,7 +46,7 @@ dependencies {
 // N.B.: We're using a specific commit from a fork to
 // work around a bug in the recipe caused by the new
 // version of gradle which hasn't been upstreamed yet.
-apply from: 'https://raw.github.com/shamanland/gradle-mvn-push/cc18d56549cdea03f744b6fff27911569394073e/gradle-mvn-push.gradle'
+//apply from: 'https://raw.github.com/shamanland/gradle-mvn-push/cc18d56549cdea03f744b6fff27911569394073e/gradle-mvn-push.gradle'
 //
 // Revert to this version once chrisbanes/gradle-mvn-push#29
 // is merged.

@@ -17,15 +17,24 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import ly.kite.KiteSDK;
+
 /**
  * Created by deonbotha on 07/02/2014.
  */
 class AssetUploadRequest {
 
+    private Context mContext;
+
     private boolean cancelled;
     private BaseRequest registerImageURLAssetsReq, signReq;
     private int numOutstandingAsyncOpertions = 0;
     private boolean notifiedUploadListenerOfOutcome = false;
+
+    AssetUploadRequest( Context context )
+        {
+        mContext = context;
+        }
 
     public void cancelUpload() {
         cancelled = true;
@@ -105,7 +114,7 @@ class AssetUploadRequest {
         if (--numOutstandingAsyncOpertions == 0) {
             notifiedUploadListenerOfOutcome = true;
             assert ex == null : "errors should be covered above";
-            listener.onUploadComplete(this, assets);
+            listener.onUploadComplete(mContext, this, assets);
         }
     }
 
@@ -119,8 +128,8 @@ class AssetUploadRequest {
             mimeTypes.append(a.getMimeType(context).getMimeTypeString());
         }
 
-        String url = String.format("%s/asset/sign/?mime_types=%s&client_asset=true", KitePrintSDK.getEnvironment().getPrintAPIEndpoint(), mimeTypes.toString());
-        registerImageURLAssetsReq = new BaseRequest(BaseRequest.HttpMethod.GET, url, null, (String) null);
+        String url = String.format("%s/asset/sign/?mime_types=%s&client_asset=true", KiteSDK.getInstance( context ).getPrintAPIEndpoint(), mimeTypes.toString());
+        registerImageURLAssetsReq = new BaseRequest( context, BaseRequest.HttpMethod.GET, url, null, (String) null);
         registerImageURLAssetsReq.start(new BaseRequest.BaseRequestListener() {
             @Override
             public void onSuccess(int httpStatusCode, JSONObject json) {
@@ -294,8 +303,8 @@ class AssetUploadRequest {
 
         final int expectedRegisteredAssetCount = c;
 
-        String url = String.format("%s/asset/", KitePrintSDK.getEnvironment().getPrintAPIEndpoint());
-        registerImageURLAssetsReq = new BaseRequest(BaseRequest.HttpMethod.PATCH, url, null, jsonBody.toString());
+        String url = String.format("%s/asset/", KiteSDK.getInstance( context ).getPrintAPIEndpoint());
+        registerImageURLAssetsReq = new BaseRequest( context, BaseRequest.HttpMethod.PATCH, url, null, jsonBody.toString());
         registerImageURLAssetsReq.start(new BaseRequest.BaseRequestListener() {
             @Override
             public void onSuccess(int httpStatusCode, JSONObject json) {

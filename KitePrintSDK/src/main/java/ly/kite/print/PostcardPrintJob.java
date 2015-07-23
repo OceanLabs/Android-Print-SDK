@@ -20,13 +20,13 @@ import ly.kite.address.Address;
  */
 class PostcardPrintJob extends PrintJob {
 
-    private String templateId;
     private Asset frontImageAsset;
     private String message;
     private Address address;
 
-    public PostcardPrintJob(String templateId, Asset frontImageAsset, String message, Address address) {
-        this.templateId = templateId;
+    public PostcardPrintJob( Product product, Asset frontImageAsset, String message, Address address) {
+        super( product );
+
         this.frontImageAsset = frontImageAsset;
         this.message = message;
         this.address = address;
@@ -34,19 +34,12 @@ class PostcardPrintJob extends PrintJob {
 
     @Override
     public BigDecimal getCost(String currencyCode) {
-        Template template = Template.getTemplate(templateId);
-        return template.getCost(currencyCode);
+        return getProduct().getCost(currencyCode);
     }
 
     @Override
     public Set<String> getCurrenciesSupported() {
-        Template template = Template.getTemplate(templateId);
-        return template.getCurrenciesSupported();
-    }
-
-    @Override
-    public ProductType getProductType() {
-        return ProductType.POSTCARD;
+        return getProduct().getCurrenciesSupported();
     }
 
     @Override
@@ -61,18 +54,13 @@ class PostcardPrintJob extends PrintJob {
         return assets;
     }
 
-    @Override
-    public String getTemplateId() {
-        return templateId;
-    }
-
     private static String getStringOrEmptyString(String val) {
         return val == null ? "" : val;
     }
 
     private JSONObject getJSON() throws JSONException{
         JSONObject json = new JSONObject();
-        json.put("template_id", templateId);
+        json.put("template_id", getProductId() );
 
         JSONObject assets = new JSONObject();
         json.put("assets", assets);
@@ -91,7 +79,7 @@ class PostcardPrintJob extends PrintJob {
         addrComponents.add(new Pair<String, String>(address.getCity(), "body-centered"));
         addrComponents.add(new Pair<String, String>(address.getStateOrCounty(), "body-centered"));
         addrComponents.add(new Pair<String, String>(address.getZipOrPostalCode(), "postcode-or-country"));
-        addrComponents.add(new Pair<String, String>(address.getCountry().getName(), "postcode-or-country"));
+        addrComponents.add(new Pair<String, String>(address.getCountry().displayName(), "postcode-or-country"));
 
         int addressComponentId = 0;
         for (Pair<String, String> addrComponent : addrComponents) {
@@ -110,7 +98,7 @@ class PostcardPrintJob extends PrintJob {
             shippingAddr.put("city", getStringOrEmptyString(address.getCity()));
             shippingAddr.put("county_state", getStringOrEmptyString(address.getStateOrCounty()));
             shippingAddr.put("postcode", getStringOrEmptyString(address.getZipOrPostalCode()));
-            shippingAddr.put("country_code", getStringOrEmptyString(address.getCountry().getCodeAlpha3()));
+            shippingAddr.put("country_code", getStringOrEmptyString(address.getCountry().iso3Code()));
         }
 
         return json;
@@ -132,14 +120,15 @@ class PostcardPrintJob extends PrintJob {
 
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
-        parcel.writeString(templateId);
+        super.writeToParcel( parcel, flags );
         parcel.writeParcelable(frontImageAsset, flags);
         parcel.writeString(message);
         parcel.writeParcelable(address, flags);
     }
 
     private PostcardPrintJob(Parcel parcel) {
-        this.templateId = parcel.readString();
+        //super( ProductCache.getDirtyInstance().getProductById( parcel.readString() ) );
+        super( parcel );
         this.frontImageAsset = parcel.readParcelable(Asset.class.getClassLoader());
         this.message = parcel.readString();
         this.address = (Address)parcel.readParcelable(Address.class.getClassLoader());
@@ -155,19 +144,5 @@ class PostcardPrintJob extends PrintJob {
             return new PostcardPrintJob[size];
         }
     };
-
-    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-        out.writeObject(templateId);
-        out.writeObject(frontImageAsset);
-        out.writeObject(message);
-        out.writeObject(address);
-    }
-
-    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
-        templateId = (String)in.readObject();
-        frontImageAsset = (Asset) in.readObject();
-        message = (String)in.readObject();
-        address = (Address) in.readObject();
-    }
 
 }

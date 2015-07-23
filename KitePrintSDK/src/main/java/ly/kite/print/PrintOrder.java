@@ -19,7 +19,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -156,7 +155,7 @@ public class PrintOrder implements Parcelable, Serializable {
                 sajson.put("city", shippingAddress.getCity());
                 sajson.put("county_state", shippingAddress.getStateOrCounty());
                 sajson.put("postcode", shippingAddress.getZipOrPostalCode());
-                sajson.put("country_code", shippingAddress.getCountry().getCodeAlpha3());
+                sajson.put("country_code", shippingAddress.getCountry().iso3Code());
                 json.put("shipping_address", sajson);
             }
 
@@ -181,7 +180,7 @@ public class PrintOrder implements Parcelable, Serializable {
     }
 
     public String getCurrencyCode() {
-        String code = currencyCode == null ? Country.getInstance(Locale.getDefault()).getCurrencyCode() : currencyCode;
+        String code = currencyCode == null ? Country.getInstance(Locale.getDefault()).iso3CurrencyCode() : currencyCode;
         Set<String> supportedCurrencies = getCurrenciesSupported();
         if (supportedCurrencies.contains(code)) {
             return code;
@@ -306,7 +305,7 @@ public class PrintOrder implements Parcelable, Serializable {
                 public void onBytesLength(Asset asset, long byteLength) {
                     totalBytesExpectedToWrite += byteLength;
                     if (--outstandingLengthCallbacks[0] == 0) {
-                        assetUploadReq = new AssetUploadRequest();
+                        assetUploadReq = new AssetUploadRequest( context );
                         assetUploadReq.uploadAssets(assetsToUpload, context, assetUploadRequestListener);
                     }
                 }
@@ -334,19 +333,19 @@ public class PrintOrder implements Parcelable, Serializable {
 
         this.submissionListener = listener;
         if (assetUploadComplete) {
-            submitForPrinting();
+            submitForPrinting( context );
         } else if (!isAssetUploadInProgress()) {
             startAssetUpload(context);
         }
     }
 
-    private void submitForPrinting() {
+    private void submitForPrinting( Context context ) {
         if (!userSubmittedForPrinting) throw new IllegalStateException("oops");
         if (!assetUploadComplete || isAssetUploadInProgress()) throw new IllegalStateException("Oops asset upload should be complete by now");
 
         // Step 2: Submit print order to the server. Print Job JSON can now reference real asset ids.
         printOrderReq = new SubmitPrintOrderRequest(this);
-        printOrderReq.submitForPrinting(new SubmitPrintOrderRequestListener() {
+        printOrderReq.submitForPrinting( context, new SubmitPrintOrderRequestListener() {
             @Override
             public void onSubmissionComplete(SubmitPrintOrderRequest req, String orderIdReceipt) {
                 receipt = orderIdReceipt;
@@ -389,7 +388,7 @@ public class PrintOrder implements Parcelable, Serializable {
         }
 
         @Override
-        public void onUploadComplete(AssetUploadRequest req, List<Asset> assets) {
+        public void onUploadComplete(Context context, AssetUploadRequest req, List<Asset> assets) {
             if (assets.size() != assetsToUpload.size()) {
                 throw new IllegalStateException(String.format("Oops there should be a 1:1 relationship between uploaded assets and submitted, currently its: %d:%d", assetsToUpload.size(), assets.size()));
             }
@@ -425,7 +424,7 @@ public class PrintOrder implements Parcelable, Serializable {
             assetsToUpload = null;
             assetUploadReq = null;
             if (userSubmittedForPrinting) {
-                submitForPrinting();
+                submitForPrinting( context );
             }
         }
 
@@ -596,9 +595,9 @@ public class PrintOrder implements Parcelable, Serializable {
         return promoCode;
     }
 
-    public CheckPromoRequest applyPromoCode(final String promoCode, final ApplyPromoCodeListener listener) {
+    public CheckPromoRequest applyPromoCode(Context context, final String promoCode, final ApplyPromoCodeListener listener) {
         CheckPromoRequest req = new CheckPromoRequest();
-        req.checkPromoCode(promoCode, this, new CheckPromoCodeRequestListener() {
+        req.checkPromoCode( context, promoCode, this, new CheckPromoCodeRequestListener() {
             @Override
             public void onDiscount(BigDecimal discount) {
                 if (promoCode != null && discount.compareTo(BigDecimal.ZERO) > 0) {
@@ -621,91 +620,6 @@ public class PrintOrder implements Parcelable, Serializable {
     public void clearPromoCode() {
         this.promoCode = null;
         this.promoCodeDiscount = null;
-    }
-
-    /*
-     * PrintOrder history persisting methods
-     */
-
-    public void saveToHistory(Context c) {
-        List<PrintOrder> currentOrders = getPrintOrderHistory(c);
-        if (!isSavedInHistory()) {
-            storageIdentifier = getNextStorageIdentifier(currentOrders);
-        }
-
-        ArrayList<PrintOrder> updatedOrders = new ArrayList<PrintOrder>();
-        updatedOrders.add(this);
-        for (PrintOrder order : currentOrders) {
-            if (order.storageIdentifier != storageIdentifier) {
-                updatedOrders.add(order);
-            }
-        }
-
-        persistOrdersToDisk(c, updatedOrders);
-    }
-
-    public void deleteFromHistory(Context c) {
-        if (!isSavedInHistory()) {
-            return;
-        }
-
-        List<PrintOrder> orders = getPrintOrderHistory(c);
-        Iterator<PrintOrder> iter = orders.iterator();
-        while (iter.hasNext()) {
-            PrintOrder o = iter.next();
-            if (o.storageIdentifier == storageIdentifier) {
-                iter.remove();
-                break;
-            }
-        }
-
-        persistOrdersToDisk(c, orders);
-    }
-
-    private void persistOrdersToDisk(Context c, List<PrintOrder> orders) {
-        ObjectOutputStream os = null;
-        try {
-            os = new ObjectOutputStream(new BufferedOutputStream(c.openFileOutput(PERSISTED_PRINT_ORDERS_FILENAME, Context.MODE_PRIVATE)));
-            os.writeObject(orders);
-        } catch (Exception ex) {
-            // ignore, we'll just lose this order from the history now
-        } finally {
-            try {
-                os.close();
-            } catch (Exception ex) {/* ignore */}
-        }
-    }
-
-    public boolean isSavedInHistory() {
-        return storageIdentifier != NOT_PERSITED;
-    }
-
-    public static int getNextStorageIdentifier(List<PrintOrder> orders) {
-        int nextIdentifier = 0;
-        for (int i = 0; i < orders.size(); ++i) {
-            PrintOrder o = orders.get(i);
-            if (nextIdentifier <= o.storageIdentifier) {
-                nextIdentifier = o.storageIdentifier + 1;
-            }
-        }
-        return nextIdentifier;
-    }
-
-    public static List<PrintOrder> getPrintOrderHistory(Context c) {
-        ObjectInputStream is = null;
-        try {
-            is = new ObjectInputStream(new BufferedInputStream(c.openFileInput(PERSISTED_PRINT_ORDERS_FILENAME)));
-            ArrayList<PrintOrder> orders = (ArrayList<PrintOrder>) is.readObject();
-            return orders;
-        } catch (FileNotFoundException ex) {
-            return new ArrayList<PrintOrder>();
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        } finally {
-            try {
-                is.close();
-            } catch (Exception ex) { /* ignore */ }
-        }
     }
 
 }

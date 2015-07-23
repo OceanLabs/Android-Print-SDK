@@ -1,0 +1,156 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="@dimen/product_overview_content_height"
+    android:background="@color/product_overview_content_background"
+    android:layerType="hardware">
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <LinearLayout
+            android:layout_gravity="top"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:paddingLeft="@dimen/product_overview_content_padding_horizontal"
+            android:paddingRight="@dimen/product_overview_content_padding_horizontal"
+            android:orientation="vertical">
+
+            <!-- Description -->
+
+            <TextView
+                android:layout_marginTop="@dimen/product_overview_detail_title_margin_top"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:textSize="@dimen/product_overview_detail_title"
+                android:textStyle="bold"
+                android:text="@string/Description"
+                android:visibility="gone"/>
+
+
+            <!-- Size -->
+
+            <LinearLayout
+                android:id="@+id/size_layout"
+                android:layout_marginTop="@dimen/product_overview_detail_title_margin_top"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:textSize="@dimen/product_overview_detail_title"
+                    android:textStyle="bold"
+                    android:text="@string/Size"/>
+                <TextView
+                    android:id="@+id/size_text_view"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:textSize="@dimen/product_overview_detail_text"/>
+            </LinearLayout>
+
+
+            <!-- Quantity -->
+
+            <LinearLayout
+                android:id="@+id/quantity_layout"
+                android:layout_marginTop="@dimen/product_overview_detail_title_margin_top"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:textSize="@dimen/product_overview_detail_title"
+                    android:textStyle="bold"
+                    android:text="@string/Quantity"/>
+                <TextView
+                    android:id="@+id/quantity_text_view"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:textSize="@dimen/product_overview_detail_text"/>
+            </LinearLayout>
+
+
+            <!-- Shipping -->
+
+            <TextView
+                android:layout_marginTop="@dimen/product_overview_detail_title_margin_top"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:textSize="@dimen/product_overview_detail_title"
+                android:textStyle="bold"
+                android:text="@string/Shipping"/>
+
+            <TextView
+                android:id="@+id/shipping_text_view"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:textSize="@dimen/product_overview_detail_text"/>
+
+
+            <!-- Quality guarantee -->
+
+            <TextView
+                android:layout_marginTop="@dimen/product_overview_detail_title_margin_top"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:textSize="@dimen/product_overview_detail_title"
+                android:textStyle="bold"
+                android:text="@string/Quality_Guarantee"/>
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:textSize="@dimen/product_overview_detail_text"
+                android:text="@string/quality_guarantee_text"/>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/product_overview_detail_start_button_frame_height"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <FrameLayout
+        android:layout_gravity="bottom"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/product_overview_detail_start_button_frame_height">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical">
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.8"
+                android:src="@drawable/product_overview_gradient_background"/>
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.2"
+                android:background="@android:color/white"/>
+        </LinearLayout>
+
+        <Button
+            style="@style/KiteSDKCTACenteredButtonStyle"
+            android:id="@+id/content_start_button"
+            android:layout_gravity="center"
+            android:text="@string/product_overview_start_button_text"/>
+
+    </FrameLayout>
+
+</FrameLayout>

@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -100,8 +101,13 @@ public class AddressEditActivity extends Activity {
      */
     public static class PlaceholderFragment extends Fragment {
 
-        private final Address address;
+        private Address address;
 
+        public PlaceholderFragment() {
+        }
+
+        // TODO: Fragments dhould not use constructors with arguments ... change to using
+        // the arguments bundle
         public PlaceholderFragment(Address address) {
             this.address = address;
         }
@@ -124,15 +130,15 @@ public class AddressEditActivity extends Activity {
             ((EditText) view.findViewById(R.id.edit_text_address_county)).setText(address.getStateOrCounty());
             ((EditText) view.findViewById(R.id.edit_text_address_postcode)).setText(address.getZipOrPostalCode());
 
-            final List<Country> countries = Country.COUNTRIES;
-            int selected = countries.indexOf(address.getCountry());
+            final Country[] countries = Country.values();
+            int selected = address.getCountry().ordinal();
             Spinner spinner = (Spinner) view.findViewById(R.id.spinner_country);
             spinner.setAdapter(new ArrayAdapter<Country>(getActivity(), android.R.layout.simple_spinner_dropdown_item, countries));
             spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int position, long i) {
-                    if (i >= 0 && i < countries.size()) {
-                        Country c = countries.get((int) i);
+                    if (i >= 0 && i < countries.length) {
+                        Country c = countries[ (int)i ];
                         address.setCountry(c);
                     }
                 }

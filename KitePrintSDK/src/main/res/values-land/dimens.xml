@@ -1,0 +1,5 @@
+<resources>
+
+    <dimen name="product_overview_content_height">180dp</dimen>
+
+</resources>

@@ -62,15 +62,15 @@ public class Address implements Parcelable, Serializable {
         this.country = country;
     }
 
-    public static AddressSearchRequest search(String query, Country country, AddressSearchRequestListener listener) {
+    public static AddressSearchRequest search( Context context, String query, Country country, AddressSearchRequestListener listener) {
         AddressSearchRequest req = new AddressSearchRequest();
-        req.search(query, country, listener);
+        req.search( context, query, country, listener);
         return req;
     }
 
-    public static AddressSearchRequest search(Address address, AddressSearchRequestListener listener) {
+    public static AddressSearchRequest search ( Context context, Address address, AddressSearchRequestListener listener) {
         AddressSearchRequest req = new AddressSearchRequest();
-        req.search(address, listener);
+        req.search(context, address, listener);
         return req;
     }
 
@@ -172,7 +172,7 @@ public class Address implements Parcelable, Serializable {
         if (city != null && city.trim().length() > 0) strBuilder.append(strBuilder.length() > 0 ? ", " : "").append(city);
         if (stateOrCounty != null && stateOrCounty.trim().length() > 0) strBuilder.append(strBuilder.length() > 0 ? ", " : "").append(stateOrCounty);
         if (zipOrPostalCode != null && zipOrPostalCode.trim().length() > 0) strBuilder.append(strBuilder.length() > 0 ? ", " : "").append(zipOrPostalCode);
-        if (country != null && country.getName().trim().length() > 0) strBuilder.append(strBuilder.length() > 0 ? ", " : "").append(country.getName());
+        if (country != null && country.displayName().trim().length() > 0) strBuilder.append(strBuilder.length() > 0 ? ", " : "").append(country.displayName());
 
         return strBuilder.toString();
     }
@@ -190,7 +190,7 @@ public class Address implements Parcelable, Serializable {
         parcel.writeString(city);
         parcel.writeString(stateOrCounty);
         parcel.writeString(zipOrPostalCode);
-        parcel.writeString(country.getCodeAlpha2());
+        parcel.writeString(country.iso2Code());
         parcel.writeString(addressId);
         parcel.writeString(displayName);
         parcel.writeInt(storageIdentifier);
@@ -229,7 +229,7 @@ public class Address implements Parcelable, Serializable {
         out.writeObject(city);
         out.writeObject(stateOrCounty);
         out.writeObject(zipOrPostalCode);
-        out.writeObject(country.getCodeAlpha2());
+        out.writeObject(country.iso2Code());
         out.writeObject(addressId);
         out.writeObject(displayName);
         out.writeInt(storageIdentifier);

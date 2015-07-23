@@ -1,0 +1,66 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:fitsSystemWindows="true">
+
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:layerType="hardware">
+            <android.support.v4.view.ViewPager
+                android:id="@+id/view_pager"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.0"
+                android:layerType="hardware"/>
+            <LinearLayout
+                android:id="@+id/overlaid_components"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginBottom="@dimen/product_overview_overlaid_start_button_spacing_bottom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <FrameLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/product_overview_paging_dots_spacing_bottom">
+                    <ly.kite.widget.PagingDots
+                        android:id="@+id/paging_dots"
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </FrameLayout>
+                <Button
+                    style="@style/KiteSDKCTACenteredButtonStyle"
+                    android:id="@+id/overlaid_start_button"
+                    android:text="@string/product_overview_start_button_text"/>
+            </LinearLayout>
+        </FrameLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/product_overview_control_bar_height"/>
+
+    </LinearLayout>
+
+
+    <ly.kite.widget.SlidingOverlayFrame
+        android:id="@+id/sliding_overlay_frame"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:elevation="10dp"
+        custom:expandDirection="up"
+        custom:alwaysVisibleView="@layout/product_overview_drawer_control_bar"
+        custom:revealedView="@layout/product_overview_drawer_content"/>
+
+
+</FrameLayout>

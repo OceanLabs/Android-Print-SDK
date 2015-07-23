@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ImageView
+        android:id="@+id/empty_frame_image_view"
+        android:layout_gravity="center"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:scaleType="centerInside"
+        android:adjustViewBounds="true"
+        android:src="@drawable/empty_photo_frame"/>
+
+    <ImageView
+        android:id="@+id/image_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:scaleType="centerCrop"
+        android:visibility="invisible"/>
+
+    <ly.kite.widget.OverlayLabel
+        android:id="@+id/overlay_label"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="@dimen/group_or_product_label_bottom_spacing"
+        android:layout_width="@dimen/group_or_product_label_width"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/group_or_product_label_padding_top"
+        android:paddingBottom="@dimen/group_or_product_label_padding_bottom"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/group_or_product_label_text_size"
+        style="@style/KiteSDKLabelStyle"
+        android:visibility="invisible"/>
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"/>
+
+</merge>

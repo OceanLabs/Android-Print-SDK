@@ -2,10 +2,13 @@ package ly.kite.print;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
+import android.util.Pair;
 import android.webkit.MimeTypeMap;
 
 import java.io.BufferedInputStream;
@@ -13,16 +16,31 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.UUID;
+
+import ly.kite.util.ImageLoader;
 
 /**
  * Created by deonbotha on 06/02/2014.
  */
 public class Asset implements Parcelable, Serializable {
+
+    private static final String LOG_TAG = "Asset";
+
+    private static final int BITMAP_TO_JPEG_QUALITY = 80;
+
+    public  static final String JPEG_FILE_EXTENSION_PRIMARY   = "jpg";
+    public  static final String JPEG_FILE_EXTENSION_SECONDARY = "jpeg";
+    public  static final String PNG_FILE_EXTENSION            = "png";
+
+    public  static final String IMAGE_CLASS_STRING_ASSET      = "asset";
+
 
     public static enum MimeType {
         JPEG("image/jpeg"),
@@ -49,7 +67,7 @@ public class Asset implements Parcelable, Serializable {
         }
     }
 
-    static enum AssetType {
+    public static enum AssetType {
         // XXX: Add new types to end to avoid break serialization
         IMAGE_URI,
         BITMAP_RESOURCE_ID,
@@ -73,6 +91,97 @@ public class Asset implements Parcelable, Serializable {
     // The next two are only valid once an asset has been uploaded to the server
     private long id;
     private URL previewURL;
+
+
+  /*****************************************************
+   *
+   * Clears any cached asset image files.
+   *
+   *****************************************************/
+  public static void clearCachedImages( Context context )
+    {
+    // Get the image cache directory
+
+    String imageCacheDirectoryPath = ImageLoader.getInstance( context ).getImageDirectoryPath( IMAGE_CLASS_STRING_ASSET );
+
+    File imageCacheDirectory = new File( imageCacheDirectoryPath );
+
+
+    // Go through all the files and delete them
+
+    File[] imageFiles = imageCacheDirectory.listFiles();
+
+    if ( imageFiles != null )
+      {
+      for ( File imageFile : imageCacheDirectory.listFiles() )
+        {
+        imageFile.delete();
+        }
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Creates a new asset from a bitmap, but writes it out
+   * to a file. The file path is automatically generated.
+   *
+   *****************************************************/
+  public static Asset createAsCachedFile( Context context, Bitmap bitmap )
+    {
+    // Generate a random file name within the cache
+    Pair<String,String> imageDirectoryAndFilePath = ImageLoader.getInstance( context ).getImageDirectoryAndFilePath( IMAGE_CLASS_STRING_ASSET, UUID.randomUUID().toString() );
+
+    File imageDirectory = new File( imageDirectoryAndFilePath.first );
+
+    imageDirectory.mkdirs();
+
+    return ( createAsCachedFile( bitmap, imageDirectoryAndFilePath.second + "." + Asset.JPEG_FILE_EXTENSION_PRIMARY ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Creates a new asset from a bitmap, but writes it out
+   * to a file.
+   *
+   *****************************************************/
+  public static Asset createAsCachedFile( Bitmap bitmap, String filePath )
+    {
+    // Write the bitmap to the file
+
+    FileOutputStream fos = null;
+
+    try
+      {
+      fos = new FileOutputStream( filePath );
+
+      bitmap.compress( Bitmap.CompressFormat.JPEG, BITMAP_TO_JPEG_QUALITY, fos );
+
+      return ( new Asset( filePath ) );
+      }
+    catch ( Exception exception )
+      {
+      Log.e( LOG_TAG, "Unable to write bitmap to file" );
+      }
+    finally
+      {
+      if ( fos != null )
+        {
+        try
+          {
+          fos.close();
+          }
+        catch ( IOException e )
+          {
+          e.printStackTrace();
+          }
+        }
+      }
+
+    return ( null );
+    }
+
 
     public Asset(Uri uri) {
         if (!uri.getScheme().equalsIgnoreCase("content") /*&& !uri.getScheme().equalsIgnoreCase("http") && !uri.getScheme().equalsIgnoreCase("https")*/) {
@@ -122,11 +231,16 @@ public class Asset implements Parcelable, Serializable {
         this.mimeType = mimeType;
     }
 
-    AssetType getType() {
+    public AssetType getType() {
         return type;
     }
 
-    URL getRemoteURL() {
+    public int getBitmapResourceId()
+      {
+      return ( this.bitmapResourceId );
+      }
+
+    public URL getRemoteURL() {
         return remoteURL;
     }
 
@@ -327,7 +441,7 @@ public class Asset implements Parcelable, Serializable {
                 return Arrays.equals(a.imageBytes, this.imageBytes);
         }
 
-        throw new IllegalStateException("should not get here");
+        throw new IllegalStateException("should not getCost here");
     }
 
     @Override
@@ -345,7 +459,7 @@ public class Asset implements Parcelable, Serializable {
                 return Arrays.hashCode(this.imageBytes);
         }
 
-        throw new IllegalStateException("should not get here");
+        throw new IllegalStateException("should not getCost here");
     }
 
     @Override

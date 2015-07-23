@@ -1,9 +1,47 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <item name="android:windowActionBar">true</item>
+
+    <style name="Theme.KiteSDK" parent="android:Theme.DeviceDefault.Light">
+        <item name="android:homeAsUpIndicator">@drawable/ic_arrow_back</item>
+    </style>
+
+    <style name="Theme.KiteSDK.ProductSelection">
+        <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar.Opaque</item>
+    </style>
+
+    <style name="Theme.KiteSDK.ActionBar" parent="android:Widget.ActionBar">
+        <item name="android:displayOptions">homeAsUp|showTitle</item>
+    </style>
+
+    <style name="Theme.KiteSDK.ActionBar.Translucent">
+        <item name="android:background">@color/translucent_action_bar</item>
+    </style>
+
+    <style name="Theme.KiteSDK.ActionBar.Opaque">
+        <item name="android:background">@color/opaque_action_bar</item>
+    </style>
+
+    <style name="KiteSDKLabelStyle">
+        <item name="android:shadowColor">#30000000</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">3</item>
+    </style>
+
+    <style name="KiteSDKCTAButtonStyle" parent="KiteSDKLabelStyle">
+        <item name="android:layout_height">@dimen/cta_button_height</item>
+        <item name="android:background">@color/cta_button_background</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/control_label_text_size</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="KiteSDKCTACenteredButtonStyle" parent="KiteSDKCTAButtonStyle">
+        <item name="android:layout_width">@dimen/cta_centered_button_width</item>
+    </style>
+
+    <style name="KiteSDKCTAOffsetButtonStyle" parent="KiteSDKCTAButtonStyle">
+        <item name="android:layout_width">@dimen/cta_offset_button_width</item>
     </style>
 
 </resources>

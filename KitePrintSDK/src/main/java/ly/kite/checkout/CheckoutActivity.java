@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.os.Parcelable;
 import android.os.Bundle;
 //import android.telecom.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,21 +25,26 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import ly.kite.print.KitePrintSDK;
-import ly.kite.print.KitePrintSDKException;
+import ly.kite.KiteSDK;
+import ly.kite.analytics.Analytics;
 import ly.kite.print.PrintJob;
 import ly.kite.print.PrintOrder;
 import ly.kite.R;
 import ly.kite.address.Address;
 import ly.kite.address.AddressBookActivity;
-import ly.kite.print.Template;
+import ly.kite.print.Product;
+import ly.kite.print.ProductGroup;
+import ly.kite.print.ProductLoader;
 
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class CheckoutActivity extends Activity {
+
+    private static final long  MAXIMUM_PRODUCT_AGE_MILLIS = 1 * 60 * 60 * 1000;
 
     private static final String SHIPPING_PREFERENCES = "shipping_preferences";
     private static final String SHIPPING_PREFERENCE_EMAIL = "shipping_preferences.email";
@@ -55,9 +61,20 @@ public class CheckoutActivity extends Activity {
     private static final int REQUEST_CODE_PAYMENT = 1;
     private static final int REQUEST_CODE_ADDRESS_BOOK = 2;
 
-    private PrintOrder printOrder;
+    private PrintOrder mPrintOrder;
     private String apiKey;
-    private KitePrintSDK.Environment environment;
+    private KiteSDK.Environment environment;
+
+
+    public static void start( Activity activity, PrintOrder printOrder, int requestCode )
+      {
+      Intent intent = new Intent( activity, CheckoutActivity.class );
+
+      intent.putExtra( EXTRA_PRINT_ORDER, (Parcelable)printOrder );
+
+      activity.startActivityForResult( intent, requestCode );
+      }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,36 +92,38 @@ public class CheckoutActivity extends Activity {
 
         String apiKey = getIntent().getStringExtra(EXTRA_PRINT_API_KEY);
         String envString = getIntent().getStringExtra(EXTRA_PRINT_ENVIRONMENT);
-        this.printOrder = (PrintOrder) getIntent().getParcelableExtra(EXTRA_PRINT_ORDER);
+
+        // TODO: Determine a better way of doing this.
+        mPrintOrder = (PrintOrder) getIntent().getParcelableExtra(EXTRA_PRINT_ORDER);
 
         if (apiKey == null) {
-            apiKey = KitePrintSDK.getAPIKey();
+            apiKey = KiteSDK.getInstance( this ).getAPIKey();
             if (apiKey == null) {
                 throw new IllegalArgumentException("You must specify an API key string extra in the intent used to start the CheckoutActivity or with KitePrintSDK.initialize");
             }
         }
 
-        if (printOrder == null) {
+        if ( mPrintOrder == null) {
             throw new IllegalArgumentException("You must specify a PrintOrder object extra in the intent used to start the CheckoutActivity");
         }
 
-        if (printOrder.getJobs().size() < 1) {
+        if ( mPrintOrder.getJobs().size() < 1) {
             throw new IllegalArgumentException("You must specify a PrintOrder object extra that actually has some jobs for printing i.e. PrintOrder.getJobs().size() > 0");
         }
 
-        KitePrintSDK.Environment env = null;
+        KiteSDK.Environment env = null;
         if (envString == null) {
-            env = KitePrintSDK.getEnvironment();
+            env = KiteSDK.getInstance( this ).getEnvironment();
             if (env == null) {
                 throw new IllegalArgumentException("You must specify an environment string extra in the intent used to start the CheckoutActivity or with KitePrintSDK.initialize");
             }
         } else {
             if (envString.equals(ENVIRONMENT_STAGING)) {
-                env = KitePrintSDK.Environment.STAGING;
+                env = KiteSDK.Environment.STAGING;
             } else if (envString.equals(ENVIRONMENT_TEST)) {
-                env = KitePrintSDK.Environment.TEST;
+                env = KiteSDK.Environment.TEST;
             } else if (envString.equals(ENVIRONMENT_LIVE)) {
-                env = KitePrintSDK.Environment.LIVE;
+                env = KiteSDK.Environment.LIVE;
             } else {
                 throw new IllegalArgumentException("Bad print environment extra: " + envString);
             }
@@ -112,30 +131,36 @@ public class CheckoutActivity extends Activity {
 
         this.apiKey = apiKey;
         this.environment = env;
-        KitePrintSDK.initialize(apiKey, env, getApplicationContext());
+        KiteSDK.getInstance( this ).setEnvironment( apiKey, env );
         if (getActionBar() != null) {
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
         // hide keyboard initially
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+
+    if ( savedInstanceState == null )
+      {
+      Analytics.getInstance( this ).trackShippingScreenViewed( mPrintOrder, Analytics.VARIANT_JSON_PROPERTY_VALUE_CLASSIC_PLUS_ADDRESS_SEARCH, true );
+      }
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(EXTRA_PRINT_ORDER, printOrder);
+        outState.putParcelable(EXTRA_PRINT_ORDER, mPrintOrder );
         outState.putString(EXTRA_PRINT_API_KEY, apiKey);
-        outState.putSerializable(EXTRA_PRINT_ENVIRONMENT, environment);
+        outState.putSerializable( EXTRA_PRINT_ENVIRONMENT, environment );
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        this.printOrder = savedInstanceState.getParcelable(EXTRA_PRINT_ORDER);
+        this.mPrintOrder = savedInstanceState.getParcelable(EXTRA_PRINT_ORDER);
         this.apiKey = savedInstanceState.getString(EXTRA_PRINT_API_KEY);
-        this.environment = (KitePrintSDK.Environment) savedInstanceState.getSerializable(EXTRA_PRINT_ENVIRONMENT);
-        KitePrintSDK.initialize(apiKey, environment, getApplicationContext());
+        this.environment = (KiteSDK.Environment) savedInstanceState.getSerializable(EXTRA_PRINT_ENVIRONMENT);
+        KiteSDK.getInstance( this ).setEnvironment( apiKey, environment );
     }
 
     @Override
@@ -173,7 +198,7 @@ public class CheckoutActivity extends Activity {
         String email = ((TextView) findViewById(R.id.email_address_text_view)).getText().toString();
         String phone = ((TextView) findViewById(R.id.phone_number_text_view)).getText().toString();
 
-        if (printOrder.getShippingAddress() == null) {
+        if ( mPrintOrder.getShippingAddress() == null) {
             showErrorDialog("Invalid Delivery Address", "Please choose a delivery address");
             return;
         }
@@ -188,7 +213,7 @@ public class CheckoutActivity extends Activity {
             return;
         }
 
-        JSONObject userData = printOrder.getUserData();
+        JSONObject userData = mPrintOrder.getUserData();
         if (userData == null) {
             userData = new JSONObject();
         }
@@ -197,9 +222,9 @@ public class CheckoutActivity extends Activity {
             userData.put("email", email);
             userData.put("phone", phone);
         } catch (JSONException ex) {/* ignore */}
-        printOrder.setUserData(userData);
-        printOrder.setNotificationEmail(email);
-        printOrder.setNotificationPhoneNumber(phone);
+        mPrintOrder.setUserData( userData );
+        mPrintOrder.setNotificationEmail( email );
+        mPrintOrder.setNotificationPhoneNumber( phone );
 
         SharedPreferences settings = getSharedPreferences(SHIPPING_PREFERENCES, 0);
         SharedPreferences.Editor editor = settings.edit();
@@ -207,33 +232,38 @@ public class CheckoutActivity extends Activity {
         editor.putString(SHIPPING_PREFERENCE_PHONE, phone);
         editor.commit();
 
-        Date lastSyncedDate = Template.getLastSyncDate();
-        Date dateHourAgo = new Date(System.currentTimeMillis() - (1 * 60 * 60 * 1000));
-        if (Template.isSyncInProgress() || lastSyncedDate == null || lastSyncedDate.compareTo(dateHourAgo) < 0) {
-            final ProgressDialog progress = ProgressDialog.show(this, null, "Loading");
-            Template.sync(getApplicationContext(), new Template.TemplateSyncListener() {
-                @Override
-                public void onSuccess() {
-                    progress.dismiss();
-                    startPaymentActivity();
-                }
 
-                @Override
-                public void onError(Exception error) {
-                    progress.dismiss();
-                    showRetryTemplateSyncDialog(error);
-                }
-            });
-        } else {
-            // templates synced recently enough to jump straight to payment
-            startPaymentActivity();
-        }
+        // Make sure we have up-to-date products before we proceed
+
+        final ProgressDialog progress = ProgressDialog.show(this, null, "Loading");
+
+        ProductLoader.getInstance( this ).getAllProducts(
+                MAXIMUM_PRODUCT_AGE_MILLIS,
+                new ProductLoader.ProductConsumer()
+                    {
+                    @Override
+                    public void onGotProducts( ArrayList<ProductGroup> productGroupList, HashMap<String, Product> productTable )
+                        {
+                        progress.dismiss();
+
+                        startPaymentActivity();
+                        }
+
+                    @Override
+                    public void onProductRetrievalError( Exception exception )
+                        {
+                        progress.dismiss();
+
+                        showRetryTemplateSyncDialog( exception );
+                        }
+                    }
+                );
     }
 
     private void showRetryTemplateSyncDialog(Exception error) {
         AlertDialog.Builder builder = new AlertDialog.Builder(CheckoutActivity.this);
         builder.setTitle("Oops");
-        builder.setMessage(error.getLocalizedMessage());
+        builder.setMessage( error.getLocalizedMessage() );
         if (error instanceof UnknownHostException || error instanceof SocketTimeoutException) {
             builder.setMessage("Please check your internet connectivity and then try again");
         }
@@ -249,21 +279,28 @@ public class CheckoutActivity extends Activity {
     }
 
     private void startPaymentActivity() {
-        // Check we have valid templates for every printjob
-        for (PrintJob job : printOrder.getJobs()) {
-            try {
-                Template.getTemplate(job.getTemplateId());
-            } catch (Exception ex) {
-                showRetryTemplateSyncDialog(ex);
-                return;
-            }
-        }
 
-        Intent i = new Intent(this, PaymentActivity.class);
-        i.putExtra(PaymentActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder);
-        i.putExtra(PaymentActivity.EXTRA_PRINT_API_KEY, apiKey);
-        i.putExtra(PaymentActivity.EXTRA_PRINT_ENVIRONMENT, getPaymentActivityEnvironment());
-        startActivityForResult(i, REQUEST_CODE_PAYMENT);
+        // Check we have valid templates for every printjob
+
+        try
+          {
+          // This will return null if there are no products, or they are out of date, but that's
+          // OK because we catch any exceptions.
+          Pair<ArrayList<ProductGroup>,HashMap<String,Product>> productPair = ProductLoader.getInstance( this ).getCachedProducts( MAXIMUM_PRODUCT_AGE_MILLIS );
+
+          // Go through every print job and check that we can get a product from the product id
+          for ( PrintJob job : mPrintOrder.getJobs() )
+            {
+            String productId = productPair.second.get( job.getProduct().getId() ).getId();
+            }
+          }
+        catch ( Exception exception )
+          {
+          showRetryTemplateSyncDialog( exception );
+          return;
+          }
+
+        PaymentActivity.start( this, mPrintOrder, apiKey, getPaymentActivityEnvironment(),  REQUEST_CODE_PAYMENT );
     }
 
     boolean isEmailValid(CharSequence email) {
@@ -280,7 +317,7 @@ public class CheckoutActivity extends Activity {
         } else if (requestCode == REQUEST_CODE_ADDRESS_BOOK) {
             if (resultCode == RESULT_OK) {
                 Address address = data.getParcelableExtra(AddressBookActivity.EXTRA_ADDRESS);
-                printOrder.setShippingAddress(address);
+                mPrintOrder.setShippingAddress( address );
                 Button chooseAddressButton = (Button) findViewById(R.id.address_picker_button);
                 chooseAddressButton.setText(address.toString());
             }

@@ -12,6 +12,7 @@ import android.os.Looper;
 import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,16 +23,19 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.paypal.android.sdk.payments.PayPalConfiguration;
 import com.paypal.android.sdk.payments.PayPalPayment;
 import com.paypal.android.sdk.payments.PayPalService;
 import com.paypal.android.sdk.payments.PaymentConfirmation;
+import com.paypal.android.sdk.payments.ProofOfPayment;
 
 import org.json.JSONException;
 
 import java.math.BigDecimal;
 
+import ly.kite.analytics.Analytics;
 import ly.kite.print.ApplyPromoCodeListener;
-import ly.kite.print.KitePrintSDK;
+import ly.kite.KiteSDK;
 import ly.kite.print.PrintOrder;
 import ly.kite.print.PrintOrderSubmissionListener;
 import ly.kite.R;
@@ -40,9 +44,10 @@ import ly.kite.payment.PayPalCardChargeListener;
 import ly.kite.payment.PayPalCardVaultStorageListener;
 import io.card.payment.CardIOActivity;
 import io.card.payment.CreditCard;
-import ly.kite.print.Template;
 
 public class PaymentActivity extends Activity {
+
+  private static final String LOG_TAG = "PaymentActivity";
 
     public static final String EXTRA_PRINT_ORDER = "ly.kite.EXTRA_PRINT_ORDER";
     public static final String EXTRA_PRINT_ENVIRONMENT = "ly.kite.EXTRA_PRINT_ENVIRONMENT";
@@ -58,10 +63,21 @@ public class PaymentActivity extends Activity {
     private static final int REQUEST_CODE_CREDITCARD = 1;
     private static final int REQUEST_CODE_RECEIPT = 2;
 
-    private PrintOrder printOrder;
+    private PrintOrder mPrintOrder;
     private String apiKey;
-    private KitePrintSDK.Environment printEnvironment;
+    private KiteSDK.Environment printEnvironment;
     private PayPalCard.Environment paypalEnvironment;
+
+  public static void start( Activity activity, PrintOrder printOrder, String apiKey, String environmentName, int requestCode )
+    {
+    Intent intent = new Intent( activity, PaymentActivity.class );
+
+    intent.putExtra(PaymentActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder );
+    intent.putExtra( PaymentActivity.EXTRA_PRINT_API_KEY, apiKey );
+    intent.putExtra( PaymentActivity.EXTRA_PRINT_ENVIRONMENT, environmentName );
+
+    activity.startActivityForResult( intent, requestCode );
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,31 +87,32 @@ public class PaymentActivity extends Activity {
 
         String apiKey = getIntent().getStringExtra(EXTRA_PRINT_API_KEY);
         String envString = getIntent().getStringExtra(EXTRA_PRINT_ENVIRONMENT);
-        this.printOrder = (PrintOrder) getIntent().getParcelableExtra(EXTRA_PRINT_ORDER);
+
+    this.mPrintOrder = (PrintOrder) getIntent().getParcelableExtra(EXTRA_PRINT_ORDER);
 
         if (apiKey == null) {
             throw new IllegalArgumentException("You must specify an API key string extra in the intent used to start the PaymentActivity");
         }
 
-        if (printOrder == null) {
+        if ( mPrintOrder == null) {
             throw new IllegalArgumentException("You must specify a PrintOrder object extra in the intent used to start the PaymentActivity");
         }
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment(printOrder))
+                    .add(R.id.container, PlaceholderFragment.newInstance( mPrintOrder ))
                     .commit();
         }
 
 //        KitePrintSDK.Environment env = KitePrintSDK.Environment.LIVE;
-        KitePrintSDK.Environment env = KitePrintSDK.Environment.TEST;
+        KiteSDK.Environment env = KiteSDK.Environment.TEST;
         this.paypalEnvironment = PayPalCard.Environment.LIVE;
         if (envString != null) {
             if (envString.equals(ENVIRONMENT_STAGING)) {
-                env = KitePrintSDK.Environment.STAGING;
+                env = KiteSDK.Environment.STAGING;
                 paypalEnvironment = PayPalCard.Environment.SANDBOX;
             } else if (envString.equals(ENVIRONMENT_TEST)) {
-                env = KitePrintSDK.Environment.TEST;
+                env = KiteSDK.Environment.TEST;
                 paypalEnvironment = PayPalCard.Environment.SANDBOX;
             }
         }
@@ -103,14 +120,19 @@ public class PaymentActivity extends Activity {
         this.apiKey = apiKey;
         this.printEnvironment = env;
 
-        KitePrintSDK.initialize(apiKey, env, getApplicationContext());
+        KiteSDK.getInstance( this ).setEnvironment( apiKey, env );
 
         /*
          * Start PayPal Service
          */
-        Intent intent = new Intent(this, PayPalService.class);
-        intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_PAYPAL_ENVIRONMENT, printEnvironment.getPayPalEnvironment());
-        intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_CLIENT_ID, printEnvironment.getPayPalClientId());
+
+        PayPalConfiguration payPalConfiguration = new PayPalConfiguration()
+                .clientId( printEnvironment.getPayPalClientId() )
+                .environment( printEnvironment.getPayPalEnvironment() );
+
+        Intent intent = new Intent( this, PayPalService.class );
+        intent.putExtra( PayPalService.EXTRA_PAYPAL_CONFIGURATION, payPalConfiguration );
+
         startService(intent);
 
         if (getActionBar() != null) {
@@ -121,26 +143,32 @@ public class PaymentActivity extends Activity {
             }
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
+
+
+    if ( savedInstanceState == null )
+        {
+        Analytics.getInstance( this ).trackPaymentScreenViewed( mPrintOrder );
+        }
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(EXTRA_PRINT_ORDER, printOrder);
-        outState.putString(EXTRA_PRINT_API_KEY, apiKey);
+        outState.putParcelable(EXTRA_PRINT_ORDER, mPrintOrder );
+        outState.putString( EXTRA_PRINT_API_KEY, apiKey );
         outState.putSerializable(EXTRA_PRINT_ENVIRONMENT, printEnvironment);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        this.printOrder = savedInstanceState.getParcelable(EXTRA_PRINT_ORDER);
+        this.mPrintOrder = savedInstanceState.getParcelable( EXTRA_PRINT_ORDER );
         this.apiKey = savedInstanceState.getString(EXTRA_PRINT_API_KEY);
-        this.printEnvironment = (KitePrintSDK.Environment) savedInstanceState.getSerializable(EXTRA_PRINT_ENVIRONMENT);
-        KitePrintSDK.initialize(apiKey, printEnvironment, getApplicationContext());
+        this.printEnvironment = (KiteSDK.Environment) savedInstanceState.getSerializable(EXTRA_PRINT_ENVIRONMENT);
+        KiteSDK.getInstance( this ).setEnvironment( apiKey, printEnvironment );
 
         paypalEnvironment = PayPalCard.Environment.LIVE;
-        if (printEnvironment == KitePrintSDK.Environment.STAGING || printEnvironment == KitePrintSDK.Environment.TEST) {
+        if (printEnvironment == KiteSDK.Environment.STAGING || printEnvironment == KiteSDK.Environment.TEST) {
             paypalEnvironment = PayPalCard.Environment.SANDBOX;
         }
     }
@@ -161,15 +189,19 @@ public class PaymentActivity extends Activity {
     }
 
     public void onButtonPayWithPayPalClicked(View view) {
-        PayPalPayment payment = new PayPalPayment(printOrder.getCost(printOrder.getCurrencyCode()), printOrder.getCurrencyCode(), "Product");
-        Intent intent = new Intent(this, com.paypal.android.sdk.payments.PaymentActivity.class);
-        intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_PAYPAL_ENVIRONMENT, printEnvironment.getPayPalEnvironment());
-        intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_CLIENT_ID, printEnvironment.getPayPalClientId());
-        intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_PAYER_ID, "<someuser@somedomain.com>");
-        intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_RECEIVER_EMAIL, printEnvironment.getPayPalReceiverEmail());
-        intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_PAYMENT, payment);
-        intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_SKIP_CREDIT_CARD, true);
-        startActivityForResult(intent, REQUEST_CODE_PAYPAL);
+
+    // TODO: See if we can remove the credit card payment option
+    PayPalPayment payment = new PayPalPayment(
+            mPrintOrder.getCost( mPrintOrder.getCurrencyCode() ),
+            mPrintOrder.getCurrencyCode(),
+            "Product",
+            PayPalPayment.PAYMENT_INTENT_SALE );
+
+    Intent intent = new Intent(this, com.paypal.android.sdk.payments.PaymentActivity.class );
+
+    intent.putExtra( com.paypal.android.sdk.payments.PaymentActivity.EXTRA_PAYMENT, payment );
+
+    startActivityForResult( intent, REQUEST_CODE_PAYPAL );
     }
 
     public void onButtonPayWithCreditCardClicked(View view) {
@@ -200,7 +232,7 @@ public class PaymentActivity extends Activity {
 
     private void payWithNewCard() {
         Intent scanIntent = new Intent(this, CardIOActivity.class);
-        scanIntent.putExtra(CardIOActivity.EXTRA_APP_TOKEN, CARD_IO_TOKEN);
+        //scanIntent.putExtra(CardIOActivity.EXTRA_APP_TOKEN, CARD_IO_TOKEN);
         scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_EXPIRY, true);
         scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_CVV, true);
         scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_POSTAL_CODE, false);
@@ -211,15 +243,45 @@ public class PaymentActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE_PAYPAL) {
             if (resultCode == Activity.RESULT_OK) {
-                PaymentConfirmation confirm = data.getParcelableExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_RESULT_CONFIRMATION);
-                if (confirm != null) {
+
+                PaymentConfirmation paymentConfirmation = data.getParcelableExtra( com.paypal.android.sdk.payments.PaymentActivity.EXTRA_RESULT_CONFIRMATION );
+
+                if (paymentConfirmation != null) {
+
+                    Analytics.getInstance( this ).trackPaymentCompleted( mPrintOrder, Analytics.PAYMENT_METHOD_PAYPAL );
+
                     try {
-                        String proofOfPayment = confirm.toJSONObject().getJSONObject("proof_of_payment").getJSONObject("adaptive_payment").getString("pay_key");
-                        submitOrderForPrinting(proofOfPayment);
-                    } catch (JSONException e) {
-                        showErrorDialog(e.getMessage());
+
+                      ProofOfPayment proofOfPayment = paymentConfirmation.getProofOfPayment();
+
+                      if ( proofOfPayment != null )
+                          {
+                          String paymentId = proofOfPayment.getPaymentId();
+
+                          //String proofOfPayment = paymentConfirmation.toJSONObject().getJSONObject("proof_of_payment").getJSONObject("adaptive_payment").getString( "pay_key" );
+
+                          if ( paymentId != null )
+                              {
+                              submitOrderForPrinting( paymentId );
+                              }
+                          else
+                              {
+                              showErrorDialog( "No payment id found in proof of payment" );
+                              }
+                          }
+                      else
+                          {
+                          showErrorDialog( "No proof of payment found in payment confirmation" );
+                          }
+
+                    } catch ( Exception exception ) {
+                        showErrorDialog( exception.getMessage() );
                     }
                 }
+            else
+                    {
+                    showErrorDialog( "No payment confirmation received from PayPal" );
+                    }
             }
         } else if (requestCode == REQUEST_CODE_CREDITCARD) {
             if (data != null && data.hasExtra(CardIOActivity.EXTRA_SCAN_RESULT)) {
@@ -297,20 +359,25 @@ public class PaymentActivity extends Activity {
         dialog.setMessage("One moment");
         dialog.show();
 
-        card.chargeCard(paypalEnvironment, printOrder.getCost(printOrder.getCurrencyCode()), getPayPalCurrency(printOrder.getCurrencyCode()), "", new PayPalCardChargeListener() {
-            @Override
-            public void onChargeSuccess(PayPalCard card, String proofOfPayment) {
-                dialog.dismiss();
-                submitOrderForPrinting(proofOfPayment);
-                card.saveAsLastUsedCard(PaymentActivity.this);
+        card.chargeCard( paypalEnvironment, mPrintOrder.getCost( mPrintOrder.getCurrencyCode() ), getPayPalCurrency( mPrintOrder.getCurrencyCode() ), "", new PayPalCardChargeListener()
+        {
+        @Override
+        public void onChargeSuccess( PayPalCard card, String proofOfPayment )
+            {
+            Analytics.getInstance( PaymentActivity.this ).trackPaymentCompleted( mPrintOrder, Analytics.PAYMENT_METHOD_CREDIT_CARD );
+
+            dialog.dismiss();
+            submitOrderForPrinting( proofOfPayment );
+            card.saveAsLastUsedCard( PaymentActivity.this );
             }
 
-            @Override
-            public void onError(PayPalCard card, Exception ex) {
-                dialog.dismiss();
-                showErrorDialog(ex.getMessage());
+        @Override
+        public void onError( PayPalCard card, Exception ex )
+            {
+            dialog.dismiss();
+            showErrorDialog( ex.getMessage() );
             }
-        });
+        } );
     }
 
     private void showErrorDialog(String message) {
@@ -322,9 +389,9 @@ public class PaymentActivity extends Activity {
 
     private void submitOrderForPrinting(String proofOfPayment) {
         if (proofOfPayment!=null) {
-            printOrder.setProofOfPayment(proofOfPayment);
+            mPrintOrder.setProofOfPayment( proofOfPayment );
         }
-        printOrder.saveToHistory(this);
+        //mPrintOrder.saveToHistory(this);
 
         final ProgressDialog dialog = new ProgressDialog(this);
         dialog.setCancelable(false);
@@ -335,46 +402,55 @@ public class PaymentActivity extends Activity {
         dialog.setMax(100);
         dialog.show();
 
-        printOrder.submitForPrinting(this, new PrintOrderSubmissionListener() {
-            @Override
-            public void onProgress(PrintOrder printOrder, int totalAssetsUploaded, int totalAssetsToUpload, long totalAssetBytesWritten, long totalAssetBytesExpectedToWrite, long totalBytesWritten, long totalBytesExpectedToWrite) {
-                if (Looper.myLooper() != Looper.getMainLooper()) throw new AssertionError("Should be calling back on the main thread");
-                final float step = (1.0f / totalAssetsToUpload);
-                float progress = totalAssetsUploaded * step + (totalAssetBytesWritten / (float) totalAssetBytesExpectedToWrite) * step;
-                dialog.setProgress((int) (totalAssetsUploaded * step * 100));
-                dialog.setSecondaryProgress((int) (progress * 100));
-                dialog.setMessage("Uploading images");
+        mPrintOrder.submitForPrinting( this, new PrintOrderSubmissionListener()
+        {
+        @Override
+        public void onProgress( PrintOrder printOrder, int totalAssetsUploaded, int totalAssetsToUpload, long totalAssetBytesWritten, long totalAssetBytesExpectedToWrite, long totalBytesWritten, long totalBytesExpectedToWrite )
+            {
+            if ( Looper.myLooper() != Looper.getMainLooper() )
+                throw new AssertionError( "Should be calling back on the main thread" );
+            final float step = (1.0f / totalAssetsToUpload);
+            float progress = totalAssetsUploaded * step + (totalAssetBytesWritten / (float) totalAssetBytesExpectedToWrite) * step;
+            dialog.setProgress( (int) (totalAssetsUploaded * step * 100) );
+            dialog.setSecondaryProgress( (int) (progress * 100) );
+            dialog.setMessage( "Uploading images" );
             }
 
-            @Override
-            public void onSubmissionComplete(PrintOrder printOrder, String orderIdReceipt) {
-                if (Looper.myLooper() != Looper.getMainLooper()) throw new AssertionError("Should be calling back on the main thread");
-                printOrder.saveToHistory(PaymentActivity.this);
-                dialog.dismiss();
-                Intent i = new Intent(PaymentActivity.this, OrderReceiptActivity.class);
-                i.putExtra(OrderReceiptActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder);
-                startActivityForResult(i, REQUEST_CODE_RECEIPT);
+        @Override
+        public void onSubmissionComplete( PrintOrder printOrder, String orderIdReceipt )
+            {
+            if ( Looper.myLooper() != Looper.getMainLooper() )
+                throw new AssertionError( "Should be calling back on the main thread" );
+            //mPrintOrder.saveToHistory(PaymentActivity.this);
+            dialog.dismiss();
+            Intent i = new Intent( PaymentActivity.this, OrderReceiptActivity.class );
+            i.putExtra( OrderReceiptActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder );
+            startActivityForResult( i, REQUEST_CODE_RECEIPT );
+
+            Analytics.getInstance( PaymentActivity.this ).trackOrderSubmission( printOrder );
             }
 
-            @Override
-            public void onError(PrintOrder printOrder, Exception error) {
-                if (Looper.myLooper() != Looper.getMainLooper()) throw new AssertionError("Should be calling back on the main thread");
-                printOrder.saveToHistory(PaymentActivity.this);
-                dialog.dismiss();
-                //showErrorDialog(error.getMessage());
+        @Override
+        public void onError( PrintOrder printOrder, Exception error )
+            {
+            if ( Looper.myLooper() != Looper.getMainLooper() )
+                throw new AssertionError( "Should be calling back on the main thread" );
+            //mPrintOrder.saveToHistory(PaymentActivity.this);
+            dialog.dismiss();
+            //showErrorDialog(error.getMessage());
 
-                Intent i = new Intent(PaymentActivity.this, OrderReceiptActivity.class);
-                i.putExtra(OrderReceiptActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder);
-                startActivityForResult(i, REQUEST_CODE_RECEIPT);
+            Intent i = new Intent( PaymentActivity.this, OrderReceiptActivity.class );
+            i.putExtra( OrderReceiptActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder );
+            startActivityForResult( i, REQUEST_CODE_RECEIPT );
             }
-        });
+        } );
     }
 
     private void updateViewsBasedOnPromoCodeChange() {
         Button applyButton = (Button) findViewById(R.id.button_apply_promo);
         EditText promoText = (EditText) findViewById(R.id.edit_text_promo_code);
-        if (printOrder.getPromoCode() != null) {
-            promoText.setText(printOrder.getPromoCode());
+        if ( mPrintOrder.getPromoCode() != null) {
+            promoText.setText( mPrintOrder.getPromoCode());
             promoText.setEnabled(false);
             applyButton.setText("Clear");
         } else {
@@ -384,7 +460,7 @@ public class PaymentActivity extends Activity {
         }
 
         Button payWithCreditCardButton = (Button) findViewById(R.id.button_pay_with_credit_card);
-        if (printOrder.getCost(printOrder.getCurrencyCode()).compareTo(BigDecimal.ZERO) <= 0) {
+        if ( mPrintOrder.getCost( mPrintOrder.getCurrencyCode()).compareTo(BigDecimal.ZERO) <= 0) {
             findViewById(R.id.button_pay_with_paypal).setVisibility(View.GONE);
             payWithCreditCardButton.setText("Checkout for Free!");
             payWithCreditCardButton.setOnClickListener(new View.OnClickListener() {
@@ -402,9 +478,9 @@ public class PaymentActivity extends Activity {
     }
 
     public void onButtonApplyClicked(View view) {
-        if (printOrder.getPromoCode() != null) {
+        if ( mPrintOrder.getPromoCode() != null) {
             // Clear promo code
-            printOrder.clearPromoCode();
+            mPrintOrder.clearPromoCode();
             updateViewsBasedOnPromoCodeChange();
         } else {
             // Apply promo code
@@ -415,7 +491,7 @@ public class PaymentActivity extends Activity {
             dialog.show();
 
             String promoCode = ((EditText) findViewById(R.id.edit_text_promo_code)).getText().toString();
-            printOrder.applyPromoCode(promoCode, new ApplyPromoCodeListener() {
+            mPrintOrder.applyPromoCode( this, promoCode, new ApplyPromoCodeListener() {
                 @Override
                 public void onPromoCodeApplied(PrintOrder order, BigDecimal discount) {
                     dialog.dismiss();
@@ -435,15 +511,38 @@ public class PaymentActivity extends Activity {
     /**
      * A placeholder fragment containing a simple view.
      */
+    // TODO: Remove inner fragment
     public static class PlaceholderFragment extends Fragment {
 
-        private final PrintOrder printOrder;
+        final static String BUNDLE_KEY_PRINT_ORDER = "mPrintOrder";
 
-        public PlaceholderFragment(PrintOrder printOrder) {
-            this.printOrder = printOrder;
-        }
+        private PrintOrder printOrder;
+
+
+        static PlaceholderFragment newInstance( PrintOrder printOrder )
+          {
+          Bundle argumentBundle = new Bundle();
+
+          argumentBundle.putParcelable( BUNDLE_KEY_PRINT_ORDER, printOrder );
+
+          PlaceholderFragment placeholderFragment = new PlaceholderFragment();
+          placeholderFragment.setArguments( argumentBundle );
+
+          return ( placeholderFragment );
+          }
+
 
         @Override
+        public void onCreate( Bundle savedInstanceState )
+          {
+          super.onCreate( savedInstanceState );
+
+          Bundle argumentBundle = getArguments();
+
+          this.printOrder = (PrintOrder)argumentBundle.getParcelable( BUNDLE_KEY_PRINT_ORDER );
+          }
+
+
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_payment, container, false);
             return rootView;

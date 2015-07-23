@@ -1,0 +1,13 @@
+<resources>
+
+    <style name="Theme.KiteSDK.ProductSelection" parent="android:Theme.DeviceDefault.Light">
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowActionBarOverlay">false</item>
+        <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar.Translucent</item>
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:statusBarColor">@color/translucent_status_bar</item>
+        <item name="android:navigationBarColor">@color/opaque_navigation_bar</item>
+    </style>
+
+</resources>
