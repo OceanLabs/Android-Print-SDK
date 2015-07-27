@@ -88,7 +88,7 @@ public class PaymentActivity extends Activity {
         String apiKey = getIntent().getStringExtra(EXTRA_PRINT_API_KEY);
         String envString = getIntent().getStringExtra(EXTRA_PRINT_ENVIRONMENT);
 
-    this.mPrintOrder = (PrintOrder) getIntent().getParcelableExtra(EXTRA_PRINT_ORDER);
+        this.mPrintOrder = (PrintOrder) getIntent().getParcelableExtra(EXTRA_PRINT_ORDER);
 
         if (apiKey == null) {
             throw new IllegalArgumentException("You must specify an API key string extra in the intent used to start the PaymentActivity");
@@ -104,8 +104,7 @@ public class PaymentActivity extends Activity {
                     .commit();
         }
 
-//        KitePrintSDK.Environment env = KitePrintSDK.Environment.LIVE;
-        KiteSDK.Environment env = KiteSDK.Environment.TEST;
+        KiteSDK.Environment env = KiteSDK.Environment.LIVE;
         this.paypalEnvironment = PayPalCard.Environment.LIVE;
         if (envString != null) {
             if (envString.equals(ENVIRONMENT_STAGING)) {
@@ -128,7 +127,8 @@ public class PaymentActivity extends Activity {
 
         PayPalConfiguration payPalConfiguration = new PayPalConfiguration()
                 .clientId( printEnvironment.getPayPalClientId() )
-                .environment( printEnvironment.getPayPalEnvironment() );
+                .environment( printEnvironment.getPayPalEnvironment() )
+                .acceptCreditCards( false );
 
         Intent intent = new Intent( this, PayPalService.class );
         intent.putExtra( PayPalService.EXTRA_PAYPAL_CONFIGURATION, payPalConfiguration );
@@ -232,8 +232,8 @@ public class PaymentActivity extends Activity {
 
     private void payWithNewCard() {
         Intent scanIntent = new Intent(this, CardIOActivity.class);
-        //scanIntent.putExtra(CardIOActivity.EXTRA_APP_TOKEN, CARD_IO_TOKEN);
         scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_EXPIRY, true);
+        scanIntent.putExtra(CardIOActivity.EXTRA_NO_CAMERA, true);
         scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_CVV, true);
         scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_POSTAL_CODE, false);
         startActivityForResult(scanIntent, REQUEST_CODE_CREDITCARD);
