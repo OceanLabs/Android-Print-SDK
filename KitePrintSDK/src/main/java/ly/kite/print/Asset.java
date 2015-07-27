@@ -184,8 +184,8 @@ public class Asset implements Parcelable, Serializable {
 
 
     public Asset(Uri uri) {
-        if (!uri.getScheme().equalsIgnoreCase("content") /*&& !uri.getScheme().equalsIgnoreCase("http") && !uri.getScheme().equalsIgnoreCase("https")*/) {
-            throw new IllegalArgumentException("Only uris with content schemes are currently supported, your scheme " + uri.getScheme() + " is not");
+        if (!uri.getScheme().equalsIgnoreCase("content") && !uri.getScheme().equalsIgnoreCase("file")) {
+            throw new IllegalArgumentException("Only uris with content & file schemes are currently supported, your scheme " + uri.getScheme() + " is not");
         }
 
         this.type = AssetType.IMAGE_URI;
