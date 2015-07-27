@@ -10,7 +10,7 @@ NEXUS_USERNAME=???
 NEXUS_PASSWORD=???
 
 0. Ensure you're on master branch!
-1. Update top level /gradle.properties as appropriate bumping the SDK version at the very least. Use semantic versioning http://semver.org/. Include SNAPSHOT in VERSION_NAME (e.g. 2.0.0-SNAPSHOT) to deploy debug snapshot for testing first
+1. Update top level /gradle.properties as appropriate bumping the SDK version at the very least. Use semantic versioning http://semver.org/. Include SNAPSHOT in VERSION_NAME (e.g. 2.0.0-SNAPSHOT) to deploy debug snapshot for testing first. Also update KiteSDK.java version to reflect this.
 2. If not a test/snapshot release then commit changes & git tag the project with VERSION_NAME specified in previous step i.e. 'git tag 2.0.0'. git push; git push --tags;
 3. CLEAN THE PROJECT (otherwise cached files can be erroneously included) then run "./gradlew uploadArchives" to push to Maven Central
 
