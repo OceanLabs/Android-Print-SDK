@@ -620,7 +620,7 @@ public class ProductLoader implements HTTPJSONRequest.BaseRequestListener
 
     // We need to perform a new retrieval. Create a new request, and consumer list containing the consumer.
 
-    String url = String.format( REQUEST_FORMAT_STRING, KiteSDK.getInstance( mContext ).getPrintAPIEndpoint() );
+    String url = String.format( REQUEST_FORMAT_STRING, KiteSDK.getInstance( mContext ).getAPIEndpoint() );
 
     mHTTPJSONRequest = new HTTPJSONRequest( mContext, HTTPJSONRequest.HttpMethod.GET, url, null, null );
     mConsumerHandlerList = new ArrayList<Pair<ProductConsumer,Handler>>();

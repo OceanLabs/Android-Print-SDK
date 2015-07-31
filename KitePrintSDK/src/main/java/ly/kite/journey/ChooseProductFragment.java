@@ -49,9 +49,10 @@ import android.widget.AdapterView;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import ly.kite.R;
 import ly.kite.analytics.Analytics;
-import ly.kite.print.Product;
-import ly.kite.print.ProductGroup;
+import ly.kite.product.Product;
+import ly.kite.product.ProductGroup;
 
 
 ///// Class Declaration /////
@@ -128,15 +129,10 @@ public class ChooseProductFragment extends AGroupOrProductFragment
       {
       mProductGroup = (ProductGroup)arguments.getParcelable( BUNDLE_KEY_PRODUCT_GROUP );
 
-      if ( mProductGroup != null )
-        {
-        mKiteActivity.setTitle( mProductGroup.getDisplayLabel() );
-        }
-      else
+      if ( mProductGroup == null )
         {
         Log.e( TAG, "No product group found in arguments" );
         }
-
       }
     }
 
@@ -158,6 +154,18 @@ public class ChooseProductFragment extends AGroupOrProductFragment
       }
 
     return ( view );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the fragment is top-most.
+   *
+   *****************************************************/
+  @Override
+  protected void onTop()
+    {
+    if ( mProductGroup != null ) mKiteActivity.setTitle( mProductGroup.getDisplayLabel() );
     }
 
 

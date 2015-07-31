@@ -47,8 +47,9 @@ import android.util.Log;
 
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 
-import ly.kite.print.Asset;
-import ly.kite.product.ProductCreationActivity;
+import ly.kite.product.Asset;
+import ly.kite.journey.ProductCreationActivity;
+import ly.kite.product.AssetHelper;
 
 
 ///// Class Declaration /////
@@ -254,6 +255,14 @@ public class KiteSDK
    *****************************************************/
   public void startShopping( Context context, ArrayList<Asset> assetArrayList )
     {
+    // Clear any temporary assets before starting a new session
+    AssetHelper.clearCachedImages( context );
+
+    // Make sure all the assets are parcelable (this may create some new cached
+    // assets). Note that from here on in the SDK is responsible for ensuring
+    // that any newly created assets are parcelable.
+    assetArrayList = AssetHelper.toParcelableList( context, assetArrayList );
+
     // We use the activity context here, not the application context
     ProductCreationActivity.start( context, assetArrayList );
     }
@@ -264,7 +273,7 @@ public class KiteSDK
    * Returns the print API endpoint.
    *
    *****************************************************/
-  public String getPrintAPIEndpoint()
+  public String getAPIEndpoint()
     {
     return ( mEnvironment.getPrintAPIEndpoint() );
     }

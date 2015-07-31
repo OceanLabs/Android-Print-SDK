@@ -1,0 +1,38 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true">
+
+    <GridView
+        android:id="@+id/image_source_grid_view"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.0"/>
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.0">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/image_recycler_view"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"/>
+
+        <include layout="@layout/include_proceed_overlay"/>
+
+        <Button
+            android:id="@+id/clear_photos_button"
+            android:layout_gravity="bottom"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/image_selection_clear_photos_button_background"
+            android:padding="20dp"
+            android:gravity="center"
+            android:visibility="gone"/>
+
+    </FrameLayout>
+
+</LinearLayout>

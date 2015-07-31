@@ -52,7 +52,7 @@ public enum UserJourneyType
   {
   CIRCLE,
   FRAME,
-  GREETINGCARD,
+  GREETING_CARD,
   PHONE_CASE,
   PHOTOBOOK,
   POSTCARD,

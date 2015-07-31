@@ -23,7 +23,7 @@ class SubmitPrintOrderRequest {
         assert req == null : "you can only submit a request once";
 
         JSONObject json = printOrder.getJSONRepresentation();
-        String url = String.format("%s/print", KiteSDK.getInstance( context ).getPrintAPIEndpoint());
+        String url = String.format("%s/print", KiteSDK.getInstance( context ).getAPIEndpoint());
         req = new HTTPJSONRequest( context, HTTPJSONRequest.HttpMethod.POST, url, null, json.toString());
         req.start(new HTTPJSONRequest.BaseRequestListener() {
             @Override

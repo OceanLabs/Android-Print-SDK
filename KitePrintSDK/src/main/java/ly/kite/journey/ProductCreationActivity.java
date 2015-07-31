@@ -55,12 +55,12 @@ import java.util.ArrayList;
 import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.checkout.CheckoutActivity;
-import ly.kite.print.Asset;
-import ly.kite.print.PrintJob;
-import ly.kite.print.PrintOrder;
-import ly.kite.print.Product;
-import ly.kite.print.ProductGroup;
-import ly.kite.product.UserJourneyCoordinator;
+import ly.kite.product.Asset;
+import ly.kite.product.AssetHelper;
+import ly.kite.product.PrintJob;
+import ly.kite.product.PrintOrder;
+import ly.kite.product.Product;
+import ly.kite.product.ProductGroup;
 
 /*****************************************************
  *
@@ -77,7 +77,7 @@ public class ProductCreationActivity extends AKiteActivity implements FragmentMa
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                         = "ProductSelectionAct.";  // Can't be more than 23 characters ... who knew?!
+  private static final String  LOG_TAG                         = "ProductCreationActivity";  // Can't be more than 23 characters ... who knew?!
 
   private static final String  INTENT_EXTRA_NAME_ASSET_LIST    = KiteSDK.INTENT_PREFIX + ".AssetList";
 
@@ -397,6 +397,8 @@ public class ProductCreationActivity extends AKiteActivity implements FragmentMa
       FragmentManager.BackStackEntry entry = mFragmentManager.getBackStackEntryAt( entryCount - 1 );
 
       mCurrentFragment = (AJourneyFragment)mFragmentManager.findFragmentByTag( entry.getName() );
+
+      mCurrentFragment.onTop();
       }
     catch ( Exception e )
       {

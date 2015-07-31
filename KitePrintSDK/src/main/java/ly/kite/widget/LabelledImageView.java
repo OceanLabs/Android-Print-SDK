@@ -47,7 +47,6 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.ImageView;
@@ -67,7 +66,7 @@ import ly.kite.R;
  * stage, fading them in where appropriate.
  *
  *****************************************************/
-public class LabelledImageView extends AFixedRatioImageFrame implements IImageConsumer, Animation.AnimationListener
+public class LabelledImageView extends AFixableImageFrame implements IImageConsumer, Animation.AnimationListener
   {
   ////////// Static Constant(s) //////////
 
@@ -85,11 +84,8 @@ public class LabelledImageView extends AFixedRatioImageFrame implements IImageCo
   ////////// Member Variable(s) //////////
 
   private ImageView     mEmptyFrameImageView;
-  private ImageView     mImageView;
   private OverlayLabel  mOverlayLabel;
   private ProgressBar   mProgressBar;
-
-  private float         mWidthToHeightMultiplier;
 
   private Object        mKey;
 
@@ -107,63 +103,60 @@ public class LabelledImageView extends AFixedRatioImageFrame implements IImageCo
   public LabelledImageView( Context context )
     {
     super( context );
-
-    initialise( context );
     }
 
   public LabelledImageView( Context context, AttributeSet attrs )
     {
     super( context, attrs );
-
-    initialise( context );
     }
 
   public LabelledImageView( Context context, AttributeSet attrs, int defStyleAttr )
     {
     super( context, attrs, defStyleAttr );
-
-    initialise( context );
     }
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   public LabelledImageView( Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes )
     {
     super( context, attrs, defStyleAttr, defStyleRes );
-
-    initialise( context );
     }
 
 
-  ////////// View Method(s) //////////
+  ////////// AFixableImageFrame Method(s) //////////
 
   /*****************************************************
    *
-   * Called to measure the view.
+   * Returns the content view.
    *
    *****************************************************/
   @Override
-  protected void onMeasure( int widthMeasureSpec, int heightMeasureSpec )
+  protected View onCreateView( Context context )
     {
-    // If an aspect ratio was set - set the image view dimensions
+    // Inflate the layout and attach it to this view
 
-    if ( mWidthToHeightMultiplier > 0.0001f )
-      {
-      int widthMode = MeasureSpec.getMode( widthMeasureSpec );
-      int widthSize = MeasureSpec.getSize( widthMeasureSpec );
+    LayoutInflater layoutInflater = LayoutInflater.from( context );
 
-      if ( widthMode == MeasureSpec.AT_MOST || widthMode == MeasureSpec.EXACTLY )
-        {
-        ViewGroup.LayoutParams imageLayoutParams = mImageView.getLayoutParams();
-
-        imageLayoutParams.width  = widthSize;
-        imageLayoutParams.height = (int)( widthSize * mWidthToHeightMultiplier );
-
-        mImageView.setLayoutParams( imageLayoutParams );
-        }
-      }
+    View view = layoutInflater.inflate( R.layout.labelled_image_view, this, true );
 
 
-    super.onMeasure( widthMeasureSpec, heightMeasureSpec );
+    // Save references to the child views
+    mEmptyFrameImageView = (ImageView)view.findViewById( R.id.empty_frame_image_view );
+    mOverlayLabel        = (OverlayLabel)view.findViewById( R.id.overlay_label );
+    mProgressBar         = (ProgressBar)view.findViewById( R.id.progress_bar );
+
+
+    // Set up the overlay label
+
+    Resources resources = context.getResources();
+
+    mOverlayLabel.setCornerRadius( resources.getDimension( R.dimen.labelled_image_label_corner_radius ) );
+    mOverlayLabel.setBackgroundShadow(
+            resources.getColor( R.color.labelled_image_label_shadow ),
+            resources.getDimension( R.dimen.labelled_image_label_shadow_blur_radius ),
+            resources.getDimension( R.dimen.labelled_image_label_shadow_y_offset ) );
+
+
+    return ( view );
     }
 
 
@@ -247,52 +240,6 @@ public class LabelledImageView extends AFixedRatioImageFrame implements IImageCo
 
 
   ////////// Method(s) //////////
-
-  /*****************************************************
-   *
-   * Initialises this product item image.
-   *
-   *****************************************************/
-  @Override
-  protected void initialise( Context context )
-    {
-    // Inflate the layout and attach it to this view
-
-    LayoutInflater layoutInflater = LayoutInflater.from( context );
-
-    View view = layoutInflater.inflate( R.layout.labelled_image_view, this, true );
-
-
-    // Save references to the child views
-    mEmptyFrameImageView = (ImageView)view.findViewById( R.id.empty_frame_image_view );
-    mOverlayLabel        = (OverlayLabel)view.findViewById( R.id.overlay_label );
-    mProgressBar         = (ProgressBar)view.findViewById( R.id.progress_bar );
-
-
-    // Set up the overlay label
-
-    Resources resources = context.getResources();
-
-    mOverlayLabel.setCornerRadius( resources.getDimension( R.dimen.labelled_image_label_corner_radius ) );
-    mOverlayLabel.setBackgroundShadow(
-            resources.getColor( R.color.labelled_image_label_shadow ),
-            resources.getDimension( R.dimen.labelled_image_label_shadow_blur_radius ),
-            resources.getDimension( R.dimen.labelled_image_label_shadow_y_offset ) );
-
-    super.initialise( view, R.id.image_view );
-    }
-
-
-  /*****************************************************
-   *
-   * Sets the aspect ratio for images.
-   *
-   *****************************************************/
-  public void setAspectRatio( float aspectRatio )
-    {
-    mWidthToHeightMultiplier = 1.0f / aspectRatio;
-    }
-
 
   /*****************************************************
    *

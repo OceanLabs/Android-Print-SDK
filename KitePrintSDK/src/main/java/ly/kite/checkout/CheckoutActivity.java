@@ -27,14 +27,14 @@ import org.json.JSONObject;
 
 import ly.kite.KiteSDK;
 import ly.kite.analytics.Analytics;
-import ly.kite.print.PrintJob;
-import ly.kite.print.PrintOrder;
+import ly.kite.product.PrintJob;
+import ly.kite.product.PrintOrder;
 import ly.kite.R;
 import ly.kite.address.Address;
 import ly.kite.address.AddressBookActivity;
-import ly.kite.print.Product;
-import ly.kite.print.ProductGroup;
-import ly.kite.print.ProductLoader;
+import ly.kite.product.Product;
+import ly.kite.product.ProductGroup;
+import ly.kite.product.ProductLoader;
 
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;

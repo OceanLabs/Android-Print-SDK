@@ -6,18 +6,18 @@ import org.json.JSONObject;
 
 import java.math.BigDecimal;
 
-import ly.kite.print.BaseRequest;
+import ly.kite.product.HTTPJSONRequest;
 import ly.kite.KiteSDK;
 import ly.kite.KiteSDKException;
-import ly.kite.print.PrintJob;
-import ly.kite.print.PrintOrder;
+import ly.kite.product.PrintJob;
+import ly.kite.product.PrintOrder;
 
 /**
  * Created by deonbotha on 17/02/2014.
  */
 public class CheckPromoRequest {
 
-    private BaseRequest req;
+    private HTTPJSONRequest req;
 
     public void checkPromoCode( Context context, String promoCode, PrintOrder order, final CheckPromoCodeRequestListener listener) {
         if (req != null) throw new AssertionError("only one check promo code request can be in progress at a time");
@@ -29,9 +29,9 @@ public class CheckPromoRequest {
             templateCostBreakdown.append(String.format("%s:%s", j.getProductId(), j.getCost(order.getCurrencyCode()).toString()));
         }
 
-        String url = String.format("%s/promo_code/check?code=%s&templates=%s&currency=%s", KiteSDK.getInstance( context ).getPrintAPIEndpoint(), promoCode, templateCostBreakdown.toString(), order.getCurrencyCode());
-        req = new BaseRequest(context, BaseRequest.HttpMethod.GET, url, null, null);
-        req.start(new BaseRequest.BaseRequestListener() {
+        String url = String.format("%s/promo_code/check?code=%s&templates=%s&currency=%s", KiteSDK.getInstance( context ).getAPIEndpoint(), promoCode, templateCostBreakdown.toString(), order.getCurrencyCode());
+        req = new HTTPJSONRequest(context, HTTPJSONRequest.HttpMethod.GET, url, null, null);
+        req.start(new HTTPJSONRequest.BaseRequestListener() {
             @Override
             public void onSuccess(int httpStatusCode, JSONObject json) {
                 try {

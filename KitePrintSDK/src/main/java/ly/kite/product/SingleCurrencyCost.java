@@ -210,17 +210,17 @@ public class SingleCurrencyCost implements Parcelable
    * Returns the amount as a displayable string for the
    * supplied locale.
    *
-   * If the currency matches the main currency for the
-   * supplied locale, then we use the number formatter
-   * to format the amount.
+   * If our currency is the same as the main currency in use
+   * for the supplied locale, then we use the number formatter
+   * to format the amount - which will give a localised string.
    *
-   * If the currency is different, then we format
-   * the amount with the full currency code. We do this to
-   * avoid any ambiguity. For example, if we were to live in
-   * Sweden but found a cost in Danish Krone, then having an
-   * amount such as 4.00 kr would be ambiguous (because we
-   * would believe we were being quoted in Swedish Kroner).
-
+   * If the currency is different, then we format the amount with
+   * the full currency code. We do this to avoid any ambiguity.
+   * For example, if we were to live in Sweden but found a cost
+   * in Danish Krone, then having an amount such as "4.00 kr"
+   * would be misleading (because we would believe we were being
+   * quoted in Swedish Kronor).
+   *
    *****************************************************/
   public String getDisplayAmountForLocale( Locale locale )
     {

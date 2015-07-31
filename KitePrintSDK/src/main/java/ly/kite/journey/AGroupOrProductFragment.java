@@ -54,8 +54,7 @@ import java.net.URL;
 import java.util.List;
 
 import ly.kite.R;
-import ly.kite.print.ProductLoader;
-import ly.kite.product.AKiteActivity;
+import ly.kite.product.ProductLoader;
 import ly.kite.product.IGroupOrProduct;
 import ly.kite.util.ImageLoader;
 import ly.kite.widget.HeaderFooterGridView;
@@ -125,13 +124,6 @@ abstract public class AGroupOrProductFragment extends AJourneyFragment implement
 
     mGridView    = (HeaderFooterGridView)view.findViewById( R.id.grid_view );
     mProgressBar = (ProgressBar)view.findViewById( R.id.progress_bar );
-
-
-    // Add a header view to the grid, that matches the height of the status bar + action bar. When
-    // the content is at the top, it will align with the action bar. This needs to be done before
-    // the adaptor is set, i.e. before we retrieve the products.
-
-    //addHeaderFooterSpacers();
 
 
     setManagedAdaptorView( mGridView );
@@ -236,103 +228,6 @@ abstract public class AGroupOrProductFragment extends AJourneyFragment implement
     {
     mProgressBar.setVisibility( View.GONE );
     }
-
-
-//  /*****************************************************
-//   *
-//   * Adds a header to the supplied grid view.
-//   *
-//   *****************************************************/
-//  private void addHeaderFooterSpacers()
-//    {
-//    // Calculate the height. Start with the action bar size, and remember to deduct the vertical spacing
-//    // height, otherwise the first spacer appears below the action bar.
-//
-//    Resources resources = getResources();
-//
-//    // Start by deducting the grid's vertical spacing
-//    int headerSpacerHeight = - (int)getResources().getDimension( R.dimen.group_or_product_grid_vertical_spacing );
-//    //int footerSpacerHeight = - (int)getResources().getDimension( R.dimen.group_or_product_grid_vertical_spacing );
-//    int footerSpacerHeight = 0;
-//
-//
-//    // Add the action bar height
-//
-//    TypedValue typedValue = new TypedValue();
-//
-//    if ( mKiteActivity.getTheme().resolveAttribute( android.R.attr.actionBarSize, typedValue, true ) )
-//      {
-//      headerSpacerHeight += TypedValue.complexToDimensionPixelSize( typedValue.data, resources.getDisplayMetrics() );
-//      }
-//
-//
-//    // If we are running on Lollipop onwards, the status and navigation bars are also transparent, so getCost their heights
-//    // and adjust the spacers' heights accordingly. Note that the navigation bar is only counted if the device is in
-//    // portrait orientation, since the navigation bar gets moved over to the side in landscape orientation.
-//
-//    if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP )
-//      {
-//      // Status bar
-//
-//      int statusBarHeightResourceId = getResources().getIdentifier( "status_bar_height", "dimen", "android" );
-//
-//      if ( statusBarHeightResourceId > 0 )
-//        {
-//        headerSpacerHeight += getResources().getDimensionPixelSize( statusBarHeightResourceId );
-//        }
-//
-//
-//      // Navigation bar
-//
-////      Rect visibleFrame = new Rect();
-////      getWindow().getDecorView().getWindowVisibleDisplayFrame(visibleFrame);
-////      DisplayMetrics dm = getResources().getDisplayMetrics();
-////
-////      View rootView = getWindow().getDecorView().getRootView();
-////
-////      Point point = new Point();
-////      Display defaultDisplay = getWindow().getWindowManager().getDefaultDisplay();
-////      defaultDisplay.getSize( point );
-//
-//
-////      int orientation = getResources().getConfiguration().orientation;
-////
-////      int navigationBarHeightResourceId = getResources().getIdentifier(
-////              ( orientation == Configuration.ORIENTATION_PORTRAIT ? "navigation_bar_height" : "navigation_bar_height_landscape" ), "dimen", "android" );
-////
-////      if ( navigationBarHeightResourceId > 0 )
-////        {
-////        footerSpacerHeight += getResources().getDimensionPixelSize( navigationBarHeightResourceId );
-////        }
-//      }
-//
-//
-//    // Create the spacers to the grid
-//
-//    mGridView.addHeaderView( newSpacerView( headerSpacerHeight ) );
-//
-//    if ( footerSpacerHeight > 0 )
-//      {
-//      mGridView.addFooterView( newSpacerView( footerSpacerHeight ) );
-//      }
-//    }
-//
-//
-//  /*****************************************************
-//   *
-//   * Creates a view and sets its height.
-//   *
-//   *****************************************************/
-//  private View newSpacerView( int height )
-//    {
-//    View view = new View( mKiteActivity );
-//
-//    GridView.LayoutParams layoutParams = new GridView.LayoutParams( GridView.LayoutParams.MATCH_PARENT, height );
-//
-//    view.setLayoutParams( layoutParams );
-//
-//    return ( view );
-//    }
 
 
   ////////// Inner Class(es) //////////
@@ -531,7 +426,7 @@ abstract public class AGroupOrProductFragment extends AJourneyFragment implement
 
       viewReferences.productImageView.setKey( imageURL );
 
-      mImageManager.getRemoteImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, imageURL, parent.getHandler(), viewReferences.productImageView );
+      mImageManager.requestRemoteImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, imageURL, parent.getHandler(), viewReferences.productImageView );
 
 
       return ( view );

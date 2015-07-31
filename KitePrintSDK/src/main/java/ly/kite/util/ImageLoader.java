@@ -39,12 +39,10 @@ package ly.kite.util;
 
 ///// Import(s) /////
 
-
-///// Class Declaration /////
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Log;
 import android.util.Pair;
@@ -59,8 +57,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 
-import ly.kite.print.Asset;
-import ly.kite.print.AssetGetBytesListener;
+
+///// Class Declaration /////
 
 /*****************************************************
  *
@@ -96,7 +94,8 @@ public class ImageLoader
   private File                                            mCacheDirectory;
 
   // In-memory image cache
-  // TODO: Change this into a LRU-MRU chain with a memory size limit
+  // TODO: Re-enable in-memory caching, and change this into a LRU-MRU chain
+  // TODO: with a memory size limit.
   private Hashtable<String,Bitmap>                        mImageTable;
 
   // Images that are currently being processed
@@ -158,6 +157,18 @@ public class ImageLoader
     }
 
 
+//  /*****************************************************
+//   *
+//   * Delivers an image to a consumer, using the supplied
+//   * handler.
+//   *
+//   *****************************************************/
+//  public static void postImageToConsumer( Handler callbackHandler, IImageConsumer imageConsumer, Object key, Bitmap bitmap )
+//    {
+//    callbackHandler.post( new ImageAvailableCaller( imageConsumer, key, bitmap ) );
+//    }
+
+
   ////////// Constructor(s) //////////
 
   private ImageLoader( Context context )
@@ -206,10 +217,10 @@ public class ImageLoader
    * if the image is already held in memory, or at a later
    * time once it has been downloaded / loaded into memory.
    *
-   * This method should be called on the UI thread.
+   * Must be called on the UI thread.
    *
    *****************************************************/
-  public void getRemoteImage( String imageClassString, Object key, URL imageURL, Handler callbackHandler, IImageConsumer imageConsumer )
+  public void requestRemoteImage( String imageClassString, Object key, URL imageURL, IImageConsumer imageConsumer )
     {
     String imageURLString = imageURL.toString();
 
@@ -221,48 +232,43 @@ public class ImageLoader
     if ( bitmap != null )
       {
       // We don't need to use the handler since we should have been called on the UI thread.
-      imageConsumer.onImageImmediate( imageURL, bitmap );
+      imageConsumer.onImageAvailable( imageURL, bitmap );
 
       return;
       }
 
 
     // If the image is already being processed - add the consumer to the list of those wanting the
-    // image. Otherwise create an in-progress entry for it.
+    // image.
 
     ArrayList<CallbackInfo> callbackInfoList;
 
-    CallbackInfo callbackInfo = new CallbackInfo( callbackHandler, imageConsumer, key );
+    CallbackInfo callbackInfo = new CallbackInfo( imageConsumer, key );
 
-    synchronized ( mInProgressTable )
+    callbackInfoList = mInProgressTable.get( imageURLString );
+
+    if ( callbackInfoList != null )
       {
-      callbackInfoList = mInProgressTable.get( imageURLString );
-
-      if ( callbackInfoList != null )
-        {
-        callbackInfoList.add( callbackInfo );
-
-        return;
-        }
-
-
-      // Create a new in-progress entry
-
-      callbackInfoList = new ArrayList<>();
-
       callbackInfoList.add( callbackInfo );
 
-      mInProgressTable.put( imageURLString, callbackInfoList );
+      return;
       }
+
+
+    // The image isn't already being processed, so create a new in-progress entry for it.
+
+    callbackInfoList = new ArrayList<>();
+
+    callbackInfoList.add( callbackInfo );
+
+    mInProgressTable.put( imageURLString, callbackInfoList );
 
 
     // Start a new processor in the background for this image. Note that we don't impose any thread limit
     // at this point. It may be that we have to introduce a size-limited pool of processors in the future
     // if this gets too silly.
 
-    Processor processor = new Processor( imageClassString, key, imageURL, imageURLString, callbackInfoList );
-
-    new Thread( processor ).start();
+    new LoadImageTask( imageClassString, key, imageURL, imageURLString, callbackInfoList ).execute();
     }
 
 
@@ -271,38 +277,21 @@ public class ImageLoader
    * Requests an image from a remote URL.
    *
    *****************************************************/
-  public void getRemoteImage( String imageClassString, URL imageURL, Handler callbackHandler, IImageConsumer imageConsumer )
+  public void requestRemoteImage( String imageClassString, URL imageURL, Handler callbackHandler, IImageConsumer imageConsumer )
     {
-    getRemoteImage( imageClassString, imageURL, imageURL, callbackHandler, imageConsumer );
+    requestRemoteImage( imageClassString, imageURL, imageURL, imageConsumer );
     }
 
 
   /*****************************************************
    *
-   * Requests an image from an asset.
+   * Requests an image from a remote URL. This must be
+   * called on the UI thread.
    *
    *****************************************************/
-  public void getImage( String imageClassString, Asset asset, Handler callbackHandler, IImageConsumer imageConsumer )
+  public void requestRemoteImage( String imageClassString, URL imageURL, IImageConsumer imageConsumer )
     {
-    switch ( asset.getType() )
-      {
-      case IMAGE_URI:
-      case IMAGE_BYTES:
-      case IMAGE_PATH:
-      case BITMAP_RESOURCE_ID:
-
-        // Get the image bytes - this calls back later on the UI thread
-
-        asset.getBytes( mContext, new AssetBytesCallback( callbackHandler, imageConsumer ) );
-
-        return;
-
-      case REMOTE_URL:
-        getRemoteImage( imageClassString, asset, asset.getRemoteURL(), callbackHandler, imageConsumer );
-        return;
-      }
-
-    throw ( new UnsupportedOperationException( "Cannot get image from unknown asset type: " + asset.getType() ) );
+    requestRemoteImage( imageClassString, imageURL, imageURL, imageConsumer );
     }
 
 
@@ -315,14 +304,12 @@ public class ImageLoader
    *****************************************************/
   private class CallbackInfo
     {
-    Handler        callbackHandler;
     IImageConsumer remoteImageConsumer;
     Object         key;
 
 
-    CallbackInfo( Handler callbackHandler, IImageConsumer remoteImageConsumer, Object key )
+    CallbackInfo( IImageConsumer remoteImageConsumer, Object key )
       {
-      this.callbackHandler     = callbackHandler;
       this.remoteImageConsumer = remoteImageConsumer;
       this.key                 = key;
       }
@@ -334,7 +321,7 @@ public class ImageLoader
    * An image processor (downloader / loader).
    *
    *****************************************************/
-  private class Processor implements Runnable
+  private class LoadImageTask extends AsyncTask<Void,CallbackInfo,Bitmap>
     {
     private String                   mImageClassString;
     private Object                   mKey;
@@ -343,7 +330,7 @@ public class ImageLoader
     private ArrayList<CallbackInfo>  mCallbackInfoList;
 
 
-    Processor( String imageClassString, Object key, URL imageURL, String imageURLString, ArrayList<CallbackInfo>  callbackInfoList )
+    LoadImageTask( String imageClassString, Object key, URL imageURL, String imageURLString, ArrayList<CallbackInfo> callbackInfoList )
       {
       mImageClassString = imageClassString;
       mKey              = key;
@@ -355,11 +342,11 @@ public class ImageLoader
 
     /*****************************************************
      *
-     * The thread entry point for the processor.
+     * The entry point for the processor.
      *
      *****************************************************/
     @Override
-    public void run()
+    protected Bitmap doInBackground( Void... params )
       {
       Pair<String,String> directoryAndFilePath = getImageDirectoryAndFilePath( mImageClassString, mImageURLString );
 
@@ -383,7 +370,7 @@ public class ImageLoader
           {
           // If we fail to download the file, don't continue. The finally block, however,
           // ensures that we clean up the in-progress entry.
-          if ( ! downloadTo( imageDirectory, imageFile ) ) return;
+          if ( ! downloadTo( imageDirectory, imageFile ) ) return ( null );
           }
 
 
@@ -396,21 +383,10 @@ public class ImageLoader
         }
       finally
         {
-        // Remove the in-progress entry
-
-        synchronized ( mInProgressTable )
-          {
-          mInProgressTable.remove( mImageURLString );
-          }
         }
 
 
-      // Notify all the consumers using their callback handlers
-
-      for ( CallbackInfo callbackInfo : mCallbackInfoList )
-        {
-        callbackInfo.callbackHandler.post( new LoadedCallbackCaller( callbackInfo.remoteImageConsumer, mKey, bitmap ) );
-        }
+      return ( bitmap );
       }
 
 
@@ -427,7 +403,7 @@ public class ImageLoader
       // Notify each of the consumers that the image is being downloaded
       for ( CallbackInfo callbackInfo : mCallbackInfoList )
         {
-        callbackInfo.callbackHandler.post( new DownloadingCallbackCaller( callbackInfo.remoteImageConsumer, callbackInfo.key ) );
+        publishProgress( callbackInfo );
         }
 
 
@@ -495,6 +471,42 @@ public class ImageLoader
       return ( false );
       }
 
+
+    /*****************************************************
+     *
+     * Called on the UI thread when the image needs to be
+     * downloaded.
+     *
+     *****************************************************/
+    @Override
+    protected void onProgressUpdate( CallbackInfo... callbackInfo )
+      {
+      callbackInfo[0].remoteImageConsumer.onImageDownloading( callbackInfo[0].key );
+      }
+
+
+    /*****************************************************
+     *
+     * Called on the UI thread when the image processing task
+     * has completed.
+     *
+     *****************************************************/
+    @Override
+    protected void onPostExecute( Bitmap resultBitmap )
+      {
+      // Remove the in-progress entry
+      mInProgressTable.remove( mImageURLString );
+
+      if ( resultBitmap != null )
+        {
+        // Deliver the image to all the consumers
+        for ( CallbackInfo callbackInfo : mCallbackInfoList )
+          {
+          callbackInfo.remoteImageConsumer.onImageAvailable( mKey, resultBitmap );
+          }
+        }
+      }
+
     }
 
 
@@ -526,17 +538,17 @@ public class ImageLoader
 
   /*****************************************************
    *
-   * A callback caller for loaded images.
+   * A callback caller for images.
    *
    *****************************************************/
-  private class LoadedCallbackCaller implements Runnable
+  private static class ImageAvailableCaller implements Runnable
     {
     private IImageConsumer mRemoteImageConsumer;
     private Object         mKey;
     private Bitmap         mBitmap;
 
 
-    LoadedCallbackCaller( IImageConsumer remoteImageConsumer, Object key, Bitmap bitmap )
+    ImageAvailableCaller( IImageConsumer remoteImageConsumer, Object key, Bitmap bitmap )
       {
       mRemoteImageConsumer = remoteImageConsumer;
       mKey                 = key;
@@ -547,60 +559,8 @@ public class ImageLoader
     @Override
     public void run()
       {
-      mRemoteImageConsumer.onImageLoaded( mKey, mBitmap );
+      mRemoteImageConsumer.onImageAvailable( mKey, mBitmap );
       }
     }
 
-
-  /*****************************************************
-   *
-   * A listener for asset image bytes.
-   *
-   *****************************************************/
-  private class AssetBytesCallback implements AssetGetBytesListener
-    {
-    private Handler         mCallbackHandler;
-    private IImageConsumer  mImageConsumer;
-
-
-    AssetBytesCallback( Handler callbackHandler, IImageConsumer imageConsumer )
-      {
-      mCallbackHandler = callbackHandler;
-      mImageConsumer   = imageConsumer;
-      }
-
-
-    @Override
-    public void onBytes( Asset asset, byte[] bytes )
-      {
-      try
-        {
-        // Decode the bytes into a bitmap
-        Bitmap bitmap = BitmapFactory.decodeByteArray( bytes, 0, bytes.length );
-
-        // If we don't have a handler - call the consumer immediately. Otherwise
-        // post the callback caller on the supplied handler.
-
-        if ( mCallbackHandler == null )
-          {
-          mImageConsumer.onImageLoaded( asset, bitmap );
-          }
-        else
-          {
-          mCallbackHandler.post( new LoadedCallbackCaller( mImageConsumer, asset, bitmap ) );
-          }
-        }
-      catch ( Exception exception )
-        {
-        Log.e( LOG_TAG, "Unable to decode asset bytes", exception );
-        }
-      }
-
-
-    @Override
-    public void onError( Asset asset, Exception exception )
-      {
-      Log.e( LOG_TAG, "Unable to get bytes for asset", exception );
-      }
-    }
   }

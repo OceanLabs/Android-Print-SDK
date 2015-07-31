@@ -53,7 +53,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import ly.kite.R;
-import ly.kite.print.ProductLoader;
+import ly.kite.product.ProductLoader;
 
 /*****************************************************
  *
@@ -122,30 +122,7 @@ public abstract class AKiteActivity extends Activity
     super.setContentView( layoutResourceId );
 
 
-    // If we can find a home as up icon and/or a title - set the spacing manually
-
     Resources resources = getResources();
-
-//    int homeAsUpViewId = resources.getIdentifier( "up", "id", "android" );
-//
-//    if ( homeAsUpViewId != 0 )
-//      {
-//      View homeAsUpView = findViewById( homeAsUpViewId );
-//
-//      if ( homeAsUpView != null )
-//        {
-//        ViewGroup.LayoutParams homeAsUpLayoutParams = homeAsUpView.getLayoutParams();
-//
-//        if ( homeAsUpLayoutParams instanceof ViewGroup.MarginLayoutParams )
-//          {
-//          ViewGroup.MarginLayoutParams homeAsUpMarginLayoutParams = (ViewGroup.MarginLayoutParams)homeAsUpLayoutParams;
-//
-//          homeAsUpMarginLayoutParams.leftMargin = (int)resources.getDimension( R.dimen.action_bar_home_as_up_icon_left_spacing );
-//
-//          homeAsUpView.setLayoutParams( homeAsUpMarginLayoutParams );
-//          }
-//        }
-//      }
 
 
     int titleViewId = resources.getIdentifier( "action_bar_title", "id", "android" );

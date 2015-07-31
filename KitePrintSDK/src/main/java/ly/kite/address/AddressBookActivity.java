@@ -60,7 +60,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import ly.kite.R;
-import ly.kite.product.AKiteActivity;
+import ly.kite.journey.AKiteActivity;
 
 
 ///// Class Declaration /////

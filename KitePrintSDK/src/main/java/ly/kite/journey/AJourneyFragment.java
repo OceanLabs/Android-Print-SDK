@@ -44,9 +44,8 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.widget.AdapterView;
 
-import ly.kite.print.SingleUnitSize;
-import ly.kite.print.UnitOfLength;
-import ly.kite.product.AKiteActivity;
+import ly.kite.product.SingleUnitSize;
+import ly.kite.product.UnitOfLength;
 
 
 ///// Class Declaration /////
@@ -288,6 +287,17 @@ abstract public class AJourneyFragment extends Fragment
 
 
     return ( false );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the fragment is top-most. Used mostly
+   * to set the title.
+   *
+   *****************************************************/
+  protected void onTop()
+    {
     }
 
 

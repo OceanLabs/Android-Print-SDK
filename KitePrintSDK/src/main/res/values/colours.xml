@@ -19,8 +19,8 @@
     <color name="product_overview_quantity_size_background">#ff3d71e1</color>
     <color name="product_overview_shipping_background">#ff36be8b</color>
 
-    <color name="product_overview_gradient_start_colour">#ffffffff</color>
-    <color name="product_overview_gradient_end_colour">#00ffffff</color>
+    <color name="proceed_overlay_frame_background_gradient_start_colour">#ffffffff</color>
+    <color name="proceed_overlay_frame_background_gradient_end_colour">#00ffffff</color>
 
     <color name="cta_button_background">#ff8cbcbf</color>
 
@@ -29,5 +29,13 @@
 
     <color name="product_creation_next_button_background">#ff8cbcbf</color>
     <color name="product_creation_background">#ffeeeeee</color>
+
+    <color name="image_source_background_device">#ff48cfad</color>
+    <color name="image_source_background_instagram">#fff6bb42</color>
+    <color name="image_source_background_facebook">#ff5d9cec</color>
+
+    <color name="image_selection_placeholder_background_1">#ffe6e9ed</color>
+    <color name="image_selection_placeholder_background_2">#ffdce0e5</color>
+    <color name="image_selection_clear_photos_button_background">#e0ffffff</color>
 
 </resources>

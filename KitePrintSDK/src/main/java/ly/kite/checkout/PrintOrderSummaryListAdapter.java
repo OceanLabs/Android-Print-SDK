@@ -10,10 +10,10 @@ import java.text.NumberFormat;
 import java.util.Currency;
 import java.util.Locale;
 
-import ly.kite.print.PrintJob;
-import ly.kite.print.PrintOrder;
+import ly.kite.product.PrintJob;
+import ly.kite.product.PrintOrder;
 import ly.kite.R;
-import ly.kite.print.Product;
+import ly.kite.product.Product;
 
 /**
  * Created by deonbotha on 20/02/2014.

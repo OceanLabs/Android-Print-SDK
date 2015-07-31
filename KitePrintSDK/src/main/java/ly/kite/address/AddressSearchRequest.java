@@ -9,7 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
-import ly.kite.print.BaseRequest;
+import ly.kite.product.HTTPJSONRequest;
 import ly.kite.KiteSDK;
 import ly.kite.KiteSDKException;
 
@@ -18,7 +18,7 @@ import ly.kite.KiteSDKException;
  */
 public class AddressSearchRequest {
 
-    private BaseRequest searchRequest;
+    private HTTPJSONRequest searchRequest;
 
     public void cancelSearch() {
         if (searchRequest != null) {
@@ -36,7 +36,7 @@ public class AddressSearchRequest {
             return;
         }
 
-        String url = String.format("%s/address/search?%s", KiteSDK.getInstance( context ).getPrintAPIEndpoint(), queryParams);
+        String url = String.format("%s/address/search?%s", KiteSDK.getInstance( context ).getAPIEndpoint(), queryParams);
         startSearch(context, url, country, listener);
     }
 
@@ -58,13 +58,13 @@ public class AddressSearchRequest {
             return;
         }
 
-        String url = String.format("%s/address/search?%s", KiteSDK.getInstance( context ).getPrintAPIEndpoint(), queryParams);
+        String url = String.format("%s/address/search?%s", KiteSDK.getInstance( context ).getAPIEndpoint(), queryParams);
         startSearch(context, url, address.getCountry(), listener);
     }
 
     private void startSearch(Context context, String url, final Country country, final AddressSearchRequestListener listener) {
-        searchRequest = new BaseRequest(context, BaseRequest.HttpMethod.GET, url, null, null);
-        searchRequest.start(new BaseRequest.BaseRequestListener() {
+        searchRequest = new HTTPJSONRequest(context, HTTPJSONRequest.HttpMethod.GET, url, null, null);
+        searchRequest.start(new HTTPJSONRequest.BaseRequestListener() {
             @Override
             public void onSuccess(int httpStatusCode, JSONObject json) {
                 searchRequest = null;

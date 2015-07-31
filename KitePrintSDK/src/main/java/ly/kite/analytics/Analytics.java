@@ -49,7 +49,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Currency;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -60,9 +59,9 @@ import ly.kite.BuildConfig;
 import ly.kite.KiteSDK;
 import ly.kite.address.Address;
 import ly.kite.address.Country;
-import ly.kite.print.PrintJob;
-import ly.kite.print.PrintOrder;
-import ly.kite.print.Product;
+import ly.kite.product.PrintJob;
+import ly.kite.product.PrintOrder;
+import ly.kite.product.Product;
 
 
 ///// Class Declaration /////

@@ -12,7 +12,6 @@ import android.os.Looper;
 import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,15 +28,13 @@ import com.paypal.android.sdk.payments.PayPalService;
 import com.paypal.android.sdk.payments.PaymentConfirmation;
 import com.paypal.android.sdk.payments.ProofOfPayment;
 
-import org.json.JSONException;
-
 import java.math.BigDecimal;
 
 import ly.kite.analytics.Analytics;
-import ly.kite.print.ApplyPromoCodeListener;
+import ly.kite.product.ApplyPromoCodeListener;
 import ly.kite.KiteSDK;
-import ly.kite.print.PrintOrder;
-import ly.kite.print.PrintOrderSubmissionListener;
+import ly.kite.product.PrintOrder;
+import ly.kite.product.PrintOrderSubmissionListener;
 import ly.kite.R;
 import ly.kite.payment.PayPalCard;
 import ly.kite.payment.PayPalCardChargeListener;
@@ -405,14 +402,12 @@ public class PaymentActivity extends Activity {
         mPrintOrder.submitForPrinting( this, new PrintOrderSubmissionListener()
         {
         @Override
-        public void onProgress( PrintOrder printOrder, int totalAssetsUploaded, int totalAssetsToUpload, long totalAssetBytesWritten, long totalAssetBytesExpectedToWrite, long totalBytesWritten, long totalBytesExpectedToWrite )
+        public void onProgress( PrintOrder printOrder, int primaryProgressPercent, int secondaryProgressPercent )
             {
             if ( Looper.myLooper() != Looper.getMainLooper() )
                 throw new AssertionError( "Should be calling back on the main thread" );
-            final float step = (1.0f / totalAssetsToUpload);
-            float progress = totalAssetsUploaded * step + (totalAssetBytesWritten / (float) totalAssetBytesExpectedToWrite) * step;
-            dialog.setProgress( (int) (totalAssetsUploaded * step * 100) );
-            dialog.setSecondaryProgress( (int) (progress * 100) );
+            dialog.setProgress( primaryProgressPercent );
+            dialog.setSecondaryProgress( secondaryProgressPercent );
             dialog.setMessage( "Uploading images" );
             }
 

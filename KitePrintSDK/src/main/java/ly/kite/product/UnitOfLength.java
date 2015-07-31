@@ -39,12 +39,12 @@ package ly.kite.product;
 
 ///// Import(s) /////
 
-
-///// Class Declaration /////
-
 import android.content.Context;
 
 import ly.kite.R;
+
+
+///// Class Declaration /////
 
 /*****************************************************
  *

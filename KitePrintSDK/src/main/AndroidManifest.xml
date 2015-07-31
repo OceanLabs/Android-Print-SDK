@@ -3,23 +3,16 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="ly.kite"
     android:versionCode="100"
-    android:versionName="1.0"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:versionName="1.0">
 
     <uses-sdk
         android:minSdkVersion="14"
         android:targetSdkVersion="22" />
 
     <!-- hardware features (Used by Card.IO for credit card scanning in the Managed Checkout) -->
-    <uses-feature
-        android:name="android.hardware.camera"
-        android:required="false" />
-    <uses-feature
-        android:name="android.hardware.camera.autofocus"
-        android:required="false" />
-    <uses-feature
-        android:name="android.hardware.camera.flash"
-        android:required="false" />
+    <uses-feature android:name="android.hardware.camera"           android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.flash"     android:required="false" />
 
     <!-- for card.io card scanning -->
     <uses-permission android:name="android.permission.CAMERA" />
@@ -36,8 +29,11 @@
 
     <application>
 
+
+        <!-- Kite SDK activities -->
+
         <activity
-            android:name=".product.ProductCreationActivity"
+            android:name=".journey.ProductCreationActivity"
             android:theme="@style/Theme.KiteSDK.ProductSelection"
             android:launchMode="singleTop"/>
 
@@ -45,67 +41,66 @@
             android:name=".checkout.PaymentActivity"
             android:label="@string/title_activity_payment"
             android:screenOrientation="portrait"
-            tools:replace="android:theme"
-            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"
-            >
-        </activity>
+            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"/>
+
         <activity
             android:name=".checkout.CheckoutActivity"
             android:label="@string/title_activity_checkout"
             android:screenOrientation="portrait"
-            tools:replace="android:theme"
-            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"
-            >
-        </activity>
+            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"/>
+
         <activity
             android:name=".checkout.OrderReceiptActivity"
             android:label="@string/title_activity_order_receipt"
             android:screenOrientation="portrait"
-            tools:replace="android:theme"
-            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"
-            >
-        </activity>
+            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"/>
+
         <activity
             android:name=".address.AddressBookActivity"
             android:label="@string/title_activity_address_book"
             android:screenOrientation="portrait"
-            tools:replace="android:theme"
-            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"  >
-        </activity>
+            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"/>
+
         <activity
             android:name=".address.AddressEditActivity"
             android:label="@string/title_activity_address_edit"
             android:screenOrientation="portrait"
-            tools:replace="android:theme"
             android:theme="@android:style/Theme.Holo.Light.DarkActionBar"
-            android:windowSoftInputMode="adjustResize" >
-        </activity>
+            android:windowSoftInputMode="adjustResize"/>
+
         <activity
             android:name=".address.AddressSearchActivity"
             android:label="@string/title_activity_address_search"
             android:screenOrientation="portrait"
-            tools:replace="android:theme"
-            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"  >
-        </activity>
+            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"/>
 
-        <!-- PayPal activites & services: -->
+
+        <!-- PayPal activities & services -->
+
         <service
             android:name="com.paypal.android.sdk.payments.PayPalService"
-            android:exported="false" />
+            android:exported="false"/>
 
         <activity
             android:name="com.paypal.android.sdk.payments.PaymentActivity"/>
+
         <activity
             android:name="com.paypal.android.sdk.payments.LoginActivity"/>
+
         <activity
             android:name="com.paypal.android.sdk.payments.PaymentMethodActivity"/>
+
         <activity
             android:name="com.paypal.android.sdk.payments.PaymentConfirmActivity"/>
+
         <activity
             android:name="io.card.payment.CardIOActivity"
             android:configChanges="keyboardHidden|orientation"/>
+
         <activity
             android:name="io.card.payment.DataEntryActivity"/>
+
+
     </application>
 
 </manifest>

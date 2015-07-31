@@ -65,10 +65,9 @@ import java.util.Locale;
 import ly.kite.R;
 import ly.kite.address.Country;
 import ly.kite.analytics.Analytics;
-import ly.kite.print.Product;
-import ly.kite.print.SingleUnitSize;
-import ly.kite.print.UnitOfLength;
-import ly.kite.product.AKiteActivity;
+import ly.kite.product.Product;
+import ly.kite.product.SingleUnitSize;
+import ly.kite.product.UnitOfLength;
 import ly.kite.product.ProductImageAdaptor;
 import ly.kite.product.SingleCurrencyCost;
 import ly.kite.product.SingleDestinationShippingCost;
@@ -121,7 +120,7 @@ public class ProductOverviewFragment extends AJourneyFragment implements View.On
   private SlidingOverlayFrame  mSlidingOverlayFrame;
   private View                 mDrawerControlLayout;
   private ImageView            mOpenCloseDrawerIconImageView;
-  private Button               mContentStartButton;
+  private Button mProceedOverlayButton;
 
   private PagerAdapter         mProductImageAdaptor;
 
@@ -204,9 +203,6 @@ public class ProductOverviewFragment extends AJourneyFragment implements View.On
 
       return;
       }
-
-
-    mKiteActivity.setTitle( mProduct.getName() );
     }
 
 
@@ -243,7 +239,7 @@ public class ProductOverviewFragment extends AJourneyFragment implements View.On
     mSlidingOverlayFrame          = (SlidingOverlayFrame) view.findViewById( R.id.sliding_overlay_frame );
     mDrawerControlLayout          = view.findViewById( R.id.drawer_control_layout );
     mOpenCloseDrawerIconImageView = (ImageView) view.findViewById( R.id.open_close_drawer_icon_image_view );
-    mContentStartButton           = (Button)view.findViewById( R.id.content_start_button );
+    mProceedOverlayButton         = (Button)view.findViewById( R.id.proceed_overlay_button );
     TextView priceTextView        = (TextView) view.findViewById( R.id.price_text_view );
     View     sizeLayout           = view.findViewById( R.id.size_layout );
     TextView sizeTextView         = (TextView) view.findViewById( R.id.size_text_view );
@@ -396,10 +392,13 @@ public class ProductOverviewFragment extends AJourneyFragment implements View.On
       }
 
 
+    mProceedOverlayButton.setText( R.string.product_overview_start_button_text );
+
+
     mProductImageViewPager.setOnClickListener( this );
     mDrawerControlLayout.setOnClickListener( this );
     mOverlaidStartButton.setOnClickListener( this );
-    mContentStartButton.setOnClickListener( this );
+    mProceedOverlayButton.setOnClickListener( this );
 
 
     return ( view );
@@ -481,6 +480,18 @@ public class ProductOverviewFragment extends AJourneyFragment implements View.On
       {
       outState.putBoolean( BUNDLE_KEY_SLIDING_DRAWER_IS_EXPANDED, mSlidingOverlayFrame.sliderIsExpanded() );
       }
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the fragment is top-most.
+   *
+   *****************************************************/
+  @Override
+  protected void onTop()
+    {
+    if ( mProduct != null ) mKiteActivity.setTitle( mProduct.getName() );
     }
 
 

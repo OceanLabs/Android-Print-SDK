@@ -1,0 +1,32 @@
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <FrameLayout
+        android:layout_gravity="bottom"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/proceed_overlay_frame_height">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical">
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.8"
+                android:src="@drawable/product_overview_gradient_background"/>
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.2"
+                android:background="@android:color/white"/>
+        </LinearLayout>
+
+        <Button
+            style="@style/KiteSDKCTACenteredButtonStyle"
+            android:id="@+id/proceed_overlay_button"
+            android:layout_gravity="center"/>
+
+    </FrameLayout>
+
+</merge>

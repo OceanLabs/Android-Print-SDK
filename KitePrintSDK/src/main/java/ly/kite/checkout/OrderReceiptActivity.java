@@ -17,8 +17,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import ly.kite.print.PrintOrder;
-import ly.kite.print.PrintOrderSubmissionListener;
+import ly.kite.product.PrintOrder;
+import ly.kite.product.PrintOrderSubmissionListener;
 import ly.kite.R;
 
 public class OrderReceiptActivity extends Activity {
@@ -84,12 +84,10 @@ public class OrderReceiptActivity extends Activity {
 
         printOrder.submitForPrinting(this, new PrintOrderSubmissionListener() {
             @Override
-            public void onProgress(PrintOrder printOrder, int totalAssetsUploaded, int totalAssetsToUpload, long totalAssetBytesWritten, long totalAssetBytesExpectedToWrite, long totalBytesWritten, long totalBytesExpectedToWrite) {
+            public void onProgress( PrintOrder printOrder, int primaryProgressPercent, int secondaryProgressPercent ) {
                 if (Looper.myLooper() != Looper.getMainLooper()) throw new AssertionError("Should be calling back on the main thread");
-                final float step = (1.0f / totalAssetsToUpload);
-                float progress = totalAssetsUploaded * step + (totalAssetBytesWritten / (float) totalAssetBytesExpectedToWrite) * step;
-                dialog.setProgress((int) (totalAssetsUploaded * step * 100));
-                dialog.setSecondaryProgress((int) (progress * 100));
+                dialog.setProgress( primaryProgressPercent );
+                dialog.setSecondaryProgress( secondaryProgressPercent );
                 dialog.setMessage("Uploading images");
             }
 

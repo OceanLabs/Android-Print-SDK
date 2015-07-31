@@ -62,7 +62,7 @@ class AssetUploadRequest {
         ArrayList<Asset> assetsToUpload = new ArrayList<Asset>();
 
         for (Asset asset : assets) {
-            if (asset.getType() == Asset.AssetType.REMOTE_URL) {
+            if (asset.getType() == Asset.Type.REMOTE_URL) {
                 urlsToRegister.add(asset);
             } else {
                 assetsToUpload.add(asset);
@@ -120,15 +120,15 @@ class AssetUploadRequest {
 
     private void getSignedS3UploadRequestURLs(final List<Asset> assets, Context context, final SignS3UploadsRequestListener listener) {
         StringBuilder mimeTypes = new StringBuilder();
-        for (Asset a : assets) {
+        for (Asset asset : assets) {
             if (mimeTypes.length() > 0) {
                 mimeTypes.append(",");
             }
 
-            mimeTypes.append(a.getMimeType(context).getMIMETypeString());
+            mimeTypes.append( AssetHelper.getMimeType( context, asset ).mimeTypeString());
         }
 
-        String url = String.format("%s/asset/sign/?mime_types=%s&client_asset=true", KiteSDK.getInstance( context ).getPrintAPIEndpoint(), mimeTypes.toString());
+        String url = String.format("%s/asset/sign/?mime_types=%s&client_asset=true", KiteSDK.getInstance( context ).getAPIEndpoint(), mimeTypes.toString());
         registerImageURLAssetsReq = new HTTPJSONRequest( context, HTTPJSONRequest.HttpMethod.GET, url, null, (String) null);
         registerImageURLAssetsReq.start(new HTTPJSONRequest.BaseRequestListener() {
             @Override
@@ -180,7 +180,7 @@ class AssetUploadRequest {
             throw new IllegalStateException("Attempting to kick off asset upload on a thread that is not the main thread");
         }
 
-        final String mimeType = details.asset.getMimeType(context).getMIMETypeString();
+        final String mimeType = AssetHelper.getMimeType( context, details.asset ).mimeTypeString();
         AsyncTask<Void, Void, Exception> uploadTask = new AsyncTask<Void, Void, Exception>() {
             @Override
             protected Exception doInBackground(Void... voids) {
@@ -222,47 +222,57 @@ class AssetUploadRequest {
 
         final SignedS3RequestUploadDetails assetToUploadDetails = remainingAssetsToUpload.remove(0);
         final int totalAssetsToUpload = uploadedAssetAccumulator.size() + remainingAssetsToUpload.size() + 1;
-        assetToUploadDetails.asset.getBytes(context, new AssetGetBytesListener() {
+        AssetHelper.requestImageBytes( context, assetToUploadDetails.asset, new AssetHelper.IImageBytesConsumer()
+        {
+        @Override
+        public void onAssetBytes( Asset asset, byte[] bytes )
+            {
+            if ( cancelled || notifiedUploadListenerOfOutcome ) return;
+
+            listener.onProgress( uploadedAssetAccumulator.size(), totalAssetsToUpload, 0, 0, bytes.length );
+            uploadAssetToS3( context, assetToUploadDetails, bytes, new UploadToS3Listener()
+            {
             @Override
-            public void onBytes(Asset asset, byte[] bytes) {
-                if (cancelled || notifiedUploadListenerOfOutcome) return;
-
-                listener.onProgress(uploadedAssetAccumulator.size(), totalAssetsToUpload, 0, 0, bytes.length);
-                uploadAssetToS3(context, assetToUploadDetails, bytes, new UploadToS3Listener() {
-                    @Override
-                    public void onProgress(long bytesWritten, long totalAssetBytesWritten, long totalAssetBytesExpectedToWrite) {
-                        if (cancelled || notifiedUploadListenerOfOutcome) return;
-                        listener.onProgress(uploadedAssetAccumulator.size(), totalAssetsToUpload, bytesWritten, totalAssetBytesWritten, totalAssetBytesExpectedToWrite);
-                    }
-
-                    @Override
-                    public void onUploadComplete() {
-                        if (cancelled || notifiedUploadListenerOfOutcome) return;
-
-                        Asset asset = assetToUploadDetails.asset;
-                        asset.markAsUploaded(assetToUploadDetails.assetId, assetToUploadDetails.s3AssetPreviewURL);
-                        uploadedAssetAccumulator.add(asset);
-                        if (remainingAssetsToUpload.size() == 0) {
-                            listener.onSuccess();
-                        } else {
-                            uploadAssetsToS3(remainingAssetsToUpload, uploadedAssetAccumulator, context, listener);
-                        }
-                    }
-
-                    @Override
-                    public void onError(Exception ex) {
-                        if (cancelled || notifiedUploadListenerOfOutcome) return;
-                        listener.onError(ex);
-                    }
-                });
-            }
+            public void onProgress( long bytesWritten, long totalAssetBytesWritten, long totalAssetBytesExpectedToWrite )
+                {
+                if ( cancelled || notifiedUploadListenerOfOutcome ) return;
+                listener.onProgress( uploadedAssetAccumulator.size(), totalAssetsToUpload, bytesWritten, totalAssetBytesWritten, totalAssetBytesExpectedToWrite );
+                }
 
             @Override
-            public void onError(Asset asset, Exception ex) {
-                if (cancelled || notifiedUploadListenerOfOutcome) return;
-                listener.onError(ex);
+            public void onUploadComplete()
+                {
+                if ( cancelled || notifiedUploadListenerOfOutcome ) return;
+
+                Asset asset = assetToUploadDetails.asset;
+                asset.markAsUploaded( assetToUploadDetails.assetId, assetToUploadDetails.s3AssetPreviewURL );
+                uploadedAssetAccumulator.add( asset );
+                if ( remainingAssetsToUpload.size() == 0 )
+                    {
+                    listener.onSuccess();
+                    }
+                else
+                    {
+                    uploadAssetsToS3( remainingAssetsToUpload, uploadedAssetAccumulator, context, listener );
+                    }
+                }
+
+            @Override
+            public void onError( Exception ex )
+                {
+                if ( cancelled || notifiedUploadListenerOfOutcome ) return;
+                listener.onError( ex );
+                }
+            } );
             }
-        });
+
+        @Override
+        public void onAssetError( Asset asset, Exception ex )
+            {
+            if ( cancelled || notifiedUploadListenerOfOutcome ) return;
+            listener.onError( ex );
+            }
+        } );
     }
 
     private void uploadAssets(final List<Asset> assets, final Context context, final AssetUploadOrRegisterListener listener) {
@@ -287,12 +297,12 @@ class AssetUploadRequest {
         try {
             jsonBody.put("objects", objects);
             for (Asset asset : assets) {
-                if (asset.getType() == Asset.AssetType.REMOTE_URL) {
+                if (asset.getType() == Asset.Type.REMOTE_URL) {
                     ++c;
                     JSONObject o = new JSONObject();
                     o.put("url", asset.getRemoteURL().toString());
                     o.put("client_asset", true);
-                    o.put("mime_type", asset.getMimeType(context).getMIMETypeString());
+                    o.put("mime_type", AssetHelper.getMimeType( context, asset ).mimeTypeString());
                     objects.put(o);
                 }
             }
@@ -303,7 +313,7 @@ class AssetUploadRequest {
 
         final int expectedRegisteredAssetCount = c;
 
-        String url = String.format("%s/asset/", KiteSDK.getInstance( context ).getPrintAPIEndpoint());
+        String url = String.format("%s/asset/", KiteSDK.getInstance( context ).getAPIEndpoint());
         registerImageURLAssetsReq = new HTTPJSONRequest( context, HTTPJSONRequest.HttpMethod.PATCH, url, null, jsonBody.toString());
         registerImageURLAssetsReq.start(new HTTPJSONRequest.BaseRequestListener() {
             @Override
@@ -318,7 +328,7 @@ class AssetUploadRequest {
                             URL previewURL = new URL(o.getString("url"));
 
                             for (Asset asset : assets) {
-                                if (asset.getType() == Asset.AssetType.REMOTE_URL && asset.getRemoteURL().equals(previewURL)) {
+                                if (asset.getType() == Asset.Type.REMOTE_URL && asset.getRemoteURL().equals(previewURL)) {
                                     asset.markAsUploaded(assetId, previewURL);
                                     ++registeredAssetCount;
                                 }

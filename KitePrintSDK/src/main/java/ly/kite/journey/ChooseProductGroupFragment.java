@@ -50,8 +50,8 @@ import java.util.HashMap;
 
 import ly.kite.R;
 import ly.kite.analytics.Analytics;
-import ly.kite.print.Product;
-import ly.kite.print.ProductGroup;
+import ly.kite.product.Product;
+import ly.kite.product.ProductGroup;
 
 
 ///// Class Declaration /////
@@ -103,20 +103,6 @@ public class ChooseProductGroupFragment extends AGroupOrProductFragment
 
   /*****************************************************
    *
-   * Called when the fragment is created.
-   *
-   *****************************************************/
-  @Override
-  public void onCreate( Bundle savedInstanceState )
-    {
-    super.onCreate( savedInstanceState );
-
-    mKiteActivity.setTitle( R.string.title_product_group_activity );
-    }
-
-
-  /*****************************************************
-   *
    * Returns the content view for this fragment
    *
    *****************************************************/
@@ -132,6 +118,18 @@ public class ChooseProductGroupFragment extends AGroupOrProductFragment
       }
 
     return ( view );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the fragment is top-most.
+   *
+   *****************************************************/
+  @Override
+  protected void onTop()
+    {
+    mKiteActivity.setTitle( R.string.title_product_group_activity );
     }
 
 

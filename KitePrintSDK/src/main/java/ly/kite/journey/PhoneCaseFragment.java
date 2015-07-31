@@ -54,10 +54,10 @@ import java.util.ArrayList;
 
 import ly.kite.R;
 import ly.kite.analytics.Analytics;
-import ly.kite.print.Asset;
-import ly.kite.print.Bleed;
-import ly.kite.print.Product;
-import ly.kite.product.AKiteActivity;
+import ly.kite.product.Asset;
+import ly.kite.product.AssetHelper;
+import ly.kite.product.Bleed;
+import ly.kite.product.Product;
 import ly.kite.util.ImageLoader;
 import ly.kite.widget.MaskedRemoteImageView;
 
@@ -236,11 +236,11 @@ public class PhoneCaseFragment extends AJourneyFragment implements View.OnClickL
     mMaskedRemoteImageView.setImageKey( asset );
     mMaskedRemoteImageView.setMaskDetails( maskURL, maskBleed );
 
-    imageManager.getImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, asset, handler, mMaskedRemoteImageView );
-    imageManager.getRemoteImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, maskURL, handler, mMaskedRemoteImageView );
+    AssetHelper.requestImage( mKiteActivity, asset, mMaskedRemoteImageView );
+    imageManager.requestRemoteImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, maskURL, handler, mMaskedRemoteImageView );
 
 
-    // TODO: Create a common superclass of all create product activities
+    // TODO: Create a common superclass of all product creation fragments
     if ( savedInstanceState == null )
       {
       Analytics.getInstance( mKiteActivity ).trackCreateProductScreenViewed( mProduct );
@@ -277,6 +277,18 @@ public class PhoneCaseFragment extends AJourneyFragment implements View.OnClickL
 
 
     return ( super.onOptionsItemSelected( item ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the fragment is top-most.
+   *
+   *****************************************************/
+  @Override
+  protected void onTop()
+    {
+    if ( mProduct != null ) mKiteActivity.setTitle( mProduct.getName() );
     }
 
 
@@ -328,9 +340,7 @@ public class PhoneCaseFragment extends AJourneyFragment implements View.OnClickL
     // Create the cropped image asset as a file, so we don't hit problems with transaction sizes
     // when passing assets through intents.
 
-    Asset.clearCachedImages( mKiteActivity );
-
-    Asset croppedImageAsset = Asset.createAsCachedFile( mKiteActivity, croppedImageBitmap );
+    Asset croppedImageAsset = AssetHelper.createAsCachedFile( mKiteActivity, croppedImageBitmap );
 
     if ( croppedImageAsset == null )
       {

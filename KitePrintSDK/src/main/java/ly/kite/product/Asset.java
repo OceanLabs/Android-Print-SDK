@@ -39,31 +39,15 @@ package ly.kite.product;
 
 ///// Import(s) /////
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
-import android.util.Pair;
-import android.webkit.MimeTypeMap;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.UUID;
-
-import ly.kite.util.ImageLoader;
+import java.util.List;
 
 
 ///// Class Declaration /////
@@ -84,13 +68,11 @@ public class Asset implements Parcelable
   @SuppressWarnings( "unused" )
   private static final String  LOG_TAG                       = "Asset";
 
-  private static final int BITMAP_TO_JPEG_QUALITY = 80;
+  public  static final int     BITMAP_TO_JPEG_QUALITY        = 80;
 
   public  static final String  JPEG_FILE_SUFFIX_PRIMARY      = ".jpg";
   public  static final String  JPEG_FILE_SUFFIX_SECONDARY    = ".jpeg";
   public  static final String  PNG_FILE_SUFFIX               = ".png";
-
-  public  static final String  IMAGE_CLASS_STRING_ASSET      = "asset";
 
 
   ////////// Static Variable(s) //////////
@@ -109,24 +91,20 @@ public class Asset implements Parcelable
     };
 
 
-  // TODO: Remove
-  //private static final long serialVersionUID = 0L;
-
-
   ////////// Member Variable(s) //////////
 
-  private AssetType  mType;
-  private Uri        mImageUri;
+  private Type       mType;
+  private Uri        mImageURI;
   private URL        mRemoteURL;
   private int        mBitmapResourceId;
   private Bitmap     mBitmap;
-  private String     mImagePath;
+  private String     mImageFilePath;
   private byte[]     mImageBytes;
   private MIMEType   mMIMEType;
 
   private boolean    mHasBeenUploaded;
 
-  // The next two are only valid once an asset has been mHasBeenUploaded to the server
+  // The next two are only valid once an asset has been uploaded to the server
   private long       mId;
   private URL        mPreviewURL;
 
@@ -138,91 +116,17 @@ public class Asset implements Parcelable
 
   /*****************************************************
    *
-   * Clears any cached asset image files.
+   * Returns true if the asset is in the list.
    *
    *****************************************************/
-  public static void clearCachedImages( Context context )
+  static public boolean isInList( List<Asset> assetList, Asset soughtAsset )
     {
-    // Get the image cache directory
-
-    String imageCacheDirectoryPath = ImageLoader.getInstance( context ).getImageDirectoryPath( IMAGE_CLASS_STRING_ASSET );
-
-    File imageCacheDirectory = new File( imageCacheDirectoryPath );
-
-
-    // Go through all the files and delete them
-
-    File[] imageFiles = imageCacheDirectory.listFiles();
-
-    if ( imageFiles != null )
+    for ( Asset candidateAsset : assetList )
       {
-      for ( File imageFile : imageCacheDirectory.listFiles() )
-        {
-        imageFile.delete();
-        }
-      }
-    }
-
-
-  /*****************************************************
-   *
-   * Creates a new asset from a bitmap, but writes it out
-   * to a file. The file path is automatically generated.
-   *
-   *****************************************************/
-  public static Asset createAsCachedFile( Context context, Bitmap bitmap )
-    {
-    // Generate a random file name within the cache
-    Pair<String,String> imageDirectoryAndFilePath = ImageLoader.getInstance( context ).getImageDirectoryAndFilePath( IMAGE_CLASS_STRING_ASSET, UUID.randomUUID().toString() );
-
-    File imageDirectory = new File( imageDirectoryAndFilePath.first );
-
-    imageDirectory.mkdirs();
-
-    return ( createAsCachedFile( bitmap, imageDirectoryAndFilePath.second + JPEG_FILE_SUFFIX_PRIMARY ) );
-    }
-
-
-  /*****************************************************
-   *
-   * Creates a new asset from a bitmap, but writes it out
-   * to a file.
-   *
-   *****************************************************/
-  public static Asset createAsCachedFile( Bitmap bitmap, String filePath )
-    {
-    // Write the bitmap to the file
-
-    FileOutputStream fos = null;
-
-    try
-      {
-      fos = new FileOutputStream( filePath );
-
-      bitmap.compress( Bitmap.CompressFormat.JPEG, BITMAP_TO_JPEG_QUALITY, fos );
-
-      return ( new Asset( filePath ) );
-      }
-    catch ( Exception exception )
-      {
-      Log.e( LOG_TAG, "Unable to write bitmap to file" );
-      }
-    finally
-      {
-      if ( fos != null )
-        {
-        try
-          {
-          fos.close();
-          }
-        catch ( IOException e )
-          {
-          e.printStackTrace();
-          }
-        }
+      if ( candidateAsset.equals( soughtAsset ) ) return ( true );
       }
 
-    return ( null );
+    return ( false );
     }
 
 
@@ -243,8 +147,8 @@ public class Asset implements Parcelable
       }
 
 
-    mType     = AssetType.IMAGE_URI;
-    mImageUri = uri;
+    mType     = Type.IMAGE_URI;
+    mImageURI = uri;
     }
 
 
@@ -281,7 +185,7 @@ public class Asset implements Parcelable
       }
 
 
-    mType      = AssetType.REMOTE_URL;
+    mType      = Type.REMOTE_URL;
     mRemoteURL = url;
     }
 
@@ -305,8 +209,8 @@ public class Asset implements Parcelable
       }
 
 
-    mType      = AssetType.IMAGE_PATH;
-    mImagePath = imagePath;
+    mType      = Type.IMAGE_FILE;
+    mImageFilePath = imagePath;
     }
 
 
@@ -317,7 +221,7 @@ public class Asset implements Parcelable
    *****************************************************/
   public Asset( int bitmapResourceId )
     {
-    mType             = AssetType.BITMAP_RESOURCE_ID;
+    mType             = Type.BITMAP_RESOURCE_ID;
     mBitmapResourceId = bitmapResourceId;
     }
 
@@ -329,7 +233,7 @@ public class Asset implements Parcelable
    *****************************************************/
   public Asset( Bitmap bitmap )
     {
-    mType   = AssetType.BITMAP;
+    mType   = Type.BITMAP;
     mBitmap = bitmap;
     }
 
@@ -341,7 +245,7 @@ public class Asset implements Parcelable
    *****************************************************/
   public Asset( byte[] imageBytes, MIMEType mimeType )
     {
-    mType       = AssetType.IMAGE_BYTES;
+    mType       = Type.IMAGE_BYTES;
     mImageBytes = imageBytes;
     mMIMEType   = mimeType;
     }
@@ -354,11 +258,11 @@ public class Asset implements Parcelable
    *****************************************************/
   private Asset( Parcel sourceParcel )
     {
-    mType             = AssetType.valueOf( sourceParcel.readString() );
-    mImageUri         = (Uri)sourceParcel.readValue( Uri.class.getClassLoader() );
+    mType             = Type.valueOf( sourceParcel.readString() );
+    mImageURI = (Uri)sourceParcel.readValue( Uri.class.getClassLoader() );
     mRemoteURL        = (URL)sourceParcel.readSerializable();
     mBitmapResourceId = sourceParcel.readInt();
-    mImagePath        = sourceParcel.readString();
+    mImageFilePath = sourceParcel.readString();
     mMIMEType         = MIMEType.fromString( sourceParcel.readString() );
     mHasBeenUploaded  = (Boolean)sourceParcel.readValue( Boolean.class.getClassLoader() );
     mId               = sourceParcel.readLong();
@@ -382,11 +286,11 @@ public class Asset implements Parcelable
     if ( ! mType.isParcelable() ) throw ( new IllegalStateException( mType.name() + " asset cannot be parcelled" ) );
 
     targetParcel.writeString( mType.name() );
-    targetParcel.writeValue( mImageUri );
+    targetParcel.writeValue( mImageURI );
     targetParcel.writeSerializable( mRemoteURL );
     targetParcel.writeInt( mBitmapResourceId );
-    targetParcel.writeString( mImagePath );
-    targetParcel.writeString( mMIMEType != null ? mMIMEType.getMIMETypeString() : null );
+    targetParcel.writeString( mImageFilePath );
+    targetParcel.writeString( mMIMEType != null ? mMIMEType.mimeTypeString() : null );
     targetParcel.writeValue( mHasBeenUploaded );
     targetParcel.writeLong( mId );
     targetParcel.writeSerializable( mPreviewURL );
@@ -400,11 +304,26 @@ public class Asset implements Parcelable
    * Returns the asset type.
    *
    *****************************************************/
-  public AssetType getType()
+  public Type getType()
     {
     return ( mType );
     }
 
+
+  /*****************************************************
+   *
+   * Returns the URI.
+   *
+   * @throw IllegalStateException if the asset was not
+   *        constructed from a URI.
+   *
+   *****************************************************/
+  public Uri getImageURI()
+    {
+    if ( mType != Type.IMAGE_URI ) throw ( new IllegalStateException( "The URI has been requested, but the asset type is: " + mType ) );
+
+    return (mImageURI);
+    }
 
   /*****************************************************
    *
@@ -416,7 +335,7 @@ public class Asset implements Parcelable
    *****************************************************/
   public int getBitmapResourceId()
     {
-    if ( mType != AssetType.BITMAP_RESOURCE_ID ) throw ( new IllegalStateException( "The bitmap resource id has been requested, but the asset type is: " + mType ) );
+    if ( mType != Type.BITMAP_RESOURCE_ID ) throw ( new IllegalStateException( "The bitmap resource id has been requested, but the asset type is: " + mType ) );
 
     return ( mBitmapResourceId );
     }
@@ -432,7 +351,7 @@ public class Asset implements Parcelable
    *****************************************************/
   public Bitmap getBitmap()
     {
-    if ( mType != AssetType.BITMAP ) throw ( new IllegalStateException( "The bitmap has been requested, but the asset type is: " + mType ) );
+    if ( mType != Type.BITMAP ) throw ( new IllegalStateException( "The bitmap has been requested, but the asset type is: " + mType ) );
 
     return ( mBitmap );
     }
@@ -448,9 +367,63 @@ public class Asset implements Parcelable
    *****************************************************/
   public URL getRemoteURL()
     {
-    if ( mType != AssetType.REMOTE_URL ) throw ( new IllegalStateException( "The remote URL has been requested, but the asset type is: " + mType ) );
+    if ( mType != Type.REMOTE_URL ) throw ( new IllegalStateException( "The remote URL has been requested, but the asset type is: " + mType ) );
 
     return ( mRemoteURL );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the image file path.
+   *
+   * @throw IllegalStateException if the asset was not
+   *        constructed from an image file.
+   *
+   *****************************************************/
+  public String getImageFilePath()
+    {
+    if ( mType != Type.IMAGE_FILE ) throw ( new IllegalStateException( "The image file path has been requested, but the asset type is: " + mType ) );
+
+    return ( mImageFilePath );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the stored image bytes. Note that this is only
+   * for use by the {@link AssetHelper}. The proper way to
+   * get the MIME type is to use
+   * {@link AssetHelper#requestImageBytes}.
+   *
+   *****************************************************/
+  byte[] getImageBytes()
+    {
+    if ( mImageBytes == null )
+      {
+      throw ( new IllegalStateException( "No image bytes were supplied when the asset was created. Did you mean to use AssetHelper.requestImageBytes?" ) );
+      }
+
+    return ( mImageBytes );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the stored MIME type. Note that this is only
+   * for use by the {@link AssetHelper}. The proper way to
+   * get the MIME type is to use
+   * {@link AssetHelper#getMimeType(Context, Asset)}.
+   *
+   *****************************************************/
+  MIMEType getMIMEType()
+    {
+    if ( mMIMEType == null )
+      {
+      throw ( new IllegalStateException( "No MIME type was supplied when the asset was created. Did you mean to use AssetHelper.getMIMEType?" ) );
+      }
+
+    return ( mMIMEType );
     }
 
 
@@ -506,360 +479,89 @@ public class Asset implements Parcelable
 
   /*****************************************************
    *
-   * Returns the MIME type for the asset.
+   * Returns true, if the supplied object is an asset and
+   * is the same as this one, false otherwise.
    *
    *****************************************************/
-  public MIMEType getMimeType( Context context )
-    {
-    switch ( mType )
-      {
-      case IMAGE_URI:
-
-        ContentResolver contentResolver = context.getContentResolver();
-        MimeTypeMap     mimeTypeMap     = MimeTypeMap.getSingleton();
-
-        return ( MIMEType.fromString( contentResolver.getType( mImageUri ) ) );
-
-
-      case BITMAP_RESOURCE_ID:
-
-        // Decode the bounds of the bitmap resource to get the MIME type
-
-        BitmapFactory.Options options = new BitmapFactory.Options();
-
-        options.inJustDecodeBounds = true;
-
-        BitmapFactory.decodeResource( context.getResources(), mBitmapResourceId, options );
-
-        if ( options.outMimeType != null )
-          {
-          return ( MIMEType.fromString( options.outMimeType ) );
-          }
-
-        return ( MIMEType.JPEG );
-
-
-      case BITMAP:
-
-        // We return the MIME type that we will supply when the image bytes are requested - JPEG.
-        // This makes sense since the images are probably photos.
-
-        return ( MIMEType.JPEG );
-
-
-      case IMAGE_BYTES:
-        return ( mMIMEType );
-
-
-      case IMAGE_PATH:
-
-        String imagePath = mImagePath.toLowerCase();
-
-        if ( imagePath.endsWith( JPEG_FILE_SUFFIX_PRIMARY ) || imagePath.endsWith( JPEG_FILE_SUFFIX_SECONDARY ) )
-          {
-          return ( MIMEType.JPEG );
-          }
-        else if ( imagePath.endsWith( PNG_FILE_SUFFIX ) )
-          {
-          return ( MIMEType.PNG );
-          }
-
-        throw new IllegalStateException( "Currently only JPEG & PNG assets are supported" );
-
-
-      case REMOTE_URL:
-        return ( mMIMEType );
-
-
-      default:
-        // Fall through
-      }
-
-    throw ( new IllegalStateException( "Invalid asset type: " + mType ) );
-    }
-
-
-  // We no longer provide the length because it is inefficient to do this separately from
-  // retrieving the bytes.
-
-  // TODO: Remove
-//  public void getBytesLength( final Context c, final AssetGetBytesLengthListener listener )
-//    {
-//
-//    AsyncTask<Void, Void, Object> t = new AsyncTask<Void, Void, Object>()
-//    {
-//    @Override
-//    protected Object doInBackground( Void... voids )
-//      {
-//      switch ( mType )
-//        {
-//        case BITMAP_RESOURCE_ID:
-//        {
-//        InputStream is = c.getResources().openRawResource( mBitmapResourceId );
-//        try
-//          {
-//          int avail = is.available();
-//          is.close();
-//          return Long.valueOf( avail );
-//          }
-//        catch ( IOException e )
-//          {
-//          return e;
-//          }
-//        }
-//        case IMAGE_BYTES:
-//          return Long.valueOf( mImageBytes.length );
-//        case IMAGE_URI:
-//        {
-//        InputStream is = null;
-//        try
-//          {
-//          is = c.getContentResolver().openInputStream( mImageUri );
-//          long avail = is.available();
-//          return Long.valueOf( avail );
-//          }
-//        catch ( Exception ex )
-//          {
-//          return ex;
-//          }
-//        finally
-//          {
-//          try
-//            {
-//            is.close();
-//            }
-//          catch ( Exception ex )
-//            {/* Ignore as we're already returning something */}
-//          }
-//        }
-//        case IMAGE_PATH:
-//        {
-//        File file = new File( mImagePath );
-//        return Long.valueOf( file.length() );
-//        }
-//        case REMOTE_URL:
-//          return Long.valueOf( 0 );
-//        default:
-//          throw new IllegalStateException( "should never arrive here" );
-//        }
-//      }
-//
-//    @Override
-//    protected void onPostExecute( Object o )
-//      {
-//      if ( o instanceof Exception )
-//        {
-//        listener.onError( Asset.this, (Exception) o );
-//        }
-//      else
-//        {
-//        listener.onBytesLength( Asset.this, ((Long) o).longValue() );
-//        }
-//      }
-//    };
-//
-//    t.execute();
-//    }
-
-  private Object readBytesOrError( InputStream is )
-    {
-    try
-      {
-      ByteArrayOutputStream baos = new ByteArrayOutputStream( is.available() );
-      byte[] buffer = new byte[ 8192 ];
-      int numRead = -1;
-      while ( (numRead = is.read( buffer )) != -1 )
-        {
-        baos.write( buffer, 0, numRead );
-        }
-
-      return baos.toByteArray();
-      }
-    catch ( IOException e )
-      {
-      return e;
-      }
-    finally
-      {
-      try
-        {
-        is.close();
-        }
-      catch ( IOException ex )
-        {/* Already returning something so just ignore this one */}
-      }
-    }
-
-  public void getBytes( final Context c, final AssetGetBytesListener listener )
-    {
-    AsyncTask<Void, Void, Object> t = new AsyncTask<Void, Void, Object>()
-    {
-    @Override
-    protected Object doInBackground( Void... voids )
-      {
-      switch ( mType )
-        {
-        case BITMAP_RESOURCE_ID:
-        {
-        BufferedInputStream is = new BufferedInputStream( c.getResources().openRawResource( mBitmapResourceId ) );
-        return readBytesOrError( is );
-        }
-        case IMAGE_BYTES:
-          return mImageBytes;
-        case IMAGE_URI:
-        {
-        try
-          {
-          BufferedInputStream is = new BufferedInputStream( c.getContentResolver().openInputStream( mImageUri ) );
-          return readBytesOrError( is );
-          }
-        catch ( FileNotFoundException ex )
-          {
-          return ex;
-          }
-        }
-        case IMAGE_PATH:
-        {
-        try
-          {
-          File file = new File( mImagePath );
-          BufferedInputStream is = new BufferedInputStream( new FileInputStream( file ) );
-          return readBytesOrError( is );
-          }
-        catch ( FileNotFoundException ex )
-          {
-          return ex;
-          }
-        }
-        case REMOTE_URL:
-          throw new UnsupportedOperationException( "Getting the bytes of a remote url is not supported!" );
-        default:
-          throw new IllegalStateException( "should never arrive here" );
-        }
-      }
-
-    @Override
-    protected void onPostExecute( Object o )
-      {
-      if ( o instanceof Exception )
-        {
-        listener.onError( Asset.this, (Exception) o );
-        }
-      else
-        {
-        listener.onBytes( Asset.this, (byte[]) o );
-        }
-      }
-    };
-
-    t.execute();
-    }
-
   @Override
-  public boolean equals( Object o )
+  public boolean equals( Object otherObject )
     {
-    if ( !(o instanceof Asset) )
+    if ( otherObject == null || ! ( otherObject instanceof Asset ) )
       {
-      return false;
+      return ( false );
       }
 
-    Asset a = (Asset) o;
-    if ( a == this )
+    Asset otherAsset = (Asset)otherObject;
+
+
+    if ( otherAsset == this ) return ( true );
+
+    if ( mType != otherAsset.mType || mMIMEType != otherAsset.mMIMEType )
       {
-      return true;
+      return ( false );
       }
 
-    if ( a.mMIMEType != this.mMIMEType || a.mType != this.mType )
-      {
-      return false;
-      }
 
     switch ( this.mType )
       {
-      case REMOTE_URL:
-        return a.mRemoteURL.equals( this.mRemoteURL );
       case IMAGE_URI:
-        return a.mImageUri.equals( this.mImageUri );
-      case IMAGE_PATH:
-        return a.mImagePath.equals( this.mImagePath );
+        return ( mImageURI.equals( otherAsset.mImageURI ) );
+
       case BITMAP_RESOURCE_ID:
-        return a.mBitmapResourceId == this.mBitmapResourceId;
+        return ( mBitmapResourceId == otherAsset.mBitmapResourceId );
+
+      case BITMAP:
+        return ( mBitmap.sameAs( otherAsset.mBitmap ) );
+
+      case REMOTE_URL:
+        // Note that we are matching the entire URL; this will fail if the protocol
+        // is different: http vs https, even though that should point to the same
+        // resource.
+        return ( mRemoteURL.equals( otherAsset.mRemoteURL ) );
+
+      case IMAGE_FILE:
+        return ( mImageFilePath.equals( otherAsset.mImageFilePath ) );
+
       case IMAGE_BYTES:
-        return Arrays.equals( a.mImageBytes, this.mImageBytes );
+        return ( Arrays.equals( mImageBytes, otherAsset.mImageBytes ) );
       }
 
     throw ( new IllegalStateException( "Invalid asset type: " + mType ) );
     }
 
+
+  /*****************************************************
+   *
+   * Returns a hash code for the asset, based on the underlying
+   * source.
+   *
+   *****************************************************/
   @Override
   public int hashCode()
     {
     switch ( this.mType )
       {
-      case REMOTE_URL:
-        return this.mRemoteURL.hashCode();
       case IMAGE_URI:
-        return this.mImageUri.hashCode();
-      case IMAGE_PATH:
-        return this.mImagePath.hashCode();
+        return ( mImageURI.hashCode() );
+
       case BITMAP_RESOURCE_ID:
-        return mBitmapResourceId;
+        return ( mBitmapResourceId );
+
+      case BITMAP:
+        return ( mBitmap.hashCode() );
+
+      case REMOTE_URL:
+        return ( mRemoteURL.hashCode() );
+
+      case IMAGE_FILE:
+        return ( mImageFilePath.hashCode() );
+
       case IMAGE_BYTES:
-        return Arrays.hashCode( this.mImageBytes );
+        return ( Arrays.hashCode( this.mImageBytes ) );
       }
 
     throw ( new IllegalStateException( "Invalid asset type: " + mType ) );
     }
-
-
-  // TODO: Remove
-//  private void writeObject( java.io.ObjectOutputStream out ) throws IOException
-//    {
-//    out.writeObject( mImageUri == null ? null : mImageUri.toString() );
-//    out.writeObject( mRemoteURL );
-//    out.writeInt( mBitmapResourceId );
-//    out.writeObject( mImagePath );
-//    out.writeInt( mImageBytes != null ? mImageBytes.length : 0 );
-//    if ( mImageBytes != null && mImageBytes.length > 0 )
-//      {
-//      out.write( mImageBytes );
-//      }
-//
-//    out.writeObject( mMIMEType == null ? null : mMIMEType.getMIMETypeString() );
-//    out.writeInt( mType.ordinal() );
-//    out.writeBoolean( mHasBeenUploaded );
-//    out.writeLong( mId );
-//    out.writeObject( mPreviewURL );
-//    }
-//
-//  private void readObject( java.io.ObjectInputStream in ) throws IOException, ClassNotFoundException
-//    {
-//    String imageUriString = (String) in.readObject();
-//    if ( imageUriString != null )
-//      {
-//      mImageUri = Uri.parse( imageUriString );
-//      }
-//
-//    mRemoteURL = (URL) in.readObject();
-//    mBitmapResourceId = in.readInt();
-//    mImagePath = (String) in.readObject();
-//    int numImageBytes = in.readInt();
-//    if ( numImageBytes > 0 )
-//      {
-//      this.mImageBytes = new byte[ numImageBytes ];
-//      in.read( this.mImageBytes );
-//      }
-//
-//    String mimeTypeString = (String) in.readObject();
-//    if ( mimeTypeString != null )
-//      {
-//      mMIMEType = MimeType.fromString( mimeTypeString );
-//      }
-//    mType = AssetType.values()[ in.readInt() ];
-//    mHasBeenUploaded = in.readBoolean();
-//    mId = in.readLong();
-//    mPreviewURL = (URL) in.readObject();
-//    }
 
 
   ////////// Inner Class(es) //////////
@@ -869,25 +571,19 @@ public class Asset implements Parcelable
    * An MIME type.
    *
    *****************************************************/
-  public static enum MIMEType
+  public enum MIMEType
     {
-    JPEG( "image/jpeg" ),
-    PNG ( "image/png" );
+    JPEG ( "image/jpeg", JPEG_FILE_SUFFIX_PRIMARY ),
+    PNG  ( "image/png",  PNG_FILE_SUFFIX          );
 
+
+    ////////// Member Variable(s) //////////
 
     private final String  mMIMETypeString;
+    private final String  mPrimaryFileSuffix;
 
 
-    MIMEType( String mimeTypeString )
-      {
-      mMIMETypeString = mimeTypeString;
-      }
-
-
-    public String getMIMETypeString()
-      {
-      return ( mMIMETypeString );
-      }
+    ////////// Static Method(s) //////////
 
     public static MIMEType fromString( String mimeType )
       {
@@ -904,6 +600,28 @@ public class Asset implements Parcelable
 
       throw new UnsupportedOperationException( "Requested mimetype " + mimeType + " is not supported" );
       }
+
+
+    ////////// Constructor(s) //////////
+
+    MIMEType( String mimeTypeString, String primaryFileSuffix )
+      {
+      mMIMETypeString    = mimeTypeString;
+      mPrimaryFileSuffix = primaryFileSuffix;
+      }
+
+
+    ////////// Method(s) //////////
+
+    public String mimeTypeString()
+      {
+      return ( mMIMETypeString );
+      }
+
+    public String primaryFileSuffix()
+      {
+      return ( mPrimaryFileSuffix );
+      }
     }
 
 
@@ -912,20 +630,20 @@ public class Asset implements Parcelable
    * The type of asset.
    *
    *****************************************************/
-  public enum AssetType
+  public enum Type
     {
     IMAGE_URI          ( true ),
     BITMAP_RESOURCE_ID ( true ),
     BITMAP             ( false ),
     IMAGE_BYTES        ( false ),
-    IMAGE_PATH         ( true ),
+    IMAGE_FILE         ( true ),
     REMOTE_URL         ( true );
 
 
     private boolean mIsParcelable;
 
 
-    private AssetType( boolean isParcelable )
+    private Type( boolean isParcelable )
       {
       mIsParcelable = isParcelable;
       }

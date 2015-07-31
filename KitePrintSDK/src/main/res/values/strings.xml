@@ -39,9 +39,11 @@
     <string name="Cancel">Cancel</string>
     <string name="Description">Description</string>
     <string name="Details">Details</string>
+    <string name="IMAGES">IMAGES</string>
     <string name="Quality_Guarantee">Quality Guarantee</string>
     <string name="Quantity">Quantity</string>
     <string name="Retry">Retry</string>
+    <string name="Select_Image">Select Image</string>
     <string name="Shipping">Shipping</string>
     <string name="Size">Size</string>
 
@@ -63,6 +65,21 @@
     <string name="product_creation_next_button_text">Next</string>
 
     <string name="address_book_empty">Address Book Empty</string>
+
+    <string name="image_selection_pack_title_format_string">#%1$d Pack of %2$d %3$s</string>
+
+    <string name="image_selection_clear_photos_format_string">Clear %1$d %2$s</string>
+
+    <plurals name="Photos_plurals">
+        <item quantity="zero">Photos</item>
+        <item quantity="one">Photo</item>
+        <item quantity="two">Photos</item>
+        <item quantity="few">Photos</item>
+        <item quantity="many">Photos</item>
+        <item quantity="other">Photos</item>
+    </plurals>
+
+    <string name="image_selection_review_button_text">Review &amp; crop</string>
 
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>

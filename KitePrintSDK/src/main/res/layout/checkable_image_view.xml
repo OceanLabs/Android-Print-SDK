@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ImageView
+        android:id="@+id/image_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:scaleType="centerCrop"/>
+
+    <ImageView
+        android:id="@+id/check_image_view"
+        android:layout_gravity="top|right"
+        android:layout_width="@dimen/image_check_size"
+        android:layout_height="@dimen/image_check_size"
+        android:src="@drawable/image_check"/>
+
+</merge>

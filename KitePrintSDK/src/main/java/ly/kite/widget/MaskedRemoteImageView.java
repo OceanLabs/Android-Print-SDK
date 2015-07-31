@@ -50,7 +50,7 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
 import ly.kite.R;
-import ly.kite.print.Bleed;
+import ly.kite.product.Bleed;
 import ly.kite.util.IImageConsumer;
 
 
@@ -143,20 +143,7 @@ public class MaskedRemoteImageView extends FrameLayout implements IImageConsumer
    *****************************************************/
 
 
-  ////////// RemoteImageConsumer Method(s) //////////
-
-  /*****************************************************
-   *
-   * Called when the remote image is immediately available.
-   *
-   *****************************************************/
-  @Override
-  public void onImageImmediate( Object key, Bitmap bitmap )
-    {
-    if ( key == mImageKey ) mMaskedImageView.setImageBitmap( bitmap );
-    if ( key == mMaskKey  ) mMaskedImageView.setMask( bitmap, mMaskBleed );
-    }
-
+  ////////// IImageConsumer Method(s) //////////
 
   /*****************************************************
    *
@@ -176,7 +163,7 @@ public class MaskedRemoteImageView extends FrameLayout implements IImageConsumer
    *
    *****************************************************/
   @Override
-  public void onImageLoaded( Object key, Bitmap bitmap )
+  public void onImageAvailable( Object key, Bitmap bitmap )
     {
     if ( key == mImageKey ) mMaskedImageView.setImageBitmap( bitmap );
     if ( key == mMaskKey  ) mMaskedImageView.setMask( bitmap, mMaskBleed );

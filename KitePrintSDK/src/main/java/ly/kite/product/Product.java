@@ -262,12 +262,34 @@ public class Product implements Parcelable, IGroupOrProduct
 
   /*****************************************************
    *
+   * Returns the user journey type.
+   *
+   *****************************************************/
+  public UserJourneyType getUserJourneyType()
+    {
+    return ( mUserJourneyType );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the quantity per sheet.
+   *
+   *****************************************************/
+  public void setQuantityPerSheet( int quantityPerSheet )
+    {
+    mQuantityPerSheet = quantityPerSheet;
+    }
+
+
+  /*****************************************************
+   *
    * Returns the quantity per sheet.
    *
    *****************************************************/
   public int getQuantityPerSheet()
     {
-    return (mQuantityPerSheet);
+    return ( mQuantityPerSheet );
     }
 
 
@@ -595,7 +617,7 @@ public class Product implements Parcelable, IGroupOrProduct
    *****************************************************/
   private class ShippingCostRelevanceComparator implements Comparator<SingleDestinationShippingCost>
     {
-    private static final boolean DEBUG_COMPARISONS = false;
+    private static final boolean DEBUG_COMPARISONS = true;
 
 
     private Country  mCountry;
@@ -627,11 +649,8 @@ public class Product implements Parcelable, IGroupOrProduct
       int returnValue = 1;
 
       // Always put the country we're in first
-      if ( mCountry != null )
-        {
-        if      ( mCountry.usesISOCode( leftDestinationCode  ) ) returnValue = -1;
-        else if ( mCountry.usesISOCode( rightDestinationCode ) ) returnValue = +1;
-        }
+      if      ( mCountry != null && mCountry.usesISOCode( leftDestinationCode  ) ) returnValue = -1;
+      else if ( mCountry != null && mCountry.usesISOCode( rightDestinationCode ) ) returnValue = +1;
 
 
       // Default order if we don't know what country we're in:

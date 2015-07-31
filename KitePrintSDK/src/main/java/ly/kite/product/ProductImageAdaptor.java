@@ -143,7 +143,7 @@ public class ProductImageAdaptor extends PagerAdapter
     labelledImageView.setKey( imageURL );
     labelledImageView.setOnClickListener( mOnClickListener );  // The view pager won't respond to click events, so we need to add them to each page
 
-    mImageManager.getRemoteImage( IMAGE_CLASS_STRING, imageURL, container.getHandler(), labelledImageView );
+    mImageManager.requestRemoteImage( IMAGE_CLASS_STRING, imageURL, container.getHandler(), labelledImageView );
 
 
     return ( view );

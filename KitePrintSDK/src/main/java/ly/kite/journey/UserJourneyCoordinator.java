@@ -44,8 +44,8 @@ import java.util.HashMap;
 
 import android.content.Context;
 
-import ly.kite.print.Asset;
-import ly.kite.print.Product;
+import ly.kite.product.Asset;
+import ly.kite.product.Product;
 
 
 ///// Class Declaration /////
@@ -103,7 +103,10 @@ public class UserJourneyCoordinator
 
     mJourneyTable = new HashMap<>();
 
-    addJourney( UserJourneyType.PHONE_CASE );  // TODO: Add UI class(es)
+    addJourney( UserJourneyType.PHONE_CASE );
+    addJourney( UserJourneyType.CIRCLE );
+    addJourney( UserJourneyType.RECTANGLE );
+    // TODO: Add UI class(es)
     }
 
 
@@ -139,7 +142,19 @@ public class UserJourneyCoordinator
    *****************************************************/
   public AJourneyFragment getFragment( Context context, ArrayList<Asset> assetList, Product product )
     {
-    return ( PhoneCaseFragment.newInstance( assetList, product ) );
+    switch ( product.getUserJourneyType() )
+      {
+      case CIRCLE:
+        return ( ImageSelectionFragment.newInstance( assetList, product ) );
+
+      case PHONE_CASE:
+        return ( PhoneCaseFragment.newInstance( assetList, product ) );
+
+      case RECTANGLE:
+        return ( ImageSelectionFragment.newInstance( assetList, product ) );
+      }
+
+    return ( null );
     }
 
 

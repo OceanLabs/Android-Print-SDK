@@ -64,15 +64,6 @@ public interface IImageConsumer
 
   /*****************************************************
    *
-   * Called when an image is available, and was loaded
-   * from flash.
-   *
-   *****************************************************/
-  public void onImageImmediate( Object key, Bitmap bitmap );
-
-
-  /*****************************************************
-   *
    * Called when an image is not available locally, and will
    * thus be downloaded.
    *
@@ -82,19 +73,10 @@ public interface IImageConsumer
 
   /*****************************************************
    *
-   * Called when an image is available, and was downloaded.
+   * Called when an image is available.
    *
    *****************************************************/
-  public void onImageLoaded( Object key, Bitmap bitmap );
-
-
-  ////////// Inner Class(es) //////////
-
-  /*****************************************************
-   *
-   * ...
-   *
-   *****************************************************/
+  public void onImageAvailable( Object key, Bitmap bitmap );
 
   }
 

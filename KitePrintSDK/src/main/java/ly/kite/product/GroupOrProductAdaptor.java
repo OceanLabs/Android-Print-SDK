@@ -51,6 +51,7 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 
 import ly.kite.R;
+import ly.kite.journey.AKiteActivity;
 import ly.kite.util.ImageLoader;
 import ly.kite.widget.LabelledImageView;
 
@@ -71,8 +72,6 @@ public class GroupOrProductAdaptor extends BaseAdapter
   private static final String  LOG_TAG              = "GroupOrProductAdaptor";
 
   private static final int     LAYOUT_RESOURCE_ID   = R.layout.grid_item_product_image;
-
-  private static final float   DEFAULT_ASPECT_RATIO = 1.389f;
 
 
   ////////// Static Variable(s) //////////
@@ -215,8 +214,6 @@ public class GroupOrProductAdaptor extends BaseAdapter
 
     IGroupOrProduct groupOrProduct = (IGroupOrProduct)getItem( position );
 
-    viewReferences.productImageView.setAspectRatio( DEFAULT_ASPECT_RATIO );
-
     URL    imageURL;
     String imageURLString;
 
@@ -238,7 +235,7 @@ public class GroupOrProductAdaptor extends BaseAdapter
 
     viewReferences.productImageView.setKey( imageURL );
 
-    mImageManager.getRemoteImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, imageURL, parent.getHandler(), viewReferences.productImageView );
+    mImageManager.requestRemoteImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, imageURL, parent.getHandler(), viewReferences.productImageView );
 
 
     return ( view );
