@@ -70,7 +70,7 @@ public class MixpanelAgent implements BaseRequest.BaseRequestListener
   private static final String  LOG_TAG             = "MixpanelAgent";
 
   private static final String  ENDPOINT_URL_STRING = "https://api.mixpanel.com/track/";
-  public  static final String  API_TOKEN           = "e08854f70bc6a97b9f14457cbbb29b24";
+  public  static final String  API_TOKEN           = "cdf64507670dd359c43aa8895fb87676";  // Live
 
 
   ////////// Static Variable(s) //////////
@@ -158,7 +158,7 @@ public class MixpanelAgent implements BaseRequest.BaseRequestListener
 
     // Perform the HTTP request
 
-    String requestURLString = ENDPOINT_URL_STRING + "?data=" + base64EncodedJSON;
+    String requestURLString = ENDPOINT_URL_STRING + "?ip=1&data=" + base64EncodedJSON;
 
     try
       {

@@ -180,11 +180,11 @@ public class KiteSDK
    * shopping experience.
    *
    *****************************************************/
-  public static void startFromProductSelection( Context context, String apiKey, KiteSDK.Environment environment, ArrayList<Asset> assetArrayList )
+  public static void startShopping( Context context, String apiKey, KiteSDK.Environment environment, ArrayList<Asset> assetArrayList )
     {
     KiteSDK kiteSDK = getInstance( context, apiKey, environment );
 
-    kiteSDK.startFromProductSelection( context, assetArrayList );
+    kiteSDK.startShopping( context, assetArrayList );
     }
 
 
@@ -252,7 +252,7 @@ public class KiteSDK
    * Launches the shopping experience.
    *
    *****************************************************/
-  public void startFromProductSelection( Context context, ArrayList<Asset> assetArrayList )
+  public void startShopping( Context context, ArrayList<Asset> assetArrayList )
     {
     // We use the activity context here, not the application context
     ProductCreationActivity.start( context, assetArrayList );

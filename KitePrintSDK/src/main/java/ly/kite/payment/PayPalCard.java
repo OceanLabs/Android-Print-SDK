@@ -86,8 +86,6 @@ public class PayPalCard implements Serializable {
     }
 
     public static enum Environment {
-//        SANDBOX("api.sandbox.paypal.com", "QWE1bnNCRG50QnBveldReWtveFFYb0hGT3FzNTUxaFROdDBCOExRWFR1ZG9oOGJEMG5UMUY3MzVjX0ZoOg=="),
-//        LIVE("api.paypal.com", "QVQySmZCQW1YRC1DSEdKblViMDVpazRKLUdyQ2k0WHhqWTlfZ3JmQ0ZqcmVZYUxyTnN3ajh1emh1V3lqOg==");
 
         SANDBOX ( "api.sandbox.paypal.com", KiteSDK.PAYPAL_CLIENT_ID_SANDBOX, "" ),
         LIVE    ( "api.paypal.com",         KiteSDK.PAYPAL_CLIENT_ID_LIVE,    "" );

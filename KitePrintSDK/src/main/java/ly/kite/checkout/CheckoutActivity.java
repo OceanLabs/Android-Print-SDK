@@ -301,11 +301,6 @@ public class CheckoutActivity extends Activity {
           }
 
         PaymentActivity.start( this, mPrintOrder, apiKey, getPaymentActivityEnvironment(),  REQUEST_CODE_PAYMENT );
-//        Intent i = new Intent(this, PaymentActivity.class);
-//        i.putExtra(PaymentActivity.EXTRA_PRINT_ORDER, (Parcelable) mPrintOrder );
-//        i.putExtra(PaymentActivity.EXTRA_PRINT_API_KEY, apiKey);
-//        i.putExtra(PaymentActivity.EXTRA_PRINT_ENVIRONMENT, getPaymentActivityEnvironment());
-//        startActivityForResult(i, REQUEST_CODE_PAYMENT);
     }
 
     boolean isEmailValid(CharSequence email) {

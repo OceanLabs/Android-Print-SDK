@@ -88,20 +88,18 @@ public class Analytics
   private static final String  EVENT_NAME_PRODUCT_SELECTION_SCREEN_VIEWED  = "Product Selection Screen Viewed";
   private static final String  EVENT_NAME_PRODUCT_OVERVIEW_SCREEN_VIEWED   = "Product Description Screen Viewed";
   private static final String  EVENT_NAME_CREATE_PRODUCT_SCREEN_VIEWED     = "Review Screen Viewed";
+  private static final String  EVENT_NAME_SHIPPING_SCREEN_VIEWED           = "Shipping Screen Viewed";
   private static final String  EVENT_NAME_CREATE_PAYMENT_SCREEN_VIEWED     = "Payment Screen Viewed";
   private static final String  EVENT_NAME_PAYMENT_COMPLETED                = "Payment Completed";
   private static final String  EVENT_NAME_ORDER_SUBMISSION                 = "Print Order Submission";
 
-
-  // Some of these names originally come from the iOS SDK, and we need to match them,
-  // despite some not being entirely appropriate (e.g. bundle id) for Android.
 
   private static final String  JSON_PROPERTY_NAME_EVENT                    = "event";
   private static final String  JSON_PROPERTY_NAME_PROPERTIES               = "properties";
 
   private static final String  JSON_PROPERTY_NAME_API_TOKEN                = "token";
   private static final String  JSON_PROPERTY_NAME_UNIQUE_USER_ID           = "distinct_id";
-  private static final String  JSON_PROPERTY_NAME_APP_ID                   = "App Bundle Id";
+  private static final String  JSON_PROPERTY_NAME_APP_PACKAGE              = "App Package";
   private static final String  JSON_PROPERTY_NAME_APP_NAME                 = "App Name";
   private static final String  JSON_PROPERTY_NAME_APP_VERSION              = "App Version";
   private static final String  JSON_PROPERTY_NAME_PLATFORM                 = "platform";
@@ -411,7 +409,7 @@ public class Analytics
 
       mCachedPropertiesMap.put( JSON_PROPERTY_NAME_API_TOKEN,        MixpanelAgent.API_TOKEN );
       mCachedPropertiesMap.put( JSON_PROPERTY_NAME_UNIQUE_USER_ID,   getUniqueUserId() );
-      mCachedPropertiesMap.put( JSON_PROPERTY_NAME_APP_ID,           mContext.getPackageName() );
+      mCachedPropertiesMap.put( JSON_PROPERTY_NAME_APP_PACKAGE,      mContext.getPackageName() );
       mCachedPropertiesMap.put( JSON_PROPERTY_NAME_APP_NAME,         mContext.getString( mContext.getApplicationInfo().labelRes ) );
       mCachedPropertiesMap.put( JSON_PROPERTY_NAME_APP_VERSION,      BuildConfig.VERSION_NAME );
       mCachedPropertiesMap.put( JSON_PROPERTY_NAME_PLATFORM,         PLATFORM_JSON_PROPERTY_VALUE_ANDROID );
@@ -444,7 +442,7 @@ public class Analytics
 
 
       mCachedPropertiesMap.put( JSON_PROPERTY_NAME_KITE_SDK_VERSION, KiteSDK.SDK_VERSION );
-      mCachedPropertiesMap.put( JSON_PROPERTY_NAME_LOCALE_COUNTRY,   Locale.getDefault().getCountry() );
+      mCachedPropertiesMap.put( JSON_PROPERTY_NAME_LOCALE_COUNTRY,   Country.getInstance( Locale.getDefault() ).displayName() );
       }
 
 
@@ -591,7 +589,7 @@ public class Analytics
       Log.e( LOG_TAG, "Error setting JSON properties", je );
       }
 
-    trackEvent( EVENT_NAME_CREATE_PRODUCT_SCREEN_VIEWED, propertiesJSONObject );
+    trackEvent( EVENT_NAME_SHIPPING_SCREEN_VIEWED, propertiesJSONObject );
     }
 
 

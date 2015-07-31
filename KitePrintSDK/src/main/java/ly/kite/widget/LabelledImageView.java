@@ -50,7 +50,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
@@ -68,7 +67,7 @@ import ly.kite.R;
  * stage, fading them in where appropriate.
  *
  *****************************************************/
-public class LabelledImageView extends FrameLayout implements IImageConsumer, Animation.AnimationListener
+public class LabelledImageView extends AFixedRatioImageFrame implements IImageConsumer, Animation.AnimationListener
   {
   ////////// Static Constant(s) //////////
 
@@ -172,20 +171,6 @@ public class LabelledImageView extends FrameLayout implements IImageConsumer, An
 
   /*****************************************************
    *
-   * Sets the image, when it has come from memory.
-   *
-   *****************************************************/
-  @Override
-  public void onImageImmediate( Object key, Bitmap bitmap )
-    {
-    setImage( bitmap );
-
-    mEmptyFrameImageView.setVisibility( View.GONE );
-    }
-
-
-  /*****************************************************
-   *
    * Indicates that the image is being downloaded.
    *
    *****************************************************/
@@ -204,7 +189,7 @@ public class LabelledImageView extends FrameLayout implements IImageConsumer, An
    *
    *****************************************************/
   @Override
-  public void onImageLoaded( Object key, Bitmap bitmap )
+  public void onImageAvailable( Object key, Bitmap bitmap )
     {
     // Make sure the image is the one we were expecting.
     synchronized ( this )
@@ -268,7 +253,8 @@ public class LabelledImageView extends FrameLayout implements IImageConsumer, An
    * Initialises this product item image.
    *
    *****************************************************/
-  private void initialise( Context context )
+  @Override
+  protected void initialise( Context context )
     {
     // Inflate the layout and attach it to this view
 
@@ -279,7 +265,6 @@ public class LabelledImageView extends FrameLayout implements IImageConsumer, An
 
     // Save references to the child views
     mEmptyFrameImageView = (ImageView)view.findViewById( R.id.empty_frame_image_view );
-    mImageView           = (ImageView)view.findViewById( R.id.image_view );
     mOverlayLabel        = (OverlayLabel)view.findViewById( R.id.overlay_label );
     mProgressBar         = (ProgressBar)view.findViewById( R.id.progress_bar );
 
@@ -293,6 +278,8 @@ public class LabelledImageView extends FrameLayout implements IImageConsumer, An
             resources.getColor( R.color.labelled_image_label_shadow ),
             resources.getDimension( R.dimen.labelled_image_label_shadow_blur_radius ),
             resources.getDimension( R.dimen.labelled_image_label_shadow_y_offset ) );
+
+    super.initialise( view, R.id.image_view );
     }
 
 

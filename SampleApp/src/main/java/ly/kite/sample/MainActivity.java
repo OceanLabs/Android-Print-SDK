@@ -97,7 +97,7 @@ public class MainActivity extends Activity
       return;
       }
 
-    KiteSDK.startFromProductSelection( this, apiKey, environment, assets );
+    KiteSDK.startShopping( this, apiKey, environment, assets );
     }
 
   private void showError( String title, String message )
