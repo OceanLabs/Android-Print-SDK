@@ -74,9 +74,13 @@ public class ImagePackAdaptor extends RecyclerView.Adapter<ImagePackAdaptor.View
   @SuppressWarnings( "unused" )
   private static final String  LOG_TAG = "ImagePackAdaptor";
 
-  private static final int VIEW_TYPE_IMAGE  = 0x00;
-  private static final int VIEW_TYPE_TITLE  = 0x01;
-  private static final int VIEW_TYPE_SPACER = 0x02;
+  private static final int VIEW_TYPE_IMAGE               = 0x00;
+  private static final int VIEW_TYPE_TITLE               = 0x01;
+  private static final int VIEW_TYPE_SPACER              = 0x02;
+
+  private static final int IMAGE_CACHE_CAPACITY_IN_BYTES = 10 * 1024 * 1024;  // 10 MB
+
+  private static final int SCALED_IMAGE_WIDTH_IN_PIXELS  = 360;
 
 
   ////////// Static Variable(s) //////////
@@ -282,7 +286,7 @@ public class ImagePackAdaptor extends RecyclerView.Adapter<ImagePackAdaptor.View
 
         viewHolder.checkableImageView.clear( item.asset );
 
-        AssetHelper.requestImage( mContext, item.asset, viewHolder.checkableImageView );
+        AssetHelper.requestImage( mContext, item.asset, SCALED_IMAGE_WIDTH_IN_PIXELS, viewHolder.checkableImageView );
 
         // See if the image is checked
         viewHolder.checkableImageView.setChecked( mSharedAssetIsCheckedList.get( item.assetIndex ) );

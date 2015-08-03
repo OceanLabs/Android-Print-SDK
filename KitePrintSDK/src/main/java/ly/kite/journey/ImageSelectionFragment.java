@@ -260,6 +260,9 @@ public class ImageSelectionFragment extends AJourneyFragment implements AdapterV
 
 
     mNumberOfColumns = getResources().getInteger( R.integer.image_selection_grid_num_columns );
+
+
+    setTitle();
     }
 
 
@@ -338,7 +341,7 @@ public class ImageSelectionFragment extends AJourneyFragment implements AdapterV
   @Override
   protected void onTop()
     {
-    if ( mProduct != null ) updateTitle();
+    if ( mProduct != null ) setTitle();
     }
 
 
@@ -384,10 +387,14 @@ public class ImageSelectionFragment extends AJourneyFragment implements AdapterV
 
       if ( ! Asset.isInList( mAssetArrayList, newAsset ) )
         {
-        // Add the selected image to our asset list, mark it as checked, and update the recycler view.
-
+        // Add the selected image to our asset list, mark it as checked
         mAssetArrayList.add( new Asset( newImageUri ) );
         mSharedAssetIsCheckedArrayList.add( true );
+
+
+        // Update the screen
+
+        setTitle();
 
         setUpRecyclerView();
         }
@@ -422,6 +429,11 @@ public class ImageSelectionFragment extends AJourneyFragment implements AdapterV
       }
 
     mUncheckedImagesCount = 0;
+
+
+    // Update the screen
+
+    setTitle();
 
     animateClearPhotosButtonOut();
     animateProceedOverlayButtonIn();
@@ -488,6 +500,8 @@ public class ImageSelectionFragment extends AJourneyFragment implements AdapterV
 
       // Update the screen
 
+      setTitle();
+
       animateClearPhotosButtonOut();
       animateProceedOverlayButtonIn();
 
@@ -496,6 +510,8 @@ public class ImageSelectionFragment extends AJourneyFragment implements AdapterV
     else if ( view == mProceedOverlayButton )
       {
       ///// Review and Crop /////
+
+      // TODO
       }
 
     }
@@ -516,6 +532,8 @@ public class ImageSelectionFragment extends AJourneyFragment implements AdapterV
     // Update the unchecked images count
     if ( isChecked ) mUncheckedImagesCount --;
     else             mUncheckedImagesCount ++;
+
+    setTitle();
 
 
     // Check if we need to show or hide the clear photos button
@@ -547,12 +565,17 @@ public class ImageSelectionFragment extends AJourneyFragment implements AdapterV
 
   /*****************************************************
    *
-   * Updates the title.
+   * Updates the title. We display the number of checked
+   * assets for the title - to match what the iOS app does.
    *
    *****************************************************/
-  private void updateTitle()
+  private void setTitle()
     {
-    mKiteActivity.setTitle( mProduct.getName() );
+    int numberOfCheckedImages = mAssetArrayList.size() - mUncheckedImagesCount;
+    int quantityPerPack       = mProduct.getQuantityPerSheet();
+    int numberOfPacks         = ( numberOfCheckedImages + ( quantityPerPack - 1 ) ) / quantityPerPack;
+
+    mKiteActivity.setTitle( getString( R.string.image_selection_title_format_string, mProduct.getName(), numberOfCheckedImages, ( numberOfPacks * quantityPerPack ) ) );
     }
 
 

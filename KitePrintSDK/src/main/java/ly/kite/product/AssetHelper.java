@@ -43,9 +43,12 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.util.Pair;
+import android.util.Size;
 import android.webkit.MimeTypeMap;
 
 import java.io.BufferedInputStream;
@@ -55,6 +58,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -100,7 +104,7 @@ public class AssetHelper
    * Clears any cached asset image files.
    *
    *****************************************************/
-  public static void clearCachedImages( Context context )
+  static public void clearCachedImages( Context context )
     {
     // Get the image cache directory
 
@@ -129,7 +133,7 @@ public class AssetHelper
    * to a file. The file path is automatically generated.
    *
    *****************************************************/
-  public static Asset createAsCachedFile( Context context, byte[] imageBytes, Asset.MIMEType mimeType )
+  static public Asset createAsCachedFile( Context context, byte[] imageBytes, Asset.MIMEType mimeType )
     {
     // Generate a random file name within the cache
     Pair<String,String> imageDirectoryAndFilePath = ImageLoader.getInstance( context ).getImageDirectoryAndFilePath( IMAGE_CLASS_STRING_ASSET, UUID.randomUUID().toString() );
@@ -148,7 +152,7 @@ public class AssetHelper
    * to a file. The file path is automatically generated.
    *
    *****************************************************/
-  public static Asset createAsCachedFile( Context context, Bitmap bitmap )
+  static public Asset createAsCachedFile( Context context, Bitmap bitmap )
     {
     // Generate a random file name within the cache
     Pair<String,String> imageDirectoryAndFilePath = ImageLoader.getInstance( context ).getImageDirectoryAndFilePath( IMAGE_CLASS_STRING_ASSET, UUID.randomUUID().toString() );
@@ -197,7 +201,7 @@ public class AssetHelper
    * from the old one.
    *
    *****************************************************/
-  public static Asset parcelableAsset( Context context, Asset originalAsset )
+  static public Asset parcelableAsset( Context context, Asset originalAsset )
     {
     Asset.Type type = originalAsset.getType();
 
@@ -226,7 +230,7 @@ public class AssetHelper
    * to a file.
    *
    *****************************************************/
-  public static Asset createAsCachedFile( byte[] imageBytes, String filePath )
+  static public Asset createAsCachedFile( byte[] imageBytes, String filePath )
     {
     // Write the bitmap to the file
 
@@ -268,7 +272,7 @@ public class AssetHelper
    * Returns the MIME type for the asset.
    *
    *****************************************************/
-  public static MIMEType getMimeType( Context context, Asset asset )
+  static public MIMEType getMimeType( Context context, Asset asset )
     {
     Type type = asset.getType();
 
@@ -348,9 +352,40 @@ public class AssetHelper
    * match the MIME type returned by {@link #getMimeType}.
    *
    *****************************************************/
-  public static void requestImageBytes( Context context, Asset asset, IImageBytesConsumer imageBytesConsumer )
+  static public void requestImageBytes( Context context, Asset asset, IImageBytesConsumer imageBytesConsumer )
     {
-    ( new GetBytesTask( context, asset, imageBytesConsumer ) ).execute();
+    switch ( asset.getType() )
+      {
+      case IMAGE_URI:
+      case IMAGE_FILE:
+      case BITMAP_RESOURCE_ID:
+      case BITMAP:
+
+        new GetBytesTask( context, asset, imageBytesConsumer ).execute();
+
+        return;
+
+
+      case IMAGE_BYTES:
+
+        imageBytesConsumer.onAssetBytes( asset, asset.getImageBytes() );
+
+        return;
+
+
+      case REMOTE_URL:
+
+        // Get the image loader to download the image
+
+        BitmapToBytesConvertorTask convertorTask = new BitmapToBytesConvertorTask( asset, imageBytesConsumer );
+
+        ImageLoader.getInstance( context ).requestRemoteImage( IMAGE_CLASS_STRING_ASSET, asset, asset.getRemoteURL(), convertorTask );
+
+        return;
+      }
+
+
+    throw ( new UnsupportedOperationException( "Cannot get image bytes from unknown asset type: " + asset.getType() ) );
     }
 
 
@@ -360,36 +395,20 @@ public class AssetHelper
    * if there was an error.
    *
    *****************************************************/
-  private static Object getBytesOrError( BufferedInputStream bis )
+  private static Object getBytes( BufferedInputStream bis ) throws Exception
     {
-    try
+    ByteArrayOutputStream baos = new ByteArrayOutputStream( bis.available() );
+
+    byte[] buffer = new byte[ READ_BUFFER_SIZE_IN_BYTES ];
+
+    int byteCount = -1;
+
+    while ( ( byteCount = bis.read( buffer ) ) >= 0 )
       {
-      ByteArrayOutputStream baos = new ByteArrayOutputStream( bis.available() );
-
-      byte[] buffer = new byte[ READ_BUFFER_SIZE_IN_BYTES ];
-
-      int byteCount = -1;
-
-      while ( ( byteCount = bis.read( buffer ) ) >= 0 )
-        {
-        baos.write( buffer, 0, byteCount );
-        }
-
-      return ( baos.toByteArray() );
+      baos.write( buffer, 0, byteCount );
       }
-    catch ( IOException ioe )
-      {
-      return ( ioe );
-      }
-    finally
-      {
-      try
-        {
-        bis.close();
-        }
-      catch ( IOException ioe )
-        {/* Already returning something so just ignore this one */}
-      }
+
+    return ( baos.toByteArray() );
     }
 
 
@@ -400,7 +419,7 @@ public class AssetHelper
    * Must be called on the UI thread.
    *
    *****************************************************/
-  public static void requestImage( Context context, Asset asset, IImageConsumer imageConsumer )
+  static public void requestImage( Context context, Asset asset, int scaledImageWidth, IImageConsumer imageConsumer )
     {
     switch ( asset.getType() )
       {
@@ -408,16 +427,9 @@ public class AssetHelper
       case IMAGE_BYTES:
       case IMAGE_FILE:
       case BITMAP_RESOURCE_ID:
-
-        // Get the image bytes the convert them into a Bitmap
-
-        requestImageBytes( context, asset, new BytesToBitmapConvertor( imageConsumer ) );
-
-        return;
-
       case BITMAP:
 
-        imageConsumer.onImageAvailable( asset, asset.getBitmap() );
+        new GetBitmapTask( context, asset, scaledImageWidth, imageConsumer ).execute();
 
         return;
 
@@ -425,12 +437,46 @@ public class AssetHelper
       case REMOTE_URL:
 
         // Get the image loader to download the image
+        // TODO: Scale the bitmap if requested
         ImageLoader.getInstance( context ).requestRemoteImage( IMAGE_CLASS_STRING_ASSET, asset, asset.getRemoteURL(), imageConsumer );
 
         return;
       }
 
+
     throw ( new UnsupportedOperationException( "Cannot get image from unknown asset type: " + asset.getType() ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Requests an image bitmap from an asset.
+   *
+   * Must be called on the UI thread.
+   *
+   *****************************************************/
+  static public void requestImage( Context context, Asset asset, IImageConsumer imageConsumer )
+    {
+    requestImage( context, asset, 0, imageConsumer );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a scaled bitmap, or the source bitmap if
+   * no scaling is required.
+   *
+   *****************************************************/
+  static public Bitmap scaleBitmap( Bitmap sourceBitmap, int scaledWidth )
+    {
+    if ( scaledWidth < 1 ) return ( sourceBitmap );
+
+
+    // Calculate the height so as to maintain the aspect ratio
+
+    int scaledHeight = (int)( (float)sourceBitmap.getHeight() * (float)scaledWidth / (float)sourceBitmap.getWidth() );
+
+    return ( sourceBitmap.createScaledBitmap( sourceBitmap, scaledWidth, scaledHeight, true ) );
     }
 
 
@@ -441,7 +487,7 @@ public class AssetHelper
    * assets and replaced.
    *
    *****************************************************/
-  public static ArrayList<Asset> toParcelableList( Context context, ArrayList<Asset> assetArrayList )
+  static public ArrayList<Asset> toParcelableList( Context context, ArrayList<Asset> assetArrayList )
     {
     // Scan through the list
 
@@ -487,7 +533,6 @@ public class AssetHelper
   public interface IImageBytesConsumer
     {
     void onAssetBytes( Asset asset, byte[] byteArray );
-
     void onAssetError( Asset asset, Exception exception );
     }
 
@@ -515,144 +560,205 @@ public class AssetHelper
     @Override
     protected Object doInBackground( Void... voids )
       {
+      BufferedInputStream bis = null;
+
       Type type = mAsset.getType();
 
-      BufferedInputStream bis;
-
-      switch ( type )
+      try
         {
-        case IMAGE_URI:
+        switch ( type )
+          {
+          case IMAGE_URI:
 
-          try
-            {
             bis = new BufferedInputStream( mContext.getContentResolver().openInputStream( mAsset.getImageURI() ) );
 
-            return ( getBytesOrError( bis ) );
-            }
-          catch ( FileNotFoundException fnfe )
-            {
-            return ( fnfe );
-            }
+            return ( getBytes( bis ) );
 
 
-        case BITMAP_RESOURCE_ID:
-          bis = new BufferedInputStream( mContext.getResources().openRawResource( mAsset.getBitmapResourceId() ) );
-          return getBytesOrError( bis );
+          case BITMAP_RESOURCE_ID:
+
+            bis = new BufferedInputStream( mContext.getResources().openRawResource( mAsset.getBitmapResourceId() ) );
+
+            return getBytes( bis );
 
 
-        case BITMAP:
+          case BITMAP:
 
-          // Start the convertor task to convert the bitmap into JPEG data
-          new BitmapToBytesConvertorTask( mAsset, mImageBytesConsumer ).execute( mAsset.getBitmap() );
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-          return ( null );
+            Bitmap bitmap = mAsset.getBitmap();
+
+            bitmap.compress( Bitmap.CompressFormat.JPEG, Asset.BITMAP_TO_JPEG_QUALITY, baos );
+
+            baos.close();
+
+            return ( baos.toByteArray() );
 
 
-        case IMAGE_BYTES:
-          return ( mAsset.getImageBytes() );
+          case IMAGE_FILE:
 
-
-        case IMAGE_FILE:
-
-          try
-            {
             File file = new File( mAsset.getImageFilePath() );
 
             bis = new BufferedInputStream( new FileInputStream( file ) );
 
-            return ( getBytesOrError( bis ) );
-            }
-          catch ( FileNotFoundException fnfe )
-            {
-            return ( fnfe );
-            }
+            return ( getBytes( bis ) );
+          }
 
-
-        case REMOTE_URL:
-
-          // We need to use the ImageLoader to download the image at the remote URL
-
-          ImageLoader.getInstance( mContext ).requestRemoteImage( IMAGE_CLASS_STRING_ASSET, mAsset.getRemoteURL(), new BitmapToBytesConvertorTask( mAsset, mImageBytesConsumer ) );
-
-          return (null);
-
-
-        default:
+        throw ( new IllegalStateException( "Invalid asset type: " + type ) );
         }
+      catch ( Exception exception )
+        {
+        Log.e( LOG_TAG, "Unable to get image bytes", exception );
 
-      throw (new IllegalStateException( "Invalid asset type: " + type ));
+        return ( exception );
+        }
+      finally
+        {
+        if ( bis != null )
+          {
+          try
+            {
+            bis.close();
+            }
+          catch ( Exception exception )
+            {
+            Log.e( LOG_TAG, "Unable to close input stream", exception );
+            }
+          }
+        }
       }
+
 
     @Override
     protected void onPostExecute( Object resultObject )
       {
-      // We have been returned one of the following:
-      //   - A byte array
-      //   - An exception
-      //   - null => the image is being downloaded from elsewhere
-      //             so nothing is returned here.
-
       if ( resultObject == null )
         {
-        // Do nothing here
-        }
-      else if ( resultObject instanceof Exception )
-        {
-        mImageBytesConsumer.onAssetError( mAsset, (Exception) resultObject );
+        // Do nothing
         }
       else if ( resultObject instanceof byte[] )
         {
         mImageBytesConsumer.onAssetBytes( mAsset, (byte[]) resultObject );
         }
+      else if ( resultObject instanceof Exception )
+        {
+        mImageBytesConsumer.onAssetError( mAsset, (Exception)resultObject );
+        }
       }
-
     }
 
 
   /*****************************************************
    *
-   * Consumes image bytes, converts them into a bitmap,
-   * and then delivers them to an image consumer.
-   *
-   * TODO: Make this an async task that decodes the bitmap
-   * TODO: on a background thread.
+   * Supplies a bitmap from a URI.
    *
    *****************************************************/
-  private static class BytesToBitmapConvertor implements IImageBytesConsumer
+  private static class GetBitmapTask extends AsyncTask<Void,Void,Object>
     {
+    private Context         mContext;
+    private Asset           mAsset;
+    private int             mScaledImageWidth;
     private IImageConsumer  mImageConsumer;
 
 
-    BytesToBitmapConvertor( IImageConsumer imageConsumer )
+    GetBitmapTask( Context context, Asset asset, int scaledImageWidth, IImageConsumer imageConsumer )
       {
-      mImageConsumer   = imageConsumer;
+      mContext          = context;
+      mAsset            = asset;
+      mScaledImageWidth = scaledImageWidth;
+      mImageConsumer    = imageConsumer;
+      }
+
+
+    GetBitmapTask( Context context, Asset asset, IImageConsumer imageConsumer )
+      {
+      this( context, asset, 0, imageConsumer );
       }
 
 
     @Override
-    public void onAssetBytes( Asset asset, byte[] byteArray )
+    public Object doInBackground( Void... voids )
       {
+      BufferedInputStream bis = null;
+
       try
         {
-        // Decode the bytes into a bitmap
-        Bitmap bitmap = BitmapFactory.decodeByteArray( byteArray, 0, byteArray.length );
+        Type type = mAsset.getType();
+
+        switch ( type )
+          {
+          case IMAGE_URI:
+
+            Uri uri = mAsset.getImageURI();
+
+            bis = new BufferedInputStream( mContext.getContentResolver().openInputStream( uri ) );
+
+            return ( scaleBitmap( BitmapFactory.decodeStream( bis ), mScaledImageWidth ) );
 
 
-        // Deliver the bitmap to the image consumer
-        mImageConsumer.onImageAvailable( asset, bitmap );
+          case IMAGE_BYTES:
+
+            byte[] imageBytes = mAsset.getImageBytes();
+
+            return ( scaleBitmap( BitmapFactory.decodeByteArray( imageBytes, 0, imageBytes.length ), mScaledImageWidth ) );
+
+
+          case IMAGE_FILE:
+
+            String filePath = mAsset.getImageFilePath();
+
+            bis = new BufferedInputStream( new FileInputStream( filePath ) );
+
+            return ( scaleBitmap( BitmapFactory.decodeStream( bis ), mScaledImageWidth ) );
+
+
+          case BITMAP_RESOURCE_ID:
+
+            int resourceId = mAsset.getBitmapResourceId();
+
+            return ( scaleBitmap( BitmapFactory.decodeResource( mContext.getResources(), resourceId ), mScaledImageWidth ) );
+
+
+          case BITMAP:
+
+            return ( scaleBitmap( mAsset.getBitmap(), mScaledImageWidth ) );
+          }
+
+
+        throw ( new IllegalStateException( "Invalid asset type: " + type ) );
         }
       catch ( Exception exception )
         {
-        Log.e( LOG_TAG, "Unable to decode asset bytes", exception );
+        Log.e( LOG_TAG, "Unable to decode bitmap", exception );
+
+        return ( exception );
+        }
+      finally
+        {
+        if ( bis != null )
+          {
+          try
+            {
+            bis.close();
+            }
+          catch ( Exception exception )
+            {
+            Log.e( LOG_TAG, "Unable to close input stream", exception );
+            }
+          }
         }
       }
 
 
     @Override
-    public void onAssetError( Asset asset, Exception exception )
+    public void onPostExecute( Object resultObject )
       {
-      Log.e( LOG_TAG, "Unable to get bytes for asset", exception );
+      if ( resultObject != null && resultObject instanceof Bitmap )
+        {
+        mImageConsumer.onImageAvailable( mAsset, (Bitmap)resultObject );
+        }
       }
+
     }
 
 
@@ -665,7 +771,7 @@ public class AssetHelper
   private static class BitmapToBytesConvertorTask extends AsyncTask<Bitmap,Void,Object> implements IImageConsumer
     {
     private Asset                mAsset;
-    private IImageBytesConsumer mImageBytesConsumer;
+    private IImageBytesConsumer  mImageBytesConsumer;
 
 
     BitmapToBytesConvertorTask( Asset asset, IImageBytesConsumer imageBytesConsumer )
