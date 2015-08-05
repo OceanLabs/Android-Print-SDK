@@ -48,7 +48,7 @@ import android.util.Log;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 
 import ly.kite.product.Asset;
-import ly.kite.journey.ProductCreationActivity;
+import ly.kite.journey.ProductSelectionActivity;
 import ly.kite.product.AssetHelper;
 
 
@@ -264,7 +264,7 @@ public class KiteSDK
     assetArrayList = AssetHelper.toParcelableList( context, assetArrayList );
 
     // We use the activity context here, not the application context
-    ProductCreationActivity.start( context, assetArrayList );
+    ProductSelectionActivity.start( context, assetArrayList );
     }
 
 

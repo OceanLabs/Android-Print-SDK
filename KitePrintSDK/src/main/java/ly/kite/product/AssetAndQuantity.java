@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * UserJourneyCoordinator.java
+ * AssetAndQuantity.java
  *
  *
  * Modified MIT License
@@ -34,44 +34,52 @@
 
 ///// Package Declaration /////
 
-package ly.kite.journey;
+package ly.kite.product;
 
 
 ///// Import(s) /////
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-import android.content.Context;
-
-import ly.kite.product.Asset;
-import ly.kite.product.Product;
+import java.util.List;
 
 
 ///// Class Declaration /////
 
 /*****************************************************
  *
- * This singleton class coordinates the user journey following
- * the product selection.
+ * This class represents an asset and a quantity.
  *
  *****************************************************/
-public class UserJourneyCoordinator
+public class AssetAndQuantity implements Parcelable
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "UserJourneyCoordinator";
+  private static final String  LOG_TAG = "AssetAndQuantity";
 
 
   ////////// Static Variable(s) //////////
 
-  private static UserJourneyCoordinator  sUserJourneyCoordinator;
+  public static final Parcelable.Creator<AssetAndQuantity> CREATOR = new Parcelable.Creator<AssetAndQuantity>()
+    {
+    public AssetAndQuantity createFromParcel( Parcel in )
+      {
+      return ( new AssetAndQuantity( in ) );
+      }
+
+    public AssetAndQuantity[] newArray( int size )
+      {
+      return ( new AssetAndQuantity[ size ] );
+      }
+    };
 
 
   ////////// Member Variable(s) //////////
 
-  private HashMap<UserJourneyType,Journey>  mJourneyTable;
+  final private Asset  mAsset;
+        private int    mQuantity;
 
 
   ////////// Static Initialiser(s) //////////
@@ -81,32 +89,51 @@ public class UserJourneyCoordinator
 
   /*****************************************************
    *
-   * Returns an instance of this coordinator.
+   * Returns true if the asset is in the list.
    *
    *****************************************************/
-  public static UserJourneyCoordinator getInstance()
+  static public boolean isInList( List<AssetAndQuantity> assetAndQuantityList, Asset soughtAsset )
     {
-    if ( sUserJourneyCoordinator == null )
+    for ( AssetAndQuantity candidateAssetAndQuantity : assetAndQuantityList )
       {
-      sUserJourneyCoordinator = new UserJourneyCoordinator();
+      if ( candidateAssetAndQuantity.getAsset().equals( soughtAsset ) ) return ( true );
       }
 
-    return ( sUserJourneyCoordinator );
+    return ( false );
     }
 
 
   ////////// Constructor(s) //////////
 
-  private UserJourneyCoordinator()
+  public AssetAndQuantity( Asset asset, int quantity )
     {
-    // Create the journey table
+    mAsset    = asset;
+    mQuantity = quantity;
+    }
 
-    mJourneyTable = new HashMap<>();
 
-    addJourney( UserJourneyType.PHONE_CASE );
-    addJourney( UserJourneyType.CIRCLE );
-    addJourney( UserJourneyType.RECTANGLE );
-    // TODO: Add UI class(es)
+  private AssetAndQuantity( Parcel sourceParcel )
+    {
+    mAsset    = new Asset( sourceParcel );
+    mQuantity = sourceParcel.readInt();
+    }
+
+
+  ////////// Parcelable Method(s) //////////
+
+  @Override
+  public int describeContents()
+    {
+    return ( 0 );
+    }
+
+
+  @Override
+  public void writeToParcel( Parcel targetParcel, int flags )
+    {
+    mAsset.writeToParcel( targetParcel, flags );
+
+    targetParcel.writeInt( mQuantity );
     }
 
 
@@ -114,47 +141,48 @@ public class UserJourneyCoordinator
 
   /*****************************************************
    *
-   * Adds a user journey.
+   * Returns the asset.
    *
    *****************************************************/
-  private void addJourney( UserJourneyType type, Class<?>... uiClasses )
+  public Asset getAsset()
     {
-    mJourneyTable.put( type, new Journey( type, uiClasses ) );
+    return ( mAsset );
     }
 
 
   /*****************************************************
    *
-   * Returns true if the user journey type is supported.
+   * Returns the quantity.
    *
    *****************************************************/
-  public boolean isSupported( UserJourneyType type )
+  public int getQuantity()
     {
-    return ( mJourneyTable.containsKey( type ) );
+    return ( mQuantity );
     }
 
 
   /*****************************************************
    *
-   * Starts the next stage in the appropriate user journey
-   * for the supplied product.
+   * Decrements the quantity by 1 and returns the new value.
+   * Will not decrement past 0.
    *
    *****************************************************/
-  public AJourneyFragment getFragment( Context context, ArrayList<Asset> assetList, Product product )
+  public int decrement()
     {
-    switch ( product.getUserJourneyType() )
-      {
-      case CIRCLE:
-        return ( ImageSelectionFragment.newInstance( assetList, product ) );
+    if ( mQuantity > 0 ) mQuantity --;
 
-      case PHONE_CASE:
-        return ( PhoneCaseFragment.newInstance( assetList, product ) );
+    return ( mQuantity );
+    }
 
-      case RECTANGLE:
-        return ( ImageSelectionFragment.newInstance( assetList, product ) );
-      }
 
-    return ( null );
+  /*****************************************************
+   *
+   * Increments the quantity by 1 and returns the new value.
+   *
+   *****************************************************/
+  public int increment()
+    {
+    return ( ++ mQuantity );
     }
 
 
@@ -162,27 +190,9 @@ public class UserJourneyCoordinator
 
   /*****************************************************
    *
-   * A set of fragments for a user journey type.
+   * ...
    *
    *****************************************************/
-  private static class Journey
-    {
-    private UserJourneyType  mType;
-    private Class<?>[]       mUIClasses;
-
-
-    Journey( UserJourneyType type, Class<?>... uiClasses )
-      {
-      mType      = type;
-      mUIClasses = uiClasses;
-      }
-
-
-    UserJourneyType getType()
-      {
-      return ( mType );
-      }
-    }
 
   }
 

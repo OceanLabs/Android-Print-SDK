@@ -51,7 +51,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import ly.kite.product.Asset;
+import ly.kite.product.AssetAndQuantity;
 import ly.kite.product.AssetHelper;
 import ly.kite.product.Product;
 import ly.kite.widget.CheckableImageView;
@@ -108,7 +108,7 @@ public class ImagePackAdaptor extends RecyclerView.Adapter<ImagePackAdaptor.View
 
   ////////// Constructor(s) //////////
 
-  public ImagePackAdaptor( Context context, Product product, List<Asset> assetList, List<Boolean> sharedAssetIsCheckedList, int numberOfColumns, IOnImageCheckChangeListener listener )
+  public ImagePackAdaptor( Context context, Product product, List<AssetAndQuantity> assetAndQuantityList, List<Boolean> sharedAssetIsCheckedList, int numberOfColumns, IOnImageCheckChangeListener listener )
     {
     mContext                  = context;
     mSharedAssetIsCheckedList = sharedAssetIsCheckedList;
@@ -134,7 +134,7 @@ public class ImagePackAdaptor extends RecyclerView.Adapter<ImagePackAdaptor.View
     int itemIndex            = 0;
     int gridStartItemIndex   = 0;
 
-    for ( assetIndex = 0; assetIndex < assetList.size(); assetIndex ++ )
+    for ( assetIndex = 0; assetIndex < assetAndQuantityList.size(); assetIndex ++ )
       {
       // Check if we need to add a title item
 
@@ -153,7 +153,7 @@ public class ImagePackAdaptor extends RecyclerView.Adapter<ImagePackAdaptor.View
 
 
       // Add the image
-      mItemList.add( new Item( assetIndex, assetList.get( assetIndex ) ) );
+      mItemList.add( new Item( assetIndex, assetAndQuantityList.get( assetIndex ) ) );
 
       itemIndex ++;
       }
@@ -284,9 +284,9 @@ public class ImagePackAdaptor extends RecyclerView.Adapter<ImagePackAdaptor.View
 
         // Clear any image that is currently set, then request a new one
 
-        viewHolder.checkableImageView.clear( item.asset );
+        viewHolder.checkableImageView.clearForNewImage( item.assetAndQuantity.getAsset() );
 
-        AssetHelper.requestImage( mContext, item.asset, SCALED_IMAGE_WIDTH_IN_PIXELS, viewHolder.checkableImageView );
+        AssetHelper.requestImage( mContext, item.assetAndQuantity.getAsset(), SCALED_IMAGE_WIDTH_IN_PIXELS, viewHolder.checkableImageView );
 
         // See if the image is checked
         viewHolder.checkableImageView.setChecked( mSharedAssetIsCheckedList.get( item.assetIndex ) );
@@ -372,13 +372,13 @@ public class ImagePackAdaptor extends RecyclerView.Adapter<ImagePackAdaptor.View
    *****************************************************/
   private class Item implements View.OnClickListener
     {
-    ItemType    itemType;
-    String      title;
-    int         assetIndex;
-    Asset       asset;
-    int         checkerBoardValue;
+    ItemType          itemType;
+    String            title;
+    int               assetIndex;
+    AssetAndQuantity  assetAndQuantity;
+    int               checkerBoardValue;
 
-    ViewHolder  viewHolder;
+    ViewHolder        viewHolder;
 
 
     Item( String title )
@@ -387,11 +387,11 @@ public class ImagePackAdaptor extends RecyclerView.Adapter<ImagePackAdaptor.View
       this.title                = title;
       }
 
-    Item( int assetIndex, Asset asset )
+    Item( int assetIndex, AssetAndQuantity assetAndQuantity )
       {
       this.itemType             = ItemType.IMAGE;
       this.assetIndex           = assetIndex;
-      this.asset                = asset;
+      this.assetAndQuantity     = assetAndQuantity;
       }
 
     Item( int checkerBoardValue )

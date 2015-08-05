@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.journey;
+package ly.kite.journey.imageselection;
 
 
 ///// Import(s) /////
@@ -61,10 +61,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ly.kite.analytics.Analytics;
-import ly.kite.journey.imageselection.ImagePackAdaptor;
-import ly.kite.journey.imageselection.ImageSource;
-import ly.kite.journey.imageselection.ImageSourceAdaptor;
+import ly.kite.journey.AKiteActivity;
+import ly.kite.journey.AKiteFragment;
+import ly.kite.journey.AProductCreationFragment;
 import ly.kite.product.Asset;
+import ly.kite.product.AssetAndQuantity;
 import ly.kite.product.Product;
 
 import ly.kite.R;
@@ -80,20 +81,18 @@ import ly.kite.widget.VisibilitySettingAnimationListener;
  * case design using an image.
  *
  *****************************************************/
-public class ImageSelectionFragment extends AJourneyFragment implements AdapterView.OnItemClickListener,
-                                                                        View.OnClickListener,
-                                                                        ImagePackAdaptor.IOnImageCheckChangeListener
+public class ImageSelectionFragment extends AProductCreationFragment implements AdapterView.OnItemClickListener,
+                                                                                View.OnClickListener,
+                                                                                ImagePackAdaptor.IOnImageCheckChangeListener
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String      LOG_TAG                          = "ImageSelectionFragment";
+  public  static final String      TAG                                             = "ImageSelectionFragment";
 
-  public  static final String      BUNDLE_KEY_ASSET_LIST             = "assetList";
-  public  static final String      BUNDLE_KEY_ASSET_IS_CHECKED_ARRAY = "assetIsCheckedArray";
-  public  static final String      BUNDLE_KEY_PRODUCT                = "product";
+  public  static final String      BUNDLE_KEY_ASSET_IS_CHECKED_ARRAY               = "assetIsCheckedArray";
 
-  private static final int         REQUEST_CODE_SELECT_IMAGE        = 10;
+  private static final int         REQUEST_CODE_SELECT_IMAGE                       = 10;
 
   private static final long        CLEAR_PHOTOS_BUTTON_ANIMATION_DURATION_MILLIS   = 300L;
   private static final long        PROCEED_BUTTON_BUTTON_ANIMATION_DURATION_MILLIS = CLEAR_PHOTOS_BUTTON_ANIMATION_DURATION_MILLIS;
@@ -104,22 +103,19 @@ public class ImageSelectionFragment extends AJourneyFragment implements AdapterV
 
   ////////// Member Variable(s) //////////
 
-  private ArrayList<Asset>            mAssetArrayList;
-  private Product                     mProduct;
+  private ArrayList<Boolean>           mAssetIsCheckedArrayList;
+  private int                          mUncheckedImagesCount;
 
-  private ArrayList<Boolean>          mSharedAssetIsCheckedArrayList;
-  private int                         mUncheckedImagesCount;
+  private int                          mNumberOfColumns;
 
-  private int                         mNumberOfColumns;
+  private BaseAdapter                  mImageSourceAdaptor;
+  private GridView                     mImageSourceGridView;
+  private Button                       mClearPhotosButton;
+  private Button                       mProceedOverlayButton;
 
-  private BaseAdapter                 mImageSourceAdaptor;
-  private GridView                    mImageSourceGridView;
-  private Button                      mClearPhotosButton;
-  private Button                      mProceedOverlayButton;
-
-  private RecyclerView                mImageRecyclerView;
-  private GridLayoutManager           mImageLayoutManager;
-  private ImagePackAdaptor            mImagePackAdaptor;
+  private RecyclerView                 mImageRecyclerView;
+  private GridLayoutManager            mImageLayoutManager;
+  private ImagePackAdaptor             mImagePackAdaptor;
 
 
   ////////// Static Initialiser(s) //////////
@@ -132,13 +128,16 @@ public class ImageSelectionFragment extends AJourneyFragment implements AdapterV
    * Creates a new instance of this fragment.
    *
    *****************************************************/
-  public static ImageSelectionFragment newInstance( ArrayList<Asset> assetArrayList, Product product )
+  public static ImageSelectionFragment newInstance( ArrayList<AssetAndQuantity> uncroppedAssetAndQuantityArrayList,
+                                                    ArrayList<AssetAndQuantity> croppedAssetAndQuantityArrayList,
+                                                    Product                     product )
     {
     ImageSelectionFragment fragment = new ImageSelectionFragment();
 
     Bundle arguments = new Bundle();
-    arguments.putParcelableArrayList( BUNDLE_KEY_ASSET_LIST, assetArrayList );
-    arguments.putParcelable( BUNDLE_KEY_PRODUCT, product );
+    arguments.putParcelableArrayList( BUNDLE_KEY_UNCROPPED_ASSET_AND_QUANTITY_LIST, uncroppedAssetAndQuantityArrayList );
+    arguments.putParcelableArrayList( BUNDLE_KEY_CROPPED_ASSET_AND_QUANTITY_LIST,   croppedAssetAndQuantityArrayList );
+    arguments.putParcelable         ( BUNDLE_KEY_PRODUCT,                           product );
 
     fragment.setArguments( arguments );
 
@@ -149,11 +148,11 @@ public class ImageSelectionFragment extends AJourneyFragment implements AdapterV
   ////////// Constructor(s) //////////
 
 
-  ////////// Activity Method(s) //////////
+  ////////// AJourneyFragment Method(s) //////////
 
   /*****************************************************
    *
-   * Called when the activity is created.
+   * Called when the fragment is created.
    *
    *****************************************************/
   @Override
@@ -162,97 +161,40 @@ public class ImageSelectionFragment extends AJourneyFragment implements AdapterV
     super.onCreate( savedInstanceState );
 
 
-    // We want to check if we are being re-created first, because the assets may have changed
-    // since we were first launched - in which case the asset lists from the saved instance state
-    // will be different from those that were provided in the argument bundle.
+    // See if we saved an "is checked" array
 
     if ( savedInstanceState != null )
       {
-      mAssetArrayList = savedInstanceState.getParcelableArrayList( BUNDLE_KEY_ASSET_LIST );
-
-
       boolean[] assetIsCheckedArray = savedInstanceState.getBooleanArray( BUNDLE_KEY_ASSET_IS_CHECKED_ARRAY );
 
-      mSharedAssetIsCheckedArrayList = BooleanHelper.arrayListFrom( assetIsCheckedArray );
+      mAssetIsCheckedArrayList = BooleanHelper.arrayListFrom( assetIsCheckedArray );
       }
 
 
-    // Get the assets and product
+    // The super class will have retrieved any asset lists and product from the arguments, so
+    // we just need to make sure we got them.
 
-    Bundle arguments = getArguments();
+    if ( ! assetListsValid() ) return;
 
-    if ( arguments == null )
-      {
-      Log.e( LOG_TAG, "No arguments found" );
+    if ( ! productIsValid() ) return;
 
-      mKiteActivity.displayModalDialog(
-              R.string.alert_dialog_title_no_arguments,
-              R.string.alert_dialog_message_no_arguments,
-              AKiteActivity.DONT_DISPLAY_BUTTON,
-              null,
-              R.string.Cancel,
-              mKiteActivity.new FinishRunnable()
-      );
-
-      return;
-      }
-
-
-    // Only get the asset list if we couldn't find a saved list
-    if ( mAssetArrayList == null )
-      {
-      if ( ( mAssetArrayList = arguments.getParcelableArrayList( BUNDLE_KEY_ASSET_LIST ) ) == null || mAssetArrayList.size() < 1 )
-        {
-        Log.e( LOG_TAG, "No asset list found" );
-
-        mKiteActivity.displayModalDialog(
-                R.string.alert_dialog_title_no_asset_list,
-                R.string.alert_dialog_message_no_asset_list,
-                AKiteActivity.DONT_DISPLAY_BUTTON,
-                null,
-                R.string.Cancel,
-                mKiteActivity.new FinishRunnable()
-        );
-
-        return;
-        }
-      }
-
-
-    mProduct = arguments.getParcelable( BUNDLE_KEY_PRODUCT );
-
-    if ( mProduct == null )
-      {
-      Log.e( LOG_TAG, "No product found" );
-
-      mKiteActivity.displayModalDialog(
-              R.string.alert_dialog_title_product_not_found,
-              R.string.alert_dialog_message_product_not_found,
-              AKiteActivity.DONT_DISPLAY_BUTTON,
-              null,
-              R.string.Cancel,
-              mKiteActivity.new FinishRunnable()
-      );
-
-      return;
-      }
 
 
     // If we don't have a valid "is checked" list - create a new one with all the images checked.
 
     mUncheckedImagesCount = 0;
 
-    if ( mSharedAssetIsCheckedArrayList == null || mSharedAssetIsCheckedArrayList.size() != mAssetArrayList.size() )
+    if ( mAssetIsCheckedArrayList == null || mAssetIsCheckedArrayList.size() != mUncroppedAssetAndQuantityArrayList.size() )
       {
-      mSharedAssetIsCheckedArrayList = new ArrayList<>( mAssetArrayList.size() );
+      mAssetIsCheckedArrayList = new ArrayList<>( mUncroppedAssetAndQuantityArrayList.size() );
 
-      for ( Asset asset : mAssetArrayList ) mSharedAssetIsCheckedArrayList.add( true );
+      for ( AssetAndQuantity assetAndQuantity : mUncroppedAssetAndQuantityArrayList ) mAssetIsCheckedArrayList.add( true );
       }
     else
       {
       // We already have a valid list, so scan it and calculate the number of unchecked images.
 
-      for ( boolean isChecked : mSharedAssetIsCheckedArrayList )
+      for ( boolean isChecked : mAssetIsCheckedArrayList )
         {
         if ( ! isChecked ) mUncheckedImagesCount ++;
         }
@@ -322,13 +264,6 @@ public class ImageSelectionFragment extends AJourneyFragment implements AdapterV
     mProceedOverlayButton.setOnClickListener( this );
 
 
-    // TODO: Create a common superclass of all product creation fragments
-    if ( savedInstanceState == null )
-      {
-      Analytics.getInstance( mKiteActivity ).trackCreateProductScreenViewed( mProduct );
-      }
-
-
     return ( view );
     }
 
@@ -353,13 +288,13 @@ public class ImageSelectionFragment extends AJourneyFragment implements AdapterV
   @Override
   public void onSaveInstanceState( Bundle outState )
     {
-    outState.putParcelableArrayList( BUNDLE_KEY_ASSET_LIST, mAssetArrayList );
+    super.onSaveInstanceState( outState );
 
 
     // We need to convert the Boolean list into a boolean array before we can
     // add it to the bundle.
 
-    boolean[] isCheckedArray = BooleanHelper.arrayFrom( mSharedAssetIsCheckedArrayList );
+    boolean[] isCheckedArray = BooleanHelper.arrayFrom( mAssetIsCheckedArrayList );
 
     outState.putBooleanArray( BUNDLE_KEY_ASSET_IS_CHECKED_ARRAY, isCheckedArray );
     }
@@ -385,11 +320,12 @@ public class ImageSelectionFragment extends AJourneyFragment implements AdapterV
 
       Asset newAsset = new Asset( newImageUri );
 
-      if ( ! Asset.isInList( mAssetArrayList, newAsset ) )
+      if ( ! AssetAndQuantity.isInList( mUncroppedAssetAndQuantityArrayList, newAsset ) )
         {
-        // Add the selected image to our asset list, mark it as checked
-        mAssetArrayList.add( new Asset( newImageUri ) );
-        mSharedAssetIsCheckedArrayList.add( true );
+        // Add the selected image to our asset lists, mark it as checked
+        mUncroppedAssetAndQuantityArrayList.add( new AssetAndQuantity( new Asset( newImageUri ), 1 ) );
+        mCroppedAssetAndQuantityArrayList.add( new AssetAndQuantity( new Asset( newImageUri ), 1 ) );
+        mAssetIsCheckedArrayList.add( true );
 
 
         // Update the screen
@@ -421,9 +357,9 @@ public class ImageSelectionFragment extends AJourneyFragment implements AdapterV
 
     int assetIndex = 0;
 
-    for ( Boolean booleanObject : mSharedAssetIsCheckedArrayList )
+    for ( Boolean booleanObject : mAssetIsCheckedArrayList )
       {
-      if ( ! booleanObject ) mSharedAssetIsCheckedArrayList.set( assetIndex, true );
+      if ( ! booleanObject ) mAssetIsCheckedArrayList.set( assetIndex, true );
 
       assetIndex ++;
       }
@@ -480,15 +416,16 @@ public class ImageSelectionFragment extends AJourneyFragment implements AdapterV
       {
       ///// Clear photos /////
 
-      // We need to go through all the assets and remove any that are unchecked - both the
-      // actual asset and the is checked value.
+      // We need to go through all the assets and remove any that are unchecked - from
+      // both lists, and the "is checked" value.
 
-      for ( int assetIndex = 0; assetIndex < mAssetArrayList.size(); assetIndex ++ )
+      for ( int assetIndex = 0; assetIndex < mUncroppedAssetAndQuantityArrayList.size(); assetIndex ++ )
         {
-        if ( ! mSharedAssetIsCheckedArrayList.get( assetIndex ) )
+        if ( ! mAssetIsCheckedArrayList.get( assetIndex ) )
           {
-          mAssetArrayList.remove( assetIndex );
-          mSharedAssetIsCheckedArrayList.remove( assetIndex );
+          mUncroppedAssetAndQuantityArrayList.remove( assetIndex );
+          mCroppedAssetAndQuantityArrayList.remove( assetIndex );
+          mAssetIsCheckedArrayList.remove( assetIndex );
 
           // If we delete an asset, then the next asset now falls into its place
           assetIndex --;
@@ -511,7 +448,10 @@ public class ImageSelectionFragment extends AJourneyFragment implements AdapterV
       {
       ///// Review and Crop /////
 
-      // TODO
+      if ( mKiteActivity instanceof ICallback )
+        {
+        ( (ICallback)mKiteActivity ).isOnNext( mUncroppedAssetAndQuantityArrayList, mCroppedAssetAndQuantityArrayList );
+        }
       }
 
     }
@@ -565,17 +505,29 @@ public class ImageSelectionFragment extends AJourneyFragment implements AdapterV
 
   /*****************************************************
    *
-   * Updates the title. We display the number of checked
-   * assets for the title - to match what the iOS app does.
+   * Updates the title.
    *
    *****************************************************/
   private void setTitle()
     {
-    int numberOfCheckedImages = mAssetArrayList.size() - mUncheckedImagesCount;
-    int quantityPerPack       = mProduct.getQuantityPerSheet();
-    int numberOfPacks         = ( numberOfCheckedImages + ( quantityPerPack - 1 ) ) / quantityPerPack;
+    // Calculate the total number of images
 
-    mKiteActivity.setTitle( getString( R.string.image_selection_title_format_string, mProduct.getName(), numberOfCheckedImages, ( numberOfPacks * quantityPerPack ) ) );
+    int numberOfImages = 0;
+
+    int assetIndex = 0;
+
+    for ( AssetAndQuantity assetAndQuantity : mUncroppedAssetAndQuantityArrayList )
+      {
+      if ( mAssetIsCheckedArrayList.get( assetIndex ) ) numberOfImages += assetAndQuantity.getQuantity();
+
+      assetIndex ++;
+      }
+
+
+    int quantityPerPack       = mProduct.getQuantityPerSheet();
+    int numberOfPacks         = ( numberOfImages + ( quantityPerPack - 1 ) ) / quantityPerPack;
+
+    mKiteActivity.setTitle( getString( R.string.image_selection_title_format_string, mProduct.getName(), numberOfImages, ( numberOfPacks * quantityPerPack ) ) );
     }
 
 
@@ -586,7 +538,7 @@ public class ImageSelectionFragment extends AJourneyFragment implements AdapterV
    *****************************************************/
   private void setUpRecyclerView()
     {
-    mImagePackAdaptor = new ImagePackAdaptor( mKiteActivity, mProduct, mAssetArrayList, mSharedAssetIsCheckedArrayList, mNumberOfColumns, this );
+    mImagePackAdaptor = new ImagePackAdaptor( mKiteActivity, mProduct, mCroppedAssetAndQuantityArrayList, mAssetIsCheckedArrayList, mNumberOfColumns, this );
 
     mImageLayoutManager = new GridLayoutManager( mKiteActivity, mNumberOfColumns );
     mImageLayoutManager.setSpanSizeLookup( mImagePackAdaptor.new SpanSizeLookup( mNumberOfColumns ) );
@@ -707,7 +659,7 @@ public class ImageSelectionFragment extends AJourneyFragment implements AdapterV
    *****************************************************/
   public interface ICallback
     {
-    public void isOnNext( List<Asset> assetList );
+    public void isOnNext( ArrayList<AssetAndQuantity> uncroppedAssetAndQuantityList, ArrayList<AssetAndQuantity> croppedAssetAndQuantityList );
     }
 
   }

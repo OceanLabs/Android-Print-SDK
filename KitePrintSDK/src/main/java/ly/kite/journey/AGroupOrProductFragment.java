@@ -69,7 +69,7 @@ import ly.kite.widget.LabelledImageView;
  * Product fragments.
  *
  *****************************************************/
-abstract public class AGroupOrProductFragment extends AJourneyFragment implements ProductLoader.ProductConsumer, AdapterView.OnItemClickListener
+abstract public class AGroupOrProductFragment extends AKiteFragment implements ProductLoader.ProductConsumer, AdapterView.OnItemClickListener
   {
   ////////// Static Constant(s) //////////
 
@@ -179,7 +179,7 @@ abstract public class AGroupOrProductFragment extends AJourneyFragment implement
   public void onProductRetrievalError( Exception exception )
     {
     // Don't do anything if the activity is no longer visible
-    if ( ! mIsVisible ) return;
+    if ( ! mKiteActivity.isVisible() ) return;
 
     onProductFetchFinished();
 

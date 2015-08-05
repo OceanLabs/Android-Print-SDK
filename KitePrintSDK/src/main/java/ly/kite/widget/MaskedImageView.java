@@ -74,13 +74,13 @@ public class MaskedImageView extends View implements GestureDetector.OnGestureLi
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                               = "MaskedImageView";
+  private static final String LOG_TAG                            = "MaskedImageView";
 
-  private static final float FLOAT_ZERO_THRESHOLD                    = 0.0001f;
+  private static final float  FLOAT_ZERO_THRESHOLD               = 0.0001f;
 
-  private static final float MAX_IMAGE_ZOOM                          = 3.0f;
+  private static final float  MAX_IMAGE_ZOOM                     = 3.0f;
 
-  private static final long  FLY_BACK_ANIMATION_DURATION_MILLIS      = 150L;
+  private static final long   FLY_BACK_ANIMATION_DURATION_MILLIS = 150L;
 
 
   ////////// Static Variable(s) //////////

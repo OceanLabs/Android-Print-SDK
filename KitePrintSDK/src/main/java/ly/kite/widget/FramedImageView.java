@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * CheckableImageView.java
+ * FramedImageView.java
  *
  *
  * Modified MIT License
@@ -59,15 +59,15 @@ import ly.kite.util.IImageConsumer;
 
 /*****************************************************
  *
- * This class overlays a check mark on an image view.
+ * This class overlays a frame on a standard image view.
  *
  *****************************************************/
-public class CheckableImageView extends AFixableImageFrame
+public class FramedImageView extends AFixableImageFrame implements IImageConsumer
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                         = "CheckableImageView";
+  private static final String  LOG_TAG                         = "FramedImageView";
 
   private static final long    CHECK_ANIMATION_DURATION_MILLIS = 200L;
 
@@ -77,8 +77,9 @@ public class CheckableImageView extends AFixableImageFrame
 
   ////////// Member Variable(s) //////////
 
-  private boolean    mIsChecked;
-  private ImageView  mCheckImageView;
+  private ImageView  mFrameImageView;
+
+  private Object     mExpectedKey;
 
 
   ////////// Static Initialiser(s) //////////
@@ -89,23 +90,23 @@ public class CheckableImageView extends AFixableImageFrame
 
   ////////// Constructor(s) //////////
 
-  public CheckableImageView( Context context )
+  public FramedImageView( Context context )
     {
     super( context );
     }
 
-  public CheckableImageView( Context context, AttributeSet attrs )
+  public FramedImageView( Context context, AttributeSet attrs )
     {
     super( context, attrs );
     }
 
-  public CheckableImageView( Context context, AttributeSet attrs, int defStyleAttr )
+  public FramedImageView( Context context, AttributeSet attrs, int defStyleAttr )
     {
     super( context, attrs, defStyleAttr );
     }
 
   @TargetApi( Build.VERSION_CODES.LOLLIPOP )
-  public CheckableImageView( Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes )
+  public FramedImageView( Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes )
     {
     super( context, attrs, defStyleAttr, defStyleRes );
     }
@@ -123,74 +124,16 @@ public class CheckableImageView extends AFixableImageFrame
     {
     LayoutInflater layoutInflator = LayoutInflater.from( context );
 
-    View view = layoutInflator.inflate( R.layout.checkable_image_view, this, true );
+    View view = layoutInflator.inflate( R.layout.framed_image_view, this, true );
 
-    mCheckImageView = (ImageView)view.findViewById( R.id.check_image_view );
+    mFrameImageView = (ImageView)view.findViewById( R.id.frame_image_view );
+
 
     return ( view );
     }
 
 
   ////////// Method(s) //////////
-
-  /*****************************************************
-   *
-   * Sets the checked state.
-   *
-   *****************************************************/
-  public void setChecked( boolean isChecked )
-    {
-    mIsChecked = isChecked;
-
-    int visibility = ( isChecked ? View.VISIBLE : View.GONE );
-
-    mCheckImageView.setAnimation( null );
-    mCheckImageView.setVisibility( visibility );
-    }
-
-
-  /*****************************************************
-   *
-   * Sets the checked state, but animates any transition.
-   *
-   *****************************************************/
-  public void transitionChecked( boolean isChecked )
-    {
-    boolean wasChecked = mIsChecked;
-
-    setChecked( isChecked );
-
-    Animation animation       = null;
-    int       finalVisibility = 0;
-
-    if ( ! wasChecked && isChecked )
-      {
-      ///// Animate in /////
-
-      animation = new AlphaAnimation( 0f, 1f );
-
-      finalVisibility = View.VISIBLE;
-      }
-    else if ( wasChecked && ! isChecked )
-      {
-      ///// Animate out /////
-
-      animation = new AlphaAnimation( 1f, 0f );
-      //animation.setFillAfter( true );
-
-      finalVisibility = View.GONE;
-      }
-
-
-    if ( animation != null )
-      {
-      animation.setDuration( CHECK_ANIMATION_DURATION_MILLIS );
-      animation.setAnimationListener( new VisibilitySettingAnimationListener( mCheckImageView, finalVisibility ) );
-
-      mCheckImageView.startAnimation( animation );
-      }
-
-    }
 
 
   ////////// Inner Class(es) //////////

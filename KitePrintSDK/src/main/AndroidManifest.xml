@@ -33,8 +33,13 @@
         <!-- Kite SDK activities -->
 
         <activity
-            android:name=".journey.ProductCreationActivity"
+            android:name=".journey.ProductSelectionActivity"
             android:theme="@style/Theme.KiteSDK.ProductSelection"
+            android:launchMode="singleTop"/>
+
+        <activity
+            android:name=".journey.ProductCreationActivity"
+            android:theme="@style/Theme.KiteSDK.ProductCreation"
             android:launchMode="singleTop"/>
 
         <activity

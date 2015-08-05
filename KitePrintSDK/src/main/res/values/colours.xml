@@ -38,4 +38,6 @@
     <color name="image_selection_placeholder_background_2">#ffdce0e5</color>
     <color name="image_selection_clear_photos_button_background">#e0ffffff</color>
 
+    <color name="review_and_crop_quantity_highlight">#fff29919</color>
+
 </resources>

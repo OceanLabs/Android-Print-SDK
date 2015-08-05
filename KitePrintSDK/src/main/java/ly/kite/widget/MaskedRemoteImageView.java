@@ -122,27 +122,6 @@ public class MaskedRemoteImageView extends FrameLayout implements IImageConsumer
     }
 
 
-  ////////// View Method(s) //////////
-
-  /*****************************************************
-   *
-   * Called when the view size changes.
-   *
-   *****************************************************/
-  @Override
-  public void onSizeChanged( int width, int height, int oldWidth, int oldHeight )
-    {
-    super.onSizeChanged( width, height, oldWidth, oldHeight );
-    }
-
-
-  /*****************************************************
-   *
-   * Draws the view.
-   *
-   *****************************************************/
-
-
   ////////// IImageConsumer Method(s) //////////
 
   /*****************************************************

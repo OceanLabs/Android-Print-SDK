@@ -256,7 +256,7 @@ public class Asset implements Parcelable
    * Constructs an asset from a parcel.
    *
    *****************************************************/
-  private Asset( Parcel sourceParcel )
+  Asset( Parcel sourceParcel )
     {
     mType             = Type.valueOf( sourceParcel.readString() );
     mImageURI = (Uri)sourceParcel.readValue( Uri.class.getClassLoader() );

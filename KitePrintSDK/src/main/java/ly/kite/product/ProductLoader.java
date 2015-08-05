@@ -59,7 +59,7 @@ import java.util.Iterator;
 
 import ly.kite.KiteSDKException;
 import ly.kite.KiteSDK;
-import ly.kite.journey.UserJourneyCoordinator;
+import ly.kite.journey.ProductCreationActivity;
 import ly.kite.journey.UserJourneyType;
 
 
@@ -111,6 +111,8 @@ public class ProductLoader implements HTTPJSONRequest.BaseRequestListener
   private static final String  JSON_NAME_PRODUCT_UI_CLASS            = "ios_sdk_ui_class";
   private static final String  JSON_NAME_SHIPPING_COSTS              = "shipping_costs";
   private static final String  JSON_NAME_WIDTH                       = "width";
+
+  private static final int     DEFAULT_IMAGES_PER_PAGE               = 1;
 
 
   ////////// Static Variable(s) //////////
@@ -386,7 +388,7 @@ public class ProductLoader implements HTTPJSONRequest.BaseRequestListener
 
         String                           productId     = productJSONObject.getString( JSON_NAME_PRODUCT_ID );
         String                           productName   = productJSONObject.getString( JSON_NAME_PRODUCT_NAME );
-        int                              imagesPerPage = productJSONObject.getInt( JSON_NAME_IMAGES_PER_PAGE );
+        int                              imagesPerPage = productJSONObject.optInt( JSON_NAME_IMAGES_PER_PAGE, DEFAULT_IMAGES_PER_PAGE );
         MultipleCurrencyCost             cost          = parseCost( productJSONObject.getJSONArray( JSON_NAME_COST ) );
         MultipleDestinationShippingCosts shippingCosts = parseShippingCosts( productJSONObject.getJSONObject( JSON_NAME_SHIPPING_COSTS ) );
 
@@ -437,7 +439,7 @@ public class ProductLoader implements HTTPJSONRequest.BaseRequestListener
 
 
         // Only display products for which we have a defined user journey
-        if ( ! UserJourneyCoordinator.getInstance().isSupported( userJourneyType ) )
+        if ( ! ProductCreationActivity.isSupported( userJourneyType ) )
           {
           Log.i( LOG_TAG, "-- Product discarded: no user journey --" );
 

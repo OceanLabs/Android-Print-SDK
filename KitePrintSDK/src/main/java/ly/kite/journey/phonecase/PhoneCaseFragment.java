@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.journey;
+package ly.kite.journey.phonecase;
 
 
 ///// Import(s) /////
@@ -53,8 +53,10 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import ly.kite.R;
-import ly.kite.analytics.Analytics;
+import ly.kite.journey.AKiteActivity;
+import ly.kite.journey.AKiteFragment;
 import ly.kite.product.Asset;
+import ly.kite.product.AssetAndQuantity;
 import ly.kite.product.AssetHelper;
 import ly.kite.product.Bleed;
 import ly.kite.product.Product;
@@ -70,15 +72,15 @@ import ly.kite.widget.MaskedRemoteImageView;
  * case design using an image.
  *
  *****************************************************/
-public class PhoneCaseFragment extends AJourneyFragment implements View.OnClickListener
+public class PhoneCaseFragment extends AKiteFragment implements View.OnClickListener
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String      LOG_TAG                      = "PhoneCaseFragment";
+  private static final String      LOG_TAG                            = "PhoneCaseFragment";
 
-  public  static final String      BUNDLE_KEY_ASSET_LIST = "assetList";
-  public  static final String      BUNDLE_KEY_PRODUCT    = "product";
+  public  static final String      BUNDLE_KEY_ASSET_AND_QUANTITY_LIST = "assetAndQuantityList";
+  public  static final String      BUNDLE_KEY_PRODUCT                 = "product";
 
 
   ////////// Static Variable(s) //////////
@@ -86,11 +88,11 @@ public class PhoneCaseFragment extends AJourneyFragment implements View.OnClickL
 
   ////////// Member Variable(s) //////////
 
-  private ArrayList<Asset>       mAssetArrayList;
-  private Product                mProduct;
+  private ArrayList<AssetAndQuantity>  mAssetAndQuantityArrayList;
+  private Product                      mProduct;
 
-  private MaskedRemoteImageView  mMaskedRemoteImageView;
-  private Button                 mNextButton;
+  private MaskedRemoteImageView        mMaskedRemoteImageView;
+  private Button                       mNextButton;
 
 
   ////////// Static Initialiser(s) //////////
@@ -103,12 +105,12 @@ public class PhoneCaseFragment extends AJourneyFragment implements View.OnClickL
    * Creates a new instance of this fragment.
    *
    *****************************************************/
-  public static PhoneCaseFragment newInstance( ArrayList<Asset> assetArrayList, Product product )
+  public static PhoneCaseFragment newInstance( ArrayList<AssetAndQuantity> assetAndQuantityArrayList, Product product )
     {
     PhoneCaseFragment fragment = new PhoneCaseFragment();
 
     Bundle arguments = new Bundle();
-    arguments.putParcelableArrayList( BUNDLE_KEY_ASSET_LIST, assetArrayList );
+    arguments.putParcelableArrayList( BUNDLE_KEY_ASSET_AND_QUANTITY_LIST, assetAndQuantityArrayList );
     arguments.putParcelable( BUNDLE_KEY_PRODUCT, product );
 
     fragment.setArguments( arguments );
@@ -153,7 +155,10 @@ public class PhoneCaseFragment extends AJourneyFragment implements View.OnClickL
       return;
       }
 
-    if ( ( mAssetArrayList = arguments.getParcelableArrayList( BUNDLE_KEY_ASSET_LIST ) ) == null || mAssetArrayList.size() < 1 )
+
+    mAssetAndQuantityArrayList = arguments.getParcelableArrayList( BUNDLE_KEY_ASSET_AND_QUANTITY_LIST );
+
+    if ( mAssetAndQuantityArrayList == null || mAssetAndQuantityArrayList.size() < 1 )
       {
       Log.e( LOG_TAG, "No asset list found" );
 
@@ -229,7 +234,7 @@ public class PhoneCaseFragment extends AJourneyFragment implements View.OnClickL
     ImageLoader imageManager = ImageLoader.getInstance( mKiteActivity );
     Handler      handler      = new Handler();
 
-    Asset        asset        = mAssetArrayList.get( 0 );
+    Asset        asset        = mAssetAndQuantityArrayList.get( 0 ).getAsset();
     URL          maskURL      = mProduct.getMaskURL();
     Bleed        maskBleed    = mProduct.getMaskBleed();
 
@@ -238,13 +243,6 @@ public class PhoneCaseFragment extends AJourneyFragment implements View.OnClickL
 
     AssetHelper.requestImage( mKiteActivity, asset, mMaskedRemoteImageView );
     imageManager.requestRemoteImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, maskURL, handler, mMaskedRemoteImageView );
-
-
-    // TODO: Create a common superclass of all product creation fragments
-    if ( savedInstanceState == null )
-      {
-      Analytics.getInstance( mKiteActivity ).trackCreateProductScreenViewed( mProduct );
-      }
 
 
     mNextButton.setOnClickListener( this );

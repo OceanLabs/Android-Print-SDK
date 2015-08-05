@@ -864,15 +864,19 @@ public class AssetHelper
     @Override
     protected void onPostExecute( Object resultObject )
       {
-      if ( resultObject instanceof byte[] )
+      if ( resultObject == null )
+        {
+        // Do nothing
+        }
+      else if ( resultObject instanceof byte[] )
         {
         mImageBytesConsumer.onAssetBytes( mAsset, (byte[]) resultObject );
         }
-
-      // We didn't get the result we wanted
-      mImageBytesConsumer.onAssetError( mAsset, (Exception)resultObject );
+      else if ( resultObject instanceof Exception )
+        {
+        mImageBytesConsumer.onAssetError( mAsset, (Exception)resultObject );
+        }
       }
-
 
     }
 

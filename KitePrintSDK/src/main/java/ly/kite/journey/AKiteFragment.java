@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * AJourneyFragment.java
+ * AKiteFragment.java
  *
  *
  * Modified MIT License
@@ -52,17 +52,21 @@ import ly.kite.product.UnitOfLength;
 
 /*****************************************************
  *
- * This is the parent class of user journey fragments.
+ * This is the parent class of Kite SDK fragments.
  *
  *****************************************************/
-abstract public class AJourneyFragment extends Fragment
+abstract public class AKiteFragment extends Fragment
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  public  static final String  TAG                                      = "AJourneyFragment";
+  public    static final String  TAG                                          = "AKiteFragment";
 
-  private static final String  BUNDLE_KEY_MANAGED_ADAPTOR_VIEW_POSITION = "managedAdaptorViewPosition";
+  private   static final String  BUNDLE_KEY_MANAGED_ADAPTOR_VIEW_POSITION     = "managedAdaptorViewPosition";
+  protected static final String  BUNDLE_KEY_UNCROPPED_ASSET_AND_QUANTITY_LIST = "uncroppedAssetAndQuantityList";
+  protected static final String  BUNDLE_KEY_CROPPED_ASSET_AND_QUANTITY_LIST   = "croppedAssetAndQuantityList";
+  protected static final String  BUNDLE_KEY_PRODUCT                           = "product";
+
 
   public  static final long    MAX_ACCEPTED_PRODUCT_AGE_MILLIS          = 1000 * 60 * 60;  // 1 hour
 
@@ -78,7 +82,7 @@ abstract public class AJourneyFragment extends Fragment
   ////////// Member Variable(s) //////////
 
   protected AKiteActivity   mKiteActivity;
-  protected boolean         mIsVisible;
+  //protected boolean         mIsVisible;
 
   private   AdapterView<?>  mManagedAdaptorView;
   private   int             mManagedAdaptorViewPosition;
@@ -126,34 +130,6 @@ abstract public class AJourneyFragment extends Fragment
     super.onAttach( activity );
 
     mKiteActivity = (AKiteActivity)activity;
-    }
-
-
-  /*****************************************************
-   *
-   * Called when the fragment becomes visible.
-   *
-   *****************************************************/
-  @Override
-  public void onStart()
-    {
-    super.onStart();
-
-    mIsVisible = true;
-    }
-
-
-  /*****************************************************
-   *
-   * Called after the fragment is no longer visible.
-   *
-   *****************************************************/
-  @Override
-  public void onStop()
-    {
-    super.onStop();
-
-    mIsVisible = false;
     }
 
 

@@ -1,0 +1,13 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:fitsSystemWindows="true">
+
+    <GridView
+        android:id="@+id/grid_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:numColumns="@integer/review_and_crop_grid_num_columns"/>
+
+</FrameLayout>

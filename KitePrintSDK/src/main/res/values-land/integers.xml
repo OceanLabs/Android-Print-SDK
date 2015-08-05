@@ -5,4 +5,6 @@
 
     <integer name="image_selection_grid_num_columns">6</integer>
 
+    <integer name="review_and_crop_grid_num_columns">2</integer>
+
 </resources>

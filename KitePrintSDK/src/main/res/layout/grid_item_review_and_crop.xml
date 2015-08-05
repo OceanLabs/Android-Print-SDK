@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/background_view"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:padding="20dp"
+    android:orientation="vertical">
+
+    <ly.kite.widget.FramedImageView
+        android:id="@+id/framed_image_view"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        custom:aspectRatio="@dimen/review_and_crop_image_aspect_ratio"/>
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/quantity_text_view"
+            android:layout_width="@dimen/cta_button_height"
+            android:layout_height="fill_parent"
+            android:background="@color/review_and_crop_quantity_highlight"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/review_and_crop_quantity_text_size"/>
+
+        <Button
+            android:id="@+id/decrease_button"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
+            android:layout_width="@dimen/cta_button_height"
+            android:layout_height="@dimen/cta_button_height"
+            android:background="@android:color/white"
+            android:gravity="center"
+            android:textColor="@color/review_and_crop_quantity_highlight"
+            android:text="-"
+            android:textSize="@dimen/review_and_crop_plus_minus_text_size"/>
+
+        <Button
+            android:id="@+id/increase_button"
+            android:layout_marginLeft="1px"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
+            android:layout_width="@dimen/cta_button_height"
+            android:layout_height="@dimen/cta_button_height"
+            android:background="@android:color/white"
+            android:gravity="center"
+            android:textColor="@color/review_and_crop_quantity_highlight"
+            android:text="+"
+            android:textSize="@dimen/review_and_crop_plus_minus_text_size"/>
+
+        <Button
+            android:id="@+id/edit_button"
+            android:layout_marginLeft="30dp"
+            android:layout_width="wrap_content"
+            android:layout_weight="1.0"
+            android:layout_height="fill_parent"
+            style="@style/KiteSDKCTAButtonStyle"
+            android:text="@string/Edit"/>
+
+
+    </LinearLayout>
+
+</LinearLayout>

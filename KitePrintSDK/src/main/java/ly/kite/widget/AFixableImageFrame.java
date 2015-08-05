@@ -42,6 +42,7 @@ package ly.kite.widget;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -51,6 +52,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import ly.kite.R;
+import ly.kite.util.IImageConsumer;
 
 
 ///// Class Declaration /////
@@ -61,13 +63,15 @@ import ly.kite.R;
  * The size of the image is set according to the aspect ratio
  * and the width of the frame.
  *
+ * The widget is also an image consumer.
+ *
  *****************************************************/
-abstract public class AFixableImageFrame extends FrameLayout
+abstract public class AFixableImageFrame extends FrameLayout implements IImageConsumer
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG              = "  AFixableImageFrame";
+  private static final String  LOG_TAG              = "AFixableImageFrame";
 
   private static final float   DEFAULT_ASPECT_RATIO = 1.389f;
 
@@ -80,6 +84,8 @@ abstract public class AFixableImageFrame extends FrameLayout
   protected ImageView     mImageView;
 
   private   float         mWidthToHeightMultiplier;
+
+  private   Object        mExpectedKey;
 
 
   ////////// Static Initialiser(s) //////////
@@ -153,6 +159,27 @@ abstract public class AFixableImageFrame extends FrameLayout
     }
 
 
+  ////////// IImageConsumer Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when an image is downloading.
+   *
+   *****************************************************/
+  @Override
+  public void onImageDownloading( Object key )
+    {
+    // Ignore
+    }
+
+
+  @Override
+  public void onImageAvailable( Object key, Bitmap bitmap )
+    {
+    if ( key.equals( mExpectedKey ) ) mImageView.setImageBitmap( bitmap );
+    }
+
+
   ////////// Method(s) //////////
 
   /*****************************************************
@@ -208,6 +235,42 @@ abstract public class AFixableImageFrame extends FrameLayout
   public void setAspectRatio( float aspectRatio )
     {
     mWidthToHeightMultiplier = 1.0f / aspectRatio;
+    }
+
+
+  /*****************************************************
+   *
+   * Clears the image and sets the key for the next
+   * expected image.
+   *
+   *****************************************************/
+  public void clearForNewImage( Object expectedKey )
+    {
+    setExpectedKey( expectedKey );
+
+    mImageView.setImageBitmap( null );
+    }
+
+
+  /*****************************************************
+   *
+   * Clears the image and key.
+   *
+   *****************************************************/
+  public void clear()
+    {
+    clearForNewImage( null );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the key to expect.
+   *
+   *****************************************************/
+  public void setExpectedKey( Object key )
+    {
+    mExpectedKey = key;
     }
 
 

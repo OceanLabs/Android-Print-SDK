@@ -45,9 +45,12 @@ package ly.kite.journey;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.FragmentManager;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,7 +64,7 @@ import ly.kite.product.ProductLoader;
  * in the Kite SDK. It provides some common functionality.
  *
  *****************************************************/
-public abstract class AKiteActivity extends Activity
+public abstract class AKiteActivity extends Activity implements FragmentManager.OnBackStackChangedListener
   {
   ////////// Static Constant(s) //////////
 
@@ -73,6 +76,7 @@ public abstract class AKiteActivity extends Activity
   public    static final String  IMAGE_CLASS_STRING_PRODUCT_ITEM = "product_item";
 
   protected static final int     ACTIVITY_REQUEST_CODE_CHECKOUT = 1;
+  protected static final int     ACTIVITY_REQUEST_CODE_CREATE   = 2;
 
 
   ////////// Static Variable(s) //////////
@@ -80,9 +84,13 @@ public abstract class AKiteActivity extends Activity
 
   ////////// Member Variable(s) //////////
 
-  protected boolean  mActivityIsVisible;
+  private   boolean           mActivityIsVisible;
 
-  private   Dialog   mDialog;
+  private   Dialog            mDialog;
+
+  private   FragmentManager   mFragmentManager;
+
+  protected AKiteFragment     mCurrentFragment;
 
 
   ////////// Static Initialiser(s) //////////
@@ -106,8 +114,24 @@ public abstract class AKiteActivity extends Activity
     {
     super.onCreate( savedInstanceState );
 
+
     // TODO: Fix this dirty hack
     ProductLoader.getInstance( this );
+
+
+    // Listen for changes to the fragment back stack
+
+    mFragmentManager = getFragmentManager();
+
+    mFragmentManager.addOnBackStackChangedListener( this );
+
+
+    // If we are being re-started - get the current fragment again.
+
+    if ( savedInstanceState != null )
+      {
+      determineCurrentFragment();
+      }
     }
 
 
@@ -165,21 +189,49 @@ public abstract class AKiteActivity extends Activity
 
   /*****************************************************
    *
-   * Called when the home action is clicked.
+   * Called when an item in the options menu is selected.
    *
    *****************************************************/
   @Override
   public boolean onOptionsItemSelected( MenuItem item )
     {
-    switch ( item.getItemId() )
+    // See what menu item was selected
+
+    int itemId = item.getItemId();
+
+    if ( itemId == android.R.id.home )
       {
-      case android.R.id.home:
-        finish();
-        return ( true );
+      ///// Home /////
+
+      // We intercept the home button and do the same as if the
+      // back key had been pressed. We don't allow fragments to
+      // intercept this one.
+
+      super.onBackPressed();
+
+      return ( true );
       }
 
 
     return ( super.onOptionsItemSelected( item ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the back key is pressed. Some fragments
+   * intercept the back key and do something internally.
+   *
+   *****************************************************/
+  @Override
+  public void onBackPressed()
+    {
+    if ( mCurrentFragment != null && mCurrentFragment.onBackPressIntercepted() )
+      {
+      return;
+      }
+
+    super.onBackPressed();
     }
 
 
@@ -213,7 +265,63 @@ public abstract class AKiteActivity extends Activity
     }
 
 
+  /*****************************************************
+   *
+   * Called when an activity result is received.
+   *
+   *****************************************************/
+  @Override
+  protected void onActivityResult( int requestCode, int resultCode, Intent data )
+    {
+    super.onActivityResult( requestCode, resultCode, data );
+
+    // If we successfully completed check-out then return the result back to any
+    // calling activity, and exit so the user goes back to the original app.
+    if ( requestCode == ACTIVITY_REQUEST_CODE_CHECKOUT && resultCode == RESULT_OK )
+      {
+      setResult( RESULT_OK );
+
+      finish();
+      }
+    }
+
+
+  ////////// FragmentManager.OnBackStackChangedListener Method(s) //////////
+
+  /*****************************************************
+   *
+   * Listens for changes to the back stack, so we can exit
+   * the activity when there are no more fragments on it.
+   *
+   *****************************************************/
+  @Override
+  public void onBackStackChanged()
+    {
+    int entryCount = mFragmentManager.getBackStackEntryCount();
+
+    if ( entryCount < 1 )
+      {
+      finish();
+      }
+
+
+    determineCurrentFragment();
+    }
+
+
+
   ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Returns true if the activity is visible, false otherwise.
+   *
+   *****************************************************/
+  public boolean isVisible()
+    {
+    return ( mActivityIsVisible );
+    }
+
 
   /*****************************************************
    *
@@ -282,6 +390,57 @@ public abstract class AKiteActivity extends Activity
       }
     }
 
+
+  /*****************************************************
+   *
+   * Displays a fragment.
+   *
+   *****************************************************/
+  protected void addFragment( AKiteFragment fragment, String tag )
+    {
+    mFragmentManager
+            .beginTransaction()
+            .replace( R.id.fragment_container, fragment, tag )
+            .addToBackStack( tag )  // Use the tag as the name so we can find it later
+            .commit();
+    }
+
+
+  /*****************************************************
+   *
+   * Works out what the current fragment is.
+   *
+   *****************************************************/
+  private void determineCurrentFragment( int entryCount )
+    {
+    try
+      {
+      FragmentManager.BackStackEntry entry = mFragmentManager.getBackStackEntryAt( entryCount - 1 );
+
+      mCurrentFragment = (AKiteFragment)mFragmentManager.findFragmentByTag( entry.getName() );
+
+      mCurrentFragment.onTop();
+      }
+    catch ( Exception e )
+      {
+      Log.e( LOG_TAG, "Could not get current fragment", e );
+
+      mCurrentFragment = null;
+      }
+
+    //Log.d( LOG_TAG, "Current fragment = " + mCurrentFragment );
+    }
+
+
+  /*****************************************************
+   *
+   * Works out what the current fragment is.
+   *
+   *****************************************************/
+  private void determineCurrentFragment()
+    {
+    determineCurrentFragment( mFragmentManager.getBackStackEntryCount() );
+    }
 
 
   ////////// Inner Class(es) //////////

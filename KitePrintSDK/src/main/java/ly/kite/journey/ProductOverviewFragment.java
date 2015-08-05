@@ -80,7 +80,7 @@ import ly.kite.widget.SlidingOverlayFrame;
  * This fragment displays a product overview.
  *
  *****************************************************/
-public class ProductOverviewFragment extends AJourneyFragment implements View.OnClickListener
+public class ProductOverviewFragment extends AKiteFragment implements View.OnClickListener
   {
   ////////// Static Constant(s) //////////
 

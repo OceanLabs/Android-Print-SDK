@@ -39,63 +39,66 @@ package ly.kite.journey;
 
 ///// Import(s) /////
 
+import java.util.ArrayList;
 
-///// Class Declaration /////
-
-import android.app.FragmentManager;
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
-
-import java.util.ArrayList;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
+import ly.kite.analytics.Analytics;
 import ly.kite.checkout.CheckoutActivity;
+import ly.kite.journey.imageselection.ImageSelectionFragment;
+import ly.kite.journey.phonecase.PhoneCaseFragment;
+import ly.kite.journey.reviewandcrop.ReviewAndCropFragment;
 import ly.kite.product.Asset;
-import ly.kite.product.AssetHelper;
+import ly.kite.product.AssetAndQuantity;
 import ly.kite.product.PrintJob;
 import ly.kite.product.PrintOrder;
 import ly.kite.product.Product;
-import ly.kite.product.ProductGroup;
+
+
+///// Class Declaration /////
 
 /*****************************************************
  *
- * This activity coordinates the various fragments involved
- * in selecting and creating a product.
+ * This activity is responsible for coordinating the user
+ * journey fragments specific to the UI class.
  *
  *****************************************************/
-public class ProductCreationActivity extends AKiteActivity implements FragmentManager.OnBackStackChangedListener,
-                                                                       ChooseProductGroupFragment.ICallback,
-                                                                       ChooseProductFragment.ICallback,
-                                                                       ProductOverviewFragment.ICallback,
-                                                                       PhoneCaseFragment.ICallback
+public class ProductCreationActivity extends AKiteActivity implements PhoneCaseFragment.ICallback,
+                                                                      ImageSelectionFragment.ICallback
+
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                         = "ProductCreationActivity";  // Can't be more than 23 characters ... who knew?!
+  private static final String  LOG_TAG = "ProductCreationActivity";
 
-  private static final String  INTENT_EXTRA_NAME_ASSET_LIST    = KiteSDK.INTENT_PREFIX + ".AssetList";
+  private static final String  INTENT_EXTRA_NAME_UNCROPPED_ASSET_AND_QUANTITY_LIST = KiteSDK.INTENT_PREFIX + ".uncroppedAssetAndQuantityList";
+  private static final String  INTENT_EXTRA_NAME_CROPPED_ASSET_AND_QUANTITY_LIST   = KiteSDK.INTENT_PREFIX + ".croppedAssetAndQuantityList";
+  private static final String  INTENT_EXTRA_NAME_PRODUCT                           = KiteSDK.INTENT_PREFIX + ".product";
 
 
   ////////// Static Variable(s) //////////
 
+  private static ProductCreationActivity sUserJourneyCoordinator;
+
 
   ////////// Member Variable(s) //////////
 
-  private ArrayList<Asset>            mAssetArrayList;
+  private ArrayList<AssetAndQuantity>  mUncroppedAssetAndQuantityArrayList;
+  private ArrayList<AssetAndQuantity>  mCroppedAssetAndQuantityArrayList;
+  private Product                      mProduct;
 
-  private FragmentManager             mFragmentManager;
 
-  private ChooseProductGroupFragment  mProductGroupFragment;
-  private ChooseProductFragment       mProductFragment;
-  private ProductOverviewFragment     mProductOverviewFragment;
+  private PhoneCaseFragment            mPhoneCaseFragment;
 
-  private AJourneyFragment            mCurrentFragment;
+  private ImageSelectionFragment       mImageSelectionFragment;
+  private ReviewAndCropFragment mReviewAndCropFragment;
 
 
   ////////// Static Initialiser(s) //////////
@@ -105,23 +108,52 @@ public class ProductCreationActivity extends AKiteActivity implements FragmentMa
 
   /*****************************************************
    *
-   * Convenience method for starting this activity.
+   * Returns true if the user journey type is supported.
    *
    *****************************************************/
-  public static void start( Context context, ArrayList<Asset> assetArrayList )
+  static public boolean isSupported( UserJourneyType type )
     {
-    Intent intent = new Intent( context, ProductCreationActivity.class );
+    switch ( type )
+      {
+      case CIRCLE:        return ( true );
+      case FRAME:         break;
+      case GREETING_CARD: break;
+      case PHONE_CASE:    return ( true );
+      case PHOTOBOOK:     break;
+      case POSTCARD:      break;
+      case POSTER:        break;
+      case RECTANGLE:     return ( true );
+      }
 
-    intent.putParcelableArrayListExtra( INTENT_EXTRA_NAME_ASSET_LIST, assetArrayList );
+    return ( false );
+    }
 
-    context.startActivity( intent );
+
+  /*****************************************************
+   *
+   * Starts this activity.
+   *
+   *****************************************************/
+  static public void startForResult( Activity                    activity,
+                                     ArrayList<AssetAndQuantity> uncroppedAssetAndQuantityArrayList,
+                                     ArrayList<AssetAndQuantity> croppedAssetAndQuantityArrayList,
+                                     Product                     product,
+                                     int                         requestCode )
+    {
+    Intent intent = new Intent( activity, ProductCreationActivity.class );
+
+    intent.putParcelableArrayListExtra( INTENT_EXTRA_NAME_UNCROPPED_ASSET_AND_QUANTITY_LIST, uncroppedAssetAndQuantityArrayList );
+    intent.putParcelableArrayListExtra( INTENT_EXTRA_NAME_CROPPED_ASSET_AND_QUANTITY_LIST, croppedAssetAndQuantityArrayList );
+    intent.putExtra( INTENT_EXTRA_NAME_PRODUCT, product );
+
+    activity.startActivityForResult( intent, requestCode );
     }
 
 
   ////////// Constructor(s) //////////
 
 
-  ////////// Activity Method(s) //////////
+  ////////// AKiteActivity Method(s) //////////
 
   /*****************************************************
    *
@@ -141,7 +173,7 @@ public class ProductCreationActivity extends AKiteActivity implements FragmentMa
 
 
 
-    // Get the assets
+    // Get the intent extras
 
     Intent intent = getIntent();
 
@@ -161,9 +193,11 @@ public class ProductCreationActivity extends AKiteActivity implements FragmentMa
       return;
       }
 
-    if ( ( mAssetArrayList = intent.getParcelableArrayListExtra( INTENT_EXTRA_NAME_ASSET_LIST ) ) == null || mAssetArrayList.size() < 1 )
+    mUncroppedAssetAndQuantityArrayList = intent.getParcelableArrayListExtra( INTENT_EXTRA_NAME_UNCROPPED_ASSET_AND_QUANTITY_LIST );
+
+    if ( mUncroppedAssetAndQuantityArrayList == null || mUncroppedAssetAndQuantityArrayList.size() < 1 )
       {
-      Log.e( LOG_TAG, "No asset list found" );
+      Log.e( LOG_TAG, "No uncropped asset and quantity list found" );
 
       displayModalDialog(
               R.string.alert_dialog_title_no_asset_list,
@@ -178,171 +212,82 @@ public class ProductCreationActivity extends AKiteActivity implements FragmentMa
       }
 
 
-    // Set up the screen content
-    setContentView( R.layout.screen_product_creation );
+    mCroppedAssetAndQuantityArrayList = intent.getParcelableArrayListExtra( INTENT_EXTRA_NAME_CROPPED_ASSET_AND_QUANTITY_LIST );
 
-
-    // Listen for changes to the fragment back stack
-
-    mFragmentManager = getFragmentManager();
-
-    mFragmentManager.addOnBackStackChangedListener( this );
-
-
-    if ( savedInstanceState != null )
+    if ( mCroppedAssetAndQuantityArrayList == null || mCroppedAssetAndQuantityArrayList.size() < 1 )
       {
-      // If we are being re-started - get the current fragment again.
+      Log.e( LOG_TAG, "No cropped asset and quantity list found" );
 
-      determineCurrentFragment();
-      }
-    else
-      {
-      // Start the first fragment
+      displayModalDialog(
+              R.string.alert_dialog_title_no_asset_list,
+              R.string.alert_dialog_message_no_asset_list,
+              DONT_DISPLAY_BUTTON,
+              null,
+              R.string.Cancel,
+              new FinishRunnable()
+      );
 
-      addFragment( mProductGroupFragment = ChooseProductGroupFragment.newInstance(), ChooseProductGroupFragment.TAG );
-      }
-    }
-
-
-  /*****************************************************
-   *
-   * Called when an item in the options menu is selected.
-   *
-   *****************************************************/
-  @Override
-  public boolean onOptionsItemSelected( MenuItem item )
-    {
-    // See what menu item was selected
-
-    int itemId = item.getItemId();
-
-    if ( itemId == android.R.id.home )
-      {
-      ///// Home /////
-
-      // We intercept the home button and do the same as if the
-      // back key had been pressed. We don't allow fragments to
-      // intercept this one.
-
-      super.onBackPressed();
-
-      return ( true );
-      }
-
-
-    return ( super.onOptionsItemSelected( item ) );
-    }
-
-
-  /*****************************************************
-   *
-   * Called when the back key is pressed. Some fragments
-   * intercept the back key and do something internally.
-   *
-   *****************************************************/
-  @Override
-  public void onBackPressed()
-    {
-    if ( mCurrentFragment != null && mCurrentFragment.onBackPressIntercepted() )
-      {
       return;
       }
 
-    super.onBackPressed();
-    }
 
+    mProduct = intent.getParcelableExtra( INTENT_EXTRA_NAME_PRODUCT );
 
-  /*****************************************************
-   *
-   * Called when an activity result is received.
-   *
-   *****************************************************/
-  @Override
-  protected void onActivityResult( int requestCode, int resultCode, Intent data )
-    {
-    super.onActivityResult( requestCode, resultCode, data );
-
-    // If we successfully completed check-out then we want to exit so the user goes back to
-    // the original app.
-    if ( requestCode == ACTIVITY_REQUEST_CODE_CHECKOUT && resultCode == RESULT_OK )
+    if ( mProduct == null )
       {
-      finish();
+      Log.e( LOG_TAG, "No product found" );
+
+      displayModalDialog(
+              R.string.alert_dialog_title_no_product,
+              R.string.alert_dialog_message_no_product,
+              DONT_DISPLAY_BUTTON,
+              null,
+              R.string.Cancel,
+              new FinishRunnable()
+      );
+
+      return;
+      }
+
+
+    // Set up the screen content
+    setContentView( R.layout.screen_generic_fragment_container );
+
+
+    // Start the first fragment
+
+    if ( savedInstanceState == null )
+      {
+      addFirstFragment();
+
+      Analytics.getInstance( this ).trackCreateProductScreenViewed( mProduct );
       }
     }
 
 
-  ////////// FragmentManager.OnBackStackChangedListener Method(s) //////////
-
   /*****************************************************
    *
-   * Listens for changes to the back stack, so we can exit
-   * the activity when there are no more fragments on it.
+   * Starts the next stage in the appropriate user journey
+   * for the supplied product.
    *
    *****************************************************/
-  @Override
-  public void onBackStackChanged()
+  private void addFirstFragment()
     {
-    int entryCount = mFragmentManager.getBackStackEntryCount();
-
-    if ( entryCount < 1 )
+    switch ( mProduct.getUserJourneyType() )
       {
-      finish();
+      case CIRCLE:
+        addFragment( mImageSelectionFragment = ImageSelectionFragment.newInstance( mUncroppedAssetAndQuantityArrayList, mCroppedAssetAndQuantityArrayList, mProduct ), ImageSelectionFragment.TAG );
+        break;
+
+      case PHONE_CASE:
+        addFragment( mPhoneCaseFragment = PhoneCaseFragment.newInstance( mUncroppedAssetAndQuantityArrayList, mProduct ), PhoneCaseFragment.TAG );
+        break;
+
+      case RECTANGLE:
+        addFragment( mImageSelectionFragment = ImageSelectionFragment.newInstance( mUncroppedAssetAndQuantityArrayList, mCroppedAssetAndQuantityArrayList, mProduct ), ImageSelectionFragment.TAG );
+        break;
       }
 
-
-    determineCurrentFragment();
-    }
-
-
-  ////////// ChooseProductGroupFragment.ICallback Method(s) //////////
-
-  /*****************************************************
-   *
-   * Called when a product group is chosen.
-   *
-   *****************************************************/
-  @Override
-  public void pgOnProductGroupChosen( ProductGroup productGroup )
-    {
-    // Display the product selection fragment
-
-    mProductFragment = ChooseProductFragment.newInstance( productGroup );
-
-    addFragment( mProductFragment, ChooseProductFragment.TAG );
-    }
-
-
-  ////////// ChooseProductFragment.ICallback Method(s) //////////
-
-  /*****************************************************
-   *
-   * Called when a product group is chosen.
-   *
-   *****************************************************/
-  @Override
-  public void pOnProductChosen( Product product )
-    {
-    // Display the product overview fragment
-
-    mProductOverviewFragment = ProductOverviewFragment.newInstance( product );
-
-    addFragment( mProductOverviewFragment, ProductOverviewFragment.TAG );
-    }
-
-
-  ////////// ProductOverviewFragment.ICallback Method(s) //////////
-
-  /*****************************************************
-   *
-   * Called when the user wishes to create a product.
-   *
-   *****************************************************/
-  @Override
-  public void poOnCreateProduct( Product product )
-    {
-    AJourneyFragment fragment = UserJourneyCoordinator.getInstance().getFragment( this, mAssetArrayList, product );
-
-    addFragment( fragment, "Custom" );
     }
 
 
@@ -368,67 +313,24 @@ public class ProductCreationActivity extends AKiteActivity implements FragmentMa
     }
 
 
-  ////////// Method(s) //////////
+  ////////// ImageSelectionFragment.ICallback Method(s) //////////
 
   /*****************************************************
    *
-   * Displays a fragment.
+   * Called when the images have been selected, and the user
+   * has pressed the review and crop button.
    *
    *****************************************************/
-  private void addFragment( AJourneyFragment fragment, String tag )
+  @Override
+  public void isOnNext( ArrayList<AssetAndQuantity> uncroppedAssetAndQuantityList, ArrayList<AssetAndQuantity> croppedAssetAndQuantityList )
     {
-    mFragmentManager
-      .beginTransaction()
-            .replace( R.id.fragment_container, fragment, tag )
-            .addToBackStack( tag )  // Use the tag as the name so we can find it later
-      .commit();
-    }
+    mReviewAndCropFragment = ReviewAndCropFragment.newInstance( uncroppedAssetAndQuantityList, croppedAssetAndQuantityList, mProduct );
 
-
-  /*****************************************************
-   *
-   * Works out what the current fragment is.
-   *
-   *****************************************************/
-  private void determineCurrentFragment( int entryCount )
-    {
-    try
-      {
-      FragmentManager.BackStackEntry entry = mFragmentManager.getBackStackEntryAt( entryCount - 1 );
-
-      mCurrentFragment = (AJourneyFragment)mFragmentManager.findFragmentByTag( entry.getName() );
-
-      mCurrentFragment.onTop();
-      }
-    catch ( Exception e )
-      {
-      Log.e( LOG_TAG, "Could not get current fragment", e );
-
-      mCurrentFragment = null;
-      }
-
-    //Log.d( LOG_TAG, "Current fragment = " + mCurrentFragment );
-    }
-
-
-  /*****************************************************
-   *
-   * Works out what the current fragment is.
-   *
-   *****************************************************/
-  private void determineCurrentFragment()
-    {
-    determineCurrentFragment( mFragmentManager.getBackStackEntryCount() );
+    addFragment( mReviewAndCropFragment, ReviewAndCropFragment.TAG );
     }
 
 
   ////////// Inner Class(es) //////////
-
-  /*****************************************************
-   *
-   * ...
-   *
-   *****************************************************/
 
   }
 

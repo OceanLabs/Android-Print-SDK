@@ -23,6 +23,9 @@
     <string name="alert_dialog_title_no_asset_list">Internal Error</string>
     <string name="alert_dialog_message_no_asset_list">There was an error: no asset list was found. Please check the log for more details.</string>
 
+    <string name="alert_dialog_title_no_product">Internal Error</string>
+    <string name="alert_dialog_message_no_product">There was an error: no product was found. Please check the log for more details.</string>
+
     <string name="alert_dialog_title_error_retrieving_products">Error Retrieving Products</string>
     <string name="alert_dialog_message_error_retrieving_products">There was an error retrieving the products. Please check that you have a network connection, and/or the log for more details</string>
 
@@ -35,10 +38,17 @@
     <string name="alert_dialog_title_create_order">Create Order</string>
     <string name="alert_dialog_message_no_cropped_image_asset">There was an internal error - Kite was unable to create a cropped image asset.</string>
 
+    <string name="alert_dialog_title_delete_photo">Delete Photo?</string>
+    <string name="alert_dialog_message_delete_photo">Are you sure you want to delete this photo?</string>
+    <string name="alert_dialog_delete_photo_cancel_text">No - keep it</string>
+    <string name="alert_dialog_delete_photo_confirm_text">Yes - delete it</string>
+
+
     <string name="Add_photo">Add photo</string>
     <string name="Cancel">Cancel</string>
     <string name="Description">Description</string>
     <string name="Details">Details</string>
+    <string name="Edit">Edit</string>
     <string name="IMAGES">IMAGES</string>
     <string name="Quality_Guarantee">Quality Guarantee</string>
     <string name="Quantity">Quantity</string>
@@ -81,6 +91,8 @@
     </plurals>
 
     <string name="image_selection_review_button_text">Review &amp; crop</string>
+
+    <string name="review_and_crop_title_format_string">%1$d / %2$d</string>
 
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
