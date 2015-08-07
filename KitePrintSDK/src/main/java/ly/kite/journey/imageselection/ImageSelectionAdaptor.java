@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * ImagePackAdaptor.java
+ * ImageSelectionAdaptor.java
  *
  *
  * Modified MIT License
@@ -41,6 +41,7 @@ package ly.kite.journey.imageselection;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -51,7 +52,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import ly.kite.product.AssetAndQuantity;
+import ly.kite.journey.AssetsAndQuantity;
+import ly.kite.journey.UserJourneyType;
+import ly.kite.product.Asset;
 import ly.kite.product.AssetHelper;
 import ly.kite.product.Product;
 import ly.kite.widget.CheckableImageView;
@@ -67,20 +70,18 @@ import ly.kite.R;
  * view.
  *
  *****************************************************/
-public class ImagePackAdaptor extends RecyclerView.Adapter<ImagePackAdaptor.ViewHolder>
+public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAdaptor.ViewHolder>
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "ImagePackAdaptor";
+  private static final String  LOG_TAG = "ImageSelectionAdaptor";
 
   private static final int VIEW_TYPE_IMAGE               = 0x00;
   private static final int VIEW_TYPE_TITLE               = 0x01;
   private static final int VIEW_TYPE_SPACER              = 0x02;
 
   private static final int IMAGE_CACHE_CAPACITY_IN_BYTES = 10 * 1024 * 1024;  // 10 MB
-
-  private static final int SCALED_IMAGE_WIDTH_IN_PIXELS  = 360;
 
 
   ////////// Static Variable(s) //////////
@@ -91,8 +92,10 @@ public class ImagePackAdaptor extends RecyclerView.Adapter<ImagePackAdaptor.View
   private Context                      mContext;
   private List<Boolean>                mSharedAssetIsCheckedList;
   private int                          mNumberOfColumns;
+  private UserJourneyType              mUserJourneyType;
   private IOnImageCheckChangeListener  mListener;
 
+  private int                          mScaledImageWidthInPixels;
   private LayoutInflater               mLayoutInflator;
   private int                          mPlaceholderBackgroundColour1;
   private int                          mPlaceholderBackgroundColour2;
@@ -108,16 +111,19 @@ public class ImagePackAdaptor extends RecyclerView.Adapter<ImagePackAdaptor.View
 
   ////////// Constructor(s) //////////
 
-  public ImagePackAdaptor( Context context, Product product, List<AssetAndQuantity> assetAndQuantityList, List<Boolean> sharedAssetIsCheckedList, int numberOfColumns, IOnImageCheckChangeListener listener )
+  public ImageSelectionAdaptor( Context context, Product product, List<AssetsAndQuantity> assetAndQuantityList, List<Boolean> sharedAssetIsCheckedList, int numberOfColumns, IOnImageCheckChangeListener listener )
     {
     mContext                  = context;
     mSharedAssetIsCheckedList = sharedAssetIsCheckedList;
     mNumberOfColumns          = numberOfColumns;
+    mUserJourneyType          = product.getUserJourneyType();
     mListener                 = listener;
 
     mLayoutInflator           = LayoutInflater.from( context );
 
     Resources resources = context.getResources();
+
+    mScaledImageWidthInPixels     = resources.getDimensionPixelSize( R.dimen.image_thumbnail_size );
 
     mPlaceholderBackgroundColour1 = resources.getColor( R.color.image_selection_placeholder_background_1 );
     mPlaceholderBackgroundColour2 = resources.getColor( R.color.image_selection_placeholder_background_2 );
@@ -282,11 +288,14 @@ public class ImagePackAdaptor extends RecyclerView.Adapter<ImagePackAdaptor.View
 
       case IMAGE:
 
-        // Clear any image that is currently set, then request a new one
+        // Clear any image that is currently set, then request a new one.
 
-        viewHolder.checkableImageView.clearForNewImage( item.assetAndQuantity.getAsset() );
+        Asset editedAsset = item.assetsAndQuantity.getEditedAsset();
 
-        AssetHelper.requestImage( mContext, item.assetAndQuantity.getAsset(), SCALED_IMAGE_WIDTH_IN_PIXELS, viewHolder.checkableImageView );
+        viewHolder.checkableImageView.clearForNewImage( editedAsset );
+
+        AssetHelper.requestImage( mContext, editedAsset, null, mScaledImageWidthInPixels, viewHolder.checkableImageView );
+
 
         // See if the image is checked
         viewHolder.checkableImageView.setChecked( mSharedAssetIsCheckedList.get( item.assetIndex ) );
@@ -375,7 +384,7 @@ public class ImagePackAdaptor extends RecyclerView.Adapter<ImagePackAdaptor.View
     ItemType          itemType;
     String            title;
     int               assetIndex;
-    AssetAndQuantity  assetAndQuantity;
+    AssetsAndQuantity assetsAndQuantity;
     int               checkerBoardValue;
 
     ViewHolder        viewHolder;
@@ -387,11 +396,11 @@ public class ImagePackAdaptor extends RecyclerView.Adapter<ImagePackAdaptor.View
       this.title                = title;
       }
 
-    Item( int assetIndex, AssetAndQuantity assetAndQuantity )
+    Item( int assetIndex, AssetsAndQuantity assetsAndQuantity )
       {
-      this.itemType             = ItemType.IMAGE;
-      this.assetIndex           = assetIndex;
-      this.assetAndQuantity     = assetAndQuantity;
+      this.itemType          = ItemType.IMAGE;
+      this.assetIndex        = assetIndex;
+      this.assetsAndQuantity = assetsAndQuantity;
       }
 
     Item( int checkerBoardValue )

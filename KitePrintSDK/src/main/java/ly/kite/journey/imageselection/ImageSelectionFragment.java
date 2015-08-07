@@ -40,7 +40,9 @@ package ly.kite.journey.imageselection;
 ///// Import(s) /////
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -56,20 +58,19 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import ly.kite.analytics.Analytics;
-import ly.kite.journey.AKiteActivity;
-import ly.kite.journey.AKiteFragment;
 import ly.kite.journey.AProductCreationFragment;
 import ly.kite.product.Asset;
-import ly.kite.product.AssetAndQuantity;
+import ly.kite.journey.AssetsAndQuantity;
+import ly.kite.product.AssetHelper;
 import ly.kite.product.Product;
 
 import ly.kite.R;
 import ly.kite.util.BooleanHelper;
+import ly.kite.util.IImageConsumer;
 import ly.kite.widget.VisibilitySettingAnimationListener;
 
 
@@ -83,7 +84,7 @@ import ly.kite.widget.VisibilitySettingAnimationListener;
  *****************************************************/
 public class ImageSelectionFragment extends AProductCreationFragment implements AdapterView.OnItemClickListener,
                                                                                 View.OnClickListener,
-                                                                                ImagePackAdaptor.IOnImageCheckChangeListener
+                                                                                ImageSelectionAdaptor.IOnImageCheckChangeListener
   {
   ////////// Static Constant(s) //////////
 
@@ -108,14 +109,17 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
   private int                          mNumberOfColumns;
 
+  private int                          mUneditedAssetsRemaining;
+
   private BaseAdapter                  mImageSourceAdaptor;
   private GridView                     mImageSourceGridView;
   private Button                       mClearPhotosButton;
   private Button                       mProceedOverlayButton;
+  private ProgressBar                  mProgressBar;
 
   private RecyclerView                 mImageRecyclerView;
   private GridLayoutManager            mImageLayoutManager;
-  private ImagePackAdaptor             mImagePackAdaptor;
+  private ImageSelectionAdaptor        mImagePackAdaptor;
 
 
   ////////// Static Initialiser(s) //////////
@@ -128,20 +132,58 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
    * Creates a new instance of this fragment.
    *
    *****************************************************/
-  public static ImageSelectionFragment newInstance( ArrayList<AssetAndQuantity> uncroppedAssetAndQuantityArrayList,
-                                                    ArrayList<AssetAndQuantity> croppedAssetAndQuantityArrayList,
-                                                    Product                     product )
+  public static ImageSelectionFragment newInstance( ArrayList<AssetsAndQuantity> assetsAndQuantityArrayList,
+                                                    Product                      product )
     {
     ImageSelectionFragment fragment = new ImageSelectionFragment();
 
     Bundle arguments = new Bundle();
-    arguments.putParcelableArrayList( BUNDLE_KEY_UNCROPPED_ASSET_AND_QUANTITY_LIST, uncroppedAssetAndQuantityArrayList );
-    arguments.putParcelableArrayList( BUNDLE_KEY_CROPPED_ASSET_AND_QUANTITY_LIST,   croppedAssetAndQuantityArrayList );
-    arguments.putParcelable         ( BUNDLE_KEY_PRODUCT,                           product );
+    arguments.putParcelableArrayList( BUNDLE_KEY_ASSETS_AND_QUANTITY_LIST, assetsAndQuantityArrayList );
+    arguments.putParcelable         ( BUNDLE_KEY_PRODUCT,                  product );
 
     fragment.setArguments( arguments );
 
     return ( fragment );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a square bitmap image, cropped if necessary.
+   *
+   *****************************************************/
+  static private Bitmap toSquareCroppedImage( Bitmap originalBitmap )
+    {
+    // Get the bitmap dimensions
+    int originalWidth  = originalBitmap.getWidth();
+    int originalHeight = originalBitmap.getHeight();
+
+    // If the bitmap is already a square - return it without doing anything
+    if ( originalWidth == originalHeight ) return ( originalBitmap );
+
+
+    // Crop the bitmap to a square
+
+    int    croppedSize;
+    Bitmap editedBitmap;
+
+    if ( originalWidth < originalHeight )
+      {
+      // Crop to width
+
+      croppedSize  = originalWidth;
+      editedBitmap = Bitmap.createBitmap( originalBitmap, 0, ( originalHeight / 2 ) - ( croppedSize / 2 ), croppedSize, croppedSize );
+      }
+    else
+      {
+      // Crop to height
+
+      croppedSize  = originalHeight;
+      editedBitmap = Bitmap.createBitmap( originalBitmap, ( originalWidth / 2 ) - ( croppedSize / 2 ), 0, croppedSize, croppedSize );
+      }
+
+
+    return ( editedBitmap );
     }
 
 
@@ -174,21 +216,40 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     // The super class will have retrieved any asset lists and product from the arguments, so
     // we just need to make sure we got them.
 
-    if ( ! assetListsValid() ) return;
+    if ( ! assetListValid() ) return;
 
     if ( ! productIsValid() ) return;
 
+
+    // We need to create a set of initial edited images - which are basically cropped
+    // to a square. We need to do these on a background thread, but We also need to make
+    // sure that we can't go further until all of them have been completed.
+
+    mUneditedAssetsRemaining = 0;
+
+    for ( AssetsAndQuantity assetsAndQuantity : mAssetsAndQuantityArrayList )
+      {
+      // Check that we don't already have a compatible edited asset
+      if ( ! mProduct.getUserJourneyType().editedImageCompatibleWith( assetsAndQuantity.getEditedFor() ) )
+        {
+        mUneditedAssetsRemaining ++;
+
+        AssetImageToSquareCropper cropper = new AssetImageToSquareCropper( assetsAndQuantity );
+
+        AssetHelper.requestImage( mKiteActivity, assetsAndQuantity.getUneditedAsset(), cropper, 0, cropper );
+        }
+      }
 
 
     // If we don't have a valid "is checked" list - create a new one with all the images checked.
 
     mUncheckedImagesCount = 0;
 
-    if ( mAssetIsCheckedArrayList == null || mAssetIsCheckedArrayList.size() != mUncroppedAssetAndQuantityArrayList.size() )
+    if ( mAssetIsCheckedArrayList == null || mAssetIsCheckedArrayList.size() != mAssetsAndQuantityArrayList.size() )
       {
-      mAssetIsCheckedArrayList = new ArrayList<>( mUncroppedAssetAndQuantityArrayList.size() );
+      mAssetIsCheckedArrayList = new ArrayList<>( mAssetsAndQuantityArrayList.size() );
 
-      for ( AssetAndQuantity assetAndQuantity : mUncroppedAssetAndQuantityArrayList ) mAssetIsCheckedArrayList.add( true );
+      for ( AssetsAndQuantity assetAndQuantity : mAssetsAndQuantityArrayList ) mAssetIsCheckedArrayList.add( true );
       }
     else
       {
@@ -222,6 +283,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     mImageRecyclerView    = (RecyclerView)view.findViewById( R.id.image_recycler_view );
     mClearPhotosButton    = (Button)view.findViewById( R.id.clear_photos_button );
     mProceedOverlayButton = (Button)view.findViewById( R.id.proceed_overlay_button );
+    mProgressBar          = (ProgressBar)view.findViewById( R.id.progress_bar );
 
 
     // Display the image sources
@@ -230,10 +292,6 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     mImageSourceAdaptor = new ImageSourceAdaptor( mKiteActivity, imageSourceList );
     mImageSourceGridView.setNumColumns( mImageSourceAdaptor.getCount() );
     mImageSourceGridView.setAdapter( mImageSourceAdaptor );
-
-
-    // Set up the image recycler view
-    setUpRecyclerView();
 
 
     // If there are unchecked images, then we need to show (but not animate in) the clear photos
@@ -256,6 +314,21 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
 
     mProceedOverlayButton.setText( R.string.image_selection_review_button_text );
+
+
+    // We don't set up the recycler view or enable the proceed button until all
+    // the assets have been cropped.
+
+    if ( mUneditedAssetsRemaining < 1 )
+      {
+      completeScreenSetup();
+      }
+    else
+      {
+      mProgressBar.setVisibility( View.VISIBLE );
+
+      mProceedOverlayButton.setEnabled( false );
+      }
 
 
     // Set up the listener(s)
@@ -320,19 +393,34 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
       Asset newAsset = new Asset( newImageUri );
 
-      if ( ! AssetAndQuantity.isInList( mUncroppedAssetAndQuantityArrayList, newAsset ) )
+      if ( ! AssetsAndQuantity.uneditedAssetIsInList( mAssetsAndQuantityArrayList, newAsset ) )
         {
+        // Create a new asset
+        AssetsAndQuantity assetsAndQuantity = new AssetsAndQuantity( new Asset( newImageUri ), 1 );
+
+
+        // Create an edited version of the asset. We are basically doing the same thing we did
+        // when we were created, but just for the new asset. We are doing this in the background
+        // again, so we need to disable the proceed button again.
+
+        mProceedOverlayButton.setEnabled( false );
+        mProgressBar.setVisibility( View.VISIBLE );
+
+        mUneditedAssetsRemaining ++;
+
+        AssetImageToSquareCropper cropper = new AssetImageToSquareCropper( assetsAndQuantity );
+
+        AssetHelper.requestImage( mKiteActivity, assetsAndQuantity.getUneditedAsset(), cropper, 0, cropper );
+
+
         // Add the selected image to our asset lists, mark it as checked
-        mUncroppedAssetAndQuantityArrayList.add( new AssetAndQuantity( new Asset( newImageUri ), 1 ) );
-        mCroppedAssetAndQuantityArrayList.add( new AssetAndQuantity( new Asset( newImageUri ), 1 ) );
+        mAssetsAndQuantityArrayList.add( assetsAndQuantity );
         mAssetIsCheckedArrayList.add( true );
 
-
-        // Update the screen
-
+        // Update the title
         setTitle();
 
-        setUpRecyclerView();
+        // The recycler view doesn't get updated until we've produced an edited asset
         }
       }
     }
@@ -419,12 +507,11 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
       // We need to go through all the assets and remove any that are unchecked - from
       // both lists, and the "is checked" value.
 
-      for ( int assetIndex = 0; assetIndex < mUncroppedAssetAndQuantityArrayList.size(); assetIndex ++ )
+      for ( int assetIndex = 0; assetIndex < mAssetsAndQuantityArrayList.size(); assetIndex ++ )
         {
         if ( ! mAssetIsCheckedArrayList.get( assetIndex ) )
           {
-          mUncroppedAssetAndQuantityArrayList.remove( assetIndex );
-          mCroppedAssetAndQuantityArrayList.remove( assetIndex );
+          mAssetsAndQuantityArrayList.remove( assetIndex );
           mAssetIsCheckedArrayList.remove( assetIndex );
 
           // If we delete an asset, then the next asset now falls into its place
@@ -450,7 +537,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
       if ( mKiteActivity instanceof ICallback )
         {
-        ( (ICallback)mKiteActivity ).isOnNext( mUncroppedAssetAndQuantityArrayList, mCroppedAssetAndQuantityArrayList );
+        ( (ICallback)mKiteActivity ).isOnNext( mAssetsAndQuantityArrayList );
         }
       }
 
@@ -516,7 +603,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
     int assetIndex = 0;
 
-    for ( AssetAndQuantity assetAndQuantity : mUncroppedAssetAndQuantityArrayList )
+    for ( AssetsAndQuantity assetAndQuantity : mAssetsAndQuantityArrayList )
       {
       if ( mAssetIsCheckedArrayList.get( assetIndex ) ) numberOfImages += assetAndQuantity.getQuantity();
 
@@ -533,12 +620,28 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
   /*****************************************************
    *
+   * Completes the set up of the screen. Called when
+   * all the images have been cropped.
+   *
+   *****************************************************/
+  private void completeScreenSetup()
+    {
+    mProgressBar.setVisibility( View.GONE );
+
+    mProceedOverlayButton.setEnabled( true );
+
+    setUpRecyclerView();
+    }
+
+
+  /*****************************************************
+   *
    * Creates the recycler view adaptor and sets it.
    *
    *****************************************************/
   private void setUpRecyclerView()
     {
-    mImagePackAdaptor = new ImagePackAdaptor( mKiteActivity, mProduct, mCroppedAssetAndQuantityArrayList, mAssetIsCheckedArrayList, mNumberOfColumns, this );
+    mImagePackAdaptor = new ImageSelectionAdaptor( mKiteActivity, mProduct, mAssetsAndQuantityArrayList, mAssetIsCheckedArrayList, mNumberOfColumns, this );
 
     mImageLayoutManager = new GridLayoutManager( mKiteActivity, mNumberOfColumns );
     mImageLayoutManager.setSpanSizeLookup( mImagePackAdaptor.new SpanSizeLookup( mNumberOfColumns ) );
@@ -659,8 +762,70 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
    *****************************************************/
   public interface ICallback
     {
-    public void isOnNext( ArrayList<AssetAndQuantity> uncroppedAssetAndQuantityList, ArrayList<AssetAndQuantity> croppedAssetAndQuantityList );
+    public void isOnNext( ArrayList<AssetsAndQuantity> assetsAndQuantityList );
     }
+
+
+  /*****************************************************
+   *
+   * An image transformer that crops the supplied image
+   * to a square, creates an asset from it, and then stores
+   * it as an edited asset.
+   *
+   * We also use it as the image consumer, because the available
+   * method gets called on the UI thread.
+   *
+   *****************************************************/
+  private class AssetImageToSquareCropper implements AssetHelper.IImageTransformer, IImageConsumer
+    {
+    private AssetsAndQuantity  mAssetsAndQuantity;
+
+
+    AssetImageToSquareCropper( AssetsAndQuantity assetsAndQuantity )
+      {
+      mAssetsAndQuantity = assetsAndQuantity;
+      }
+
+
+    ////////// AssetHelper.IImageTransformer Method(s) //////////
+
+    @Override
+    public Bitmap getTransformedBitmap( Bitmap bitmap )
+      {
+      return ( toSquareCroppedImage( bitmap ) );
+      }
+
+
+    ////////// IImageConsumer Method(s) //////////
+
+    @Override
+    public void onImageDownloading( Object key )
+      {
+      // Ignore
+      }
+
+    @Override
+    public void onImageAvailable( Object key, Bitmap bitmap )
+      {
+      // Create a new file-backed asset from the cropped bitmap, and save it as the edited asset.
+
+      Asset editedAsset = AssetHelper.createAsCachedFile( mKiteActivity, bitmap );
+
+      mAssetsAndQuantity.setEditedAsset( editedAsset, mProduct.getUserJourneyType() );
+
+
+      // If we now have all the cropped images - set up the recycler view, and
+      // enable the proceed button.
+
+      mUneditedAssetsRemaining --;
+
+      if ( mUneditedAssetsRemaining < 1 )
+        {
+        completeScreenSetup();
+        }
+      }
+    }
+
 
   }
 

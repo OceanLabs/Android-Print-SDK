@@ -55,6 +55,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.product.ProductLoader;
 
@@ -69,14 +70,16 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private   static final String  LOG_TAG                         = "AKiteActivity";
+  private   static final String  LOG_TAG                                     = "AKiteActivity";
 
-  public    static final int     DONT_DISPLAY_BUTTON             = 0;
+  public    static final String  INTENT_EXTRA_NAME_ASSETS_AND_QUANTITY__LIST = KiteSDK.INTENT_PREFIX + ".assetsAndQuantityList";
 
-  public    static final String  IMAGE_CLASS_STRING_PRODUCT_ITEM = "product_item";
+  public    static final int     DONT_DISPLAY_BUTTON                         = 0;
 
-  protected static final int     ACTIVITY_REQUEST_CODE_CHECKOUT = 1;
-  protected static final int     ACTIVITY_REQUEST_CODE_CREATE   = 2;
+  public    static final String  IMAGE_CLASS_STRING_PRODUCT_ITEM             = "product_item";
+
+  protected static final int     ACTIVITY_REQUEST_CODE_CHECKOUT              = 1;
+  protected static final int     ACTIVITY_REQUEST_CODE_CREATE                = 2;
 
 
   ////////// Static Variable(s) //////////
@@ -259,9 +262,9 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     {
     mActivityIsVisible = false;
 
-    super.onDestroy();
-
     ensureDialogGone();
+
+    super.onDestroy();
     }
 
 

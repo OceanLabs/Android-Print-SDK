@@ -90,7 +90,7 @@
         <item quantity="other">Photos</item>
     </plurals>
 
-    <string name="image_selection_review_button_text">Review &amp; crop</string>
+    <string name="image_selection_review_button_text">Review &amp; edit</string>
 
     <string name="review_and_crop_title_format_string">%1$d / %2$d</string>
 

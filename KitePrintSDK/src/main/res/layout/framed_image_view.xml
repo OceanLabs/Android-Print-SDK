@@ -2,15 +2,10 @@
 <merge
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <ImageView
+    <ly.kite.widget.StencilImageView
         android:id="@+id/image_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:scaleType="centerCrop"/>
-
-    <ImageView
-        android:id="@+id/frame_image_view"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"/>
 
 </merge>

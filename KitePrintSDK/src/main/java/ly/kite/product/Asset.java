@@ -44,6 +44,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import java.net.URL;
 import java.util.Arrays;
@@ -258,11 +259,14 @@ public class Asset implements Parcelable
    *****************************************************/
   Asset( Parcel sourceParcel )
     {
-    mType             = Type.valueOf( sourceParcel.readString() );
-    mImageURI = (Uri)sourceParcel.readValue( Uri.class.getClassLoader() );
+    String typeName = sourceParcel.readString();
+
+    mType             = Type.valueOf( typeName );
+
+    mImageURI         = (Uri)sourceParcel.readValue( Uri.class.getClassLoader() );
     mRemoteURL        = (URL)sourceParcel.readSerializable();
     mBitmapResourceId = sourceParcel.readInt();
-    mImageFilePath = sourceParcel.readString();
+    mImageFilePath    = sourceParcel.readString();
     mMIMEType         = MIMEType.fromString( sourceParcel.readString() );
     mHasBeenUploaded  = (Boolean)sourceParcel.readValue( Boolean.class.getClassLoader() );
     mId               = sourceParcel.readLong();

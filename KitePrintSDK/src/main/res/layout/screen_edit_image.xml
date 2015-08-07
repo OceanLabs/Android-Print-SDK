@@ -6,8 +6,8 @@
     android:background="@color/product_creation_background"
     android:fitsSystemWindows="true">
 
-    <ly.kite.widget.MaskedRemoteImageView
-        android:id="@+id/masked_remote_image_view"
+    <ly.kite.widget.EditableConsumerImageView
+        android:id="@+id/editable_consumer_image_view"
         android:layout_margin="10dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -20,10 +20,15 @@
         android:padding="@dimen/cta_button_margin">
 
         <Button
-            android:id="@+id/next_button"
+            android:id="@+id/cancel_button"
             style="@style/KiteSDKCTAOffsetButtonStyle"
-            android:layout_gravity="bottom|right"
-            android:text="@string/product_creation_next_button_text"/>
+            android:layout_gravity="bottom|left"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/confirm_button"
+            style="@style/KiteSDKCTAOffsetButtonStyle"
+            android:layout_gravity="bottom|right"/>
 
     </FrameLayout>
 

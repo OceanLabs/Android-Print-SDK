@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * AProductCreationFragment.java
+ * AEditImageFragment.java
  *
  *
  * Modified MIT License
@@ -39,29 +39,36 @@ package ly.kite.journey;
 
 ///// Import(s) /////
 
-
-///// Class Declaration /////
-
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 
 import java.util.ArrayList;
 
 import ly.kite.R;
 import ly.kite.product.Product;
+import ly.kite.widget.EditableConsumerImageView;
+
+
+///// Class Declaration /////
 
 /*****************************************************
  *
- * This is the abstract super-class of product creation
- * fragments. It provides some common features.
+ * This activity allows the user to create a phone
+ * case design using an image.
  *
  *****************************************************/
-abstract public class AProductCreationFragment extends AKiteFragment
+abstract public class AEditImageFragment extends AKiteFragment implements View.OnClickListener
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "AProductCreationFrag.";
+  private static final String      LOG_TAG                        = "AEditImageFragment";
+
+  public  static final String      BUNDLE_KEY_PRODUCT             = "product";
 
 
   ////////// Static Variable(s) //////////
@@ -69,8 +76,11 @@ abstract public class AProductCreationFragment extends AKiteFragment
 
   ////////// Member Variable(s) //////////
 
-  protected ArrayList<AssetsAndQuantity>  mAssetsAndQuantityArrayList;
   protected Product                       mProduct;
+
+  protected EditableConsumerImageView     mEditableConsumerImageView;
+  protected Button                        mCancelButton;
+  protected Button                        mConfirmButton;
 
 
   ////////// Static Initialiser(s) //////////
@@ -82,27 +92,17 @@ abstract public class AProductCreationFragment extends AKiteFragment
   ////////// Constructor(s) //////////
 
 
-  ////////// AKiteFragment Method(s) //////////
+  ////////// Activity Method(s) //////////
 
   /*****************************************************
    *
-   * Called when the fragment is created.
+   * Called when the activity is created.
    *
    *****************************************************/
   @Override
   public void onCreate( Bundle savedInstanceState )
     {
     super.onCreate( savedInstanceState );
-
-
-    // We want to check if we are being re-created first, because the assets may have changed
-    // since we were first launched - in which case the asset lists from the saved instance state
-    // will be different from those that were provided in the argument bundle.
-
-    if ( savedInstanceState != null )
-      {
-      mAssetsAndQuantityArrayList = savedInstanceState.getParcelableArrayList( BUNDLE_KEY_ASSETS_AND_QUANTITY_LIST );
-      }
 
 
     // Get the assets and product
@@ -113,76 +113,24 @@ abstract public class AProductCreationFragment extends AKiteFragment
       {
       Log.e( LOG_TAG, "No arguments found" );
 
+      mKiteActivity.displayModalDialog(
+              R.string.alert_dialog_title_no_arguments,
+              R.string.alert_dialog_message_no_arguments,
+              AKiteActivity.DONT_DISPLAY_BUTTON,
+              null,
+              R.string.Cancel,
+              mKiteActivity.new FinishRunnable()
+      );
+
       return;
       }
 
 
-    // Only get the original asset list from the intent if we couldn't find any saved lists
-
-    if ( mAssetsAndQuantityArrayList == null )
-      {
-      mAssetsAndQuantityArrayList = arguments.getParcelableArrayList( BUNDLE_KEY_ASSETS_AND_QUANTITY_LIST );
-      }
-
-
-    // Get the product
     mProduct = arguments.getParcelable( BUNDLE_KEY_PRODUCT );
-    }
 
-
-  /*****************************************************
-   *
-   * Saves the current state to the supplied bundle.
-   *
-   *****************************************************/
-  @Override
-  public void onSaveInstanceState( Bundle outState )
-    {
-    super.onSaveInstanceState( outState );
-
-    outState.putParcelableArrayList( BUNDLE_KEY_ASSETS_AND_QUANTITY_LIST, mAssetsAndQuantityArrayList );
-    }
-
-
-  ////////// Method(s) //////////
-
-  /*****************************************************
-   *
-   * Checks that the asset lists are OK.
-   *
-   *****************************************************/
-  protected boolean assetListValid()
-    {
-    if ( mAssetsAndQuantityArrayList == null || mAssetsAndQuantityArrayList.size() < 1 )
-      {
-      Log.e( TAG, "Invalid asset list" );
-
-      mKiteActivity.displayModalDialog(
-              R.string.alert_dialog_title_no_asset_list,
-              R.string.alert_dialog_message_no_asset_list,
-              AKiteActivity.DONT_DISPLAY_BUTTON,
-              null,
-              R.string.Cancel,
-              mKiteActivity.new FinishRunnable() );
-
-      return ( false );
-      }
-
-
-    return ( true );
-    }
-
-
-  /*****************************************************
-   *
-   * Checks that the product is OK.
-   *
-   *****************************************************/
-  protected boolean productIsValid()
-    {
     if ( mProduct == null )
       {
-      Log.e( TAG, "No product found" );
+      Log.e( LOG_TAG, "No product found" );
 
       mKiteActivity.displayModalDialog(
               R.string.alert_dialog_title_product_not_found,
@@ -193,21 +141,81 @@ abstract public class AProductCreationFragment extends AKiteFragment
               mKiteActivity.new FinishRunnable()
       );
 
-      return ( false );
+      return;
       }
 
-
-    return ( true );
     }
 
 
-  ////////// Inner Class(es) //////////
+  /*****************************************************
+   *
+   * Returns the content view for this fragment
+   *
+   *****************************************************/
+  @Override
+  public View onCreateView( LayoutInflater layoutInflator, ViewGroup container, Bundle savedInstanceState )
+    {
+    View view = layoutInflator.inflate( R.layout.screen_edit_image, container, false );
+
+    mEditableConsumerImageView = (EditableConsumerImageView)view.findViewById( R.id.editable_consumer_image_view );
+    mCancelButton              = (Button)view.findViewById( R.id.cancel_button );
+    mConfirmButton             = (Button)view.findViewById( R.id.confirm_button );
+
+
+    mCancelButton.setOnClickListener( this );
+    mConfirmButton.setOnClickListener( this );
+
+
+    return ( view );
+    }
+
+
+  ////////// View.OnClickListener Method(s) //////////
 
   /*****************************************************
    *
-   * ...
+   * Called when something is clicked.
    *
    *****************************************************/
+  @Override
+  public void onClick( View view )
+    {
+    if ( view == mCancelButton )
+      {
+      ///// Cancel /////
+
+      onCancel();
+      }
+    else if ( view == mConfirmButton )
+      {
+      ///// Confirm /////
+
+      onConfirm();
+      }
+    }
+
+
+  ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when the cancel button is clicked.
+   *
+   *****************************************************/
+  protected void onCancel()
+    {
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the confirm button is clicked.
+   *
+   *****************************************************/
+  abstract protected void onConfirm();
+
+
+  ////////// Inner Class(es) //////////
 
   }
 

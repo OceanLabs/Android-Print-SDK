@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * ReviewAndCropFragment.java
+ * ReviewAndEditFragment.java
  *
  *
  * Modified MIT License
@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.journey.reviewandcrop;
+package ly.kite.journey.reviewandedit;
 
 
 ///// Import(s) /////
@@ -43,7 +43,6 @@ package ly.kite.journey.reviewandcrop;
 ///// Class Declaration /////
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,24 +51,22 @@ import android.widget.GridView;
 import java.util.ArrayList;
 
 import ly.kite.R;
-import ly.kite.journey.AKiteActivity;
-import ly.kite.journey.AKiteFragment;
 import ly.kite.journey.AProductCreationFragment;
-import ly.kite.product.AssetAndQuantity;
+import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.product.Product;
 
 /*****************************************************
  *
- * This fragment displays the review and crop screen
+ * This fragment displays the review and edit screen
  * for images.
  *
  *****************************************************/
-public class ReviewAndCropFragment extends AProductCreationFragment implements AssetAndQuantityAdaptor.IListener
+public class ReviewAndEditFragment extends AProductCreationFragment implements AssetAndQuantityAdaptor.IListener
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  public  static final String  TAG                                = "ReviewAndCropFragment";
+  public  static final String  TAG                                = "ReviewAndEditFragment";
 
 
   ////////// Static Variable(s) //////////
@@ -91,16 +88,14 @@ public class ReviewAndCropFragment extends AProductCreationFragment implements A
    * Creates a new instance of this fragment.
    *
    *****************************************************/
-  public static ReviewAndCropFragment newInstance( ArrayList<AssetAndQuantity> uncroppedAssetAndQuantityArrayList,
-                                                   ArrayList<AssetAndQuantity> croppedAssetAndQuantityArrayList,
-                                                   Product                     product )
+  public static ReviewAndEditFragment newInstance( ArrayList<AssetsAndQuantity> assetsAndQuantityArrayList,
+                                                   Product                      product )
     {
-    ReviewAndCropFragment fragment = new ReviewAndCropFragment();
+    ReviewAndEditFragment fragment = new ReviewAndEditFragment();
 
     Bundle arguments = new Bundle();
-    arguments.putParcelableArrayList( BUNDLE_KEY_UNCROPPED_ASSET_AND_QUANTITY_LIST, uncroppedAssetAndQuantityArrayList );
-    arguments.putParcelableArrayList( BUNDLE_KEY_CROPPED_ASSET_AND_QUANTITY_LIST,   croppedAssetAndQuantityArrayList );
-    arguments.putParcelable         ( BUNDLE_KEY_PRODUCT,                           product );
+    arguments.putParcelableArrayList( BUNDLE_KEY_ASSETS_AND_QUANTITY_LIST, assetsAndQuantityArrayList );
+    arguments.putParcelable         ( BUNDLE_KEY_PRODUCT,                  product );
 
     fragment.setArguments( arguments );
 
@@ -127,7 +122,7 @@ public class ReviewAndCropFragment extends AProductCreationFragment implements A
     // The super class will have retrieved any asset lists and product from the arguments, so
     // we just need to make sure we got them.
 
-    if ( ! assetListsValid() ) return;
+    if ( ! assetListValid() ) return;
 
     if ( ! productIsValid() ) return;
 
@@ -144,13 +139,13 @@ public class ReviewAndCropFragment extends AProductCreationFragment implements A
   @Override
   public View onCreateView( LayoutInflater layoutInflator, ViewGroup container, Bundle savedInstanceState )
     {
-    View view = layoutInflator.inflate( R.layout.screen_review_and_crop, container, false );
+    View view = layoutInflator.inflate( R.layout.screen_review_and_edit, container, false );
 
     mGridView = (GridView)view.findViewById( R.id.grid_view );
 
 
     // Create and set the adaptor
-    mAssetAndQuantityAdaptor = new AssetAndQuantityAdaptor( mKiteActivity, mCroppedAssetAndQuantityArrayList, this );
+    mAssetAndQuantityAdaptor = new AssetAndQuantityAdaptor( mKiteActivity, mAssetsAndQuantityArrayList, mProduct.getUserJourneyType(), this );
     mGridView.setAdapter( mAssetAndQuantityAdaptor );
 
 
@@ -186,14 +181,13 @@ public class ReviewAndCropFragment extends AProductCreationFragment implements A
 
   /*****************************************************
    *
-   * Called when the decrease button has been pressed to
-   * take the quantity to zero.
+   * Called when the quantity of an asset changes.
    *
    *****************************************************/
   @Override
   public void onQuantityChanged( int assetIndex )
     {
-
+    setTitle();
     }
 
 
@@ -206,6 +200,8 @@ public class ReviewAndCropFragment extends AProductCreationFragment implements A
   @Override
   public void onEdit( int assetIndex )
     {
+    // Launch the edit screen
+
     // TODO
     }
 
@@ -223,9 +219,9 @@ public class ReviewAndCropFragment extends AProductCreationFragment implements A
 
     int numberOfImages = 0;
 
-    for ( AssetAndQuantity assetAndQuantity : mUncroppedAssetAndQuantityArrayList )
+    for ( AssetsAndQuantity assetsAndQuantity : mAssetsAndQuantityArrayList )
       {
-      numberOfImages += assetAndQuantity.getQuantity();
+      numberOfImages += assetsAndQuantity.getQuantity();
       }
 
 
@@ -258,8 +254,7 @@ public class ReviewAndCropFragment extends AProductCreationFragment implements A
     public void run()
       {
       // Remove the asset
-      mUncroppedAssetAndQuantityArrayList.remove( mAssetIndex );
-      mCroppedAssetAndQuantityArrayList.remove( mAssetIndex );
+      mAssetsAndQuantityArrayList.remove( mAssetIndex );
 
       // Update the screen
       mAssetAndQuantityAdaptor.notifyDataSetInvalidated();

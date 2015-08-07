@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * AssetAndQuantity.java
+ * AssetsAndQuantity.java
  *
  *
  * Modified MIT License
@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.product;
+package ly.kite.journey;
 
 
 ///// Import(s) /////
@@ -44,42 +44,54 @@ import android.os.Parcelable;
 
 import java.util.List;
 
+import ly.kite.product.Asset;
+
 
 ///// Class Declaration /////
 
 /*****************************************************
  *
- * This class represents an asset and a quantity.
+ * This class holds two assets and a quantity. The assets
+ * are an original asset, and a cropped asset.
  *
  *****************************************************/
-public class AssetAndQuantity implements Parcelable
+public class AssetsAndQuantity implements Parcelable
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "AssetAndQuantity";
+  private static final String  LOG_TAG       = "AssetsAndQuantity";
+
+  private static final byte    TRUE_AS_BYTE  = 1;
+  private static final byte    FALSE_AS_BYTE = 0;
 
 
   ////////// Static Variable(s) //////////
 
-  public static final Parcelable.Creator<AssetAndQuantity> CREATOR = new Parcelable.Creator<AssetAndQuantity>()
+  public static final Parcelable.Creator<AssetsAndQuantity> CREATOR = new Parcelable.Creator<AssetsAndQuantity>()
     {
-    public AssetAndQuantity createFromParcel( Parcel in )
+    public AssetsAndQuantity createFromParcel( Parcel in )
       {
-      return ( new AssetAndQuantity( in ) );
+      return ( new AssetsAndQuantity( in ) );
       }
 
-    public AssetAndQuantity[] newArray( int size )
+    public AssetsAndQuantity[] newArray( int size )
       {
-      return ( new AssetAndQuantity[ size ] );
+      return ( new AssetsAndQuantity[ size ] );
       }
     };
 
 
   ////////// Member Variable(s) //////////
 
-  final private Asset  mAsset;
-        private int    mQuantity;
+  private Asset            mUneditedAsset;
+  private Asset            mEditedAsset;
+  private int              mQuantity;
+
+  // The edited for field is useful if the user exits product creation and selects a different
+  // product: some editing will be valid across products. For example, rectangular stickers and
+  // circular stickers both crop to a square.
+  private UserJourneyType  mEditedFor;
 
 
   ////////// Static Initialiser(s) //////////
@@ -92,11 +104,11 @@ public class AssetAndQuantity implements Parcelable
    * Returns true if the asset is in the list.
    *
    *****************************************************/
-  static public boolean isInList( List<AssetAndQuantity> assetAndQuantityList, Asset soughtAsset )
+  static public boolean uneditedAssetIsInList( List<AssetsAndQuantity> assetsAndQuantityList, Asset soughtUneditedAsset )
     {
-    for ( AssetAndQuantity candidateAssetAndQuantity : assetAndQuantityList )
+    for ( AssetsAndQuantity candidateAssetsAndQuantity : assetsAndQuantityList )
       {
-      if ( candidateAssetAndQuantity.getAsset().equals( soughtAsset ) ) return ( true );
+      if ( candidateAssetsAndQuantity.getUneditedAsset().equals( soughtUneditedAsset ) ) return ( true );
       }
 
     return ( false );
@@ -105,16 +117,22 @@ public class AssetAndQuantity implements Parcelable
 
   ////////// Constructor(s) //////////
 
-  public AssetAndQuantity( Asset asset, int quantity )
+  public AssetsAndQuantity( Asset uneditedAsset, int quantity )
     {
-    mAsset    = asset;
-    mQuantity = quantity;
+    mUneditedAsset = uneditedAsset;
+    mQuantity      = quantity;
     }
 
 
-  private AssetAndQuantity( Parcel sourceParcel )
+  private AssetsAndQuantity( Parcel sourceParcel )
     {
-    mAsset    = new Asset( sourceParcel );
+    mUneditedAsset = sourceParcel.readParcelable( Asset.class.getClassLoader() );
+
+    if ( sourceParcel.readByte() == TRUE_AS_BYTE )
+      {
+      mEditedAsset = sourceParcel.readParcelable( Asset.class.getClassLoader() );
+      }
+
     mQuantity = sourceParcel.readInt();
     }
 
@@ -131,7 +149,18 @@ public class AssetAndQuantity implements Parcelable
   @Override
   public void writeToParcel( Parcel targetParcel, int flags )
     {
-    mAsset.writeToParcel( targetParcel, flags );
+    targetParcel.writeParcelable( mUneditedAsset, flags );
+
+    if ( mEditedAsset != null )
+      {
+      targetParcel.writeByte( TRUE_AS_BYTE );
+
+      targetParcel.writeParcelable( mEditedAsset, flags );
+      }
+    else
+      {
+      targetParcel.writeByte( FALSE_AS_BYTE );
+      }
 
     targetParcel.writeInt( mQuantity );
     }
@@ -141,12 +170,39 @@ public class AssetAndQuantity implements Parcelable
 
   /*****************************************************
    *
-   * Returns the asset.
+   * Returns the unedited asset.
    *
    *****************************************************/
-  public Asset getAsset()
+  public Asset getUneditedAsset()
     {
-    return ( mAsset );
+    return ( mUneditedAsset );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the edited asset.
+   *
+   *****************************************************/
+  public void setEditedAsset( Asset editedAsset, UserJourneyType editedFor )
+    {
+    mEditedAsset = editedAsset;
+
+    // If the edited asset is being cleared - also clear
+    // the edit for value.
+    if ( editedAsset == null ) mEditedFor = null;
+    else                       mEditedFor = editedFor;
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the edited asset.
+   *
+   *****************************************************/
+  public Asset getEditedAsset()
+    {
+    return ( mEditedAsset );
     }
 
 
@@ -158,6 +214,18 @@ public class AssetAndQuantity implements Parcelable
   public int getQuantity()
     {
     return ( mQuantity );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the user journey type that the edited asset
+   * was intended for.
+   *
+   *****************************************************/
+  public UserJourneyType getEditedFor()
+    {
+    return ( mEditedFor );
     }
 
 

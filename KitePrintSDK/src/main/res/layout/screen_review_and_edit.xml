@@ -8,6 +8,6 @@
         android:id="@+id/grid_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:numColumns="@integer/review_and_crop_grid_num_columns"/>
+        android:numColumns="@integer/review_and_edit_grid_num_columns"/>
 
 </FrameLayout>

@@ -75,6 +75,8 @@ abstract public class AFixableImageFrame extends FrameLayout implements IImageCo
 
   private static final float   DEFAULT_ASPECT_RATIO = 1.389f;
 
+  private static final Object  ANY_KEY              = new Object();
+
 
   ////////// Static Variable(s) //////////
 
@@ -176,7 +178,10 @@ abstract public class AFixableImageFrame extends FrameLayout implements IImageCo
   @Override
   public void onImageAvailable( Object key, Bitmap bitmap )
     {
-    if ( key.equals( mExpectedKey ) ) mImageView.setImageBitmap( bitmap );
+    if ( mExpectedKey == ANY_KEY || key.equals( mExpectedKey ) )
+      {
+      mImageView.setImageBitmap( bitmap );
+      }
     }
 
 
@@ -247,6 +252,20 @@ abstract public class AFixableImageFrame extends FrameLayout implements IImageCo
   public void clearForNewImage( Object expectedKey )
     {
     setExpectedKey( expectedKey );
+
+    mImageView.setImageBitmap( null );
+    }
+
+
+  /*****************************************************
+   *
+   * Clears the image and sets a wildcard key for the next
+   * expected image.
+   *
+   *****************************************************/
+  public void clearForAnyImage()
+    {
+    setExpectedKey( ANY_KEY );
 
     mImageView.setImageBitmap( null );
     }

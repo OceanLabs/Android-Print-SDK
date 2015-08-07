@@ -63,7 +63,7 @@ import ly.kite.util.IImageConsumer;
  * may be moved and zoomed.
  *
  *****************************************************/
-public class MaskedRemoteImageView extends FrameLayout implements IImageConsumer
+public class EditableConsumerImageView extends FrameLayout implements IImageConsumer
   {
   ////////// Static Constant(s) //////////
 
@@ -76,7 +76,7 @@ public class MaskedRemoteImageView extends FrameLayout implements IImageConsumer
 
   ////////// Member Variable(s) //////////
 
-  private MaskedImageView  mMaskedImageView;
+  private EditableImageView mMaskedImageView;
   private ProgressBar      mProgressBar;
 
   private Object           mImageKey;
@@ -92,21 +92,21 @@ public class MaskedRemoteImageView extends FrameLayout implements IImageConsumer
 
   ////////// Constructor(s) //////////
 
-  public MaskedRemoteImageView( Context context )
+  public EditableConsumerImageView( Context context )
     {
     super( context );
 
     initialise( context );
     }
 
-  public MaskedRemoteImageView( Context context, AttributeSet attrs )
+  public EditableConsumerImageView( Context context, AttributeSet attrs )
     {
     super( context, attrs );
 
     initialise( context );
     }
 
-  public MaskedRemoteImageView( Context context, AttributeSet attrs, int defStyleAttr )
+  public EditableConsumerImageView( Context context, AttributeSet attrs, int defStyleAttr )
     {
     super( context, attrs, defStyleAttr );
 
@@ -114,7 +114,7 @@ public class MaskedRemoteImageView extends FrameLayout implements IImageConsumer
     }
 
   @TargetApi( Build.VERSION_CODES.LOLLIPOP )
-  public MaskedRemoteImageView( Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes )
+  public EditableConsumerImageView( Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes )
     {
     super( context, attrs, defStyleAttr, defStyleRes );
 
@@ -168,9 +168,9 @@ public class MaskedRemoteImageView extends FrameLayout implements IImageConsumer
     {
     LayoutInflater layoutInflater = LayoutInflater.from( context );
 
-    View view = layoutInflater.inflate( R.layout.masked_remote_image_view, this, true );
+    View view = layoutInflater.inflate( R.layout.editable_consumer_image_view, this, true );
 
-    mMaskedImageView = (MaskedImageView)view.findViewById( R.id.masked_image_view );
+    mMaskedImageView = (EditableImageView)view.findViewById( R.id.editable_image_view );
     mProgressBar     = (ProgressBar)view.findViewById( R.id.progress_bar );
     }
 
@@ -203,7 +203,7 @@ public class MaskedRemoteImageView extends FrameLayout implements IImageConsumer
    * Returns the masked image view.
    *
    *****************************************************/
-  public MaskedImageView getMaskedImageView()
+  public EditableImageView getMaskedImageView()
     {
     return ( mMaskedImageView );
     }

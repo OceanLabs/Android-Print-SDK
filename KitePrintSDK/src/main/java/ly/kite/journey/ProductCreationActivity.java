@@ -53,9 +53,8 @@ import ly.kite.analytics.Analytics;
 import ly.kite.checkout.CheckoutActivity;
 import ly.kite.journey.imageselection.ImageSelectionFragment;
 import ly.kite.journey.phonecase.PhoneCaseFragment;
-import ly.kite.journey.reviewandcrop.ReviewAndCropFragment;
+import ly.kite.journey.reviewandedit.ReviewAndEditFragment;
 import ly.kite.product.Asset;
-import ly.kite.product.AssetAndQuantity;
 import ly.kite.product.PrintJob;
 import ly.kite.product.PrintOrder;
 import ly.kite.product.Product;
@@ -76,29 +75,27 @@ public class ProductCreationActivity extends AKiteActivity implements PhoneCaseF
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "ProductCreationActivity";
+  private static final String  LOG_TAG                                    = "ProductCreationActivity";
 
-  private static final String  INTENT_EXTRA_NAME_UNCROPPED_ASSET_AND_QUANTITY_LIST = KiteSDK.INTENT_PREFIX + ".uncroppedAssetAndQuantityList";
-  private static final String  INTENT_EXTRA_NAME_CROPPED_ASSET_AND_QUANTITY_LIST   = KiteSDK.INTENT_PREFIX + ".croppedAssetAndQuantityList";
-  private static final String  INTENT_EXTRA_NAME_PRODUCT                           = KiteSDK.INTENT_PREFIX + ".product";
+  private static final String  INTENT_EXTRA_NAME_ASSETS_AND_QUANTITY_LIST = KiteSDK.INTENT_PREFIX + ".assetsAndQuantityList";
+  private static final String  INTENT_EXTRA_NAME_PRODUCT                  = KiteSDK.INTENT_PREFIX + ".product";
 
 
   ////////// Static Variable(s) //////////
 
-  private static ProductCreationActivity sUserJourneyCoordinator;
+  static private ProductCreationActivity sUserJourneyCoordinator;
 
 
   ////////// Member Variable(s) //////////
 
-  private ArrayList<AssetAndQuantity>  mUncroppedAssetAndQuantityArrayList;
-  private ArrayList<AssetAndQuantity>  mCroppedAssetAndQuantityArrayList;
-  private Product                      mProduct;
+  private ArrayList<AssetsAndQuantity>  mAssetsAndQuantityArrayList;
+  private Product                       mProduct;
 
 
-  private PhoneCaseFragment            mPhoneCaseFragment;
+  private PhoneCaseFragment             mPhoneCaseFragment;
 
-  private ImageSelectionFragment       mImageSelectionFragment;
-  private ReviewAndCropFragment mReviewAndCropFragment;
+  private ImageSelectionFragment        mImageSelectionFragment;
+  private ReviewAndEditFragment mReviewAndCropFragment;
 
 
   ////////// Static Initialiser(s) //////////
@@ -134,16 +131,14 @@ public class ProductCreationActivity extends AKiteActivity implements PhoneCaseF
    * Starts this activity.
    *
    *****************************************************/
-  static public void startForResult( Activity                    activity,
-                                     ArrayList<AssetAndQuantity> uncroppedAssetAndQuantityArrayList,
-                                     ArrayList<AssetAndQuantity> croppedAssetAndQuantityArrayList,
-                                     Product                     product,
-                                     int                         requestCode )
+  static public void startForResult( Activity                      activity,
+                                     ArrayList<AssetsAndQuantity>  assetsAndQuantityArrayList,
+                                     Product                       product,
+                                     int                           requestCode )
     {
     Intent intent = new Intent( activity, ProductCreationActivity.class );
 
-    intent.putParcelableArrayListExtra( INTENT_EXTRA_NAME_UNCROPPED_ASSET_AND_QUANTITY_LIST, uncroppedAssetAndQuantityArrayList );
-    intent.putParcelableArrayListExtra( INTENT_EXTRA_NAME_CROPPED_ASSET_AND_QUANTITY_LIST, croppedAssetAndQuantityArrayList );
+    intent.putParcelableArrayListExtra( INTENT_EXTRA_NAME_ASSETS_AND_QUANTITY_LIST, assetsAndQuantityArrayList );
     intent.putExtra( INTENT_EXTRA_NAME_PRODUCT, product );
 
     activity.startActivityForResult( intent, requestCode );
@@ -193,30 +188,11 @@ public class ProductCreationActivity extends AKiteActivity implements PhoneCaseF
       return;
       }
 
-    mUncroppedAssetAndQuantityArrayList = intent.getParcelableArrayListExtra( INTENT_EXTRA_NAME_UNCROPPED_ASSET_AND_QUANTITY_LIST );
+    mAssetsAndQuantityArrayList = intent.getParcelableArrayListExtra( INTENT_EXTRA_NAME_ASSETS_AND_QUANTITY_LIST );
 
-    if ( mUncroppedAssetAndQuantityArrayList == null || mUncroppedAssetAndQuantityArrayList.size() < 1 )
+    if ( mAssetsAndQuantityArrayList == null || mAssetsAndQuantityArrayList.size() < 1 )
       {
-      Log.e( LOG_TAG, "No uncropped asset and quantity list found" );
-
-      displayModalDialog(
-              R.string.alert_dialog_title_no_asset_list,
-              R.string.alert_dialog_message_no_asset_list,
-              DONT_DISPLAY_BUTTON,
-              null,
-              R.string.Cancel,
-              new FinishRunnable()
-      );
-
-      return;
-      }
-
-
-    mCroppedAssetAndQuantityArrayList = intent.getParcelableArrayListExtra( INTENT_EXTRA_NAME_CROPPED_ASSET_AND_QUANTITY_LIST );
-
-    if ( mCroppedAssetAndQuantityArrayList == null || mCroppedAssetAndQuantityArrayList.size() < 1 )
-      {
-      Log.e( LOG_TAG, "No cropped asset and quantity list found" );
+      Log.e( LOG_TAG, "No asset list found" );
 
       displayModalDialog(
               R.string.alert_dialog_title_no_asset_list,
@@ -265,37 +241,15 @@ public class ProductCreationActivity extends AKiteActivity implements PhoneCaseF
     }
 
 
-  /*****************************************************
-   *
-   * Starts the next stage in the appropriate user journey
-   * for the supplied product.
-   *
-   *****************************************************/
-  private void addFirstFragment()
-    {
-    switch ( mProduct.getUserJourneyType() )
-      {
-      case CIRCLE:
-        addFragment( mImageSelectionFragment = ImageSelectionFragment.newInstance( mUncroppedAssetAndQuantityArrayList, mCroppedAssetAndQuantityArrayList, mProduct ), ImageSelectionFragment.TAG );
-        break;
-
-      case PHONE_CASE:
-        addFragment( mPhoneCaseFragment = PhoneCaseFragment.newInstance( mUncroppedAssetAndQuantityArrayList, mProduct ), PhoneCaseFragment.TAG );
-        break;
-
-      case RECTANGLE:
-        addFragment( mImageSelectionFragment = ImageSelectionFragment.newInstance( mUncroppedAssetAndQuantityArrayList, mCroppedAssetAndQuantityArrayList, mProduct ), ImageSelectionFragment.TAG );
-        break;
-      }
-
-    }
+  // TODO: We need a way to pass an updated assets + quantity list back to the
+  // TODO: calling activity.
 
 
   ////////// PhoneCaseFragment.ICallback Method(s) //////////
 
   /*****************************************************
    *
-   * Called when the product has been created.
+   * Called when a phone case has been created.
    *
    *****************************************************/
   @Override
@@ -322,11 +276,43 @@ public class ProductCreationActivity extends AKiteActivity implements PhoneCaseF
    *
    *****************************************************/
   @Override
-  public void isOnNext( ArrayList<AssetAndQuantity> uncroppedAssetAndQuantityList, ArrayList<AssetAndQuantity> croppedAssetAndQuantityList )
+  public void isOnNext( ArrayList<AssetsAndQuantity> assetsAndQuantityList )
     {
-    mReviewAndCropFragment = ReviewAndCropFragment.newInstance( uncroppedAssetAndQuantityList, croppedAssetAndQuantityList, mProduct );
+    // Update the assets and quantity list. If this is the first time - it will
+    // contain cropped assets that we need.
+    mAssetsAndQuantityArrayList = assetsAndQuantityList;
 
-    addFragment( mReviewAndCropFragment, ReviewAndCropFragment.TAG );
+    mReviewAndCropFragment = ReviewAndEditFragment.newInstance( mAssetsAndQuantityArrayList, mProduct );
+
+    addFragment( mReviewAndCropFragment, ReviewAndEditFragment.TAG );
+    }
+
+
+  ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Starts the next stage in the appropriate user journey
+   * for the supplied product.
+   *
+   *****************************************************/
+  private void addFirstFragment()
+    {
+    switch ( mProduct.getUserJourneyType() )
+      {
+      case CIRCLE:
+        addFragment( mImageSelectionFragment = ImageSelectionFragment.newInstance( mAssetsAndQuantityArrayList, mProduct ), ImageSelectionFragment.TAG );
+        break;
+
+      case PHONE_CASE:
+        addFragment( mPhoneCaseFragment = PhoneCaseFragment.newInstance( mAssetsAndQuantityArrayList, mProduct ), PhoneCaseFragment.TAG );
+        break;
+
+      case RECTANGLE:
+        addFragment( mImageSelectionFragment = ImageSelectionFragment.newInstance( mAssetsAndQuantityArrayList, mProduct ), ImageSelectionFragment.TAG );
+        break;
+      }
+
     }
 
 

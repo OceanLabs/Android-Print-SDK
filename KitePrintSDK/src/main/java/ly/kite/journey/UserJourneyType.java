@@ -50,14 +50,36 @@ package ly.kite.journey;
  *****************************************************/
 public enum UserJourneyType
   {
-  CIRCLE,
+  CIRCLE
+          {
+          public boolean editedImageCompatibleWith( UserJourneyType otherType )
+            {
+            if ( otherType == CIRCLE || otherType == RECTANGLE )
+              {
+              return ( true );
+              }
+
+            return ( false );
+            }
+          },
   FRAME,
   GREETING_CARD,
   PHONE_CASE,
   PHOTOBOOK,
   POSTCARD,
   POSTER,
-  RECTANGLE;
+  RECTANGLE
+          {
+          public boolean editedImageCompatibleWith( UserJourneyType otherType )
+            {
+            if ( otherType == RECTANGLE || otherType == CIRCLE )
+              {
+              return ( true );
+              }
+
+            return ( false );
+            }
+          };
 
 
   ////////// Member Variable(s) //////////
@@ -76,9 +98,17 @@ public enum UserJourneyType
 
   /*****************************************************
    *
-   * ...
+   * Returns true if the other type is not null and
+   * its edited image is compatible with this one.
+   *
+   * The default is false. Override the method for
+   * individual types above.
    *
    *****************************************************/
+  public boolean editedImageCompatibleWith( UserJourneyType otherType )
+    {
+    return ( false );
+    }
 
 
   ////////// Inner Class(es) //////////

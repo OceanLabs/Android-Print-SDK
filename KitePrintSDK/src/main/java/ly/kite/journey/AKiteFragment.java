@@ -63,8 +63,7 @@ abstract public class AKiteFragment extends Fragment
   public    static final String  TAG                                          = "AKiteFragment";
 
   private   static final String  BUNDLE_KEY_MANAGED_ADAPTOR_VIEW_POSITION     = "managedAdaptorViewPosition";
-  protected static final String  BUNDLE_KEY_UNCROPPED_ASSET_AND_QUANTITY_LIST = "uncroppedAssetAndQuantityList";
-  protected static final String  BUNDLE_KEY_CROPPED_ASSET_AND_QUANTITY_LIST   = "croppedAssetAndQuantityList";
+  protected static final String  BUNDLE_KEY_ASSETS_AND_QUANTITY_LIST          = "assetAndQuantityList";
   protected static final String  BUNDLE_KEY_PRODUCT                           = "product";
 
 
@@ -82,7 +81,6 @@ abstract public class AKiteFragment extends Fragment
   ////////// Member Variable(s) //////////
 
   protected AKiteActivity   mKiteActivity;
-  //protected boolean         mIsVisible;
 
   private   AdapterView<?>  mManagedAdaptorView;
   private   int             mManagedAdaptorViewPosition;

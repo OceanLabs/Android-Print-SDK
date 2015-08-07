@@ -52,9 +52,8 @@ import java.util.ArrayList;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
-import ly.kite.journey.reviewandcrop.ReviewAndCropFragment;
+import ly.kite.journey.reviewandedit.ReviewAndEditFragment;
 import ly.kite.product.Asset;
-import ly.kite.product.AssetAndQuantity;
 import ly.kite.product.Product;
 import ly.kite.product.ProductGroup;
 
@@ -76,7 +75,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ChoosePro
   @SuppressWarnings( "unused" )
   private static final String  LOG_TAG                         = "ProductSelectionAct.";  // Can't be more than 23 characters ... who knew?!
 
-  private static final String  INTENT_EXTRA_NAME_ASSET_LIST    = KiteSDK.INTENT_PREFIX + ".AssetList";
+  private static final String  INTENT_EXTRA_NAME_ASSET_LIST    = KiteSDK.INTENT_PREFIX + ".assetList";
 
 
   ////////// Static Variable(s) //////////
@@ -84,15 +83,12 @@ public class ProductSelectionActivity extends AKiteActivity implements ChoosePro
 
   ////////// Member Variable(s) //////////
 
-  //private ArrayList<Asset>             mAssetArrayList;
+  private ArrayList<AssetsAndQuantity>  mAssetsAndQuantityArrayList;
 
-  private ArrayList<AssetAndQuantity>  mUncroppedAssetAndQuantityArrayList;
-  private ArrayList<AssetAndQuantity>  mCroppedAssetAndQuantityArrayList;
-
-  private ChooseProductGroupFragment   mProductGroupFragment;
-  private ChooseProductFragment        mProductFragment;
-  private ProductOverviewFragment      mProductOverviewFragment;
-  private ReviewAndCropFragment mReviewAndCropFragment;
+  private ChooseProductGroupFragment    mProductGroupFragment;
+  private ChooseProductFragment         mProductFragment;
+  private ProductOverviewFragment       mProductOverviewFragment;
+  private ReviewAndEditFragment mReviewAndCropFragment;
 
 
   ////////// Static Initialiser(s) //////////
@@ -121,16 +117,16 @@ public class ProductSelectionActivity extends AKiteActivity implements ChoosePro
    * array list, with the quantities set to 1.
    *
    *****************************************************/
-  private static ArrayList<AssetAndQuantity> assetAndQuantityArrayListFrom( ArrayList<Asset> assetArrayList )
+  private static ArrayList<AssetsAndQuantity> assetsAndQuantityArrayListFrom( ArrayList<Asset> assetArrayList )
     {
-    ArrayList<AssetAndQuantity> assetAndQuantityArrayList = new ArrayList<>( assetArrayList.size() );
+    ArrayList<AssetsAndQuantity> assetsAndQuantityArrayList = new ArrayList<>( assetArrayList.size() );
 
     for ( Asset asset : assetArrayList )
       {
-      assetAndQuantityArrayList.add( new AssetAndQuantity( asset, 1 ) );
+      assetsAndQuantityArrayList.add( new AssetsAndQuantity( asset, 1 ) );
       }
 
-    return ( assetAndQuantityArrayList );
+    return ( assetsAndQuantityArrayList );
     }
 
 
@@ -196,12 +192,11 @@ public class ProductSelectionActivity extends AKiteActivity implements ChoosePro
       }
 
 
-    // Create the asset + quantity array lists here, because in the iOS version, we keep track of the
-    // quantities even if we come out of the product creation and go into a different product. So we
-    // want to be storing the quantity with the asset right from the start.
+    // We convert the asset list into an assets and quantity list (long before we get
+    // to cropping and editing) because if the user comes out of product creation, and
+    // goes back into another product - we want to remember quantities.
 
-    mUncroppedAssetAndQuantityArrayList = assetAndQuantityArrayListFrom( assetArrayList );
-    mCroppedAssetAndQuantityArrayList   = assetAndQuantityArrayListFrom( assetArrayList );
+    mAssetsAndQuantityArrayList = assetsAndQuantityArrayListFrom( assetArrayList );
 
 
     // Set up the screen content
@@ -212,6 +207,31 @@ public class ProductSelectionActivity extends AKiteActivity implements ChoosePro
     if ( savedInstanceState == null )
       {
       addFragment( mProductGroupFragment = ChooseProductGroupFragment.newInstance(), ChooseProductGroupFragment.TAG );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Called when an activity result is received.
+   *
+   *****************************************************/
+  @Override
+  protected void onActivityResult( int requestCode, int resultCode, Intent data )
+    {
+    super.onActivityResult( requestCode, resultCode, data );
+
+
+    // The parent method will check for the checkout result.
+
+
+    // See if we got an updated assets + quantity list
+
+    if ( data != null )
+      {
+      ArrayList<AssetsAndQuantity> assetsAndQuantityArrayList = data.getParcelableArrayListExtra( INTENT_EXTRA_NAME_ASSETS_AND_QUANTITY__LIST );
+
+      if ( assetsAndQuantityArrayList != null ) mAssetsAndQuantityArrayList = assetsAndQuantityArrayList;
       }
     }
 
@@ -266,7 +286,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ChoosePro
     // we then hand over to the product creation activity to choose the journey
     // depending on the product.
 
-    ProductCreationActivity.startForResult( this, mUncroppedAssetAndQuantityArrayList, mCroppedAssetAndQuantityArrayList, product, ACTIVITY_REQUEST_CODE_CHECKOUT );
+    ProductCreationActivity.startForResult( this, mAssetsAndQuantityArrayList, product, ACTIVITY_REQUEST_CODE_CHECKOUT );
     }
 
 

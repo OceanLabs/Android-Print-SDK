@@ -12,7 +12,8 @@
         android:id="@+id/framed_image_view"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        custom:aspectRatio="@dimen/review_and_crop_image_aspect_ratio"/>
+        custom:aspectRatio="@dimen/review_and_crop_image_aspect_ratio"
+        android:background="@android:color/white"/>
 
     <LinearLayout
         android:layout_marginTop="10dp"

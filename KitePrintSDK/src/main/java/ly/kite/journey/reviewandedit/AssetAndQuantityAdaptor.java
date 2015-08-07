@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.journey.reviewandcrop;
+package ly.kite.journey.reviewandedit;
 
 
 ///// Import(s) /////
@@ -50,8 +50,9 @@ import android.widget.TextView;
 import java.util.List;
 
 import ly.kite.R;
+import ly.kite.journey.UserJourneyType;
 import ly.kite.product.Asset;
-import ly.kite.product.AssetAndQuantity;
+import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.product.AssetHelper;
 import ly.kite.widget.FramedImageView;
 
@@ -76,11 +77,12 @@ public class AssetAndQuantityAdaptor extends BaseAdapter
 
   ////////// Member Variable(s) //////////
 
-  private Context                 mContext;
-  private List<AssetAndQuantity>  mAssetAndQuantityList;
-  private IListener               mListener;
+  private Context                  mContext;
+  private List<AssetsAndQuantity>  mAssetsAndQuantityList;
+  private UserJourneyType          mUserJourneyType;
+  private IListener                mListener;
 
-  private LayoutInflater          mLayoutInflator;
+  private LayoutInflater           mLayoutInflator;
 
 
   ////////// Static Initialiser(s) //////////
@@ -91,13 +93,14 @@ public class AssetAndQuantityAdaptor extends BaseAdapter
 
   ////////// Constructor(s) //////////
 
-  public AssetAndQuantityAdaptor( Context context, List<AssetAndQuantity> assetAndQuantityList, IListener listener )
+  public AssetAndQuantityAdaptor( Context context, List<AssetsAndQuantity> assetsAndQuantityList, UserJourneyType userJourneyType, IListener listener )
     {
-    mContext              = context;
-    mAssetAndQuantityList = assetAndQuantityList;
-    mListener             = listener;
+    mContext               = context;
+    mAssetsAndQuantityList = assetsAndQuantityList;
+    mUserJourneyType       = userJourneyType;
+    mListener              = listener;
 
-    mLayoutInflator       = LayoutInflater.from( context );
+    mLayoutInflator        = LayoutInflater.from( context );
     }
 
 
@@ -111,7 +114,7 @@ public class AssetAndQuantityAdaptor extends BaseAdapter
   @Override
   public int getCount()
     {
-    return ( mAssetAndQuantityList.size() );
+    return ( mAssetsAndQuantityList.size() );
     }
 
 
@@ -123,7 +126,7 @@ public class AssetAndQuantityAdaptor extends BaseAdapter
   @Override
   public Object getItem( int position )
     {
-    return ( mAssetAndQuantityList.get( position ) );
+    return ( mAssetsAndQuantityList.get( position ) );
     }
 
 
@@ -172,27 +175,39 @@ public class AssetAndQuantityAdaptor extends BaseAdapter
       viewReferences.increaseButton   = (Button)view.findViewById( R.id.increase_button );
       viewReferences.editButton       = (Button)view.findViewById( R.id.edit_button );
 
+
+      // We only need to set the overlay or border once, when the view is first created,
+      // since any re-use of the view will keep the properties.
+
+      if ( mUserJourneyType == UserJourneyType.RECTANGLE )
+        {
+        viewReferences.framedImageView.setBackgroundColor( 0xffffffff );
+        viewReferences.framedImageView.setBorder( (int)mContext.getResources().getDimension( R.dimen.review_and_crop_rectangle_border ) );
+        }
+      else if ( mUserJourneyType == UserJourneyType.CIRCLE )
+        {
+        viewReferences.framedImageView.setStencil( R.drawable.filled_white_circle );
+        }
+
+
       view.setTag( viewReferences );
       }
 
 
     // Set up the view
 
-    AssetAndQuantity assetAndQuantity = (AssetAndQuantity)getItem( position );
-    Asset            asset            = assetAndQuantity.getAsset();
+    AssetsAndQuantity assetsAndQuantity = (AssetsAndQuantity)getItem( position );
+    Asset             editedAsset       = assetsAndQuantity.getEditedAsset();
 
-    viewReferences.framedImageView.clearForNewImage( asset );
-    AssetHelper.requestImage( mContext, asset, viewReferences.framedImageView );
+    viewReferences.framedImageView.clearForNewImage( editedAsset );
+    AssetHelper.requestImage( mContext, editedAsset, viewReferences.framedImageView );
 
-    viewReferences.quantityTextView.setText( String.valueOf( assetAndQuantity.getQuantity() ) );
+    viewReferences.quantityTextView.setText( String.valueOf( assetsAndQuantity.getQuantity() ) );
     viewReferences.assetIndex = position;
 
     viewReferences.decreaseButton.setOnClickListener( viewReferences );
     viewReferences.increaseButton.setOnClickListener( viewReferences );
     viewReferences.editButton.setOnClickListener( viewReferences );
-
-
-    // TODO
 
 
     return ( view );
@@ -208,9 +223,9 @@ public class AssetAndQuantityAdaptor extends BaseAdapter
    *****************************************************/
   public interface IListener
     {
-    public void onWantsToBeZero( int assetIndex );
-    public void onQuantityChanged( int assetIndex );
-    public void onEdit( int assetIndex );
+    public void onWantsToBeZero   ( int assetIndex );
+    public void onQuantityChanged ( int assetIndex );
+    public void onEdit            ( int assetIndex );
     }
 
 
@@ -234,7 +249,7 @@ public class AssetAndQuantityAdaptor extends BaseAdapter
     @Override
     public void onClick( View view )
       {
-      AssetAndQuantity assetAndQuantity = mAssetAndQuantityList.get( this.assetIndex );
+      AssetsAndQuantity assetAndQuantity = mAssetsAndQuantityList.get( this.assetIndex );
 
       if ( view == this.decreaseButton )
         {

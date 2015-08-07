@@ -53,15 +53,16 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import ly.kite.R;
+import ly.kite.journey.AEditImageFragment;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.journey.AKiteFragment;
 import ly.kite.product.Asset;
-import ly.kite.product.AssetAndQuantity;
+import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.product.AssetHelper;
 import ly.kite.product.Bleed;
 import ly.kite.product.Product;
 import ly.kite.util.ImageLoader;
-import ly.kite.widget.MaskedRemoteImageView;
+import ly.kite.widget.EditableConsumerImageView;
 
 
 ///// Class Declaration /////
@@ -72,7 +73,7 @@ import ly.kite.widget.MaskedRemoteImageView;
  * case design using an image.
  *
  *****************************************************/
-public class PhoneCaseFragment extends AKiteFragment implements View.OnClickListener
+public class PhoneCaseFragment extends AEditImageFragment
   {
   ////////// Static Constant(s) //////////
 
@@ -88,11 +89,7 @@ public class PhoneCaseFragment extends AKiteFragment implements View.OnClickList
 
   ////////// Member Variable(s) //////////
 
-  private ArrayList<AssetAndQuantity>  mAssetAndQuantityArrayList;
-  private Product                      mProduct;
-
-  private MaskedRemoteImageView        mMaskedRemoteImageView;
-  private Button                       mNextButton;
+  private ArrayList<AssetsAndQuantity>  mAssetAndQuantityArrayList;
 
 
   ////////// Static Initialiser(s) //////////
@@ -105,7 +102,7 @@ public class PhoneCaseFragment extends AKiteFragment implements View.OnClickList
    * Creates a new instance of this fragment.
    *
    *****************************************************/
-  public static PhoneCaseFragment newInstance( ArrayList<AssetAndQuantity> assetAndQuantityArrayList, Product product )
+  public static PhoneCaseFragment newInstance( ArrayList<AssetsAndQuantity> assetAndQuantityArrayList, Product product )
     {
     PhoneCaseFragment fragment = new PhoneCaseFragment();
 
@@ -175,25 +172,6 @@ public class PhoneCaseFragment extends AKiteFragment implements View.OnClickList
       }
 
 
-    mProduct = arguments.getParcelable( BUNDLE_KEY_PRODUCT );
-
-    if ( mProduct == null )
-      {
-      Log.e( LOG_TAG, "No product found" );
-
-      mKiteActivity.displayModalDialog(
-              R.string.alert_dialog_title_product_not_found,
-              R.string.alert_dialog_message_product_not_found,
-              AKiteActivity.DONT_DISPLAY_BUTTON,
-              null,
-              R.string.Cancel,
-              mKiteActivity.new FinishRunnable()
-      );
-
-      return;
-      }
-
-
     //this.setHasOptionsMenu( true );
     }
 
@@ -223,10 +201,13 @@ public class PhoneCaseFragment extends AKiteFragment implements View.OnClickList
   @Override
   public View onCreateView( LayoutInflater layoutInflator, ViewGroup container, Bundle savedInstanceState )
     {
-    View view = layoutInflator.inflate( R.layout.screen_phone_case, container, false );
+    View view = super.onCreateView( layoutInflator, container, savedInstanceState );
 
-    mMaskedRemoteImageView = (MaskedRemoteImageView)view.findViewById( R.id.masked_remote_image_view );
-    mNextButton            = (Button)view.findViewById( R.id.next_button );
+
+    mCancelButton.setVisibility( View.GONE );
+
+    mConfirmButton.setVisibility( View.VISIBLE );
+    mConfirmButton.setText( R.string.product_creation_next_button_text );
 
 
     // Request the image and mask
@@ -234,18 +215,15 @@ public class PhoneCaseFragment extends AKiteFragment implements View.OnClickList
     ImageLoader imageManager = ImageLoader.getInstance( mKiteActivity );
     Handler      handler      = new Handler();
 
-    Asset        asset        = mAssetAndQuantityArrayList.get( 0 ).getAsset();
+    Asset        asset        = mAssetAndQuantityArrayList.get( 0 ).getUneditedAsset();
     URL          maskURL      = mProduct.getMaskURL();
     Bleed        maskBleed    = mProduct.getMaskBleed();
 
-    mMaskedRemoteImageView.setImageKey( asset );
-    mMaskedRemoteImageView.setMaskDetails( maskURL, maskBleed );
+    mEditableConsumerImageView.setImageKey( asset );
+    mEditableConsumerImageView.setMaskDetails( maskURL, maskBleed );
 
-    AssetHelper.requestImage( mKiteActivity, asset, mMaskedRemoteImageView );
-    imageManager.requestRemoteImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, maskURL, handler, mMaskedRemoteImageView );
-
-
-    mNextButton.setOnClickListener( this );
+    AssetHelper.requestImage( mKiteActivity, asset, mEditableConsumerImageView );
+    imageManager.requestRemoteImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, maskURL, handler, mEditableConsumerImageView );
 
 
     return ( view );
@@ -290,25 +268,6 @@ public class PhoneCaseFragment extends AKiteFragment implements View.OnClickList
     }
 
 
-  ////////// View.OnClickListener Method(s) //////////
-
-  /*****************************************************
-   *
-   * Called when something is clicked.
-   *
-   *****************************************************/
-  @Override
-  public void onClick( View view )
-    {
-    if ( view == mNextButton )
-      {
-      ///// Next /////
-
-      onNext();
-      }
-    }
-
-
   ////////// Method(s) //////////
 
   /*****************************************************
@@ -316,12 +275,13 @@ public class PhoneCaseFragment extends AKiteFragment implements View.OnClickList
    * Called when the Next button is clicked.
    *
    *****************************************************/
-  private void onNext()
+  @Override
+  protected void onConfirm()
     {
     // Create a print order from the cropped image, then start
     // the checkout activity.
 
-    Bitmap croppedImageBitmap = mMaskedRemoteImageView.getMaskedImageView().getImageCroppedToMask();
+    Bitmap croppedImageBitmap = mEditableConsumerImageView.getMaskedImageView().getImageCroppedToMask();
 
 
     // Sometimes users can hit the next button before we've actually got all the images, so check

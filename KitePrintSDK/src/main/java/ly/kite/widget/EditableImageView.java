@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * MaskedImageView.java
+ * EditableImageView.java
  *
  *
  * Modified MIT License
@@ -66,15 +66,15 @@ import ly.kite.product.Bleed;
  *
  * This class is a view that displays a mask over another
  * image (such as a photo). The underlying photo/image
- * may be moved and zoomed.
+ * may be panned and scaled.
  *
  *****************************************************/
-public class MaskedImageView extends View implements GestureDetector.OnGestureListener, ScaleGestureDetector.OnScaleGestureListener
+public class EditableImageView extends View implements GestureDetector.OnGestureListener, ScaleGestureDetector.OnScaleGestureListener
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String LOG_TAG                            = "MaskedImageView";
+  private static final String LOG_TAG                            = "EditableImageView";
 
   private static final float  FLOAT_ZERO_THRESHOLD               = 0.0001f;
 
@@ -129,21 +129,21 @@ public class MaskedImageView extends View implements GestureDetector.OnGestureLi
 
   ////////// Constructor(s) //////////
 
-  public MaskedImageView( Context context )
+  public EditableImageView( Context context )
     {
     super( context );
 
     initialise( context );
     }
 
-  public MaskedImageView( Context context, AttributeSet attrs )
+  public EditableImageView( Context context, AttributeSet attrs )
     {
     super( context, attrs );
 
     initialise( context );
     }
 
-  public MaskedImageView( Context context, AttributeSet attrs, int defStyleAttr )
+  public EditableImageView( Context context, AttributeSet attrs, int defStyleAttr )
     {
     super( context, attrs, defStyleAttr );
 
@@ -151,7 +151,7 @@ public class MaskedImageView extends View implements GestureDetector.OnGestureLi
     }
 
   @TargetApi( Build.VERSION_CODES.LOLLIPOP )
-  public MaskedImageView( Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes )
+  public EditableImageView( Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes )
     {
     super( context, attrs, defStyleAttr, defStyleRes );
 
