@@ -23,6 +23,12 @@
     <string name="alert_dialog_title_no_asset_list">Internal Error</string>
     <string name="alert_dialog_message_no_asset_list">There was an error: no asset list was found. Please check the log for more details.</string>
 
+    <string name="alert_dialog_title_no_asset">Internal Error</string>
+    <string name="alert_dialog_message_no_asset">There was an error: no asset was found. Please check the log for more details.</string>
+
+    <string name="alert_dialog_title_no_mask">Internal Error</string>
+    <string name="alert_dialog_message_no_mask">There was an error: no mask was found. Please check the log for more details.</string>
+
     <string name="alert_dialog_title_no_product">Internal Error</string>
     <string name="alert_dialog_message_no_product">There was an error: no product was found. Please check the log for more details.</string>
 
@@ -48,8 +54,10 @@
     <string name="Cancel">Cancel</string>
     <string name="Description">Description</string>
     <string name="Details">Details</string>
+    <string name="Done">Done</string>
     <string name="Edit">Edit</string>
     <string name="IMAGES">IMAGES</string>
+    <string name="OK">OK</string>
     <string name="Quality_Guarantee">Quality Guarantee</string>
     <string name="Quantity">Quantity</string>
     <string name="Retry">Retry</string>
@@ -90,9 +98,12 @@
         <item quantity="other">Photos</item>
     </plurals>
 
-    <string name="image_selection_review_button_text">Review &amp; edit</string>
+    <string name="image_selection_proceed_button_text">Review &amp; edit</string>
 
-    <string name="review_and_crop_title_format_string">%1$d / %2$d</string>
+    <string name="review_and_edit_title_format_string">%1$d / %2$d</string>
+    <string name="review_and_edit_proceed_button_text">Confirm</string>
+
+    <string name="edit_image_title">Edit image</string>
 
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>

@@ -2,12 +2,17 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    android:background="@color/product_creation_background">
 
     <GridView
         android:id="@+id/grid_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:numColumns="@integer/review_and_edit_grid_num_columns"/>
+        android:numColumns="@integer/review_and_edit_grid_num_columns"
+        android:paddingBottom="@dimen/proceed_overlay_frame_height"
+        android:clipToPadding="false"/>
+
+    <include layout="@layout/include_proceed_overlay"/>
 
 </FrameLayout>

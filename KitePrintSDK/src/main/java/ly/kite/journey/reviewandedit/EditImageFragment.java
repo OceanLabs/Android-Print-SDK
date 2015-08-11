@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * PhoneCaseFragment.java
+ * EditImageFragment.java
  *
  *
  * Modified MIT License
@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.journey.phonecase;
+package ly.kite.journey.reviewandedit;
 
 
 ///// Import(s) /////
@@ -42,20 +42,14 @@ package ly.kite.journey.phonecase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-
-import java.net.URL;
-import java.util.ArrayList;
 
 import ly.kite.R;
 import ly.kite.journey.AEditImageFragment;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.product.Asset;
-import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.product.AssetHelper;
-import ly.kite.product.Bleed;
 import ly.kite.product.Product;
 import ly.kite.util.ImageLoader;
 
@@ -64,19 +58,19 @@ import ly.kite.util.ImageLoader;
 
 /*****************************************************
  *
- * This activity allows the user to create a phone
- * case design using an image.
+ * This fragment allows the user to edit an image.
  *
  *****************************************************/
-public class PhoneCaseFragment extends AEditImageFragment
+public class EditImageFragment extends AEditImageFragment
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String      LOG_TAG                            = "PhoneCaseFragment";
+  private static final String      LOG_TAG                     = "EditImageFragment";
 
-  public  static final String      BUNDLE_KEY_ASSET_AND_QUANTITY_LIST = "assetAndQuantityList";
-  public  static final String      BUNDLE_KEY_PRODUCT                 = "product";
+  public  static final String      BUNDLE_KEY_UNEDITED_ASSET   = "uneditedAsset";
+  public  static final String      BUNDLE_KEY_MASK_RESOURCE_ID = "maskResourceId";
+  public  static final String      BUNDLE_KEY_PRODUCT          = "product";
 
 
   ////////// Static Variable(s) //////////
@@ -84,7 +78,7 @@ public class PhoneCaseFragment extends AEditImageFragment
 
   ////////// Member Variable(s) //////////
 
-  private ArrayList<AssetsAndQuantity>  mAssetAndQuantityArrayList;
+  private Asset  mAsset;
 
 
   ////////// Static Initialiser(s) //////////
@@ -97,12 +91,12 @@ public class PhoneCaseFragment extends AEditImageFragment
    * Creates a new instance of this fragment.
    *
    *****************************************************/
-  public static PhoneCaseFragment newInstance( ArrayList<AssetsAndQuantity> assetAndQuantityArrayList, Product product )
+  public static EditImageFragment newInstance( Asset uneditedAsset, Product product )
     {
-    PhoneCaseFragment fragment = new PhoneCaseFragment();
+    EditImageFragment fragment = new EditImageFragment();
 
     Bundle arguments = new Bundle();
-    arguments.putParcelableArrayList( BUNDLE_KEY_ASSET_AND_QUANTITY_LIST, assetAndQuantityArrayList );
+    arguments.putParcelable( BUNDLE_KEY_UNEDITED_ASSET, uneditedAsset );
     arguments.putParcelable( BUNDLE_KEY_PRODUCT, product );
 
     fragment.setArguments( arguments );
@@ -130,21 +124,21 @@ public class PhoneCaseFragment extends AEditImageFragment
     // We have already obtained the product in the parent fragment
 
 
-    // Get the assets
+    // Get the asset and mask
 
     Bundle arguments = getArguments();
 
     if ( arguments != null )
       {
-      mAssetAndQuantityArrayList = arguments.getParcelableArrayList( BUNDLE_KEY_ASSET_AND_QUANTITY_LIST );
+      mAsset = arguments.getParcelable( BUNDLE_KEY_UNEDITED_ASSET );
 
-      if ( mAssetAndQuantityArrayList == null || mAssetAndQuantityArrayList.size() < 1 )
+      if ( mAsset == null )
         {
-        Log.e( LOG_TAG, "No asset list found" );
+        Log.e( LOG_TAG, "No asset found" );
 
         mKiteActivity.displayModalDialog(
-                R.string.alert_dialog_title_no_asset_list,
-                R.string.alert_dialog_message_no_asset_list,
+                R.string.alert_dialog_title_no_asset,
+                R.string.alert_dialog_message_no_asset,
                 AKiteActivity.DONT_DISPLAY_BUTTON,
                 null,
                 R.string.Cancel,
@@ -155,26 +149,7 @@ public class PhoneCaseFragment extends AEditImageFragment
         }
       }
 
-
-    //this.setHasOptionsMenu( true );
     }
-
-
-  /*****************************************************
-   *
-   * Called the first time the options menu is created.
-   *
-   *****************************************************/
-// Uncomment once we implement the add photo functionality
-//  @Override
-//  public boolean onCreateOptionsMenu( Menu menu )
-//    {
-//    MenuInflater menuInflator = getMenuInflater();
-//
-//    menuInflator.inflate( R.menu.add_photo, menu );
-//
-//    return ( true );
-//    }
 
 
   /*****************************************************
@@ -188,25 +163,21 @@ public class PhoneCaseFragment extends AEditImageFragment
     View view = super.onCreateView( layoutInflator, container, savedInstanceState );
 
 
-    mCancelButton.setVisibility( View.GONE );
+    mCancelButton.setVisibility( View.VISIBLE );
+    mCancelButton.setText( R.string.Cancel );
 
     mConfirmButton.setVisibility( View.VISIBLE );
-    mConfirmButton.setText( R.string.product_creation_next_button_text );
+    mConfirmButton.setText( R.string.OK );
 
 
-    // Request the image and mask
+    // Request the image and set the mask
 
     ImageLoader imageManager = ImageLoader.getInstance( mKiteActivity );
 
-    Asset        asset        = mAssetAndQuantityArrayList.get( 0 ).getUneditedAsset();
-    URL          maskURL      = mProduct.getMaskURL();
-    Bleed        maskBleed    = mProduct.getMaskBleed();
+    mEditableConsumerImageView.setImageKey( mAsset );
+    mEditableConsumerImageView.setMask( mProduct.getUserJourneyType().maskResourceId() );
 
-    mEditableConsumerImageView.setImageKey( asset );
-    mEditableConsumerImageView.setMaskExtras( maskURL, maskBleed );
-
-    AssetHelper.requestImage( mKiteActivity, asset, mEditableConsumerImageView );
-    imageManager.requestRemoteImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, maskURL, mEditableConsumerImageView );
+    AssetHelper.requestImage( mKiteActivity, mAsset, mEditableConsumerImageView );
 
 
     return ( view );
@@ -215,39 +186,13 @@ public class PhoneCaseFragment extends AEditImageFragment
 
   /*****************************************************
    *
-   * Called when an item in the options menu is selected.
+   * Called when the fragment is on top.
    *
    *****************************************************/
   @Override
-  public boolean onOptionsItemSelected( MenuItem item )
+  public void onTop()
     {
-    // See what menu item was selected
-
-    int itemId = item.getItemId();
-
-    if ( itemId == R.id.add_photo )
-      {
-      ///// Add photo /////
-
-      // TODO:
-
-      return ( true );
-      }
-
-
-    return ( super.onOptionsItemSelected( item ) );
-    }
-
-
-  /*****************************************************
-   *
-   * Called when the fragment is top-most.
-   *
-   *****************************************************/
-  @Override
-  protected void onTop()
-    {
-    if ( mProduct != null ) mKiteActivity.setTitle( mProduct.getName() );
+    mKiteActivity.setTitle( R.string.edit_image_title );
     }
 
 
@@ -255,21 +200,33 @@ public class PhoneCaseFragment extends AEditImageFragment
 
   /*****************************************************
    *
-   * Called when the Next button is clicked.
+   * Called when the cancel button is clicked.
    *
    *****************************************************/
-  @Override
-  protected void onConfirm()
+  protected void onCancel()
     {
-    Asset editedImageAsset = getEditedImageAsset();
-
-    if ( editedImageAsset == null ) return;
-
-
-    // Call back to the activity
     if ( mKiteActivity instanceof ICallback )
       {
-      ( (ICallback)mKiteActivity ).pcOnCreated( editedImageAsset );
+      ( (ICallback)mKiteActivity ).eiOnCancel();
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the confirm button is clicked.
+   *
+   *****************************************************/
+  protected void onConfirm()
+    {
+    Asset croppedImageAsset = getEditedImageAsset();
+
+    if ( croppedImageAsset == null ) return;
+
+
+    if ( mKiteActivity instanceof ICallback )
+      {
+      ((ICallback) mKiteActivity).eiOnConfirm( croppedImageAsset );
       }
     }
 
@@ -278,12 +235,13 @@ public class PhoneCaseFragment extends AEditImageFragment
 
   /*****************************************************
    *
-   * A callback interface.
+   * The callback interface.
    *
    *****************************************************/
   public interface ICallback
     {
-    public void pcOnCreated( Asset imageAsset );
+    public void eiOnCancel();
+    public void eiOnConfirm( Asset editedAsset );
     }
 
   }

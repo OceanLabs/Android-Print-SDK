@@ -184,10 +184,8 @@ public class AssetAndQuantityAdaptor extends BaseAdapter
         viewReferences.framedImageView.setBackgroundColor( 0xffffffff );
         viewReferences.framedImageView.setBorder( (int)mContext.getResources().getDimension( R.dimen.review_and_crop_rectangle_border ) );
         }
-      else if ( mUserJourneyType == UserJourneyType.CIRCLE )
-        {
-        viewReferences.framedImageView.setStencil( R.drawable.filled_white_circle );
-        }
+
+      viewReferences.framedImageView.setStencil( mUserJourneyType.maskResourceId() );
 
 
       view.setTag( viewReferences );
@@ -280,7 +278,7 @@ public class AssetAndQuantityAdaptor extends BaseAdapter
         {
         ///// Edit /////
 
-        // TODO
+        mListener.onEdit( this.assetIndex );
         }
       }
     }

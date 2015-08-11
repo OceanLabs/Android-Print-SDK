@@ -3,7 +3,8 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    android:background="@color/product_creation_background">
 
     <GridView
         android:id="@+id/image_source_grid_view"
@@ -31,6 +32,7 @@
             android:background="@color/image_selection_clear_photos_button_background"
             android:padding="20dp"
             android:gravity="center"
+            android:textColor="@color/image_selection_clear_photos_button_text"
             android:visibility="gone"/>
 
         <ProgressBar

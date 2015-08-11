@@ -39,6 +39,7 @@ package ly.kite.journey;
 
 ///// Import(s) /////
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -46,9 +47,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import java.util.ArrayList;
-
 import ly.kite.R;
+import ly.kite.product.Asset;
+import ly.kite.product.AssetHelper;
 import ly.kite.product.Product;
 import ly.kite.widget.EditableConsumerImageView;
 
@@ -57,8 +58,8 @@ import ly.kite.widget.EditableConsumerImageView;
 
 /*****************************************************
  *
- * This activity allows the user to create a phone
- * case design using an image.
+ * This is the parent of fragments that allow users to
+ * edit an image to fit within a mask.
  *
  *****************************************************/
 abstract public class AEditImageFragment extends AKiteFragment implements View.OnClickListener
@@ -92,7 +93,7 @@ abstract public class AEditImageFragment extends AKiteFragment implements View.O
   ////////// Constructor(s) //////////
 
 
-  ////////// Activity Method(s) //////////
+  ////////// AKiteFragment Method(s) //////////
 
   /*****************************************************
    *
@@ -213,6 +214,54 @@ abstract public class AEditImageFragment extends AKiteFragment implements View.O
    *
    *****************************************************/
   abstract protected void onConfirm();
+
+
+  /*****************************************************
+   *
+   * Gets the cropped image and creates a file-backed
+   * asset from it.
+   *
+   *****************************************************/
+  protected Asset getEditedImageAsset()
+    {
+    Bitmap editedImageBitmap = mEditableConsumerImageView.getEditableImageView().getImageCroppedToMask();
+
+
+    // Sometimes users can hit the next button before we've actually got all the images, so check
+    // for this.
+
+    if ( editedImageBitmap == null )
+      {
+      Log.w( LOG_TAG, "Cropped image not yet available" );
+
+      return ( null );
+      }
+
+
+    // Create the cropped image asset as a file. We always create file-backed assets within
+    // the SDK so we don't hit problems with transaction sizes when passing assets through
+    // intents.
+
+    Asset editedImageAsset = AssetHelper.createAsCachedFile( mKiteActivity, editedImageBitmap );
+
+    if ( editedImageAsset == null )
+      {
+      Log.e( LOG_TAG, "Could not create edited image asset" );
+
+      mKiteActivity.displayModalDialog(
+              R.string.alert_dialog_title_create_order,
+              R.string.alert_dialog_message_no_cropped_image_asset,
+              AKiteActivity.DONT_DISPLAY_BUTTON,
+              null,
+              R.string.Cancel,
+              null );
+
+      return ( null );
+      }
+
+
+    return ( editedImageAsset );
+    }
 
 
   ////////// Inner Class(es) //////////

@@ -39,6 +39,8 @@ package ly.kite.journey;
 
 ///// Import(s) /////
 
+import ly.kite.R;
+
 
 ///// Class Declaration /////
 
@@ -50,7 +52,7 @@ package ly.kite.journey;
  *****************************************************/
 public enum UserJourneyType
   {
-  CIRCLE
+  CIRCLE ( R.drawable.filled_white_circle )
           {
           public boolean editedImageCompatibleWith( UserJourneyType otherType )
             {
@@ -68,7 +70,7 @@ public enum UserJourneyType
   PHOTOBOOK,
   POSTCARD,
   POSTER,
-  RECTANGLE
+  RECTANGLE ( R.drawable.filled_white_rectangle )
           {
           public boolean editedImageCompatibleWith( UserJourneyType otherType )
             {
@@ -84,6 +86,7 @@ public enum UserJourneyType
 
   ////////// Member Variable(s) //////////
 
+  private int  mMaskResourceId;
 
   ////////// Static Initialiser(s) //////////
 
@@ -92,6 +95,17 @@ public enum UserJourneyType
 
 
   ////////// Constructor(s) //////////
+
+  private UserJourneyType( int maskResourceId )
+    {
+    mMaskResourceId = maskResourceId;
+    }
+
+
+  private UserJourneyType()
+    {
+    this( 0 );
+    }
 
 
   ////////// Method(s) //////////
@@ -108,6 +122,17 @@ public enum UserJourneyType
   public boolean editedImageCompatibleWith( UserJourneyType otherType )
     {
     return ( false );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the resource id of the mask.
+   *
+   *****************************************************/
+  public int maskResourceId()
+    {
+    return ( mMaskResourceId );
     }
 
 

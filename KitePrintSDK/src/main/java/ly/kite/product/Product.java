@@ -617,7 +617,7 @@ public class Product implements Parcelable, IGroupOrProduct
    *****************************************************/
   private class ShippingCostRelevanceComparator implements Comparator<SingleDestinationShippingCost>
     {
-    private static final boolean DEBUG_COMPARISONS = true;
+    private static final boolean DEBUG_COMPARISONS = false;
 
 
     private Country  mCountry;

@@ -44,6 +44,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,6 +58,7 @@ import ly.kite.journey.UserJourneyType;
 import ly.kite.product.Asset;
 import ly.kite.product.AssetHelper;
 import ly.kite.product.Product;
+import ly.kite.util.ImageCache;
 import ly.kite.widget.CheckableImageView;
 
 import ly.kite.R;
@@ -95,6 +97,8 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
   private UserJourneyType              mUserJourneyType;
   private IOnImageCheckChangeListener  mListener;
 
+  private ImageCache                   mImageCache;
+
   private int                          mScaledImageWidthInPixels;
   private LayoutInflater               mLayoutInflator;
   private int                          mPlaceholderBackgroundColour1;
@@ -119,11 +123,13 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
     mUserJourneyType          = product.getUserJourneyType();
     mListener                 = listener;
 
+    mImageCache               = new ImageCache( IMAGE_CACHE_CAPACITY_IN_BYTES );
+
     mLayoutInflator           = LayoutInflater.from( context );
 
     Resources resources = context.getResources();
 
-    mScaledImageWidthInPixels     = resources.getDimensionPixelSize( R.dimen.image_thumbnail_size );
+    mScaledImageWidthInPixels     = resources.getDimensionPixelSize( R.dimen.image_selection_thumbnail_size );
 
     mPlaceholderBackgroundColour1 = resources.getColor( R.color.image_selection_placeholder_background_1 );
     mPlaceholderBackgroundColour2 = resources.getColor( R.color.image_selection_placeholder_background_2 );
@@ -288,13 +294,27 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
 
       case IMAGE:
 
-        // Clear any image that is currently set, then request a new one.
-
         Asset editedAsset = item.assetsAndQuantity.getEditedAsset();
 
-        viewHolder.checkableImageView.clearForNewImage( editedAsset );
 
-        AssetHelper.requestImage( mContext, editedAsset, null, mScaledImageWidthInPixels, viewHolder.checkableImageView );
+        // See if the image is already stored in the cache
+
+        Bitmap editedImageBitmap = mImageCache.getImage( editedAsset );
+
+        if ( editedImageBitmap != null )
+          {
+          viewHolder.checkableImageView.setImageBitmap( editedImageBitmap );
+          }
+        else
+          {
+          // Make a request for a new image
+
+          viewHolder.checkableImageView.clearForNewImage( editedAsset );
+
+          mImageCache.addPendingImage( editedAsset, viewHolder.checkableImageView );
+
+          AssetHelper.requestImage( mContext, editedAsset, null, mScaledImageWidthInPixels, mImageCache );
+          }
 
 
         // See if the image is checked

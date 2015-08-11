@@ -46,13 +46,13 @@
     <dimen name="cta_button_height">50dp</dimen>
 
     <item name="image_selection_image_aspect_ratio" type="dimen" format="float">1.0</item>
+    <dimen name="image_selection_thumbnail_size">360px</dimen>
+
     <dimen name="image_check_size">28dp</dimen>
 
     <item name="review_and_crop_image_aspect_ratio" type="dimen" format="float">1.0</item>
     <dimen name="review_and_crop_quantity_text_size">18sp</dimen>
     <dimen name="review_and_crop_plus_minus_text_size">28sp</dimen>
     <dimen name="review_and_crop_rectangle_border">20dp</dimen>
-
-    <dimen name="image_thumbnail_size">360px</dimen>
 
 </resources>

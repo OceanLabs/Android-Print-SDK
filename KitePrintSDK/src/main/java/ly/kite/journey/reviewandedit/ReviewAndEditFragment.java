@@ -46,6 +46,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.GridView;
 
 import java.util.ArrayList;
@@ -53,6 +54,7 @@ import java.util.ArrayList;
 import ly.kite.R;
 import ly.kite.journey.AProductCreationFragment;
 import ly.kite.journey.AssetsAndQuantity;
+import ly.kite.product.Asset;
 import ly.kite.product.Product;
 
 /*****************************************************
@@ -61,7 +63,8 @@ import ly.kite.product.Product;
  * for images.
  *
  *****************************************************/
-public class ReviewAndEditFragment extends AProductCreationFragment implements AssetAndQuantityAdaptor.IListener
+public class ReviewAndEditFragment extends AProductCreationFragment implements AssetAndQuantityAdaptor.IListener,
+                                                                               View.OnClickListener
   {
   ////////// Static Constant(s) //////////
 
@@ -75,6 +78,8 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
   ////////// Member Variable(s) //////////
 
   private GridView                     mGridView;
+  private Button                       mProceedOverlayButton;
+
   private AssetAndQuantityAdaptor      mAssetAndQuantityAdaptor;
 
 
@@ -95,7 +100,7 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
 
     Bundle arguments = new Bundle();
     arguments.putParcelableArrayList( BUNDLE_KEY_ASSETS_AND_QUANTITY_LIST, assetsAndQuantityArrayList );
-    arguments.putParcelable         ( BUNDLE_KEY_PRODUCT,                  product );
+    arguments.putParcelable( BUNDLE_KEY_PRODUCT, product );
 
     fragment.setArguments( arguments );
 
@@ -141,12 +146,18 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
     {
     View view = layoutInflator.inflate( R.layout.screen_review_and_edit, container, false );
 
-    mGridView = (GridView)view.findViewById( R.id.grid_view );
+    mGridView             = (GridView)view.findViewById( R.id.grid_view );
+    mProceedOverlayButton = (Button)view.findViewById( R.id.proceed_overlay_button );
 
 
     // Create and set the adaptor
     mAssetAndQuantityAdaptor = new AssetAndQuantityAdaptor( mKiteActivity, mAssetsAndQuantityArrayList, mProduct.getUserJourneyType(), this );
     mGridView.setAdapter( mAssetAndQuantityAdaptor );
+
+
+    mProceedOverlayButton.setText( R.string.review_and_edit_proceed_button_text );
+
+    mProceedOverlayButton.setOnClickListener( this );
 
 
     return ( view );
@@ -200,9 +211,34 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
   @Override
   public void onEdit( int assetIndex )
     {
-    // Launch the edit screen
+    // Launch the edit screen for the chosen asset
 
-    // TODO
+    if ( mKiteActivity instanceof ICallback )
+      {
+      ( (ICallback)mKiteActivity ).reOnEdit( assetIndex );
+      }
+    }
+
+
+  ////////// View.OnClickListener Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when a view is clicked.
+   *
+   *****************************************************/
+  @Override
+  public void onClick( View view )
+    {
+    if ( view == mProceedOverlayButton )
+      {
+      ///// Confirm /////
+
+      if ( mKiteActivity instanceof ICallback )
+        {
+        ( (ICallback)mKiteActivity ).reOnConfirm();
+        }
+      }
     }
 
 
@@ -228,11 +264,36 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
     int quantityPerPack = mProduct.getQuantityPerSheet();
     int numberOfPacks   = ( numberOfImages + ( quantityPerPack - 1 ) ) / quantityPerPack;
 
-    mKiteActivity.setTitle( getString( R.string.review_and_crop_title_format_string, numberOfImages, ( numberOfPacks * quantityPerPack ) ) );
+    mKiteActivity.setTitle( getString( R.string.review_and_edit_title_format_string, numberOfImages, ( numberOfPacks * quantityPerPack ) ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Updates the assets and quantity.
+   *
+   *****************************************************/
+  public void onAssetUpdated( int assetIndex, AssetsAndQuantity assetsAndQuantity )
+    {
+    mAssetsAndQuantityArrayList.set( assetIndex, assetsAndQuantity );
+
+    mAssetAndQuantityAdaptor.notifyDataSetInvalidated();
     }
 
 
   ////////// Inner Class(es) //////////
+
+  /*****************************************************
+   *
+   * The callback interface.
+   *
+   *****************************************************/
+  public interface ICallback
+    {
+    public void reOnEdit( int assetIndex );
+    public void reOnConfirm();
+    }
+
 
   /*****************************************************
    *

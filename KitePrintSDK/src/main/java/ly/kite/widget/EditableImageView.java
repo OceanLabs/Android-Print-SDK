@@ -48,6 +48,8 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
@@ -82,6 +84,8 @@ public class EditableImageView extends View implements GestureDetector.OnGesture
 
   private static final long   FLY_BACK_ANIMATION_DURATION_MILLIS = 150L;
 
+  private static final int    OPAQUE_WHITE                       = 0xffffffff;
+
 
   ////////// Static Variable(s) //////////
 
@@ -92,14 +96,15 @@ public class EditableImageView extends View implements GestureDetector.OnGesture
   private int                   mViewHeight;
   private float                 mViewAspectRatio;
 
-  private Bitmap                mMaskBitmap;
+  //private Bitmap                mMaskBitmap;
+  private Drawable              mMaskDrawable;
   private Bleed                 mMaskBleed;
   private Rect                  mMaskToBlendSourceRect;
 
   private Bitmap                mImageBitmap;
   private Rect                  mImageToBlendSourceRect;
 
-  private RectF                 mMaskToBlendTargetRect;
+  private Rect                  mMaskToBlendTargetRect;
   private RectF                 mImageToBlendTargetRectF;
 
   private Rect                  mBlendToViewSourceRect;
@@ -109,8 +114,6 @@ public class EditableImageView extends View implements GestureDetector.OnGesture
   private float                 mImageScaleFactor;
   private float                 mImageMaxScaleFactor;
 
-  private Paint                 mBlendBackgroundPaint;
-  private Paint                 mMaskToBlendPaint;
   private Paint                 mImageToBlendPaint;
   private Paint                 mBlendToViewPaint;
 
@@ -200,10 +203,13 @@ public class EditableImageView extends View implements GestureDetector.OnGesture
       // We don't need to clear the canvas since we are always drawing the mask in the same place
 
       // Draw white where the mask will be (which may be smaller than the blend area if there is a bleed).
-      mBlendCanvas.drawRect( mMaskToBlendTargetRect, mBlendBackgroundPaint );
+      //mBlendCanvas.drawRect( mMaskToBlendTargetRect, mBlendBackgroundPaint );
 
-      // Blend the mask with the white, using the mask alpha and the white colour
-      mBlendCanvas.drawBitmap( mMaskBitmap, mMaskToBlendSourceRect, mMaskToBlendTargetRect, mMaskToBlendPaint );
+      // Draw the mask, but apply a colour filter so that it is always white, but using the
+      // mask's alpha.
+      mMaskDrawable.setColorFilter( OPAQUE_WHITE, PorterDuff.Mode.SRC_ATOP );
+      mMaskDrawable.setBounds( mMaskToBlendTargetRect );
+      mMaskDrawable.draw( mBlendCanvas );
 
       // Blend the image with the white mask
       if ( mImageToBlendTargetRectF != null )
@@ -317,13 +323,14 @@ public class EditableImageView extends View implements GestureDetector.OnGesture
   @Override
   public void onLongPress( MotionEvent e )
     {
-
+    // Ignore
     }
 
   @Override
   public boolean onFling( MotionEvent e1, MotionEvent e2, float velocityX, float velocityY )
     {
-    return false;
+    // Ignore
+    return ( false );
     }
 
 
@@ -390,23 +397,12 @@ public class EditableImageView extends View implements GestureDetector.OnGesture
    *****************************************************/
   private void initialise( Context context )
     {
-    mBlendBackgroundPaint = new Paint();
-    mBlendBackgroundPaint.setColor( 0xffffffff );
-
-    mMaskToBlendPaint = new Paint();
-    mMaskToBlendPaint.setXfermode( new PorterDuffXfermode( PorterDuff.Mode.DST_ATOP ) );
-    mMaskToBlendPaint.setAntiAlias( true );
-    mMaskToBlendPaint.setFilterBitmap( true );
-    //mMaskToBlendPaint.setDither( true );
-
     mImageToBlendPaint = new Paint();
     mImageToBlendPaint.setXfermode( new PorterDuffXfermode( PorterDuff.Mode.SRC_ATOP ) );
     mImageToBlendPaint.setAntiAlias( true );
     mImageToBlendPaint.setFilterBitmap( true );
-    //mImageToBlendPaint.setDither( true );
 
     mBlendToViewPaint = new Paint();
-    //mBlendToViewPaint.setXfermode( new PorterDuffXfermode( PorterDuff.Mode.SRC_OVER ) );
 
     // Monitor both panning and zooming
     mGestureDetector      = new GestureDetector( context, this );
@@ -447,7 +443,8 @@ public class EditableImageView extends View implements GestureDetector.OnGesture
    *****************************************************/
   public void setMask( Bitmap bitmap, Bleed bleed )
     {
-    mMaskBitmap = bitmap;
+    //mMaskBitmap = bitmap;
+    mMaskDrawable = new BitmapDrawable( bitmap );
     mMaskBleed  = bleed;
 
     calculateSizes();
@@ -458,12 +455,20 @@ public class EditableImageView extends View implements GestureDetector.OnGesture
 
   /*****************************************************
    *
-   * Returns the mask bitmap.
+   * Sets the mask as a drawable resource id.
    *
    *****************************************************/
-  public Bitmap getMaskBitmap()
+  public void setMask( int drawableResourceId )
     {
-    return ( mMaskBitmap );
+    // Create a drawable from the resource
+    mMaskDrawable = getResources().getDrawable( drawableResourceId );
+
+    // Create a dummy mask of zero size
+    mMaskBleed = new Bleed( 0, 0, 0, 0 );
+
+    calculateSizes();
+
+    invalidate();
     }
 
 
@@ -497,7 +502,7 @@ public class EditableImageView extends View implements GestureDetector.OnGesture
     {
     // See if we have enough to calculate the sizes
 
-    if ( mMaskBitmap      == null ||
+    if ( mMaskDrawable    == null ||
          mMaskBleed       == null ||
          mViewAspectRatio  < FLOAT_ZERO_THRESHOLD ) return;
 
@@ -511,8 +516,8 @@ public class EditableImageView extends View implements GestureDetector.OnGesture
     // The mask will therefore be the same size as, or smaller (if there is a bleed) than, the
     // blend canvas.
 
-    int unscaledMaskWidth           = mMaskBitmap.getWidth();
-    int unscaledMaskHeight          = mMaskBitmap.getHeight();
+    int unscaledMaskWidth           = mMaskDrawable.getIntrinsicWidth();
+    int unscaledMaskHeight          = mMaskDrawable.getIntrinsicHeight();
 
     int unscaledMaskPlusBleedWidth  = mMaskBleed.leftPixels + unscaledMaskWidth  + mMaskBleed.rightPixels;
     int unscaledMaskPlusBleedHeight = mMaskBleed.topPixels  + unscaledMaskHeight + mMaskBleed.bottomPixels;
@@ -552,7 +557,7 @@ public class EditableImageView extends View implements GestureDetector.OnGesture
 
 
     mMaskToBlendSourceRect = new Rect( 0, 0, unscaledMaskWidth, unscaledMaskHeight );
-    mMaskToBlendTargetRect = new RectF(
+    mMaskToBlendTargetRect = new Rect(
             Math.round( halfBlendWidth - halfScaledMaskWidth ),
             Math.round( halfBlendHeight - halfScaledMaskHeight ),
             Math.round( halfBlendWidth + halfScaledMaskWidth ),
@@ -618,9 +623,9 @@ public class EditableImageView extends View implements GestureDetector.OnGesture
    * Returns true if we have both bitmaps, false otherwise.
    *
    *****************************************************/
-  public boolean bothBitmapsAvailable()
+  public boolean bothImagesAvailable()
     {
-    return ( mImageBitmap != null && mMaskBitmap != null );
+    return ( mImageBitmap != null && mMaskDrawable != null );
     }
 
 

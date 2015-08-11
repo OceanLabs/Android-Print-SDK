@@ -40,7 +40,6 @@ package ly.kite.journey.imageselection;
 ///// Import(s) /////
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -62,6 +61,8 @@ import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 
+import ly.kite.journey.AKiteActivity;
+import ly.kite.journey.AKiteFragment;
 import ly.kite.journey.AProductCreationFragment;
 import ly.kite.product.Asset;
 import ly.kite.journey.AssetsAndQuantity;
@@ -92,8 +93,6 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
   public  static final String      TAG                                             = "ImageSelectionFragment";
 
   public  static final String      BUNDLE_KEY_ASSET_IS_CHECKED_ARRAY               = "assetIsCheckedArray";
-
-  private static final int         REQUEST_CODE_SELECT_IMAGE                       = 10;
 
   private static final long        CLEAR_PHOTOS_BUTTON_ANIMATION_DURATION_MILLIS   = 300L;
   private static final long        PROCEED_BUTTON_BUTTON_ANIMATION_DURATION_MILLIS = CLEAR_PHOTOS_BUTTON_ANIMATION_DURATION_MILLIS;
@@ -221,26 +220,6 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     if ( ! productIsValid() ) return;
 
 
-    // We need to create a set of initial edited images - which are basically cropped
-    // to a square. We need to do these on a background thread, but We also need to make
-    // sure that we can't go further until all of them have been completed.
-
-    mUneditedAssetsRemaining = 0;
-
-    for ( AssetsAndQuantity assetsAndQuantity : mAssetsAndQuantityArrayList )
-      {
-      // Check that we don't already have a compatible edited asset
-      if ( ! mProduct.getUserJourneyType().editedImageCompatibleWith( assetsAndQuantity.getEditedFor() ) )
-        {
-        mUneditedAssetsRemaining ++;
-
-        AssetImageToSquareCropper cropper = new AssetImageToSquareCropper( assetsAndQuantity );
-
-        AssetHelper.requestImage( mKiteActivity, assetsAndQuantity.getUneditedAsset(), cropper, 0, cropper );
-        }
-      }
-
-
     // If we don't have a valid "is checked" list - create a new one with all the images checked.
 
     mUncheckedImagesCount = 0;
@@ -313,7 +292,27 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
       }
 
 
-    mProceedOverlayButton.setText( R.string.image_selection_review_button_text );
+    mProceedOverlayButton.setText( R.string.image_selection_proceed_button_text );
+
+
+    // We need to create a set of initial edited images - which are basically cropped
+    // to a square. We need to do these on a background thread, but We also need to make
+    // sure that we can't go further until all of them have been completed.
+
+    mUneditedAssetsRemaining = 0;
+
+    for ( AssetsAndQuantity assetsAndQuantity : mAssetsAndQuantityArrayList )
+      {
+      // Check that we don't already have a compatible edited asset
+      if ( ! mProduct.getUserJourneyType().editedImageCompatibleWith( assetsAndQuantity.getEditedFor() ) )
+        {
+        mUneditedAssetsRemaining ++;
+
+        AssetImageToSquareCropper cropper = new AssetImageToSquareCropper( assetsAndQuantity );
+
+        AssetHelper.requestImage( mKiteActivity, assetsAndQuantity.getUneditedAsset(), cropper, 0, cropper );
+        }
+      }
 
 
     // We don't set up the recycler view or enable the proceed button until all
@@ -379,17 +378,19 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
    *
    *****************************************************/
   @Override
-  public void onActivityResult( int requestCode, int resultCode, Intent data )
+  public void onActivityResult( int requestCode, int resultCode, Intent returnedIntent )
     {
-    super.onActivityResult( requestCode, resultCode, data );
+    super.onActivityResult( requestCode, resultCode, returnedIntent );
 
-    if ( requestCode == REQUEST_CODE_SELECT_IMAGE && resultCode == Activity.RESULT_OK )
+Log.d( TAG, "onActivityResult( requestCode = " + requestCode + ", resultCode = " + resultCode + ", returnedIndex = " + returnedIntent + " )" );
+
+    if ( requestCode == AKiteActivity.ACTIVITY_REQUEST_CODE_SELECT_IMAGE && resultCode == Activity.RESULT_OK )
       {
       // We don't allow duplicate images, so first check that the asset isn't already in
       // our list. Note that we don't check that the image is the same but come from
       // different sources.
 
-      Uri newImageUri = data.getData();
+      Uri newImageUri = returnedIntent.getData();
 
       Asset newAsset = new Asset( newImageUri );
 
@@ -485,7 +486,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
       ImageSource imageSource = (ImageSource)mImageSourceGridView.getItemAtPosition( position );
 
-      imageSource.onClick( this, REQUEST_CODE_SELECT_IMAGE );
+      imageSource.onClick( this, AKiteActivity.ACTIVITY_REQUEST_CODE_SELECT_IMAGE );
       }
     }
 
@@ -751,6 +752,22 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
     mProceedOverlayButton.startAnimation( animation );
     }
+
+
+  /*****************************************************
+   *
+   * Updates the assets and quantity.
+   *
+   *****************************************************/
+  public void onAssetUpdated( int assetIndex, AssetsAndQuantity assetsAndQuantity )
+    {
+    mAssetsAndQuantityArrayList.set( assetIndex, assetsAndQuantity );
+
+    // We don't need to request any cropped image because it is the edited asset
+    // that has been updated. So just updated the recycler view.
+    setUpRecyclerView();
+    }
+
 
 
   ////////// Inner Class(es) //////////

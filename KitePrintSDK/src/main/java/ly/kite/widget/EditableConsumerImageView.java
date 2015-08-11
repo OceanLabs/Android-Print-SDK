@@ -76,12 +76,12 @@ public class EditableConsumerImageView extends FrameLayout implements IImageCons
 
   ////////// Member Variable(s) //////////
 
-  private EditableImageView mMaskedImageView;
-  private ProgressBar      mProgressBar;
+  private EditableImageView mEditableImageView;
+  private ProgressBar       mProgressBar;
 
-  private Object           mImageKey;
-  private Object           mMaskKey;
-  private Bleed            mMaskBleed;
+  private Object            mImageKey;
+  private Object            mMaskKey;
+  private Bleed             mMaskBleed;
 
 
   ////////// Static Initialiser(s) //////////
@@ -144,13 +144,13 @@ public class EditableConsumerImageView extends FrameLayout implements IImageCons
   @Override
   public void onImageAvailable( Object key, Bitmap bitmap )
     {
-    if ( key == mImageKey ) mMaskedImageView.setImageBitmap( bitmap );
-    if ( key == mMaskKey  ) mMaskedImageView.setMask( bitmap, mMaskBleed );
+    if ( key == mImageKey ) mEditableImageView.setImageBitmap( bitmap );
+    if ( key == mMaskKey  ) mEditableImageView.setMask( bitmap, mMaskBleed );
 
 
     // If both images have been downloaded - remove the progress spinner
 
-    if ( mMaskedImageView.bothBitmapsAvailable() )
+    if ( mEditableImageView.bothImagesAvailable() )
       {
       mProgressBar.setVisibility( View.GONE );
       }
@@ -170,7 +170,7 @@ public class EditableConsumerImageView extends FrameLayout implements IImageCons
 
     View view = layoutInflater.inflate( R.layout.editable_consumer_image_view, this, true );
 
-    mMaskedImageView = (EditableImageView)view.findViewById( R.id.editable_image_view );
+    mEditableImageView = (EditableImageView)view.findViewById( R.id.editable_image_view );
     mProgressBar     = (ProgressBar)view.findViewById( R.id.progress_bar );
     }
 
@@ -188,10 +188,21 @@ public class EditableConsumerImageView extends FrameLayout implements IImageCons
 
   /*****************************************************
    *
+   * Sets the mask as a drawable resource.
+   *
+   *****************************************************/
+  public void setMask( int resourceId )
+    {
+    mEditableImageView.setMask( resourceId );
+    }
+
+
+  /*****************************************************
+   *
    * Sets the request key and bleed for the mask.
    *
    *****************************************************/
-  public void setMaskDetails( Object key, Bleed maskBleed )
+  public void setMaskExtras( Object key, Bleed maskBleed )
     {
     mMaskKey   = key;
     mMaskBleed = maskBleed;
@@ -203,9 +214,9 @@ public class EditableConsumerImageView extends FrameLayout implements IImageCons
    * Returns the masked image view.
    *
    *****************************************************/
-  public EditableImageView getMaskedImageView()
+  public EditableImageView getEditableImageView()
     {
-    return ( mMaskedImageView );
+    return ( mEditableImageView );
     }
 
 

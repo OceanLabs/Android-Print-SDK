@@ -53,6 +53,7 @@ import ly.kite.analytics.Analytics;
 import ly.kite.checkout.CheckoutActivity;
 import ly.kite.journey.imageselection.ImageSelectionFragment;
 import ly.kite.journey.phonecase.PhoneCaseFragment;
+import ly.kite.journey.reviewandedit.EditImageFragment;
 import ly.kite.journey.reviewandedit.ReviewAndEditFragment;
 import ly.kite.product.Asset;
 import ly.kite.product.PrintJob;
@@ -69,7 +70,9 @@ import ly.kite.product.Product;
  *
  *****************************************************/
 public class ProductCreationActivity extends AKiteActivity implements PhoneCaseFragment.ICallback,
-                                                                      ImageSelectionFragment.ICallback
+                                                                      ImageSelectionFragment.ICallback,
+                                                                      ReviewAndEditFragment.ICallback,
+                                                                      EditImageFragment.ICallback
 
   {
   ////////// Static Constant(s) //////////
@@ -92,10 +95,13 @@ public class ProductCreationActivity extends AKiteActivity implements PhoneCaseF
   private Product                       mProduct;
 
 
-  private PhoneCaseFragment             mPhoneCaseFragment;
+//  private PhoneCaseFragment             mPhoneCaseFragment;
+//
+//  private ImageSelectionFragment        mImageSelectionFragment;
+//  private ReviewAndEditFragment         mReviewAndEditFragment;
+//  private EditImageFragment             mEditImageFragment;
 
-  private ImageSelectionFragment        mImageSelectionFragment;
-  private ReviewAndEditFragment mReviewAndCropFragment;
+  private int                           mLastEditedAssetIndex;
 
 
   ////////// Static Initialiser(s) //////////
@@ -241,7 +247,7 @@ public class ProductCreationActivity extends AKiteActivity implements PhoneCaseF
     }
 
 
-  // TODO: We need a way to pass an updated assets + quantity list back to the
+  // TODO: We need to pass an updated assets + quantity list back to the
   // TODO: calling activity.
 
 
@@ -253,16 +259,16 @@ public class ProductCreationActivity extends AKiteActivity implements PhoneCaseF
    *
    *****************************************************/
   @Override
-  public void pcOnCreated( Product product, Asset imageAsset )
+  public void pcOnCreated( Asset imageAsset )
     {
     // Create the print order
 
     PrintOrder printOrder = new PrintOrder();
 
-    printOrder.addPrintJob( PrintJob.createPrintJob( product, imageAsset ) );
+    printOrder.addPrintJob( PrintJob.createPrintJob( mProduct, imageAsset ) );
 
 
-    // Start the check out activity
+    // Start the check-out activity
     CheckoutActivity.start( this, printOrder, ACTIVITY_REQUEST_CODE_CHECKOUT );
     }
 
@@ -282,9 +288,112 @@ public class ProductCreationActivity extends AKiteActivity implements PhoneCaseF
     // contain cropped assets that we need.
     mAssetsAndQuantityArrayList = assetsAndQuantityList;
 
-    mReviewAndCropFragment = ReviewAndEditFragment.newInstance( mAssetsAndQuantityArrayList, mProduct );
+    ReviewAndEditFragment reviewAndEditFragment = ReviewAndEditFragment.newInstance( mAssetsAndQuantityArrayList, mProduct );
 
-    addFragment( mReviewAndCropFragment, ReviewAndEditFragment.TAG );
+    addFragment( reviewAndEditFragment, ReviewAndEditFragment.TAG );
+    }
+
+
+  ////////// ReviewAndEditFragment.ICallback Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when an asset image is to be edited.
+   *
+   *****************************************************/
+  @Override
+  public void reOnEdit( int assetIndex )
+    {
+    // Start the edit fragment
+
+    EditImageFragment editImageFragment = EditImageFragment.newInstance( mAssetsAndQuantityArrayList.get( assetIndex ).getUneditedAsset(), mProduct );
+
+    addFragment( editImageFragment, EditImageFragment.TAG );
+
+    mLastEditedAssetIndex = assetIndex;
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the confirm button is clicked.
+   *
+   *****************************************************/
+  public void reOnConfirm()
+    {
+    // In order to create a print job, we need to create a list of assets. Assets are listed
+    // as many times as their quantity - so if an asset has a quantity of 3, we include it 3
+    // times.
+
+    ArrayList<Asset> assetArrayList = new ArrayList<>();
+
+    for ( AssetsAndQuantity assetsAndQuantity : mAssetsAndQuantityArrayList )
+      {
+      for ( int index = 0; index < assetsAndQuantity.getQuantity(); index ++ )
+        {
+        assetArrayList.add( assetsAndQuantity.getEditedAsset() );
+        }
+      }
+
+
+    // Create the print order
+
+    PrintOrder printOrder = new PrintOrder();
+
+    printOrder.addPrintJob( PrintJob.createPrintJob( mProduct, assetArrayList ) );
+
+
+    // Start the check-out activity
+    CheckoutActivity.start( this, printOrder, ACTIVITY_REQUEST_CODE_CHECKOUT );
+    }
+
+
+  ////////// EditImageFragment.ICallback Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when the cancel button is clicked.
+   *
+   *****************************************************/
+  @Override
+  public void eiOnCancel()
+    {
+    // Remove the top (edit image) fragment
+    popFragment();
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the OK button is clicked.
+   *
+   *****************************************************/
+  @Override
+  public void eiOnConfirm( Asset editedAsset )
+    {
+    // Replace the edited asset with the new one
+    
+    AssetsAndQuantity assetsAndQuantity = mAssetsAndQuantityArrayList.get( mLastEditedAssetIndex );
+
+    assetsAndQuantity.setEditedAsset( editedAsset, mProduct.getUserJourneyType() );
+
+
+    // Remove the edit image fragment from the back stack
+    popFragment();
+
+
+    // Notify the review and edit fragment
+
+    ReviewAndEditFragment reviewAndEditFragment = (ReviewAndEditFragment)mFragmentManager.findFragmentByTag( ReviewAndEditFragment.TAG );
+
+    if ( reviewAndEditFragment != null ) reviewAndEditFragment.onAssetUpdated( mLastEditedAssetIndex, assetsAndQuantity );
+
+
+    // Notify the image selection fragment
+
+    ImageSelectionFragment imageSelectionFragment = (ImageSelectionFragment)mFragmentManager.findFragmentByTag( ImageSelectionFragment.TAG );
+
+    imageSelectionFragment.onAssetUpdated( mLastEditedAssetIndex, assetsAndQuantity );
     }
 
 
@@ -301,15 +410,15 @@ public class ProductCreationActivity extends AKiteActivity implements PhoneCaseF
     switch ( mProduct.getUserJourneyType() )
       {
       case CIRCLE:
-        addFragment( mImageSelectionFragment = ImageSelectionFragment.newInstance( mAssetsAndQuantityArrayList, mProduct ), ImageSelectionFragment.TAG );
+        addFragment( ImageSelectionFragment.newInstance( mAssetsAndQuantityArrayList, mProduct ), ImageSelectionFragment.TAG );
         break;
 
       case PHONE_CASE:
-        addFragment( mPhoneCaseFragment = PhoneCaseFragment.newInstance( mAssetsAndQuantityArrayList, mProduct ), PhoneCaseFragment.TAG );
+        addFragment( PhoneCaseFragment.newInstance( mAssetsAndQuantityArrayList, mProduct ), PhoneCaseFragment.TAG );
         break;
 
       case RECTANGLE:
-        addFragment( mImageSelectionFragment = ImageSelectionFragment.newInstance( mAssetsAndQuantityArrayList, mProduct ), ImageSelectionFragment.TAG );
+        addFragment( ImageSelectionFragment.newInstance( mAssetsAndQuantityArrayList, mProduct ), ImageSelectionFragment.TAG );
         break;
       }
 

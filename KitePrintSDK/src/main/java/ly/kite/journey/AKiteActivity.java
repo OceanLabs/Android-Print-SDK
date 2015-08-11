@@ -78,8 +78,10 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
   public    static final String  IMAGE_CLASS_STRING_PRODUCT_ITEM             = "product_item";
 
-  protected static final int     ACTIVITY_REQUEST_CODE_CHECKOUT              = 1;
-  protected static final int     ACTIVITY_REQUEST_CODE_CREATE                = 2;
+  public    static final int     ACTIVITY_REQUEST_CODE_CHECKOUT              = 10;
+  public    static final int     ACTIVITY_REQUEST_CODE_CREATE                = 11;
+  public    static final int     ACTIVITY_REQUEST_CODE_SELECT_IMAGE          = 12;
+
 
 
   ////////// Static Variable(s) //////////
@@ -91,7 +93,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
   private   Dialog            mDialog;
 
-  private   FragmentManager   mFragmentManager;
+  protected FragmentManager   mFragmentManager;
 
   protected AKiteFragment     mCurrentFragment;
 
@@ -443,6 +445,17 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   private void determineCurrentFragment()
     {
     determineCurrentFragment( mFragmentManager.getBackStackEntryCount() );
+    }
+
+
+  /*****************************************************
+   *
+   * Removes a fragment.
+   *
+   *****************************************************/
+  protected void popFragment()
+    {
+    mFragmentManager.popBackStack();
     }
 
 

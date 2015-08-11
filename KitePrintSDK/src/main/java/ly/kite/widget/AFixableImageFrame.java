@@ -165,7 +165,7 @@ abstract public class AFixableImageFrame extends FrameLayout implements IImageCo
 
   /*****************************************************
    *
-   * Called when an image is downloading.
+   * Called when the image is downloading.
    *
    *****************************************************/
   @Override
@@ -175,6 +175,11 @@ abstract public class AFixableImageFrame extends FrameLayout implements IImageCo
     }
 
 
+  /*****************************************************
+   *
+   * Called when the image is available.
+   *
+   *****************************************************/
   @Override
   public void onImageAvailable( Object key, Bitmap bitmap )
     {
@@ -240,6 +245,17 @@ abstract public class AFixableImageFrame extends FrameLayout implements IImageCo
   public void setAspectRatio( float aspectRatio )
     {
     mWidthToHeightMultiplier = 1.0f / aspectRatio;
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the image bitmap.
+   *
+   *****************************************************/
+  public void setImageBitmap( Bitmap bitmap )
+    {
+    mImageView.setImageBitmap( bitmap );
     }
 
 
