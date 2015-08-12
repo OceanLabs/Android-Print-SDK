@@ -105,6 +105,15 @@
 
     <string name="edit_image_title">Edit image</string>
 
+    <string name="shipping_delivery_address_button_text">Choose Delivery Address</string>
+    <string name="shipping_email_hint_text">Email</string>
+    <string name="shipping_phone_hint_text">Phone number</string>
+    <string name="shipping_email_reason">Your email is required so that we can send you order confirmation updates</string>
+    <string name="shipping_phone_reason">Your phone number is required in case there are any delivery issues</string>
+
+    <string name="powered_by">Powered by Kite.ly</string>
+
+
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>

@@ -69,7 +69,7 @@ import ly.kite.product.Product;
 import ly.kite.product.SingleUnitSize;
 import ly.kite.product.UnitOfLength;
 import ly.kite.product.ProductImageAdaptor;
-import ly.kite.product.SingleCurrencyCost;
+import ly.kite.product.SingleCurrencyAmount;
 import ly.kite.product.SingleDestinationShippingCost;
 import ly.kite.widget.BellInterpolator;
 import ly.kite.widget.PagingDots;
@@ -316,7 +316,7 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
 
     Locale locale = Locale.getDefault();
 
-    SingleCurrencyCost cost = mProduct.getCostWithFallback( locale );
+    SingleCurrencyAmount cost = mProduct.getCostWithFallback( locale );
 
     if ( cost != null ) priceTextView.setText( cost.getDisplayAmountForLocale( locale ) );
 
@@ -374,7 +374,7 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
 
       // Get the cost in the default currency for the locale, and format the amount.
 
-      cost = singleDestinationShippingCost.getCost().getDefaultCostWithFallback();
+      cost = singleDestinationShippingCost.getCost().getDefaultAmountWithFallback();
 
       if ( cost != null )
         {

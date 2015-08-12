@@ -104,7 +104,7 @@ public class Product implements Parcelable, IGroupOrProduct
   private UserJourneyType                   mUserJourneyType;
   private int                               mQuantityPerSheet;
 
-  private MultipleCurrencyCost              mCost;
+  private MultipleCurrencyAmount mCost;
   private MultipleDestinationShippingCosts  mShippingCosts;
   private URL                               mHeroImageURL;
   private int                               mLabelColour;
@@ -146,7 +146,7 @@ public class Product implements Parcelable, IGroupOrProduct
     mUserJourneyType  = (userJourneyString != null ? UserJourneyType.valueOf( userJourneyString ) : null);
 
     mQuantityPerSheet = sourceParcel.readInt();
-    mCost             = (MultipleCurrencyCost) sourceParcel.readParcelable( MultipleCurrencyCost.class.getClassLoader() );
+    mCost             = (MultipleCurrencyAmount) sourceParcel.readParcelable( MultipleCurrencyAmount.class.getClassLoader() );
     mShippingCosts    = (MultipleDestinationShippingCosts) sourceParcel.readParcelable( MultipleDestinationShippingCosts.class.getClassLoader() );
     mHeroImageURL     = (URL) sourceParcel.readSerializable();
     mLabelColour      = sourceParcel.readInt();
@@ -322,7 +322,7 @@ public class Product implements Parcelable, IGroupOrProduct
    * Sets the cost.
    *
    *****************************************************/
-  Product setCost( MultipleCurrencyCost cost )
+  Product setCost( MultipleCurrencyAmount cost )
     {
     mCost = cost;
 
@@ -471,9 +471,9 @@ public class Product implements Parcelable, IGroupOrProduct
    * if the cost is not known in the requested currency.
    *
    *****************************************************/
-  public SingleCurrencyCost getCostWithFallback( String preferredCurrencyCode )
+  public SingleCurrencyAmount getCostWithFallback( String preferredCurrencyCode )
     {
-    return (mCost.getCostWithFallback( preferredCurrencyCode ));
+    return (mCost.getAmountWithFallback( preferredCurrencyCode ));
     }
 
 
@@ -482,9 +482,9 @@ public class Product implements Parcelable, IGroupOrProduct
    * Returns the cost in the currency for the supplied locale,
    *
    *****************************************************/
-  public SingleCurrencyCost getCostWithFallback( Locale locale )
+  public SingleCurrencyAmount getCostWithFallback( Locale locale )
     {
-    return (mCost.getCostWithFallback( Currency.getInstance( locale ) ));
+    return (mCost.getAmountWithFallback( Currency.getInstance( locale ) ));
     }
 
 
@@ -495,7 +495,7 @@ public class Product implements Parcelable, IGroupOrProduct
    *****************************************************/
   public BigDecimal getCost( String currencyCode )
     {
-    SingleCurrencyCost cost = mCost.get( currencyCode );
+    SingleCurrencyAmount cost = mCost.get( currencyCode );
 
     if ( cost == null )
       throw (new IllegalArgumentException( "No cost found for currency " + currencyCode ));
@@ -520,11 +520,11 @@ public class Product implements Parcelable, IGroupOrProduct
    * Returns the shipping cost to a destination country.
    *
    *****************************************************/
-  public MultipleCurrencyCost getShippingCostTo( String countryCode )
+  public MultipleCurrencyAmount getShippingCostTo( String countryCode )
     {
     // First see if we can find the country as a destination
 
-    MultipleCurrencyCost shippingCost = mShippingCosts.getCost( countryCode );
+    MultipleCurrencyAmount shippingCost = mShippingCosts.getCost( countryCode );
 
     if ( shippingCost != null ) return (shippingCost);
 

@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ly.kite.KiteSDK;
+import ly.kite.util.HTTPJSONRequest;
 
 /**
  * Created by deonbotha on 07/02/2014.
@@ -130,7 +131,7 @@ class AssetUploadRequest {
 
         String url = String.format("%s/asset/sign/?mime_types=%s&client_asset=true", KiteSDK.getInstance( context ).getAPIEndpoint(), mimeTypes.toString());
         registerImageURLAssetsReq = new HTTPJSONRequest( context, HTTPJSONRequest.HttpMethod.GET, url, null, (String) null);
-        registerImageURLAssetsReq.start(new HTTPJSONRequest.BaseRequestListener() {
+        registerImageURLAssetsReq.start(new HTTPJSONRequest.HTTPJSONRequestListener() {
             @Override
             public void onSuccess(int httpStatusCode, JSONObject json) {
                 if (cancelled || notifiedUploadListenerOfOutcome) return;
@@ -169,8 +170,8 @@ class AssetUploadRequest {
             }
 
             @Override
-            public void onError(Exception ex) {
-                listener.onError(ex);
+            public void onError(Exception exception ) {
+                listener.onError( exception );
             }
         });
     }
@@ -315,7 +316,7 @@ class AssetUploadRequest {
 
         String url = String.format("%s/asset/", KiteSDK.getInstance( context ).getAPIEndpoint());
         registerImageURLAssetsReq = new HTTPJSONRequest( context, HTTPJSONRequest.HttpMethod.PATCH, url, null, jsonBody.toString());
-        registerImageURLAssetsReq.start(new HTTPJSONRequest.BaseRequestListener() {
+        registerImageURLAssetsReq.start(new HTTPJSONRequest.HTTPJSONRequestListener() {
             @Override
             public void onSuccess(int httpStatusCode, JSONObject json) {
                 int registeredAssetCount = 0;
@@ -351,8 +352,8 @@ class AssetUploadRequest {
             }
 
             @Override
-            public void onError(Exception ex) {
-                listener.onError(ex);
+            public void onError(Exception exception ) {
+                listener.onError( exception );
             }
         });
     }

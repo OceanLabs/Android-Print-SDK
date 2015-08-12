@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import ly.kite.KiteSDKException;
 import ly.kite.KiteSDK;
+import ly.kite.util.HTTPJSONRequest;
 
 /**
  * Created by deonbotha on 09/02/2014.
@@ -25,7 +26,7 @@ class SubmitPrintOrderRequest {
         JSONObject json = printOrder.getJSONRepresentation();
         String url = String.format("%s/print", KiteSDK.getInstance( context ).getAPIEndpoint());
         req = new HTTPJSONRequest( context, HTTPJSONRequest.HttpMethod.POST, url, null, json.toString());
-        req.start(new HTTPJSONRequest.BaseRequestListener() {
+        req.start(new HTTPJSONRequest.HTTPJSONRequestListener() {
             @Override
             public void onSuccess(int httpStatusCode, JSONObject json) {
                 try {
@@ -51,8 +52,8 @@ class SubmitPrintOrderRequest {
             }
 
             @Override
-            public void onError(Exception ex) {
-                listener.onError(SubmitPrintOrderRequest.this, ex);
+            public void onError(Exception exception ) {
+                listener.onError(SubmitPrintOrderRequest.this, exception );
             }
         });
     }

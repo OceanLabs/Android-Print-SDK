@@ -13,6 +13,14 @@
         <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar.Opaque</item>
     </style>
 
+    <style name="Theme.KiteSDK.Checkout">
+        <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar.Opaque</item>
+    </style>
+
+    <style name="Theme.KiteSDK.Payment">
+        <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar.Opaque</item>
+    </style>
+
     <style name="Theme.KiteSDK.ActionBar" parent="android:Widget.ActionBar">
         <item name="android:displayOptions">homeAsUp|showTitle</item>
     </style>

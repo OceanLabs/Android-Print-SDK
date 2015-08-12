@@ -202,25 +202,69 @@ public class PrintOrder implements Parcelable /* , Serializable */
         this.currencyCode = currencyCode;
     }
 
-    public BigDecimal getCost(String currency) {
-        if (!getCurrenciesSupported().contains(currency)) {
-            throw new IllegalStateException(currency + " is not supported by this PrintOrder. See PrintOrder.getCurrenciesSupported()");
-        }
+//    public BigDecimal getCost(String currency) {
+//        if (!getCurrenciesSupported().contains(currency)) {
+//            throw new IllegalStateException(currency + " is not supported by this PrintOrder. See PrintOrder.getCurrenciesSupported()");
+//        }
+//
+//        BigDecimal cost = new BigDecimal(0);
+//        for (PrintJob job : jobs) {
+//            cost = cost.add(job.getCost(currency));
+//        }
+//
+//        if (this.promoCodeDiscount != null) {
+//            cost = cost.subtract(this.promoCodeDiscount);
+//            if (cost.compareTo(BigDecimal.ZERO) < 0) {
+//                cost = BigDecimal.ZERO;
+//            }
+//        }
+//
+//        return cost;
+//    }
 
-        BigDecimal cost = new BigDecimal(0);
-        for (PrintJob job : jobs) {
-            cost = cost.add(job.getCost(currency));
-        }
 
-        if (this.promoCodeDiscount != null) {
-            cost = cost.subtract(this.promoCodeDiscount);
-            if (cost.compareTo(BigDecimal.ZERO) < 0) {
-                cost = BigDecimal.ZERO;
-            }
-        }
+    /*****************************************************
+     *
+     * Returns a string representation of this order as a
+     * basket, in the form:
+     *
+     *   <template-id>:<quantity>[,<template-id>:<quantity> ...]
+     *
+     *****************************************************/
+    public void toBasketString( StringBuilder stringBuilder )
+      {
+      String separatorString = "";
 
-        return cost;
-    }
+      for ( PrintJob job : jobs )
+        {
+        stringBuilder
+                .append( separatorString )
+                .append( job.getProductId() )
+                .append( ":")
+                .append( String.valueOf( job.getQuantity() ) );
+
+        separatorString = ",";
+        }
+      }
+
+
+    /*****************************************************
+     *
+     * Returns a string representation of this order as a
+     * basket, in the form:
+     *
+     *   <template-id>:<quantity>[,<template-id>:<quantity> ...]
+     *
+     *****************************************************/
+    public String toBasketString()
+      {
+      StringBuilder basketStringBuilder = new StringBuilder();
+
+      toBasketString( basketStringBuilder );
+
+      return ( basketStringBuilder.toString() );
+      }
+
 
     List<Asset> getAssetsToUpload() {
         ArrayList<Asset> assets = new ArrayList<Asset>();
@@ -290,34 +334,9 @@ public class PrintOrder implements Parcelable /* , Serializable */
 
         final boolean[] previousError = {false};
         final int[] outstandingLengthCallbacks = {assetsToUpload.size()};
-//        totalBytesWritten = 0;
-//        totalBytesExpectedToWrite = 0;
 
         assetUploadReq = new AssetUploadRequest( context );
         assetUploadReq.uploadAssets(assetsToUpload, context, assetUploadRequestListener);
-
-//        for (Asset asset : assetsToUpload) {
-//            asset.getBytesLength(context, new AssetGetBytesLengthListener() {
-//                @Override
-//                public void onBytesLength(Asset asset, long byteLength) {
-//                    totalBytesExpectedToWrite += byteLength;
-//                    if (--outstandingLengthCallbacks[0] == 0) {
-//                        assetUploadReq = new AssetUploadRequest( context );
-//                        assetUploadReq.uploadAssets(assetsToUpload, context, assetUploadRequestListener);
-//                    }
-//                }
-//
-//                @Override
-//                public void onError(Asset asset, Exception ex) {
-//                    if (previousError[0]) {
-//                        return;
-//                    }
-//
-//                    previousError[0] = true;
-//                    assetUploadRequestListener.onError(null, ex);
-//                }
-//            });
-//      }
     }
 
     public void submitForPrinting(Context context, PrintOrderSubmissionListener listener) {
@@ -534,62 +553,6 @@ public class PrintOrder implements Parcelable /* , Serializable */
         }
     };
 
-//    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-//        out.writeObject(shippingAddress);
-//        out.writeObject(proofOfPayment);
-//        out.writeObject(voucherCode);
-//        String userDataString = userData == null ? null : userData.toString();
-//        out.writeObject(userDataString);
-//
-//        out.writeInt(jobs.size());
-//        for (int i = 0; i < jobs.size(); ++i) {
-//            out.writeObject(jobs.get(i));
-//        }
-//
-//        out.writeBoolean(userSubmittedForPrinting);
-//        out.writeBoolean(assetUploadComplete);
-//        out.writeObject(lastPrintSubmissionDate);
-//        out.writeObject(receipt);
-//        out.writeObject(lastPrintSubmissionError);
-//        out.writeInt(storageIdentifier);
-//        out.writeObject(promoCode);
-//        out.writeObject(promoCodeDiscount);
-//        out.writeObject(statusNotificationEmail);
-//        out.writeObject(statusNotificationPhone);
-//        out.writeObject(currencyCode);
-//    }
-//
-//    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
-//        shippingAddress = (Address) in.readObject();
-//        proofOfPayment = (String) in.readObject();
-//        voucherCode = (String) in.readObject();
-//        String userDataString = (String) in.readObject();
-//        if (userDataString != null) {
-//            try {
-//                this.userData = new JSONObject(userDataString);
-//            } catch (JSONException ex) {
-//                throw new RuntimeException(ex); // will never happen ;)
-//            }
-//        }
-//
-//        int numJobs = in.readInt();
-//        jobs = new ArrayList<PrintJob>();
-//        for (int i = 0; i < numJobs; ++i) {
-//            jobs.add((PrintJob) in.readObject());
-//        }
-//
-//        userSubmittedForPrinting = in.readBoolean();
-//        assetUploadComplete = in.readBoolean();
-//        lastPrintSubmissionDate = (Date) in.readObject();
-//        receipt = (String) in.readObject();
-//        lastPrintSubmissionError = (Exception) in.readObject();
-//        storageIdentifier = in.readInt();
-//        promoCode = (String) in.readObject();
-//        promoCodeDiscount = (BigDecimal) in.readObject();
-//        statusNotificationEmail = (String) in.readObject();
-//        statusNotificationPhone = (String) in.readObject();
-//        currencyCode = (String) in.readObject();
-//    }
 
     /*
      * Promo code stuff

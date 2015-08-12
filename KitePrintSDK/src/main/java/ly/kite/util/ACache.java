@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * MultipleDestinationShippingCosts.java
+ * ACache.java
  *
  *
  * Modified MIT License
@@ -34,57 +34,39 @@
 
 ///// Package Declaration /////
 
-package ly.kite.product;
+package ly.kite.util;
 
 
 ///// Import(s) /////
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-
-import android.os.Parcel;
-import android.os.Parcelable;
 
 
 ///// Class Declaration /////
 
 /*****************************************************
  *
- * This class represents shipping costs for an item.
+ * This class provides a caching facility for retrievers /
+ * agents, and assists with distributing values or errors
+ * to consumers.
  *
  *****************************************************/
-public class MultipleDestinationShippingCosts implements Parcelable
+abstract public class ACache<K,V,C extends ACache.IConsumer>
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                        = "MultipleDestinationShippingCosts";
-
-  public  static final String  DESTINATION_CODE_EUROPE        = "europe";
-  public  static final String  DESTINATION_CODE_REST_OF_WORLD = "rest_of_world";
+  private static final String  LOG_TAG = "ACache";
 
 
   ////////// Static Variable(s) //////////
 
-  public static final Parcelable.Creator<MultipleDestinationShippingCosts> CREATOR =
-    new Parcelable.Creator<MultipleDestinationShippingCosts>()
-      {
-      public MultipleDestinationShippingCosts createFromParcel( Parcel sourceParcel )
-        {
-        return ( new MultipleDestinationShippingCosts( sourceParcel ) );
-        }
-
-      public MultipleDestinationShippingCosts[] newArray( int size )
-        {
-        return ( new MultipleDestinationShippingCosts[ size ] );
-        }
-      };
-
 
   ////////// Member Variable(s) //////////
 
-  private HashMap<String,SingleDestinationShippingCost>  mDestinationCostTable;
+  private HashMap<K,V>             mCacheTable;
+  private HashMap<K,ArrayList<C>>  mConsumerTable;
 
 
   ////////// Static Initialiser(s) //////////
@@ -95,54 +77,10 @@ public class MultipleDestinationShippingCosts implements Parcelable
 
   ////////// Constructor(s) //////////
 
-  public MultipleDestinationShippingCosts()
+  protected ACache()
     {
-    mDestinationCostTable = new HashMap<>();
-    }
-
-
-  // Constructor used by parcelable interface
-  private MultipleDestinationShippingCosts( Parcel sourceParcel )
-    {
-    this();
-
-    int count = sourceParcel.readInt();
-
-    for ( int index = 0; index < count; index ++ )
-      {
-      add( (SingleDestinationShippingCost)sourceParcel.readParcelable( SingleDestinationShippingCost.class.getClassLoader() ) );
-      }
-    }
-
-
-  ////////// Parcelable Method(s) //////////
-
-  /*****************************************************
-   *
-   * Describes the contents of this parcelable.
-   *
-   *****************************************************/
-  @Override
-  public int describeContents()
-    {
-    return ( 0 );
-    }
-
-
-  /*****************************************************
-   *
-   * Write the contents of this product to a parcel.
-   *
-   *****************************************************/
-  @Override
-  public void writeToParcel( Parcel targetParcel, int flags )
-    {
-    targetParcel.writeInt( mDestinationCostTable.size() );
-
-    for ( SingleDestinationShippingCost singleDestinationShippingCost : mDestinationCostTable.values() )
-      {
-      targetParcel.writeParcelable( singleDestinationShippingCost, flags );
-      }
+    mCacheTable    = new HashMap<>();
+    mConsumerTable = new HashMap<>();
     }
 
 
@@ -150,52 +88,127 @@ public class MultipleDestinationShippingCosts implements Parcelable
 
   /*****************************************************
    *
-   * Adds a destination, together with the cost in one of more
-   * currencies.
+   * Returns a cached value for the supplied key, or null
+   * if the key has no cached value.
    *
    *****************************************************/
-  public void add( SingleDestinationShippingCost singleDestinationShippingCost )
+  protected V getCachedValue( K key )
     {
-    mDestinationCostTable.put( singleDestinationShippingCost.getDestinationCode(), singleDestinationShippingCost );
+    return ( mCacheTable.get( key ) );
     }
 
 
   /*****************************************************
    *
-   * Adds a destination, together with the cost in one of more
-   * currencies.
+   * Stores a consumer.
+   *
+   * @return true, if there is already a request running
+   *         for the same key, false otherwise.
    *
    *****************************************************/
-  public void add( String destinationCode, MultipleCurrencyAmount cost )
+  protected boolean requestAlreadyStarted( K key, C consumer )
     {
-    add( new SingleDestinationShippingCost( destinationCode, cost ) );
+    // If we don't already have an entry for the key - create a new list
+    // containing just this one callback.
+
+    ArrayList<C> callbackList = mConsumerTable.get( key );
+
+    if ( callbackList == null )
+      {
+      callbackList = new ArrayList<>();
+
+      callbackList.add( consumer );
+
+      mConsumerTable.put( key, callbackList );
+
+      return ( false );
+      }
+
+
+    // We do already have an entry for the key, so add this callback if it
+    // is not already in the list.
+
+    if ( ! callbackList.contains( consumer ) ) callbackList.add( consumer );
+
+    return ( true );
     }
 
 
   /*****************************************************
    *
-   * Returns the shipping cost for a destination.
+   * Stores a value in the cache, and distributes it to
+   * any callbacks.
    *
    *****************************************************/
-  public MultipleCurrencyAmount getCost( String destinationCode )
+  protected void onValueAvailable( K key, V value )
     {
-    return ( mDestinationCostTable.get( destinationCode ).getCost() );
+    // Cache the value
+    mCacheTable.put( key, value );
+
+
+    // Remove the consumer list, and supply the value to them.
+
+    ArrayList<C> consumerList = mConsumerTable.remove( key );
+
+    if ( consumerList != null )
+      {
+      for ( C consumer : consumerList )
+        {
+        if ( consumer != null ) onValueAvailable( value, consumer );
+        }
+      }
     }
 
 
   /*****************************************************
    *
-   * Returns the shipping costs as a list.
+   * Distributes a value to a consumer. The consumer will
+   * never be null.
    *
    *****************************************************/
-  public List<SingleDestinationShippingCost> asList()
+  abstract protected void onValueAvailable( V value, C consumer );
+
+
+  /*****************************************************
+   *
+   * Distributes an error to  any consumers.
+   *
+   *****************************************************/
+  protected void onError( K key, Exception exception )
     {
-    return ( new ArrayList<SingleDestinationShippingCost>( mDestinationCostTable.values() ) );
+    // Remove the consumer list, and supply the error to them.
+
+    ArrayList<C> consumerList = mConsumerTable.remove( key );
+
+    if ( consumerList != null )
+      {
+      for ( C consumer : consumerList )
+        {
+        if ( consumer != null ) onError( exception, consumer );
+        }
+      }
     }
+
+
+  /*****************************************************
+   *
+   * Distributes an error to a consumer. The callback will
+   * never be null.
+   *
+   *****************************************************/
+  abstract protected void onError( Exception exception, C consumer );
 
 
   ////////// Inner Class(es) //////////
 
+  /*****************************************************
+   *
+   * A consumer.
+   *
+   *****************************************************/
+  public interface IConsumer
+    {
+    }
 
   }
 

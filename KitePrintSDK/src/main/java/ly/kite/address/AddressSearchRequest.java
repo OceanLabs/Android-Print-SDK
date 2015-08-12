@@ -9,7 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
-import ly.kite.product.HTTPJSONRequest;
+import ly.kite.util.HTTPJSONRequest;
 import ly.kite.KiteSDK;
 import ly.kite.KiteSDKException;
 
@@ -64,7 +64,7 @@ public class AddressSearchRequest {
 
     private void startSearch(Context context, String url, final Country country, final AddressSearchRequestListener listener) {
         searchRequest = new HTTPJSONRequest(context, HTTPJSONRequest.HttpMethod.GET, url, null, null);
-        searchRequest.start(new HTTPJSONRequest.BaseRequestListener() {
+        searchRequest.start(new HTTPJSONRequest.HTTPJSONRequestListener() {
             @Override
             public void onSuccess(int httpStatusCode, JSONObject json) {
                 searchRequest = null;
@@ -97,9 +97,9 @@ public class AddressSearchRequest {
             }
 
             @Override
-            public void onError(Exception ex) {
+            public void onError(Exception exception ) {
                 searchRequest = null;
-                listener.onError(AddressSearchRequest.this, ex);
+                listener.onError(AddressSearchRequest.this, exception );
             }
         });
     }

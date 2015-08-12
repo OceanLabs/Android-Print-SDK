@@ -6,7 +6,7 @@ import org.json.JSONObject;
 
 import java.math.BigDecimal;
 
-import ly.kite.product.HTTPJSONRequest;
+import ly.kite.util.HTTPJSONRequest;
 import ly.kite.KiteSDK;
 import ly.kite.KiteSDKException;
 import ly.kite.product.PrintJob;
@@ -31,7 +31,7 @@ public class CheckPromoRequest {
 
         String url = String.format("%s/promo_code/check?code=%s&templates=%s&currency=%s", KiteSDK.getInstance( context ).getAPIEndpoint(), promoCode, templateCostBreakdown.toString(), order.getCurrencyCode());
         req = new HTTPJSONRequest(context, HTTPJSONRequest.HttpMethod.GET, url, null, null);
-        req.start(new HTTPJSONRequest.BaseRequestListener() {
+        req.start(new HTTPJSONRequest.HTTPJSONRequestListener() {
             @Override
             public void onSuccess(int httpStatusCode, JSONObject json) {
                 try {
@@ -49,8 +49,8 @@ public class CheckPromoRequest {
             }
 
             @Override
-            public void onError(Exception ex) {
-                listener.onError(ex);
+            public void onError(Exception exception ) {
+                listener.onError( exception );
             }
         });
     }

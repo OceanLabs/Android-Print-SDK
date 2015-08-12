@@ -43,16 +43,16 @@
             android:launchMode="singleTop"/>
 
         <activity
-            android:name=".checkout.PaymentActivity"
-            android:label="@string/title_activity_payment"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"/>
-
-        <activity
             android:name=".checkout.CheckoutActivity"
             android:label="@string/title_activity_checkout"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"/>
+            android:theme="@style/Theme.KiteSDK.Checkout"
+            android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".checkout.PaymentActivity"
+            android:label="@string/title_activity_payment"
+            android:theme="@style/Theme.KiteSDK.Payment"
+            android:screenOrientation="portrait"/>
 
         <activity
             android:name=".checkout.OrderReceiptActivity"

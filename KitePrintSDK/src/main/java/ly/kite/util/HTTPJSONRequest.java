@@ -1,4 +1,4 @@
-package ly.kite.product;
+package ly.kite.util;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -34,9 +34,10 @@ public class HTTPJSONRequest
   public  static final String ERROR_RESPONSE_CODE_JSON_NAME    = "code";
 
 
-    public static interface BaseRequestListener {
-        void onSuccess(int httpStatusCode, JSONObject json);
-        void onError(Exception ex);
+  public static interface HTTPJSONRequestListener
+    {
+    void onSuccess( int httpStatusCode, JSONObject json );
+    void onError  ( Exception exception );
     }
 
     public static enum HttpMethod {
@@ -89,7 +90,7 @@ public class HTTPJSONRequest
         }
     }
 
-    public void start(final BaseRequestListener listener) {
+    public void start(final HTTPJSONRequestListener listener) {
 
         assert requestTask == null : "Oops a request has previously been started";
 

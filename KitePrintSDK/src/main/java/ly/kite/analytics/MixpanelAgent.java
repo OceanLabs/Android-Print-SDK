@@ -51,7 +51,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
-import ly.kite.product.HTTPJSONRequest;
+import ly.kite.util.HTTPJSONRequest;
 
 
 ///// Class Declaration /////
@@ -62,7 +62,7 @@ import ly.kite.product.HTTPJSONRequest;
  * API.
  *
  *****************************************************/
-public class MixpanelAgent implements HTTPJSONRequest.BaseRequestListener
+public class MixpanelAgent implements HTTPJSONRequest.HTTPJSONRequestListener
   {
   ////////// Static Constant(s) //////////
 

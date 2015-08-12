@@ -61,6 +61,7 @@ import ly.kite.KiteSDKException;
 import ly.kite.KiteSDK;
 import ly.kite.journey.ProductCreationActivity;
 import ly.kite.journey.UserJourneyType;
+import ly.kite.util.HTTPJSONRequest;
 
 
 ///// Class Declaration /////
@@ -71,7 +72,7 @@ import ly.kite.journey.UserJourneyType;
  * product groups and products from the server.
  *
  ****************************************************/
-public class ProductLoader implements HTTPJSONRequest.BaseRequestListener
+public class ProductLoader implements HTTPJSONRequest.HTTPJSONRequestListener
   {
   ////////// Static Constant(s) //////////
 
@@ -160,23 +161,9 @@ public class ProductLoader implements HTTPJSONRequest.BaseRequestListener
    * Parses a JSON shipping cost.
    *
    ****************************************************/
-  private static MultipleCurrencyCost parseShippingCost( JSONObject shippingCostJSONObject ) throws JSONException
+  private static MultipleCurrencyAmount parseShippingCost( JSONObject shippingCostJSONObject ) throws JSONException
     {
-    // The costs aren't in an array, so we need to iterate through the keys, i.e. the currency codes.
-
-    MultipleCurrencyCost shippingCost = new MultipleCurrencyCost();
-
-    Iterator<String> currencyIterator = shippingCostJSONObject.keys();
-
-    while ( currencyIterator.hasNext() )
-      {
-      String     currencyCode = currencyIterator.next();
-      BigDecimal amount       = new BigDecimal( shippingCostJSONObject.getString( currencyCode ) );
-
-      shippingCost.add( new SingleCurrencyCost( Currency.getInstance( currencyCode ), amount ) );
-      }
-
-    return ( shippingCost );
+    return ( new MultipleCurrencyAmount( shippingCostJSONObject ) );
     }
 
 
@@ -308,13 +295,13 @@ public class ProductLoader implements HTTPJSONRequest.BaseRequestListener
    * Parses a JSON cost.
    *
    ****************************************************/
-  private static SingleCurrencyCost parseCost( JSONObject costJSONObject ) throws JSONException
+  private static SingleCurrencyAmount parseCost( JSONObject costJSONObject ) throws JSONException
     {
     Currency   currency        = Currency.getInstance( costJSONObject.getString( JSON_NAME_CURRENCY ) );
     BigDecimal amount          = new BigDecimal( costJSONObject.getString( JSON_NAME_AMOUNT ) );
     String     formattedAmount = costJSONObject.getString( JSON_NAME_FORMATTED_AMOUNT );
 
-    return ( new SingleCurrencyCost( currency, amount, formattedAmount ) );
+    return ( new SingleCurrencyAmount( currency, amount, formattedAmount ) );
     }
 
 
@@ -345,9 +332,9 @@ public class ProductLoader implements HTTPJSONRequest.BaseRequestListener
    * Parses a JSON cost array.
    *
    ****************************************************/
-  private static MultipleCurrencyCost parseCost( JSONArray costJSONArray ) throws JSONException
+  private static MultipleCurrencyAmount parseCost( JSONArray costJSONArray ) throws JSONException
     {
-    MultipleCurrencyCost cost = new MultipleCurrencyCost();
+    MultipleCurrencyAmount cost = new MultipleCurrencyAmount();
 
     for ( int costIndex = 0; costIndex < costJSONArray.length(); costIndex ++ )
       {
@@ -389,7 +376,7 @@ public class ProductLoader implements HTTPJSONRequest.BaseRequestListener
         String                           productId     = productJSONObject.getString( JSON_NAME_PRODUCT_ID );
         String                           productName   = productJSONObject.getString( JSON_NAME_PRODUCT_NAME );
         int                              imagesPerPage = productJSONObject.optInt( JSON_NAME_IMAGES_PER_PAGE, DEFAULT_IMAGES_PER_PAGE );
-        MultipleCurrencyCost             cost          = parseCost( productJSONObject.getJSONArray( JSON_NAME_COST ) );
+        MultipleCurrencyAmount cost          = parseCost( productJSONObject.getJSONArray( JSON_NAME_COST ) );
         MultipleDestinationShippingCosts shippingCosts = parseShippingCosts( productJSONObject.getJSONObject( JSON_NAME_SHIPPING_COSTS ) );
 
 

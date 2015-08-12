@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * SingleCurrencyCost.java
+ * SingleCurrencyAmount.java
  *
  *
  * Modified MIT License
@@ -52,32 +52,32 @@ import java.util.Locale;
 
 /*****************************************************
  *
- * This class represents a cost in a single currency.
+ * This class represents an amount in a single currency.
  *
  *****************************************************/
-public class SingleCurrencyCost implements Parcelable
+public class SingleCurrencyAmount implements Parcelable
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                     = "SingleCurrencyCost";
+  private static final String  LOG_TAG                     = "SingleCurrencyAmount";
 
   private static final String  FORMAL_AMOUNT_FORMAT_STRING = "$1$s $2$.2f";
 
 
   ////////// Static Variable(s) //////////
 
-  public static final Parcelable.Creator<SingleCurrencyCost> CREATOR =
-    new Parcelable.Creator<SingleCurrencyCost>()
+  public static final Parcelable.Creator<SingleCurrencyAmount> CREATOR =
+    new Parcelable.Creator<SingleCurrencyAmount>()
       {
-      public SingleCurrencyCost createFromParcel( Parcel sourceParcel )
+      public SingleCurrencyAmount createFromParcel( Parcel sourceParcel )
         {
-        return ( new SingleCurrencyCost( sourceParcel ) );
+        return ( new SingleCurrencyAmount( sourceParcel ) );
         }
 
-      public SingleCurrencyCost[] newArray( int size )
+      public SingleCurrencyAmount[] newArray( int size )
         {
-        return ( new SingleCurrencyCost[ size ] );
+        return ( new SingleCurrencyAmount[ size ] );
         }
       };
 
@@ -97,7 +97,7 @@ public class SingleCurrencyCost implements Parcelable
 
   ////////// Constructor(s) //////////
 
-  public SingleCurrencyCost( Currency currency, BigDecimal amount, String formattedAmount )
+  public SingleCurrencyAmount( Currency currency, BigDecimal amount, String formattedAmount )
     {
     mCurrency        = currency;
     mAmount          = amount;
@@ -105,14 +105,14 @@ public class SingleCurrencyCost implements Parcelable
     }
 
 
-  public SingleCurrencyCost( Currency currency, BigDecimal amount )
+  public SingleCurrencyAmount( Currency currency, BigDecimal amount )
     {
     this ( currency, amount, null );
     }
 
 
   // Constructor used by parcelable interface
-  private SingleCurrencyCost( Parcel parcel )
+  private SingleCurrencyAmount( Parcel parcel )
     {
     mCurrency        = (Currency)parcel.readSerializable();
     mAmount          = (BigDecimal)parcel.readSerializable();
