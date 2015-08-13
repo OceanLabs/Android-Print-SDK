@@ -14,6 +14,9 @@
     <string name="title_product_group_activity">Print Shop</string>
     <string name="title_phone_case_activity">Create Phone Case</string>
 
+    <string name="alert_dialog_title_oops">Oops!</string>
+    <string name="alert_dialog_message_pricing_format_string">There was a problem retrieving pricing from the server:\n%1$s</string>
+
     <string name="alert_dialog_title_no_intent">Internal Error</string>
     <string name="alert_dialog_message_no_intent">There was an error: no intent was passed to the fragment. Please check the log for more details.</string>
 
@@ -56,14 +59,17 @@
     <string name="Details">Details</string>
     <string name="Done">Done</string>
     <string name="Edit">Edit</string>
+    <string name="Free">Free</string>
     <string name="IMAGES">IMAGES</string>
     <string name="OK">OK</string>
+    <string name="Promotional_Discount">Promotional Discount</string>
     <string name="Quality_Guarantee">Quality Guarantee</string>
     <string name="Quantity">Quantity</string>
     <string name="Retry">Retry</string>
     <string name="Select_Image">Select Image</string>
     <string name="Shipping">Shipping</string>
     <string name="Size">Size</string>
+    <string name="Total">Total</string>
 
     <string name="destination_description_gbr">UK</string>
     <string name="destination_description_europe">Europe</string>
@@ -113,6 +119,11 @@
 
     <string name="powered_by">Powered by Kite.ly</string>
 
+    <string name="payment_promo_hint">Promotional code</string>
+    <string name="payment_promo_button_text_apply">Apply</string>
+    <string name="payment_promo_button_text_clear">Clear</string>
+    <string name="payment_credit_card_button_text">Pay with Credit Card</string>
+    <string name="payment_paypal_button_text">Pay with PayPal</string>
 
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>

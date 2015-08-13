@@ -320,10 +320,11 @@ public class Analytics
 
       Set<String> supportedCurrencies = printOrder.getCurrenciesSupported();
 
-      if ( supportedCurrencies.contains( "GPB" ) )
-        {
-        jsonObject.put( JSON_PROPERTY_NAME_COST, printOrder.getCost( "GBP" ) );
-        }
+      // TODO
+//      if ( supportedCurrencies.contains( "GPB" ) )
+//        {
+//        jsonObject.put( JSON_PROPERTY_NAME_COST, printOrder.getCost( "GBP" ) );
+//        }
 
 
       // Job count

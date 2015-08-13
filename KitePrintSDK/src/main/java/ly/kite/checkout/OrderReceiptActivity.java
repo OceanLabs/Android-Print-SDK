@@ -142,8 +142,9 @@ public class OrderReceiptActivity extends Activity {
         public void onViewCreated(View view, Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
 
-            ListView l = (ListView) view.findViewById(R.id.list_view_order_summary);
-            l.setAdapter(new PrintOrderSummaryListAdapter(printOrder));
+        // TODO
+//            ListView l = (ListView) view.findViewById(R.id.order_summary_list_view );
+//            l.setAdapter(new PrintOrderSummaryListAdapter(printOrder));
 
             TextView orderView = (TextView) view.findViewById(R.id.text_view_order_id);
             orderView.setText(printOrder.getReceipt());

@@ -13,13 +13,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import ly.kite.address.Address;
-import ly.kite.address.Country;
-import ly.kite.payment.CheckPromoCodeRequestListener;
-import ly.kite.payment.CheckPromoRequest;
 
 /**
  * Created by deonbotha on 09/02/2014.
@@ -54,7 +50,7 @@ public class PrintOrder implements Parcelable /* , Serializable */
     private BigDecimal promoCodeDiscount;
     private String statusNotificationEmail;
     private String statusNotificationPhone;
-    private String currencyCode = null;
+    //private String currencyCode = null;
 
     public PrintOrder() {}
 
@@ -172,35 +168,35 @@ public class PrintOrder implements Parcelable /* , Serializable */
         return supported == null ? Collections.EMPTY_SET : supported;
     }
 
-    public String getCurrencyCode() {
-        String code = currencyCode == null ? Country.getInstance(Locale.getDefault()).iso3CurrencyCode() : currencyCode;
-        Set<String> supportedCurrencies = getCurrenciesSupported();
-        if (supportedCurrencies.contains(code)) {
-            return code;
-        }
+//    public String getCurrencyCode() {
+//        String code = currencyCode == null ? Country.getInstance(Locale.getDefault()).iso3CurrencyCode() : currencyCode;
+//        Set<String> supportedCurrencies = getCurrenciesSupported();
+//        if (supportedCurrencies.contains(code)) {
+//            return code;
+//        }
+//
+//        if (supportedCurrencies.contains("USD")) {
+//            return "USD";
+//        }
+//
+//        if (supportedCurrencies.contains("GBP")) {
+//            return "GBP";
+//        }
+//
+//        if (supportedCurrencies.contains("EUR")) {
+//            return "EUR";
+//        }
+//
+//        if (supportedCurrencies.size() == 0) {
+//            throw new IllegalStateException("Please ensure that there is at least one common currency amongst PrintJobs that are added to the PrintOrder");
+//        }
+//
+//        return supportedCurrencies.iterator().next();
+//    }
 
-        if (supportedCurrencies.contains("USD")) {
-            return "USD";
-        }
-
-        if (supportedCurrencies.contains("GBP")) {
-            return "GBP";
-        }
-
-        if (supportedCurrencies.contains("EUR")) {
-            return "EUR";
-        }
-
-        if (supportedCurrencies.size() == 0) {
-            throw new IllegalStateException("Please ensure that there is at least one common currency amongst PrintJobs that are added to the PrintOrder");
-        }
-
-        return supportedCurrencies.iterator().next();
-    }
-
-    public void setCurrencyCode(String currencyCode) {
-        this.currencyCode = currencyCode;
-    }
+//    public void setCurrencyCode(String currencyCode) {
+//        this.currencyCode = currencyCode;
+//    }
 
 //    public BigDecimal getCost(String currency) {
 //        if (!getCurrenciesSupported().contains(currency)) {
@@ -501,7 +497,7 @@ public class PrintOrder implements Parcelable /* , Serializable */
         p.writeValue(promoCodeDiscount);
         p.writeString(statusNotificationEmail);
         p.writeString(statusNotificationPhone);
-        p.writeString(currencyCode);
+        //p.writeString(currencyCode);
     }
 
     private PrintOrder(Parcel p) {
@@ -539,7 +535,7 @@ public class PrintOrder implements Parcelable /* , Serializable */
         this.promoCodeDiscount = (BigDecimal) p.readValue(BigDecimal.class.getClassLoader());
         this.statusNotificationEmail = p.readString();
         this.statusNotificationPhone = p.readString();
-        this.currencyCode = p.readString();
+        //this.currencyCode = p.readString();
     }
 
     public static final Parcelable.Creator<PrintOrder> CREATOR
@@ -562,31 +558,36 @@ public class PrintOrder implements Parcelable /* , Serializable */
         return promoCodeDiscount;
     }
 
+    public void setPromoCode( String promoCode )
+        {
+        this.promoCode = promoCode;
+        }
+
     public String getPromoCode() {
         return promoCode;
     }
 
-    public CheckPromoRequest applyPromoCode(Context context, final String promoCode, final ApplyPromoCodeListener listener) {
-        CheckPromoRequest req = new CheckPromoRequest();
-        req.checkPromoCode( context, promoCode, this, new CheckPromoCodeRequestListener() {
-            @Override
-            public void onDiscount(BigDecimal discount) {
-                if (promoCode != null && discount.compareTo(BigDecimal.ZERO) > 0) {
-                    PrintOrder.this.promoCode = promoCode;
-                    PrintOrder.this.promoCodeDiscount = discount;
-                }
-
-                listener.onPromoCodeApplied(PrintOrder.this, discount);
-            }
-
-            @Override
-            public void onError(Exception ex) {
-                listener.onError(PrintOrder.this, ex);
-            }
-        });
-
-        return req;
-    }
+//    public CheckPromoRequest applyPromoCode(Context context, final String promoCode, final ApplyPromoCodeListener listener) {
+//        CheckPromoRequest req = new CheckPromoRequest();
+//        req.checkPromoCode( context, promoCode, this, new CheckPromoCodeRequestListener() {
+//            @Override
+//            public void onDiscount(BigDecimal discount) {
+//                if (promoCode != null && discount.compareTo(BigDecimal.ZERO) > 0) {
+//                    PrintOrder.this.promoCode = promoCode;
+//                    PrintOrder.this.promoCodeDiscount = discount;
+//                }
+//
+//                listener.onPromoCodeApplied(PrintOrder.this, discount);
+//            }
+//
+//            @Override
+//            public void onError(Exception ex) {
+//                listener.onError(PrintOrder.this, ex);
+//            }
+//        });
+//
+//        return req;
+//    }
 
     public void clearPromoCode() {
         this.promoCode = null;

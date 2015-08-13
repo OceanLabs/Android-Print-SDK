@@ -117,7 +117,7 @@ abstract public class AEditImageFragment extends AKiteFragment implements View.O
       mKiteActivity.displayModalDialog(
               R.string.alert_dialog_title_no_arguments,
               R.string.alert_dialog_message_no_arguments,
-              AKiteActivity.DONT_DISPLAY_BUTTON,
+              AKiteActivity.NO_BUTTON,
               null,
               R.string.Cancel,
               mKiteActivity.new FinishRunnable()
@@ -136,7 +136,7 @@ abstract public class AEditImageFragment extends AKiteFragment implements View.O
       mKiteActivity.displayModalDialog(
               R.string.alert_dialog_title_product_not_found,
               R.string.alert_dialog_message_product_not_found,
-              AKiteActivity.DONT_DISPLAY_BUTTON,
+              AKiteActivity.NO_BUTTON,
               null,
               R.string.Cancel,
               mKiteActivity.new FinishRunnable()
@@ -251,7 +251,7 @@ abstract public class AEditImageFragment extends AKiteFragment implements View.O
       mKiteActivity.displayModalDialog(
               R.string.alert_dialog_title_create_order,
               R.string.alert_dialog_message_no_cropped_image_asset,
-              AKiteActivity.DONT_DISPLAY_BUTTON,
+              AKiteActivity.NO_BUTTON,
               null,
               R.string.Cancel,
               null );

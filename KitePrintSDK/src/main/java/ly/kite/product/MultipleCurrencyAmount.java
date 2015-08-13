@@ -248,21 +248,6 @@ public class MultipleCurrencyAmount implements Parcelable
 
   /*****************************************************
    *
-   * Returns the cost in the default currency (for the default
-   * locale), falling back if the cost is not known in the
-   * requested currency.
-   *
-   *****************************************************/
-  public SingleCurrencyAmount getDefaultAmountWithFallback()
-    {
-    Country defaultCountry = Country.getInstance();
-
-    return ( getAmountWithFallback( defaultCountry.iso3CurrencyCode() ) );
-    }
-
-
-  /*****************************************************
-   *
    * Returns the amount in a specific currency, falling back
    * if the amount is not known in the requested currency.
    *
@@ -296,6 +281,35 @@ public class MultipleCurrencyAmount implements Parcelable
     {
     return ( getAmountWithFallback( preferredCurrency.getCurrencyCode() ) );
     }
+
+
+  /*****************************************************
+   *
+   * Returns the amount in a specific currency, falling back
+   * if the amount is not known in the requested currency.
+   *
+   *****************************************************/
+  public SingleCurrencyAmount getAmountWithFallback( Locale locale )
+    {
+    return ( getAmountWithFallback( Currency.getInstance( locale ) ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the cost in the default currency (for the default
+   * locale), falling back if the cost is not known in the
+   * requested currency.
+   *
+   *****************************************************/
+  public SingleCurrencyAmount getDefaultAmountWithFallback()
+    {
+    Locale   defaultLocale   = Locale.getDefault();
+    Currency defaultCurrency = Currency.getInstance( defaultLocale );
+
+    return ( getAmountWithFallback( defaultCurrency.getCurrencyCode() ) );
+    }
+
 
 
   /*****************************************************

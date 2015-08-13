@@ -47,6 +47,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import ly.kite.product.MultipleCurrencyAmount;
 
@@ -75,6 +76,8 @@ public class OrderPricing
   private static final String  JSON_NAME_TOTAL_PRODUCT_COST  = "total_product_cost";
   private static final String  JSON_NAME_TOTAL_SHIPPING_COST = "total_shipping_cost";
 
+  private static final String  JSON_VALUE_NULL               = "null";
+
 
   ////////// Static Variable(s) //////////
 
@@ -82,9 +85,9 @@ public class OrderPricing
   ////////// Member Variable(s) //////////
 
   private String                  mPromoCodeInvalidMessage;
-  private MultipleCurrencyAmount mPromoCodeDiscount;
+  private MultipleCurrencyAmount  mPromoCodeDiscount;
 
-  private ArrayList<LineItem> mLineItemArrayList;
+  private ArrayList<LineItem>     mLineItemArrayList;
   private MultipleCurrencyAmount  mTotalProductCost;
   private MultipleCurrencyAmount  mTotalCost;
   private MultipleCurrencyAmount  mTotalShippingCost;
@@ -168,7 +171,16 @@ public class OrderPricing
 
     if ( promoCodeJSONObject != null )
       {
-      mPromoCodeInvalidMessage = promoCodeJSONObject.getString( JSON_NAME_INVALID_MESSAGE );
+      String promoCodeInvalidMessage = promoCodeJSONObject.getString( JSON_NAME_INVALID_MESSAGE );
+
+      if ( promoCodeInvalidMessage == null || promoCodeInvalidMessage.equals( JSON_VALUE_NULL ) )
+        {
+        mPromoCodeInvalidMessage = null;
+        }
+      else
+        {
+        mPromoCodeInvalidMessage = promoCodeInvalidMessage;
+        }
 
       try
         {
@@ -183,11 +195,14 @@ public class OrderPricing
 
     // Line items
 
+    mLineItemArrayList = new ArrayList<>( lineItemsJSONArray.length() );
+
     for ( int lineItemIndex = 0; lineItemIndex < lineItemsJSONArray.length(); lineItemIndex ++ )
       {
       LineItem lineItem = new LineItem( lineItemsJSONArray.getJSONObject( lineItemIndex ) );
-      }
 
+      mLineItemArrayList.add( lineItem );
+      }
 
 
     mTotalProductCost  = new MultipleCurrencyAmount( totalProductCostJSONObject );
@@ -200,9 +215,58 @@ public class OrderPricing
 
   /*****************************************************
    *
-   * ...
+   * Returns any promo code invalid message, or null, if
+   * there was no promo code error.
    *
    *****************************************************/
+  public String getPromoCodeInvalidMessage()
+    {
+    return ( mPromoCodeInvalidMessage );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns any promo code discount.
+   *
+   *****************************************************/
+  public MultipleCurrencyAmount getPromoCodeDiscount()
+    {
+    return ( mPromoCodeDiscount );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the line item list.
+   *
+   *****************************************************/
+  public List<LineItem> getLineItems()
+    {
+    return ( mLineItemArrayList );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the total cost.
+   *
+   *****************************************************/
+  public MultipleCurrencyAmount getTotalCost()
+    {
+    return ( mTotalCost );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the total shipping cost.
+   *
+   *****************************************************/
+  public MultipleCurrencyAmount getTotalShippingCost()
+    {
+    return ( mTotalShippingCost );
+    }
 
 
   ////////// Inner Class(es) //////////
@@ -250,6 +314,29 @@ public class OrderPricing
       mQuantity     = jsonObject.getInt( JSON_NAME_QUANTITY );
       mProductCost  = new MultipleCurrencyAmount( jsonObject.getJSONObject( JSON_NAME_PRODUCT_COST ) );
       }
+
+
+    /*****************************************************
+     *
+     * Returns the description.
+     *
+     *****************************************************/
+    public String getDescription()
+      {
+      return ( mDescription );
+      }
+
+
+    /*****************************************************
+     *
+     * Returns the shipping cost.
+     *
+     *****************************************************/
+    public MultipleCurrencyAmount getShippingCost()
+      {
+      return ( mShippingCost );
+      }
+
     }
 
   }

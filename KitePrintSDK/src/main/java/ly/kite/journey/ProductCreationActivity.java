@@ -185,7 +185,7 @@ public class ProductCreationActivity extends AKiteActivity implements PhoneCaseF
       displayModalDialog(
               R.string.alert_dialog_title_no_intent,
               R.string.alert_dialog_message_no_intent,
-              DONT_DISPLAY_BUTTON,
+              NO_BUTTON,
               null,
               R.string.Cancel,
               new FinishRunnable()
@@ -203,7 +203,7 @@ public class ProductCreationActivity extends AKiteActivity implements PhoneCaseF
       displayModalDialog(
               R.string.alert_dialog_title_no_asset_list,
               R.string.alert_dialog_message_no_asset_list,
-              DONT_DISPLAY_BUTTON,
+              NO_BUTTON,
               null,
               R.string.Cancel,
               new FinishRunnable()
@@ -222,7 +222,7 @@ public class ProductCreationActivity extends AKiteActivity implements PhoneCaseF
       displayModalDialog(
               R.string.alert_dialog_title_no_product,
               R.string.alert_dialog_message_no_product,
-              DONT_DISPLAY_BUTTON,
+              NO_BUTTON,
               null,
               R.string.Cancel,
               new FinishRunnable()

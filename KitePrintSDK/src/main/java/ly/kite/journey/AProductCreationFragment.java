@@ -160,7 +160,7 @@ abstract public class AProductCreationFragment extends AKiteFragment
       mKiteActivity.displayModalDialog(
               R.string.alert_dialog_title_no_asset_list,
               R.string.alert_dialog_message_no_asset_list,
-              AKiteActivity.DONT_DISPLAY_BUTTON,
+              AKiteActivity.NO_BUTTON,
               null,
               R.string.Cancel,
               mKiteActivity.new FinishRunnable() );
@@ -187,7 +187,7 @@ abstract public class AProductCreationFragment extends AKiteFragment
       mKiteActivity.displayModalDialog(
               R.string.alert_dialog_title_product_not_found,
               R.string.alert_dialog_message_product_not_found,
-              AKiteActivity.DONT_DISPLAY_BUTTON,
+              AKiteActivity.NO_BUTTON,
               null,
               R.string.Cancel,
               mKiteActivity.new FinishRunnable()

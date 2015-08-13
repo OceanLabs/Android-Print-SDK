@@ -139,7 +139,7 @@ public class EditImageFragment extends AEditImageFragment
         mKiteActivity.displayModalDialog(
                 R.string.alert_dialog_title_no_asset,
                 R.string.alert_dialog_message_no_asset,
-                AKiteActivity.DONT_DISPLAY_BUTTON,
+                AKiteActivity.NO_BUTTON,
                 null,
                 R.string.Cancel,
                 mKiteActivity.new FinishRunnable()

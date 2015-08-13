@@ -74,7 +74,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
   public    static final String  INTENT_EXTRA_NAME_ASSETS_AND_QUANTITY__LIST = KiteSDK.INTENT_PREFIX + ".assetsAndQuantityList";
 
-  public    static final int     DONT_DISPLAY_BUTTON                         = 0;
+  public    static final int     NO_BUTTON                                   = 0;
 
   public    static final String  IMAGE_CLASS_STRING_PRODUCT_ITEM             = "product_item";
 
@@ -382,6 +382,25 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
   /*****************************************************
    *
+   * Displays an error dialog.
+   *
+   *****************************************************/
+  protected void showErrorDialog( String message )
+    {
+    displayModalDialog
+            (
+            R.string.alert_dialog_title_oops,
+            message,
+            R.string.OK,
+            null,
+            NO_BUTTON,
+            null
+            );
+    }
+
+
+  /*****************************************************
+   *
    * Ensures any dialog is gone.
    *
    *****************************************************/
@@ -420,11 +439,20 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     {
     try
       {
-      FragmentManager.BackStackEntry entry = mFragmentManager.getBackStackEntryAt( entryCount - 1 );
+      FragmentManager.BackStackEntry entry;
 
-      mCurrentFragment = (AKiteFragment)mFragmentManager.findFragmentByTag( entry.getName() );
+      if ( entryCount        > 0    &&
+           mFragmentManager != null &&
+           ( entry = mFragmentManager.getBackStackEntryAt( entryCount - 1 ) ) != null )
+        {
+        mCurrentFragment = (AKiteFragment) mFragmentManager.findFragmentByTag( entry.getName() );
 
-      mCurrentFragment.onTop();
+        mCurrentFragment.onTop();
+        }
+      else
+        {
+        mCurrentFragment = null;
+        }
       }
     catch ( Exception e )
       {
