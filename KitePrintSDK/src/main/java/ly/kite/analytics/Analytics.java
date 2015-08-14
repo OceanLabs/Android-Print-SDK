@@ -59,9 +59,12 @@ import ly.kite.BuildConfig;
 import ly.kite.KiteSDK;
 import ly.kite.address.Address;
 import ly.kite.address.Country;
+import ly.kite.pricing.OrderPricing;
+import ly.kite.product.MultipleCurrencyAmount;
 import ly.kite.product.PrintJob;
 import ly.kite.product.PrintOrder;
 import ly.kite.product.Product;
+import ly.kite.product.SingleCurrencyAmount;
 
 
 ///// Class Declaration /////
@@ -318,13 +321,16 @@ public class Analytics
 
       ///// Cost /////
 
-      Set<String> supportedCurrencies = printOrder.getCurrenciesSupported();
+      OrderPricing           orderPricing = printOrder.getOrderPricing();
+      MultipleCurrencyAmount totalCost;
+      SingleCurrencyAmount   totalCostInGBP;
 
-      // TODO
-//      if ( supportedCurrencies.contains( "GPB" ) )
-//        {
-//        jsonObject.put( JSON_PROPERTY_NAME_COST, printOrder.getCost( "GBP" ) );
-//        }
+      if (   orderPricing                                   != null &&
+           ( totalCost      = orderPricing.getTotalCost() ) != null &&
+           ( totalCostInGBP = totalCost.get( "GBP" )      ) != null )
+        {
+        jsonObject.put( JSON_PROPERTY_NAME_COST, totalCostInGBP.getAmount() );
+        }
 
 
       // Job count

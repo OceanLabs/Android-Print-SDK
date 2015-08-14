@@ -55,4 +55,6 @@
     <dimen name="review_and_crop_plus_minus_text_size">28sp</dimen>
     <dimen name="review_and_crop_rectangle_border">20dp</dimen>
 
+    <dimen name="payment_item_text_size">16sp</dimen>
+
 </resources>

@@ -112,6 +112,9 @@ public class OrderPricingAdaptor extends BaseAdapter
 
     mItemList = new ArrayList<>();
 
+    if ( pricing == null ) return;
+
+
     Locale defaultLocale = Locale.getDefault();
 
     ///// Line items
@@ -122,11 +125,11 @@ public class OrderPricingAdaptor extends BaseAdapter
       {
       String description = lineItem.getDescription();
 
-      MultipleCurrencyAmount shippingCost = lineItem.getShippingCost();
+      MultipleCurrencyAmount itemCost = lineItem.getProductCost();
 
-      String amount = shippingCost.getDefaultDisplayAmountWithFallback();
+      String itemCostString = itemCost.getDefaultDisplayAmountWithFallback();
 
-      mItemList.add( new Item( description, amount, false ) );
+      mItemList.add( new Item( description, itemCostString, false ) );
       }
 
 

@@ -42,6 +42,9 @@ package ly.kite.pricing;
 
 ///// Class Declaration /////
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,13 +53,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ly.kite.product.MultipleCurrencyAmount;
+import ly.kite.product.SingleCurrencyAmount;
 
 /*****************************************************
  *
  * This class holds pricing information for an order.
  *
  *****************************************************/
-public class OrderPricing
+public class OrderPricing implements Parcelable
   {
   ////////// Static Constant(s) //////////
 
@@ -80,6 +84,20 @@ public class OrderPricing
 
 
   ////////// Static Variable(s) //////////
+
+  public static final Parcelable.Creator<OrderPricing> CREATOR =
+    new Parcelable.Creator<OrderPricing>()
+      {
+      public OrderPricing createFromParcel( Parcel sourceParcel )
+        {
+        return ( new OrderPricing( sourceParcel ) );
+        }
+
+      public OrderPricing[] newArray( int size )
+        {
+        return ( new OrderPricing[ size ] );
+        }
+      };
 
 
   ////////// Member Variable(s) //////////
@@ -211,6 +229,59 @@ public class OrderPricing
     }
 
 
+  /*****************************************************
+   *
+   * Creates order pricing from a parcel.
+   *
+   *****************************************************/
+  private OrderPricing( Parcel parcel )
+    {
+    mPromoCodeInvalidMessage = parcel.readString();
+    mPromoCodeDiscount       = (MultipleCurrencyAmount)parcel.readParcelable( MultipleCurrencyAmount.class.getClassLoader() );
+
+    mLineItemArrayList = new ArrayList<LineItem>();
+    parcel.readList( mLineItemArrayList, LineItem.class.getClassLoader() );
+
+    mTotalProductCost = (MultipleCurrencyAmount)parcel.readParcelable( MultipleCurrencyAmount.class.getClassLoader() );
+    mTotalCost = (MultipleCurrencyAmount)parcel.readParcelable( MultipleCurrencyAmount.class.getClassLoader() );
+    mTotalShippingCost = (MultipleCurrencyAmount)parcel.readParcelable( MultipleCurrencyAmount.class.getClassLoader() );
+    }
+
+
+  ////////// Parcelable Method(s) //////////
+
+  /*****************************************************
+   *
+   * Describes the contents.
+   *
+   *****************************************************/
+  @Override
+  public int describeContents()
+    {
+    return ( 0 );
+    }
+
+
+  /*****************************************************
+   *
+   * Write the contents to a parcel.
+   *
+   *****************************************************/
+  @Override
+  public void writeToParcel( Parcel parcel, int flags )
+    {
+    parcel.writeString( mPromoCodeInvalidMessage );
+    parcel.writeParcelable( mPromoCodeDiscount, flags );
+
+    parcel.writeList( mLineItemArrayList );
+    parcel.readList( mLineItemArrayList, LineItem.class.getClassLoader() );
+
+    parcel.writeParcelable( mTotalProductCost, flags );
+    parcel.writeParcelable( mTotalCost, flags );
+    parcel.writeParcelable( mTotalShippingCost, flags );
+    }
+
+
   ////////// Method(s) //////////
 
   /*****************************************************
@@ -276,13 +347,30 @@ public class OrderPricing
    * A line item in the pricing detail.
    *
    *****************************************************/
-  public class LineItem
+  static public class LineItem implements Parcelable
     {
+
+    public static final Parcelable.Creator<LineItem> CREATOR =
+        new Parcelable.Creator<LineItem>()
+        {
+        public LineItem createFromParcel( Parcel sourceParcel )
+          {
+          return ( new LineItem( sourceParcel ) );
+          }
+
+        public LineItem[] newArray( int size )
+          {
+          return ( new LineItem[ size ] );
+          }
+        };
+
+
     private String                  mProductId;
     private String                  mDescription;
     private MultipleCurrencyAmount  mShippingCost;
     private int                     mQuantity;
     private MultipleCurrencyAmount  mProductCost;
+
 
 
     /*****************************************************
@@ -316,6 +404,48 @@ public class OrderPricing
       }
 
 
+    LineItem( Parcel parcel )
+      {
+      mProductId    = parcel.readString();
+      mDescription  = parcel.readString();
+      mShippingCost = (MultipleCurrencyAmount)parcel.readParcelable( MultipleCurrencyAmount.class.getClassLoader() );
+      mQuantity     = parcel.readInt();
+      mProductCost  = (MultipleCurrencyAmount)parcel.readParcelable( MultipleCurrencyAmount.class.getClassLoader() );
+      }
+
+
+    ////////// Parcelable Method(s) //////////
+
+    /*****************************************************
+     *
+     * Describes the contents.
+     *
+     *****************************************************/
+    @Override
+    public int describeContents()
+      {
+      return ( 0 );
+      }
+
+
+    /*****************************************************
+     *
+     * Write the contents to a parcel.
+     *
+     *****************************************************/
+    @Override
+    public void writeToParcel( Parcel parcel, int flags )
+      {
+      parcel.writeString( mProductId );
+      parcel.writeString( mDescription );
+      parcel.writeParcelable( mShippingCost, flags );
+      parcel.writeInt( mQuantity );
+      parcel.writeParcelable( mProductCost, flags );
+      }
+
+
+    ////////// Method(s) //////////
+
     /*****************************************************
      *
      * Returns the description.
@@ -329,12 +459,12 @@ public class OrderPricing
 
     /*****************************************************
      *
-     * Returns the shipping cost.
+     * Returns the product cost.
      *
      *****************************************************/
-    public MultipleCurrencyAmount getShippingCost()
+    public MultipleCurrencyAmount getProductCost()
       {
-      return ( mShippingCost );
+      return ( mProductCost );
       }
 
     }

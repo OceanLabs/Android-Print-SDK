@@ -3,80 +3,81 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-    <ScrollView
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+        android:layout_height="fill_parent"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/checkout_progress_indicator"
+            android:layout_width="fill_parent"
+            android:layout_height="60dp"
+            android:src="@drawable/checkout_progress_indicator2"/>
+
+        <ListView
+            android:id="@+id/order_summary_list_view"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="0dp"/>
 
         <LinearLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/container_promo_code"
+            android:layout_marginTop="30dp"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:paddingBottom="@dimen/activity_vertical_margin"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingTop="@dimen/activity_vertical_margin"
-            android:orientation="vertical">
-
-            <ImageView
-                android:id="@+id/checkout_progress_indicator"
-                android:layout_width="fill_parent"
-                android:layout_height="60dp"
-                android:src="@drawable/checkout_progress_indicator2"/>
-
-            <ListView
-                android:id="@+id/order_summary_list_view"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.0"
+            android:orientation="horizontal">
+            <EditText
+                android:id="@+id/promo_edit_text"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="@dimen/activity_vertical_margin"/>
-
-            <LinearLayout
-                android:id="@+id/container_promo_code"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:orientation="horizontal">
-                <EditText
-                    android:id="@+id/promo_edit_text"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1.0"
-                    android:hint="@string/payment_promo_hint"/>
-                <Button
-                    android:id="@+id/promo_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.0"
-                    android:background="@null"
-                    android:enabled="false"
-                    android:onClick="onPromoButtonClicked"
-                    android:text="@string/payment_promo_button_text_apply"
-                    android:textColor="@color/apply_button"/>
-            </LinearLayout>
-
-
+                android:layout_weight="1.0"
+                android:hint="@string/payment_promo_hint"
+                android:textColor="@color/payment_promo_code_text_default"/>
             <Button
-                android:id="@+id/credit_card_button"
-                android:layout_width="fill_parent"
+                android:id="@+id/promo_button"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:background="#8eae4d"
-                android:onClick="onCreditCardButtonClicked"
-                android:text="@string/payment_credit_card_button_text"
-                android:textColor="@android:color/white"/>
-
-            <Button
-                android:id="@+id/paypal_button"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:background="#286db3"
-                android:onClick="onPayPalButtonClicked"
-                android:text="@string/payment_paypal_button_text"
-                android:textColor="@android:color/white"/>
-
+                android:layout_weight="0.0"
+                android:background="@null"
+                android:enabled="false"
+                android:onClick="onPromoButtonClicked"
+                android:text="@string/payment_promo_button_text_apply"
+                android:textColor="@color/apply_button"/>
         </LinearLayout>
 
-    </ScrollView>
+
+        <Button
+            android:id="@+id/credit_card_button"
+            android:layout_marginTop="30dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.0"
+            android:background="#8eae4d"
+            android:onClick="onCreditCardButtonClicked"
+            android:text="@string/payment_credit_card_button_text"
+            android:textColor="@android:color/white"/>
+
+        <Button
+            android:id="@+id/paypal_button"
+            android:layout_marginTop="10dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.0"
+            android:background="#286db3"
+            android:onClick="onPayPalButtonClicked"
+            android:text="@string/payment_paypal_button_text"
+            android:textColor="@android:color/white"/>
+
+    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/progress_bar"

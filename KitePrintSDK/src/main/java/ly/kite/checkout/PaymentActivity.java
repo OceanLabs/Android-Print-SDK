@@ -72,6 +72,7 @@ import ly.kite.pricing.IPricingConsumer;
 import ly.kite.pricing.OrderPricing;
 import ly.kite.pricing.PricingAgent;
 import ly.kite.KiteSDK;
+import ly.kite.product.MultipleCurrencyAmount;
 import ly.kite.product.PrintOrder;
 import ly.kite.product.PrintOrderSubmissionListener;
 import ly.kite.R;
@@ -93,22 +94,22 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
   {
   ////////// Static Constant(s) //////////
 
-  @SuppressWarnings( "unused" )
-  private static final String LOG_TAG                 = "PaymentActivity";
+  @SuppressWarnings("unused")
+  private static final String LOG_TAG = "PaymentActivity";
 
-  public  static final String EXTRA_PRINT_ORDER       = "ly.kite.EXTRA_PRINT_ORDER";
-  public  static final String EXTRA_PRINT_ENVIRONMENT = "ly.kite.EXTRA_PRINT_ENVIRONMENT";
-  public  static final String EXTRA_PRINT_API_KEY     = "ly.kite.EXTRA_PRINT_API_KEY";
+  public static final String EXTRA_PRINT_ORDER = "ly.kite.EXTRA_PRINT_ORDER";
+  public static final String EXTRA_PRINT_ENVIRONMENT = "ly.kite.EXTRA_PRINT_ENVIRONMENT";
+  public static final String EXTRA_PRINT_API_KEY = "ly.kite.EXTRA_PRINT_API_KEY";
 
-  public  static final String ENVIRONMENT_STAGING     = "ly.kite.ENVIRONMENT_STAGING";
-  public  static final String ENVIRONMENT_LIVE        = "ly.kite.ENVIRONMENT_LIVE";
-  public  static final String ENVIRONMENT_TEST        = "ly.kite.ENVIRONMENT_TEST";
+  public static final String ENVIRONMENT_STAGING = "ly.kite.ENVIRONMENT_STAGING";
+  public static final String ENVIRONMENT_LIVE = "ly.kite.ENVIRONMENT_LIVE";
+  public static final String ENVIRONMENT_TEST = "ly.kite.ENVIRONMENT_TEST";
 
-  private static final String CARD_IO_TOKEN           = "f1d07b66ad21407daf153c0ac66c09d7";
+  private static final String CARD_IO_TOKEN = "f1d07b66ad21407daf153c0ac66c09d7";
 
-  private static final int    REQUEST_CODE_PAYPAL     = 0;
-  private static final int    REQUEST_CODE_CREDITCARD = 1;
-  private static final int    REQUEST_CODE_RECEIPT    = 2;
+  private static final int REQUEST_CODE_PAYPAL = 0;
+  private static final int REQUEST_CODE_CREDITCARD = 1;
+  private static final int REQUEST_CODE_RECEIPT = 2;
 
 
   ////////// Static Variable(s) //////////
@@ -116,19 +117,21 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
 
   ////////// Member Variable(s) //////////
 
-  private PrintOrder              mPrintOrder;
-  private String                  mAPIKey;
-  private KiteSDK.Environment     mKiteSDKEnvironment;
-  private PayPalCard.Environment  mPayPalEnvironment;
+  private PrintOrder mPrintOrder;
+  private String mAPIKey;
+  private KiteSDK.Environment mKiteSDKEnvironment;
+  private PayPalCard.Environment mPayPalEnvironment;
 
-  private ListView                mOrderSummaryListView;
-  private EditText                mPromoEditText;
-  private Button                  mPromoButton;
-  private Button                  mCreditCardButton;
-  private Button                  mPayPalButton;
-  private ProgressBar             mProgressBar;
+  private ListView mOrderSummaryListView;
+  private EditText mPromoEditText;
+  private Button mPromoButton;
+  private Button mCreditCardButton;
+  private Button mPayPalButton;
+  private ProgressBar mProgressBar;
 
-  private OrderPricing            mOrderPricing;
+  private OrderPricing mOrderPricing;
+
+  private boolean mPromoButtonClearsCode;
 
 
   ////////// Static Initialiser(s) //////////
@@ -140,7 +143,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
     {
     Intent intent = new Intent( activity, PaymentActivity.class );
 
-    intent.putExtra(PaymentActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder );
+    intent.putExtra( PaymentActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder );
     intent.putExtra( PaymentActivity.EXTRA_PRINT_API_KEY, apiKey );
     intent.putExtra( PaymentActivity.EXTRA_PRINT_ENVIRONMENT, environmentName );
 
@@ -219,35 +222,14 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
 
     setContentView( R.layout.screen_payment );
 
-    mOrderSummaryListView = (ListView)findViewById( R.id.order_summary_list_view );
-    mPromoEditText        = (EditText)findViewById( R.id.promo_edit_text );
-    mPromoButton          = (Button)findViewById( R.id.promo_button );
-    mCreditCardButton     = (Button)findViewById( R.id.credit_card_button );
-    mPayPalButton         = (Button)findViewById( R.id.paypal_button );
-    mProgressBar          = (ProgressBar)findViewById( R.id.progress_bar );
+    mOrderSummaryListView = (ListView) findViewById( R.id.order_summary_list_view );
+    mPromoEditText        = (EditText) findViewById( R.id.promo_edit_text );
+    mPromoButton          = (Button) findViewById( R.id.promo_button );
+    mCreditCardButton     = (Button) findViewById( R.id.credit_card_button );
+    mPayPalButton         = (Button) findViewById( R.id.paypal_button );
+    mProgressBar          = (ProgressBar) findViewById( R.id.progress_bar );
 
-    //mOrderSummaryListView.setAdapter( new PrintOrderSummaryListAdapter( mPrintOrder ) );
-
-    //updateViewsBasedOnPromoCodeChange();
-
-    mPromoEditText.addTextChangedListener( new TextWatcher()
-      {
-      @Override
-      public void beforeTextChanged( CharSequence charSequence, int i, int i2, int i3 )
-        {
-        }
-
-      @Override
-      public void onTextChanged( CharSequence charSequence, int i, int i2, int i3 )
-        {
-        }
-
-      @Override
-      public void afterTextChanged( Editable editable )
-        {
-        mPromoButton.setEnabled( mPromoEditText.getText().length() > 0 );
-        }
-      } );
+    mPromoEditText.addTextChangedListener( new PromoCodeTextWatcher() );
 
 
     if ( mPayPalEnvironment == PayPalCard.Environment.SANDBOX )
@@ -281,6 +263,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
     outState.putSerializable( EXTRA_PRINT_ENVIRONMENT, mKiteSDKEnvironment );
     }
 
+
   @Override
   public void onRestoreInstanceState( Bundle savedInstanceState )
     {
@@ -300,97 +283,116 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
 
 
   @Override
-  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-  if (requestCode == REQUEST_CODE_PAYPAL) {
-  if (resultCode == Activity.RESULT_OK) {
-
-  PaymentConfirmation paymentConfirmation = data.getParcelableExtra( com.paypal.android.sdk.payments.PaymentActivity.EXTRA_RESULT_CONFIRMATION );
-
-  if (paymentConfirmation != null) {
-
-  Analytics.getInstance( this ).trackPaymentCompleted( mPrintOrder, Analytics.PAYMENT_METHOD_PAYPAL );
-
-  try {
-
-  ProofOfPayment proofOfPayment = paymentConfirmation.getProofOfPayment();
-
-  if ( proofOfPayment != null )
+  protected void onActivityResult( int requestCode, int resultCode, Intent data )
     {
-    String paymentId = proofOfPayment.getPaymentId();
-
-    //String proofOfPayment = paymentConfirmation.toJSONObject().getJSONObject("proof_of_payment").getJSONObject("adaptive_payment").getString( "pay_key" );
-
-    if ( paymentId != null )
+    if ( requestCode == REQUEST_CODE_PAYPAL )
       {
-      submitOrderForPrinting( paymentId );
+      if ( resultCode == Activity.RESULT_OK )
+        {
+
+        PaymentConfirmation paymentConfirmation = data.getParcelableExtra( com.paypal.android.sdk.payments.PaymentActivity.EXTRA_RESULT_CONFIRMATION );
+
+        if ( paymentConfirmation != null )
+          {
+
+          Analytics.getInstance( this ).trackPaymentCompleted( mPrintOrder, Analytics.PAYMENT_METHOD_PAYPAL );
+
+          try
+            {
+
+            ProofOfPayment proofOfPayment = paymentConfirmation.getProofOfPayment();
+
+            if ( proofOfPayment != null )
+              {
+              String paymentId = proofOfPayment.getPaymentId();
+
+              //String proofOfPayment = paymentConfirmation.toJSONObject().getJSONObject("proof_of_payment").getJSONObject("adaptive_payment").getString( "pay_key" );
+
+              if ( paymentId != null )
+                {
+                submitOrderForPrinting( paymentId );
+                }
+              else
+                {
+                showErrorDialog( "No payment id found in proof of payment" );
+                }
+              }
+            else
+              {
+              showErrorDialog( "No proof of payment found in payment confirmation" );
+              }
+
+            }
+          catch ( Exception exception )
+            {
+            showErrorDialog( exception.getMessage() );
+            }
+          }
+        else
+          {
+          showErrorDialog( "No payment confirmation received from PayPal" );
+          }
+        }
       }
-    else
+    else if ( requestCode == REQUEST_CODE_CREDITCARD )
       {
-      showErrorDialog( "No payment id found in proof of payment" );
+      if ( data != null && data.hasExtra( CardIOActivity.EXTRA_SCAN_RESULT ) )
+        {
+        CreditCard scanResult = data.getParcelableExtra( CardIOActivity.EXTRA_SCAN_RESULT );
+
+        if ( !scanResult.isExpiryValid() )
+          {
+          showErrorDialog( "Sorry it looks like that card has expired. Please try again." );
+          return;
+          }
+
+        PayPalCard card = new PayPalCard();
+        card.setNumber( scanResult.cardNumber );
+        card.setExpireMonth( scanResult.expiryMonth );
+        card.setExpireYear( scanResult.expiryYear );
+        card.setCvv2( scanResult.cvv );
+        card.setCardType( PayPalCard.CardType.getCardType( scanResult.getCardType() ) );
+
+        if ( card.getCardType() == PayPalCard.CardType.UNSUPPORTED )
+          {
+          showErrorDialog( "Sorry we couldn't recognize your card. Please try again manually entering your card details if necessary." );
+          return;
+          }
+
+        final ProgressDialog dialog = new ProgressDialog( this );
+        dialog.setCancelable( false );
+        dialog.setTitle( "Processing" );
+        dialog.setMessage( "One moment" );
+        dialog.show();
+        card.storeCard( mPayPalEnvironment, new PayPalCardVaultStorageListener()
+        {
+        @Override
+        public void onStoreSuccess( PayPalCard card )
+          {
+          dialog.dismiss();
+          payWithExistingCard( card );
+          }
+
+        @Override
+        public void onError( PayPalCard card, Exception ex )
+          {
+          dialog.dismiss();
+          showErrorDialog( ex.getMessage() );
+          }
+        } );
+
+        }
+      else
+        {
+        // card scan cancelled
+        }
+      }
+    else if ( requestCode == REQUEST_CODE_RECEIPT )
+      {
+      setResult( Activity.RESULT_OK );
+      finish();
       }
     }
-  else
-    {
-    showErrorDialog( "No proof of payment found in payment confirmation" );
-    }
-
-  } catch ( Exception exception ) {
-  showErrorDialog( exception.getMessage() );
-  }
-  }
-  else
-    {
-    showErrorDialog( "No payment confirmation received from PayPal" );
-    }
-  }
-  } else if (requestCode == REQUEST_CODE_CREDITCARD) {
-  if (data != null && data.hasExtra(CardIOActivity.EXTRA_SCAN_RESULT)) {
-  CreditCard scanResult = data.getParcelableExtra(CardIOActivity.EXTRA_SCAN_RESULT);
-
-  if (!scanResult.isExpiryValid()) {
-  showErrorDialog("Sorry it looks like that card has expired. Please try again.");
-  return;
-  }
-
-  PayPalCard card = new PayPalCard();
-  card.setNumber(scanResult.cardNumber);
-  card.setExpireMonth(scanResult.expiryMonth);
-  card.setExpireYear(scanResult.expiryYear);
-  card.setCvv2(scanResult.cvv);
-  card.setCardType(PayPalCard.CardType.getCardType(scanResult.getCardType()));
-
-  if (card.getCardType() == PayPalCard.CardType.UNSUPPORTED) {
-  showErrorDialog("Sorry we couldn't recognize your card. Please try again manually entering your card details if necessary.");
-  return;
-  }
-
-  final ProgressDialog dialog = new ProgressDialog(this);
-  dialog.setCancelable(false);
-  dialog.setTitle("Processing");
-  dialog.setMessage("One moment");
-  dialog.show();
-  card.storeCard( mPayPalEnvironment, new PayPalCardVaultStorageListener() {
-  @Override
-  public void onStoreSuccess(PayPalCard card) {
-  dialog.dismiss();
-  payWithExistingCard(card);
-  }
-
-  @Override
-  public void onError(PayPalCard card, Exception ex) {
-  dialog.dismiss();
-  showErrorDialog(ex.getMessage());
-  }
-  });
-
-  } else {
-  // card scan cancelled
-  }
-  } else if (requestCode == REQUEST_CODE_RECEIPT) {
-  setResult(Activity.RESULT_OK);
-  finish();
-  }
-  }
 
 
   @Override
@@ -402,13 +404,15 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
 
 
   @Override
-  public boolean onMenuItemSelected(int featureId, MenuItem item) {
-  if (item.getItemId() == android.R.id.home) {
-  finish();
-  return true;
-  }
-  return super.onMenuItemSelected(featureId, item);
-  }
+  public boolean onMenuItemSelected( int featureId, MenuItem item )
+    {
+    if ( item.getItemId() == android.R.id.home )
+      {
+      finish();
+      return true;
+      }
+    return super.onMenuItemSelected( featureId, item );
+    }
 
 
   ////////// IPricingConsumer Method(s) //////////
@@ -494,16 +498,70 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
     {
     // Verify that amy promo code was accepted
 
-    String message = mOrderPricing.getPromoCodeInvalidMessage();
+    String promoCodeInvalidMessage = mOrderPricing.getPromoCodeInvalidMessage();
 
-    if ( message != null )
+    if ( promoCodeInvalidMessage != null )
       {
-      // Note that we show an error message, but we leave the buttons
-      // enabled, so the user can pay without the benefit of any promotion.
+      // A promo code was sent with the request but was invalid.
 
-      showErrorDialog( message );
+      // Change the colour to highlight it
+      mPromoEditText.setTextColor( getResources().getColor( R.color.payment_promo_code_text_error ) );
 
-      return;
+      mPromoButton.setText( R.string.payment_promo_button_text_clear );
+
+      mPromoButtonClearsCode = true;
+
+
+      // Note that we show an error message, but we still update the
+      // order summary and leave the buttons enabled. That way the
+      // user can still pay without the benefit of any promotional
+      // discount.
+
+      showErrorDialog( promoCodeInvalidMessage );
+      }
+    else
+      {
+      // Either there was no promo code, or it was valid.
+
+      // If there is a promo code - change the text to "Clear" immediately following a retrieval. It
+      // will get changed back to "Apply" as soon as the field is changed.
+
+      if ( setPromoButtonEnabledState() )
+        {
+        mPromoButton.setText( R.string.payment_promo_button_text_clear );
+
+        mPromoButtonClearsCode = true;
+        }
+      }
+
+
+    // Get the total cost, and save it in the order
+
+    MultipleCurrencyAmount totalCost = mOrderPricing.getTotalCost();
+
+    mPrintOrder.setOrderPricing( mOrderPricing );
+
+
+    // If the cost is zero, we change the button text
+    if ( totalCost.getDefaultAmountWithFallback().getAmount().compareTo( BigDecimal.ZERO ) <= 0 )
+      {
+      mPayPalButton.setVisibility( View.GONE );
+
+      mCreditCardButton.setText( R.string.payment_credit_card_button_text_free );
+      mCreditCardButton.setOnClickListener( new View.OnClickListener()
+      {
+      @Override
+      public void onClick( View view )
+        {
+        submitOrderForPrinting( null );
+        }
+      } );
+      }
+    else
+      {
+      mPayPalButton.setVisibility( View.VISIBLE );
+
+      mCreditCardButton.setText( R.string.payment_credit_card_button_text );
       }
 
 
@@ -511,6 +569,54 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
 
     mOrderSummaryListView.setAdapter( adaptor );
     }
+
+
+  /*****************************************************
+   *
+   * Sets the enabled state of the promo button.
+   *
+   * @return The enabled state.
+   *
+   *****************************************************/
+  private boolean setPromoButtonEnabledState()
+    {
+    boolean isEnabled = ( mPromoEditText.getText().length() > 0 );
+
+    mPromoButton.setEnabled( isEnabled );
+
+    return ( isEnabled );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the promo button is called. It may be
+   * in one of two states:
+   *   - Apply
+   *   - Clear
+   *
+   *****************************************************/
+  public void onPromoButtonClicked( View view )
+    {
+    if ( mPromoButtonClearsCode )
+      {
+      mPrintOrder.clearPromoCode();
+
+      mPromoEditText.setText( null );
+
+      mPromoButton.setText( R.string.payment_promo_button_text_apply );
+      mPromoButton.setEnabled( false );
+
+      mPromoButtonClearsCode = false;
+      }
+    else
+      {
+      mPrintOrder.setPromoCode( mPromoEditText.getText().toString() );
+
+      requestPrices();
+      }
+    }
+
 
 
   /*****************************************************
@@ -577,10 +683,11 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
   private void payWithNewCard()
     {
     Intent scanIntent = new Intent( this, CardIOActivity.class );
-    //scanIntent.putExtra(CardIOActivity.EXTRA_APP_TOKEN, CARD_IO_TOKEN);
+
     scanIntent.putExtra( CardIOActivity.EXTRA_REQUIRE_EXPIRY, true );
     scanIntent.putExtra( CardIOActivity.EXTRA_REQUIRE_CVV, true );
     scanIntent.putExtra( CardIOActivity.EXTRA_REQUIRE_POSTAL_CODE, false );
+
     startActivityForResult( scanIntent, REQUEST_CODE_CREDITCARD );
     }
 
@@ -621,6 +728,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
       }
     }
 
+
   private void payWithExistingCard( PayPalCard card )
     {
     final ProgressDialog dialog = new ProgressDialog( this );
@@ -636,24 +744,24 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
             getPayPalCurrency( totalCost.getCurrencyCode() ),
             "",
             new PayPalCardChargeListener()
-    {
-    @Override
-    public void onChargeSuccess( PayPalCard card, String proofOfPayment )
-      {
-      Analytics.getInstance( PaymentActivity.this ).trackPaymentCompleted( mPrintOrder, Analytics.PAYMENT_METHOD_CREDIT_CARD );
+            {
+            @Override
+            public void onChargeSuccess( PayPalCard card, String proofOfPayment )
+              {
+              Analytics.getInstance( PaymentActivity.this ).trackPaymentCompleted( mPrintOrder, Analytics.PAYMENT_METHOD_CREDIT_CARD );
 
-      dialog.dismiss();
-      submitOrderForPrinting( proofOfPayment );
-      card.saveAsLastUsedCard( PaymentActivity.this );
-      }
+              dialog.dismiss();
+              submitOrderForPrinting( proofOfPayment );
+              card.saveAsLastUsedCard( PaymentActivity.this );
+              }
 
-    @Override
-    public void onError( PayPalCard card, Exception ex )
-      {
-      dialog.dismiss();
-      showErrorDialog( ex.getMessage() );
-      }
-    } );
+            @Override
+            public void onError( PayPalCard card, Exception ex )
+              {
+              dialog.dismiss();
+              showErrorDialog( ex.getMessage() );
+              }
+            } );
     }
 
 
@@ -716,89 +824,44 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
     } );
     }
 
-  private void updateViewsBasedOnPromoCodeChange()
-    {
-    if ( mPrintOrder.getPromoCode() != null )
-      {
-      mPromoEditText.setText( mPrintOrder.getPromoCode() );
-      mPromoEditText.setEnabled( false );
-      mPromoButton.setText( "Clear" );
-      }
-    else
-      {
-      mPromoEditText.setText( "" );
-      mPromoEditText.setEnabled( true );
-      mPromoButton.setText( "Apply" );
-      }
-
-    if ( mOrderPricing.getTotalCost().getDefaultAmountWithFallback().getAmount().compareTo( BigDecimal.ZERO ) <= 0 )
-      {
-      mPayPalButton.setVisibility( View.GONE );
-      mCreditCardButton.setText( "Checkout for Free!" );
-      mCreditCardButton.setOnClickListener( new View.OnClickListener()
-      {
-      @Override
-      public void onClick( View view )
-        {
-        submitOrderForPrinting( null );
-        }
-      } );
-
-
-      }
-    else
-      {
-      mPayPalButton.setVisibility( View.VISIBLE );
-      mCreditCardButton.setText( "Pay with Credit Card" );
-      }
-    }
-
-  public void onPromoButtonClicked( View view )
-    {
-    if ( mPrintOrder.getPromoCode() != null )
-      {
-      // Clear promo code
-      mPrintOrder.clearPromoCode();
-      updateViewsBasedOnPromoCodeChange();
-      }
-    else
-      {
-      // Apply promo code
-      final ProgressDialog dialog = new ProgressDialog( this );
-      dialog.setCancelable( false );
-      dialog.setTitle( "Processing" );
-      dialog.setMessage( "Checking Code..." );
-      dialog.show();
-
-      String promoCode = mPromoEditText.getText().toString();
-      // TODO: Request pricing again
-
-      mPrintOrder.setPromoCode( promoCode );
-
-      requestPrices();
-
-      //mPrintOrder.applyPromoCode( this, promoCode, new ApplyPromoCodeListener()
-//      {
-//      @Override
-//      public void onPromoCodeApplied( PrintOrder order, BigDecimal discount )
-//        {
-//        dialog.dismiss();
-//        Toast.makeText( PaymentActivity.this, "Discount applied!", Toast.LENGTH_LONG ).show();
-//        updateViewsBasedOnPromoCodeChange();
-//        }
-//
-//      @Override
-//      public void onError( PrintOrder order, Exception ex )
-//        {
-//        dialog.dismiss();
-//        showErrorDialog( ex.getMessage() );
-//        }
-//      } );
-      }
-    }
-
 
   ////////// Inner Class(es) //////////
+
+  /*****************************************************
+   *
+   * A text watcher for the promo code.
+   *
+   *****************************************************/
+  private class PromoCodeTextWatcher implements TextWatcher
+    {
+    @Override
+    public void beforeTextChanged( CharSequence charSequence, int i, int i2, int i3 )
+      {
+      // Ignore
+      }
+
+    @Override
+    public void onTextChanged( CharSequence charSequence, int i, int i2, int i3 )
+      {
+      // Ignore
+      }
+
+    @Override
+    public void afterTextChanged( Editable editable )
+      {
+      // Clear any error colour on the text
+      mPromoEditText.setTextColor( getResources().getColor( R.color.payment_promo_code_text_default ) );
+
+      // Set the enabled state
+      setPromoButtonEnabledState();
+
+      // Change the button text back to Apply (even if we disable the button because the code is blank)
+      mPromoButton.setText( R.string.payment_promo_button_text_apply );
+
+      mPromoButtonClearsCode = false;
+      }
+    }
+
 
   /*****************************************************
    *

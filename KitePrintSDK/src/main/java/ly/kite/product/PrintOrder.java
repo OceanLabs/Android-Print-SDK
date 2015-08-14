@@ -3,6 +3,7 @@ package ly.kite.product;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.MutableLong;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 
 import ly.kite.address.Address;
+import ly.kite.pricing.OrderPricing;
 
 /**
  * Created by deonbotha on 09/02/2014.
@@ -47,10 +49,16 @@ public class PrintOrder implements Parcelable /* , Serializable */
     private int storageIdentifier = NOT_PERSITED;
 
     private String promoCode;
-    private BigDecimal promoCodeDiscount;
+
+    private OrderPricing  mOrderPricing;
+
+    //MultipleCurrencyAmount  mPromoCodeDiscount;
+    //private BigDecimal promoCodeDiscount;
     private String statusNotificationEmail;
     private String statusNotificationPhone;
     //private String currencyCode = null;
+
+    //private MultipleCurrencyAmount mTotalCost;
 
     public PrintOrder() {}
 
@@ -167,57 +175,6 @@ public class PrintOrder implements Parcelable /* , Serializable */
 
         return supported == null ? Collections.EMPTY_SET : supported;
     }
-
-//    public String getCurrencyCode() {
-//        String code = currencyCode == null ? Country.getInstance(Locale.getDefault()).iso3CurrencyCode() : currencyCode;
-//        Set<String> supportedCurrencies = getCurrenciesSupported();
-//        if (supportedCurrencies.contains(code)) {
-//            return code;
-//        }
-//
-//        if (supportedCurrencies.contains("USD")) {
-//            return "USD";
-//        }
-//
-//        if (supportedCurrencies.contains("GBP")) {
-//            return "GBP";
-//        }
-//
-//        if (supportedCurrencies.contains("EUR")) {
-//            return "EUR";
-//        }
-//
-//        if (supportedCurrencies.size() == 0) {
-//            throw new IllegalStateException("Please ensure that there is at least one common currency amongst PrintJobs that are added to the PrintOrder");
-//        }
-//
-//        return supportedCurrencies.iterator().next();
-//    }
-
-//    public void setCurrencyCode(String currencyCode) {
-//        this.currencyCode = currencyCode;
-//    }
-
-//    public BigDecimal getCost(String currency) {
-//        if (!getCurrenciesSupported().contains(currency)) {
-//            throw new IllegalStateException(currency + " is not supported by this PrintOrder. See PrintOrder.getCurrenciesSupported()");
-//        }
-//
-//        BigDecimal cost = new BigDecimal(0);
-//        for (PrintJob job : jobs) {
-//            cost = cost.add(job.getCost(currency));
-//        }
-//
-//        if (this.promoCodeDiscount != null) {
-//            cost = cost.subtract(this.promoCodeDiscount);
-//            if (cost.compareTo(BigDecimal.ZERO) < 0) {
-//                cost = BigDecimal.ZERO;
-//            }
-//        }
-//
-//        return cost;
-//    }
-
 
     /*****************************************************
      *
@@ -394,12 +351,6 @@ public class PrintOrder implements Parcelable /* , Serializable */
         @Override
         public void onProgress(AssetUploadRequest req, int totalAssetsUploaded, int totalAssetsToUpload, long bytesWritten, long totalAssetBytesWritten, long totalAssetBytesExpectedToWrite) {
 
-//        final float step = (1.0f / totalAssetsToUpload);
-//        float progress = totalAssetsUploaded * step + (totalAssetBytesWritten / (float) totalAssetBytesExpectedToWrite) * step;
-//        dialog.setProgress((int) (totalAssetsUploaded * step * 100));
-//        dialog.setSecondaryProgress((int) (progress * 100));
-
-//        totalBytesWritten += bytesWritten;
 
             // Calculate the primary / secondary progress
             int primaryProgressPercent   = Math.round( (float)totalAssetsUploaded    * 100f / (float)totalAssetsToUpload );
@@ -470,13 +421,13 @@ public class PrintOrder implements Parcelable /* , Serializable */
 
     @Override
     public void writeToParcel(Parcel p, int flags) {
-        p.writeValue(shippingAddress);
+        p.writeValue( shippingAddress );
         p.writeString(proofOfPayment);
-        p.writeString(voucherCode);
+        p.writeString( voucherCode );
         String userDataString = userData == null ? null : userData.toString();
-        p.writeString(userDataString);
+        p.writeString( userDataString );
 
-        p.writeInt(jobs.size());
+        p.writeInt( jobs.size() );
         for (PrintJob job : jobs) {
             if (job instanceof PostcardPrintJob) {
                 p.writeInt(1);
@@ -489,15 +440,14 @@ public class PrintOrder implements Parcelable /* , Serializable */
 
         p.writeValue(userSubmittedForPrinting);
         p.writeValue(assetUploadComplete);
-        p.writeValue(lastPrintSubmissionDate);
-        p.writeString(receipt);
-        p.writeSerializable(lastPrintSubmissionError);
-        p.writeInt(storageIdentifier);
-        p.writeString(promoCode);
-        p.writeValue(promoCodeDiscount);
-        p.writeString(statusNotificationEmail);
-        p.writeString(statusNotificationPhone);
-        //p.writeString(currencyCode);
+        p.writeValue( lastPrintSubmissionDate );
+        p.writeString( receipt );
+        p.writeSerializable( lastPrintSubmissionError );
+        p.writeInt( storageIdentifier );
+        p.writeString( promoCode );
+        p.writeParcelable( mOrderPricing, flags );
+        p.writeString( statusNotificationEmail );
+        p.writeString( statusNotificationPhone );
     }
 
     private PrintOrder(Parcel p) {
@@ -527,15 +477,14 @@ public class PrintOrder implements Parcelable /* , Serializable */
 
         this.userSubmittedForPrinting = (Boolean) p.readValue(Boolean.class.getClassLoader());
         this.assetUploadComplete = (Boolean) p.readValue(Boolean.class.getClassLoader());
-        this.lastPrintSubmissionDate = (Date) p.readValue(Date.class.getClassLoader());
+        this.lastPrintSubmissionDate = (Date) p.readValue( Date.class.getClassLoader() );
         this.receipt = p.readString();
         this.lastPrintSubmissionError = (Exception) p.readSerializable();
         this.storageIdentifier = p.readInt();
         this.promoCode = p.readString();
-        this.promoCodeDiscount = (BigDecimal) p.readValue(BigDecimal.class.getClassLoader());
+        mOrderPricing = (OrderPricing)p.readParcelable( OrderPricing.class.getClassLoader() );
         this.statusNotificationEmail = p.readString();
         this.statusNotificationPhone = p.readString();
-        //this.currencyCode = p.readString();
     }
 
     public static final Parcelable.Creator<PrintOrder> CREATOR
@@ -554,10 +503,6 @@ public class PrintOrder implements Parcelable /* , Serializable */
      * Promo code stuff
      */
 
-    public BigDecimal getPromoCodeDiscount() {
-        return promoCodeDiscount;
-    }
-
     public void setPromoCode( String promoCode )
         {
         this.promoCode = promoCode;
@@ -567,31 +512,18 @@ public class PrintOrder implements Parcelable /* , Serializable */
         return promoCode;
     }
 
-//    public CheckPromoRequest applyPromoCode(Context context, final String promoCode, final ApplyPromoCodeListener listener) {
-//        CheckPromoRequest req = new CheckPromoRequest();
-//        req.checkPromoCode( context, promoCode, this, new CheckPromoCodeRequestListener() {
-//            @Override
-//            public void onDiscount(BigDecimal discount) {
-//                if (promoCode != null && discount.compareTo(BigDecimal.ZERO) > 0) {
-//                    PrintOrder.this.promoCode = promoCode;
-//                    PrintOrder.this.promoCodeDiscount = discount;
-//                }
-//
-//                listener.onPromoCodeApplied(PrintOrder.this, discount);
-//            }
-//
-//            @Override
-//            public void onError(Exception ex) {
-//                listener.onError(PrintOrder.this, ex);
-//            }
-//        });
-//
-//        return req;
-//    }
-
     public void clearPromoCode() {
         this.promoCode = null;
-        this.promoCodeDiscount = null;
+        mOrderPricing = null;
     }
 
+    public void setOrderPricing( OrderPricing orderPricing )
+      {
+      mOrderPricing = orderPricing;
+      }
+
+    public OrderPricing getOrderPricing()
+      {
+      return ( mOrderPricing );
+      }
 }

@@ -41,4 +41,7 @@
 
     <color name="review_and_crop_quantity_highlight">#fff29919</color>
 
+    <color name="payment_promo_code_text_default">@android:color/black</color>
+    <color name="payment_promo_code_text_error">#ffff0000</color>
+
 </resources>
