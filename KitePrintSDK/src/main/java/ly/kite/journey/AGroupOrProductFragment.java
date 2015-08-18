@@ -424,7 +424,7 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements P
         }
 
 
-      viewReferences.productImageView.setKey( imageURL );
+      viewReferences.productImageView.clearForNewImage( imageURL );
 
       mImageManager.requestRemoteImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, imageURL, parent.getHandler(), viewReferences.productImageView );
 

@@ -49,6 +49,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
@@ -153,42 +154,16 @@ public class ProductSelectionActivity extends AKiteActivity implements ChoosePro
 
 
 
-    // Get the assets
+    // Get the assets. Note that the asset list may be null, since some apps allow assets to be
+    // chosen at a later stage, in which case we create an empty one here.
 
-    Intent intent = getIntent();
+    Intent           intent = getIntent();
+    ArrayList<Asset> assetArrayList;
 
-    if ( intent == null )
+    if ( intent == null ||
+         ( assetArrayList = intent.getParcelableArrayListExtra( INTENT_EXTRA_NAME_ASSET_LIST ) ) == null )
       {
-      Log.e( LOG_TAG, "No intent found" );
-
-      displayModalDialog(
-              R.string.alert_dialog_title_no_intent,
-              R.string.alert_dialog_message_no_intent,
-              NO_BUTTON,
-              null,
-              R.string.Cancel,
-              new FinishRunnable()
-      );
-
-      return;
-      }
-
-    ArrayList<Asset> assetArrayList = intent.getParcelableArrayListExtra( INTENT_EXTRA_NAME_ASSET_LIST );
-
-    if ( assetArrayList == null || assetArrayList.size() < 1 )
-      {
-      Log.e( LOG_TAG, "No asset list found" );
-
-      displayModalDialog(
-              R.string.alert_dialog_title_no_asset_list,
-              R.string.alert_dialog_message_no_asset_list,
-              NO_BUTTON,
-              null,
-              R.string.Cancel,
-              new FinishRunnable()
-      );
-
-      return;
+      assetArrayList = new ArrayList<Asset>();
       }
 
 
@@ -246,11 +221,23 @@ public class ProductSelectionActivity extends AKiteActivity implements ChoosePro
   @Override
   public void pgOnProductGroupChosen( ProductGroup productGroup )
     {
-    // Display the product selection fragment
+    // If the product group contains more than one product - display
+    // the choose product screen. Otherwise go direct to the product
+    // overview.
 
-    mProductFragment = ChooseProductFragment.newInstance( productGroup );
+    List<Product> productList = productGroup.getProductList();
 
-    addFragment( mProductFragment, ChooseProductFragment.TAG );
+    if ( productList == null || productList.size() > 1 )
+      {
+      mProductFragment = ChooseProductFragment.newInstance( productGroup );
+
+      addFragment( mProductFragment, ChooseProductFragment.TAG );
+
+      return;
+      }
+
+
+    onDisplayProductOverview( productList.get( 0 ) );
     }
 
 
@@ -264,11 +251,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ChoosePro
   @Override
   public void pOnProductChosen( Product product )
     {
-    // Display the product overview fragment
-
-    mProductOverviewFragment = ProductOverviewFragment.newInstance( product );
-
-    addFragment( mProductOverviewFragment, ProductOverviewFragment.TAG );
+    onDisplayProductOverview( product );
     }
 
 
@@ -291,6 +274,19 @@ public class ProductSelectionActivity extends AKiteActivity implements ChoosePro
 
 
   ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Displays the product overview fragment for the supplied
+   * product.
+   *
+   *****************************************************/
+  private void onDisplayProductOverview( Product product )
+    {
+    mProductOverviewFragment = ProductOverviewFragment.newInstance( product );
+
+    addFragment( mProductOverviewFragment, ProductOverviewFragment.TAG );
+    }
 
 
   ////////// Inner Class(es) //////////

@@ -189,6 +189,23 @@ public class KiteSDK
     }
 
 
+  /*****************************************************
+   *
+   * Convenience method for initialising and Launching the
+   * shopping experience, without any assets.
+   *
+   *****************************************************/
+  public static void startShopping( Context context, String apiKey, KiteSDK.Environment environment )
+    {
+    KiteSDK kiteSDK = getInstance( context, apiKey, environment );
+
+    // Create an empty asset array list
+    ArrayList<Asset> assetArrayList = new ArrayList<>( 0 );
+
+    kiteSDK.startShopping( context, assetArrayList );
+    }
+
+
   ////////// Constructor(s) //////////
 
   private KiteSDK( Context context, String apiKey, Environment environment )

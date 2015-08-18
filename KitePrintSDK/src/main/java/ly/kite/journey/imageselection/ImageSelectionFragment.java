@@ -220,6 +220,9 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     if ( ! productIsValid() ) return;
 
 
+    mNumberOfColumns = getResources().getInteger( R.integer.image_selection_grid_num_columns );
+
+
     // If we don't have a valid "is checked" list - create a new one with all the images checked.
 
     mUncheckedImagesCount = 0;
@@ -239,9 +242,6 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
         if ( ! isChecked ) mUncheckedImagesCount ++;
         }
       }
-
-
-    mNumberOfColumns = getResources().getInteger( R.integer.image_selection_grid_num_columns );
 
 
     setTitle();
@@ -381,8 +381,6 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
   public void onActivityResult( int requestCode, int resultCode, Intent returnedIntent )
     {
     super.onActivityResult( requestCode, resultCode, returnedIntent );
-
-Log.d( TAG, "onActivityResult( requestCode = " + requestCode + ", resultCode = " + resultCode + ", returnedIndex = " + returnedIntent + " )" );
 
     if ( requestCode == AKiteActivity.ACTIVITY_REQUEST_CODE_SELECT_IMAGE && resultCode == Activity.RESULT_OK )
       {

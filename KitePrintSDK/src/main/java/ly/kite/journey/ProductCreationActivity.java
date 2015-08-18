@@ -94,13 +94,6 @@ public class ProductCreationActivity extends AKiteActivity implements PhoneCaseF
   private ArrayList<AssetsAndQuantity>  mAssetsAndQuantityArrayList;
   private Product                       mProduct;
 
-
-//  private PhoneCaseFragment             mPhoneCaseFragment;
-//
-//  private ImageSelectionFragment        mImageSelectionFragment;
-//  private ReviewAndEditFragment         mReviewAndEditFragment;
-//  private EditImageFragment             mEditImageFragment;
-
   private int                           mLastEditedAssetIndex;
 
 
@@ -196,21 +189,7 @@ public class ProductCreationActivity extends AKiteActivity implements PhoneCaseF
 
     mAssetsAndQuantityArrayList = intent.getParcelableArrayListExtra( INTENT_EXTRA_NAME_ASSETS_AND_QUANTITY_LIST );
 
-    if ( mAssetsAndQuantityArrayList == null || mAssetsAndQuantityArrayList.size() < 1 )
-      {
-      Log.e( LOG_TAG, "No asset list found" );
-
-      displayModalDialog(
-              R.string.alert_dialog_title_no_asset_list,
-              R.string.alert_dialog_message_no_asset_list,
-              NO_BUTTON,
-              null,
-              R.string.Cancel,
-              new FinishRunnable()
-      );
-
-      return;
-      }
+    if ( mAssetsAndQuantityArrayList == null ) mAssetsAndQuantityArrayList = new ArrayList<>();
 
 
     mProduct = intent.getParcelableExtra( INTENT_EXTRA_NAME_PRODUCT );

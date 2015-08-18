@@ -81,7 +81,7 @@ public class ProductImageAdaptor extends PagerAdapter
   private View.OnClickListener  mOnClickListener;
 
   private LayoutInflater        mLayoutInflator;
-  private ImageLoader mImageManager;
+  private ImageLoader           mImageLoader;
 
 
   ////////// Static Initialiser(s) //////////
@@ -99,7 +99,7 @@ public class ProductImageAdaptor extends PagerAdapter
     mOnClickListener = onClickListener;
 
     mLayoutInflator  = LayoutInflater.from( context );
-    mImageManager    = ImageLoader.getInstance( context );
+    mImageLoader = ImageLoader.getInstance( context );
     }
 
 
@@ -140,10 +140,10 @@ public class ProductImageAdaptor extends PagerAdapter
 
     LabelledImageView labelledImageView = (LabelledImageView)view.findViewById( R.id.labelled_image_view );
 
-    labelledImageView.setKey( imageURL );
+    labelledImageView.clearForNewImage( imageURL );
     labelledImageView.setOnClickListener( mOnClickListener );  // The view pager won't respond to click events, so we need to add them to each page
 
-    mImageManager.requestRemoteImage( IMAGE_CLASS_STRING, imageURL, container.getHandler(), labelledImageView );
+    mImageLoader.requestRemoteImage( IMAGE_CLASS_STRING, imageURL, container.getHandler(), labelledImageView );
 
 
     return ( view );

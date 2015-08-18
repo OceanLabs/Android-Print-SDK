@@ -171,9 +171,24 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
       }
 
 
-    // Add as many placeholders as we need to complete the pack
+    // If we have no assets, then make sure we have a title for an empty placeholder pack.
 
-    while ( ( assetIndex % imagesPerPack ) != 0 )
+    if ( assetIndex <= 0 )
+      {
+      packNumber ++;
+
+      mItemList.add( new Item( context.getString( R.string.image_selection_pack_title_format_string, packNumber, imagesPerPack, product.getName() ) ) );
+
+      itemIndex ++;
+
+      gridStartItemIndex = itemIndex;
+      }
+
+
+    // Add as many placeholders as we need to complete the pack. Remember that the grid must
+    // always contain at least one pack - even if it is empty.
+
+    while ( assetIndex == 0 || ( assetIndex % imagesPerPack ) != 0 )
       {
       int gridY = ( itemIndex - gridStartItemIndex ) / numberOfColumns;
       int gridX = ( itemIndex - gridStartItemIndex ) % numberOfColumns;

@@ -289,7 +289,7 @@ public class PrintOrder implements Parcelable /* , Serializable */
         final int[] outstandingLengthCallbacks = {assetsToUpload.size()};
 
         assetUploadReq = new AssetUploadRequest( context );
-        assetUploadReq.uploadAssets(assetsToUpload, context, assetUploadRequestListener);
+        assetUploadReq.uploadAssets( context, assetsToUpload, new MyAssetUploadRequestListener( context ) );
     }
 
     public void submitForPrinting(Context context, PrintOrderSubmissionListener listener) {
@@ -346,73 +346,6 @@ public class PrintOrder implements Parcelable /* , Serializable */
         userSubmittedForPrinting = false;
     }
 
-
-    private AssetUploadRequestListener assetUploadRequestListener = new AssetUploadRequestListener() {
-        @Override
-        public void onProgress(AssetUploadRequest req, int totalAssetsUploaded, int totalAssetsToUpload, long bytesWritten, long totalAssetBytesWritten, long totalAssetBytesExpectedToWrite) {
-
-
-            // Calculate the primary / secondary progress
-            int primaryProgressPercent   = Math.round( (float)totalAssetsUploaded    * 100f / (float)totalAssetsToUpload );
-            int secondaryProgressPercent = Math.round( (float)totalAssetBytesWritten * 100f / (float)totalAssetBytesExpectedToWrite );
-
-            if (userSubmittedForPrinting) {
-                submissionListener.onProgress(PrintOrder.this, primaryProgressPercent, secondaryProgressPercent );
-            }
-        }
-
-        @Override
-        public void onUploadComplete(Context context, AssetUploadRequest req, List<Asset> assets) {
-            if (assets.size() != assetsToUpload.size()) {
-                throw new IllegalStateException(String.format("Oops there should be a 1:1 relationship between uploaded assets and submitted, currently its: %d:%d", assetsToUpload.size(), assets.size()));
-            }
-
-            for (Asset asset : assets) {
-                if (!assetsToUpload.contains(asset)) {
-                    throw new AssertionError("oops");
-                }
-            }
-
-            // make sure all job assets have asset ids & preview urls. We need to do this because we optimize the asset upload to avoid uploading
-            // assets that are considered to have duplicate contents
-            for (PrintJob job : jobs) {
-                for (Asset uploadedAsset : assets) {
-                    for (Asset jobAsset : job.getAssetsForUploading()) {
-                        if (uploadedAsset != jobAsset && uploadedAsset.equals(jobAsset)) {
-                            jobAsset.markAsUploaded(uploadedAsset.getId(), uploadedAsset.getPreviewURL());
-                        }
-                    }
-                }
-            }
-
-            // sanity check all assets are uploaded
-            for (PrintJob job : jobs) {
-                for (Asset a : job.getAssetsForUploading()) {
-                    if (!a.hasBeenUploaded()) {
-                        throw new AssertionError("oops all assets should have been uploaded");
-                    }
-                }
-            }
-
-            assetUploadComplete = true;
-            assetsToUpload = null;
-            assetUploadReq = null;
-            if (userSubmittedForPrinting) {
-                submitForPrinting( context );
-            }
-        }
-
-        @Override
-        public void onError(AssetUploadRequest req, Exception error) {
-            assetUploadReq = null;
-            assetsToUpload = null;
-            if (userSubmittedForPrinting) {
-                lastPrintSubmissionError = error;
-                userSubmittedForPrinting = false; // allow the user to resubmit for printing
-                submissionListener.onError(PrintOrder.this, error);
-            }
-        }
-    };
 
     @Override
     public int describeContents() {
@@ -526,4 +459,99 @@ public class PrintOrder implements Parcelable /* , Serializable */
       {
       return ( mOrderPricing );
       }
-}
+
+
+    private class MyAssetUploadRequestListener implements AssetUploadRequestListener
+      {
+      private Context  mContext;
+
+
+      MyAssetUploadRequestListener( Context context )
+        {
+        mContext = context;
+        }
+
+
+      @Override
+      public void onProgress( AssetUploadRequest req, int totalAssetsUploaded, int totalAssetsToUpload, long bytesWritten, long totalAssetBytesWritten, long totalAssetBytesExpectedToWrite )
+        {
+
+
+        // Calculate the primary / secondary progress
+        int primaryProgressPercent = Math.round( (float) totalAssetsUploaded * 100f / (float) totalAssetsToUpload );
+        int secondaryProgressPercent = Math.round( (float) totalAssetBytesWritten * 100f / (float) totalAssetBytesExpectedToWrite );
+
+        if ( userSubmittedForPrinting )
+          {
+          submissionListener.onProgress( PrintOrder.this, primaryProgressPercent, secondaryProgressPercent );
+          }
+        }
+
+      @Override
+      public void onUploadComplete( AssetUploadRequest req, List<Asset> assets )
+        {
+        if ( assets.size() != assetsToUpload.size() )
+          {
+          throw new IllegalStateException( String.format( "Oops there should be a 1:1 relationship between uploaded assets and submitted, currently its: %d:%d", assetsToUpload.size(), assets.size() ) );
+          }
+
+        for ( Asset asset : assets )
+          {
+          if ( !assetsToUpload.contains( asset ) )
+            {
+            throw new AssertionError( "oops" );
+            }
+          }
+
+        // make sure all job assets have asset ids & preview urls. We need to do this because we optimize the asset upload to avoid uploading
+        // assets that are considered to have duplicate contents
+        for ( PrintJob job : jobs )
+          {
+          for ( Asset uploadedAsset : assets )
+            {
+            for ( Asset jobAsset : job.getAssetsForUploading() )
+              {
+              if ( uploadedAsset != jobAsset && uploadedAsset.equals( jobAsset ) )
+                {
+                jobAsset.markAsUploaded( uploadedAsset.getId(), uploadedAsset.getPreviewURL() );
+                }
+              }
+            }
+          }
+
+        // sanity check all assets are uploaded
+        for ( PrintJob job : jobs )
+          {
+          for ( Asset a : job.getAssetsForUploading() )
+            {
+            if ( !a.hasBeenUploaded() )
+              {
+              throw new AssertionError( "oops all assets should have been uploaded" );
+              }
+            }
+          }
+
+        assetUploadComplete = true;
+        assetsToUpload = null;
+        assetUploadReq = null;
+        if ( userSubmittedForPrinting )
+          {
+          submitForPrinting( mContext );
+          }
+        }
+
+      @Override
+      public void onError( AssetUploadRequest req, Exception error )
+        {
+        assetUploadReq = null;
+        assetsToUpload = null;
+        if ( userSubmittedForPrinting )
+          {
+          lastPrintSubmissionError = error;
+          userSubmittedForPrinting = false; // allow the user to resubmit for printing
+          submissionListener.onError( PrintOrder.this, error );
+          }
+        }
+      }
+
+    }

@@ -153,7 +153,7 @@ abstract public class AProductCreationFragment extends AKiteFragment
    *****************************************************/
   protected boolean assetListValid()
     {
-    if ( mAssetsAndQuantityArrayList == null || mAssetsAndQuantityArrayList.size() < 1 )
+    if ( mAssetsAndQuantityArrayList == null )
       {
       Log.e( TAG, "Invalid asset list" );
 

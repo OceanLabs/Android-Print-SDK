@@ -283,15 +283,25 @@ public class LabelledImageView extends AFixableImageFrame implements IImageConsu
 
   /*****************************************************
    *
-   * Sets an expected image URL.
+   * Clears the image, and sets an expected image key.
    *
    *****************************************************/
-  public void setKey( Object key )
+  public void clearForNewImage( Object expectedKey )
     {
-    synchronized ( this )
-      {
-      mKey = key;
-      }
+    setExpectedKey( expectedKey );
+
+    mImageView.setImageBitmap( null );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets an expected image key.
+   *
+   *****************************************************/
+  public void setExpectedKey( Object key )
+    {
+    mKey = key;
     }
 
 

@@ -55,10 +55,10 @@ class AssetUploadRequest {
     public void uploadAsset(Asset asset, Context context, AssetUploadRequestListener uploadListener) {
         ArrayList<Asset> list = new ArrayList<Asset>();
         list.add(asset);
-        uploadAssets(list, context, uploadListener);
+        uploadAssets(context, list, uploadListener);
     }
 
-    public void uploadAssets(final List<Asset> assets, Context context, final AssetUploadRequestListener uploadListener) {
+    public void uploadAssets( Context context, final List<Asset> assets, final AssetUploadRequestListener uploadListener) {
         ArrayList<Asset> urlsToRegister = new ArrayList<Asset>();
         ArrayList<Asset> assetsToUpload = new ArrayList<Asset>();
 
@@ -115,7 +115,7 @@ class AssetUploadRequest {
         if (--numOutstandingAsyncOpertions == 0) {
             notifiedUploadListenerOfOutcome = true;
             assert ex == null : "errors should be covered above";
-            listener.onUploadComplete(mContext, this, assets);
+            listener.onUploadComplete( this, assets);
         }
     }
 
