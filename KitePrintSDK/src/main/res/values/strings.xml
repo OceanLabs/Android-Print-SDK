@@ -11,8 +11,8 @@
     <string name="unit_inches_short">in</string>
     <string name="unit_pixels_short">px</string>
 
-    <string name="title_product_group_activity">Print Shop</string>
-    <string name="title_phone_case_activity">Create Phone Case</string>
+    <string name="title_choose_product_group">Print Shop</string>
+    <string name="title_create_phone_case">Create Phone Case</string>
 
     <string name="alert_dialog_title_oops">Oops!</string>
     <string name="alert_dialog_message_pricing_format_string">There was a problem retrieving pricing from the server:\n%1$s</string>

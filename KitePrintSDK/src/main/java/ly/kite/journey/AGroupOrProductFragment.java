@@ -48,6 +48,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -268,9 +269,10 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements P
 
     ////////// Member Variable(s) //////////
 
-    private Context mContext;
-    private List<? extends IGroupOrProduct> mGroupOrProductList;
+    private Context                          mContext;
+    private List<? extends IGroupOrProduct>  mGroupOrProductList;
     private GridView                         mGridView;
+    private int                              mLayoutResourceId;
 
     private int                              mActualItemCount;
     private int                              mApparentItemCount;
@@ -289,11 +291,12 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements P
 
     ////////// Constructor(s) //////////
 
-    GroupOrProductAdaptor( Context context, List<? extends IGroupOrProduct> displayItemList, GridView gridView )
+    GroupOrProductAdaptor( Context context, List<? extends IGroupOrProduct> displayItemList, GridView gridView, int layoutResourceId )
       {
       mContext            = context;
       mGroupOrProductList = displayItemList;
       mGridView           = gridView;
+      mLayoutResourceId   = layoutResourceId;
 
       mLayoutInflator     = LayoutInflater.from( context );
       mImageManager       = ImageLoader.getInstance( context );
@@ -389,10 +392,11 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements P
         }
       else
         {
-        view = mLayoutInflator.inflate( R.layout.grid_item_product_image, null );
+        view = mLayoutInflator.inflate( mLayoutResourceId, null );
 
         viewReferences                   = new ViewReferences();
-        viewReferences.productImageView = (LabelledImageView)view.findViewById( R.id.product_image_view );
+        viewReferences.productImageView = (LabelledImageView)view.findViewById( R.id.labelled_image_view );
+        viewReferences.priceTextView    = (TextView)view.findViewById( R.id.price_text_view );
 
         view.setTag( viewReferences );
         }
@@ -411,6 +415,9 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements P
       if ( groupOrProduct != null )
         {
         viewReferences.productImageView.setLabel( groupOrProduct.getDisplayLabel(), groupOrProduct.getDisplayLabelColour() );
+
+        // There may be a price text view in the layout
+        if ( viewReferences.priceTextView != null ) viewReferences.priceTextView.setText( groupOrProduct.getDisplayPrice() );
 
         imageURL       = groupOrProduct.getDisplayImageURL();
         imageURLString = imageURL.toString();
@@ -442,7 +449,8 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements P
      *****************************************************/
     private class ViewReferences
       {
-      LabelledImageView productImageView;
+      LabelledImageView  productImageView;
+      TextView           priceTextView;
       }
 
     }

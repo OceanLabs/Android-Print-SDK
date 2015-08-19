@@ -119,7 +119,7 @@ public class CheckableImageView extends AFixableImageFrame
    *
    *****************************************************/
   @Override
-  protected View onCreateView( Context context )
+  protected View onCreateView( Context context, AttributeSet attributeSet, int defaultStyle )
     {
     LayoutInflater layoutInflator = LayoutInflater.from( context );
 

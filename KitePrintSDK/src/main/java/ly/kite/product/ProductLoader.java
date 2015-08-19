@@ -376,7 +376,7 @@ public class ProductLoader implements HTTPJSONRequest.HTTPJSONRequestListener
         String                           productId     = productJSONObject.getString( JSON_NAME_PRODUCT_ID );
         String                           productName   = productJSONObject.getString( JSON_NAME_PRODUCT_NAME );
         int                              imagesPerPage = productJSONObject.optInt( JSON_NAME_IMAGES_PER_PAGE, DEFAULT_IMAGES_PER_PAGE );
-        MultipleCurrencyAmount cost          = parseCost( productJSONObject.getJSONArray( JSON_NAME_COST ) );
+        MultipleCurrencyAmount           cost          = parseCost( productJSONObject.getJSONArray( JSON_NAME_COST ) );
         MultipleDestinationShippingCosts shippingCosts = parseShippingCosts( productJSONObject.getJSONObject( JSON_NAME_SHIPPING_COSTS ) );
 
 
@@ -421,7 +421,7 @@ public class ProductLoader implements HTTPJSONRequest.HTTPJSONRequestListener
                 .setSize( size );
 
         Log.i( LOG_TAG, "-- Found product --" );
-        Log.i( LOG_TAG, product.toLogString() );
+        Log.i( LOG_TAG, product.toLogString( groupLabel ) );
 
 
 
@@ -485,55 +485,31 @@ public class ProductLoader implements HTTPJSONRequest.HTTPJSONRequestListener
   @Override
   public void onSuccess( int httpStatusCode, JSONObject jsonData )
     {
+    // Check if we got a valid HTTP response code
 
-    try
+    if ( httpStatusCode >= 200 && httpStatusCode <= 299 )
       {
-      // Check if we got a valid HTTP response code
+      onProductData( jsonData );
+      }
+    else
+      {
+      // Invalid HTTP response code - see if we can getCost an error message
 
-      if ( httpStatusCode >= 200 && httpStatusCode <= 299 )
+      try
         {
-        // Try to getCost an array of products, then parse it.
-
-        JSONArray productsJSONArray = jsonData.getJSONArray( JSON_NAME_PRODUCT_ARRAY );
-
-        Pair<ArrayList<ProductGroup>,HashMap<String,Product>> productPair = parseProducts( productsJSONArray );
-
-        ArrayList<ProductGroup> productGroupList = productPair.first;
-        HashMap<String,Product> productTable     = productPair.second;
-
-        // Save the query result
-        mLastRetrievedProductGroupList      = productGroupList;
-        mLastRetrievedProductTable          = productTable;
-        mLastRetrievedElapsedRealtimeMillis = SystemClock.elapsedRealtime();
-
-        // Pass the update products list to each of the consumers that want it
-        for ( Pair<ProductConsumer,Handler> consumerHandlerPair : mConsumerHandlerList )
-          {
-          returnProductsToConsumer( productGroupList, productTable, consumerHandlerPair );
-          }
-
-        mHTTPJSONRequest = null;
-        mConsumerHandlerList = null;
-        }
-      else
-        {
-        // Invalid HTTP response code - see if we can getCost an error message
-
         JSONObject errorJSONObject = jsonData.getJSONObject( HTTPJSONRequest.ERROR_RESPONSE_JSON_OBJECT_NAME );
-        String     errorMessage    = errorJSONObject.getString( HTTPJSONRequest.ERROR_RESPONSE_MESSAGE_JSON_NAME );
-        String     errorCode       = errorJSONObject.getString( HTTPJSONRequest.ERROR_RESPONSE_CODE_JSON_NAME );
+        String errorMessage = errorJSONObject.getString( HTTPJSONRequest.ERROR_RESPONSE_MESSAGE_JSON_NAME );
+        String errorCode = errorJSONObject.getString( HTTPJSONRequest.ERROR_RESPONSE_CODE_JSON_NAME );
 
         Exception exception = new KiteSDKException( errorMessage );
 
         returnErrorToConsumers( exception );
         }
-
+      catch ( JSONException je )
+        {
+        returnErrorToConsumers( je);
+        }
       }
-    catch ( JSONException je )
-      {
-      returnErrorToConsumers( je );
-      }
-
     }
 
 
@@ -668,6 +644,47 @@ public class ProductLoader implements HTTPJSONRequest.HTTPJSONRequestListener
     if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "getAllProducts( consumer = " + consumer + " )" );
 
     getAllProducts( ANY_AGE_OK, consumer, null );
+    }
+
+
+  /****************************************************
+   *
+   * Called when we have product data to parse.
+   *
+   ****************************************************/
+  public void onProductData( JSONObject jsonData )
+    {
+
+    try
+      {
+      // Try to getCost an array of products, then parse it.
+
+      JSONArray productsJSONArray = jsonData.getJSONArray( JSON_NAME_PRODUCT_ARRAY );
+
+      Pair<ArrayList<ProductGroup>,HashMap<String,Product>> productPair = parseProducts( productsJSONArray );
+
+      ArrayList<ProductGroup> productGroupList = productPair.first;
+      HashMap<String,Product> productTable     = productPair.second;
+
+      // Save the query result
+      mLastRetrievedProductGroupList      = productGroupList;
+      mLastRetrievedProductTable          = productTable;
+      mLastRetrievedElapsedRealtimeMillis = SystemClock.elapsedRealtime();
+
+      // Pass the update products list to each of the consumers that want it
+      for ( Pair<ProductConsumer,Handler> consumerHandlerPair : mConsumerHandlerList )
+        {
+        returnProductsToConsumer( productGroupList, productTable, consumerHandlerPair );
+        }
+
+      mHTTPJSONRequest = null;
+      mConsumerHandlerList = null;
+      }
+    catch ( JSONException je )
+      {
+      returnErrorToConsumers( je );
+      }
+
     }
 
 

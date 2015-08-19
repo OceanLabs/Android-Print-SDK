@@ -212,7 +212,7 @@ public class ProductCreationActivity extends AKiteActivity implements PhoneCaseF
 
 
     // Set up the screen content
-    setContentView( R.layout.screen_generic_fragment_container );
+    setContentView( R.layout.screen_product_selection );
 
 
     // Start the first fragment

@@ -200,7 +200,7 @@ abstract public class AFixableImageFrame extends FrameLayout implements IImageCo
   protected void initialise( Context context, AttributeSet attributeSet, int defaultStyle )
     {
     // Get the view
-    View view = onCreateView( context );
+    View view = onCreateView( context, attributeSet, defaultStyle );
 
     // Get the fixable image view
     mImageView = (ImageView)view.findViewById( R.id.image_view );
@@ -234,7 +234,7 @@ abstract public class AFixableImageFrame extends FrameLayout implements IImageCo
    * Returns the view for this frame.
    *
    *****************************************************/
-  abstract protected View onCreateView( Context context );
+  abstract protected View onCreateView( Context context, AttributeSet attributeSet, int defaultStyle );
 
 
   /*****************************************************

@@ -42,9 +42,11 @@ package ly.kite.widget;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
@@ -73,6 +75,8 @@ public class LabelledImageView extends AFixableImageFrame implements IImageConsu
   @SuppressWarnings( "unused" )
   private static final String  LOG_TAG                           = "LabelledImageView";
 
+  private static final int     NO_FORCED_LABEL_COLOUR            = 0x00000000;
+
   private static final long    FADE_IN_ANIMATION_DURATION_MILLIS = 300L;
   private static final float   ALPHA_TRANSPARENT                 = 0.0f;
   private static final float   ALPHA_OPAQUE                      = 1.0f;
@@ -86,6 +90,8 @@ public class LabelledImageView extends AFixableImageFrame implements IImageConsu
   private ImageView     mEmptyFrameImageView;
   private OverlayLabel  mOverlayLabel;
   private ProgressBar   mProgressBar;
+
+  private int           mForcedLabelColour;
 
   private Object        mKey;
 
@@ -130,7 +136,7 @@ public class LabelledImageView extends AFixableImageFrame implements IImageConsu
    *
    *****************************************************/
   @Override
-  protected View onCreateView( Context context )
+  protected View onCreateView( Context context, AttributeSet attributeSet, int defaultStyle )
     {
     // Inflate the layout and attach it to this view
 
@@ -154,6 +160,26 @@ public class LabelledImageView extends AFixableImageFrame implements IImageConsu
             resources.getColor( R.color.labelled_image_label_shadow ),
             resources.getDimension( R.dimen.labelled_image_label_shadow_blur_radius ),
             resources.getDimension( R.dimen.labelled_image_label_shadow_y_offset ) );
+
+
+    // Check the XML attributes
+
+    if ( attributeSet != null )
+      {
+      TypedArray typedArray = context.obtainStyledAttributes( attributeSet, R.styleable.LabelledImageView, defaultStyle, defaultStyle );
+
+
+      // See if there is a forced label colour
+
+      TypedValue value = new TypedValue();
+
+      mForcedLabelColour = typedArray.getColor( R.styleable.LabelledImageView_forcedLabelColour, NO_FORCED_LABEL_COLOUR );
+
+
+      typedArray.recycle();
+      }
+
+
 
 
     return ( view );
@@ -277,7 +303,9 @@ public class LabelledImageView extends AFixableImageFrame implements IImageConsu
     {
     setLabel( label );
 
-    mOverlayLabel.setBackgroundColor( colour );
+    // Set the background colour. If we have a forced colour then use that instead of the
+    // supplied one.
+    mOverlayLabel.setBackgroundColor( mForcedLabelColour != NO_FORCED_LABEL_COLOUR ? mForcedLabelColour : colour );
     }
 
 

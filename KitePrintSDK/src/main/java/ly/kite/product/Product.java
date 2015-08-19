@@ -104,7 +104,7 @@ public class Product implements Parcelable, IGroupOrProduct
   private UserJourneyType                   mUserJourneyType;
   private int                               mQuantityPerSheet;
 
-  private MultipleCurrencyAmount mCost;
+  private MultipleCurrencyAmount            mCost;
   private MultipleDestinationShippingCosts  mShippingCosts;
   private URL                               mHeroImageURL;
   private int                               mLabelColour;
@@ -124,12 +124,12 @@ public class Product implements Parcelable, IGroupOrProduct
 
   Product( String productId, String productCode, String productName, String productLabel, int labelColour, UserJourneyType userJourneyType, int quantityPerSheet )
     {
-    mId = productId;
-    mCode = productCode;
-    mName = productName;
-    mLabel = productLabel;
-    mLabelColour = labelColour;
-    mUserJourneyType = userJourneyType;
+    mId               = productId;
+    mCode             = productCode;
+    mName             = productName;
+    mLabel            = productLabel;
+    mLabelColour      = labelColour;
+    mUserJourneyType  = userJourneyType;
     mQuantityPerSheet = quantityPerSheet;
     }
 
@@ -290,6 +290,17 @@ public class Product implements Parcelable, IGroupOrProduct
   public int getQuantityPerSheet()
     {
     return ( mQuantityPerSheet );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a display price.
+   *
+   *****************************************************/
+  public String getDisplayPrice()
+    {
+    return ( mCost.getDefaultDisplayAmountWithFallback() );
     }
 
 
@@ -490,6 +501,17 @@ public class Product implements Parcelable, IGroupOrProduct
 
   /*****************************************************
    *
+   * Returns the cost in multiple currencies.
+   *
+   *****************************************************/
+  public MultipleCurrencyAmount getCost()
+    {
+    return ( mCost );
+    }
+
+
+  /*****************************************************
+   *
    * Returns the cost in a specific currency.
    *
    *****************************************************/
@@ -570,10 +592,11 @@ public class Product implements Parcelable, IGroupOrProduct
    * product.
    *
    *****************************************************/
-  public String toLogString()
+  public String toLogString( String groupLabel )
     {
     StringBuilder stringBuilder = new StringBuilder();
 
+    stringBuilder.append( "Group              : " ).append( groupLabel != null ? groupLabel : "?" ).append( "\n" );
     stringBuilder.append( "Id                 : " ).append( mId ).append( "\n" );
     stringBuilder.append( "Code               : " ).append( mCode ).append( "\n" );
     stringBuilder.append( "Name               : " ).append( mName ).append( "\n" );
@@ -604,6 +627,18 @@ public class Product implements Parcelable, IGroupOrProduct
 
 
     return ( stringBuilder.toString() );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a log-displayable string representing this
+   * product.
+   *
+   *****************************************************/
+  public String toLogString()
+    {
+    return ( toLogString( null ) );
     }
 
 

@@ -77,5 +77,14 @@ public interface IGroupOrProduct
    *****************************************************/
   public int getDisplayLabelColour();
 
+
+  /*****************************************************
+   *
+   * Returns a display price.
+   *
+   *****************************************************/
+  public String getDisplayPrice();
+
+
   }
 

@@ -129,7 +129,7 @@ public class ChooseProductGroupFragment extends AGroupOrProductFragment
   @Override
   protected void onTop()
     {
-    mKiteActivity.setTitle( R.string.title_product_group_activity );
+    mKiteActivity.setTitle( R.string.title_choose_product_group );
     }
 
 
@@ -150,7 +150,7 @@ public class ChooseProductGroupFragment extends AGroupOrProductFragment
 
     // Display the product groups
 
-    mGridAdaptor = new GroupOrProductAdaptor( mKiteActivity, productGroupList, mGridView );
+    mGridAdaptor = new GroupOrProductAdaptor( mKiteActivity, productGroupList, mGridView, R.layout.grid_item_product_group );
     mGridView.setAdapter( mGridAdaptor );
 
     onRestoreManagedAdaptorViewPosition();

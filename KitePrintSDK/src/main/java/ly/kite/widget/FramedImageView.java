@@ -121,7 +121,7 @@ public class FramedImageView extends AFixableImageFrame implements IImageConsume
    *
    *****************************************************/
   @Override
-  protected View onCreateView( Context context )
+  protected View onCreateView( Context context, AttributeSet attributeSet, int defaultStyle )
     {
     LayoutInflater layoutInflator = LayoutInflater.from( context );
 

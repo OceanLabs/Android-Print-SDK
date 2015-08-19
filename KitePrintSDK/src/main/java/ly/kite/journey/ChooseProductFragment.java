@@ -190,7 +190,7 @@ public class ChooseProductFragment extends AGroupOrProductFragment
       {
       // Display the products
 
-      mGridAdaptor = new GroupOrProductAdaptor( mKiteActivity, mProductList, mGridView );
+      mGridAdaptor = new GroupOrProductAdaptor( mKiteActivity, mProductList, mGridView, R.layout.grid_item_product );
       mGridView.setAdapter( mGridAdaptor );
 
       onRestoreManagedAdaptorViewPosition();

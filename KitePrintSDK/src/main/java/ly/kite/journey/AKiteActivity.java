@@ -129,14 +129,6 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     mFragmentManager = getFragmentManager();
 
     mFragmentManager.addOnBackStackChangedListener( this );
-
-
-    // If we are being re-started - get the current fragment again.
-
-    if ( savedInstanceState != null )
-      {
-      determineCurrentFragment();
-      }
     }
 
 
@@ -175,6 +167,24 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
         }
       }
 
+    }
+
+
+  /*****************************************************
+   *
+   * Called after the activity has been created.
+   *
+   *****************************************************/
+  @Override
+  protected void onPostCreate( Bundle savedInstanceState )
+    {
+    super.onPostCreate( savedInstanceState );
+
+    // If we are being re-created - work out the current fragment.
+    if ( savedInstanceState != null )
+      {
+      determineCurrentFragment();
+      }
     }
 
 
@@ -447,7 +457,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
         {
         mCurrentFragment = (AKiteFragment) mFragmentManager.findFragmentByTag( entry.getName() );
 
-        mCurrentFragment.onTop();
+        if ( mCurrentFragment != null ) onNotifyTop( mCurrentFragment );
         }
       else
         {
@@ -473,6 +483,18 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   private void determineCurrentFragment()
     {
     determineCurrentFragment( mFragmentManager.getBackStackEntryCount() );
+    }
+
+
+  /*****************************************************
+   *
+   * Called with the current top-most fragment. May be
+   * overridden, but must call through to this method.
+   *
+   *****************************************************/
+  protected void onNotifyTop( AKiteFragment topFragment )
+    {
+    mCurrentFragment.onTop();
     }
 
 

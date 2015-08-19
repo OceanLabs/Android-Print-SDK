@@ -41,13 +41,17 @@ package ly.kite.widget;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.widget.TextView;
+
+import ly.kite.R;
 
 
 ///// Class Declaration /////
@@ -106,21 +110,21 @@ public class OverlayLabel extends TextView
     {
     super( context );
 
-    initialise( context );
+    initialise( context, null, 0 );
     }
 
   public OverlayLabel( Context context, AttributeSet attrs )
     {
     super( context, attrs );
 
-    initialise( context );
+    initialise( context, attrs, 0 );
     }
 
   public OverlayLabel( Context context, AttributeSet attrs, int defStyleAttr )
     {
     super( context, attrs, defStyleAttr );
 
-    initialise( context );
+    initialise( context, attrs, defStyleAttr );
     }
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -128,7 +132,7 @@ public class OverlayLabel extends TextView
     {
     super( context, attrs, defStyleAttr, defStyleRes );
 
-    initialise( context );
+    initialise( context, attrs, defStyleAttr );
     }
 
 
@@ -144,6 +148,7 @@ public class OverlayLabel extends TextView
     {
     // We intercept this and set the paint colour. The base text view
     // doesn't draw the background; we draw it ourselves.
+
     mSolidPaint.setColor( colour );
     }
 
@@ -188,7 +193,7 @@ public class OverlayLabel extends TextView
    * Initialises this custom view.
    *
    *****************************************************/
-  private void initialise( Context context )
+  private void initialise( Context context, AttributeSet attributeSet, int defaultStyle )
     {
     mCornerRadius = DEFAULT_ROUNDED_CORNER_RADIUS;
 

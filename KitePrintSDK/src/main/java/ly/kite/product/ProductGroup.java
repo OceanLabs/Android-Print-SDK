@@ -45,8 +45,11 @@ package ly.kite.product;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.math.BigDecimal;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Currency;
+import java.util.Locale;
 
 /*****************************************************
  *
@@ -197,6 +200,46 @@ public class ProductGroup implements Parcelable, IGroupOrProduct
   public int getDisplayLabelColour()
     {
     return ( mLabelColour );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a display price. For product groups, this is
+   * the lowest price of any of the products in the group.
+   * Thus it may be used as a "from" price.
+   *
+   *****************************************************/
+  public String getDisplayPrice()
+    {
+    Locale locale       = Locale.getDefault();
+    String currencyCode = Currency.getInstance( locale ).getCurrencyCode();
+
+
+    // We don't want to mess around with trying to compare prices in different
+    // currencies, so just try and get prices for the local currency.
+
+    SingleCurrencyAmount lowestSingleCurrencyCost = null;
+
+    for ( Product product : mProductList )
+      {
+      MultipleCurrencyAmount candidateCost               = product.getCost();
+      SingleCurrencyAmount   candidateSingleCurrencyCost = candidateCost.get( currencyCode );
+
+      // See if this is the lowest cost
+      if ( candidateSingleCurrencyCost != null &&
+           ( lowestSingleCurrencyCost == null ||
+             candidateSingleCurrencyCost.getAmount().compareTo( lowestSingleCurrencyCost.getAmount() ) < 0 ) )
+        {
+        lowestSingleCurrencyCost = candidateSingleCurrencyCost;
+        }
+      }
+
+
+    // If we found a low price - return it as a string formated for the current locale
+    if ( lowestSingleCurrencyCost != null ) return ( lowestSingleCurrencyCost.getDisplayAmountForLocale( locale ) );
+
+    return ( null );
     }
 
 

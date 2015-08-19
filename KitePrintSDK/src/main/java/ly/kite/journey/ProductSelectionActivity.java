@@ -46,7 +46,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -175,7 +174,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ChoosePro
 
 
     // Set up the screen content
-    setContentView( R.layout.screen_generic_fragment_container );
+    setContentView( R.layout.screen_product_selection );
 
 
     // Start the first fragment
