@@ -65,6 +65,8 @@ import java.util.Locale;
 import ly.kite.R;
 import ly.kite.address.Country;
 import ly.kite.analytics.Analytics;
+import ly.kite.product.MultipleCurrencyAmount;
+import ly.kite.product.MultipleDestinationShippingCosts;
 import ly.kite.product.Product;
 import ly.kite.product.SingleUnitSize;
 import ly.kite.product.UnitOfLength;
@@ -88,8 +90,6 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
   public static final String      TAG                                       = "ProductOverviewFragment";
 
   public static final String      BUNDLE_KEY_PRODUCT                        = "product";
-
-  private static final BigDecimal BIG_DECIMAL_ZERO                          = BigDecimal.valueOf( 0 );
 
   private static final long       PAGING_DOT_ANIMATION_DURATION_MILLIS      = 300L;
   private static final float      PAGING_DOT_ANIMATION_OPAQUE               = 1.0f;
@@ -120,7 +120,7 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
   private SlidingOverlayFrame  mSlidingOverlayFrame;
   private View                 mDrawerControlLayout;
   private ImageView            mOpenCloseDrawerIconImageView;
-  private Button mProceedOverlayButton;
+  private Button               mProceedOverlayButton;
 
   private PagerAdapter         mProductImageAdaptor;
 
@@ -228,24 +228,27 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
       }
 
 
-    // Set up the screen
+    // Set up the screen. Note that the SDK allows for different layouts to be used in place of the standard
+    // one, so some of these views are optional and may not actually exist in the current layout.
 
     View view = layoutInflator.inflate( R.layout.screen_product_overview, container, false );
 
-    mProductImageViewPager        = (ViewPager) view.findViewById( R.id.view_pager );
-    mOverlaidComponents           = view.findViewById( R.id.overlaid_components );
-    mPagingDots                   = (PagingDots) view.findViewById( R.id.paging_dots );
-    mOverlaidStartButton          = (Button) view.findViewById( R.id.overlaid_start_button );
-    mSlidingOverlayFrame          = (SlidingOverlayFrame) view.findViewById( R.id.sliding_overlay_frame );
-    mDrawerControlLayout          = view.findViewById( R.id.drawer_control_layout );
-    mOpenCloseDrawerIconImageView = (ImageView) view.findViewById( R.id.open_close_drawer_icon_image_view );
-    mProceedOverlayButton         = (Button)view.findViewById( R.id.proceed_overlay_button );
-    TextView priceTextView        = (TextView) view.findViewById( R.id.price_text_view );
-    View     sizeLayout           = view.findViewById( R.id.size_layout );
-    TextView sizeTextView         = (TextView) view.findViewById( R.id.size_text_view );
-    View     quantityLayout       = view.findViewById( R.id.quantity_layout );
-    TextView quantityTextView     = (TextView) view.findViewById( R.id.quantity_text_view );
-    TextView shippingTextView     = (TextView) view.findViewById( R.id.shipping_text_view );
+    mProductImageViewPager              = (ViewPager) view.findViewById( R.id.view_pager );
+    mOverlaidComponents                 = view.findViewById( R.id.overlaid_components );
+    mPagingDots                         = (PagingDots) view.findViewById( R.id.paging_dots );
+    mOverlaidStartButton                = (Button) view.findViewById( R.id.overlaid_start_button );
+    mSlidingOverlayFrame                = (SlidingOverlayFrame) view.findViewById( R.id.sliding_overlay_frame );
+    mDrawerControlLayout                = view.findViewById( R.id.drawer_control_layout );
+    mOpenCloseDrawerIconImageView       = (ImageView) view.findViewById( R.id.open_close_drawer_icon_image_view );
+    mProceedOverlayButton               = (Button)view.findViewById( R.id.proceed_overlay_button );
+    TextView priceTextView              = (TextView) view.findViewById( R.id.price_text_view );
+    TextView summaryDescriptionTextView = (TextView)view.findViewById( R.id.summary_description_text_view );
+    TextView summaryShippingTextView    = (TextView)view.findViewById( R.id.summary_shipping_text_view );
+    View     sizeLayout                 = view.findViewById( R.id.size_layout );
+    TextView sizeTextView               = (TextView) view.findViewById( R.id.size_text_view );
+    View     quantityLayout             = view.findViewById( R.id.quantity_layout );
+    TextView quantityTextView           = (TextView) view.findViewById( R.id.quantity_text_view );
+    TextView shippingTextView           = (TextView) view.findViewById( R.id.shipping_text_view );
 
 
     // Paging dots
@@ -307,98 +310,172 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
 
     mOverlaidComponents.setAlpha( slidingDrawerIsExpanded ? 0f : 1f );  // If the drawer starts open, these components need to be invisible
 
-    mSlidingOverlayFrame.snapToExpandedState( slidingDrawerIsExpanded );
-    mSlidingOverlayFrame.setSlideAnimationDuration( SLIDE_ANIMATION_DURATION_MILLIS );
-    mOpenCloseDrawerIconImageView.setRotation( slidingDrawerIsExpanded ? OPEN_CLOSE_ICON_ROTATION_DOWN : OPEN_CLOSE_ICON_ROTATION_UP );
+
+    if ( mSlidingOverlayFrame != null )
+      {
+      mSlidingOverlayFrame.snapToExpandedState( slidingDrawerIsExpanded );
+      mSlidingOverlayFrame.setSlideAnimationDuration( SLIDE_ANIMATION_DURATION_MILLIS );
+      mOpenCloseDrawerIconImageView.setRotation( slidingDrawerIsExpanded ? OPEN_CLOSE_ICON_ROTATION_DOWN : OPEN_CLOSE_ICON_ROTATION_UP );
+      }
+
+
+    SingleUnitSize                   size             = mProduct.getSizeWithFallback( UnitOfLength.CENTIMETERS );
+    String                           sizeString       = String.format( getString( R.string.product_size_format_string ), size.getWidth(), size.getHeight(), size.getUnit().shortString( mKiteActivity ) );
+
+    int                              quantityPerSheet = mProduct.getQuantityPerSheet();
+    MultipleDestinationShippingCosts shippingCosts    = mProduct.getShippingCosts();
+
+    Locale                           locale           = Locale.getDefault();
+    Country                          country          = Country.getInstance( locale );
+
+
+    SingleCurrencyAmount singleCurrencyCost;
 
 
     // Price
 
-    Locale locale = Locale.getDefault();
+    if ( isVisible( priceTextView ) )
+      {
+      singleCurrencyCost = mProduct.getCostWithFallback( locale );
 
-    SingleCurrencyAmount cost = mProduct.getCostWithFallback( locale );
+      if ( singleCurrencyCost != null ) priceTextView.setText( singleCurrencyCost.getDisplayAmountForLocale( locale ) );
+      }
 
-    if ( cost != null ) priceTextView.setText( cost.getDisplayAmountForLocale( locale ) );
+
+    // Summary description
+
+    if ( isVisible( summaryDescriptionTextView ) )
+      {
+      String summaryDescription =
+              String.valueOf( quantityPerSheet )
+              + " "
+              + mProduct.getName()
+              + ( isSensibleProductSize( size ) ? " (" + sizeString + ")" : "" );
+
+      summaryDescriptionTextView.setText( summaryDescription );
+      }
 
 
     // Size
 
-    SingleUnitSize size = mProduct.getSizeWithFallback( UnitOfLength.CENTIMETERS );
-
-    if ( isSensibleProductSize( size ) )
+    if ( isVisible( sizeTextView ) )
       {
-      sizeLayout.setVisibility( View.VISIBLE );
-
-      sizeTextView.setText( String.format( getString( R.string.product_size_format_string ), size.getWidth(), size.getHeight(), size.getUnit().shortString( mKiteActivity ) ) );
-      }
-    else
-      {
-      sizeLayout.setVisibility( View.GONE );
+      if ( isSensibleProductSize( size ) )
+        {
+        sizeTextView.setText( String.format( getString( R.string.product_size_format_string ), size.getWidth(), size.getHeight(), size.getUnit().shortString( mKiteActivity ) ) );
+        }
+      else
+        {
+        sizeLayout.setVisibility( View.GONE );
+        }
       }
 
 
     // Quantity
 
-    int quantityPerSheet = mProduct.getQuantityPerSheet();
-
-    if ( quantityPerSheet > 1 )
+    if ( isVisible( quantityTextView ) )
       {
-      quantityLayout.setVisibility( View.VISIBLE );
+      if ( quantityPerSheet > 1 )
+        {
+        quantityLayout.setVisibility( View.VISIBLE );
 
-      quantityTextView.setText( getString( R.string.product_quantity_format_string, quantityPerSheet ) );
+        quantityTextView.setText( getString( R.string.product_quantity_format_string, quantityPerSheet ) );
+        }
+      else
+        {
+        quantityLayout.setVisibility( View.GONE );
+        }
       }
-    else
+
+
+    // Shipping description
+
+    if ( isVisible( summaryShippingTextView ) )
       {
-      quantityLayout.setVisibility( View.GONE );
+      // Currently we just check that shipping is free everywhere. If it isn't - we don't display
+      // anything.
+
+      boolean freeShippingEverywhere = true;
+
+      MultipleDestinationShippingCosts multipleDestinationShippingCosts = shippingCosts;
+
+      for ( SingleDestinationShippingCost singleDestinationShippingCosts : multipleDestinationShippingCosts.asList() )
+        {
+        MultipleCurrencyAmount multipleCurrencyShippingCost = singleDestinationShippingCosts.getCost();
+
+        for ( SingleCurrencyAmount singleCurrencyShippingCost : multipleCurrencyShippingCost.asCollection() )
+          {
+          if ( singleCurrencyShippingCost.isNonZero() )
+            {
+            freeShippingEverywhere = false;
+            }
+          }
+        }
+
+      if ( freeShippingEverywhere )
+        {
+        summaryShippingTextView.setText( R.string.product_free_worldwide_shipping );
+        }
+      else
+        {
+        summaryShippingTextView.setText( getString( R.string.product_shipping_summary_format_string, shippingCosts.getDisplayCost( locale ) ) );
+        }
       }
 
 
     // Shipping (postage)
 
-    Country country = Country.getInstance( locale );
-
-    List<SingleDestinationShippingCost> sortedShippingCostList = mProduct.getSortedShippingCosts( country );
-
-    StringBuilder shippingCostsStringBuilder = new StringBuilder();
-
-    String newlineString = "";
-
-    for ( SingleDestinationShippingCost singleDestinationShippingCost : sortedShippingCostList )
+    if ( isVisible( shippingTextView ) )
       {
-      // We want to prepend a new line for every shipping destination except the first
+      List<SingleDestinationShippingCost> sortedShippingCostList = mProduct.getSortedShippingCosts( country );
 
-      shippingCostsStringBuilder.append( newlineString );
+      StringBuilder shippingCostsStringBuilder = new StringBuilder();
 
-      newlineString = "\n";
+      String newlineString = "";
 
-
-      // Get the cost in the default currency for the locale, and format the amount.
-
-      cost = singleDestinationShippingCost.getCost().getDefaultAmountWithFallback();
-
-      if ( cost != null )
+      for ( SingleDestinationShippingCost singleDestinationShippingCost : sortedShippingCostList )
         {
-        String formatString = getString( R.string.product_shipping_format_string );
+        // We want to prepend a new line for every shipping destination except the first
 
-        String costString = (cost.getAmount().compareTo( BIG_DECIMAL_ZERO ) != 0
-                ? cost.getDisplayAmountForLocale( locale )
-                : getString( R.string.product_free_shipping ));
+        shippingCostsStringBuilder.append( newlineString );
 
-        shippingCostsStringBuilder
-                .append( String.format( formatString, singleDestinationShippingCost.getDestinationDescription( mKiteActivity ), costString ) );
+        newlineString = "\n";
+
+
+        // Get the cost in the default currency for the locale, and format the amount.
+
+        singleCurrencyCost = singleDestinationShippingCost.getCost().getDefaultAmountWithFallback();
+
+        if ( singleCurrencyCost != null )
+          {
+          String formatString = getString( R.string.product_shipping_format_string );
+
+          String costString = ( singleCurrencyCost.isNonZero()
+                  ? singleCurrencyCost.getDisplayAmountForLocale( locale )
+                  : getString( R.string.product_free_shipping ) );
+
+          shippingCostsStringBuilder
+                  .append( String.format( formatString, singleDestinationShippingCost.getDestinationDescription( mKiteActivity ), costString ) );
+          }
+
+        shippingTextView.setText( shippingCostsStringBuilder.toString() );
         }
-
-      shippingTextView.setText( shippingCostsStringBuilder.toString() );
       }
 
 
-    mProceedOverlayButton.setText( R.string.product_overview_start_button_text );
+    if ( mProceedOverlayButton != null )
+      {
+      mProceedOverlayButton.setText( R.string.product_overview_start_button_text );
+
+      mProceedOverlayButton.setOnClickListener( this );
+      }
 
 
     mProductImageViewPager.setOnClickListener( this );
-    mDrawerControlLayout.setOnClickListener( this );
+
+    if ( mDrawerControlLayout != null ) mDrawerControlLayout.setOnClickListener( this );
+
     mOverlaidStartButton.setOnClickListener( this );
-    mProceedOverlayButton.setOnClickListener( this );
 
 
     return ( view );
@@ -433,7 +510,7 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
   public boolean onBackPressIntercepted()
     {
     // If the slider is open - close it
-    if ( mSlidingOverlayFrame.sliderIsExpanded() )
+    if ( mSlidingOverlayFrame != null && mSlidingOverlayFrame.sliderIsExpanded() )
       {
       toggleSliderState();
 
@@ -523,6 +600,17 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
 
   /*****************************************************
    *
+   * Returns true if a view is visible, false otherwise.
+   *
+   *****************************************************/
+  private boolean isVisible( View view )
+    {
+    return ( view != null && view.getVisibility() == View.VISIBLE );
+    }
+
+
+  /*****************************************************
+   *
    * Called when one of the start creating buttons is clicked.
    *
    *****************************************************/
@@ -588,13 +676,19 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
     openCloseIconAnimation.setFillAfter( true );
 
 
-    mOverlaidComponents.setAlpha( 1f );               // Clear any alpha already applied
-    mOpenCloseDrawerIconImageView.setRotation( 0f );  // Clear any rotation already applied
+    if ( mOverlaidComponents != null )
+      {
+      mOverlaidComponents.setAlpha( 1f );               // Clear any alpha already applied
+      mOverlaidComponents.startAnimation( overlaidComponentsAnimation );
+      }
+
+    if ( mOpenCloseDrawerIconImageView != null )
+      {
+      mOpenCloseDrawerIconImageView.setRotation( 0f );  // Clear any rotation already applied
+      mOpenCloseDrawerIconImageView.startAnimation( openCloseIconAnimation );
+      }
 
     mSlidingOverlayFrame.animateToExpandedState( sliderWillBeOpening );
-
-    mOverlaidComponents.startAnimation( overlaidComponentsAnimation );
-    mOpenCloseDrawerIconImageView.startAnimation( openCloseIconAnimation );
     }
 
 

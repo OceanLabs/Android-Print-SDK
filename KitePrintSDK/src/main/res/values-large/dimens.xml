@@ -5,11 +5,11 @@
 
     <dimen name="paging_dot_size">10dp</dimen>
 
-    <dimen name="group_or_product_label_bottom_spacing">25dp</dimen>
-    <dimen name="group_or_product_label_width">300dp</dimen>
+    <dimen name="label_margin_bottom">25dp</dimen>
+    <dimen name="label_width">300dp</dimen>
     <dimen name="group_or_product_label_text_size">@dimen/label_text_size</dimen>
-    <dimen name="group_or_product_label_padding_top">8dp</dimen>
-    <dimen name="group_or_product_label_padding_bottom">12dp</dimen>
+    <dimen name="label_padding_top">8dp</dimen>
+    <dimen name="label_padding_bottom">12dp</dimen>
     <dimen name="labelled_image_label_shadow_y_offset">1dp</dimen>
 
     <dimen name="product_overview_paging_dots_spacing_bottom">12dp</dimen>

@@ -90,7 +90,7 @@ import ly.kite.product.ProductLoader;
  * process - the shipping screen.
  *
  *****************************************************/
-public class CheckoutActivity extends AKiteActivity
+public class CheckoutActivity extends AKiteActivity implements View.OnClickListener
   {
   ////////// Static Constant(s) //////////
 
@@ -126,6 +126,7 @@ public class CheckoutActivity extends AKiteActivity
 
   private EditText             mEmailEditText;
   private EditText             mPhoneEditText;
+  private Button               mProceedButton;
 
 
   ////////// Static Initialiser(s) //////////
@@ -164,6 +165,7 @@ public class CheckoutActivity extends AKiteActivity
 
     mEmailEditText = (EditText)findViewById( R.id.email_edit_text );
     mPhoneEditText = (EditText)findViewById( R.id.phone_edit_text );
+    mProceedButton = (Button)findViewById( R.id.proceed_overlay_button );
 
 
     // Restore email address and phone number from history
@@ -236,10 +238,9 @@ public class CheckoutActivity extends AKiteActivity
 
     KiteSDK.getInstance( this ).setEnvironment( apiKey, env );
 
-//    if ( getActionBar() != null )
-//      {
-//      getActionBar().setDisplayHomeAsUpEnabled( true );
-//      }
+
+    mProceedButton.setText( R.string.shipping_proceed_button_text );
+
 
     // hide keyboard initially
     this.getWindow().setSoftInputMode( WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN );
@@ -255,6 +256,9 @@ public class CheckoutActivity extends AKiteActivity
       {
       Analytics.getInstance( this ).trackShippingScreenViewed( mPrintOrder, Analytics.VARIANT_JSON_PROPERTY_VALUE_CLASSIC_PLUS_ADDRESS_SEARCH, true );
       }
+
+
+    mProceedButton.setOnClickListener( this );
     }
 
 
@@ -323,6 +327,18 @@ public class CheckoutActivity extends AKiteActivity
     }
 
 
+  ////////// View.OnClickListener Method(s) //////////
+
+  @Override
+  public void onClick( View view )
+    {
+    if ( view == mProceedButton )
+      {
+      onProceedButtonClicked();
+      }
+    }
+
+
   ////////// Method(s) //////////
 
   public void onChooseDeliveryAddressButtonClicked( View view )
@@ -354,7 +370,7 @@ public class CheckoutActivity extends AKiteActivity
     d.show();
     }
 
-  public void onButtonNextClicked( View view )
+  public void onProceedButtonClicked()
     {
     String email = mEmailEditText.getText().toString();
     String phone = mPhoneEditText.getText().toString();
@@ -443,7 +459,7 @@ public class CheckoutActivity extends AKiteActivity
     @Override
     public void onClick( DialogInterface dialogInterface, int i )
       {
-      onButtonNextClicked( null );
+      onProceedButtonClicked();
       }
     } );
     builder.setNegativeButton( "Cancel", null );

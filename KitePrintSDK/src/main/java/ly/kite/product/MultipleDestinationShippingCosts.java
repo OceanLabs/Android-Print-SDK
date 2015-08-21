@@ -42,9 +42,12 @@ package ly.kite.product;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import ly.kite.address.Country;
 
 
 ///// Class Declaration /////
@@ -61,8 +64,8 @@ public class MultipleDestinationShippingCosts implements Parcelable
   @SuppressWarnings( "unused" )
   private static final String  LOG_TAG                        = "MultipleDestinationShippingCosts";
 
-  public  static final String  DESTINATION_CODE_EUROPE        = "europe";
-  public  static final String  DESTINATION_CODE_REST_OF_WORLD = "rest_of_world";
+//  public  static final String  DESTINATION_CODE_EUROPE        = "europe";
+//  public  static final String  DESTINATION_CODE_REST_OF_WORLD = "rest_of_world";
 
 
   ////////// Static Variable(s) //////////
@@ -169,6 +172,60 @@ public class MultipleDestinationShippingCosts implements Parcelable
   public void add( String destinationCode, MultipleCurrencyAmount cost )
     {
     add( new SingleDestinationShippingCost( destinationCode, cost ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the shipping cost for a country.
+   *
+   *****************************************************/
+  public SingleDestinationShippingCost getCost( Country country )
+    {
+    SingleDestinationShippingCost singleDestinationShippingCost;
+
+
+    // See if there is a cost for the country as a destination
+
+    singleDestinationShippingCost = mDestinationCostTable.get( country.iso3Code() );
+
+    if ( singleDestinationShippingCost != null ) return ( singleDestinationShippingCost );
+
+
+    // Otherwise if the country is in Europe, see if there is a cost for Europe as a destination
+    if ( country.isInEurope() )
+      {
+      singleDestinationShippingCost = mDestinationCostTable.get( SingleDestinationShippingCost.DESTINATION_CODE_EUROPE );
+
+      if ( singleDestinationShippingCost != null ) return ( singleDestinationShippingCost );
+      }
+
+
+    // Otherwise see if there is a cost for the rest of world as a destination
+
+    singleDestinationShippingCost = mDestinationCostTable.get( SingleDestinationShippingCost.DESTINATION_CODE_REST_OF_WORLD );
+
+    return ( singleDestinationShippingCost );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a cost for shipping to the current locale,
+   * formatted according to the locale.
+   *
+   *****************************************************/
+  public String getDisplayCost( Locale locale )
+    {
+    // Get the cost for shipping
+
+    Country country = Country.getInstance( locale );
+
+    SingleDestinationShippingCost shippingCost = getCost( country );
+
+
+    // Now get a formatted string for the amount
+    return ( shippingCost.getCost().getDisplayAmountWithFallback( locale ) );
     }
 
 

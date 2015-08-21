@@ -21,13 +21,13 @@
 
         <Button
             android:id="@+id/cancel_button"
-            style="@style/KiteSDKCTAOffsetButtonStyle"
+            style="@style/KiteSDKCTAButton.Offset"
             android:layout_gravity="bottom|left"
             android:visibility="gone"/>
 
         <Button
             android:id="@+id/confirm_button"
-            style="@style/KiteSDKCTAOffsetButtonStyle"
+            style="@style/KiteSDKCTAButton.Offset"
             android:layout_gravity="bottom|right"/>
 
     </FrameLayout>

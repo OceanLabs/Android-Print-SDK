@@ -185,6 +185,28 @@ public class SingleCurrencyAmount implements Parcelable
 
   /*****************************************************
    *
+   * Returns true if the amount is zero, false otherwise.
+   *
+   *****************************************************/
+  public boolean isZero()
+    {
+    return ( mAmount.compareTo( BigDecimal.ZERO ) == 0 );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns true if the amount is non-zero, false otherwise.
+   *
+   *****************************************************/
+  public boolean isNonZero()
+    {
+    return ( mAmount.compareTo( BigDecimal.ZERO ) != 0 );
+    }
+
+
+  /*****************************************************
+   *
    * Returns the amount as a double.
    *
    *****************************************************/

@@ -41,36 +41,60 @@ public class AddressSearchActivity extends Activity implements ActionBar.OnNavig
 
     private static final int REQUEST_CODE_ADDRESS = 0;
 
+
+  @Override
+  protected void onCreate( Bundle savedInstanceState )
+    {
+    super.onCreate( savedInstanceState );
+    setContentView( R.layout.screen_address_search );
+
+    // Set up the action bar to show a dropdown list.
+    final ActionBar actionBar = getActionBar();
+    actionBar.setDisplayShowTitleEnabled( false );
+    actionBar.setNavigationMode( ActionBar.NAVIGATION_MODE_LIST );
+
+    // Set up the dropdown list navigation in the action bar.
+    actionBar.setListNavigationCallbacks(
+            // Specify a SpinnerAdapter to populate the dropdown list.
+            new ArrayAdapter<Country>(
+                    this,
+                    R.layout.spinner_item_country,
+                    android.R.id.text1,
+                    Country.values() ),
+            this );
+
+    int selected = Country.getInstance( Locale.getDefault() ).ordinal();
+    actionBar.setSelectedNavigationItem( selected );
+    actionBar.setDisplayHomeAsUpEnabled( true );
+
+
+    final ListView addressSearchResults = (ListView) findViewById( R.id.list_view_address_search_results );
+    addressSearchResults.setAdapter( new AddressSearchResultAdapter() );
+
+    addressSearchResults.setOnItemClickListener( new AdapterView.OnItemClickListener()
+    {
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_address_search);
-
-        // Set up the action bar to show a dropdown list.
-        final ActionBar actionBar = getActionBar();
-        actionBar.setDisplayShowTitleEnabled(false);
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-
-        // Set up the dropdown list navigation in the action bar.
-        actionBar.setListNavigationCallbacks(
-                // Specify a SpinnerAdapter to populate the dropdown list.
-                new ArrayAdapter<Country>(
-                        this,
-                        R.layout.country_spinner_item,
-                        android.R.id.text1,
-                        Country.values() ),
-                this);
-
-        int selected = Country.getInstance(Locale.getDefault()).ordinal();
-        actionBar.setSelectedNavigationItem(selected);
-        actionBar.setDisplayHomeAsUpEnabled(true);
-
-        if (savedInstanceState == null) {
-            getFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
-                    .commit();
+    public void onItemClick( AdapterView<?> adapterView, View view, int i, long position )
+      {
+      Address addr = (Address) addressSearchResults.getAdapter().getItem( (int) position );
+      if ( addr.isSearchRequiredForFullDetails() )
+        {
+        searchForAddressDetails( addr );
         }
+      else
+        {
+        Intent intent = new Intent( AddressSearchActivity.this, AddressEditActivity.class );
+        intent.putExtra( AddressEditActivity.EXTRA_ADDRESS, (Parcelable) addr );
+        startActivityForResult( intent, REQUEST_CODE_ADDRESS );
+        }
+      }
+    } );
+
+    TextView empty = (TextView) findViewById( R.id.empty );
+    addressSearchResults.setEmptyView( empty );
+    empty.setText( R.string.address_search_prompt );
     }
+
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -201,44 +225,6 @@ public class AddressSearchActivity extends Activity implements ActionBar.OnNavig
         });
     }
 
-    public static class PlaceholderFragment extends Fragment {
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_address_search, container, false);
-            final ListView addressSearchResults = (ListView) rootView.findViewById(R.id.list_view_address_search_results);
-            addressSearchResults.setAdapter(new AddressSearchResultAdapter());
-
-            addressSearchResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int i, long position) {
-                    Address addr = (Address) addressSearchResults.getAdapter().getItem((int) position);
-                    if (addr.isSearchRequiredForFullDetails()) {
-                        ((AddressSearchActivity) getActivity()).searchForAddressDetails(addr);
-                    } else {
-                        Intent intent = new Intent(getActivity(), AddressEditActivity.class);
-                        intent.putExtra(AddressEditActivity.EXTRA_ADDRESS, (Parcelable) addr);
-                        startActivityForResult(intent, REQUEST_CODE_ADDRESS);
-                    }
-                }
-            });
-
-            TextView empty = (TextView) rootView.findViewById(R.id.empty);
-            addressSearchResults.setEmptyView(empty);
-            empty.setText("Search for addresses above");
-
-            return rootView;
-        }
-
-        @Override
-        public void onActivityResult(int requestCode, int resultCode, Intent data) {
-            ((AddressSearchActivity) getActivity()).onActivityResult(requestCode, resultCode, data);
-        }
-    }
 
     public void onMultipleChoices(AddressSearchRequest req, List<Address> options) {
         if (options.size() == 0) {

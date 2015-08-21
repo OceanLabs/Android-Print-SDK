@@ -51,9 +51,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -332,8 +334,31 @@ public class MultipleCurrencyAmount implements Parcelable
    *****************************************************/
   public String getDefaultDisplayAmountWithFallback()
     {
-    Locale   defaultLocale   = Locale.getDefault();
-    Currency defaultCurrency = Currency.getInstance( defaultLocale );
+    return ( getDisplayAmountWithFallback( Locale.getDefault() ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the amount as a formatted string. Tries to use
+   * the default currency, but will fall back to other
+   * currencies if the preferred is not available.
+   *
+   * If the currency that we found matches the main currency
+   * for the default locale, then we use the number formatter
+   * to format the amount.
+   *
+   * If the currency that we found is different, then we format
+   * the amount with the full currency code. We do this to
+   * avoid any ambiguity. For example, if we were to live in
+   * Sweden but found a cost in Danish Krone, then having an
+   * amount such as 4.00 kr would be ambiguous (because we
+   * would believe we were being quoted in Swedish Kroner).
+   *
+   *****************************************************/
+  public String getDisplayAmountWithFallback( Locale locale )
+    {
+    Currency defaultCurrency = Currency.getInstance( locale );
 
 
     // Get the single currency amount
@@ -345,7 +370,17 @@ public class MultipleCurrencyAmount implements Parcelable
 
     // Format the amount we found for the default locale. It may not be the same currency
     // we asked for.
-    return ( amount.getDisplayAmountForLocale( defaultLocale ) );
+    return ( amount.getDisplayAmountForLocale( locale ) );
+    }
+
+  /*****************************************************
+   *
+   * Returns the amounts as a list.
+   *
+   *****************************************************/
+  public Collection<SingleCurrencyAmount> asCollection()
+    {
+    return ( mCurrencyAmountTable.values() );
     }
 
 

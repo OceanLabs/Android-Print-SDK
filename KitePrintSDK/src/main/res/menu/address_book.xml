@@ -6,7 +6,7 @@
         android:id="@+id/add_address"
         android:title="@string/add_address"
         android:showAsAction="always"
-        android:icon="@drawable/ic_action_add">
+        android:icon="@drawable/ic_add_black">
 
         <menu>
             <item

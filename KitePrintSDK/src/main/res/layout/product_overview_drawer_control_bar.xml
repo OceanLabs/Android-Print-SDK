@@ -30,7 +30,7 @@
                 android:textSize="@dimen/product_overview_details_text"
                 android:textColor="@android:color/white"
                 android:text="@string/Details"
-                style="@style/KiteSDKLabelStyle"/>
+                style="@style/KiteSDKShadowedText"/>
         </LinearLayout>
     </FrameLayout>
 
@@ -43,6 +43,6 @@
         android:gravity="center"
         android:textSize="@dimen/product_overview_price_text"
         android:textColor="@android:color/white"
-        style="@style/KiteSDKLabelStyle"/>
+        style="@style/KiteSDKShadowedText"/>
 
 </LinearLayout>

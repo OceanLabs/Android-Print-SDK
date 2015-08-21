@@ -5,6 +5,9 @@
         <item name="android:homeAsUpIndicator">@drawable/ic_arrow_back</item>
     </style>
 
+
+    <!-- SDK Activities may be re-styled as required -->
+
     <style name="Theme.KiteSDK.ProductSelection">
         <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar.Opaque</item>
     </style>
@@ -17,9 +20,28 @@
         <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar.Opaque</item>
     </style>
 
+    <style name="Theme.KiteSDK.AddressBook">
+        <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar.Opaque</item>
+    </style>
+
+    <style name="Theme.KiteSDK.AddressSearch">
+        <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar.Opaque</item>
+    </style>
+
+    <style name="Theme.KiteSDK.AddressEdit">
+        <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar.Opaque</item>
+    </style>
+
     <style name="Theme.KiteSDK.Payment">
         <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar.Opaque</item>
     </style>
+
+    <style name="Theme.KiteSDK.OrderReceipt">
+        <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar.Opaque</item>
+    </style>
+
+    <!--  -->
+
 
     <style name="Theme.KiteSDK.ActionBar" parent="android:Widget.ActionBar">
         <item name="android:displayOptions">homeAsUp|showTitle</item>
@@ -33,14 +55,25 @@
         <item name="android:background">@color/opaque_action_bar</item>
     </style>
 
-    <style name="KiteSDKLabelStyle">
+    <style name="KiteSDKShadowedText">
         <item name="android:shadowColor">#30000000</item>
         <item name="android:shadowDx">0</item>
         <item name="android:shadowDy">1</item>
         <item name="android:shadowRadius">3</item>
     </style>
 
-    <style name="KiteSDKCTAButtonStyle" parent="KiteSDKLabelStyle">
+    <style name="KiteSDKLabel" parent="KiteSDKShadowedText">
+        <item name="android:layout_marginBottom">@dimen/label_margin_bottom</item>
+        <item name="android:layout_width">@dimen/label_width</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">@dimen/label_padding_top</item>
+        <item name="android:paddingBottom">@dimen/label_padding_bottom</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">@dimen/label_text_size</item>
+    </style>
+
+    <style name="KiteSDKCTAButton" parent="KiteSDKShadowedText">
         <item name="android:layout_height">@dimen/cta_button_height</item>
         <item name="android:background">@color/cta_button_background</item>
         <item name="android:gravity">center</item>
@@ -48,11 +81,13 @@
         <item name="android:textColor">@android:color/white</item>
     </style>
 
-    <style name="KiteSDKCTACenteredButtonStyle" parent="KiteSDKCTAButtonStyle">
+    <style name="KiteSDKCTAButton.ReviewAndCrop"/>
+
+    <style name="KiteSDKCTAButton.Centered">
         <item name="android:layout_width">@dimen/cta_centered_button_width</item>
     </style>
 
-    <style name="KiteSDKCTAOffsetButtonStyle" parent="KiteSDKCTAButtonStyle">
+    <style name="KiteSDKCTAButton.Offset">
         <item name="android:layout_width">@dimen/cta_offset_button_width</item>
     </style>
 

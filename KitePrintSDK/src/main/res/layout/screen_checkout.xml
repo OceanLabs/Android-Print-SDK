@@ -19,8 +19,10 @@
 
             <ImageView
                 android:id="@+id/checkout_progress_indicator"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:scaleType="centerCrop"
+                android:adjustViewBounds="true"
                 android:src="@drawable/checkout_progress_indicator1"/>
 
             <Button
@@ -68,24 +70,8 @@
 
     </ScrollView>
 
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.0"
-        android:padding="10dp"
-        android:gravity="center"
-        android:text="@string/powered_by"
-        android:textColor="@color/light_grey"/>
+    <include layout="@layout/include_powered_by"/>
 
-    <Button
-        android:id="@+id/next_button"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.0"
-        android:background="#57ae2e"
-        android:onClick="onButtonNextClicked"
-        android:text="Next"
-        android:textColor="@android:color/white"/>
+    <include layout="@layout/include_proceed_overlay"/>
 
 </LinearLayout>

@@ -23,7 +23,7 @@
         </LinearLayout>
 
         <Button
-            style="@style/KiteSDKCTACenteredButtonStyle"
+            style="@style/KiteSDKCTAButton.Centered"
             android:id="@+id/proceed_overlay_button"
             android:layout_gravity="center"/>
 

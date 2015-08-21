@@ -40,7 +40,7 @@
                         android:layout_height="wrap_content"/>
                 </FrameLayout>
                 <Button
-                    style="@style/KiteSDKCTACenteredButtonStyle"
+                    style="@style/KiteSDKCTAButton.Centered"
                     android:id="@+id/overlaid_start_button"
                     android:text="@string/product_overview_start_button_text"/>
             </LinearLayout>

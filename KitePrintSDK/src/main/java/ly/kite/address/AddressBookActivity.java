@@ -116,7 +116,7 @@ public class AddressBookActivity extends AKiteActivity
     super.onCreate( savedInstanceState );
 
 
-    setContentView( R.layout.activity_address_book );
+    setContentView( R.layout.screen_address_book );
 
     mAddressBookListView  = (ListView)findViewById( R.id.address_book_list_view );
     mEmptyMessageTextView = (TextView)findViewById( R.id.empty_message_text_view );

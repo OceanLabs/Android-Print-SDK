@@ -88,7 +88,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ChoosePro
   private ChooseProductGroupFragment    mProductGroupFragment;
   private ChooseProductFragment         mProductFragment;
   private ProductOverviewFragment       mProductOverviewFragment;
-  private ReviewAndEditFragment mReviewAndCropFragment;
+  private ReviewAndEditFragment         mReviewAndCropFragment;
 
 
   ////////// Static Initialiser(s) //////////

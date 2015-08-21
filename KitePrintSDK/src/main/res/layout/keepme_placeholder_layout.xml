@@ -1,0 +1,24 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <!-- This file is never used, but simply allows us to define placeholder layout ids
+         that customs apps may use.
+         Note that a custom app that does not use any views that are defined in the SDK,
+         must include a similar file.
+     -->
+
+    <TextView
+        android:id="@+id/summary_description_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/summary_shipping_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+</FrameLayout>
