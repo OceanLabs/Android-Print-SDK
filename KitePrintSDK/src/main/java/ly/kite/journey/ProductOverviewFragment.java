@@ -566,8 +566,10 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
    *
    *****************************************************/
   @Override
-  protected void onTop()
+  public void onTop()
     {
+    super.onTop();
+
     if ( mProduct != null ) mKiteActivity.setTitle( mProduct.getName() );
     }
 

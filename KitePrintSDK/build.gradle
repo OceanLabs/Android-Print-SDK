@@ -37,6 +37,7 @@ dependencies {
     compile files('libs/CardIONativeLibs.jar')
     // To generate this jar containing shared libraries see: http://ivansotof.com/2013/12/including-native-so-libraries-in-android/
     compile 'com.android.support:support-v4:22.2.1'
+    compile 'com.android.support:appcompat-v7:22.2.1'
     compile 'com.android.support:recyclerview-v7:22.2.1'
 }
 

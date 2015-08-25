@@ -587,9 +587,10 @@ public class Product implements Parcelable, IGroupOrProduct
     stringBuilder.append( "Id                 : " ).append( mId ).append( "\n" );
     stringBuilder.append( "Code               : " ).append( mCode ).append( "\n" );
     stringBuilder.append( "Name               : " ).append( mName ).append( "\n" );
-    stringBuilder.append( "Label              : " ).append( mType ).append( "\n" );
+    stringBuilder.append( "Type               : " ).append( mType ).append( "\n" );
     stringBuilder.append( "User Journey Type  : " ).append( mUserJourneyType.name() ).append( "\n" );
     stringBuilder.append( "Quantity Per Sheet : " ).append( mQuantityPerSheet ).append( "\n" );
+    stringBuilder.append( "Hero Image URL     : " ).append( mHeroImageURL.toString() ).append( "\n" );
 
     stringBuilder.append( "  ..." ).append( "\n" );
 

@@ -127,8 +127,10 @@ public class ChooseProductGroupFragment extends AGroupOrProductFragment
    *
    *****************************************************/
   @Override
-  protected void onTop()
+  public void onTop()
     {
+    super.onTop();
+
     mKiteActivity.setTitle( R.string.title_choose_product_group );
     }
 

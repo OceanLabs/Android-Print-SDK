@@ -55,7 +55,6 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 
 
 ///// Class Declaration /////
@@ -70,7 +69,10 @@ import java.util.Hashtable;
  *   - Images may be stored in the cache directory on the
  *   devices. This allows them to be cleared by clearing
  *   the cache in the app manager.
- *   - Images may also be stored in memory.
+ *
+ * In-memory image caching has been removed completely. Due
+ * to the stringent requirements of low-end devices, any caching
+ * is best left to the caller.
  *
  *****************************************************/
 public class ImageLoader
@@ -78,9 +80,9 @@ public class ImageLoader
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "ImageLoader";
+  private static final String  LOG_TAG                   = "ImageLoader";
 
-  private static final int     DOWNLOAD_BUFFER_SIZE_IN_BYTES = 8192;  // 8 KB
+  private static final int     LOAD_BUFFER_SIZE_IN_BYTES = 8192;  // 8 KB
 
 
   ////////// Static Variable(s) //////////
@@ -93,10 +95,7 @@ public class ImageLoader
   private Context                                         mContext;
   private File                                            mCacheDirectory;
 
-  // In-memory image cache
-  // TODO: Re-enable in-memory caching, and change this into a LRU-MRU chain
-  // TODO: with a memory size limit.
-  private Hashtable<String,Bitmap>                        mImageTable;
+  private HashMap<String,Integer>                         mURLResourceIdTable;
 
   // Images that are currently being processed
   private HashMap<String,ArrayList<CallbackInfo>>         mInProgressTable;
@@ -157,31 +156,34 @@ public class ImageLoader
     }
 
 
-//  /*****************************************************
-//   *
-//   * Delivers an image to a consumer, using the supplied
-//   * handler.
-//   *
-//   *****************************************************/
-//  public static void postImageToConsumer( Handler callbackHandler, IImageConsumer imageConsumer, Object key, Bitmap bitmap )
-//    {
-//    callbackHandler.post( new ImageAvailableCaller( imageConsumer, key, bitmap ) );
-//    }
-
-
   ////////// Constructor(s) //////////
 
   private ImageLoader( Context context )
     {
-    mContext         = context;
-    mCacheDirectory  = context.getCacheDir();
+    mContext            = context;
+    mCacheDirectory     = context.getCacheDir();
 
-    mImageTable      = new Hashtable<>();
-    mInProgressTable = new HashMap<>();
+    mURLResourceIdTable = new HashMap<>();
+    mInProgressTable    = new HashMap<>();
     }
 
 
   ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Adds a set of mappings from URLs to resource ids. This
+   * is useful if we want to pre-cache any images.
+   *
+   *****************************************************/
+  public void addResourceMappings( Pair<String,Integer>... resourceMappings )
+    {
+    for ( Pair<String,Integer> resourceMapping : resourceMappings )
+      {
+      mURLResourceIdTable.put( resourceMapping.first, resourceMapping.second );
+      }
+    }
+
 
   /*****************************************************
    *
@@ -223,19 +225,6 @@ public class ImageLoader
   public void requestRemoteImage( String imageClassString, Object key, URL imageURL, IImageConsumer imageConsumer )
     {
     String imageURLString = imageURL.toString();
-
-
-    // If we already have the image in memory, return it immediately
-
-    Bitmap bitmap = mImageTable.get( imageURLString );
-
-    if ( bitmap != null )
-      {
-      // We don't need to use the handler since we should have been called on the UI thread.
-      imageConsumer.onImageAvailable( imageURL, bitmap );
-
-      return;
-      }
 
 
     // If the image is already being processed - add the consumer to the list of those wanting the
@@ -348,42 +337,54 @@ public class ImageLoader
     @Override
     protected Bitmap doInBackground( Void... params )
       {
-      Pair<String,String> directoryAndFilePath = getImageDirectoryAndFilePath( mImageClassString, mImageURLString );
-
-      String imageDirectoryPath = directoryAndFilePath.first;
-      String imageFilePath      = directoryAndFilePath.second;
+      Bitmap bitmap = null;
 
 
-      boolean imageWasFoundLocally = false;
-      Bitmap  bitmap               = null;
+      // If we have a resource mapping for the image - don't bother caching it to a file,
+      // just load it and return. The Android framework handles resource caching automatically.
 
-      try
+      Integer resourceIdAsInteger = mURLResourceIdTable.get( mImageURLString );
+
+      if ( resourceIdAsInteger != null )
         {
-        // If we don't have the image stored locally - download it now
+        bitmap = BitmapFactory.decodeResource( mContext.getResources(), resourceIdAsInteger );
+        }
+      else
+        {
+        Pair<String, String> directoryAndFilePath = getImageDirectoryAndFilePath( mImageClassString, mImageURLString );
 
-        File imageDirectory = new File( imageDirectoryPath );
-        File imageFile      = new File( imageFilePath );
+        String imageDirectoryPath = directoryAndFilePath.first;
+        String imageFilePath = directoryAndFilePath.second;
 
-        imageWasFoundLocally = imageFile.exists();
 
-        if ( ! imageWasFoundLocally )
+        boolean imageWasFoundLocally = false;
+
+        try
           {
-          // If we fail to download the file, don't continue. The finally block, however,
-          // ensures that we clean up the in-progress entry.
-          if ( ! downloadTo( imageDirectory, imageFile ) ) return ( null );
+          // If we don't have the image stored locally - download it now
+
+          File imageDirectory = new File( imageDirectoryPath );
+          File imageFile      = new File( imageFilePath );
+
+          imageWasFoundLocally = imageFile.exists();
+
+          if ( ! imageWasFoundLocally )
+            {
+            // If we fail to download the file, don't continue. The finally block, however,
+            // ensures that we clean up the in-progress entry.
+            if ( ! downloadTo( imageDirectory, imageFile ) ) return ( null );
+            }
+
+
+          // Load the image from the file
+          bitmap = BitmapFactory.decodeFile( imageFilePath );
           }
-
-
-        // Load the image from the file and store it in the memory cache
-
-        bitmap = BitmapFactory.decodeFile( imageFilePath );
-
-        // TODO: Re-enable in-memory caching when we implement aging
-        //mImageTable.put( mImageURLString, bitmap );
+        finally
+          {
+          }
         }
-      finally
-        {
-        }
+
+
 
 
       return ( bitmap );
@@ -392,7 +393,8 @@ public class ImageLoader
 
     /*****************************************************
      *
-     * Downloads a file from the remote URL to the image file.
+     * Either downloads a file from the remote URL, or loads
+     * one from resources, and saves it to the output file.
      *
      * @return true, if the file was downloaded successfully.
      * @return false, otherwise.
@@ -411,7 +413,7 @@ public class ImageLoader
       imageDirectory.mkdirs();
 
 
-      // Download the image
+      // Retrieve the image
 
       InputStream  inputStream  = null;
       OutputStream outputStream = null;
@@ -420,10 +422,11 @@ public class ImageLoader
         {
         Log.i( LOG_TAG, "Downloading: " + mImageURLString + " -> " + imageFile.getPath() );
 
-        inputStream  = mImageURL.openStream();
+        inputStream = mImageURL.openStream();
+
         outputStream = new FileOutputStream( imageFile );
 
-        byte[] downloadBuffer = new byte[ DOWNLOAD_BUFFER_SIZE_IN_BYTES ];
+        byte[] downloadBuffer = new byte[ LOAD_BUFFER_SIZE_IN_BYTES ];
 
         int numberOfBytesRead;
 

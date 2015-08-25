@@ -41,11 +41,13 @@ package ly.kite.journey;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -136,13 +138,13 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements P
 
   /*****************************************************
    *
-   * Called when the fragment becomes visible.
+   * Called when the fragment is on top.
    *
    *****************************************************/
   @Override
-  public void onStart()
+  public void onTop()
     {
-    super.onStart();
+    super.onTop();
 
 
     getProducts();
@@ -151,18 +153,12 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements P
 
   /*****************************************************
    *
-   * Called after the fragment is no longer visible.
+   * Called when the fragment is not on top.
    *
    *****************************************************/
   @Override
-  public void onStop()
+  public void onNotTop()
     {
-    super.onStop();
-
-
-    // Clear out the stored images to reduce memory usage
-    // when not on this screen.
-
     mGridView.setAdapter( null );
 
     mGridAdaptor = null;
@@ -395,8 +391,9 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements P
         view = mLayoutInflator.inflate( mLayoutResourceId, null );
 
         viewReferences                   = new ViewReferences();
-        viewReferences.productImageView = (LabelledImageView)view.findViewById( R.id.labelled_image_view );
-        viewReferences.priceTextView    = (TextView)view.findViewById( R.id.price_text_view );
+        viewReferences.productImageView  = (LabelledImageView)view.findViewById( R.id.labelled_image_view );
+        viewReferences.priceOverlayFrame = (FrameLayout)view.findViewById( R.id.price_overlay_frame );
+        viewReferences.priceTextView     = (TextView)view.findViewById( R.id.price_text_view );
 
         view.setTag( viewReferences );
         }
@@ -414,17 +411,25 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements P
 
       if ( groupOrProduct != null )
         {
+        ///// Group / Product image /////
+
         viewReferences.productImageView.setLabel( groupOrProduct.getDisplayLabel(), groupOrProduct.getDisplayLabelColour() );
 
-        // There may be a price text view in the layout
-        if ( viewReferences.priceTextView != null ) viewReferences.priceTextView.setText( groupOrProduct.getDisplayPrice() );
+        // Populate any price overlay
+        if ( viewReferences.priceOverlayFrame != null ) viewReferences.priceOverlayFrame.setVisibility( View.VISIBLE );
+        if ( viewReferences.priceTextView     != null ) viewReferences.priceTextView.setText( groupOrProduct.getDisplayPrice() );
 
         imageURL       = groupOrProduct.getDisplayImageURL();
         imageURLString = imageURL.toString();
         }
       else
         {
+        ///// Placeholder image /////
+
         viewReferences.productImageView.setLabel( null );
+
+        // Any price overlay should not be visible for a placeholder image
+        if ( viewReferences.priceOverlayFrame != null ) viewReferences.priceOverlayFrame.setVisibility( View.GONE );
 
         imageURL       = mPlaceholderImageURL;
         imageURLString = mPlaceholderImageURLString;
@@ -450,6 +455,7 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements P
     private class ViewReferences
       {
       LabelledImageView  productImageView;
+      FrameLayout        priceOverlayFrame;
       TextView           priceTextView;
       }
 

@@ -95,7 +95,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
   protected FragmentManager   mFragmentManager;
 
-  protected AKiteFragment     mCurrentFragment;
+  protected AKiteFragment mTopFragment;
 
 
   ////////// Static Initialiser(s) //////////
@@ -180,10 +180,10 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     {
     super.onPostCreate( savedInstanceState );
 
-    // If we are being re-created - work out the current fragment.
+    // If we are being re-created - work out the top fragment.
     if ( savedInstanceState != null )
       {
-      determineCurrentFragment();
+      determineTopFragment();
       }
     }
 
@@ -241,7 +241,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   @Override
   public void onBackPressed()
     {
-    if ( mCurrentFragment != null && mCurrentFragment.onBackPressIntercepted() )
+    if ( mTopFragment != null && mTopFragment.onBackPressIntercepted() )
       {
       return;
       }
@@ -320,7 +320,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
       }
 
 
-    determineCurrentFragment();
+    determineTopFragment();
     }
 
 
@@ -445,33 +445,58 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
    * Works out what the current fragment is.
    *
    *****************************************************/
-  private void determineCurrentFragment( int entryCount )
+  private void determineTopFragment( int entryCount )
     {
+    AKiteFragment lastTopFragment = mTopFragment;
+
+
     try
       {
       FragmentManager.BackStackEntry entry;
 
-      if ( entryCount        > 0    &&
-           mFragmentManager != null &&
-           ( entry = mFragmentManager.getBackStackEntryAt( entryCount - 1 ) ) != null )
-        {
-        mCurrentFragment = (AKiteFragment) mFragmentManager.findFragmentByTag( entry.getName() );
 
-        if ( mCurrentFragment != null ) onNotifyTop( mCurrentFragment );
+      // See if there is a top fragment
+
+      int entryIndex = entryCount - 1;
+
+      if ( entryCount > 0 && ( entry = mFragmentManager.getBackStackEntryAt( entryIndex ) ) != null )
+        {
+        mTopFragment = (AKiteFragment)mFragmentManager.findFragmentByTag( entry.getName() );
+
+        if ( mTopFragment != null ) onNotifyTop( mTopFragment );
         }
       else
         {
-        mCurrentFragment = null;
+        mTopFragment = null;
         }
+
+
+      // Notify all other fragments that they are not top-most
+
+      for ( entryIndex --; entryIndex >= 0; entryIndex -- )
+        {
+        entry = mFragmentManager.getBackStackEntryAt( entryIndex );
+
+        if ( entry != null )
+          {
+          AKiteFragment fragment = (AKiteFragment)mFragmentManager.findFragmentByTag( entry.getName() );
+
+          if ( fragment != null )
+            {
+            onNotifyNotTop( fragment );
+            }
+          }
+        }
+
       }
     catch ( Exception e )
       {
-      Log.e( LOG_TAG, "Could not get current fragment", e );
+      Log.e( LOG_TAG, "Could not determine current fragment", e );
 
-      mCurrentFragment = null;
+      mTopFragment = null;
       }
 
-    //Log.d( LOG_TAG, "Current fragment = " + mCurrentFragment );
+    //Log.d( LOG_TAG, "Current fragment = " + mTopFragment );
     }
 
 
@@ -480,21 +505,35 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
    * Works out what the current fragment is.
    *
    *****************************************************/
-  private void determineCurrentFragment()
+  private void determineTopFragment()
     {
-    determineCurrentFragment( mFragmentManager.getBackStackEntryCount() );
+    determineTopFragment( mFragmentManager.getBackStackEntryCount() );
     }
 
 
   /*****************************************************
    *
-   * Called with the current top-most fragment. May be
-   * overridden, but must call through to this method.
+   * Called with the current top-most fragment.
+   *
+   * Will never be called with a null fragment.
    *
    *****************************************************/
   protected void onNotifyTop( AKiteFragment topFragment )
     {
-    mCurrentFragment.onTop();
+    topFragment.onTop();
+    }
+
+
+  /*****************************************************
+   *
+   * Called when fragments are no longer top-most.
+   *
+   * Will never be called with a null fragment.
+   *
+   *****************************************************/
+  protected void onNotifyNotTop( AKiteFragment fragment )
+    {
+    fragment.onNotTop();
     }
 
 

@@ -245,8 +245,10 @@ public class PhoneCaseFragment extends AEditImageFragment
    *
    *****************************************************/
   @Override
-  protected void onTop()
+  public void onTop()
     {
+    super.onTop();
+
     if ( mProduct != null ) mKiteActivity.setTitle( mProduct.getName() );
     }
 

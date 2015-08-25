@@ -266,11 +266,22 @@ abstract public class AKiteFragment extends Fragment
 
   /*****************************************************
    *
-   * Called when the fragment is top-most. Used mostly
-   * to set the title.
+   * Called when the fragment is top-most. Can be used as
+   * an equivalent to onResume, to set the title etc.
    *
    *****************************************************/
-  protected void onTop()
+  public void onTop()
+    {
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the fragment is not top-most. Can be
+   * used to free resources.
+   *
+   *****************************************************/
+  public void onNotTop()
     {
     }
 

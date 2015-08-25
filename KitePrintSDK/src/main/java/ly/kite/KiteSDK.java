@@ -50,6 +50,7 @@ import com.paypal.android.sdk.payments.PayPalConfiguration;
 import ly.kite.product.Asset;
 import ly.kite.journey.ProductSelectionActivity;
 import ly.kite.product.AssetHelper;
+import ly.kite.util.ImageLoader;
 
 
 ///// Class Declaration /////
@@ -72,16 +73,6 @@ public class KiteSDK
   private static final String SHARED_PREFERENCES_NAME                 = "kite_shared_prefs";
   private static final String SHARED_PREFERENCES_KEY_API_KEY          = "api_key";
   private static final String SHARED_PREFERENCES_KEY_ENVIRONMENT_NAME = "environment_name";
-
-
-  // Old stuff
-
-  //private static final String PAYPAL_CLIENT_ID_SANDBOX = "Aa5nsBDntBpozWQykoxQXoHFOqs551hTNt0B8LQXTudoh8bD0nT1F735c_Fh";
-  //private static final String PAYPAL_RECIPIENT_SANDBOX = "hello-facilitator@psilov.eu";
-
-  //private static final String PAYPAL_CLIENT_ID_LIVE = "AT2JfBAmXD-CHGJnUb05ik4J-GrCi4XxjY9_grfCFjreYaLrNswj8uzhuWyj";
-  //private static final String PAYPAL_RECIPIENT_LIVE = "deon@oceanlabs.co";
-
 
   public static final String PAYPAL_CLIENT_ID_SANDBOX = "AcEcBRDxqcCKiikjm05FyD4Sfi4pkNP98AYN67sr3_yZdBe23xEk0qhdhZLM";
   public static final String PAYPAL_RECIPIENT_SANDBOX = "sandbox-merchant@kite.ly";
@@ -116,7 +107,7 @@ public class KiteSDK
    * already been initialised.
    *
    *****************************************************/
-  public static KiteSDK getInstance( Context context )
+  static public KiteSDK getInstance( Context context )
     {
     if ( sKiteSDK == null )
       {
@@ -129,12 +120,12 @@ public class KiteSDK
 
       String apiKey = sharedPreferences.getString( SHARED_PREFERENCES_KEY_API_KEY, null );
 
-      if ( apiKey == null ) throw ( new IllegalStateException( "Unable to find persisted API key" ) );
+      if ( apiKey == null ) throw ( new IllegalStateException( "Unable to find persisted API key ... have you initialised the SDK?" ) );
 
 
       String environmentName = sharedPreferences.getString( SHARED_PREFERENCES_KEY_ENVIRONMENT_NAME, null );
 
-      if ( apiKey == null ) throw ( new IllegalStateException( "Unable to find persisted environment name" ) );
+      if ( apiKey == null ) throw ( new IllegalStateException( "Unable to find persisted environment name ... have you initialised the SDK?" ) );
 
       try
         {
@@ -160,7 +151,7 @@ public class KiteSDK
    * have its environment set to the supplied values.
    *
    *****************************************************/
-  public static KiteSDK getInstance( Context context, String apiKey, Environment environment )
+  static public KiteSDK getInstance( Context context, String apiKey, Environment environment )
     {
     if ( sKiteSDK != null )
       {
@@ -177,11 +168,22 @@ public class KiteSDK
 
   /*****************************************************
    *
+   * Initialises the Kite SDK without returning an instance.
+   *
+   *****************************************************/
+  static public void initialise( Context context, String apiKey, Environment environment )
+    {
+    getInstance( context, apiKey, environment );
+    }
+
+
+  /*****************************************************
+   *
    * Convenience method for initialising and Launching the
    * shopping experience.
    *
    *****************************************************/
-  public static void startShopping( Context context, String apiKey, KiteSDK.Environment environment, ArrayList<Asset> assetArrayList )
+  static public void startShopping( Context context, String apiKey, KiteSDK.Environment environment, ArrayList<Asset> assetArrayList )
     {
     KiteSDK kiteSDK = getInstance( context, apiKey, environment );
 
@@ -195,7 +197,7 @@ public class KiteSDK
    * shopping experience, without any assets.
    *
    *****************************************************/
-  public static void startShopping( Context context, String apiKey, KiteSDK.Environment environment )
+  static public void startShopping( Context context, String apiKey, KiteSDK.Environment environment )
     {
     KiteSDK kiteSDK = getInstance( context, apiKey, environment );
 
@@ -262,6 +264,17 @@ public class KiteSDK
   public Environment getEnvironment()
     {
     return ( mEnvironment );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns an instance of the image loader.
+   *
+   *****************************************************/
+  public ImageLoader getImageLoader( Context context )
+    {
+    return ( ImageLoader.getInstance( context ) );
     }
 
 

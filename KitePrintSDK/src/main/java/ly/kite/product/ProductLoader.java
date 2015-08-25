@@ -442,6 +442,9 @@ public class ProductLoader implements HTTPJSONRequest.HTTPJSONRequestListener
           {
           productGroup = new ProductGroup( groupLabel, labelColour, groupImageURL );
 
+          Log.i( LOG_TAG, "-- New Product Group --" );
+          Log.i( LOG_TAG, productGroup.toLogString() );
+
           productGroupList.add( productGroup );
           productGroupTable.put( groupLabel, productGroup );
           }

@@ -153,6 +153,8 @@ public class ChooseProductFragment extends AGroupOrProductFragment
       Analytics.getInstance( mKiteActivity ).trackProductSelectionScreenViewed();
       }
 
+    if ( mProductGroup != null ) mKiteActivity.setTitle( mProductGroup.getDisplayLabel() );
+
     return ( view );
     }
 
@@ -163,8 +165,10 @@ public class ChooseProductFragment extends AGroupOrProductFragment
    *
    *****************************************************/
   @Override
-  protected void onTop()
+  public void onTop()
     {
+    super.onTop();
+
     if ( mProductGroup != null ) mKiteActivity.setTitle( mProductGroup.getDisplayLabel() );
     }
 
