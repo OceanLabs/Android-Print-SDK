@@ -41,7 +41,7 @@ We publish builds of our SDK to the Maven central repository as an .aar file. Th
 
 ```java 
 dependencies {
-    compile 'ly.kite:kite-print-sdk:2.+@aar'
+    compile 'ly.kite:kite-print-sdk:2.+'
 }
 ```
 
