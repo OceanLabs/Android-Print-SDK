@@ -356,8 +356,10 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
    *
    *****************************************************/
   @Override
-  protected void onTop()
+  public void onTop()
     {
+    super.onTop();
+
     if ( mProduct != null ) setTitle();
     }
 

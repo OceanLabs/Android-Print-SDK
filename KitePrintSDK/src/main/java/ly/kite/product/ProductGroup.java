@@ -267,6 +267,25 @@ public class ProductGroup implements Parcelable, IGroupOrProduct
     }
 
 
+  /*****************************************************
+   *
+   * Returns a log-displayable string representing this
+   * product group.
+   *
+   *****************************************************/
+  public String toLogString()
+    {
+    StringBuilder stringBuilder = new StringBuilder();
+
+    stringBuilder.append( "Label        : " ).append( mLabel ).append( "\n" );
+    stringBuilder.append( "Label Colour : 0x" ).append( Integer.toHexString( mLabelColour ) ).append( "\n" );
+    stringBuilder.append( "Image URL    : " ).append( mImageURL.toString() ).append( "\n" );
+
+    return ( stringBuilder.toString() );
+    }
+
+
+
   ////////// Inner Class(es) //////////
 
   /*****************************************************
