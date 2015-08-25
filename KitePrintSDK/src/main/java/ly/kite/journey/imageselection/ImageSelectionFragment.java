@@ -61,9 +61,13 @@ import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 
+import ly.kite.KiteSDK;
+import ly.kite.instagramphotopicker.InstagramPhoto;
+import ly.kite.instagramphotopicker.InstagramPhotoPicker;
 import ly.kite.journey.AKiteActivity;
-import ly.kite.journey.AKiteFragment;
 import ly.kite.journey.AProductCreationFragment;
+import ly.kite.photopicker.Photo;
+import ly.kite.photopicker.PhotoPicker;
 import ly.kite.product.Asset;
 import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.product.AssetHelper;
@@ -268,6 +272,12 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     // Display the image sources
     ArrayList<ImageSource> imageSourceList = new ArrayList<>();
     imageSourceList.add( ImageSource.DEVICE );
+
+    // add the Instagram image source only if the SDK user has enabled it by providing a client id & redirect URI
+    String instagramClientId    = KiteSDK.getInstance( getActivity() ).getInstagramClientId();
+    String instagramRedirectURI = KiteSDK.getInstance( getActivity() ).getInstagramRedirectURI();
+    if ( instagramClientId != null && instagramRedirectURI != null ) imageSourceList.add( ImageSource.INSTAGRAM );
+
     mImageSourceAdaptor = new ImageSourceAdaptor( mKiteActivity, imageSourceList );
     mImageSourceGridView.setNumColumns( mImageSourceAdaptor.getCount() );
     mImageSourceGridView.setAdapter( mImageSourceAdaptor );
@@ -384,45 +394,30 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     {
     super.onActivityResult( requestCode, resultCode, returnedIntent );
 
-    if ( requestCode == AKiteActivity.ACTIVITY_REQUEST_CODE_SELECT_IMAGE && resultCode == Activity.RESULT_OK )
+    if ( requestCode == AKiteActivity.ACTIVITY_REQUEST_CODE_SELECT_DEVICE_IMAGE && resultCode == Activity.RESULT_OK )
       {
-      // We don't allow duplicate images, so first check that the asset isn't already in
-      // our list. Note that we don't check that the image is the same but come from
-      // different sources.
-
-      Uri newImageUri = returnedIntent.getData();
-
-      Asset newAsset = new Asset( newImageUri );
-
-      if ( ! AssetsAndQuantity.uneditedAssetIsInList( mAssetsAndQuantityArrayList, newAsset ) )
+      Photo[] photos = PhotoPicker.getResultPhotos( returnedIntent );
+      ArrayList<Asset> assets = new ArrayList<Asset>();
+      for ( Photo photo : photos )
         {
-        // Create a new asset
-        AssetsAndQuantity assetsAndQuantity = new AssetsAndQuantity( new Asset( newImageUri ), 1 );
-
-
-        // Create an edited version of the asset. We are basically doing the same thing we did
-        // when we were created, but just for the new asset. We are doing this in the background
-        // again, so we need to disable the proceed button again.
-
-        mProceedOverlayButton.setEnabled( false );
-        mProgressBar.setVisibility( View.VISIBLE );
-
-        mUneditedAssetsRemaining ++;
-
-        AssetImageToSquareCropper cropper = new AssetImageToSquareCropper( assetsAndQuantity );
-
-        AssetHelper.requestImage( mKiteActivity, assetsAndQuantity.getUneditedAsset(), cropper, 0, cropper );
-
-
-        // Add the selected image to our asset lists, mark it as checked
-        mAssetsAndQuantityArrayList.add( assetsAndQuantity );
-        mAssetIsCheckedArrayList.add( true );
-
-        // Update the title
-        setTitle();
-
-        // The recycler view doesn't get updated until we've produced an edited asset
+          assets.add( new Asset( photo.getUri() ) );
         }
+
+      addAssets( assets );
+
+      }
+    else if ( requestCode == AKiteActivity.ACTIVITY_REQUEST_CODE_SELECT_INSTAGRAM_IMAGE && resultCode == Activity.RESULT_OK )
+      {
+      InstagramPhoto photos[] = InstagramPhotoPicker.getResultPhotos( returnedIntent );
+      ArrayList<Asset> assets = new ArrayList<Asset>();
+
+      for ( InstagramPhoto photo : photos )
+        {
+        assets.add( new Asset( photo.getFullURL() ) );
+        }
+
+      addAssets( assets );
+
       }
     }
 
@@ -485,8 +480,10 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
       ///// Image Source /////
 
       ImageSource imageSource = (ImageSource)mImageSourceGridView.getItemAtPosition( position );
-
-      imageSource.onClick( this, AKiteActivity.ACTIVITY_REQUEST_CODE_SELECT_IMAGE );
+      int requestCode = imageSource == ImageSource.DEVICE
+              ? AKiteActivity.ACTIVITY_REQUEST_CODE_SELECT_DEVICE_IMAGE
+              : AKiteActivity.ACTIVITY_REQUEST_CODE_SELECT_INSTAGRAM_IMAGE;
+      imageSource.onClick( this, requestCode );
       }
     }
 
@@ -590,6 +587,58 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
 
   ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Adds new unedited assets to the users collection. Duplicates will be discarded.
+   *
+   *****************************************************/
+  private void addAssets(ArrayList<Asset> assets)
+    {
+
+    boolean addedNewAsset = false;
+
+    for ( Asset asset : assets )
+      {
+      // We don't allow duplicate images, so first check that the asset isn't already in
+      // our list. Note that we don't check that the image is the same but come from
+      // different sources.
+
+      if ( ! AssetsAndQuantity.uneditedAssetIsInList( mAssetsAndQuantityArrayList, asset ) )
+        {
+
+        // Create a new asset
+        AssetsAndQuantity assetsAndQuantity = new AssetsAndQuantity( asset, 1 );
+        mUneditedAssetsRemaining++;
+
+        // Create an edited version of the asset. We are basically doing the same thing we did
+        // when we were created, but just for the new asset. We are doing this in the background
+        // again, so we need to disable the proceed button again.
+
+        if (!addedNewAsset)
+          {
+          addedNewAsset = true;
+          mProceedOverlayButton.setEnabled( false );
+          mProgressBar.setVisibility( View.VISIBLE );
+          }
+
+        AssetImageToSquareCropper cropper = new AssetImageToSquareCropper( assetsAndQuantity );
+
+        AssetHelper.requestImage( mKiteActivity, assetsAndQuantity.getUneditedAsset(), cropper, 0, cropper );
+
+
+        // Add the selected image to our asset lists, mark it as checked
+        mAssetsAndQuantityArrayList.add( assetsAndQuantity );
+        mAssetIsCheckedArrayList.add( true );
+
+        }
+      }
+
+      // Update the title
+      if ( addedNewAsset ) setTitle();
+
+      // If we added a new asset the recycler view doesn't get updated until we've produced an edited asset
+    }
 
   /*****************************************************
    *

@@ -40,9 +40,11 @@ package ly.kite.journey.imageselection;
 ///// Import(s) /////
 
 import android.app.Fragment;
-import android.content.Intent;
 
+import ly.kite.KiteSDK;
 import ly.kite.R;
+import ly.kite.instagramphotopicker.InstagramPhotoPicker;
+import ly.kite.photopicker.PhotoPicker;
 
 
 ///// Class Declaration /////
@@ -59,17 +61,20 @@ public enum ImageSource
             public void onClick( Fragment fragment, int requestCode )
               {
               // Clicking on the device image source starts a chooser to pick images from the device
+              PhotoPicker.startPhotoPickerForResult( fragment, requestCode );
+              }
+            },
 
-              Intent intent = new Intent();
-
-              intent.setType( "image/*" );
-              intent.setAction( Intent.ACTION_GET_CONTENT );
-
-              fragment.startActivityForResult( Intent.createChooser( intent, fragment.getResources().getString( R.string.Select_Image ) ), requestCode );
+    INSTAGRAM ( R.color.image_source_background_instagram, R.drawable.ic_add_instagram_white, R.string.INSTAGRAM )
+            {
+            public void onClick( Fragment fragment, int requestCode )
+              {
+              // Clicking on the Instagram image source starts our Instagram image picker library
+              String instagramClientId    = KiteSDK.getInstance( fragment.getActivity() ).getInstagramClientId();
+              String instagramRedirectURI = KiteSDK.getInstance( fragment.getActivity() ).getInstagramRedirectURI();
+              InstagramPhotoPicker.startPhotoPickerForResult( fragment, instagramClientId, instagramRedirectURI, requestCode );
               }
             }
-
-//    ,INSTAGRAM
 //    ,FACEBOOK
     ;
 

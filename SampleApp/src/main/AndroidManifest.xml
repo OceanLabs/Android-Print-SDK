@@ -9,19 +9,6 @@
         android:minSdkVersion="14"
         android:targetSdkVersion="22"/>
 
-	<!-- hardware features (Used by Card.IO for credit card scanning in the Kite Managed Checkout)
-	<uses-feature android:name="android.hardware.camera"           android:required="false" />
-	<uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
-	<uses-feature android:name="android.hardware.camera.flash"     android:required="false" />
-	
-	<uses-permission android:name="android.permission.CAMERA" />
-	<uses-permission android:name="android.permission.VIBRATE" />
-	
-	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-	<uses-permission android:name="android.permission.INTERNET" />
-    -->
-
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -36,66 +23,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <!-- Kite Print SDK Activities: -->
-		<!-- All the SDK activities should be included when the manifests are merged
-
-<activity
-    android:name="ly.kite.checkout.PaymentActivity"
-    android:label="@string/title_activity_payment"
-    android:screenOrientation="portrait"
-    >
-</activity>
-<activity
-    android:name="ly.kite.checkout.CheckoutActivity"
-    android:label="@string/title_activity_checkout"
-    android:screenOrientation="portrait"
-    >
-</activity>
-<activity
-    android:name="ly.kite.checkout.OrderReceiptActivity"
-    android:label="@string/title_activity_order_receipt"
-    android:screenOrientation="portrait"
-    >
-</activity>
-<activity
-    android:name="ly.kite.address.AddressBookActivity"
-    android:label="@string/title_activity_address_book"
-    android:screenOrientation="portrait"
-    >
-</activity>
-
-<activity
-    android:name="ly.kite.address.AddressEditActivity"
-    android:label="@string/title_activity_address_edit"
-    android:screenOrientation="portrait"
-    android:windowSoftInputMode="adjustResize"
-    >
-</activity>
-<activity
-    android:name="ly.kite.address.AddressSearchActivity"
-    android:label="@string/title_activity_address_search"
-    android:screenOrientation="portrait"
-    >
-</activity>
-
--->
-
-<!-- PayPal activites & services: -->
-        <!--
-	    <service
-	        android:name="com.paypal.android.sdk.payments.PayPalService"
-	        android:exported="false" />
-	
-	    <activity android:name="com.paypal.android.sdk.payments.PaymentActivity" />
-	    <activity android:name="com.paypal.android.sdk.payments.LoginActivity" />
-	    <activity android:name="com.paypal.android.sdk.payments.PaymentMethodActivity" />
-	    <activity android:name="com.paypal.android.sdk.payments.PaymentConfirmActivity" />
-	    <activity
-	        android:name="io.card.payment.CardIOActivity"
-	        android:configChanges="keyboardHidden|orientation" />
-	    <activity android:name="io.card.payment.DataEntryActivity" />
--->
 
         <meta-data
             android:name="io.fabric.ApiKey"
