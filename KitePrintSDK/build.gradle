@@ -41,7 +41,8 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:22.2.1'
 
     // The next 3 dependencies are used internally by instagram-photo-picker & photo-picker. They
-    // should be able to disappear once I get to the bottom of why they're not auto discovered...
+    // should be able to disappear once I get to the bottom of why they're not auto discovered,
+    // or someone answers: http://stackoverflow.com/questions/32204339/gradle-sync-not-auto-resolve-android-library-project-dependencies
     compile 'com.android.support:appcompat-v7:22.2.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'in.srain.cube:grid-view-with-header-footer:1.0.12'
