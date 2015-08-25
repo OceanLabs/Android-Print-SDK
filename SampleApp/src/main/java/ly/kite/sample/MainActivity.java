@@ -55,6 +55,8 @@ import com.crashlytics.android.Crashlytics;
 
 import io.fabric.sdk.android.Fabric;
 
+import ly.kite.photopicker.Photo;
+import ly.kite.photopicker.PhotoPicker;
 import ly.kite.product.Asset;
 import ly.kite.KiteSDK;
 
@@ -88,6 +90,8 @@ public class MainActivity extends Activity
   //private static final String API_KEY_TEST                = "0453d74be957c1eb510fc2d580007294cdc31a79"; // Photobox
 
   private static final String API_KEY_LIVE                = NON_REPLACED_API_KEY;
+  private static final String INSTAGRAM_API_KEY           = "aa314a392fdd4de7aa287a6614ea8897";
+  private static final String INSTAGRAM_REDIRECT_URI      = "psapp://instagram-callback";
 
 
   private static final int    REQUEST_CODE_SELECT_PICTURE = 1;
@@ -162,11 +166,14 @@ public class MainActivity extends Activity
 
       if ( resultCode == RESULT_OK )
         {
-        Uri selectedImageUri = data.getData();
+        Photo[] photos = PhotoPicker.getResultPhotos( data );
 
         ArrayList<Asset> assetArrayList = new ArrayList<Asset>();
 
-        assetArrayList.add( new Asset( selectedImageUri ) );
+        for ( Photo photo : photos )
+          {
+          assetArrayList.add( new Asset( photo.getUri() ) );
+          }
 
         checkoutWithAssets( assetArrayList );
         }
@@ -183,13 +190,7 @@ public class MainActivity extends Activity
   public void onGalleryButtonClicked( View view )
     {
     // Launch the picture selector
-
-    Intent intent = new Intent();
-
-    intent.setType( "image/*" );
-    intent.setAction( Intent.ACTION_GET_CONTENT );
-
-    startActivityForResult( Intent.createChooser( intent, "Select Picture" ), REQUEST_CODE_SELECT_PICTURE );
+    PhotoPicker.startPhotoPickerForResult( this, REQUEST_CODE_SELECT_PICTURE );
     }
 
 
@@ -258,6 +259,7 @@ public class MainActivity extends Activity
 
 
     // Launch the SDK shopping journey
+    KiteSDK.getInstance( this ).setInstagramCredentials( INSTAGRAM_API_KEY, INSTAGRAM_REDIRECT_URI );
     KiteSDK.startShopping( this, apiKey, environment, assets );
     }
 

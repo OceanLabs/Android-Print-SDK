@@ -70,17 +70,18 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private   static final String  LOG_TAG                                     = "AKiteActivity";
+  private   static final String  LOG_TAG                                      = "AKiteActivity";
 
-  public    static final String  INTENT_EXTRA_NAME_ASSETS_AND_QUANTITY__LIST = KiteSDK.INTENT_PREFIX + ".assetsAndQuantityList";
+  public    static final String  INTENT_EXTRA_NAME_ASSETS_AND_QUANTITY__LIST  = KiteSDK.INTENT_PREFIX + ".assetsAndQuantityList";
 
-  public    static final int     NO_BUTTON                                   = 0;
+  public    static final int     NO_BUTTON                                    = 0;
 
-  public    static final String  IMAGE_CLASS_STRING_PRODUCT_ITEM             = "product_item";
+  public    static final String  IMAGE_CLASS_STRING_PRODUCT_ITEM              = "product_item";
 
-  public    static final int     ACTIVITY_REQUEST_CODE_CHECKOUT              = 10;
-  public    static final int     ACTIVITY_REQUEST_CODE_CREATE                = 11;
-  public    static final int     ACTIVITY_REQUEST_CODE_SELECT_IMAGE          = 12;
+  public    static final int     ACTIVITY_REQUEST_CODE_CHECKOUT               = 10;
+  public    static final int     ACTIVITY_REQUEST_CODE_CREATE                 = 11;
+  public    static final int     ACTIVITY_REQUEST_CODE_SELECT_DEVICE_IMAGE    = 12;
+  public    static final int     ACTIVITY_REQUEST_CODE_SELECT_INSTAGRAM_IMAGE = 13;
 
 
 

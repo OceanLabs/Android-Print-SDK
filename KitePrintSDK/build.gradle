@@ -35,22 +35,20 @@ android {
 dependencies {
     compile files('libs/PayPalAndroidSDK-2.9.10.jar')
     compile files('libs/CardIONativeLibs.jar')
-    // To generate this jar containing shared libraries see: http://ivansotof.com/2013/12/including-native-so-libraries-in-android/
+
     compile 'com.android.support:support-v4:22.2.1'
     compile 'com.android.support:recyclerview-v7:22.2.1'
+
+    // The next 3 dependencies are used internally by instagram-photo-picker & photo-picker. They
+    // should be able to disappear once I get to the bottom of why they're not auto discovered...
+    compile 'com.android.support:appcompat-v7:22.2.1'
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'in.srain.cube:grid-view-with-header-footer:1.0.12'
+
+    compile 'ly.kite:instagram-photo-picker:1.1.0@aar'
+    compile 'ly.kite:photo-picker:1.1.2@aar'
 }
 
-// Apply chrisbanes' excellent gradle-mvn-push recipe,
-// which lets us publish the build artifacts to maven
-// without *writing a single line of XML.*
-//
-// N.B.: We're using a specific commit from a fork to
-// work around a bug in the recipe caused by the new
-// version of gradle which hasn't been upstreamed yet.
 //apply from: 'https://raw.github.com/shamanland/gradle-mvn-push/cc18d56549cdea03f744b6fff27911569394073e/gradle-mvn-push.gradle'
-//
-// Revert to this version once chrisbanes/gradle-mvn-push#29
-// is merged.
-// apply from: 'https://raw.github.com/chrisbanes/gradle-mvn-push/master/gradle-mvn-push.gradle'
 
 

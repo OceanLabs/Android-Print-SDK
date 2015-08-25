@@ -67,11 +67,13 @@ public class KiteSDK
   @SuppressWarnings( "unused" )
   private static final String  LOG_TAG = "KiteSDK";
 
-  public  static final String SDK_VERSION                             = "2.0";
+  public  static final String SDK_VERSION                               = "2.0";
 
-  private static final String SHARED_PREFERENCES_NAME                 = "kite_shared_prefs";
-  private static final String SHARED_PREFERENCES_KEY_API_KEY          = "api_key";
-  private static final String SHARED_PREFERENCES_KEY_ENVIRONMENT_NAME = "environment_name";
+  private static final String SHARED_PREFERENCES_NAME                   = "kite_shared_prefs";
+  private static final String SHARED_PREFERENCES_KEY_API_KEY            = "api_key";
+  private static final String SHARED_PREFERENCES_KEY_ENVIRONMENT_NAME   = "environment_name";
+  private static final String SHARED_PREFERENCES_INSTAGRAM_CLIENT_ID    = "instagram_client_id";
+  private static final String SHARED_PREFERENCES_INSTAGRAM_REDIRECT_URI = "instagram_redirect_uri";
 
 
   // Old stuff
@@ -242,6 +244,26 @@ public class KiteSDK
       }
     }
 
+  /*****************************************************
+   *
+   * Sets the Instagram developer credentials. Doing
+   * this enables Instagram as an image source
+   *
+   *****************************************************/
+  public void setInstagramCredentials( String clientId, String redirectUri )
+    {
+    SharedPreferences.Editor editor = mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE ).edit();
+
+    editor
+      .putString( SHARED_PREFERENCES_INSTAGRAM_CLIENT_ID,       clientId )
+      .putString( SHARED_PREFERENCES_INSTAGRAM_REDIRECT_URI, redirectUri );
+
+    if ( ! editor.commit() )
+      {
+      Log.e( LOG_TAG, "Unable to save instagram credentials to shared preferences" );
+      }
+    }
+
 
   /*****************************************************
    *
@@ -262,6 +284,32 @@ public class KiteSDK
   public Environment getEnvironment()
     {
     return ( mEnvironment );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the instagram client id or null if one has
+   * not been set.
+   *
+   *****************************************************/
+  public String getInstagramClientId()
+    {
+    SharedPreferences prefs = mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE );
+    return prefs.getString( SHARED_PREFERENCES_INSTAGRAM_CLIENT_ID, null );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the instagram redirect uri or null if one has
+   * not been set.
+   *
+   *****************************************************/
+  public String getInstagramRedirectURI()
+    {
+    SharedPreferences prefs = mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE );
+    return prefs.getString( SHARED_PREFERENCES_INSTAGRAM_REDIRECT_URI, null );
     }
 
 
