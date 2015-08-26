@@ -379,7 +379,7 @@ public class Analytics
         mCachedEventCallback = (IAnalyticsEventCallback) ctor.newInstance( new Object[] { mContext } );
       } catch ( Exception ex )
         {
-        mCachedEventCallback = null;
+        mCachedEventCallback = new NullAnalyticsEventCallback(mContext);
         }
       }
 
@@ -548,7 +548,7 @@ public class Analytics
       }
 
     trackEvent( EVENT_NAME_SDK_LOADED, propertiesJSONObject );
-    if (getEventCallback() != null) getEventCallback().onSDKLoaded( entryPoint );
+    getEventCallback().onSDKLoaded( entryPoint );
     }
 
 
@@ -560,7 +560,7 @@ public class Analytics
   public void trackProductSelectionScreenViewed()
     {
     trackEvent( EVENT_NAME_PRODUCT_SELECTION_SCREEN_VIEWED );
-    if (getEventCallback() != null) getEventCallback().onProductSelectionScreenViewed();
+    getEventCallback().onProductSelectionScreenViewed();
     }
 
 
@@ -583,7 +583,7 @@ public class Analytics
       }
 
     trackEvent( EVENT_NAME_PRODUCT_OVERVIEW_SCREEN_VIEWED, propertiesJSONObject );
-    if (getEventCallback() != null) getEventCallback().onProductOverviewScreenViewed(product);
+    getEventCallback().onProductOverviewScreenViewed(product);
     }
 
 
@@ -606,7 +606,7 @@ public class Analytics
       }
 
     trackEvent( EVENT_NAME_CREATE_PRODUCT_SCREEN_VIEWED, propertiesJSONObject );
-    if (getEventCallback() != null) getEventCallback().onCreateProductScreenViewed(product);
+    getEventCallback().onCreateProductScreenViewed(product);
     }
 
 
@@ -632,7 +632,7 @@ public class Analytics
       }
 
     trackEvent( EVENT_NAME_SHIPPING_SCREEN_VIEWED, propertiesJSONObject );
-    if (getEventCallback() != null) getEventCallback().onShippingScreenViewed(printOrder, variant, showPhoneEntryField);
+    getEventCallback().onShippingScreenViewed(printOrder, variant, showPhoneEntryField);
     }
 
 
@@ -648,7 +648,7 @@ public class Analytics
     addToJSON( printOrder, propertiesJSONObject );
 
     trackEvent( EVENT_NAME_CREATE_PAYMENT_SCREEN_VIEWED, propertiesJSONObject );
-    if (getEventCallback() != null) getEventCallback().onPaymentScreenViewed(printOrder);
+    getEventCallback().onPaymentScreenViewed(printOrder);
     }
 
 
@@ -673,7 +673,7 @@ public class Analytics
       }
 
     trackEvent( EVENT_NAME_PAYMENT_COMPLETED, propertiesJSONObject );
-    if (getEventCallback() != null) getEventCallback().onPaymentCompleted(printOrder, paymentMethod);
+    getEventCallback().onPaymentCompleted(printOrder, paymentMethod);
     }
 
 
@@ -689,7 +689,7 @@ public class Analytics
     addToJSON( printOrder, propertiesJSONObject );
 
     trackEvent( EVENT_NAME_ORDER_SUBMISSION, propertiesJSONObject );
-    if (getEventCallback() != null) getEventCallback().onOrderSubmission(printOrder);
+    getEventCallback().onOrderSubmission(printOrder);
     }
 
 

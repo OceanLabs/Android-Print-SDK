@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * TemplateClass.java
+ * IAnalyticsEventCallback.java
  *
  *
  * Modified MIT License
@@ -39,13 +39,10 @@ package ly.kite.analytics;
 
 ///// Import(s) /////
 
-
-///// Class Declaration /////
-
-import android.content.Context;
-
 import ly.kite.product.PrintOrder;
 import ly.kite.product.Product;
+
+///// Class Declaration /////
 
 /*****************************************************
  *
