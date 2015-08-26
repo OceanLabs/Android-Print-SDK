@@ -58,7 +58,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
 
@@ -70,7 +69,6 @@ import ly.kite.product.MultipleDestinationShippingCosts;
 import ly.kite.product.Product;
 import ly.kite.product.SingleUnitSize;
 import ly.kite.product.UnitOfLength;
-import ly.kite.product.ProductImageAdaptor;
 import ly.kite.product.SingleCurrencyAmount;
 import ly.kite.product.SingleDestinationShippingCost;
 import ly.kite.widget.BellInterpolator;
@@ -484,23 +482,6 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
 
   /*****************************************************
    *
-   * Called when the fragment becomes visible.
-   *
-   *****************************************************/
-  @Override
-  public void onStart()
-    {
-    super.onStart();
-
-
-    // Set the the product image gallery
-    mProductImageAdaptor = new ProductImageAdaptor( mKiteActivity, mProduct.getImageURLList(), this );
-    mProductImageViewPager.setAdapter( mProductImageAdaptor );
-    }
-
-
-  /*****************************************************
-   *
    * Called when the back key is pressed. The fragment
    * can either intercept it, or ignore it - in which case
    * the default behaviour is performed.
@@ -518,26 +499,6 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
       }
 
     return ( false );
-    }
-
-
-  /*****************************************************
-   *
-   * Called after the fragment is no longer visible.
-   *
-   *****************************************************/
-  @Override
-  public void onStop()
-    {
-    super.onStop();
-
-
-    // Clear out the stored images to reduce memory usage
-    // when not on this screen.
-
-    mProductImageViewPager.setAdapter( null );
-
-    mProductImageAdaptor = null;
     }
 
 
@@ -571,7 +532,33 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
     super.onTop();
 
     if ( mProduct != null ) mKiteActivity.setTitle( mProduct.getName() );
+
+    // Set up the product image gallery
+    mProductImageAdaptor = new ProductImageAdaptor( mKiteActivity, mProduct.getImageURLList(), this );
+    mProductImageViewPager.setAdapter( mProductImageAdaptor );
     }
+
+
+  /*****************************************************
+   *
+   * Called when the fragment is not on top.
+   *
+   *****************************************************/
+  @Override
+  public void onNotTop()
+    {
+    super.onNotTop();
+
+
+    // Clear out the stored images to reduce memory usage
+    // when not on this screen.
+
+    if ( mProductImageViewPager != null ) mProductImageViewPager.setAdapter( null );
+
+    mProductImageAdaptor = null;
+    }
+
+
 
 
   ////////// View.OnClickListener Method(s) //////////

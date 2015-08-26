@@ -53,7 +53,6 @@ import ly.kite.R;
 import ly.kite.journey.UserJourneyType;
 import ly.kite.product.Asset;
 import ly.kite.journey.AssetsAndQuantity;
-import ly.kite.product.AssetHelper;
 import ly.kite.widget.FramedImageView;
 
 
@@ -197,8 +196,7 @@ public class AssetAndQuantityAdaptor extends BaseAdapter
     AssetsAndQuantity assetsAndQuantity = (AssetsAndQuantity)getItem( position );
     Asset             editedAsset       = assetsAndQuantity.getEditedAsset();
 
-    viewReferences.framedImageView.clearForNewImage( editedAsset );
-    AssetHelper.requestImage( mContext, editedAsset, viewReferences.framedImageView );
+    viewReferences.framedImageView.requestScaledImage( editedAsset );
 
     viewReferences.quantityTextView.setText( String.valueOf( assetsAndQuantity.getQuantity() ) );
     viewReferences.assetIndex = position;

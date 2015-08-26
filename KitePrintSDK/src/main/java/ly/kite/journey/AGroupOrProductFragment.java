@@ -406,7 +406,6 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements P
       viewReferences.productImageView.setAspectRatio( DEFAULT_ASPECT_RATIO );
 
       URL    imageURL;
-      String imageURLString;
 
       if ( groupOrProduct != null )
         {
@@ -418,8 +417,7 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements P
         if ( viewReferences.priceOverlayFrame != null ) viewReferences.priceOverlayFrame.setVisibility( View.VISIBLE );
         if ( viewReferences.priceTextView     != null ) viewReferences.priceTextView.setText( groupOrProduct.getDisplayPrice() );
 
-        imageURL       = groupOrProduct.getDisplayImageURL();
-        imageURLString = imageURL.toString();
+        imageURL = groupOrProduct.getDisplayImageURL();
         }
       else
         {
@@ -430,14 +428,11 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements P
         // Any price overlay should not be visible for a placeholder image
         if ( viewReferences.priceOverlayFrame != null ) viewReferences.priceOverlayFrame.setVisibility( View.GONE );
 
-        imageURL       = mPlaceholderImageURL;
-        imageURLString = mPlaceholderImageURLString;
+        imageURL = mPlaceholderImageURL;
         }
 
 
-      viewReferences.productImageView.clearForNewImage( imageURL );
-
-      mImageLoader.requestRemoteImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, imageURL, viewReferences.productImageView );
+      viewReferences.productImageView.requestScaledImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, imageURL );
 
 
       return ( view );

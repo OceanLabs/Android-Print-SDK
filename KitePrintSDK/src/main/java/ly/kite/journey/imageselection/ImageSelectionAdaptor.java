@@ -44,7 +44,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,12 +78,13 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
   @SuppressWarnings( "unused" )
   private static final String  LOG_TAG = "ImageSelectionAdaptor";
 
-  private static final int VIEW_TYPE_IMAGE               = 0x00;
-  private static final int VIEW_TYPE_TITLE               = 0x01;
-  private static final int VIEW_TYPE_SPACER              = 0x02;
+  private static final int     VIEW_TYPE_IMAGE               = 0x00;
+  private static final int     VIEW_TYPE_TITLE               = 0x01;
+  private static final int     VIEW_TYPE_SPACER              = 0x02;
 
-  private static final int IMAGE_CACHE_CAPACITY_IN_BYTES = 10 * 1024 * 1024;  // 10 MB
+  private static final int     IMAGE_CACHE_CAPACITY_IN_BYTES = 1 * 1024 * 1024;  // 1 MB
 
+  private static final boolean IMAGE_CACHE_ENABLED           = false;
 
   ////////// Static Variable(s) //////////
 
@@ -123,7 +123,10 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
     mUserJourneyType          = product.getUserJourneyType();
     mListener                 = listener;
 
-    mImageCache               = new ImageCache( IMAGE_CACHE_CAPACITY_IN_BYTES );
+    if ( IMAGE_CACHE_ENABLED )
+      {
+      mImageCache = new ImageCache( IMAGE_CACHE_CAPACITY_IN_BYTES );
+      }
 
     mLayoutInflator           = LayoutInflater.from( context );
 
@@ -312,23 +315,26 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
         Asset editedAsset = item.assetsAndQuantity.getEditedAsset();
 
 
-        // See if the image is already stored in the cache
-
-        Bitmap editedImageBitmap = mImageCache.getImage( editedAsset );
-
-        if ( editedImageBitmap != null )
+        if ( IMAGE_CACHE_ENABLED )
           {
-          viewHolder.checkableImageView.setImageBitmap( editedImageBitmap );
+          Bitmap editedImageBitmap = mImageCache.getImage( editedAsset );
+
+          if ( editedImageBitmap != null )
+            {
+            viewHolder.checkableImageView.setImageBitmap( editedImageBitmap );
+            }
+          else
+            {
+            viewHolder.checkableImageView.clearForNewImage( editedAsset );
+
+            mImageCache.addPendingImage( editedAsset, viewHolder.checkableImageView );
+
+            AssetHelper.requestImage( mContext, editedAsset, null, mScaledImageWidthInPixels, mImageCache );
+            }
           }
         else
           {
-          // Make a request for a new image
-
-          viewHolder.checkableImageView.clearForNewImage( editedAsset );
-
-          mImageCache.addPendingImage( editedAsset, viewHolder.checkableImageView );
-
-          AssetHelper.requestImage( mContext, editedAsset, null, mScaledImageWidthInPixels, mImageCache );
+          viewHolder.checkableImageView.requestScaledImage( editedAsset );
           }
 
 

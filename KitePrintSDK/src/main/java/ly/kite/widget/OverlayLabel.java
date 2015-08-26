@@ -64,7 +64,7 @@ import ly.kite.R;
  * appropriate.
  *
  *****************************************************/
-public class OverlayLabel extends TextView
+public class OverlayLabel extends CustomTypefaceTextView
   {
   ////////// Static Constant(s) //////////
 
@@ -110,21 +110,21 @@ public class OverlayLabel extends TextView
     {
     super( context );
 
-    initialise( context, null, 0 );
+    initialise();
     }
 
   public OverlayLabel( Context context, AttributeSet attrs )
     {
     super( context, attrs );
 
-    initialise( context, attrs, 0 );
+    initialise();
     }
 
   public OverlayLabel( Context context, AttributeSet attrs, int defStyleAttr )
     {
     super( context, attrs, defStyleAttr );
 
-    initialise( context, attrs, defStyleAttr );
+    initialise();
     }
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -132,7 +132,7 @@ public class OverlayLabel extends TextView
     {
     super( context, attrs, defStyleAttr, defStyleRes );
 
-    initialise( context, attrs, defStyleAttr );
+    initialise();
     }
 
 
@@ -193,7 +193,7 @@ public class OverlayLabel extends TextView
    * Initialises this custom view.
    *
    *****************************************************/
-  private void initialise( Context context, AttributeSet attributeSet, int defaultStyle )
+  private void initialise()
     {
     mCornerRadius = DEFAULT_ROUNDED_CORNER_RADIUS;
 

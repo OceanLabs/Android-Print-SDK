@@ -43,7 +43,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.util.Log;
 import android.util.Pair;
 
@@ -221,7 +220,7 @@ public class ImageLoader
    * Must be called on the UI thread.
    *
    *****************************************************/
-  public void requestRemoteImage( String imageClassString, Object key, URL imageURL, IImageConsumer imageConsumer )
+  public void requestRemoteImage( String imageClassString, Object key, URL imageURL, int scaledImageWidth, IImageConsumer imageConsumer )
     {
     String imageURLString = imageURL.toString();
 
@@ -231,7 +230,7 @@ public class ImageLoader
 
     ArrayList<CallbackInfo> callbackInfoList;
 
-    CallbackInfo callbackInfo = new CallbackInfo( imageConsumer, key );
+    CallbackInfo callbackInfo = new CallbackInfo( imageConsumer, key, scaledImageWidth );
 
     callbackInfoList = mInProgressTable.get( imageURLString );
 
@@ -266,9 +265,21 @@ public class ImageLoader
    * on the UI thread.
    *
    *****************************************************/
+  public void requestRemoteImage( String imageClassString, Object key, URL imageURL, IImageConsumer imageConsumer )
+    {
+    requestRemoteImage( imageClassString, key, imageURL, 0, imageConsumer );
+    }
+
+
+  /*****************************************************
+   *
+   * Requests an image from a remote URL. Must be called
+   * on the UI thread.
+   *
+   *****************************************************/
   public void requestRemoteImage( String imageClassString, URL imageURL, IImageConsumer imageConsumer )
     {
-    requestRemoteImage( imageClassString, imageURL, imageURL, imageConsumer );
+    requestRemoteImage( imageClassString, imageURL, imageURL, 0, imageConsumer );
     }
 
 
@@ -281,14 +292,16 @@ public class ImageLoader
    *****************************************************/
   private class CallbackInfo
     {
-    IImageConsumer remoteImageConsumer;
-    Object         key;
+    IImageConsumer  remoteImageConsumer;
+    Object          key;
+    int             scaledImageWidth;
 
 
-    CallbackInfo( IImageConsumer remoteImageConsumer, Object key )
+    CallbackInfo( IImageConsumer remoteImageConsumer, Object key, int scaledImageWidth )
       {
       this.remoteImageConsumer = remoteImageConsumer;
       this.key                 = key;
+      this.scaledImageWidth    = scaledImageWidth;
       }
     }
 
@@ -492,7 +505,7 @@ public class ImageLoader
         // Deliver the image to all the consumers
         for ( CallbackInfo callbackInfo : mCallbackInfoList )
           {
-          callbackInfo.remoteImageConsumer.onImageAvailable( mKey, resultBitmap );
+          callbackInfo.remoteImageConsumer.onImageAvailable( mKey, ImageDownscaler.scaleBitmap( resultBitmap, callbackInfo.scaledImageWidth ) );
           }
         }
       }

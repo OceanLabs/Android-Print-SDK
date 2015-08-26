@@ -51,8 +51,13 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import java.net.URL;
+
 import ly.kite.R;
+import ly.kite.product.Asset;
+import ly.kite.product.AssetHelper;
 import ly.kite.util.IImageConsumer;
+import ly.kite.util.ImageLoader;
 
 
 ///// Class Declaration /////
@@ -83,9 +88,15 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
 
   ////////// Member Variable(s) //////////
 
+  private   int           mWidth;
+  private   int           mHeight;
+
   protected ImageView     mImageView;
 
   private   float         mWidthToHeightMultiplier;
+
+  private   String        mRequestImageClass;
+  private   Object        mRequestImageSource;
 
   private   Object        mExpectedKey;
 
@@ -158,6 +169,23 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
 
 
     super.onMeasure( widthMeasureSpec, heightMeasureSpec );
+    }
+
+
+  /*****************************************************
+   *
+   * Called with the image size.
+   *
+   *****************************************************/
+  @Override
+  public void onSizeChanged( int width, int height, int previousWidth, int previousHeight )
+    {
+    super.onSizeChanged( width, height, previousWidth, previousHeight );
+
+    mWidth   = width;
+    mHeight = height;
+
+    checkRequestImage();
     }
 
 
@@ -258,6 +286,61 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
   public void setImageBitmap( Bitmap bitmap )
     {
     mImageView.setImageBitmap( bitmap );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the source of the image to be scaled to the
+   * correct size.
+   *
+   *****************************************************/
+  public void requestScaledImage( String imageClass, Object imageSource )
+    {
+    clear();
+
+    mRequestImageClass  = imageClass;
+    mRequestImageSource = imageSource;
+
+    checkRequestImage();
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the source of the image as an asset to be scaled
+   * to the correct size.
+   *
+   *****************************************************/
+  public void requestScaledImage( Asset asset )
+    {
+    requestScaledImage( AssetHelper.IMAGE_CLASS_STRING_ASSET, asset );
+    }
+
+
+  /*****************************************************
+   *
+   * Checks if we have everything we need to request
+   * the image.
+   *
+   *****************************************************/
+  private void checkRequestImage()
+    {
+    if ( mWidth > 0 && mHeight > 0 && mRequestImageSource != null )
+      {
+      if ( mRequestImageSource instanceof Asset )
+        {
+        setExpectedKey( mRequestImageSource );
+
+        AssetHelper.requestImage( getContext(), (Asset) mRequestImageSource, null, mWidth, this );
+        }
+      else if ( mRequestImageSource instanceof URL )
+        {
+        setExpectedKey( mRequestImageSource );
+
+        ImageLoader.getInstance( getContext() ).requestRemoteImage( mRequestImageClass, mRequestImageSource, (URL) mRequestImageSource, mWidth, this );
+        }
+      }
     }
 
 

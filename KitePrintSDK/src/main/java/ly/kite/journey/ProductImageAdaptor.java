@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.product;
+package ly.kite.journey;
 
 
 ///// Import(s) /////
@@ -136,14 +136,12 @@ public class ProductImageAdaptor extends PagerAdapter
     container.addView( view );
 
 
-    // Request the image
+    // Set up the view
 
     LabelledImageView labelledImageView = (LabelledImageView)view.findViewById( R.id.labelled_image_view );
 
-    labelledImageView.clearForNewImage( imageURL );
     labelledImageView.setOnClickListener( mOnClickListener );  // The view pager won't respond to click events, so we need to add them to each page
-
-    mImageLoader.requestRemoteImage( IMAGE_CLASS_STRING, imageURL, labelledImageView );
+    labelledImageView.requestScaledImage( IMAGE_CLASS_STRING, imageURL );
 
 
     return ( view );

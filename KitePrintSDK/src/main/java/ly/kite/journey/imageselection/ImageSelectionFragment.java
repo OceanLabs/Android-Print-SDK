@@ -325,21 +325,6 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
       }
 
 
-    // We don't set up the recycler view or enable the proceed button until all
-    // the assets have been cropped.
-
-    if ( mUneditedAssetsRemaining < 1 )
-      {
-      completeScreenSetup();
-      }
-    else
-      {
-      mProgressBar.setVisibility( View.VISIBLE );
-
-      mProceedOverlayButton.setEnabled( false );
-      }
-
-
     // Set up the listener(s)
     mImageSourceGridView.setOnItemClickListener( this );
     mClearPhotosButton.setOnClickListener( this );
@@ -347,20 +332,6 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
 
     return ( view );
-    }
-
-
-  /*****************************************************
-   *
-   * Called when the fragment is top-most.
-   *
-   *****************************************************/
-  @Override
-  public void onTop()
-    {
-    super.onTop();
-
-    if ( mProduct != null ) setTitle();
     }
 
 
@@ -462,6 +433,56 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
 
     return ( true );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the fragment is top-most.
+   *
+   *****************************************************/
+  @Override
+  public void onTop()
+    {
+    super.onTop();
+
+
+    if ( mProduct != null ) setTitle();
+
+
+    // We don't set up the recycler view or enable the proceed button until all
+    // the assets have been cropped.
+
+    if ( mUneditedAssetsRemaining < 1 )
+      {
+      completeScreenSetup();
+      }
+    else
+      {
+      mProgressBar.setVisibility( View.VISIBLE );
+
+      mProceedOverlayButton.setEnabled( false );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the fragment is not on top.
+   *
+   *****************************************************/
+  @Override
+  public void onNotTop()
+    {
+    super.onNotTop();
+
+
+    // Clear out the stored images to reduce memory usage
+    // when not on this screen.
+
+    if ( mImageRecyclerView != null ) mImageRecyclerView.setAdapter( null );
+
+    mImagePackAdaptor = null;
     }
 
 

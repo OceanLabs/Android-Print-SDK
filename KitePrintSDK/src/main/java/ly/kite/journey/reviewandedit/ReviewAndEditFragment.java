@@ -150,11 +150,6 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
     mProceedOverlayButton = (Button)view.findViewById( R.id.proceed_overlay_button );
 
 
-    // Create and set the adaptor
-    mAssetAndQuantityAdaptor = new AssetAndQuantityAdaptor( mKiteActivity, mAssetsAndQuantityArrayList, mProduct.getUserJourneyType(), this );
-    mGridView.setAdapter( mAssetAndQuantityAdaptor );
-
-
     mProceedOverlayButton.setText( R.string.review_and_edit_proceed_button_text );
 
     mProceedOverlayButton.setOnClickListener( this );
@@ -162,6 +157,44 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
 
     return ( view );
     }
+
+
+  /*****************************************************
+   *
+   * Called when the fragment is top-most.
+   *
+   *****************************************************/
+  @Override
+  public void onTop()
+    {
+    super.onTop();
+
+    // Create and set the adaptor
+    mAssetAndQuantityAdaptor = new AssetAndQuantityAdaptor( mKiteActivity, mAssetsAndQuantityArrayList, mProduct.getUserJourneyType(), this );
+    mGridView.setAdapter( mAssetAndQuantityAdaptor );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the fragment is not on top.
+   *
+   *****************************************************/
+  @Override
+  public void onNotTop()
+    {
+    super.onNotTop();
+
+
+    // Clear out the stored images to reduce memory usage
+    // when not on this screen.
+
+    if ( mGridView != null ) mGridView.setAdapter( null );
+
+    mAssetAndQuantityAdaptor = null;
+    }
+
+
 
 
   ////////// AssetAndQuantityAdaptor.IListener Method(s) //////////
@@ -277,7 +310,7 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
     {
     mAssetsAndQuantityArrayList.set( assetIndex, assetsAndQuantity );
 
-    mAssetAndQuantityAdaptor.notifyDataSetInvalidated();
+    if ( mAssetAndQuantityAdaptor != null ) mAssetAndQuantityAdaptor.notifyDataSetInvalidated();
     }
 
 

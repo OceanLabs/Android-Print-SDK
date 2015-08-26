@@ -211,7 +211,7 @@ public class LabelledImageView extends AImageContainerFrame implements IImageCon
     // Make sure the image is the one we were expecting.
     if ( keyIsOK( key ) )
       {
-      setImage( bitmap );
+      setImageBitmap( bitmap );
 
       fadeImageIn();
       }
@@ -267,9 +267,9 @@ public class LabelledImageView extends AImageContainerFrame implements IImageCon
    * Sets the image.
    *
    *****************************************************/
-  public void setImage( Bitmap bitmap )
+  public void setImageBitmap( Bitmap bitmap )
     {
-    mImageView.setImageBitmap( bitmap );
+    super.setImageBitmap( bitmap );
 
     mImageView.setVisibility( View.VISIBLE );
     mProgressBar.setVisibility( View.INVISIBLE );
@@ -304,28 +304,28 @@ public class LabelledImageView extends AImageContainerFrame implements IImageCon
     }
 
 
-  /*****************************************************
-   *
-   * Clears the image, and sets an expected image key.
-   *
-   *****************************************************/
-  public void clearForNewImage( Object expectedKey )
-    {
-    setExpectedKey( expectedKey );
-
-    mImageView.setImageBitmap( null );
-    }
-
-
-  /*****************************************************
-   *
-   * Sets an expected image key.
-   *
-   *****************************************************/
-  public void setExpectedKey( Object key )
-    {
-    mKey = key;
-    }
+//  /*****************************************************
+//   *
+//   * Clears the image, and sets an expected image key.
+//   *
+//   *****************************************************/
+//  public void clearForNewImage( Object expectedKey )
+//    {
+//    setExpectedKey( expectedKey );
+//
+//    mImageView.setImageBitmap( null );
+//    }
+//
+//
+//  /*****************************************************
+//   *
+//   * Sets an expected image key.
+//   *
+//   *****************************************************/
+//  public void setExpectedKey( Object key )
+//    {
+//    mKey = key;
+//    }
 
 
   /*****************************************************

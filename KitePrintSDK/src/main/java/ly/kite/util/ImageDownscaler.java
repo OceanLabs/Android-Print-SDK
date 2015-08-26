@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * ImageScaler.java
+ * ImageDownscaler.java
  *
  *
  * Modified MIT License
@@ -46,15 +46,17 @@ import android.graphics.Bitmap;
 
 /*****************************************************
  *
- * This class scales images.
+ * This class scales images down.
  *
  *****************************************************/
-public class ImageScaler
+public class ImageDownscaler
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "ImageScaler";
+  private static final String  LOG_TAG    = "ImageDownscaler";
+
+  public  static final int     NO_SCALING = 0;
 
 
   ////////// Static Variable(s) //////////
@@ -70,13 +72,17 @@ public class ImageScaler
 
   /*****************************************************
    *
-   * Returns a scaled bitmap, or the source bitmap if
-   * no scaling is required.
+   * Returns a scaled bitmap.
+   *
+   * If no scaling is required, because the scaled width is
+   * < 1, or the source bitmap is smaller than the scaled
+   * width, then the original bitmap is returned without
+   * alteration.
    *
    *****************************************************/
   static public Bitmap scaleBitmap( Bitmap sourceBitmap, int scaledWidth )
     {
-    if ( scaledWidth < 1 ) return ( sourceBitmap );
+    if ( scaledWidth < 1 || sourceBitmap.getWidth() <= scaledWidth ) return ( sourceBitmap );
 
 
     // Calculate the height so as to maintain the aspect ratio
