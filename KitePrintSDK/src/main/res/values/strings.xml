@@ -153,5 +153,5 @@
     <string name="search_title">Search</string>
     <string name="country_search_hint">Search Addresses</string>
     <string name="title_activity_template_sync">TemplateSyncActivity</string>
-
+    <string name="analytics_event_callback_class_name">ly.kite.analytics.NullAnalyticsEventCallback</string>
 </resources>
