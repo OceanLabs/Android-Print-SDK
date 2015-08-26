@@ -19,7 +19,7 @@
 
             <!-- Description -->
 
-            <TextView
+            <ly.kite.widget.CustomTypefaceTextView
                 android:layout_marginTop="@dimen/product_overview_detail_title_margin_top"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -38,14 +38,14 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-                <TextView
+                <ly.kite.widget.CustomTypefaceTextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:gravity="start"
                     android:textSize="@dimen/product_overview_detail_title"
                     android:textStyle="bold"
                     android:text="@string/Size"/>
-                <TextView
+                <ly.kite.widget.CustomTypefaceTextView
                     android:id="@+id/size_text_view"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
@@ -63,14 +63,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:visibility="gone">
-                <TextView
+                <ly.kite.widget.CustomTypefaceTextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:gravity="start"
                     android:textSize="@dimen/product_overview_detail_title"
                     android:textStyle="bold"
                     android:text="@string/Quantity"/>
-                <TextView
+                <ly.kite.widget.CustomTypefaceTextView
                     android:id="@+id/quantity_text_view"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
@@ -81,7 +81,7 @@
 
             <!-- Shipping -->
 
-            <TextView
+            <ly.kite.widget.CustomTypefaceTextView
                 android:layout_marginTop="@dimen/product_overview_detail_title_margin_top"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -90,7 +90,7 @@
                 android:textStyle="bold"
                 android:text="@string/Shipping"/>
 
-            <TextView
+            <ly.kite.widget.CustomTypefaceTextView
                 android:id="@+id/shipping_text_view"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -100,7 +100,7 @@
 
             <!-- Quality guarantee -->
 
-            <TextView
+            <ly.kite.widget.CustomTypefaceTextView
                 android:layout_marginTop="@dimen/product_overview_detail_title_margin_top"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -109,7 +109,7 @@
                 android:textStyle="bold"
                 android:text="@string/Quality_Guarantee"/>
 
-            <TextView
+            <ly.kite.widget.CustomTypefaceTextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:gravity="start"

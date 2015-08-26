@@ -35,14 +35,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.0"
             android:orientation="horizontal">
-            <EditText
+            <ly.kite.widget.CustomTypefaceEditText
                 android:id="@+id/promo_edit_text"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.0"
                 android:hint="@string/payment_promo_hint"
                 android:textColor="@color/payment_promo_code_text_default"/>
-            <Button
+            <ly.kite.widget.CustomTypefaceButton
                 android:id="@+id/promo_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -55,7 +55,7 @@
         </LinearLayout>
 
 
-        <Button
+        <ly.kite.widget.CustomTypefaceButton
             android:id="@+id/credit_card_button"
             android:layout_marginTop="30dp"
             android:layout_width="fill_parent"
@@ -66,7 +66,7 @@
             android:text="@string/payment_credit_card_button_text"
             android:textColor="@android:color/white"/>
 
-        <Button
+        <ly.kite.widget.CustomTypefaceButton
             android:id="@+id/paypal_button"
             android:layout_marginTop="10dp"
             android:layout_width="fill_parent"

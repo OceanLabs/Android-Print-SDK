@@ -22,7 +22,7 @@
                 android:background="@android:color/white"/>
         </LinearLayout>
 
-        <Button
+        <ly.kite.widget.CustomTypefaceButton
             style="@style/KiteSDKCTAButton.Centered"
             android:id="@+id/proceed_overlay_button"
             android:layout_gravity="center"/>

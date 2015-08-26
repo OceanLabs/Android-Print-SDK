@@ -22,7 +22,7 @@
                 android:layout_height="@dimen/product_overview_open_drawer_icon_size"
                 android:src="@drawable/close_drawer_icon"
                 android:scaleType="centerInside"/>
-            <TextView
+            <ly.kite.widget.CustomTypefaceTextView
                 android:layout_marginLeft="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
@@ -34,7 +34,7 @@
         </LinearLayout>
     </FrameLayout>
 
-    <TextView
+    <ly.kite.widget.CustomTypefaceTextView
         android:id="@+id/price_text_view"
         android:layout_width="0dp"
         android:layout_weight="0.5"

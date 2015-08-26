@@ -19,13 +19,13 @@
         android:layout_weight="0.0"
         android:padding="@dimen/cta_button_margin">
 
-        <Button
+        <ly.kite.widget.CustomTypefaceButton
             android:id="@+id/cancel_button"
             style="@style/KiteSDKCTAButton.Offset"
             android:layout_gravity="bottom|left"
             android:visibility="gone"/>
 
-        <Button
+        <ly.kite.widget.CustomTypefaceButton
             android:id="@+id/confirm_button"
             style="@style/KiteSDKCTAButton.Offset"
             android:layout_gravity="bottom|right"/>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView
+<ly.kite.widget.CustomTypefaceTextView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/title_text_view"
     android:layout_width="fill_parent"

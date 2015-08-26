@@ -6,7 +6,7 @@
     android:gravity="fill_horizontal"
     android:orientation="vertical" >
 
-    <TextView
+    <ly.kite.widget.CustomTypefaceTextView
         android:id="@android:id/text1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

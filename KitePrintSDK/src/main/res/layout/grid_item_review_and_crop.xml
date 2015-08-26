@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <TextView
+        <ly.kite.widget.CustomTypefaceTextView
             android:id="@+id/quantity_text_view"
             android:layout_width="@dimen/cta_button_height"
             android:layout_height="fill_parent"
@@ -30,7 +30,7 @@
             android:textColor="@android:color/white"
             android:textSize="@dimen/review_and_crop_quantity_text_size"/>
 
-        <Button
+        <ly.kite.widget.CustomTypefaceButton
             android:id="@+id/decrease_button"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="2dp"
@@ -43,7 +43,7 @@
             android:text="-"
             android:textSize="@dimen/review_and_crop_plus_minus_text_size"/>
 
-        <Button
+        <ly.kite.widget.CustomTypefaceButton
             android:id="@+id/increase_button"
             android:layout_marginLeft="1px"
             android:layout_marginTop="2dp"
@@ -56,7 +56,7 @@
             android:text="+"
             android:textSize="@dimen/review_and_crop_plus_minus_text_size"/>
 
-        <Button
+        <ly.kite.widget.CustomTypefaceButton
             android:id="@+id/edit_button"
             android:layout_marginLeft="30dp"
             android:layout_width="wrap_content"

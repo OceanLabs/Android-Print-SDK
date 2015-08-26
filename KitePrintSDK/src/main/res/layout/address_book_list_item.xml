@@ -6,13 +6,13 @@
     android:padding="16dp"
     android:orientation="vertical">
 
-    <TextView
+    <ly.kite.widget.CustomTypefaceTextView
         android:id="@android:id/text1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceListItem"/>
 
-    <TextView
+    <ly.kite.widget.CustomTypefaceTextView
         android:id="@android:id/text2"
         android:layout_marginTop="5dp"
         android:layout_width="fill_parent"

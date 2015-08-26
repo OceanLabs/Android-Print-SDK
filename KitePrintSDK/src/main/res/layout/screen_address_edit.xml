@@ -15,7 +15,7 @@
             android:paddingRight="@dimen/activity_horizontal_margin"
             android:paddingTop="@dimen/activity_vertical_margin">
 
-            <EditText
+            <ly.kite.widget.CustomTypefaceEditText
                 android:id="@+id/edit_text_recipient_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -26,7 +26,7 @@
                 android:maxLines="1"
                 android:singleLine="true"/>
 
-            <EditText
+            <ly.kite.widget.CustomTypefaceEditText
                 android:id="@+id/edit_text_address_line1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -37,7 +37,7 @@
                 android:maxLines="1"
                 android:singleLine="true"/>
 
-            <EditText
+            <ly.kite.widget.CustomTypefaceEditText
                 android:id="@+id/edit_text_address_line2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -48,7 +48,7 @@
                 android:maxLines="1"
                 android:singleLine="true"/>
 
-            <EditText
+            <ly.kite.widget.CustomTypefaceEditText
                 android:id="@+id/edit_text_address_city"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -59,7 +59,7 @@
                 android:maxLines="1"
                 android:singleLine="true"/>
 
-            <EditText
+            <ly.kite.widget.CustomTypefaceEditText
                 android:id="@+id/edit_text_address_county"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -70,7 +70,7 @@
                 android:maxLines="1"
                 android:singleLine="true"/>
 
-            <EditText
+            <ly.kite.widget.CustomTypefaceEditText
                 android:id="@+id/edit_text_address_postcode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -89,7 +89,7 @@
                 android:text="Country"/>
 
             <!-- Placeholder that is the same as save button to allow scrollview to show country spinner -->
-            <Button
+            <ly.kite.widget.CustomTypefaceButton
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/activity_vertical_margin"

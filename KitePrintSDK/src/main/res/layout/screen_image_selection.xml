@@ -24,7 +24,7 @@
 
         <include layout="@layout/include_proceed_overlay"/>
 
-        <Button
+        <ly.kite.widget.CustomTypefaceButton
             android:id="@+id/clear_photos_button"
             android:layout_gravity="bottom"
             android:layout_width="fill_parent"

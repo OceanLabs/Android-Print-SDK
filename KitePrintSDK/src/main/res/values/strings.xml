@@ -3,6 +3,8 @@
 
     <string name="app_name">Kite SDK</string>
 
+    <string name="custom_typeface_file_name"></string>
+
     <string name="unit_centimeters">centimeters</string>
     <string name="unit_inches">inches</string>
     <string name="unit_pixels">pixels</string>

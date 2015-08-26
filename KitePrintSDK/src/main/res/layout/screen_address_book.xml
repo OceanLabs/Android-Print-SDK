@@ -8,7 +8,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"/>
 
-    <TextView
+    <ly.kite.widget.CustomTypefaceTextView
         android:id="@+id/empty_message_text_view"
         android:text="@string/address_book_empty"
         android:layout_width="fill_parent"
