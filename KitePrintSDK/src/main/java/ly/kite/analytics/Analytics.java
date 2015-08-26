@@ -49,6 +49,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -57,6 +58,7 @@ import java.util.UUID;
 
 import ly.kite.BuildConfig;
 import ly.kite.KiteSDK;
+import ly.kite.R;
 import ly.kite.address.Address;
 import ly.kite.address.Country;
 import ly.kite.pricing.OrderPricing;
@@ -176,7 +178,7 @@ public class Analytics
 
   private String      mCachedUniqueUserId;
   private HashMap<String,Object> mCachedPropertiesMap;
-  //private JSONObject  mCachedPropertiesJSONObject;
+  private IAnalyticsEventCallback mCachedEventCallback;
 
 
   ////////// Static Initialiser(s) //////////
@@ -356,6 +358,36 @@ public class Analytics
 
   /*****************************************************
    *
+   * Gets the integrating applications analytics event
+   * callback if any, else returns null. The event
+   * callback class is registered by the integrating
+   * application as a string resource
+   * (R.string.analytics_event_callback_class_name) which we
+   * instantiate via reflection & cache for future use
+   *
+   *****************************************************/
+  private IAnalyticsEventCallback getEventCallback()
+    {
+    if ( mCachedEventCallback == null )
+      {
+      // Load registered analytics event callback (if any) via reflection
+      String callbackClassName = mContext.getString(R.string.analytics_event_callback_class_name);
+      try
+        {
+        Class<?> clazz = Class.forName( callbackClassName );
+        Constructor<?> ctor = clazz.getConstructor( Context.class );
+        mCachedEventCallback = (IAnalyticsEventCallback) ctor.newInstance( new Object[] { mContext } );
+      } catch ( Exception ex )
+        {
+        mCachedEventCallback = new NullAnalyticsEventCallback(mContext);
+        }
+      }
+
+    return mCachedEventCallback;
+    }
+
+  /*****************************************************
+   *
    * Returns a unique id representing the user. This is
    * generated and then persisted.
    *
@@ -516,6 +548,7 @@ public class Analytics
       }
 
     trackEvent( EVENT_NAME_SDK_LOADED, propertiesJSONObject );
+    getEventCallback().onSDKLoaded( entryPoint );
     }
 
 
@@ -527,6 +560,7 @@ public class Analytics
   public void trackProductSelectionScreenViewed()
     {
     trackEvent( EVENT_NAME_PRODUCT_SELECTION_SCREEN_VIEWED );
+    getEventCallback().onProductSelectionScreenViewed();
     }
 
 
@@ -549,6 +583,7 @@ public class Analytics
       }
 
     trackEvent( EVENT_NAME_PRODUCT_OVERVIEW_SCREEN_VIEWED, propertiesJSONObject );
+    getEventCallback().onProductOverviewScreenViewed(product);
     }
 
 
@@ -571,6 +606,7 @@ public class Analytics
       }
 
     trackEvent( EVENT_NAME_CREATE_PRODUCT_SCREEN_VIEWED, propertiesJSONObject );
+    getEventCallback().onCreateProductScreenViewed(product);
     }
 
 
@@ -596,6 +632,7 @@ public class Analytics
       }
 
     trackEvent( EVENT_NAME_SHIPPING_SCREEN_VIEWED, propertiesJSONObject );
+    getEventCallback().onShippingScreenViewed(printOrder, variant, showPhoneEntryField);
     }
 
 
@@ -611,6 +648,7 @@ public class Analytics
     addToJSON( printOrder, propertiesJSONObject );
 
     trackEvent( EVENT_NAME_CREATE_PAYMENT_SCREEN_VIEWED, propertiesJSONObject );
+    getEventCallback().onPaymentScreenViewed(printOrder);
     }
 
 
@@ -635,6 +673,7 @@ public class Analytics
       }
 
     trackEvent( EVENT_NAME_PAYMENT_COMPLETED, propertiesJSONObject );
+    getEventCallback().onPaymentCompleted(printOrder, paymentMethod);
     }
 
 
@@ -650,6 +689,7 @@ public class Analytics
     addToJSON( printOrder, propertiesJSONObject );
 
     trackEvent( EVENT_NAME_ORDER_SUBMISSION, propertiesJSONObject );
+    getEventCallback().onOrderSubmission(printOrder);
     }
 
 
