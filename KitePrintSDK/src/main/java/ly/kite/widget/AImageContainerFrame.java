@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * AFixableImageFrame.java
+ * AImageContainerFrame.java
  *
  *
  * Modified MIT License
@@ -66,14 +66,14 @@ import ly.kite.util.IImageConsumer;
  * The widget is also an image consumer.
  *
  *****************************************************/
-abstract public class AFixableImageFrame extends FrameLayout implements IImageConsumer
+abstract public class AImageContainerFrame extends FrameLayout implements IImageConsumer
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG              = "AFixableImageFrame";
+  private static final String  LOG_TAG              = "AImageContainerFrame";
 
-  private static final float   DEFAULT_ASPECT_RATIO = 1.389f;
+  public  static final float   DEFAULT_ASPECT_RATIO = 1.389f;
 
   private static final Object  ANY_KEY              = new Object();
 
@@ -98,21 +98,21 @@ abstract public class AFixableImageFrame extends FrameLayout implements IImageCo
 
   ////////// Constructor(s) //////////
 
-  public AFixableImageFrame( Context context )
+  public AImageContainerFrame( Context context )
     {
     super( context );
 
     initialise( context, null, 0 );
     }
 
-  public AFixableImageFrame( Context context, AttributeSet attrs )
+  public AImageContainerFrame( Context context, AttributeSet attrs )
     {
     super( context, attrs );
 
     initialise( context, attrs, 0 );
     }
 
-  public AFixableImageFrame( Context context, AttributeSet attrs, int defStyleAttr )
+  public AImageContainerFrame( Context context, AttributeSet attrs, int defStyleAttr )
     {
     super( context, attrs, defStyleAttr );
 
@@ -120,7 +120,7 @@ abstract public class AFixableImageFrame extends FrameLayout implements IImageCo
     }
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-  public AFixableImageFrame( Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes )
+  public AImageContainerFrame( Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes )
     {
     super( context, attrs, defStyleAttr, defStyleRes );
 
@@ -183,7 +183,7 @@ abstract public class AFixableImageFrame extends FrameLayout implements IImageCo
   @Override
   public void onImageAvailable( Object key, Bitmap bitmap )
     {
-    if ( mExpectedKey == ANY_KEY || key.equals( mExpectedKey ) )
+    if ( keyIsOK( key ) )
       {
       mImageView.setImageBitmap( bitmap );
       }
@@ -202,7 +202,7 @@ abstract public class AFixableImageFrame extends FrameLayout implements IImageCo
     // Get the view
     View view = onCreateView( context, attributeSet, defaultStyle );
 
-    // Get the fixable image view
+    // Get the image view
     mImageView = (ImageView)view.findViewById( R.id.image_view );
 
 
@@ -213,8 +213,8 @@ abstract public class AFixableImageFrame extends FrameLayout implements IImageCo
       TypedArray typedArray = context.obtainStyledAttributes( attributeSet, R.styleable.FixableImageFrame, defaultStyle, defaultStyle );
 
 
-      // If an aspect ratio was defined in the XML then set it now. Otherwise
-      // leave it at its uninitialised value: 0.0
+      // If an aspect ratio was defined in the XML then set it now.
+      // ** Otherwise leave it at its uninitialised value **
 
       TypedValue value = new TypedValue();
 
@@ -226,12 +226,14 @@ abstract public class AFixableImageFrame extends FrameLayout implements IImageCo
 
       typedArray.recycle();
       }
+
     }
 
 
   /*****************************************************
    *
-   * Returns the view for this frame.
+   * Returns the view for this frame. The view should be
+   * attached to this frame when this method returns.
    *
    *****************************************************/
   abstract protected View onCreateView( Context context, AttributeSet attributeSet, int defaultStyle );
@@ -306,6 +308,17 @@ abstract public class AFixableImageFrame extends FrameLayout implements IImageCo
   public void setExpectedKey( Object key )
     {
     mExpectedKey = key;
+    }
+
+
+  /*****************************************************
+   *
+   * Returns true if the supplied key is OK.
+   *
+   *****************************************************/
+  protected boolean keyIsOK( Object key )
+    {
+    return ( mExpectedKey == ANY_KEY || key.equals( mExpectedKey ) );
     }
 
 

@@ -14,7 +14,7 @@ repositories {
 
 android {
     compileSdkVersion 22
-    buildToolsVersion "21.1.2"
+    buildToolsVersion '22.0.1'
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 22
@@ -35,12 +35,11 @@ android {
 dependencies {
     compile files('libs/PayPalAndroidSDK-2.9.10.jar')
     compile files('libs/CardIONativeLibs.jar')
-
     compile 'com.android.support:support-v4:22.2.1'
     compile 'com.android.support:appcompat-v7:22.2.1'
     compile 'com.android.support:recyclerview-v7:22.2.1'
-    compile 'ly.kite:instagram-photo-picker:1.+'
-    compile 'ly.kite:photo-picker:1.+'
+    compile 'ly.kite:instagram-photo-picker:1.1.0'
+    compile 'ly.kite:photo-picker:1.1.2'
 }
 
 //apply from: 'https://raw.github.com/shamanland/gradle-mvn-push/cc18d56549cdea03f744b6fff27911569394073e/gradle-mvn-push.gradle'

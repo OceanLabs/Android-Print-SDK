@@ -41,8 +41,6 @@ package ly.kite.widget;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.res.TypedArray;
-import android.graphics.Bitmap;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -52,7 +50,6 @@ import android.view.animation.Animation;
 import android.widget.ImageView;
 
 import ly.kite.R;
-import ly.kite.util.IImageConsumer;
 
 
 ///// Class Declaration /////
@@ -62,7 +59,7 @@ import ly.kite.util.IImageConsumer;
  * This class overlays a check mark on an image view.
  *
  *****************************************************/
-public class CheckableImageView extends AFixableImageFrame
+public class CheckableImageView extends AImageContainerFrame
   {
   ////////// Static Constant(s) //////////
 

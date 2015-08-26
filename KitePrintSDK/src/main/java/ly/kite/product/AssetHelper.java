@@ -62,6 +62,7 @@ import ly.kite.util.IImageConsumer;
 import ly.kite.util.ImageLoader;
 import ly.kite.product.Asset.Type;
 import ly.kite.product.Asset.MIMEType;
+import ly.kite.util.ImageScaler;
 
 
 ///// Class Declaration /////
@@ -478,25 +479,6 @@ public class AssetHelper
 
   /*****************************************************
    *
-   * Returns a scaled bitmap, or the source bitmap if
-   * no scaling is required.
-   *
-   *****************************************************/
-  static public Bitmap scaleBitmap( Bitmap sourceBitmap, int scaledWidth )
-    {
-    if ( scaledWidth < 1 ) return ( sourceBitmap );
-
-
-    // Calculate the height so as to maintain the aspect ratio
-
-    int scaledHeight = (int)( (float)sourceBitmap.getHeight() * (float)scaledWidth / (float)sourceBitmap.getWidth() );
-
-    return ( sourceBitmap.createScaledBitmap( sourceBitmap, scaledWidth, scaledHeight, true ) );
-    }
-
-
-  /*****************************************************
-   *
    * Ensures that all the assets in the supplied list, are
    * parcelable. Any that aren't are converted to file-backed
    * assets and replaced.
@@ -726,7 +708,7 @@ public class AssetHelper
 
             transformedBitmap = transformBitmap( BitmapFactory.decodeStream( bis ), mImageTransformer );
 
-            return ( scaleBitmap( transformedBitmap, mScaledImageWidth ) );
+            return ( ImageScaler.scaleBitmap( transformedBitmap, mScaledImageWidth ) );
 
 
           case IMAGE_BYTES:
@@ -735,7 +717,7 @@ public class AssetHelper
 
             transformedBitmap = transformBitmap( BitmapFactory.decodeByteArray( imageBytes, 0, imageBytes.length ), mImageTransformer );
 
-            return ( scaleBitmap( transformedBitmap, mScaledImageWidth ) );
+            return ( ImageScaler.scaleBitmap( transformedBitmap, mScaledImageWidth ) );
 
 
           case IMAGE_FILE:
@@ -746,7 +728,7 @@ public class AssetHelper
 
             transformedBitmap = transformBitmap( BitmapFactory.decodeStream( bis ), mImageTransformer );
 
-            return ( scaleBitmap( transformedBitmap, mScaledImageWidth ) );
+            return ( ImageScaler.scaleBitmap( transformedBitmap, mScaledImageWidth ) );
 
 
           case BITMAP_RESOURCE_ID:
@@ -755,14 +737,14 @@ public class AssetHelper
 
             transformedBitmap = transformBitmap( BitmapFactory.decodeResource( mContext.getResources(), resourceId ), mImageTransformer );
 
-            return ( scaleBitmap( transformedBitmap, mScaledImageWidth ) );
+            return ( ImageScaler.scaleBitmap( transformedBitmap, mScaledImageWidth ) );
 
 
           case BITMAP:
 
             transformedBitmap = transformBitmap( mAsset.getBitmap(), mImageTransformer );
 
-            return ( scaleBitmap( transformedBitmap, mScaledImageWidth ) );
+            return ( ImageScaler.scaleBitmap( transformedBitmap, mScaledImageWidth ) );
           }
 
 
@@ -958,7 +940,7 @@ public class AssetHelper
       Bitmap transformedBitmap = transformBitmap( mOriginalBitmap, mImageTransformer );
 
       // Scale the bitmap
-      return ( scaleBitmap( transformedBitmap, mScaledImageWidth ) );
+      return ( ImageScaler.scaleBitmap( transformedBitmap, mScaledImageWidth ) );
       }
 
 

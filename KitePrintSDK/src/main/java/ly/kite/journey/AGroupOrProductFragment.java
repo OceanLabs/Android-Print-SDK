@@ -41,7 +41,6 @@ package ly.kite.journey;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -159,7 +158,7 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements P
   @Override
   public void onNotTop()
     {
-    mGridView.setAdapter( null );
+    if ( mGridView != null ) mGridView.setAdapter( null );
 
     mGridAdaptor = null;
     }
@@ -273,10 +272,10 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements P
     private int                              mActualItemCount;
     private int                              mApparentItemCount;
     private String                           mPlaceholderImageURLString;
-    private URL mPlaceholderImageURL;
+    private URL                              mPlaceholderImageURL;
 
     private LayoutInflater                   mLayoutInflator;
-    private ImageLoader mImageManager;
+    private ImageLoader                      mImageLoader;
 
 
     ////////// Static Initialiser(s) //////////
@@ -295,7 +294,7 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements P
       mLayoutResourceId   = layoutResourceId;
 
       mLayoutInflator     = LayoutInflater.from( context );
-      mImageManager       = ImageLoader.getInstance( context );
+      mImageLoader        = ImageLoader.getInstance( context );
 
       mActualItemCount    = mGroupOrProductList.size();
 
@@ -399,8 +398,8 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements P
         }
 
 
-      // Get the item we are displaying; set the label, and request the image from the image manager. We
-      // also need to set the size of the image. Show placeholders for any missing items.
+      // Get the item we are displaying; set the label, and request the image from the image manager.
+      // Show placeholders for any missing items.
 
       IGroupOrProduct groupOrProduct = (IGroupOrProduct)getItem( position );
 
@@ -438,7 +437,7 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements P
 
       viewReferences.productImageView.clearForNewImage( imageURL );
 
-      mImageManager.requestRemoteImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, imageURL, parent.getHandler(), viewReferences.productImageView );
+      mImageLoader.requestRemoteImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, imageURL, viewReferences.productImageView );
 
 
       return ( view );

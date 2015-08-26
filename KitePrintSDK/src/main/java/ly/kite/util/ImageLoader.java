@@ -65,10 +65,9 @@ import java.util.HashMap;
  * images.
  *
  * Images originate from a network server, and are specified
- * using a URL. Then there are two levels of 'caching':
- *   - Images may be stored in the cache directory on the
- *   devices. This allows them to be cleared by clearing
- *   the cache in the app manager.
+ * using a URL. Images may be stored in the cache directory on
+ * the devices. This allows them to be cleared by clearing
+ * the cache in the app manager.
  *
  * In-memory image caching has been removed completely. Due
  * to the stringent requirements of low-end devices, any caching
@@ -111,7 +110,7 @@ public class ImageLoader
    * Returns an instance of the image manager.
    *
    *****************************************************/
-  public static ImageLoader getInstance( Context context )
+  static public ImageLoader getInstance( Context context )
     {
     if ( sImageManager == null )
       {
@@ -128,7 +127,7 @@ public class ImageLoader
    * use in file / directory names.
    *
    *****************************************************/
-  public static String toSafeString( String sourceString )
+  static public String toSafeString( String sourceString )
     {
     int length = sourceString.length();
 
@@ -263,19 +262,8 @@ public class ImageLoader
 
   /*****************************************************
    *
-   * Requests an image from a remote URL.
-   *
-   *****************************************************/
-  public void requestRemoteImage( String imageClassString, URL imageURL, Handler callbackHandler, IImageConsumer imageConsumer )
-    {
-    requestRemoteImage( imageClassString, imageURL, imageURL, imageConsumer );
-    }
-
-
-  /*****************************************************
-   *
-   * Requests an image from a remote URL. This must be
-   * called on the UI thread.
+   * Requests an image from a remote URL. Must be called
+   * on the UI thread.
    *
    *****************************************************/
   public void requestRemoteImage( String imageClassString, URL imageURL, IImageConsumer imageConsumer )
@@ -354,7 +342,7 @@ public class ImageLoader
         Pair<String, String> directoryAndFilePath = getImageDirectoryAndFilePath( mImageClassString, mImageURLString );
 
         String imageDirectoryPath = directoryAndFilePath.first;
-        String imageFilePath = directoryAndFilePath.second;
+        String imageFilePath      = directoryAndFilePath.second;
 
 
         boolean imageWasFoundLocally = false;
@@ -370,8 +358,9 @@ public class ImageLoader
 
           if ( ! imageWasFoundLocally )
             {
-            // If we fail to download the file, don't continue. The finally block, however,
-            // ensures that we clean up the in-progress entry.
+            // Try and download the file. Regardless of whether this succeeds or fails,
+            // the in-progress entry will be removed in the post execute method.
+
             if ( ! downloadTo( imageDirectory, imageFile ) ) return ( null );
             }
 
@@ -383,8 +372,6 @@ public class ImageLoader
           {
           }
         }
-
-
 
 
       return ( bitmap );

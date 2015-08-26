@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * FramedImageView.java
+ * ImageScaler.java
  *
  *
  * Modified MIT License
@@ -34,36 +34,27 @@
 
 ///// Package Declaration /////
 
-package ly.kite.widget;
+package ly.kite.util;
 
 
 ///// Import(s) /////
 
-import android.annotation.TargetApi;
-import android.content.Context;
-import android.os.Build;
-import android.util.AttributeSet;
-import android.view.LayoutInflater;
-import android.view.View;
-
-import ly.kite.R;
-
 
 ///// Class Declaration /////
 
+import android.graphics.Bitmap;
+
 /*****************************************************
  *
- * This class overlays a frame on a standard image view.
+ * This class scales images.
  *
  *****************************************************/
-public class FramedImageView extends AImageContainerFrame
+public class ImageScaler
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                         = "FramedImageView";
-
-  private static final long    CHECK_ANIMATION_DURATION_MILLIS = 200L;
+  private static final String  LOG_TAG = "ImageScaler";
 
 
   ////////// Static Variable(s) //////////
@@ -71,88 +62,50 @@ public class FramedImageView extends AImageContainerFrame
 
   ////////// Member Variable(s) //////////
 
-  private StencilImageView  mStencilImageView;
-
-  private Object            mExpectedKey;
-
 
   ////////// Static Initialiser(s) //////////
 
 
   ////////// Static Method(s) //////////
 
-
-  ////////// Constructor(s) //////////
-
-  public FramedImageView( Context context )
-    {
-    super( context );
-    }
-
-  public FramedImageView( Context context, AttributeSet attrs )
-    {
-    super( context, attrs );
-    }
-
-  public FramedImageView( Context context, AttributeSet attrs, int defStyleAttr )
-    {
-    super( context, attrs, defStyleAttr );
-    }
-
-  @TargetApi( Build.VERSION_CODES.LOLLIPOP )
-  public FramedImageView( Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes )
-    {
-    super( context, attrs, defStyleAttr, defStyleRes );
-    }
-
-
-  ////////// AFixableImageFrame Method(s) //////////
-
   /*****************************************************
    *
-   * Returns the content view.
+   * Returns a scaled bitmap, or the source bitmap if
+   * no scaling is required.
    *
    *****************************************************/
-  @Override
-  protected View onCreateView( Context context, AttributeSet attributeSet, int defaultStyle )
+  static public Bitmap scaleBitmap( Bitmap sourceBitmap, int scaledWidth )
     {
-    LayoutInflater layoutInflator = LayoutInflater.from( context );
-
-    View view = layoutInflator.inflate( R.layout.framed_image_view, this, true );
-
-    mStencilImageView = (StencilImageView)view.findViewById( R.id.image_view );
+    if ( scaledWidth < 1 ) return ( sourceBitmap );
 
 
-    return ( view );
+    // Calculate the height so as to maintain the aspect ratio
+
+    int scaledHeight = (int)( (float)sourceBitmap.getHeight() * (float)scaledWidth / (float)sourceBitmap.getWidth() );
+
+    return ( sourceBitmap.createScaledBitmap( sourceBitmap, scaledWidth, scaledHeight, true ) );
     }
+
+
+  ////////// Constructor(s) //////////
 
 
   ////////// Method(s) //////////
 
   /*****************************************************
    *
-   * Sets a frame border around the image by setting the
-   * padding.
+   * ...
    *
    *****************************************************/
-  public void setBorder( int width )
-    {
-    setPadding( width, width, width, width );
-    }
-
-
-  /*****************************************************
-   *
-   * Sets the stencil window.
-   *
-   *****************************************************/
-  public void setStencil( int stencilDrawableResourceId )
-    {
-    mStencilImageView.setStencil( stencilDrawableResourceId );
-    }
 
 
   ////////// Inner Class(es) //////////
+
+  /*****************************************************
+   *
+   * ...
+   *
+   *****************************************************/
 
   }
 

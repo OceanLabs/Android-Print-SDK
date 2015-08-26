@@ -68,7 +68,7 @@ import ly.kite.R;
  * stage, fading them in where appropriate.
  *
  *****************************************************/
-public class LabelledImageView extends AFixableImageFrame implements IImageConsumer, Animation.AnimationListener
+public class LabelledImageView extends AImageContainerFrame implements IImageConsumer, Animation.AnimationListener
   {
   ////////// Static Constant(s) //////////
 
@@ -180,13 +180,11 @@ public class LabelledImageView extends AFixableImageFrame implements IImageConsu
       }
 
 
-
-
     return ( view );
     }
 
 
-  ////////// RemoteImageConsumer Method(s) //////////
+  ////////// IImageConsumer Method(s) //////////
 
   /*****************************************************
    *
@@ -211,14 +209,11 @@ public class LabelledImageView extends AFixableImageFrame implements IImageConsu
   public void onImageAvailable( Object key, Bitmap bitmap )
     {
     // Make sure the image is the one we were expecting.
-    synchronized ( this )
+    if ( keyIsOK( key ) )
       {
-      if ( key == mKey )
-        {
-        setImage( bitmap );
+      setImage( bitmap );
 
-        fadeImageIn();
-        }
+      fadeImageIn();
       }
     }
 
