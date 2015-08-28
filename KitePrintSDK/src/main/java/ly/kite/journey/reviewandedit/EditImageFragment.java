@@ -51,7 +51,7 @@ import ly.kite.journey.AKiteActivity;
 import ly.kite.product.Asset;
 import ly.kite.product.AssetHelper;
 import ly.kite.product.Product;
-import ly.kite.util.ImageLoader;
+import ly.kite.util.ImageAgent;
 
 
 ///// Class Declaration /////
@@ -172,7 +172,7 @@ public class EditImageFragment extends AEditImageFragment
 
     // Request the image and set the mask
 
-    ImageLoader imageManager = ImageLoader.getInstance( mKiteActivity );
+    ImageAgent imageManager = ImageAgent.getInstance( mKiteActivity );
 
     mEditableConsumerImageView.setImageKey( mAsset );
     mEditableConsumerImageView.setMask( mProduct.getUserJourneyType().maskResourceId() );

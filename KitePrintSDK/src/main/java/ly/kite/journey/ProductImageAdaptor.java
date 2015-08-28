@@ -52,7 +52,7 @@ import java.net.URL;
 import java.util.List;
 
 import ly.kite.R;
-import ly.kite.util.ImageLoader;
+import ly.kite.util.ImageAgent;
 import ly.kite.widget.LabelledImageView;
 
 /*****************************************************
@@ -81,7 +81,7 @@ public class ProductImageAdaptor extends PagerAdapter
   private View.OnClickListener  mOnClickListener;
 
   private LayoutInflater        mLayoutInflator;
-  private ImageLoader           mImageLoader;
+  private ImageAgent mImageLoader;
 
 
   ////////// Static Initialiser(s) //////////
@@ -99,7 +99,7 @@ public class ProductImageAdaptor extends PagerAdapter
     mOnClickListener = onClickListener;
 
     mLayoutInflator  = LayoutInflater.from( context );
-    mImageLoader = ImageLoader.getInstance( context );
+    mImageLoader = ImageAgent.getInstance( context );
     }
 
 
@@ -141,7 +141,7 @@ public class ProductImageAdaptor extends PagerAdapter
     LabelledImageView labelledImageView = (LabelledImageView)view.findViewById( R.id.labelled_image_view );
 
     labelledImageView.setOnClickListener( mOnClickListener );  // The view pager won't respond to click events, so we need to add them to each page
-    labelledImageView.requestScaledImage( IMAGE_CLASS_STRING, imageURL );
+    labelledImageView.requestScaledImageOnceSized( IMAGE_CLASS_STRING, imageURL );
 
 
     return ( view );

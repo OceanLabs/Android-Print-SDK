@@ -76,6 +76,7 @@ import ly.kite.product.Product;
 import ly.kite.R;
 import ly.kite.util.BooleanHelper;
 import ly.kite.util.IImageConsumer;
+import ly.kite.util.IImageTransformer;
 import ly.kite.widget.VisibilitySettingAnimationListener;
 
 
@@ -863,7 +864,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
    * method gets called on the UI thread.
    *
    *****************************************************/
-  private class AssetImageToSquareCropper implements AssetHelper.IImageTransformer, IImageConsumer
+  private class AssetImageToSquareCropper implements IImageTransformer, IImageConsumer
     {
     private AssetsAndQuantity  mAssetsAndQuantity;
 

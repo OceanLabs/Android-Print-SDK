@@ -334,7 +334,7 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
           }
         else
           {
-          viewHolder.checkableImageView.requestScaledImage( editedAsset );
+          viewHolder.checkableImageView.requestScaledImageOnceSized( editedAsset );
           }
 
 

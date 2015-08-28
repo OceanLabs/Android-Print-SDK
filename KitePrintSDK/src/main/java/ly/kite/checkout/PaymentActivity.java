@@ -119,7 +119,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
 
   private PrintOrder mPrintOrder;
   private String mAPIKey;
-  private KiteSDK.Environment mKiteSDKEnvironment;
+  private KiteSDK.DefaultEnvironment mKiteSDKEnvironment;
   private PayPalCard.Environment mPayPalEnvironment;
 
   private ListView mOrderSummaryListView;
@@ -183,18 +183,18 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
       }
 
 
-    KiteSDK.Environment env = KiteSDK.Environment.TEST;
+    KiteSDK.DefaultEnvironment env = KiteSDK.DefaultEnvironment.TEST;
     mPayPalEnvironment = PayPalCard.Environment.LIVE;
     if ( envString != null )
       {
       if ( envString.equals( ENVIRONMENT_STAGING ) )
         {
-        env = KiteSDK.Environment.STAGING;
+        env = KiteSDK.DefaultEnvironment.STAGING;
         mPayPalEnvironment = PayPalCard.Environment.SANDBOX;
         }
       else if ( envString.equals( ENVIRONMENT_TEST ) )
         {
-        env = KiteSDK.Environment.TEST;
+        env = KiteSDK.DefaultEnvironment.TEST;
         mPayPalEnvironment = PayPalCard.Environment.SANDBOX;
         }
       }
@@ -271,11 +271,11 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
 
     mPrintOrder = savedInstanceState.getParcelable( EXTRA_PRINT_ORDER );
     mAPIKey = savedInstanceState.getString( EXTRA_PRINT_API_KEY );
-    mKiteSDKEnvironment = (KiteSDK.Environment) savedInstanceState.getSerializable( EXTRA_PRINT_ENVIRONMENT );
+    mKiteSDKEnvironment = (KiteSDK.DefaultEnvironment) savedInstanceState.getSerializable( EXTRA_PRINT_ENVIRONMENT );
     KiteSDK.getInstance( this ).setEnvironment( mAPIKey, mKiteSDKEnvironment );
 
     mPayPalEnvironment = PayPalCard.Environment.LIVE;
-    if ( mKiteSDKEnvironment == KiteSDK.Environment.STAGING || mKiteSDKEnvironment == KiteSDK.Environment.TEST )
+    if ( mKiteSDKEnvironment == KiteSDK.DefaultEnvironment.STAGING || mKiteSDKEnvironment == KiteSDK.DefaultEnvironment.TEST )
       {
       mPayPalEnvironment = PayPalCard.Environment.SANDBOX;
       }

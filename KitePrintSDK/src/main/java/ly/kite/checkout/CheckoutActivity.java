@@ -50,7 +50,6 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -58,15 +57,12 @@ import android.content.SharedPreferences;
 import android.os.Parcelable;
 import android.os.Bundle;
 import android.util.Pair;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import ly.kite.KiteSDK;
 import ly.kite.analytics.Analytics;
@@ -121,8 +117,8 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
   ////////// Member Variable(s) //////////
 
   private PrintOrder           mPrintOrder;
-  private String               mAPIKey;
-  private KiteSDK.Environment  mEnvironment;
+//  private String               mAPIKey;
+//  private KiteSDK.Environment  mEnvironment;
 
   private EditText             mEmailEditText;
   private EditText             mPhoneEditText;
@@ -204,39 +200,41 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
       throw new IllegalArgumentException( "You must specify a PrintOrder object extra that actually has some jobs for printing i.e. PrintOrder.getJobs().size() > 0" );
       }
 
-    KiteSDK.Environment env = null;
-    if ( envString == null )
-      {
-      env = KiteSDK.getInstance( this ).getEnvironment();
-      if ( env == null )
-        {
-        throw new IllegalArgumentException( "You must specify an environment string extra in the intent used to start the CheckoutActivity or with KitePrintSDK.initialize" );
-        }
-      }
-    else
-      {
-      if ( envString.equals( ENVIRONMENT_STAGING ) )
-        {
-        env = KiteSDK.Environment.STAGING;
-        }
-      else if ( envString.equals( ENVIRONMENT_TEST ) )
-        {
-        env = KiteSDK.Environment.TEST;
-        }
-      else if ( envString.equals( ENVIRONMENT_LIVE ) )
-        {
-        env = KiteSDK.Environment.LIVE;
-        }
-      else
-        {
-        throw new IllegalArgumentException( "Bad print environment extra: " + envString );
-        }
-      }
-
-    mAPIKey      = apiKey;
-    mEnvironment = env;
-
-    KiteSDK.getInstance( this ).setEnvironment( apiKey, env );
+//    KiteSDK.Environment environment = null;
+//
+//    if ( envString == null )
+//      {
+//      environment = KiteSDK.getInstance( this ).getEnvironment();
+//
+//      if ( environment == null )
+//        {
+//        throw new IllegalArgumentException( "You must specify an environment string extra in the intent used to start the CheckoutActivity or with KitePrintSDK.initialize" );
+//        }
+//      }
+//    else
+//      {
+//      if ( envString.equals( ENVIRONMENT_STAGING ) )
+//        {
+//        environment = KiteSDK.DefaultEnvironment.STAGING;
+//        }
+//      else if ( envString.equals( ENVIRONMENT_TEST ) )
+//        {
+//        environment = KiteSDK.DefaultEnvironment.TEST;
+//        }
+//      else if ( envString.equals( ENVIRONMENT_LIVE ) )
+//        {
+//        environment = KiteSDK.DefaultEnvironment.LIVE;
+//        }
+//      else
+//        {
+//        throw new IllegalArgumentException( "Bad print environment extra: " + envString );
+//        }
+//      }
+//
+//    mAPIKey      = apiKey;
+//    mEnvironment = environment;
+//
+//    KiteSDK.getInstance( this ).setEnvironment( apiKey, environment );
 
 
     mProceedButton.setText( R.string.shipping_proceed_button_text );
@@ -268,8 +266,8 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
     super.onSaveInstanceState( outState );
 
     outState.putParcelable( EXTRA_PRINT_ORDER, mPrintOrder );
-    outState.putString( EXTRA_PRINT_API_KEY, mAPIKey );
-    outState.putSerializable( EXTRA_PRINT_ENVIRONMENT, mEnvironment );
+//    outState.putString( EXTRA_PRINT_API_KEY, mAPIKey );
+//    outState.putParcelable( EXTRA_PRINT_ENVIRONMENT, mEnvironment );
     }
 
   @Override
@@ -278,10 +276,10 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
     super.onRestoreInstanceState( savedInstanceState );
 
     mPrintOrder  = savedInstanceState.getParcelable( EXTRA_PRINT_ORDER );
-    mAPIKey      = savedInstanceState.getString( EXTRA_PRINT_API_KEY );
-    mEnvironment = (KiteSDK.Environment) savedInstanceState.getSerializable( EXTRA_PRINT_ENVIRONMENT );
-
-    KiteSDK.getInstance( this ).setEnvironment( mAPIKey, mEnvironment );
+//    mAPIKey      = savedInstanceState.getString( EXTRA_PRINT_API_KEY );
+//    mEnvironment = (KiteSDK.DefaultEnvironment) savedInstanceState.getSerializable( EXTRA_PRINT_ENVIRONMENT );
+//
+//    KiteSDK.getInstance( this ).setEnvironment( mAPIKey, mEnvironment );
     }
 
   @Override
@@ -347,20 +345,20 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
     startActivityForResult( i, REQUEST_CODE_ADDRESS_BOOK );
     }
 
-  private String getPaymentActivityEnvironment()
-    {
-    switch ( mEnvironment )
-      {
-      case LIVE:
-        return PaymentActivity.ENVIRONMENT_LIVE;
-      case STAGING:
-        return PaymentActivity.ENVIRONMENT_STAGING;
-      case TEST:
-        return PaymentActivity.ENVIRONMENT_TEST;
-      default:
-        throw new IllegalStateException( "oops" );
-      }
-    }
+//  private String getPaymentActivityEnvironment()
+//    {
+//    switch ( mEnvironment )
+//      {
+//      case LIVE:
+//        return PaymentActivity.ENVIRONMENT_LIVE;
+//      case STAGING:
+//        return PaymentActivity.ENVIRONMENT_STAGING;
+//      case TEST:
+//        return PaymentActivity.ENVIRONMENT_TEST;
+//      default:
+//        throw new IllegalStateException( "oops" );
+//      }
+//    }
 
   private void showErrorDialog( String title, String message )
     {
@@ -489,7 +487,9 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
       return;
       }
 
-    PaymentActivity.start( this, mPrintOrder, mAPIKey, getPaymentActivityEnvironment(), REQUEST_CODE_PAYMENT );
+    KiteSDK kiteSDK = KiteSDK.getInstance( this );
+
+    PaymentActivity.start( this, mPrintOrder, kiteSDK.getAPIKey(), kiteSDK.getEnvironment().getPaymentActivityEnvironment(), REQUEST_CODE_PAYMENT );
     }
 
   boolean isEmailValid( CharSequence email )

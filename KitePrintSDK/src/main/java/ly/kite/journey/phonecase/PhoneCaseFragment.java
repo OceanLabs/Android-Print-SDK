@@ -57,7 +57,7 @@ import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.product.AssetHelper;
 import ly.kite.product.Bleed;
 import ly.kite.product.Product;
-import ly.kite.util.ImageLoader;
+import ly.kite.util.ImageAgent;
 
 
 ///// Class Declaration /////
@@ -196,7 +196,7 @@ public class PhoneCaseFragment extends AEditImageFragment
 
     // Request the image and mask
 
-    ImageLoader imageManager = ImageLoader.getInstance( mKiteActivity );
+    ImageAgent imageManager = ImageAgent.getInstance( mKiteActivity );
 
     Asset        asset        = mAssetAndQuantityArrayList.get( 0 ).getUneditedAsset();
     URL          maskURL      = mProduct.getMaskURL();
@@ -206,7 +206,7 @@ public class PhoneCaseFragment extends AEditImageFragment
     mEditableConsumerImageView.setMaskExtras( maskURL, maskBleed );
 
     AssetHelper.requestImage( mKiteActivity, asset, mEditableConsumerImageView );
-    imageManager.requestRemoteImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, maskURL, mEditableConsumerImageView );
+    imageManager.requestImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, maskURL, mEditableConsumerImageView );
 
 
     return ( view );

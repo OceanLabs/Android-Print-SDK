@@ -59,7 +59,8 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import ly.kite.util.IImageConsumer;
-import ly.kite.util.ImageLoader;
+import ly.kite.util.IImageTransformer;
+import ly.kite.util.ImageAgent;
 import ly.kite.product.Asset.Type;
 import ly.kite.product.Asset.MIMEType;
 import ly.kite.util.ImageDownscaler;
@@ -105,7 +106,7 @@ public class AssetHelper
     {
     // Get the image cache directory
 
-    String imageCacheDirectoryPath = ImageLoader.getInstance( context ).getImageDirectoryPath( IMAGE_CLASS_STRING_ASSET );
+    String imageCacheDirectoryPath = ImageAgent.getInstance( context ).getImageDirectoryPath( IMAGE_CLASS_STRING_ASSET );
 
     File imageCacheDirectory = new File( imageCacheDirectoryPath );
 
@@ -133,7 +134,7 @@ public class AssetHelper
   static public Asset createAsCachedFile( Context context, byte[] imageBytes, Asset.MIMEType mimeType )
     {
     // Generate a random file name within the cache
-    Pair<String,String> imageDirectoryAndFilePath = ImageLoader.getInstance( context ).getImageDirectoryAndFilePath( IMAGE_CLASS_STRING_ASSET, UUID.randomUUID().toString() );
+    Pair<String,String> imageDirectoryAndFilePath = ImageAgent.getInstance( context ).getImageDirectoryAndFilePath( IMAGE_CLASS_STRING_ASSET, UUID.randomUUID().toString() );
 
     File imageDirectory = new File( imageDirectoryAndFilePath.first );
 
@@ -152,7 +153,7 @@ public class AssetHelper
   static public Asset createAsCachedFile( Context context, Bitmap bitmap )
     {
     // Generate a random file name within the cache
-    Pair<String,String> imageDirectoryAndFilePath = ImageLoader.getInstance( context ).getImageDirectoryAndFilePath( IMAGE_CLASS_STRING_ASSET, UUID.randomUUID().toString() );
+    Pair<String,String> imageDirectoryAndFilePath = ImageAgent.getInstance( context ).getImageDirectoryAndFilePath( IMAGE_CLASS_STRING_ASSET, UUID.randomUUID().toString() );
 
 
     // Ensure that the directory exists
@@ -376,7 +377,7 @@ public class AssetHelper
 
         BitmapToBytesConvertorTask convertorTask = new BitmapToBytesConvertorTask( asset, imageBytesConsumer );
 
-        ImageLoader.getInstance( context ).requestRemoteImage( IMAGE_CLASS_STRING_ASSET, asset, asset.getRemoteURL(), convertorTask );
+        ImageAgent.getInstance( context ).requestImage( IMAGE_CLASS_STRING_ASSET, asset, asset.getRemoteURL(), convertorTask );
 
         return;
       }
@@ -440,7 +441,7 @@ public class AssetHelper
 
         IImageConsumer remoteImageConsumer = new RemoteImageConsumer( asset, imageTransformer, scaledImageWidth, imageConsumer );
 
-        ImageLoader.getInstance( context ).requestRemoteImage( IMAGE_CLASS_STRING_ASSET, asset, asset.getRemoteURL(), remoteImageConsumer );
+        ImageAgent.getInstance( context ).requestImage( IMAGE_CLASS_STRING_ASSET, asset, asset.getRemoteURL(), remoteImageConsumer );
 
         return;
       }
@@ -531,18 +532,6 @@ public class AssetHelper
     {
     void onAssetBytes( Asset asset, byte[] byteArray );
     void onAssetError( Asset asset, Exception exception );
-    }
-
-
-  /*****************************************************
-   *
-   * A callback interface used to perform processing on an
-   * image before being scaled and returned.
-   *
-   *****************************************************/
-  public interface IImageTransformer
-    {
-    Bitmap getTransformedBitmap( Bitmap originalBitmap );
     }
 
 

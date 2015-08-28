@@ -196,7 +196,7 @@ public class AssetAndQuantityAdaptor extends BaseAdapter
     AssetsAndQuantity assetsAndQuantity = (AssetsAndQuantity)getItem( position );
     Asset             editedAsset       = assetsAndQuantity.getEditedAsset();
 
-    viewReferences.framedImageView.requestScaledImage( editedAsset );
+    viewReferences.framedImageView.requestScaledImageOnceSized( editedAsset );
 
     viewReferences.quantityTextView.setText( String.valueOf( assetsAndQuantity.getQuantity() ) );
     viewReferences.assetIndex = position;

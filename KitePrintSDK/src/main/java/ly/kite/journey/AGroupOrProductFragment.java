@@ -58,7 +58,7 @@ import java.util.List;
 import ly.kite.R;
 import ly.kite.product.ProductLoader;
 import ly.kite.product.IGroupOrProduct;
-import ly.kite.util.ImageLoader;
+import ly.kite.util.ImageAgent;
 import ly.kite.widget.HeaderFooterGridView;
 import ly.kite.widget.LabelledImageView;
 
@@ -275,7 +275,7 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements P
     private URL                              mPlaceholderImageURL;
 
     private LayoutInflater                   mLayoutInflator;
-    private ImageLoader                      mImageLoader;
+    private ImageAgent mImageLoader;
 
 
     ////////// Static Initialiser(s) //////////
@@ -294,7 +294,7 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements P
       mLayoutResourceId   = layoutResourceId;
 
       mLayoutInflator     = LayoutInflater.from( context );
-      mImageLoader        = ImageLoader.getInstance( context );
+      mImageLoader        = ImageAgent.getInstance( context );
 
       mActualItemCount    = mGroupOrProductList.size();
 
@@ -432,7 +432,7 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements P
         }
 
 
-      viewReferences.productImageView.requestScaledImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, imageURL );
+      viewReferences.productImageView.requestScaledImageOnceSized( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, imageURL );
 
 
       return ( view );

@@ -57,7 +57,7 @@ import ly.kite.R;
 import ly.kite.product.Asset;
 import ly.kite.product.AssetHelper;
 import ly.kite.util.IImageConsumer;
-import ly.kite.util.ImageLoader;
+import ly.kite.util.ImageAgent;
 
 
 ///// Class Declaration /////
@@ -295,7 +295,7 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
    * correct size.
    *
    *****************************************************/
-  public void requestScaledImage( String imageClass, Object imageSource )
+  public void requestScaledImageOnceSized( String imageClass, Object imageSource )
     {
     clear();
 
@@ -312,9 +312,9 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
    * to the correct size.
    *
    *****************************************************/
-  public void requestScaledImage( Asset asset )
+  public void requestScaledImageOnceSized( Asset asset )
     {
-    requestScaledImage( AssetHelper.IMAGE_CLASS_STRING_ASSET, asset );
+    requestScaledImageOnceSized( AssetHelper.IMAGE_CLASS_STRING_ASSET, asset );
     }
 
 
@@ -332,13 +332,13 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
         {
         setExpectedKey( mRequestImageSource );
 
-        AssetHelper.requestImage( getContext(), (Asset) mRequestImageSource, null, mWidth, this );
+        AssetHelper.requestImage( getContext(), (Asset)mRequestImageSource, null, mWidth, this );
         }
       else if ( mRequestImageSource instanceof URL )
         {
         setExpectedKey( mRequestImageSource );
 
-        ImageLoader.getInstance( getContext() ).requestRemoteImage( mRequestImageClass, mRequestImageSource, (URL) mRequestImageSource, mWidth, this );
+        ImageAgent.getInstance( getContext() ).requestImage( mRequestImageClass, mRequestImageSource, (URL)mRequestImageSource, null, mWidth, this );
         }
       }
     }

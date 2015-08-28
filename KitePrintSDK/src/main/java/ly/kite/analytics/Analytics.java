@@ -53,7 +53,6 @@ import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 import java.util.UUID;
 
 import ly.kite.BuildConfig;
@@ -149,11 +148,6 @@ public class Analytics
   public  static final String  ENTRY_POINT_JSON_PROPERTY_VALUE_HOME_SCREEN = "Home Screen";
 
   private static final String  PLATFORM_JSON_PROPERTY_VALUE_ANDROID        = "Android";
-
-  private static final String  ENVIRONMENT_JSON_PROPERTY_VALUE_LIVE        = "Live";
-  private static final String  ENVIRONMENT_JSON_PROPERTY_VALUE_TESTING     = "Sandbox";
-  private static final String  ENVIRONMENT_JSON_PROPERTY_VALUE_STAGING     = "Staging";
-  private static final String  ENVIRONMENT_JSON_PROPERTY_VALUE_UNKNOWN     = "Unknown";
 
   public  static final String  VARIANT_JSON_PROPERTY_VALUE_CLASSIC_PLUS_ADDRESS_SEARCH = "Classic + Address Search";
 
@@ -461,20 +455,11 @@ public class Analytics
       mCachedPropertiesMap.put( JSON_PROPERTY_NAME_SCREEN_HEIGHT,    displayMetrics.heightPixels );
 
 
-      KiteSDK             kiteSDK     = KiteSDK.getInstance( mContext );
-      KiteSDK.Environment environment = kiteSDK.getEnvironment();
+      KiteSDK              kiteSDK     = KiteSDK.getInstance( mContext );
+      KiteSDK.Environment  environment = kiteSDK.getEnvironment();
 
-      String environmentString;
+      mCachedPropertiesMap.put( JSON_PROPERTY_NAME_ENVIRONMENT,      environment.getName() );
 
-      switch ( environment )
-        {
-        case LIVE:    environmentString = ENVIRONMENT_JSON_PROPERTY_VALUE_LIVE;    break;
-        case TEST:    environmentString = ENVIRONMENT_JSON_PROPERTY_VALUE_TESTING; break;
-        case STAGING: environmentString = ENVIRONMENT_JSON_PROPERTY_VALUE_STAGING; break;
-        default:      environmentString = ENVIRONMENT_JSON_PROPERTY_VALUE_UNKNOWN; break;
-        }
-
-      mCachedPropertiesMap.put( JSON_PROPERTY_NAME_ENVIRONMENT,      environmentString );
 
       mCachedPropertiesMap.put( JSON_PROPERTY_NAME_API_KEY,          kiteSDK.getAPIKey() );
 
