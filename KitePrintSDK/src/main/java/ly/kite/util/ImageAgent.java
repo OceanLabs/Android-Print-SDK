@@ -40,6 +40,8 @@ package ly.kite.util;
 ///// Import(s) /////
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.util.Pair;
 
 import java.io.File;
@@ -198,10 +200,46 @@ public class ImageAgent
 
   /*****************************************************
    *
-   * Requests an image from a URL. The image will be returned
-   * through the IImageConsumer interface either immediately,
-   * if the image is already held in memory, or at a later
-   * time once it has been downloaded / loaded into memory.
+   * Requests an image from a file.
+   *
+   * Must be called on the UI thread.
+   *
+   *****************************************************/
+  public void requestImage( Object key, File imageFile, IImageTransformer imageTransformer, int scaledImageWidth, IImageConsumer imageConsumer )
+    {
+    ImageLoader.getInstance( mContext ).requestImageLoad( key, imageFile, imageTransformer, scaledImageWidth, imageConsumer );
+    }
+
+
+  /*****************************************************
+   *
+   * Requests an image from a resource.
+   *
+   * Must be called on the UI thread.
+   *
+   *****************************************************/
+  public void requestImage( Object key, int resourceId, IImageTransformer imageTransformer, int scaledImageWidth, IImageConsumer imageConsumer )
+    {
+    ImageLoader.getInstance( mContext ).requestImageLoad( key, resourceId, imageTransformer, scaledImageWidth, imageConsumer );
+    }
+
+
+  /*****************************************************
+   *
+   * Requests an image from a URI.
+   *
+   * Must be called on the UI thread.
+   *
+   *****************************************************/
+  public void requestImage( Object key, Uri imageUri, IImageTransformer imageTransformer, int scaledImageWidth, IImageConsumer imageConsumer )
+    {
+    ImageLoader.getInstance( mContext ).requestImageLoad( key, imageUri, imageTransformer, scaledImageWidth, imageConsumer );
+    }
+
+
+  /*****************************************************
+   *
+   * Requests an image from a URL.
    *
    * Must be called on the UI thread.
    *
@@ -258,19 +296,6 @@ public class ImageAgent
 
   /*****************************************************
    *
-   * Requests an image from a resource.
-   *
-   * Must be called on the UI thread.
-   *
-   *****************************************************/
-  public void requestImage( Object key, int resourceId, IImageTransformer imageTransformer, int scaledImageWidth, IImageConsumer imageConsumer )
-    {
-    ImageLoader.getInstance( mContext ).requestImageLoad( key, resourceId, imageTransformer, scaledImageWidth, imageConsumer );
-    }
-
-
-  /*****************************************************
-   *
    * Requests an image from a remote URL. Must be called
    * on the UI thread.
    *
@@ -290,6 +315,32 @@ public class ImageAgent
   public void requestImage( String imageClassString, URL imageURL, IImageConsumer imageConsumer )
     {
     requestImage( imageClassString, imageURL, imageURL, null, 0, imageConsumer );
+    }
+
+
+  /*****************************************************
+   *
+   * Requests an image from an existing bitmap.
+   *
+   * Must be called on the UI thread.
+   *
+   *****************************************************/
+  public void requestImage( Object key, Bitmap bitmap, IImageTransformer imageTransformer, int scaledImageWidth, IImageConsumer imageConsumer )
+    {
+    ImageLoader.getInstance( mContext ).requestImageLoad( key, bitmap, imageTransformer, scaledImageWidth, imageConsumer );
+    }
+
+
+  /*****************************************************
+   *
+   * Requests an image from image data.
+   *
+   * Must be called on the UI thread.
+   *
+   *****************************************************/
+  public void requestImage( Object key, byte[] imageBytes, IImageTransformer imageTransformer, int scaledImageWidth, IImageConsumer imageConsumer )
+    {
+    ImageLoader.getInstance( mContext ).requestImageLoad( key, imageBytes, imageTransformer, scaledImageWidth, imageConsumer );
     }
 
 

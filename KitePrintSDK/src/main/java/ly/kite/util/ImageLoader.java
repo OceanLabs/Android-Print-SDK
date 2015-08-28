@@ -178,6 +178,32 @@ public class ImageLoader
     }
 
 
+  /*****************************************************
+   *
+   * Requests an image to be loaded from an existing bitmap.
+   *
+   * Must be called on the UI thread.
+   *
+   *****************************************************/
+  public void requestImageLoad( Object key, Bitmap sourceBitmap, IImageTransformer imageTransformer, int scaledImageWidth, IImageConsumer imageConsumer )
+    {
+    requestImageLoad( new Request( key, sourceBitmap, imageTransformer, scaledImageWidth, imageConsumer ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Requests an image to be loaded from image data.
+   *
+   * Must be called on the UI thread.
+   *
+   *****************************************************/
+  public void requestImageLoad( Object key, byte[] sourceBytes, IImageTransformer imageTransformer, int scaledImageWidth, IImageConsumer imageConsumer )
+    {
+    requestImageLoad( new Request( key, sourceBytes, imageTransformer, scaledImageWidth, imageConsumer ) );
+    }
+
+
   ////////// Inner Class(es) //////////
 
   /*****************************************************
@@ -192,6 +218,8 @@ public class ImageLoader
     File               sourceFile;
     int                sourceResourceId;
     Uri                sourceURI;
+    Bitmap             sourceBitmap;
+    byte[]             sourceBytes;
 
     IImageTransformer  imageTransformer;
     int                scaledImageWidth;
@@ -229,6 +257,20 @@ public class ImageLoader
       this( key, imageTransformer, scaledImageWidth, imageConsumer );
 
       this.sourceURI = sourceURI;
+      }
+
+    Request( Object key, Bitmap sourceBitmap, IImageTransformer imageTransformer, int scaledImageWidth, IImageConsumer imageConsumer )
+      {
+      this( key, imageTransformer, scaledImageWidth, imageConsumer );
+
+      this.sourceBitmap = sourceBitmap;
+      }
+
+    Request( Object key, byte[] sourceBytes, IImageTransformer imageTransformer, int scaledImageWidth, IImageConsumer imageConsumer )
+      {
+      this( key, imageTransformer, scaledImageWidth, imageConsumer );
+
+      this.sourceBytes = sourceBytes;
       }
 
     }
@@ -294,6 +336,24 @@ public class ImageLoader
             BufferedInputStream bis = new BufferedInputStream( mContext.getContentResolver().openInputStream( request.sourceURI ) );
 
             bitmap = BitmapFactory.decodeStream( bis );
+            }
+          else if ( request.sourceBitmap != null )
+            {
+            ///// Bitmap /////
+
+            bitmap = request.sourceBitmap;
+
+            // There's no point in keeping a reference to the source bitmap if it gets transformed / scaled
+            request.sourceBitmap = null;
+            }
+          else if ( request.sourceBytes != null )
+            {
+            ///// Bytes /////
+
+            bitmap = BitmapFactory.decodeByteArray( request.sourceBytes, 0, request.sourceBytes.length );
+
+            // There's no point in keeping a reference to the source bytes
+            request.sourceBytes = null;
             }
 
 

@@ -423,25 +423,46 @@ public class AssetHelper
     {
     switch ( asset.getType() )
       {
-      case IMAGE_URI:
-      case IMAGE_BYTES:
       case IMAGE_FILE:
-      case BITMAP_RESOURCE_ID:
-      case BITMAP:
 
-        new GetBitmapTask( context, asset, imageTransformer, scaledImageWidth, imageConsumer ).execute();
+        File imageFile = new File( asset.getImageFilePath() );
+
+        ImageAgent.getInstance( context ).requestImage( asset, imageFile, imageTransformer, scaledImageWidth, imageConsumer );
+
+        return;
+
+
+      case BITMAP_RESOURCE_ID:
+
+        ImageAgent.getInstance( context ).requestImage( asset, asset.getBitmapResourceId(), imageTransformer, scaledImageWidth, imageConsumer );
+
+        return;
+
+
+      case IMAGE_URI:
+
+        ImageAgent.getInstance( context ).requestImage( asset, asset.getImageURI(), imageTransformer, scaledImageWidth, imageConsumer );
 
         return;
 
 
       case REMOTE_URL:
 
-        // Get the image loader to download the image, but intercept the image to perform
-        // any transformation / scaling, before passing on to the consumer.
+        ImageAgent.getInstance( context ).requestImage( IMAGE_CLASS_STRING_ASSET, asset, asset.getRemoteURL(), imageTransformer, scaledImageWidth, imageConsumer );
 
-        IImageConsumer remoteImageConsumer = new RemoteImageConsumer( asset, imageTransformer, scaledImageWidth, imageConsumer );
+        return;
 
-        ImageAgent.getInstance( context ).requestImage( IMAGE_CLASS_STRING_ASSET, asset, asset.getRemoteURL(), remoteImageConsumer );
+
+      case BITMAP:
+
+        ImageAgent.getInstance( context ).requestImage( asset, asset.getBitmap(), imageTransformer, scaledImageWidth, imageConsumer );
+
+        return;
+
+
+      case IMAGE_BYTES:
+
+        ImageAgent.getInstance( context ).requestImage( asset, asset.getImageBytes(), imageTransformer, scaledImageWidth, imageConsumer );
 
         return;
       }
@@ -646,134 +667,134 @@ public class AssetHelper
     }
 
 
-  /*****************************************************
-   *
-   * Supplies a bitmap from a URI.
-   *
-   *****************************************************/
-  private static class GetBitmapTask extends AsyncTask<Void,Void,Object>
-    {
-    private Context            mContext;
-    private Asset              mAsset;
-    private IImageTransformer  mImageTransformer;
-    private int                mScaledImageWidth;
-    private IImageConsumer     mImageConsumer;
-
-
-    GetBitmapTask( Context context, Asset asset, IImageTransformer imageTransformer, int scaledImageWidth, IImageConsumer imageConsumer )
-      {
-      mContext          = context;
-      mAsset            = asset;
-      mImageTransformer = imageTransformer;
-      mScaledImageWidth = scaledImageWidth;
-      mImageConsumer    = imageConsumer;
-      }
-
-
-    GetBitmapTask( Context context, Asset asset, IImageConsumer imageConsumer )
-      {
-      this( context, asset, null, 0, imageConsumer );
-      }
-
-
-    @Override
-    public Object doInBackground( Void... voids )
-      {
-      BufferedInputStream bis = null;
-
-      try
-        {
-        Type type = mAsset.getType();
-
-        Bitmap transformedBitmap;
-
-        switch ( type )
-          {
-          case IMAGE_URI:
-
-            Uri uri = mAsset.getImageURI();
-
-            bis = new BufferedInputStream( mContext.getContentResolver().openInputStream( uri ) );
-
-            transformedBitmap = transformBitmap( BitmapFactory.decodeStream( bis ), mImageTransformer );
-
-            return ( ImageDownscaler.scaleBitmap( transformedBitmap, mScaledImageWidth ) );
-
-
-          case IMAGE_BYTES:
-
-            byte[] imageBytes = mAsset.getImageBytes();
-
-            transformedBitmap = transformBitmap( BitmapFactory.decodeByteArray( imageBytes, 0, imageBytes.length ), mImageTransformer );
-
-            return ( ImageDownscaler.scaleBitmap( transformedBitmap, mScaledImageWidth ) );
-
-
-          case IMAGE_FILE:
-
-            String filePath = mAsset.getImageFilePath();
-
-            bis = new BufferedInputStream( new FileInputStream( filePath ) );
-
-            transformedBitmap = transformBitmap( BitmapFactory.decodeStream( bis ), mImageTransformer );
-
-            return ( ImageDownscaler.scaleBitmap( transformedBitmap, mScaledImageWidth ) );
-
-
-          case BITMAP_RESOURCE_ID:
-
-            int resourceId = mAsset.getBitmapResourceId();
-
-            transformedBitmap = transformBitmap( BitmapFactory.decodeResource( mContext.getResources(), resourceId ), mImageTransformer );
-
-            return ( ImageDownscaler.scaleBitmap( transformedBitmap, mScaledImageWidth ) );
-
-
-          case BITMAP:
-
-            transformedBitmap = transformBitmap( mAsset.getBitmap(), mImageTransformer );
-
-            return ( ImageDownscaler.scaleBitmap( transformedBitmap, mScaledImageWidth ) );
-          }
-
-
-        throw ( new IllegalStateException( "Invalid asset type: " + type ) );
-        }
-      catch ( Exception exception )
-        {
-        Log.e( LOG_TAG, "Unable to decode bitmap", exception );
-
-        return ( exception );
-        }
-      finally
-        {
-        if ( bis != null )
-          {
-          try
-            {
-            bis.close();
-            }
-          catch ( Exception exception )
-            {
-            Log.e( LOG_TAG, "Unable to close input stream", exception );
-            }
-          }
-        }
-      }
-
-
-    @Override
-    public void onPostExecute( Object resultObject )
-      {
-      if ( resultObject != null &&
-           resultObject instanceof Bitmap &&
-           mImageConsumer != null )
-        {
-        mImageConsumer.onImageAvailable( mAsset, (Bitmap)resultObject );
-        }
-      }
-
-    }
+//  /*****************************************************
+//   *
+//   * Supplies a bitmap from a URI.
+//   *
+//   *****************************************************/
+//  private static class GetBitmapTask extends AsyncTask<Void,Void,Object>
+//    {
+//    private Context            mContext;
+//    private Asset              mAsset;
+//    private IImageTransformer  mImageTransformer;
+//    private int                mScaledImageWidth;
+//    private IImageConsumer     mImageConsumer;
+//
+//
+//    GetBitmapTask( Context context, Asset asset, IImageTransformer imageTransformer, int scaledImageWidth, IImageConsumer imageConsumer )
+//      {
+//      mContext          = context;
+//      mAsset            = asset;
+//      mImageTransformer = imageTransformer;
+//      mScaledImageWidth = scaledImageWidth;
+//      mImageConsumer    = imageConsumer;
+//      }
+//
+//
+//    GetBitmapTask( Context context, Asset asset, IImageConsumer imageConsumer )
+//      {
+//      this( context, asset, null, 0, imageConsumer );
+//      }
+//
+//
+//    @Override
+//    public Object doInBackground( Void... voids )
+//      {
+//      BufferedInputStream bis = null;
+//
+//      try
+//        {
+//        Type type = mAsset.getType();
+//
+//        Bitmap transformedBitmap;
+//
+//        switch ( type )
+//          {
+//          case IMAGE_URI:
+//
+//            Uri uri = mAsset.getImageURI();
+//
+//            bis = new BufferedInputStream( mContext.getContentResolver().openInputStream( uri ) );
+//
+//            transformedBitmap = transformBitmap( BitmapFactory.decodeStream( bis ), mImageTransformer );
+//
+//            return ( ImageDownscaler.scaleBitmap( transformedBitmap, mScaledImageWidth ) );
+//
+//
+//          case IMAGE_BYTES:
+//
+//            byte[] imageBytes = mAsset.getImageBytes();
+//
+//            transformedBitmap = transformBitmap( BitmapFactory.decodeByteArray( imageBytes, 0, imageBytes.length ), mImageTransformer );
+//
+//            return ( ImageDownscaler.scaleBitmap( transformedBitmap, mScaledImageWidth ) );
+//
+//
+//          case IMAGE_FILE:
+//
+//            String filePath = mAsset.getImageFilePath();
+//
+//            bis = new BufferedInputStream( new FileInputStream( filePath ) );
+//
+//            transformedBitmap = transformBitmap( BitmapFactory.decodeStream( bis ), mImageTransformer );
+//
+//            return ( ImageDownscaler.scaleBitmap( transformedBitmap, mScaledImageWidth ) );
+//
+//
+//          case BITMAP_RESOURCE_ID:
+//
+//            int resourceId = mAsset.getBitmapResourceId();
+//
+//            transformedBitmap = transformBitmap( BitmapFactory.decodeResource( mContext.getResources(), resourceId ), mImageTransformer );
+//
+//            return ( ImageDownscaler.scaleBitmap( transformedBitmap, mScaledImageWidth ) );
+//
+//
+//          case BITMAP:
+//
+//            transformedBitmap = transformBitmap( mAsset.getBitmap(), mImageTransformer );
+//
+//            return ( ImageDownscaler.scaleBitmap( transformedBitmap, mScaledImageWidth ) );
+//          }
+//
+//
+//        throw ( new IllegalStateException( "Invalid asset type: " + type ) );
+//        }
+//      catch ( Exception exception )
+//        {
+//        Log.e( LOG_TAG, "Unable to decode bitmap", exception );
+//
+//        return ( exception );
+//        }
+//      finally
+//        {
+//        if ( bis != null )
+//          {
+//          try
+//            {
+//            bis.close();
+//            }
+//          catch ( Exception exception )
+//            {
+//            Log.e( LOG_TAG, "Unable to close input stream", exception );
+//            }
+//          }
+//        }
+//      }
+//
+//
+//    @Override
+//    public void onPostExecute( Object resultObject )
+//      {
+//      if ( resultObject != null &&
+//           resultObject instanceof Bitmap &&
+//           mImageConsumer != null )
+//        {
+//        mImageConsumer.onImageAvailable( mAsset, (Bitmap)resultObject );
+//        }
+//      }
+//
+//    }
 
 
   /*****************************************************
@@ -891,75 +912,6 @@ public class AssetHelper
         mImageBytesConsumer.onAssetError( mAsset, (Exception)resultObject );
         }
       }
-
-    }
-
-
-  /*****************************************************
-   *
-   * Consumes a remote bitmap, the performs any required
-   * transformation / scaling on a background thread.
-   *
-   *****************************************************/
-  private static class RemoteImageConsumer extends AsyncTask<Void,Void,Bitmap> implements IImageConsumer
-    {
-    Asset              mAsset;
-    IImageTransformer  mImageTransformer;
-    int                mScaledImageWidth;
-    IImageConsumer     mImageConsumer;
-
-    Bitmap             mOriginalBitmap;
-
-
-    RemoteImageConsumer( Asset asset, IImageTransformer imageTransformer, int scaledImageWidth, IImageConsumer imageConsumer )
-      {
-      mAsset            = asset;
-      mImageTransformer = imageTransformer;
-      mScaledImageWidth = scaledImageWidth;
-      mImageConsumer    = imageConsumer;
-      }
-
-
-    ////////// AsyncTask Method(s) //////////
-
-    @Override
-    protected Bitmap doInBackground( Void... params )
-      {
-      // Transform the bitmap
-      Bitmap transformedBitmap = transformBitmap( mOriginalBitmap, mImageTransformer );
-
-      // Scale the bitmap
-      return ( ImageDownscaler.scaleBitmap( transformedBitmap, mScaledImageWidth ) );
-      }
-
-
-    @Override
-    protected void onPostExecute( Bitmap resultBitmap )
-      {
-      if ( mImageConsumer != null ) mImageConsumer.onImageAvailable( mAsset, resultBitmap );
-      }
-
-
-    ////////// IImageConsumer Method(s) //////////
-
-    @Override
-    public void onImageDownloading( Object key )
-      {
-      // Ignore
-      }
-
-
-    @Override
-    public void onImageAvailable( Object key, Bitmap bitmap )
-      {
-      // Save the bitmap, then start a background thread to
-      // transform and scale the bitmap.
-
-      mOriginalBitmap = bitmap;
-
-      execute();
-      }
-
 
     }
 
