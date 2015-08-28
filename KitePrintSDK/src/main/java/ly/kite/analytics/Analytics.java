@@ -91,6 +91,7 @@ public class Analytics
   private static final String  EVENT_NAME_PRODUCT_SELECTION_SCREEN_VIEWED  = "Product Selection Screen Viewed";
   private static final String  EVENT_NAME_PRODUCT_OVERVIEW_SCREEN_VIEWED   = "Product Description Screen Viewed";
   private static final String  EVENT_NAME_CREATE_PRODUCT_SCREEN_VIEWED     = "Review Screen Viewed";
+  private static final String  EVENT_NAME_PRODUCT_ORDER_REVIEW_SCREEN_VIEWED = "Product Order Review Screen";
   private static final String  EVENT_NAME_SHIPPING_SCREEN_VIEWED           = "Shipping Screen Viewed";
   private static final String  EVENT_NAME_CREATE_PAYMENT_SCREEN_VIEWED     = "Payment Screen Viewed";
   private static final String  EVENT_NAME_PAYMENT_COMPLETED                = "Payment Completed";
@@ -574,7 +575,7 @@ public class Analytics
 
   /*****************************************************
    *
-   * Called when the user enters the product overview screen.
+   * Called when the user enters the product creation/add photo screen.
    *
    *****************************************************/
   public void trackCreateProductScreenViewed( Product product )
@@ -594,6 +595,28 @@ public class Analytics
     getEventCallback().onCreateProductScreenViewed(product);
     }
 
+
+  /*****************************************************
+   *
+   * Called when the user enters the product order review screen
+   *
+   *****************************************************/
+  public void trackProductOrderReviewScreenViewed( Product product )
+    {
+    JSONObject propertiesJSONObject = getPropertiesJSONObject();
+
+    try
+      {
+      propertiesJSONObject.put( JSON_PROPERTY_NAME_PRODUCT_NAME, product.getName() );
+      }
+    catch ( JSONException je )
+      {
+      Log.e( LOG_TAG, "Error setting JSON properties", je );
+      }
+
+    trackEvent( EVENT_NAME_PRODUCT_ORDER_REVIEW_SCREEN_VIEWED, propertiesJSONObject );
+    getEventCallback().onProductOrderReviewScreenViewed( product );
+    }
 
   /*****************************************************
    *
