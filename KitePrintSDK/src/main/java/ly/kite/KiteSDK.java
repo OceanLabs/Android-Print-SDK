@@ -537,7 +537,7 @@ public class KiteSDK
   public static enum DefaultEnvironment implements IEnvironment
     {
     LIVE    ( "Live",    "https://api.kite.ly/v1.4",   PaymentActivity.ENVIRONMENT_LIVE,    PayPalConfiguration.ENVIRONMENT_PRODUCTION, PAYPAL_CLIENT_ID_LIVE    ),
-    TEST    ( "Sandbox", "https://api.kite.ly/v1.4",   PaymentActivity.ENVIRONMENT_TEST,    PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_CLIENT_ID_SANDBOX ),
+    TEST    ( "Test",    "https://api.kite.ly/v1.4",   PaymentActivity.ENVIRONMENT_TEST,    PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_CLIENT_ID_SANDBOX ),
     STAGING ( "Staging", "http://staging.api.kite.ly", PaymentActivity.ENVIRONMENT_STAGING, PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_CLIENT_ID_SANDBOX ); /* private environment intended only for Ocean Labs use, hands off :) */
 
 

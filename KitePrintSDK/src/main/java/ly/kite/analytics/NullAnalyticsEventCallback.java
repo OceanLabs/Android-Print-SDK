@@ -75,6 +75,9 @@ public class NullAnalyticsEventCallback implements IAnalyticsEventCallback
   public void onCreateProductScreenViewed(Product product) {}
 
   @Override
+  public void onProductOrderReviewScreenViewed(Product product) {}
+
+  @Override
   public void onShippingScreenViewed(PrintOrder printOrder, String variant, boolean showPhoneEntryField) {}
 
   @Override

@@ -52,6 +52,7 @@ import android.widget.GridView;
 import java.util.ArrayList;
 
 import ly.kite.R;
+import ly.kite.analytics.Analytics;
 import ly.kite.journey.AProductCreationFragment;
 import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.product.Asset;
@@ -133,6 +134,11 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
 
 
     setTitle();
+
+    if ( savedInstanceState == null )
+      {
+      Analytics.getInstance( getActivity() ).trackProductOrderReviewScreenViewed( mProduct );
+      }
     }
 
 
