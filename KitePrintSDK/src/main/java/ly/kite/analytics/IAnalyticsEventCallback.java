@@ -91,6 +91,12 @@ public interface IAnalyticsEventCallback
    *****************************************************/
   void onCreateProductScreenViewed( Product product );
 
+  /*****************************************************
+   *
+   * Called when the user enters the photo review screen
+   *
+   *****************************************************/
+  void onProductOrderReviewScreenViewed( Product product );
 
   /*****************************************************
    *
