@@ -83,7 +83,7 @@ public class ProductCreationActivity extends AKiteActivity implements FragmentMa
   @SuppressWarnings( "unused" )
   private static final String  LOG_TAG                         = "ProductSelectionAct.";  // Can't be more than 23 characters ... who knew?!
 
-  private static final String  INTENT_EXTRA_NAME_ASSET_LIST    = KiteSDK.INTENT_PREFIX + ".AssetList";
+  public static final String  INTENT_EXTRA_NAME_ASSET_LIST     = KiteSDK.INTENT_PREFIX + ".AssetList";
 
 
   ////////// Static Variable(s) //////////
