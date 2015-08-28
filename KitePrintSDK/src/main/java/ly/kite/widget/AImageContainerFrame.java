@@ -59,6 +59,7 @@ import java.net.URL;
 import ly.kite.R;
 import ly.kite.product.Asset;
 import ly.kite.product.AssetHelper;
+import ly.kite.util.FileDownloader;
 import ly.kite.util.IImageConsumer;
 import ly.kite.util.ImageAgent;
 
@@ -224,7 +225,7 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
     {
     if ( keyIsOK( key ) )
       {
-      mImageView.setImageBitmap( bitmap );
+      setImageBitmap( bitmap );
 
       fadeImageIn();
       }
@@ -253,7 +254,14 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
   @Override
   public void onAnimationEnd( Animation animation )
     {
-    // Ignore
+    // Clear the animation
+
+    if ( animation == mFadeInAnimation )
+      {
+      mFadeInAnimation = null;
+
+      mImageView.setAnimation( null );
+      }
     }
 
 
@@ -491,8 +499,7 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
     {
     mFadeInAnimation = new AlphaAnimation( ALPHA_TRANSPARENT, ALPHA_OPAQUE );
     mFadeInAnimation.setDuration( FADE_IN_ANIMATION_DURATION_MILLIS );
-
-    // We make the empty frame invisible only after the fade in animation has finished.
+    mFadeInAnimation.setFillAfter( true );
     mFadeInAnimation.setAnimationListener( this );
 
     mImageView.startAnimation( mFadeInAnimation );

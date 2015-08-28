@@ -114,6 +114,20 @@ public class ImageLoader
 
   /*****************************************************
    *
+   * Clears the request queue.
+   *
+   *****************************************************/
+  public void clearPendingRequests()
+    {
+    synchronized ( mRequestQueue )
+      {
+      mRequestQueue.clear();
+      }
+    }
+
+
+  /*****************************************************
+   *
    * Requests an image to be loaded.
    *
    * Must be called on the UI thread.

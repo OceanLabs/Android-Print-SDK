@@ -202,8 +202,10 @@ public class LabelledImageView extends AImageContainerFrame implements IImageCon
   @Override
   public void onAnimationEnd( Animation animation )
     {
-    // The parent class does nothing, but we want to make the empty
-    // frame invisible after the photo image fade in has finished.
+    super.onAnimationEnd( animation );
+
+    // We want to make the empty frame invisible after the
+    // photo image fade in has finished.
     if ( animation == mFadeInAnimation )
       {
       mEmptyFrameImageView.setVisibility( View.GONE );

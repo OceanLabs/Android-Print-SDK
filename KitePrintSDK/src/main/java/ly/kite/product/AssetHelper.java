@@ -50,6 +50,7 @@ import android.util.Pair;
 import android.webkit.MimeTypeMap;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -163,13 +164,21 @@ public class AssetHelper
     imageDirectory.mkdirs();
 
 
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();;
+    // Encode the bitmap directly to the filesystem, to avoid using more memory than necessary.
+
+    FileOutputStream     fos = null;
+    BufferedOutputStream bos = null;
 
     try
       {
-      bitmap.compress( Bitmap.CompressFormat.JPEG, Asset.BITMAP_TO_JPEG_QUALITY, baos );
+      String filePath = imageDirectoryAndFilePath.second + MIMEType.JPEG.primaryFileSuffix();
 
-      return ( createAsCachedFile( baos.toByteArray(), imageDirectoryAndFilePath.second + MIMEType.JPEG.primaryFileSuffix() ) );
+      fos = new FileOutputStream( filePath );
+      bos = new BufferedOutputStream( fos );
+
+      bitmap.compress( Bitmap.CompressFormat.JPEG, Asset.BITMAP_TO_JPEG_QUALITY, bos );
+
+      return ( new Asset( filePath ) );
       }
     catch ( Exception e )
       {
@@ -179,14 +188,29 @@ public class AssetHelper
       }
     finally
       {
-      try
+      if ( bos != null )
         {
-        baos.close();
+        try
+          {
+          bos.close();
+          }
+        catch ( IOException ioe )
+          {
+          // Do nothing
+          }
         }
-      catch ( IOException ioe )
+      if ( fos != null )
         {
-        // Do nothing
+        try
+          {
+          fos.close();
+          }
+        catch ( IOException ioe )
+          {
+          // Do nothing
+          }
         }
+
       }
     }
 

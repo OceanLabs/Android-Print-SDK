@@ -311,6 +311,21 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
 
   /*****************************************************
    *
+   * Puts an item into the item list at the specified
+   * position. If the position is already occupied, the
+   * existing item will be replaced. Otherwise the new item
+   * is added to the end.
+   *
+   *****************************************************/
+  private void putItem( int index, Item item )
+    {
+    if ( index < mItemList.size() ) mItemList.set( index, item );
+    else                            mItemList.add( item );
+    }
+
+
+  /*****************************************************
+   *
    * Adds an asset. This is used both by our constructor,
    * and by the fragment. We need to be able to add assets
    * without necessarily re-building the entire item list
@@ -325,8 +340,8 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
       addPack();
       }
 
-    // Add the asset
-    mItemList.add( mFilledItemCount, new Item( mAssetCount, assetsAndQuantity ) );
+    // Add the asset; replace any previous placeholder.
+    putItem( mFilledItemCount, new Item( mAssetCount, assetsAndQuantity ) );
 
     mAssetCount ++;
     mFilledItemCount ++;
@@ -350,7 +365,7 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
 
     String title = mContext.getString( R.string.image_selection_pack_title_format_string, mPackCount, mImagesPerPack, mProduct.getName() );
 
-    mItemList.add( mFilledItemCount, new Item( title ) );
+    putItem( mFilledItemCount, new Item( title ) );
 
 
     mFilledItemCount ++;

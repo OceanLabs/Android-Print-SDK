@@ -88,6 +88,9 @@ public class ImageAgent
 
   private HashMap<String,Integer>  mURLResourceIdTable;
 
+  private ImageLoader              mImageLoader;
+  private FileDownloader           mFileDownloader;
+
 
   ////////// Static Initialiser(s) //////////
 
@@ -151,6 +154,9 @@ public class ImageAgent
     mContext            = context;
     mCacheDirectory     = context.getCacheDir();
     mURLResourceIdTable = new HashMap<>();
+
+    mImageLoader    = ImageLoader.getInstance( context );
+    mFileDownloader = FileDownloader.getInstance( context );
     }
 
 
@@ -168,6 +174,18 @@ public class ImageAgent
       {
       mURLResourceIdTable.put( resourceMapping.first, resourceMapping.second );
       }
+    }
+
+
+  /*****************************************************
+   *
+   * Clears any outstanding load / download requests.
+   *
+   *****************************************************/
+  public void clearPendingRequests()
+    {
+    mImageLoader.clearPendingRequests();
+    mFileDownloader.clearPendingRequests();
     }
 
 
@@ -207,7 +225,7 @@ public class ImageAgent
    *****************************************************/
   public void requestImage( Object key, File imageFile, IImageTransformer imageTransformer, int scaledImageWidth, IImageConsumer imageConsumer )
     {
-    ImageLoader.getInstance( mContext ).requestImageLoad( key, imageFile, imageTransformer, scaledImageWidth, imageConsumer );
+    mImageLoader.requestImageLoad( key, imageFile, imageTransformer, scaledImageWidth, imageConsumer );
     }
 
 
@@ -220,7 +238,7 @@ public class ImageAgent
    *****************************************************/
   public void requestImage( Object key, int resourceId, IImageTransformer imageTransformer, int scaledImageWidth, IImageConsumer imageConsumer )
     {
-    ImageLoader.getInstance( mContext ).requestImageLoad( key, resourceId, imageTransformer, scaledImageWidth, imageConsumer );
+    mImageLoader.requestImageLoad( key, resourceId, imageTransformer, scaledImageWidth, imageConsumer );
     }
 
 
@@ -233,7 +251,7 @@ public class ImageAgent
    *****************************************************/
   public void requestImage( Object key, Uri imageUri, IImageTransformer imageTransformer, int scaledImageWidth, IImageConsumer imageConsumer )
     {
-    ImageLoader.getInstance( mContext ).requestImageLoad( key, imageUri, imageTransformer, scaledImageWidth, imageConsumer );
+    mImageLoader.requestImageLoad( key, imageUri, imageTransformer, scaledImageWidth, imageConsumer );
     }
 
 
@@ -249,7 +267,7 @@ public class ImageAgent
     // First check if we have been provided with a mapping to a resource id. If so - make
     // a resource request instead.
 
-    Integer resourceIdAsInteger = mURLResourceIdTable.get( imageURL );
+    Integer resourceIdAsInteger = mURLResourceIdTable.get( imageURL.toString() );
 
     if ( resourceIdAsInteger != null )
       {
@@ -276,7 +294,7 @@ public class ImageAgent
       {
       // Make a request to load the image
 
-      ImageLoader.getInstance( mContext ).requestImageLoad( key, imageFile, imageTransformer, scaledImageWidth, imageConsumer );
+      mImageLoader.requestImageLoad( key, imageFile, imageTransformer, scaledImageWidth, imageConsumer );
       }
     else
       {
@@ -289,7 +307,7 @@ public class ImageAgent
 
       DownloadCallback downloadCallback = new DownloadCallback( key, imageTransformer, scaledImageWidth, imageConsumer );
 
-      FileDownloader.getInstance( mContext ).requestFileDownload( imageURL, imageDirectory, imageFile, downloadCallback );
+      mFileDownloader.requestFileDownload( imageURL, imageDirectory, imageFile, downloadCallback );
       }
     }
 
@@ -327,7 +345,7 @@ public class ImageAgent
    *****************************************************/
   public void requestImage( Object key, Bitmap bitmap, IImageTransformer imageTransformer, int scaledImageWidth, IImageConsumer imageConsumer )
     {
-    ImageLoader.getInstance( mContext ).requestImageLoad( key, bitmap, imageTransformer, scaledImageWidth, imageConsumer );
+    mImageLoader.requestImageLoad( key, bitmap, imageTransformer, scaledImageWidth, imageConsumer );
     }
 
 
@@ -340,7 +358,7 @@ public class ImageAgent
    *****************************************************/
   public void requestImage( Object key, byte[] imageBytes, IImageTransformer imageTransformer, int scaledImageWidth, IImageConsumer imageConsumer )
     {
-    ImageLoader.getInstance( mContext ).requestImageLoad( key, imageBytes, imageTransformer, scaledImageWidth, imageConsumer );
+    mImageLoader.requestImageLoad( key, imageBytes, imageTransformer, scaledImageWidth, imageConsumer );
     }
 
 
@@ -372,7 +390,7 @@ public class ImageAgent
     public void onFileDownloaded( URL sourceURL, File targetDirectory, File targetFile )
       {
       // Once the image has downloaded - immediately request that it be loaded
-      ImageLoader.getInstance( mContext ).requestImageLoad( mKey, targetFile, mImageTransformer, mScaledImageWidth, mImageConsumer );
+      mImageLoader.requestImageLoad( mKey, targetFile, mImageTransformer, mScaledImageWidth, mImageConsumer );
       }
     }
 

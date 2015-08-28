@@ -225,6 +225,9 @@ public class KiteSDK
     mApplicationContext = context.getApplicationContext();
     
     setEnvironment( apiKey, environment );
+
+    // Clear any temporary assets
+    AssetHelper.clearCachedImages( context );
     }
 
 
@@ -328,7 +331,7 @@ public class KiteSDK
    * Returns an instance of the image loader.
    *
    *****************************************************/
-  public ImageAgent getImageLoader( Context context )
+  public ImageAgent getImageAgent( Context context )
     {
     return ( ImageAgent.getInstance( context ) );
     }
@@ -341,12 +344,12 @@ public class KiteSDK
    *****************************************************/
   public void startShopping( Context context, ArrayList<Asset> assetArrayList )
     {
-    // Clear any temporary assets before starting a new session
+    // Clear any temporary assets
     AssetHelper.clearCachedImages( context );
 
     // Make sure all the assets are parcelable (this may create some new cached
     // assets). Note that from here on in the SDK is responsible for ensuring
-    // that any newly created assets are parcelable.
+    // that all new assets are parcelable.
     assetArrayList = AssetHelper.toParcelableList( context, assetArrayList );
 
     // We use the activity context here, not the application context

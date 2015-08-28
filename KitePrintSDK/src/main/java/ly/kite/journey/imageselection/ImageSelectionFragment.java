@@ -100,6 +100,8 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
   private static final long        CLEAR_PHOTOS_BUTTON_ANIMATION_DURATION_MILLIS   = 300L;
   private static final long        PROCEED_BUTTON_BUTTON_ANIMATION_DURATION_MILLIS = CLEAR_PHOTOS_BUTTON_ANIMATION_DURATION_MILLIS;
 
+  private static final int         PROGRESS_COMPLETE                               = 100;  // 100%
+
 
   ////////// Static Variable(s) //////////
 
@@ -111,16 +113,14 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
   private int                          mNumberOfColumns;
 
+  private int                          mInitialUneditedAssetsCount;
   private int                          mUneditedAssetsRemaining;
 
   private BaseAdapter                  mImageSourceAdaptor;
   private GridView                     mImageSourceGridView;
+  private ProgressBar                  mProgressBar;
   private Button                       mClearPhotosButton;
   private Button                       mProceedOverlayButton;
-
-  // We maintain an overall progress spinner, even though each image also has a progress spinner
-  // because there may be images off screen that are still being cropped.
-  private ProgressBar                  mProgressSpinner;
 
   private RecyclerView                 mImageRecyclerView;
   private GridLayoutManager            mImageLayoutManager;
@@ -265,10 +265,10 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     View view = layoutInflator.inflate( R.layout.screen_image_selection, container, false );
 
     mImageSourceGridView  = (GridView)view.findViewById( R.id.image_source_grid_view );
+    mProgressBar          = (ProgressBar)view.findViewById( R.id.progress_bar );
     mImageRecyclerView    = (RecyclerView)view.findViewById( R.id.image_recycler_view );
     mClearPhotosButton    = (Button)view.findViewById( R.id.clear_photos_button );
     mProceedOverlayButton = (Button)view.findViewById( R.id.proceed_overlay_button );
-    mProgressSpinner      = (ProgressBar)view.findViewById( R.id.progress_bar );
 
 
     // Display the image sources
@@ -332,6 +332,10 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
         AssetHelper.requestImage( mKiteActivity, assetsAndQuantity.getUneditedAsset(), cropper, 0, cropper );
         }
       }
+
+    mInitialUneditedAssetsCount = mUneditedAssetsRemaining;
+
+    showProgress( mUneditedAssetsRemaining, mInitialUneditedAssetsCount );
 
 
     // Set up the listener(s)
@@ -482,14 +486,10 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
     if ( mUneditedAssetsRemaining < 1 )
       {
-      mProgressSpinner.setVisibility( View.GONE );
-
       mProceedOverlayButton.setEnabled( true );
       }
     else
       {
-      mProgressSpinner.setVisibility( View.VISIBLE );
-
       mProceedOverlayButton.setEnabled( false );
       }
     }
@@ -640,6 +640,29 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
   /*****************************************************
    *
+   * Shows the cropping progress.
+   *
+   *****************************************************/
+  private void showProgress( int remainingCount, int totalCount )
+    {
+    // If there are no images, or none left to crop, don't show the
+    // progress bar.
+
+    if ( totalCount < 1 || remainingCount < 1 )
+      {
+      mProgressBar.setVisibility( View.INVISIBLE );
+      }
+    else
+      {
+      mProgressBar.setVisibility( View.VISIBLE );
+
+      mProgressBar.setProgress( PROGRESS_COMPLETE * ( totalCount - remainingCount ) / totalCount );
+      }
+    }
+
+
+  /*****************************************************
+   *
    * Sets up the recycler view.
    *
    *****************************************************/
@@ -691,7 +714,6 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
           addedNewAsset = true;
 
           mProceedOverlayButton.setEnabled( false );
-          mProgressSpinner.setVisibility( View.VISIBLE );
           }
 
 
@@ -712,8 +734,14 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
       }
 
 
-    // If we added a new asset - update the title
-    if ( addedNewAsset ) setTitle();
+    if ( addedNewAsset )
+      {
+      setTitle();
+
+      mInitialUneditedAssetsCount = mUneditedAssetsRemaining;
+
+      showProgress( mUneditedAssetsRemaining, mInitialUneditedAssetsCount );
+      }
     }
 
 
@@ -857,7 +885,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
     // We don't need to request any cropped image because it is the edited asset
     // that has been updated. So just updated the recycler view.
-    mImagePackAdaptor.notifyDataSetChanged();
+    if ( mImagePackAdaptor != null ) mImagePackAdaptor.notifyDataSetChanged();
     }
 
 
@@ -928,10 +956,10 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
       mUneditedAssetsRemaining --;
 
+      showProgress( mUneditedAssetsRemaining, mInitialUneditedAssetsCount );
+
       if ( mUneditedAssetsRemaining < 1 )
         {
-        mProgressSpinner.setVisibility( View.GONE );
-
         mProceedOverlayButton.setEnabled( true );
         }
       }

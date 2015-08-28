@@ -141,14 +141,16 @@ public class FileDownloader
         outputStream.write( downloadBuffer, 0, numberOfBytesRead );
         }
 
-      outputStream.close();
-      inputStream.close();
-
       return ( true );
       }
     catch ( IOException ioe )
       {
       Log.e( LOG_TAG, "Unable to download to file", ioe );
+
+      // Clean up any damaged files
+      targetFile.delete();
+
+      return ( false );
       }
     finally
       {
@@ -176,8 +178,6 @@ public class FileDownloader
           }
         }
       }
-
-    return ( false );
     }
 
 
@@ -191,6 +191,20 @@ public class FileDownloader
 
 
   ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Clears the request queue.
+   *
+   *****************************************************/
+  public void clearPendingRequests()
+    {
+    synchronized ( mRequestQueue )
+      {
+      mRequestQueue.clear();
+      }
+    }
+
 
   /*****************************************************
    *
