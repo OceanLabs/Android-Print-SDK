@@ -82,9 +82,6 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
   private static final int     VIEW_TYPE_TITLE               = 0x01;
   private static final int     VIEW_TYPE_SPACER              = 0x02;
 
-  private static final int     IMAGE_CACHE_CAPACITY_IN_BYTES = 1 * 1024 * 1024;  // 1 MB
-
-  private static final boolean IMAGE_CACHE_ENABLED           = false;
 
   ////////// Static Variable(s) //////////
 
@@ -92,19 +89,24 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
   ////////// Member Variable(s) //////////
 
   private Context                      mContext;
+  private Product                      mProduct;
   private List<Boolean>                mSharedAssetIsCheckedList;
   private int                          mNumberOfColumns;
   private UserJourneyType              mUserJourneyType;
   private IOnImageCheckChangeListener  mListener;
-
-  private ImageCache                   mImageCache;
 
   private int                          mScaledImageWidthInPixels;
   private LayoutInflater               mLayoutInflator;
   private int                          mPlaceholderBackgroundColour1;
   private int                          mPlaceholderBackgroundColour2;
 
+  private int                          mImagesPerPack;
+  private int                          mItemsPerPack;
+  private int                          mCurrentGridStartIndex;
+  private int                          mAssetCount;
+  private int                          mPackCount;
   private List<Item>                   mItemList;
+  private int                          mFilledItemCount;
 
 
   ////////// Static Initialiser(s) //////////
@@ -115,18 +117,14 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
 
   ////////// Constructor(s) //////////
 
-  public ImageSelectionAdaptor( Context context, Product product, List<AssetsAndQuantity> assetAndQuantityList, List<Boolean> sharedAssetIsCheckedList, int numberOfColumns, IOnImageCheckChangeListener listener )
+  public ImageSelectionAdaptor( Context context, Product product, List<AssetsAndQuantity> assetsAndQuantityList, List<Boolean> sharedAssetIsCheckedList, int numberOfColumns, IOnImageCheckChangeListener listener )
     {
     mContext                  = context;
+    mProduct                  = product;
     mSharedAssetIsCheckedList = sharedAssetIsCheckedList;
     mNumberOfColumns          = numberOfColumns;
     mUserJourneyType          = product.getUserJourneyType();
     mListener                 = listener;
-
-    if ( IMAGE_CACHE_ENABLED )
-      {
-      mImageCache = new ImageCache( IMAGE_CACHE_CAPACITY_IN_BYTES );
-      }
 
     mLayoutInflator           = LayoutInflater.from( context );
 
@@ -140,73 +138,21 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
 
     // All the titles, images, and placeholders need to go into a flat list.
 
-    int imagesPerPack = product.getQuantityPerSheet();
+    mImagesPerPack         = product.getQuantityPerSheet();
+    mItemsPerPack          = mImagesPerPack + 1;  // title + images
+    mCurrentGridStartIndex = 1;
+    mAssetCount            = 0;
+    mItemList              = new ArrayList<>();
+    mFilledItemCount       = 0;
 
-    mItemList = new ArrayList<>();
+    // We always have at least one pack (even if it's empty)
+    addPack();
 
-    int packNumber           = 0;
-    int assetIndex;
-    int itemIndex            = 0;
-    int gridStartItemIndex   = 0;
-
-    for ( assetIndex = 0; assetIndex < assetAndQuantityList.size(); assetIndex ++ )
+    // Add any assets
+    for ( AssetsAndQuantity assetsAndQuantity : assetsAndQuantityList )
       {
-      // Check if we need to add a title item
-
-      if ( ( assetIndex % imagesPerPack ) == 0 )
-        {
-        packNumber ++;
-
-        String title = context.getString( R.string.image_selection_pack_title_format_string, packNumber, imagesPerPack, product.getName() );
-
-        mItemList.add( new Item( title ) );
-
-        itemIndex ++;
-
-        gridStartItemIndex = itemIndex;
-        }
-
-
-      // Add the image
-      mItemList.add( new Item( assetIndex, assetAndQuantityList.get( assetIndex ) ) );
-
-      itemIndex ++;
+      addAsset( assetsAndQuantity );
       }
-
-
-    // If we have no assets, then make sure we have a title for an empty placeholder pack.
-
-    if ( assetIndex <= 0 )
-      {
-      packNumber ++;
-
-      mItemList.add( new Item( context.getString( R.string.image_selection_pack_title_format_string, packNumber, imagesPerPack, product.getName() ) ) );
-
-      itemIndex ++;
-
-      gridStartItemIndex = itemIndex;
-      }
-
-
-    // Add as many placeholders as we need to complete the pack. Remember that the grid must
-    // always contain at least one pack - even if it is empty.
-
-    while ( assetIndex == 0 || ( assetIndex % imagesPerPack ) != 0 )
-      {
-      int gridY = ( itemIndex - gridStartItemIndex ) / numberOfColumns;
-      int gridX = ( itemIndex - gridStartItemIndex ) % numberOfColumns;
-
-      int checkerBoardValue = ( gridY + gridX );
-
-      mItemList.add( new Item( checkerBoardValue ) );
-
-      assetIndex ++;
-      itemIndex ++;
-      }
-
-
-    // Add the footer to take the content above the proceed overlay frame
-    mItemList.add( new Item() );
     }
 
 
@@ -315,26 +261,17 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
         Asset editedAsset = item.assetsAndQuantity.getEditedAsset();
 
 
-        if ( IMAGE_CACHE_ENABLED )
+        // If have got an edited asset - request the image once the view
+        // has been sized. Otherwise display a loading spinner.
+
+        if ( editedAsset != null )
           {
-          Bitmap editedImageBitmap = mImageCache.getImage( editedAsset );
-
-          if ( editedImageBitmap != null )
-            {
-            viewHolder.checkableImageView.setImageBitmap( editedImageBitmap );
-            }
-          else
-            {
-            viewHolder.checkableImageView.clearForNewImage( editedAsset );
-
-            mImageCache.addPendingImage( editedAsset, viewHolder.checkableImageView );
-
-            AssetHelper.requestImage( mContext, editedAsset, null, mScaledImageWidthInPixels, mImageCache );
-            }
+          viewHolder.checkableImageView.requestScaledImageOnceSized( editedAsset );
           }
         else
           {
-          viewHolder.checkableImageView.requestScaledImageOnceSized( editedAsset );
+          viewHolder.checkableImageView.clear();
+          viewHolder.checkableImageView.showProgressSpinner();
           }
 
 
@@ -371,6 +308,74 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
 
 
   ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Adds an asset. This is used both by our constructor,
+   * and by the fragment. We need to be able to add assets
+   * without necessarily re-building the entire item list
+   * from scratch.
+   *
+   *****************************************************/
+  public void addAsset( AssetsAndQuantity assetsAndQuantity )
+    {
+    // See if we need to add a new pack
+    if ( ( mFilledItemCount % mItemsPerPack ) == 0 )
+      {
+      addPack();
+      }
+
+    // Add the asset
+    mItemList.add( mFilledItemCount, new Item( mAssetCount, assetsAndQuantity ) );
+
+    mAssetCount ++;
+    mFilledItemCount ++;
+
+
+    notifyDataSetChanged();
+    }
+
+
+  /*****************************************************
+   *
+   * Adds a pack.
+   *
+   *****************************************************/
+  private void addPack()
+    {
+    mPackCount ++;
+
+
+    // Add the title
+
+    String title = mContext.getString( R.string.image_selection_pack_title_format_string, mPackCount, mImagesPerPack, mProduct.getName() );
+
+    mItemList.add( mFilledItemCount, new Item( title ) );
+
+
+    mFilledItemCount ++;
+
+    mCurrentGridStartIndex = mFilledItemCount;
+
+
+    // Add as many placeholders as we need to complete the pack.
+
+    for ( int itemIndex = mFilledItemCount; ( itemIndex % mItemsPerPack ) != 0; itemIndex ++ )
+      {
+      int gridY = ( itemIndex - mCurrentGridStartIndex ) / mNumberOfColumns;
+      int gridX = ( itemIndex - mCurrentGridStartIndex ) % mNumberOfColumns;
+
+      int checkerBoardValue = ( gridY + gridX );
+
+      mItemList.add( new Item( checkerBoardValue ) );
+      }
+
+
+    // Add the footer to take the content above the proceed overlay frame. This will get replaced
+    // when a new pack is added, but added at the end again.
+    mItemList.add( new Item() );
+    }
+
 
   /*****************************************************
    *

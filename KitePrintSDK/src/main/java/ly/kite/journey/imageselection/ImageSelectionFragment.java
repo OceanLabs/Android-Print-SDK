@@ -42,11 +42,9 @@ package ly.kite.journey.imageselection;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -119,7 +117,10 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
   private GridView                     mImageSourceGridView;
   private Button                       mClearPhotosButton;
   private Button                       mProceedOverlayButton;
-  private ProgressBar                  mProgressBar;
+
+  // We maintain an overall progress spinner, even though each image also has a progress spinner
+  // because there may be images off screen that are still being cropped.
+  private ProgressBar                  mProgressSpinner;
 
   private RecyclerView                 mImageRecyclerView;
   private GridLayoutManager            mImageLayoutManager;
@@ -267,7 +268,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     mImageRecyclerView    = (RecyclerView)view.findViewById( R.id.image_recycler_view );
     mClearPhotosButton    = (Button)view.findViewById( R.id.clear_photos_button );
     mProceedOverlayButton = (Button)view.findViewById( R.id.proceed_overlay_button );
-    mProgressBar          = (ProgressBar)view.findViewById( R.id.progress_bar );
+    mProgressSpinner      = (ProgressBar)view.findViewById( R.id.progress_bar );
 
 
     // Display the image sources
@@ -279,9 +280,16 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     String instagramRedirectURI = KiteSDK.getInstance( getActivity() ).getInstagramRedirectURI();
     if ( instagramClientId != null && instagramRedirectURI != null ) imageSourceList.add( ImageSource.INSTAGRAM );
 
+
+    // Set up the image sources
+
     mImageSourceAdaptor = new ImageSourceAdaptor( mKiteActivity, imageSourceList );
     mImageSourceGridView.setNumColumns( mImageSourceAdaptor.getCount() );
     mImageSourceGridView.setAdapter( mImageSourceAdaptor );
+
+
+    // Set up the selected images
+    setUpRecyclerView();
 
 
     // If there are unchecked images, then we need to show (but not animate in) the clear photos
@@ -366,30 +374,48 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     {
     super.onActivityResult( requestCode, resultCode, returnedIntent );
 
-    if ( requestCode == AKiteActivity.ACTIVITY_REQUEST_CODE_SELECT_DEVICE_IMAGE && resultCode == Activity.RESULT_OK )
+
+    if ( resultCode == Activity.RESULT_OK )
       {
-      Photo[] photos = PhotoPicker.getResultPhotos( returnedIntent );
-      ArrayList<Asset> assets = new ArrayList<Asset>();
-      for ( Photo photo : photos )
+      // Check which activity has returned photos, and create new assets for them.
+
+      if ( requestCode == AKiteActivity.ACTIVITY_REQUEST_CODE_SELECT_DEVICE_IMAGE )
         {
-          assets.add( new Asset( photo.getUri() ) );
+        ///// Device photos /////
+
+        Photo[] devicePhotos = PhotoPicker.getResultPhotos( returnedIntent );
+
+        if ( devicePhotos != null )
+          {
+          ArrayList<Asset> assets = new ArrayList<Asset>( devicePhotos.length );
+
+          for ( Photo devicePhoto : devicePhotos )
+            {
+            assets.add( new Asset( devicePhoto.getUri() ) );
+            }
+
+          addAssets( assets );
+          }
+
         }
-
-      addAssets( assets );
-
-      }
-    else if ( requestCode == AKiteActivity.ACTIVITY_REQUEST_CODE_SELECT_INSTAGRAM_IMAGE && resultCode == Activity.RESULT_OK )
-      {
-      InstagramPhoto photos[] = InstagramPhotoPicker.getResultPhotos( returnedIntent );
-      ArrayList<Asset> assets = new ArrayList<Asset>();
-
-      for ( InstagramPhoto photo : photos )
+      else if ( requestCode == AKiteActivity.ACTIVITY_REQUEST_CODE_SELECT_INSTAGRAM_IMAGE )
         {
-        assets.add( new Asset( photo.getFullURL() ) );
+        ///// Instagram photos /////
+
+        InstagramPhoto instagramPhotos[] = InstagramPhotoPicker.getResultPhotos( returnedIntent );
+
+        if ( instagramPhotos != null )
+          {
+          ArrayList<Asset> assets = new ArrayList<Asset>( instagramPhotos.length );
+
+          for ( InstagramPhoto instagramPhoto : instagramPhotos )
+            {
+            assets.add( new Asset( instagramPhoto.getFullURL() ) );
+            }
+
+          addAssets( assets );
+          }
         }
-
-      addAssets( assets );
-
       }
     }
 
@@ -456,11 +482,13 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
     if ( mUneditedAssetsRemaining < 1 )
       {
-      completeScreenSetup();
+      mProgressSpinner.setVisibility( View.GONE );
+
+      mProceedOverlayButton.setEnabled( true );
       }
     else
       {
-      mProgressBar.setVisibility( View.VISIBLE );
+      mProgressSpinner.setVisibility( View.VISIBLE );
 
       mProceedOverlayButton.setEnabled( false );
       }
@@ -612,55 +640,82 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
   /*****************************************************
    *
-   * Adds new unedited assets to the users collection. Duplicates will be discarded.
+   * Sets up the recycler view.
+   *
+   *****************************************************/
+  private void setUpRecyclerView()
+    {
+    mImagePackAdaptor = new ImageSelectionAdaptor( mKiteActivity, mProduct, mAssetsAndQuantityArrayList, mAssetIsCheckedArrayList, mNumberOfColumns, this );
+
+    mImageLayoutManager = new GridLayoutManager( mKiteActivity, mNumberOfColumns );
+    mImageLayoutManager.setSpanSizeLookup( mImagePackAdaptor.new SpanSizeLookup( mNumberOfColumns ) );
+
+    mImageRecyclerView.setLayoutManager( mImageLayoutManager );
+
+    mImageRecyclerView.setAdapter( mImagePackAdaptor );
+    }
+
+
+  /*****************************************************
+   *
+   * Adds new unedited assets to the users collection.
+   * Duplicates will be discarded.
    *
    *****************************************************/
   private void addAssets(ArrayList<Asset> assets)
     {
-
     boolean addedNewAsset = false;
 
     for ( Asset asset : assets )
       {
       // We don't allow duplicate images, so first check that the asset isn't already in
-      // our list. Note that we don't check that the image is the same but come from
-      // different sources.
+      // our list. Note that we don't check the scenario where the image is the same but
+      // from a different source - a byte by byte comparison would take too long, and a
+      // duplicate is unlikely anyway.
 
       if ( ! AssetsAndQuantity.uneditedAssetIsInList( mAssetsAndQuantityArrayList, asset ) )
         {
+        // Start with the unedited asset, and a quantity of 1.
 
-        // Create a new asset
         AssetsAndQuantity assetsAndQuantity = new AssetsAndQuantity( asset, 1 );
+
         mUneditedAssetsRemaining++;
+
 
         // Create an edited version of the asset. We are basically doing the same thing we did
         // when we were created, but just for the new asset. We are doing this in the background
         // again, so we need to disable the proceed button again.
 
-        if (!addedNewAsset)
+        if ( ! addedNewAsset )
           {
           addedNewAsset = true;
+
           mProceedOverlayButton.setEnabled( false );
-          mProgressBar.setVisibility( View.VISIBLE );
+          mProgressSpinner.setVisibility( View.VISIBLE );
           }
-
-        AssetImageToSquareCropper cropper = new AssetImageToSquareCropper( assetsAndQuantity );
-
-        AssetHelper.requestImage( mKiteActivity, assetsAndQuantity.getUneditedAsset(), cropper, 0, cropper );
 
 
         // Add the selected image to our asset lists, mark it as checked
         mAssetsAndQuantityArrayList.add( assetsAndQuantity );
         mAssetIsCheckedArrayList.add( true );
 
+        // Let the adaptor know we've added another asset.
+        mImagePackAdaptor.addAsset( assetsAndQuantity );
+
+
+        // Request the image and crop it
+
+        AssetImageToSquareCropper cropper = new AssetImageToSquareCropper( assetsAndQuantity );
+
+        AssetHelper.requestImage( mKiteActivity, assetsAndQuantity.getUneditedAsset(), cropper, 0, cropper );
         }
       }
 
-      // Update the title
-      if ( addedNewAsset ) setTitle();
 
-      // If we added a new asset the recycler view doesn't get updated until we've produced an edited asset
+    // If we added a new asset - update the title
+    if ( addedNewAsset ) setTitle();
     }
+
 
   /*****************************************************
    *
@@ -687,40 +742,6 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     int numberOfPacks         = ( numberOfImages + ( quantityPerPack - 1 ) ) / quantityPerPack;
 
     mKiteActivity.setTitle( getString( R.string.image_selection_title_format_string, mProduct.getName(), numberOfImages, ( numberOfPacks * quantityPerPack ) ) );
-    }
-
-
-  /*****************************************************
-   *
-   * Completes the set up of the screen. Called when
-   * all the images have been cropped.
-   *
-   *****************************************************/
-  private void completeScreenSetup()
-    {
-    mProgressBar.setVisibility( View.GONE );
-
-    mProceedOverlayButton.setEnabled( true );
-
-    setUpRecyclerView();
-    }
-
-
-  /*****************************************************
-   *
-   * Creates the recycler view adaptor and sets it.
-   *
-   *****************************************************/
-  private void setUpRecyclerView()
-    {
-    mImagePackAdaptor = new ImageSelectionAdaptor( mKiteActivity, mProduct, mAssetsAndQuantityArrayList, mAssetIsCheckedArrayList, mNumberOfColumns, this );
-
-    mImageLayoutManager = new GridLayoutManager( mKiteActivity, mNumberOfColumns );
-    mImageLayoutManager.setSpanSizeLookup( mImagePackAdaptor.new SpanSizeLookup( mNumberOfColumns ) );
-
-    mImageRecyclerView.setLayoutManager( mImageLayoutManager );
-
-    mImageRecyclerView.setAdapter( mImagePackAdaptor );
     }
 
 
@@ -836,9 +857,8 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
     // We don't need to request any cropped image because it is the edited asset
     // that has been updated. So just updated the recycler view.
-    setUpRecyclerView();
+    mImagePackAdaptor.notifyDataSetChanged();
     }
-
 
 
   ////////// Inner Class(es) //////////
@@ -901,15 +921,18 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
       mAssetsAndQuantity.setEditedAsset( editedAsset, mProduct.getUserJourneyType() );
 
+      mImagePackAdaptor.notifyDataSetChanged();
 
-      // If we now have all the cropped images - set up the recycler view, and
-      // enable the proceed button.
+
+      // If we now have all the cropped - enable the proceed button.
 
       mUneditedAssetsRemaining --;
 
       if ( mUneditedAssetsRemaining < 1 )
         {
-        completeScreenSetup();
+        mProgressSpinner.setVisibility( View.GONE );
+
+        mProceedOverlayButton.setEnabled( true );
         }
       }
     }

@@ -77,10 +77,6 @@ public class LabelledImageView extends AImageContainerFrame implements IImageCon
 
   private static final int     NO_FORCED_LABEL_COLOUR            = 0x00000000;
 
-  private static final long    FADE_IN_ANIMATION_DURATION_MILLIS = 300L;
-  private static final float   ALPHA_TRANSPARENT                 = 0.0f;
-  private static final float   ALPHA_OPAQUE                      = 1.0f;
-
 
   ////////// Static Variable(s) //////////
 
@@ -92,10 +88,6 @@ public class LabelledImageView extends AImageContainerFrame implements IImageCon
   private ProgressBar   mProgressBar;
 
   private int           mForcedLabelColour;
-
-  private Object        mKey;
-
-  private Animation     mFadeInAnimation;
 
 
   ////////// Static Initialiser(s) //////////
@@ -200,37 +192,7 @@ public class LabelledImageView extends AImageContainerFrame implements IImageCon
     }
 
 
-  /*****************************************************
-   *
-   * Sets the image after it has been loaded.
-   *
-   *****************************************************/
-  @Override
-  public void onImageAvailable( Object key, Bitmap bitmap )
-    {
-    // Make sure the image is the one we were expecting.
-    if ( keyIsOK( key ) )
-      {
-      setImageBitmap( bitmap );
-
-      fadeImageIn();
-      }
-    }
-
-
   ////////// Animation.AnimationListener Method(s) //////////
-
-  /*****************************************************
-   *
-   * Called when an animation starts.
-   *
-   *****************************************************/
-  @Override
-  public void onAnimationStart( Animation animation )
-    {
-    // Ignore
-    }
-
 
   /*****************************************************
    *
@@ -240,23 +202,12 @@ public class LabelledImageView extends AImageContainerFrame implements IImageCon
   @Override
   public void onAnimationEnd( Animation animation )
     {
-    // Make the empty frame invisible only when the photo image fade in has finished
+    // The parent class does nothing, but we want to make the empty
+    // frame invisible after the photo image fade in has finished.
     if ( animation == mFadeInAnimation )
       {
       mEmptyFrameImageView.setVisibility( View.GONE );
       }
-    }
-
-
-  /*****************************************************
-   *
-   * Called when an animation repeats.
-   *
-   *****************************************************/
-  @Override
-  public void onAnimationRepeat( Animation animation )
-    {
-    // Ignore
     }
 
 
@@ -301,47 +252,6 @@ public class LabelledImageView extends AImageContainerFrame implements IImageCon
     // Set the background colour. If we have a forced colour then use that instead of the
     // supplied one.
     mOverlayLabel.setBackgroundColor( mForcedLabelColour != NO_FORCED_LABEL_COLOUR ? mForcedLabelColour : colour );
-    }
-
-
-//  /*****************************************************
-//   *
-//   * Clears the image, and sets an expected image key.
-//   *
-//   *****************************************************/
-//  public void clearForNewImage( Object expectedKey )
-//    {
-//    setExpectedKey( expectedKey );
-//
-//    mImageView.setImageBitmap( null );
-//    }
-//
-//
-//  /*****************************************************
-//   *
-//   * Sets an expected image key.
-//   *
-//   *****************************************************/
-//  public void setExpectedKey( Object key )
-//    {
-//    mKey = key;
-//    }
-
-
-  /*****************************************************
-   *
-   * Starts a fade-in animation on the image.
-   *
-   *****************************************************/
-  private void fadeImageIn()
-    {
-    mFadeInAnimation = new AlphaAnimation( ALPHA_TRANSPARENT, ALPHA_OPAQUE );
-    mFadeInAnimation.setDuration( FADE_IN_ANIMATION_DURATION_MILLIS );
-
-    // We make the empty frame invisible only after the fade in animation has finished.
-    mFadeInAnimation.setAnimationListener( this );
-
-    mImageView.startAnimation( mFadeInAnimation );
     }
 
 

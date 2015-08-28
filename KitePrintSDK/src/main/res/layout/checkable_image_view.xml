@@ -15,4 +15,11 @@
         android:layout_height="@dimen/image_check_size"
         android:src="@drawable/image_check"/>
 
+    <ProgressBar
+        android:id="@+id/progress_spinner"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@android:style/Widget.DeviceDefault.ProgressBar.Small"/>
+
 </merge>

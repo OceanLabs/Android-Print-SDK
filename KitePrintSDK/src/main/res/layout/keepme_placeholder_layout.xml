@@ -33,4 +33,10 @@
         android:layout_height="wrap_content"
         android:visibility="gone"/>
 
+    <ProgressBar
+        android:id="@+id/progress_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
 </FrameLayout>

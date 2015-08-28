@@ -48,8 +48,11 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import java.net.URL;
 
@@ -71,16 +74,21 @@ import ly.kite.util.ImageAgent;
  * The widget is also an image consumer.
  *
  *****************************************************/
-abstract public class AImageContainerFrame extends FrameLayout implements IImageConsumer
+abstract public class AImageContainerFrame extends FrameLayout implements IImageConsumer, Animation.AnimationListener
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG              = "AImageContainerFrame";
+  private   static final String  LOG_TAG                           = "AImageContainerFrame";
 
-  public  static final float   DEFAULT_ASPECT_RATIO = 1.389f;
+  public    static final float   DEFAULT_ASPECT_RATIO              = 1.389f;
 
-  private static final Object  ANY_KEY              = new Object();
+  private   static final Object  ANY_KEY                           = new Object();
+
+  private   static final long    FADE_IN_ANIMATION_DURATION_MILLIS = 300L;
+  private   static final float   ALPHA_TRANSPARENT                 = 0.0f;
+  private   static final float   ALPHA_OPAQUE                      = 1.0f;
+
 
 
   ////////// Static Variable(s) //////////
@@ -92,6 +100,7 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
   private   int           mHeight;
 
   protected ImageView     mImageView;
+  protected ProgressBar   mProgressSpinner;
 
   private   float         mWidthToHeightMultiplier;
 
@@ -99,6 +108,8 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
   private   Object        mRequestImageSource;
 
   private   Object        mExpectedKey;
+
+  protected Animation     mFadeInAnimation;
 
 
   ////////// Static Initialiser(s) //////////
@@ -214,7 +225,47 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
     if ( keyIsOK( key ) )
       {
       mImageView.setImageBitmap( bitmap );
+
+      fadeImageIn();
       }
+    }
+
+
+  ////////// Animation.AnimationListener Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when an animation starts.
+   *
+   *****************************************************/
+  @Override
+  public void onAnimationStart( Animation animation )
+    {
+    // Ignore
+    }
+
+
+  /*****************************************************
+   *
+   * Called when an animation completes.
+   *
+   *****************************************************/
+  @Override
+  public void onAnimationEnd( Animation animation )
+    {
+    // Ignore
+    }
+
+
+  /*****************************************************
+   *
+   * Called when an animation repeats.
+   *
+   *****************************************************/
+  @Override
+  public void onAnimationRepeat( Animation animation )
+    {
+    // Ignore
     }
 
 
@@ -230,8 +281,9 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
     // Get the view
     View view = onCreateView( context, attributeSet, defaultStyle );
 
-    // Get the image view
-    mImageView = (ImageView)view.findViewById( R.id.image_view );
+    // Get the views
+    mImageView       = (ImageView)view.findViewById( R.id.image_view );
+    mProgressSpinner = (ProgressBar)view.findViewById( R.id.progress_spinner );
 
 
     // Check the XML attributes
@@ -286,6 +338,31 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
   public void setImageBitmap( Bitmap bitmap )
     {
     mImageView.setImageBitmap( bitmap );
+
+    // Automatically clear any progress spinner
+    hideProgressSpinner();
+    }
+
+
+  /*****************************************************
+   *
+   * Shows any progress spinner.
+   *
+   *****************************************************/
+  public void showProgressSpinner()
+    {
+    if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.VISIBLE );
+    }
+
+
+  /*****************************************************
+   *
+   * Hides any progress spinner.
+   *
+   *****************************************************/
+  public void hideProgressSpinner()
+    {
+    if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.GONE );
     }
 
 
@@ -354,7 +431,7 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
     {
     setExpectedKey( expectedKey );
 
-    mImageView.setImageBitmap( null );
+    setImageBitmap( null );
     }
 
 
@@ -402,6 +479,23 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
   protected boolean keyIsOK( Object key )
     {
     return ( mExpectedKey == ANY_KEY || key.equals( mExpectedKey ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Starts a fade-in animation on the image.
+   *
+   *****************************************************/
+  private void fadeImageIn()
+    {
+    mFadeInAnimation = new AlphaAnimation( ALPHA_TRANSPARENT, ALPHA_OPAQUE );
+    mFadeInAnimation.setDuration( FADE_IN_ANIMATION_DURATION_MILLIS );
+
+    // We make the empty frame invisible only after the fade in animation has finished.
+    mFadeInAnimation.setAnimationListener( this );
+
+    mImageView.startAnimation( mFadeInAnimation );
     }
 
 
