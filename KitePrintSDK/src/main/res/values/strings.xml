@@ -16,6 +16,9 @@
     <string name="title_choose_product_group">Print Shop</string>
     <string name="title_create_phone_case">Create Phone Case</string>
 
+    <string name="alert_dialog_title_pack_not_full_format_string">You\'ve selected %d photos</string>
+    <string name="alert_dialog_message_pack_not_full_format_string">You can add %d more for the same price</string>
+
     <string name="alert_dialog_title_oops">Oops!</string>
     <string name="alert_dialog_message_pricing_format_string">There was a problem retrieving pricing from the server:\n%1$s</string>
 
@@ -64,6 +67,8 @@
     <string name="Done">Done</string>
     <string name="Edit">Edit</string>
     <string name="Free">Free</string>
+    <string name="add_more">Add More</string>
+    <string name="print_these">Print these</string>
     <string name="IMAGES">IMAGES</string>
     <string name="INSTAGRAM">INSTAGRAM</string>
     <string name="OK">OK</string>

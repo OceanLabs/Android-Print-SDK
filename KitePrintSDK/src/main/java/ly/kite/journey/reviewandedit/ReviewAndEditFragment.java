@@ -292,7 +292,38 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
 
       if ( mKiteActivity instanceof ICallback )
         {
-        ( (ICallback)mKiteActivity ).reOnConfirm();
+            // firstly check if number of images user has selected meets expectations, if not
+            // prompt the user for confirmation to continue
+            int numberOfImages = 0;
+
+            for ( AssetsAndQuantity assetsAndQuantity : mAssetsAndQuantityArrayList )
+              {
+              numberOfImages += assetsAndQuantity.getQuantity();
+              }
+
+            int quantityPerPack = mProduct.getQuantityPerSheet();
+            int numberOfPacks   = ( numberOfImages + ( quantityPerPack - 1 ) ) / quantityPerPack;
+            int expectedNumberOfImages = numberOfPacks * quantityPerPack;
+            if ( numberOfImages < expectedNumberOfImages )
+              {
+              mKiteActivity.displayModalDialog(
+                getString( R.string.alert_dialog_title_pack_not_full_format_string, numberOfImages ),
+                getString( R.string.alert_dialog_message_pack_not_full_format_string, expectedNumberOfImages - numberOfImages ),
+                R.string.print_these,
+                new Runnable()
+                  {
+                  @Override
+                  public void run()
+                    {
+                    ((ICallback) mKiteActivity).reOnConfirm();
+                    }
+                  },
+                R.string.add_more, null );
+              }
+            else
+              {
+              ((ICallback) mKiteActivity).reOnConfirm();
+              }
         }
       }
     }
