@@ -44,7 +44,6 @@ package ly.kite.util;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.support.v4.util.AtomicFile;
 import android.util.Log;
 
 import java.io.File;
@@ -133,17 +132,17 @@ public class FileDownloader
     InputStream inputStream  = null;
     FileOutputStream fileOutputStream = null;
 
-    // use AtomicFile as elsewhere i.e. ImageAgent.requestImage we assume file existence means completed download
-    // and this download likely occurs on a different thread.
-    AtomicFile atomicTargetFile = new AtomicFile( targetFile );
-
+    // use temp file as initial download target as elsewhere i.e. ImageAgent.requestImage we
+    // assume file existence means completed download and this download likely occurs on a different
+    // thread.
+    File tempTargetFile = null;
     try
       {
       Log.i( LOG_TAG, "Downloading: " + sourceURL.toString() + " -> " + targetFile.getPath() );
-
+      tempTargetFile = File.createTempFile( targetFile.getName(), ".tmp" );
       inputStream = sourceURL.openStream();
 
-      fileOutputStream = atomicTargetFile.startWrite();
+      fileOutputStream = new FileOutputStream( tempTargetFile );
 
       byte[] downloadBuffer = new byte[ BUFFER_SIZE_IN_BYTES ];
 
@@ -154,7 +153,8 @@ public class FileDownloader
         fileOutputStream.write( downloadBuffer, 0, numberOfBytesRead );
         }
 
-      atomicTargetFile.finishWrite( fileOutputStream );
+
+      tempTargetFile.renameTo( targetFile );
       return ( true );
       }
     catch ( IOException ioe )
@@ -162,7 +162,7 @@ public class FileDownloader
       Log.e( LOG_TAG, "Unable to download to file", ioe );
 
       // Clean up any damaged files
-      atomicTargetFile.failWrite( fileOutputStream );
+      if ( tempTargetFile != null ) tempTargetFile.delete();
       targetFile.delete();
 
       return ( false );
