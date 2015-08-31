@@ -176,7 +176,7 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
     super.onTop();
 
     // Create and set the adaptor
-    mAssetAndQuantityAdaptor = new AssetAndQuantityAdaptor( mKiteActivity, mAssetsAndQuantityArrayList, mProduct.getUserJourneyType(), this );
+    mAssetAndQuantityAdaptor = new AssetAndQuantityAdaptor( mKiteActivity, mAssetsAndQuantityArrayList, mProduct, this );
     mGridView.setAdapter( mAssetAndQuantityAdaptor );
     }
 

@@ -44,6 +44,7 @@ package ly.kite.util;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.support.v4.util.AtomicFile;
 import android.util.Log;
 
 import java.io.File;
@@ -52,7 +53,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /*****************************************************
  *
@@ -68,6 +75,8 @@ public class FileDownloader
 
   private static final int     BUFFER_SIZE_IN_BYTES = 8192;  // 8 KB
 
+  private static final int MAX_CONCURRENT_DOWNLOADS = 5;
+
 
   ////////// Static Variable(s) //////////
 
@@ -76,11 +85,11 @@ public class FileDownloader
 
   ////////// Member Variable(s) //////////
 
-  private Context              mContext;
+  private Context                     mContext;
 
-  private LinkedList<Request>  mRequestQueue;
+  private Executor                    mThreadPoolExecutor;
 
-  private DownloaderTask       mDownloaderTask;
+  private Map<URL, DownloaderTask>    mInProgressDownloadTasks;
 
 
   ////////// Static Initialiser(s) //////////
@@ -122,7 +131,11 @@ public class FileDownloader
     // Retrieve the image
 
     InputStream inputStream  = null;
-    OutputStream outputStream = null;
+    FileOutputStream fileOutputStream = null;
+
+    // use AtomicFile as elsewhere i.e. ImageAgent.requestImage we assume file existence means completed download
+    // and this download likely occurs on a different thread.
+    AtomicFile atomicTargetFile = new AtomicFile( targetFile );
 
     try
       {
@@ -130,7 +143,7 @@ public class FileDownloader
 
       inputStream = sourceURL.openStream();
 
-      outputStream = new FileOutputStream( targetFile );
+      fileOutputStream = atomicTargetFile.startWrite();
 
       byte[] downloadBuffer = new byte[ BUFFER_SIZE_IN_BYTES ];
 
@@ -138,9 +151,10 @@ public class FileDownloader
 
       while ( ( numberOfBytesRead = inputStream.read( downloadBuffer ) ) >= 0 )
         {
-        outputStream.write( downloadBuffer, 0, numberOfBytesRead );
+        fileOutputStream.write( downloadBuffer, 0, numberOfBytesRead );
         }
 
+      atomicTargetFile.finishWrite( fileOutputStream );
       return ( true );
       }
     catch ( IOException ioe )
@@ -148,17 +162,18 @@ public class FileDownloader
       Log.e( LOG_TAG, "Unable to download to file", ioe );
 
       // Clean up any damaged files
+      atomicTargetFile.failWrite( fileOutputStream );
       targetFile.delete();
 
       return ( false );
       }
     finally
       {
-      if ( outputStream != null )
+      if ( fileOutputStream != null )
         {
         try
           {
-          outputStream.close();
+          fileOutputStream.close();
           }
         catch ( IOException ioe )
           {
@@ -186,7 +201,8 @@ public class FileDownloader
   private FileDownloader( Context context )
     {
     mContext      = context;
-    mRequestQueue = new LinkedList<>();
+    mThreadPoolExecutor = Executors.newFixedThreadPool( MAX_CONCURRENT_DOWNLOADS );
+    mInProgressDownloadTasks = new HashMap<>();
     }
 
 
@@ -196,40 +212,18 @@ public class FileDownloader
    *
    * Clears the request queue.
    *
-   *****************************************************/
-  public void clearPendingRequests()
-    {
-    synchronized ( mRequestQueue )
-      {
-      mRequestQueue.clear();
-      }
-    }
-
-
-  /*****************************************************
-   *
-   * Requests a file to be downloaded.
-   *
    * Must be called on the UI thread.
    *
    *****************************************************/
-  private void requestFileDownload( Request request )
+  public void clearPendingRequests()
     {
-    synchronized ( mRequestQueue )
+
+    for ( DownloaderTask task : mInProgressDownloadTasks.values() )
       {
-      // Add the request to the queue
-      mRequestQueue.add( request );
-
-      // If the downloader task is already running - do nothing more
-      if ( mDownloaderTask != null ) return;
+      task.cancel( true );
       }
+    mInProgressDownloadTasks.clear();
 
-
-    // Create and start a new downloader task
-
-    mDownloaderTask = new DownloaderTask();
-
-    mDownloaderTask.execute();
     }
 
 
@@ -242,7 +236,19 @@ public class FileDownloader
    *****************************************************/
   public void requestFileDownload( URL sourceURL, File targetDirectory, File targetFile, ICallback callback )
     {
-    requestFileDownload( new Request( sourceURL, targetDirectory, targetFile, callback ) );
+        if ( mInProgressDownloadTasks.get( sourceURL ) == null )
+          {
+          // no in progress task downloading this file, lets kick one off
+          DownloaderTask task = new DownloaderTask( sourceURL, targetDirectory, targetFile, callback );
+          mInProgressDownloadTasks.put( sourceURL, task );
+          task.executeOnExecutor( mThreadPoolExecutor );
+          }
+        else
+          {
+          // A download is already in progress for this file so just add to the list of callbacks that
+          // will be notified upon completion
+          mInProgressDownloadTasks.get( sourceURL ).addCallback( callback );
+          }
     }
 
 
@@ -259,92 +265,62 @@ public class FileDownloader
     }
 
 
-  /*****************************************************
-   *
-   * An download request.
-   *
-   *****************************************************/
-  private class Request
-    {
-    URL        sourceURL;
-    File       targetDirectory;
-    File       targetFile;
-    ICallback  callback;
-
-
-    private Request( URL sourceURL, File targetDirectory, File targetFile, ICallback callback  )
-      {
-      this.sourceURL       = sourceURL;
-      this.targetDirectory = targetDirectory;
-      this.targetFile      = targetFile;
-      this.callback        = callback;
-      }
-    }
-
 
   /*****************************************************
    *
    * The downloader task.
    *
    *****************************************************/
-  private class DownloaderTask extends AsyncTask<Void,Request,Void>
+  private class DownloaderTask extends AsyncTask< Void, Void, Void >
     {
+
+    private final URL mSourceURL;
+    private final File mTargetDirectory;
+    private final File mTargetFile;
+    private final List<ICallback> mCallbacks;
+
+    public DownloaderTask( URL sourceURL, File targetDirectory, File targetFile, ICallback callback )
+      {
+      mSourceURL = sourceURL;
+      mTargetDirectory = targetDirectory;
+      mTargetFile = targetFile;
+      mCallbacks = new ArrayList<>();
+      mCallbacks.add( callback );
+      }
+
+    public void addCallback( ICallback callback ) {
+        mCallbacks.add( callback );
+    }
 
     /*****************************************************
      *
      * Entry point for background thread.
      *
      *****************************************************/
+
     @Override
     protected Void doInBackground( Void... params )
       {
-      // Keep going until we run out of requests
-
-      while ( true )
+      if (  !mTargetFile.exists() )
         {
-        Request request = null;
-
-        synchronized ( mRequestQueue )
-          {
-          request = mRequestQueue.poll();
-
-          if ( request == null )
-            {
-            mDownloaderTask = null;
-
-            return ( null );
-            }
-          }
-
-
-        // It's possible that the file has already been downloaded by a previous request, so check
-        // whether it exists before we try to download it again.
-
-        if ( request.targetFile.exists() ||
-             download( request.sourceURL, request.targetDirectory, request.targetFile ) )
-          {
-          publishProgress( request );
-          }
-
+        download( mSourceURL, mTargetDirectory, mTargetFile );
         }
+
+      return null;
       }
 
-
-    /*****************************************************
-     *
-     * Called after each request is complete.
-     *
-     *****************************************************/
     @Override
-    protected void onProgressUpdate( Request... requests )
+    protected void onPostExecute(Void v)
       {
-      Request request = requests[ 0 ];
+      for (ICallback callback : mCallbacks)
+        {
+        callback.onFileDownloaded( mSourceURL, mTargetDirectory, mTargetFile );
+        }
 
-      // Notify the callback that the file was downloaded
-      request.callback.onFileDownloaded( request.sourceURL, request.targetDirectory, request.targetFile );
-      }
-
+        mInProgressDownloadTasks.remove( mSourceURL );
+        }
     }
+
 
   }
 

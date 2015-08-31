@@ -97,6 +97,7 @@ public class ProductLoader implements HTTPJSONRequest.HTTPJSONRequestListener
   private static final String  JSON_NAME_INCH                        = "inch";
   private static final String  JSON_NAME_LABEL_COLOUR                = "ios_sdk_label_color";
   private static final String  JSON_NAME_MASK_BLEED                  = "mask_bleed";
+  private static final String  JSON_NAME_BORDER                      = "ios_image_border";
   private static final String  JSON_NAME_MASK_URL                    = "mask_url";
   private static final String  JSON_NAME_PIXELS                      = "px";
   private static final String  JSON_NAME_PRODUCT_ARRAY               = "objects";
@@ -242,10 +243,25 @@ public class ProductLoader implements HTTPJSONRequest.HTTPJSONRequestListener
     int top    = bleedJSONArray.getInt( 0 );
     int right  = bleedJSONArray.getInt( 1 );
     int bottom = bleedJSONArray.getInt( 2 );
-    int left   = bleedJSONArray.getInt( 2 );
+    int left   = bleedJSONArray.getInt( 3 );
 
     return ( new Bleed( top, right, bottom, left ) );
     }
+
+  /****************************************************
+   *
+   * Parses a JSON border.
+   *
+   ****************************************************/
+  private static Border parseBorder( JSONArray borderJSONArray ) throws JSONException
+  {
+      int top    = borderJSONArray.getInt( 0 ) * 4; // * 4 to adjust for iOS screen density baked into ios_image_border: TODO: get Tom to add android border field
+      int right  = borderJSONArray.getInt( 1 ) * 4;
+      int bottom = borderJSONArray.getInt( 2 ) * 4;
+      int left   = borderJSONArray.getInt( 3 ) * 4;
+
+      return ( new Border( top, right, bottom, left ) );
+  }
 
 
   /****************************************************
@@ -396,8 +412,10 @@ public class ProductLoader implements HTTPJSONRequest.HTTPJSONRequestListener
         MultipleUnitSize       size                = parseProductSize( productDetailJSONObject.getJSONObject( JSON_NAME_PRODUCT_SIZE ) );
 
 
+
         URL   maskURL   = null;
         Bleed maskBleed = null;
+        Border border = null;
 
         try
           {
@@ -409,6 +427,15 @@ public class ProductLoader implements HTTPJSONRequest.HTTPJSONRequestListener
           // Ignore
           }
 
+        try
+          {
+          border = parseBorder( productDetailJSONObject.getJSONArray( JSON_NAME_BORDER ) );
+          }
+        catch ( JSONException je)
+          {
+            // Ignore
+          }
+
 
         // Create the product and display it
 
@@ -418,7 +445,8 @@ public class ProductLoader implements HTTPJSONRequest.HTTPJSONRequestListener
                 .setImageURLs( heroImageURL, imageURLList )
                 .setLabelColour( labelColour )
                 .setMask( maskURL, maskBleed )
-                .setSize( size );
+                .setSize( size )
+                .setBorder( border );
 
         Log.i( LOG_TAG, "-- Found product --" );
         Log.i( LOG_TAG, product.toLogString( groupLabel ) );

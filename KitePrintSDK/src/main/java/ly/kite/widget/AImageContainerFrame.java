@@ -166,7 +166,7 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
     if ( mWidthToHeightMultiplier > 0.001f )
       {
       int widthMode = MeasureSpec.getMode( widthMeasureSpec );
-      int widthSize = MeasureSpec.getSize( widthMeasureSpec );
+      int widthSize = MeasureSpec.getSize( widthMeasureSpec ) - ( getPaddingLeft() + getPaddingRight() );
 
       if ( widthMode == MeasureSpec.AT_MOST || widthMode == MeasureSpec.EXACTLY )
         {

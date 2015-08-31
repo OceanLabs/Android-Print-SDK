@@ -582,8 +582,12 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     else if ( view == mProceedOverlayButton )
       {
       ///// Review and Crop /////
+      if ( mAssetsAndQuantityArrayList.isEmpty() )
+        {
+        mKiteActivity.displayModalDialog(R.string.alert_dialog_title_oops, R.string.alert_dialog_message_no_images_selected, R.string.OK, null, 0, null);
 
-      if ( mKiteActivity instanceof ICallback )
+        }
+      else if ( mKiteActivity instanceof ICallback )
         {
         ( (ICallback)mKiteActivity ).isOnNext( mAssetsAndQuantityArrayList );
         }
@@ -948,8 +952,8 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
       Asset editedAsset = AssetHelper.createAsCachedFile( mKiteActivity, bitmap );
 
       mAssetsAndQuantity.setEditedAsset( editedAsset, mProduct.getUserJourneyType() );
-
-      mImagePackAdaptor.notifyDataSetChanged();
+      int position = mImagePackAdaptor.positionOf( mAssetsAndQuantity );
+      mImagePackAdaptor.notifyItemChanged( position );
 
 
       // If we now have all the cropped - enable the proceed button.

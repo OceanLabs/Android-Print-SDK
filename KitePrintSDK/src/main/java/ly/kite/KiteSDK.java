@@ -85,6 +85,8 @@ public class KiteSDK
   private static final String SHARED_PREFERENCES_INSTAGRAM_CLIENT_ID    = "instagram_client_id";
   private static final String SHARED_PREFERENCES_INSTAGRAM_REDIRECT_URI = "instagram_redirect_uri";
 
+  private static final String SHARED_PREFERENCES_REQUEST_PHONE_NUMBER   = "request_phone_number";
+
   public  static final String PAYPAL_CLIENT_ID_LIVE                     = "ASYVBBCHF_KwVUstugKy4qvpQaPlUeE_5beKRJHpIP2d3SA_jZrsaUDTmLQY";
   public  static final String PAYPAL_RECIPIENT_LIVE                     = "hello@kite.ly";
 
@@ -193,11 +195,12 @@ public class KiteSDK
    * shopping experience.
    *
    *****************************************************/
-  static public void startShopping( Context context, String apiKey, IEnvironment environment, ArrayList<Asset> assetArrayList )
+  static public KiteSDK startShopping( Context context, String apiKey, IEnvironment environment, ArrayList<Asset> assetArrayList )
     {
     KiteSDK kiteSDK = getInstance( context, apiKey, environment );
 
     kiteSDK.startShopping( context, assetArrayList );
+    return kiteSDK;
     }
 
 
@@ -240,7 +243,7 @@ public class KiteSDK
    * this class is garbage collected.
    *
    *****************************************************/
-  public void setEnvironment( String apiKey, IEnvironment environment )
+  public KiteSDK setEnvironment( String apiKey, IEnvironment environment )
     {
     mAPIKey      = apiKey;
     mEnvironment = Environment.getFrom( environment );
@@ -255,6 +258,8 @@ public class KiteSDK
       {
       Log.e( LOG_TAG, "Unable to save current environment to shared preferences" );
       }
+
+    return sKiteSDK;
     }
 
   /*****************************************************
@@ -263,7 +268,7 @@ public class KiteSDK
    * this enables Instagram as an image source
    *
    *****************************************************/
-  public void setInstagramCredentials( String clientId, String redirectUri )
+  public KiteSDK setInstagramCredentials( String clientId, String redirectUri )
     {
     SharedPreferences.Editor editor = mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE ).edit();
 
@@ -275,6 +280,28 @@ public class KiteSDK
       {
       Log.e( LOG_TAG, "Unable to save instagram credentials to shared preferences" );
       }
+
+    return sKiteSDK;
+    }
+
+  /*****************************************************
+   *
+   * Sets the display of phone number entry field in checkout
+   * journey. If false then phone number will not be requested
+   *
+   *****************************************************/
+  public KiteSDK setRequestPhoneNumber( boolean requestPhoneNumber )
+    {
+    SharedPreferences.Editor editor = mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE ).edit();
+
+    editor.putBoolean( SHARED_PREFERENCES_REQUEST_PHONE_NUMBER, requestPhoneNumber );
+
+    if ( ! editor.commit() )
+      {
+      Log.e( LOG_TAG, "Unable to save request phone number preference to shared preferences" );
+      }
+
+    return sKiteSDK;
     }
 
 
@@ -287,7 +314,6 @@ public class KiteSDK
     {
     return ( mAPIKey );
     }
-
 
   /*****************************************************
    *
@@ -323,6 +349,19 @@ public class KiteSDK
     {
     SharedPreferences prefs = mApplicationContext.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
     return prefs.getString(SHARED_PREFERENCES_INSTAGRAM_REDIRECT_URI, null);
+    }
+
+
+  /*****************************************************
+   *
+   * Returns whether the users phone number should be
+   * requested in the checkout journey
+   *
+   *****************************************************/
+  public boolean getRequestPhoneNumber()
+    {
+    SharedPreferences prefs = mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE );
+    return prefs.getBoolean( SHARED_PREFERENCES_REQUEST_PHONE_NUMBER, true );
     }
 
 

@@ -232,7 +232,7 @@ public class MainActivity extends Activity
   private void checkoutWithAssets( ArrayList<Asset> assets )
     {
     String               apiKey;
-    KiteSDK.Environment  environment;
+    KiteSDK.IEnvironment  environment;
 
 
     // Determine the API and environment based on the position
@@ -241,12 +241,12 @@ public class MainActivity extends Activity
     if ( mEnvironmentSwitch.isChecked() )
       {
       apiKey      = API_KEY_LIVE;
-      environment = KiteSDK.Environment.LIVE;
+      environment = KiteSDK.DefaultEnvironment.LIVE;
       }
     else
       {
       apiKey      = API_KEY_TEST;
-      environment = KiteSDK.Environment.TEST;
+      environment = KiteSDK.DefaultEnvironment.TEST;
       }
 
 
@@ -259,8 +259,9 @@ public class MainActivity extends Activity
 
 
     // Launch the SDK shopping journey
-    KiteSDK.getInstance( this ).setInstagramCredentials( INSTAGRAM_API_KEY, INSTAGRAM_REDIRECT_URI );
-    KiteSDK.startShopping( this, apiKey, environment, assets );
+    KiteSDK.startShopping( this, apiKey, environment, assets )
+      .setInstagramCredentials( INSTAGRAM_API_KEY, INSTAGRAM_REDIRECT_URI )
+      .setRequestPhoneNumber( false );
     }
 
 
