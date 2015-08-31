@@ -43,6 +43,7 @@ package ly.kite.journey.reviewandedit;
 ///// Class Declaration /////
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,6 +80,7 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
   ////////// Member Variable(s) //////////
 
   private GridView                     mGridView;
+  private Parcelable                   mGridViewState;
   private Button                       mProceedOverlayButton;
 
   private AssetAndQuantityAdaptor      mAssetAndQuantityAdaptor;
@@ -178,6 +180,13 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
     // Create and set the adaptor
     mAssetAndQuantityAdaptor = new AssetAndQuantityAdaptor( mKiteActivity, mAssetsAndQuantityArrayList, mProduct, this );
     mGridView.setAdapter( mAssetAndQuantityAdaptor );
+
+    // restore gridview state
+    if ( mGridViewState != null )
+      {
+      mGridView.onRestoreInstanceState( mGridViewState );
+      mGridViewState = null;
+      }
     }
 
 
@@ -193,9 +202,15 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
 
 
     // Clear out the stored images to reduce memory usage
-    // when not on this screen.
+    // when not on this screen. Save state so we can return
+    // to correct scroll offset in onTop
 
-    if ( mGridView != null ) mGridView.setAdapter( null );
+
+    if ( mGridView != null )
+      {
+      mGridViewState = mGridView.onSaveInstanceState();
+      mGridView.setAdapter( null );
+      }
 
     mAssetAndQuantityAdaptor = null;
     }
