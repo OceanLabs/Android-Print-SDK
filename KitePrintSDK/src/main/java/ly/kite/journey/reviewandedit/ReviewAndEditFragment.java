@@ -187,6 +187,8 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
       mGridView.onRestoreInstanceState( mGridViewState );
       mGridViewState = null;
       }
+
+    setTitle(); // restore title
     }
 
 
