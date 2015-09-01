@@ -318,7 +318,9 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
 
 
     SingleUnitSize                   size             = mProduct.getSizeWithFallback( UnitOfLength.CENTIMETERS );
-    String                           sizeString       = String.format( getString( R.string.product_size_format_string ), size.getWidth(), size.getHeight(), size.getUnit().shortString( mKiteActivity ) );
+    boolean                          formatAsInt      = size.getWidth() == (int) size.getWidth() && size.getHeight() == (int) size.getHeight();
+    String                           sizeFormatString = getString( formatAsInt ? R.string.product_size_format_string_int : R.string.product_size_format_string_float );
+    String                           sizeString       = String.format( sizeFormatString, size.getWidth(), size.getHeight(), size.getUnit().shortString( mKiteActivity ) );
 
     int                              quantityPerSheet = mProduct.getQuantityPerSheet();
     MultipleDestinationShippingCosts shippingCosts    = mProduct.getShippingCosts();
@@ -360,7 +362,7 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
       {
       if ( isSensibleProductSize( size ) )
         {
-        sizeTextView.setText( String.format( getString( R.string.product_size_format_string ), size.getWidth(), size.getHeight(), size.getUnit().shortString( mKiteActivity ) ) );
+        sizeTextView.setText( String.format( sizeFormatString, size.getWidth(), size.getHeight(), size.getUnit().shortString( mKiteActivity ) ) );
         }
       else
         {

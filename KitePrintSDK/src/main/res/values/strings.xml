@@ -88,7 +88,8 @@
     <string name="group_or_product_placeholder_image_url">https://s3.amazonaws.com/sdk-static/product_photography/placeholder.png</string>
 
     <string name="product_quantity_format_string">Pack of %d</string>
-    <string name="product_size_format_string">%1$.1f x %2$.1f %3$s</string>
+    <string name="product_size_format_string_float">%1$.1f x %2$.1f %3$s</string>
+    <string name="product_size_format_string_int">%1$.0f x %2$.0f %3$s</string>
 
     <string name="product_shipping_format_string">%1$s: %2$s</string>
     <string name="product_free_shipping">free</string>
