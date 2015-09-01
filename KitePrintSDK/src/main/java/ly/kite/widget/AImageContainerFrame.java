@@ -345,6 +345,7 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
    *****************************************************/
   public void setImageBitmap( Bitmap bitmap )
     {
+    mImageView.setVisibility( View.VISIBLE );
     mImageView.setImageBitmap( bitmap );
 
     // Automatically clear any progress spinner

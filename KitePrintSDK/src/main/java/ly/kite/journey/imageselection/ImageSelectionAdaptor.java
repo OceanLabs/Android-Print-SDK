@@ -262,10 +262,10 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
 
 
         // If have got an edited asset - request the image once the view
-        // has been sized. Otherwise display a loading spinner.
+        // has been sized.
 
-        viewHolder.checkableImageView.hideProgressSpinner();
         viewHolder.checkableImageView.setBackgroundColor( mPlaceholderBackgroundColour1 );
+
         if ( editedAsset != null )
           {
           viewHolder.checkableImageView.requestScaledImageOnceSized( editedAsset );

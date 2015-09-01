@@ -85,7 +85,6 @@ public class LabelledImageView extends AImageContainerFrame implements IImageCon
 
   private ImageView     mEmptyFrameImageView;
   private OverlayLabel  mOverlayLabel;
-  private ProgressBar   mProgressBar;
 
   private int           mForcedLabelColour;
 
@@ -140,7 +139,7 @@ public class LabelledImageView extends AImageContainerFrame implements IImageCon
     // Save references to the child views
     mEmptyFrameImageView = (ImageView)view.findViewById( R.id.empty_frame_image_view );
     mOverlayLabel        = (OverlayLabel)view.findViewById( R.id.overlay_label );
-    mProgressBar         = (ProgressBar)view.findViewById( R.id.progress_bar );
+    //mProgressBar         = (ProgressBar)view.findViewById( R.id.progress_bar );
 
 
     // Set up the overlay label
@@ -188,7 +187,8 @@ public class LabelledImageView extends AImageContainerFrame implements IImageCon
     {
     mEmptyFrameImageView.setVisibility( View.VISIBLE );
     mImageView.setVisibility( View.INVISIBLE );
-    mProgressBar.setVisibility( View.VISIBLE );
+
+    showProgressSpinner();
     }
 
 
@@ -214,20 +214,6 @@ public class LabelledImageView extends AImageContainerFrame implements IImageCon
 
 
   ////////// Method(s) //////////
-
-  /*****************************************************
-   *
-   * Sets the image.
-   *
-   *****************************************************/
-  public void setImageBitmap( Bitmap bitmap )
-    {
-    super.setImageBitmap( bitmap );
-
-    mImageView.setVisibility( View.VISIBLE );
-    mProgressBar.setVisibility( View.INVISIBLE );
-    }
-
 
   /*****************************************************
    *
