@@ -3,13 +3,11 @@ package ly.kite.product;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.MutableLong;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -142,6 +140,14 @@ public class PrintOrder implements Parcelable /* , Serializable */
 
             if (userData != null) {
                 json.put("user_data", userData);
+            }
+
+            if (getOrderPricing() != null) {
+                SingleCurrencyAmount orderCost = getOrderPricing().getTotalCost().getDefaultAmountWithFallback();
+                JSONObject customerPayment = new JSONObject();
+                customerPayment.put("currency", orderCost.getCurrencyCode());
+                customerPayment.put("amount", orderCost.getAmount().floatValue());
+                json.put("customer_payment", customerPayment);
             }
 
             if (shippingAddress != null) {
