@@ -97,6 +97,10 @@ public class KiteSDK
   public  static final String INTENT_PREFIX                             = "ly.kite";
 
 
+  public  static final float  FLOAT_ZERO_THRESHOLD                      = 0.0001f;
+
+
+
   ////////// Static Variable(s) //////////
 
   private static KiteSDK  sKiteSDK;

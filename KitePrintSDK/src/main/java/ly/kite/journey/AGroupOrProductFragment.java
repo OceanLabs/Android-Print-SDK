@@ -403,7 +403,7 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements P
 
       IGroupOrProduct groupOrProduct = (IGroupOrProduct)getItem( position );
 
-      viewReferences.productImageView.setAspectRatio( DEFAULT_ASPECT_RATIO );
+      viewReferences.productImageView.setImageAspectRatio( DEFAULT_ASPECT_RATIO );
 
       URL    imageURL;
 

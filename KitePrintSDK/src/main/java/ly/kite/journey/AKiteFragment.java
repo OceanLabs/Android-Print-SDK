@@ -69,10 +69,6 @@ abstract public class AKiteFragment extends Fragment
 
   public  static final long    MAX_ACCEPTED_PRODUCT_AGE_MILLIS          = 1000 * 60 * 60;  // 1 hour
 
-  private static final float   MINIMUM_SENSIBLE_SIZE_CENTIMETERS        = 0.5f;
-  private static final float   MINIMUM_SENSIBLE_SIZE_INCHES             = 0.2f;
-  private static final float   MINIMUM_SENSIBLE_SIZE_PIXELS             = 10f;
-
 
 
   ////////// Static Variable(s) //////////
@@ -216,51 +212,6 @@ abstract public class AKiteFragment extends Fragment
         mManagedAdaptorView.setSelection( mManagedAdaptorViewPosition );
         }
       }
-    }
-
-
-  /*****************************************************
-   *
-   * Returns true, if the dimension is a sensible product
-   * size, false otherwise.
-   *
-   *****************************************************/
-  public boolean isSensibleProductSize( SingleUnitSize size )
-    {
-    if ( size == null ) return ( false );
-
-    UnitOfLength unit = size.getUnit();
-
-    float minimumSensibleSize = 1f;
-
-    switch ( unit )
-      {
-      case CENTIMETERS:
-        minimumSensibleSize = MINIMUM_SENSIBLE_SIZE_CENTIMETERS;
-        break;
-
-      case INCHES:
-        minimumSensibleSize = MINIMUM_SENSIBLE_SIZE_INCHES;
-        break;
-
-      case PIXELS:
-        minimumSensibleSize = MINIMUM_SENSIBLE_SIZE_PIXELS;
-        break;
-
-      default:
-      }
-
-
-    // Check that both dimensions are sensible
-
-    if ( size.getWidth() >= minimumSensibleSize  &&
-         size.getHeight() >= minimumSensibleSize )
-      {
-      return ( true );
-      }
-
-
-    return ( false );
     }
 
 

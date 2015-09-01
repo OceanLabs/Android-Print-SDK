@@ -323,11 +323,13 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
     if ( index < mItemList.size() )
       {
       mItemList.set( index, item );
+
       notifyItemChanged( index );
       }
     else
       {
       mItemList.add( item );
+
       notifyItemInserted( mItemList.size() - 1 );
       }
     }
@@ -341,16 +343,20 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
    *****************************************************/
   public int positionOf( AssetsAndQuantity assetsAndQuantity )
     {
-    for ( int i = 0; i < mItemList.size(); ++i )
+    // Check that we actually have an item list
+    if ( mItemList == null ) return ( -1 );
+
+    for ( int candidateItemIndex = 0; candidateItemIndex < mItemList.size(); candidateItemIndex ++ )
       {
-      Item item = mItemList.get( i );
-      if ( item.assetsAndQuantity == assetsAndQuantity )
+      Item candidateItem = mItemList.get( candidateItemIndex );
+
+      if ( candidateItem.assetsAndQuantity == assetsAndQuantity )
         {
-        return i;
+        return ( candidateItemIndex );
         }
       }
 
-    return -1;
+    return ( -1 );
     }
 
   /*****************************************************

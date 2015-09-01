@@ -191,9 +191,9 @@ public class EditableConsumerImageView extends FrameLayout implements IImageCons
    * Sets the mask as a drawable resource.
    *
    *****************************************************/
-  public void setMask( int resourceId )
+  public void setMask( int resourceId, float aspectRatio )
     {
-    mEditableImageView.setMask( resourceId );
+    mEditableImageView.setMask( resourceId, aspectRatio );
     }
 
 

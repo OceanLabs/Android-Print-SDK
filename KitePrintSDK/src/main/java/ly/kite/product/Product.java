@@ -69,13 +69,17 @@ public class Product implements Parcelable, IGroupOrProduct
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings("unused")
-  private static final String       LOG_TAG                        = "Product";
+  private static final String       LOG_TAG                           = "Product";
 
-  private static final UnitOfLength FALLBACK_UNIT_1                = UnitOfLength.CENTIMETERS;
-  private static final UnitOfLength FALLBACK_UNIT_2                = UnitOfLength.INCHES;
+  private static final UnitOfLength FALLBACK_UNIT_1                   = UnitOfLength.CENTIMETERS;
+  private static final UnitOfLength FALLBACK_UNIT_2                   = UnitOfLength.INCHES;
 
-  private static final String       DESTINATION_CODE_EUROPE        = "europe";
-  private static final String       DESTINATION_CODE_REST_OF_WORLD = "rest_of_world";
+  private static final String       DESTINATION_CODE_EUROPE           = "europe";
+  private static final String       DESTINATION_CODE_REST_OF_WORLD    = "rest_of_world";
+
+  public  static final float        MINIMUM_SENSIBLE_SIZE_CENTIMETERS = 0.5f;
+  public  static final float        MINIMUM_SENSIBLE_SIZE_INCHES      = 0.2f;
+  public  static final float        MINIMUM_SENSIBLE_SIZE_PIXELS      = 10f;
 
 
   ////////// Static Variable(s) //////////
@@ -119,6 +123,50 @@ public class Product implements Parcelable, IGroupOrProduct
 
 
   ////////// Static Method(s) //////////
+
+  /*****************************************************
+   *
+   * Returns true, if the dimension is a sensible product
+   * size, false otherwise.
+   *
+   *****************************************************/
+  static public boolean isSensibleSize( SingleUnitSize size )
+    {
+    if ( size == null ) return ( false );
+
+    UnitOfLength unit = size.getUnit();
+
+    float minimumSensibleSize = 1f;
+
+    switch ( unit )
+      {
+      case CENTIMETERS:
+        minimumSensibleSize = MINIMUM_SENSIBLE_SIZE_CENTIMETERS;
+        break;
+
+      case INCHES:
+        minimumSensibleSize = MINIMUM_SENSIBLE_SIZE_INCHES;
+        break;
+
+      case PIXELS:
+        minimumSensibleSize = MINIMUM_SENSIBLE_SIZE_PIXELS;
+        break;
+
+      default:
+      }
+
+
+    // Check that both dimensions are sensible
+
+    if ( size.getWidth() >= minimumSensibleSize  &&
+            size.getHeight() >= minimumSensibleSize )
+      {
+      return ( true );
+      }
+
+
+    return ( false );
+    }
 
 
   ////////// Constructor(s) //////////
@@ -479,6 +527,24 @@ public class Product implements Parcelable, IGroupOrProduct
     }
 
 
+  /*****************************************************
+   *
+   * Returns the aspect ratio of the image required for
+   * producing the product - *not* the product itself.
+   *
+   *****************************************************/
+  public float getImageAspectRatio()
+    {
+//    SingleUnitSize size = getSizeWithFallback( UnitOfLength.PIXELS );
+//
+//    if ( size != null && isSensibleSize( size ) )
+//      {
+//      return ( size.getAspectRatio() );
+//      }
+
+    return ( SingleUnitSize.DEFAULT_ASPECT_RATIO );
+    }
+
 
   /*****************************************************
    *
@@ -487,8 +553,9 @@ public class Product implements Parcelable, IGroupOrProduct
    *****************************************************/
   Product setBorder( Border border )
     {
-    this.mBorder = border;
-    return this;
+    mBorder = border;
+
+    return ( this );
     }
 
 
@@ -500,7 +567,7 @@ public class Product implements Parcelable, IGroupOrProduct
    *****************************************************/
   public Border getBorder()
     {
-    return mBorder;
+    return ( mBorder );
     }
 
 

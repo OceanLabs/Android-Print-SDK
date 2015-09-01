@@ -75,6 +75,7 @@ import ly.kite.R;
 import ly.kite.util.BooleanHelper;
 import ly.kite.util.IImageConsumer;
 import ly.kite.util.IImageTransformer;
+import ly.kite.util.ImageAgent;
 import ly.kite.widget.VisibilitySettingAnimationListener;
 
 
@@ -152,46 +153,6 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     }
 
 
-  /*****************************************************
-   *
-   * Returns a square bitmap image, cropped if necessary.
-   *
-   *****************************************************/
-  static private Bitmap toSquareCroppedImage( Bitmap originalBitmap )
-    {
-    // Get the bitmap dimensions
-    int originalWidth  = originalBitmap.getWidth();
-    int originalHeight = originalBitmap.getHeight();
-
-    // If the bitmap is already a square - return it without doing anything
-    if ( originalWidth == originalHeight ) return ( originalBitmap );
-
-
-    // Crop the bitmap to a square
-
-    int    croppedSize;
-    Bitmap editedBitmap;
-
-    if ( originalWidth < originalHeight )
-      {
-      // Crop to width
-
-      croppedSize  = originalWidth;
-      editedBitmap = Bitmap.createBitmap( originalBitmap, 0, ( originalHeight / 2 ) - ( croppedSize / 2 ), croppedSize, croppedSize );
-      }
-    else
-      {
-      // Crop to height
-
-      croppedSize  = originalHeight;
-      editedBitmap = Bitmap.createBitmap( originalBitmap, ( originalWidth / 2 ) - ( croppedSize / 2 ), 0, croppedSize, croppedSize );
-      }
-
-
-    return ( editedBitmap );
-    }
-
-
   ////////// Constructor(s) //////////
 
 
@@ -248,6 +209,33 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
         if ( ! isChecked ) mUncheckedImagesCount ++;
         }
       }
+
+
+    // We need to create a set of initial edited images - which are basically cropped
+    // to a square. We need to do these on a background thread, but We also need to make
+    // sure that we can't go further until all of them have been completed.
+
+    mUneditedAssetsRemaining = 0;
+
+    for ( AssetsAndQuantity assetsAndQuantity : mAssetsAndQuantityArrayList )
+      {
+      String productId = mProduct.getId();
+
+
+      // If we don't already have an edited asset - create one now
+
+      if ( ( productId == null ) ||
+           ( ! productId.equals( assetsAndQuantity.getEditedForProductId() ) ) )
+        {
+        mUneditedAssetsRemaining ++;
+
+        AssetImageCropper cropper = new AssetImageCropper( assetsAndQuantity, mProduct.getImageAspectRatio() );
+
+        AssetHelper.requestImage( mKiteActivity, assetsAndQuantity.getUneditedAsset(), cropper, 0, cropper );
+        }
+      }
+
+    mInitialUneditedAssetsCount = mUneditedAssetsRemaining;
 
 
     setTitle();
@@ -313,27 +301,6 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
     mProceedOverlayButton.setText( R.string.image_selection_proceed_button_text );
 
-
-    // We need to create a set of initial edited images - which are basically cropped
-    // to a square. We need to do these on a background thread, but We also need to make
-    // sure that we can't go further until all of them have been completed.
-
-    mUneditedAssetsRemaining = 0;
-
-    for ( AssetsAndQuantity assetsAndQuantity : mAssetsAndQuantityArrayList )
-      {
-      // Check that we don't already have a compatible edited asset
-      if ( ! mProduct.getUserJourneyType().editedImageCompatibleWith( assetsAndQuantity.getEditedFor() ) )
-        {
-        mUneditedAssetsRemaining ++;
-
-        AssetImageToSquareCropper cropper = new AssetImageToSquareCropper( assetsAndQuantity );
-
-        AssetHelper.requestImage( mKiteActivity, assetsAndQuantity.getUneditedAsset(), cropper, 0, cropper );
-        }
-      }
-
-    mInitialUneditedAssetsCount = mUneditedAssetsRemaining;
 
     showProgress( mUneditedAssetsRemaining, mInitialUneditedAssetsCount );
 
@@ -689,7 +656,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
    * Duplicates will be discarded.
    *
    *****************************************************/
-  private void addAssets(ArrayList<Asset> assets)
+  private void addAssets( ArrayList<Asset> assets )
     {
     boolean addedNewAsset = false;
 
@@ -731,7 +698,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
         // Request the image and crop it
 
-        AssetImageToSquareCropper cropper = new AssetImageToSquareCropper( assetsAndQuantity );
+        AssetImageCropper cropper = new AssetImageCropper( assetsAndQuantity, mProduct.getImageAspectRatio() );
 
         AssetHelper.requestImage( mKiteActivity, assetsAndQuantity.getUneditedAsset(), cropper, 0, cropper );
         }
@@ -916,23 +883,43 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
    * method gets called on the UI thread.
    *
    *****************************************************/
-  private class AssetImageToSquareCropper implements IImageTransformer, IImageConsumer
+  private class AssetImageCropper implements IImageTransformer, IImageConsumer
     {
     private AssetsAndQuantity  mAssetsAndQuantity;
+    private float              mCroppedAspectRatio;
 
 
-    AssetImageToSquareCropper( AssetsAndQuantity assetsAndQuantity )
+    AssetImageCropper( AssetsAndQuantity assetsAndQuantity, float croppedAspectRatio )
       {
-      mAssetsAndQuantity = assetsAndQuantity;
+      mAssetsAndQuantity  = assetsAndQuantity;
+      mCroppedAspectRatio = croppedAspectRatio;
       }
 
 
     ////////// AssetHelper.IImageTransformer Method(s) //////////
 
+    /*****************************************************
+     *
+     * Called on a background thread to transform a bitmap.
+     * We use this to crop the bitmap, and create a file-backed
+     * asset from it.
+     *
+     *****************************************************/
     @Override
     public Bitmap getTransformedBitmap( Bitmap bitmap )
       {
-      return ( toSquareCroppedImage( bitmap ) );
+      // Crop the bitmap to the required shape
+      Bitmap croppedBitmap = ImageAgent.crop( bitmap, mCroppedAspectRatio );
+
+
+      // Create a new file-backed asset from the cropped bitmap, and save it as the edited asset.
+
+      Asset editedAsset = AssetHelper.createAsCachedFile( mKiteActivity, croppedBitmap );
+
+      mAssetsAndQuantity.setEditedAsset( editedAsset, mProduct.getId() );
+
+
+      return ( croppedBitmap );
       }
 
 
@@ -944,19 +931,26 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
       // Ignore
       }
 
+
+    /*****************************************************
+     *
+     * Called on the UI thread, with the cropped image.
+     *
+     *****************************************************/
     @Override
     public void onImageAvailable( Object key, Bitmap bitmap )
       {
-      // Create a new file-backed asset from the cropped bitmap, and save it as the edited asset.
+      // Update the adaptor with the edited (cropped) image
 
-      Asset editedAsset = AssetHelper.createAsCachedFile( mKiteActivity, bitmap );
+      if ( mImagePackAdaptor != null )
+        {
+        int position = mImagePackAdaptor.positionOf( mAssetsAndQuantity );
 
-      mAssetsAndQuantity.setEditedAsset( editedAsset, mProduct.getUserJourneyType() );
-      int position = mImagePackAdaptor.positionOf( mAssetsAndQuantity );
-      mImagePackAdaptor.notifyItemChanged( position );
+        if ( position >= 0 ) mImagePackAdaptor.notifyItemChanged( position );
+        }
 
 
-      // If we now have all the cropped - enable the proceed button.
+      // If we now have all the cropped images - enable the proceed button.
 
       mUneditedAssetsRemaining --;
 
@@ -964,7 +958,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
       if ( mUneditedAssetsRemaining < 1 )
         {
-        mProceedOverlayButton.setEnabled( true );
+        if ( mProceedOverlayButton != null ) mProceedOverlayButton.setEnabled( true );
         }
       }
     }

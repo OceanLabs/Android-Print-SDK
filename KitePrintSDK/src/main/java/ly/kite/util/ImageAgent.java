@@ -48,6 +48,8 @@ import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
 
+import ly.kite.KiteSDK;
+
 
 ///// Class Declaration /////
 
@@ -144,6 +146,48 @@ public class ImageAgent
       }
 
     return ( new String( targetCharArray ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a cropped bitmap image.
+   *
+   *****************************************************/
+  static public Bitmap crop( Bitmap originalBitmap, float croppedAspectRatio )
+    {
+    // Get the bitmap dimensions
+    int originalWidth  = originalBitmap.getWidth();
+    int originalHeight = originalBitmap.getHeight();
+
+    // Avoid divide by zero
+    if ( originalHeight < KiteSDK.FLOAT_ZERO_THRESHOLD ) return ( originalBitmap );
+
+    float originalAspectRatio = (float)originalWidth / (float)originalHeight;
+
+
+
+    // Crop the bitmap
+
+    Bitmap croppedBitmap;
+
+    if ( croppedAspectRatio <= originalAspectRatio )
+      {
+      float croppedWidth  = originalWidth * croppedAspectRatio / originalAspectRatio;
+      float croppedHeight = originalHeight;
+
+      croppedBitmap = originalBitmap.createBitmap( originalBitmap, (int)( ( originalWidth - croppedWidth ) * 0.5f ), 0, (int)croppedWidth, (int)croppedHeight );
+      }
+    else
+      {
+      float croppedHeight = originalHeight * originalAspectRatio / croppedAspectRatio;
+      float croppedWidth  = originalWidth;
+
+      croppedBitmap = originalBitmap.createBitmap( originalBitmap, 0, (int)( ( originalHeight - croppedHeight ) * 0.5f ), (int)croppedWidth, (int)croppedHeight );
+      }
+
+
+    return ( croppedBitmap );
     }
 
 

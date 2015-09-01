@@ -42,6 +42,8 @@ package ly.kite.product;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import ly.kite.KiteSDK;
+
 
 ///// Class Declaration /////
 
@@ -55,7 +57,9 @@ public class SingleUnitSize implements Parcelable
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "SingleUnitSize";
+  private static final String  LOG_TAG              = "SingleUnitSize";
+
+  public  static final float   DEFAULT_ASPECT_RATIO = 1.0f;
 
 
   ////////// Static Variable(s) //////////
@@ -167,6 +171,20 @@ public class SingleUnitSize implements Parcelable
   public float getHeight()
     {
     return ( mHeight );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the aspect ratio.
+   *
+   *****************************************************/
+  public float getAspectRatio()
+    {
+    // Avoid divide by zero
+    if ( mHeight >= KiteSDK.FLOAT_ZERO_THRESHOLD ) return ( mWidth / mHeight );
+
+    return ( DEFAULT_ASPECT_RATIO );
     }
 
 

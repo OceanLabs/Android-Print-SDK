@@ -47,6 +47,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import ly.kite.R;
+import ly.kite.product.Border;
 
 
 ///// Class Declaration /////
@@ -140,6 +141,7 @@ public class FramedImageView extends AImageContainerFrame
     setPadding( width, width, width, width );
     }
 
+
   /*****************************************************
    *
    * Sets a frame border around the image by setting the
@@ -149,6 +151,18 @@ public class FramedImageView extends AImageContainerFrame
   public void setBorder( int left, int top, int right, int bottom )
     {
     setPadding( left, top, right, bottom );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets a frame border around the image by setting the
+   * padding.
+   *
+   *****************************************************/
+  public void setBorder( Border border )
+    {
+    setBorder( border.leftPixels, border.topPixels, border.rightPixels, border.bottomPixels );
     }
 
 

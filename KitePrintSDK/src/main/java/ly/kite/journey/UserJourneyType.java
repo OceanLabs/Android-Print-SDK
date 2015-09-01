@@ -52,41 +52,20 @@ import ly.kite.R;
  *****************************************************/
 public enum UserJourneyType
   {
-  CIRCLE ( R.drawable.filled_white_circle )
-          {
-          public boolean editedImageCompatibleWith( UserJourneyType otherType )
-            {
-            if ( otherType == CIRCLE || otherType == RECTANGLE )
-              {
-              return ( true );
-              }
-
-            return ( false );
-            }
-          },
+  CIRCLE ( R.drawable.filled_white_circle ),
   FRAME,
   GREETING_CARD,
   PHONE_CASE,
   PHOTOBOOK,
   POSTCARD,
   POSTER,
-  RECTANGLE ( R.drawable.filled_white_rectangle )
-          {
-          public boolean editedImageCompatibleWith( UserJourneyType otherType )
-            {
-            if ( otherType == RECTANGLE || otherType == CIRCLE )
-              {
-              return ( true );
-              }
-
-            return ( false );
-            }
-          };
+  RECTANGLE ( R.drawable.filled_white_rectangle );
 
 
   ////////// Member Variable(s) //////////
 
   private int  mMaskResourceId;
+
 
   ////////// Static Initialiser(s) //////////
 
@@ -109,21 +88,6 @@ public enum UserJourneyType
 
 
   ////////// Method(s) //////////
-
-  /*****************************************************
-   *
-   * Returns true if the other type is not null and
-   * its edited image is compatible with this one.
-   *
-   * The default is false. Override the method for
-   * individual types above.
-   *
-   *****************************************************/
-  public boolean editedImageCompatibleWith( UserJourneyType otherType )
-    {
-    return ( false );
-    }
-
 
   /*****************************************************
    *

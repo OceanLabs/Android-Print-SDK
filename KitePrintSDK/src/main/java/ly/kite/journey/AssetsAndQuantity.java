@@ -88,10 +88,7 @@ public class AssetsAndQuantity implements Parcelable
   private Asset            mEditedAsset;
   private int              mQuantity;
 
-  // The edited for field is useful if the user exits product creation and selects a different
-  // product: some editing will be valid across products. For example, rectangular stickers and
-  // circular stickers both crop to a square.
-  private UserJourneyType  mEditedFor;
+  private String           mEditedForProductId;
 
 
   ////////// Static Initialiser(s) //////////
@@ -184,14 +181,14 @@ public class AssetsAndQuantity implements Parcelable
    * Sets the edited asset.
    *
    *****************************************************/
-  public void setEditedAsset( Asset editedAsset, UserJourneyType editedFor )
+  public void setEditedAsset( Asset editedAsset, String editedForProductId )
     {
     mEditedAsset = editedAsset;
 
     // If the edited asset is being cleared - also clear
     // the edit for value.
-    if ( editedAsset == null ) mEditedFor = null;
-    else                       mEditedFor = editedFor;
+    if ( editedAsset == null ) mEditedForProductId = null;
+    else                       mEditedForProductId = editedForProductId;
     }
 
 
@@ -223,9 +220,9 @@ public class AssetsAndQuantity implements Parcelable
    * was intended for.
    *
    *****************************************************/
-  public UserJourneyType getEditedFor()
+  public String getEditedForProductId()
     {
-    return ( mEditedFor );
+    return ( mEditedForProductId );
     }
 
 

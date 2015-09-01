@@ -354,7 +354,7 @@ public class ProductCreationActivity extends AKiteActivity implements PhoneCaseF
     
     AssetsAndQuantity assetsAndQuantity = mAssetsAndQuantityArrayList.get( mLastEditedAssetIndex );
 
-    assetsAndQuantity.setEditedAsset( editedAsset, mProduct.getUserJourneyType() );
+    assetsAndQuantity.setEditedAsset( editedAsset, mProduct.getId() );
 
 
     // Remove the edit image fragment from the back stack

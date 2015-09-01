@@ -56,10 +56,10 @@ import android.widget.ProgressBar;
 
 import java.net.URL;
 
+import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.product.Asset;
 import ly.kite.product.AssetHelper;
-import ly.kite.util.FileDownloader;
 import ly.kite.util.IImageConsumer;
 import ly.kite.util.ImageAgent;
 
@@ -104,6 +104,11 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
   protected ProgressBar   mProgressSpinner;
 
   private   float         mWidthToHeightMultiplier;
+
+  private   float         mLeftPaddingProportion;
+  private   float         mTopPaddingProportion;
+  private   float         mRightPaddingProportion;
+  private   float         mBottomPaddingProportion;
 
   private   String        mRequestImageClass;
   private   Object        mRequestImageSource;
@@ -161,19 +166,33 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
   @Override
   protected void onMeasure( int widthMeasureSpec, int heightMeasureSpec )
     {
-    // If an aspect ratio was set - set the image view dimensions
+    int widthMode = MeasureSpec.getMode( widthMeasureSpec );
+    int widthSize = MeasureSpec.getSize( widthMeasureSpec );
 
-    if ( mWidthToHeightMultiplier > 0.001f )
+    if ( widthMode == MeasureSpec.AT_MOST || widthMode == MeasureSpec.EXACTLY )
       {
-      int widthMode = MeasureSpec.getMode( widthMeasureSpec );
-      int widthSize = MeasureSpec.getSize( widthMeasureSpec ) - ( getPaddingLeft() + getPaddingRight() );
+      // If a proportional padding was set - apply it now.
 
-      if ( widthMode == MeasureSpec.AT_MOST || widthMode == MeasureSpec.EXACTLY )
+      if ( mLeftPaddingProportion   >= KiteSDK.FLOAT_ZERO_THRESHOLD ||
+           mTopPaddingProportion    >= KiteSDK.FLOAT_ZERO_THRESHOLD ||
+           mRightPaddingProportion  >= KiteSDK.FLOAT_ZERO_THRESHOLD ||
+           mBottomPaddingProportion >= KiteSDK.FLOAT_ZERO_THRESHOLD )
+        {
+        setPadding( (int)( widthSize * mLeftPaddingProportion   ),
+                    (int)( widthSize * mTopPaddingProportion    ),
+                    (int)( widthSize * mRightPaddingProportion  ),
+                    (int)( widthSize * mBottomPaddingProportion ) );
+        }
+
+
+      // If an image aspect ratio was set - set the image view dimensions.
+
+      if ( mWidthToHeightMultiplier >= KiteSDK.FLOAT_ZERO_THRESHOLD )
         {
         ViewGroup.LayoutParams imageLayoutParams = mImageView.getLayoutParams();
 
-        imageLayoutParams.width  = widthSize;
-        imageLayoutParams.height = (int)( widthSize * mWidthToHeightMultiplier );
+        imageLayoutParams.width  = widthSize - ( getPaddingLeft() + getPaddingRight() );
+        imageLayoutParams.height = (int) ( imageLayoutParams.width * mWidthToHeightMultiplier );
 
         mImageView.setLayoutParams( imageLayoutParams );
         }
@@ -308,7 +327,7 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
 
       if ( typedArray.getValue( R.styleable.FixableImageFrame_aspectRatio, value ) )
         {
-        setAspectRatio( value.getFloat() );
+        setImageAspectRatio( value.getFloat() );
         }
 
 
@@ -332,9 +351,25 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
    * Sets the aspect ratio for images.
    *
    *****************************************************/
-  public void setAspectRatio( float aspectRatio )
+  public void setImageAspectRatio( float aspectRatio )
     {
     mWidthToHeightMultiplier = 1.0f / aspectRatio;
+    }
+
+
+  /*****************************************************
+   *
+   * Sets a frame border around the image as a proportion
+   * of the image size (which we won't know until we are
+   * measured), by setting the padding.
+   *
+   *****************************************************/
+  public void setPaddingProportions( float leftProportion, float topProportion, float rightProportion, float bottomProportion )
+    {
+    mLeftPaddingProportion = leftProportion;
+    mTopPaddingProportion = topProportion;
+    mRightPaddingProportion = rightProportion;
+    mBottomPaddingProportion = bottomProportion;
     }
 
 

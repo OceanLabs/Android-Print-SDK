@@ -58,6 +58,7 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
+import ly.kite.KiteSDK;
 import ly.kite.animation.ASimpleFloatPropertyAnimator;
 import ly.kite.product.Bleed;
 
@@ -78,8 +79,6 @@ public class EditableImageView extends View implements GestureDetector.OnGesture
   @SuppressWarnings( "unused" )
   private static final String LOG_TAG                            = "EditableImageView";
 
-  private static final float  FLOAT_ZERO_THRESHOLD               = 0.0001f;
-
   private static final float  MAX_IMAGE_ZOOM                     = 3.0f;
 
   private static final long   FLY_BACK_ANIMATION_DURATION_MILLIS = 150L;
@@ -96,8 +95,9 @@ public class EditableImageView extends View implements GestureDetector.OnGesture
   private int                   mViewHeight;
   private float                 mViewAspectRatio;
 
-  //private Bitmap                mMaskBitmap;
   private Drawable              mMaskDrawable;
+  private int                   mMaskWidth;
+  private int                   mMaskHeight;
   private Bleed                 mMaskBleed;
   private Rect                  mMaskToBlendSourceRect;
 
@@ -441,11 +441,25 @@ public class EditableImageView extends View implements GestureDetector.OnGesture
    * Sets the mask bitmap.
    *
    *****************************************************/
-  public void setMask( Bitmap bitmap, Bleed bleed )
+  public void setMask( Drawable drawable, float aspectRatio, Bleed bleed )
     {
-    //mMaskBitmap = bitmap;
-    mMaskDrawable = new BitmapDrawable( bitmap );
-    mMaskBleed  = bleed;
+    mMaskDrawable = drawable;
+
+    // If an aspect ratio was supplied - invent a suitable width and height.
+    if ( aspectRatio >= KiteSDK.FLOAT_ZERO_THRESHOLD )
+      {
+      mMaskHeight = 1000;
+      mMaskWidth  = (int)( mMaskHeight * aspectRatio );
+      }
+    else
+      {
+      mMaskWidth  = mMaskDrawable.getIntrinsicWidth();
+      mMaskHeight = mMaskDrawable.getIntrinsicHeight();
+      }
+
+    if ( bleed != null ) mMaskBleed  = bleed;
+    else                 mMaskBleed = new Bleed( 0, 0, 0, 0 );
+
 
     calculateSizes();
 
@@ -455,20 +469,35 @@ public class EditableImageView extends View implements GestureDetector.OnGesture
 
   /*****************************************************
    *
+   * Sets the mask bitmap.
+   *
+   *****************************************************/
+  public void setMask( Bitmap bitmap, Bleed bleed )
+    {
+    setMask( new BitmapDrawable( bitmap ), 0f, bleed );
+    }
+
+
+  /*****************************************************
+   *
    * Sets the mask as a drawable resource id.
+   *
+   *****************************************************/
+  public void setMask( int drawableResourceId, float aspectRatio )
+    {
+    setMask( getResources().getDrawable( drawableResourceId ), aspectRatio, null );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the mask as a drawable resource id, and fixes
+   * its aspect ratio
    *
    *****************************************************/
   public void setMask( int drawableResourceId )
     {
-    // Create a drawable from the resource
-    mMaskDrawable = getResources().getDrawable( drawableResourceId );
-
-    // Create a dummy mask of zero size
-    mMaskBleed = new Bleed( 0, 0, 0, 0 );
-
-    calculateSizes();
-
-    invalidate();
+    setMask( drawableResourceId, 0f );
     }
 
 
@@ -504,7 +533,7 @@ public class EditableImageView extends View implements GestureDetector.OnGesture
 
     if ( mMaskDrawable    == null ||
          mMaskBleed       == null ||
-         mViewAspectRatio  < FLOAT_ZERO_THRESHOLD ) return;
+         mViewAspectRatio  < KiteSDK.FLOAT_ZERO_THRESHOLD ) return;
 
 
     float halfViewWidth  = mViewWidth  * 0.5f;
@@ -516,8 +545,8 @@ public class EditableImageView extends View implements GestureDetector.OnGesture
     // The mask will therefore be the same size as, or smaller (if there is a bleed) than, the
     // blend canvas.
 
-    int unscaledMaskWidth           = mMaskDrawable.getIntrinsicWidth();
-    int unscaledMaskHeight          = mMaskDrawable.getIntrinsicHeight();
+    int unscaledMaskWidth           = mMaskWidth;
+    int unscaledMaskHeight          = mMaskHeight;
 
     int unscaledMaskPlusBleedWidth  = mMaskBleed.leftPixels + unscaledMaskWidth  + mMaskBleed.rightPixels;
     int unscaledMaskPlusBleedHeight = mMaskBleed.topPixels  + unscaledMaskHeight + mMaskBleed.bottomPixels;

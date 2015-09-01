@@ -40,8 +40,6 @@ package ly.kite.journey.reviewandedit;
 ///// Import(s) /////
 
 import android.content.Context;
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,13 +50,10 @@ import android.widget.TextView;
 import java.util.List;
 
 import ly.kite.R;
-import ly.kite.journey.UserJourneyType;
 import ly.kite.product.Asset;
 import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.product.Border;
 import ly.kite.product.Product;
-import ly.kite.product.SingleUnitSize;
-import ly.kite.product.UnitOfLength;
 import ly.kite.widget.FramedImageView;
 
 
@@ -74,7 +69,10 @@ public class AssetAndQuantityAdaptor extends BaseAdapter
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "AssetAndQuantityAdaptor";
+  private static final String  LOG_TAG          = "AssetAndQuantityAdaptor";
+
+  private static final int     MAX_BORDER_VALUE                      = 1000;
+  private static final float   BORDER_VALUE_TO_PROPORTION_MULTIPLIER = 1.0f / MAX_BORDER_VALUE;
 
 
   ////////// Static Variable(s) //////////
@@ -183,14 +181,37 @@ public class AssetAndQuantityAdaptor extends BaseAdapter
 
       // We only need to set the overlay or border once, when the view is first created,
       // since any re-use of the view will keep the properties.
-      if ( mProduct.getBorder() != null )
+
+      Border border = mProduct.getBorder();
+
+      if ( border != null )
         {
         viewReferences.framedImageView.setBackgroundColor( mContext.getResources().getColor( android.R.color.white ) );
-        Border b = mProduct.getBorder();
-        viewReferences.framedImageView.setBorder( b.leftPixels, b.topPixels, b.rightPixels, b.bottomPixels );
+
+        // The border values are values hard-coded for iOS (multiplied by 4). So to make them useful,
+        // work them out as proportions (of a maximum / 100% value) and then multiply them by the width
+        // in pixels of the parent.
+
+        float leftBorderProportion   = border.leftPixels   * BORDER_VALUE_TO_PROPORTION_MULTIPLIER;
+        float topBorderProportion    = border.topPixels    * BORDER_VALUE_TO_PROPORTION_MULTIPLIER;
+        float rightBorderProportion  = border.rightPixels  * BORDER_VALUE_TO_PROPORTION_MULTIPLIER;
+        float bottomBorderProportion = border.bottomPixels * BORDER_VALUE_TO_PROPORTION_MULTIPLIER;
+
+        int   parentWidth = parent.getWidth();
+
+        viewReferences.framedImageView.setPaddingProportions(
+                leftBorderProportion,
+                topBorderProportion,
+                rightBorderProportion,
+                bottomBorderProportion );
         }
 
       viewReferences.framedImageView.setStencil( mProduct.getUserJourneyType().maskResourceId() );
+
+
+      // Set the aspect ratio of the review image to match the product aspect ratio
+      //viewReferences.framedImageView.setImageAspectRatio( mProduct.getAspectRatio() );
+
 
       view.setTag( viewReferences );
       }

@@ -350,7 +350,7 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
               String.valueOf( quantityPerSheet )
               + " "
               + mProduct.getName()
-              + ( isSensibleProductSize( size ) ? " (" + sizeString + ")" : "" );
+              + ( Product.isSensibleSize( size ) ? " (" + sizeString + ")" : "" );
 
       summaryDescriptionTextView.setText( summaryDescription );
       }
@@ -360,7 +360,7 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
 
     if ( isVisible( sizeTextView ) )
       {
-      if ( isSensibleProductSize( size ) )
+      if ( Product.isSensibleSize( size ) )
         {
         sizeTextView.setText( String.format( sizeFormatString, size.getWidth(), size.getHeight(), size.getUnit().shortString( mKiteActivity ) ) );
         }

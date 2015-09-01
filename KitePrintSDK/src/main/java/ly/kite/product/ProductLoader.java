@@ -248,20 +248,21 @@ public class ProductLoader implements HTTPJSONRequest.HTTPJSONRequestListener
     return ( new Bleed( top, right, bottom, left ) );
     }
 
+
   /****************************************************
    *
    * Parses a JSON border.
    *
    ****************************************************/
   private static Border parseBorder( JSONArray borderJSONArray ) throws JSONException
-  {
-      int top    = borderJSONArray.getInt( 0 ) * 4; // * 4 to adjust for iOS screen density baked into ios_image_border: TODO: get Tom to add android border field
-      int right  = borderJSONArray.getInt( 1 ) * 4;
-      int bottom = borderJSONArray.getInt( 2 ) * 4;
-      int left   = borderJSONArray.getInt( 3 ) * 4;
+    {
+    int top    = borderJSONArray.getInt( 0 ) * 4; // * 4 to adjust for iOS screen density baked into ios_image_border: TODO: get Tom to add android border field
+    int right  = borderJSONArray.getInt( 1 ) * 4;
+    int bottom = borderJSONArray.getInt( 2 ) * 4;
+    int left   = borderJSONArray.getInt( 3 ) * 4;
 
-      return ( new Border( top, right, bottom, left ) );
-  }
+    return ( new Border( top, right, bottom, left ) );
+    }
 
 
   /****************************************************
