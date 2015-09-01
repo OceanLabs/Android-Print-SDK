@@ -175,6 +175,12 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
     if ( email != null ) mEmailEditText.setText( email );
     if ( phone != null ) mPhoneEditText.setText( phone );
 
+    if ( !KiteSDK.getInstance( this ).getRequestPhoneNumber() )
+      {
+      mPhoneEditText.setVisibility( View.GONE );
+      findViewById(R.id.phone_require_reason).setVisibility( View.GONE );
+      }
+
 
     String apiKey = getIntent().getStringExtra( EXTRA_PRINT_API_KEY );
     String envString = getIntent().getStringExtra( EXTRA_PRINT_ENVIRONMENT );
@@ -385,7 +391,7 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
       return;
       }
 
-    if ( phone.length() < 5 )
+    if ( KiteSDK.getInstance( this ).getRequestPhoneNumber() && phone.length() < 5 )
       {
       showErrorDialog( "Invalid Phone Number", "Please enter a valid phone number" );
       return;

@@ -70,8 +70,8 @@ public class MixpanelAgent implements HTTPJSONRequest.HTTPJSONRequestListener
   private static final String  LOG_TAG             = "MixpanelAgent";
 
   private static final String  ENDPOINT_URL_STRING = "https://api.mixpanel.com/track/";
-  //public  static final String  API_TOKEN           = "cdf64507670dd359c43aa8895fb87676";  // Live
-  public  static final String  API_TOKEN           = "e08854f70bc6a97b9f14457cbbb29b24";  // JL Test
+  public  static final String  API_TOKEN           = "cdf64507670dd359c43aa8895fb87676";  // Live
+  //public  static final String  API_TOKEN           = "e08854f70bc6a97b9f14457cbbb29b24";  // JL Test
 
   ////////// Static Variable(s) //////////
 

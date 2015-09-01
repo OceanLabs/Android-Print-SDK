@@ -40,6 +40,8 @@ package ly.kite.journey.reviewandedit;
 ///// Import(s) /////
 
 import android.content.Context;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,6 +55,10 @@ import ly.kite.R;
 import ly.kite.journey.UserJourneyType;
 import ly.kite.product.Asset;
 import ly.kite.journey.AssetsAndQuantity;
+import ly.kite.product.Border;
+import ly.kite.product.Product;
+import ly.kite.product.SingleUnitSize;
+import ly.kite.product.UnitOfLength;
 import ly.kite.widget.FramedImageView;
 
 
@@ -78,7 +84,7 @@ public class AssetAndQuantityAdaptor extends BaseAdapter
 
   private Context                  mContext;
   private List<AssetsAndQuantity>  mAssetsAndQuantityList;
-  private UserJourneyType          mUserJourneyType;
+  private Product                  mProduct;
   private IListener                mListener;
 
   private LayoutInflater           mLayoutInflator;
@@ -92,11 +98,11 @@ public class AssetAndQuantityAdaptor extends BaseAdapter
 
   ////////// Constructor(s) //////////
 
-  public AssetAndQuantityAdaptor( Context context, List<AssetsAndQuantity> assetsAndQuantityList, UserJourneyType userJourneyType, IListener listener )
+  public AssetAndQuantityAdaptor( Context context, List<AssetsAndQuantity> assetsAndQuantityList, Product product, IListener listener )
     {
     mContext               = context;
     mAssetsAndQuantityList = assetsAndQuantityList;
-    mUserJourneyType       = userJourneyType;
+    mProduct               = product;
     mListener              = listener;
 
     mLayoutInflator        = LayoutInflater.from( context );
@@ -177,15 +183,14 @@ public class AssetAndQuantityAdaptor extends BaseAdapter
 
       // We only need to set the overlay or border once, when the view is first created,
       // since any re-use of the view will keep the properties.
-
-      if ( mUserJourneyType == UserJourneyType.RECTANGLE )
+      if ( mProduct.getBorder() != null )
         {
-        viewReferences.framedImageView.setBackgroundColor( 0xffffffff );
-        viewReferences.framedImageView.setBorder( (int)mContext.getResources().getDimension( R.dimen.review_and_crop_rectangle_border ) );
+        viewReferences.framedImageView.setBackgroundColor( mContext.getResources().getColor( android.R.color.white ) );
+        Border b = mProduct.getBorder();
+        viewReferences.framedImageView.setBorder( b.leftPixels, b.topPixels, b.rightPixels, b.bottomPixels );
         }
 
-      viewReferences.framedImageView.setStencil( mUserJourneyType.maskResourceId() );
-
+      viewReferences.framedImageView.setStencil( mProduct.getUserJourneyType().maskResourceId() );
 
       view.setTag( viewReferences );
       }
@@ -204,7 +209,6 @@ public class AssetAndQuantityAdaptor extends BaseAdapter
     viewReferences.decreaseButton.setOnClickListener( viewReferences );
     viewReferences.increaseButton.setOnClickListener( viewReferences );
     viewReferences.editButton.setOnClickListener( viewReferences );
-
 
     return ( view );
     }

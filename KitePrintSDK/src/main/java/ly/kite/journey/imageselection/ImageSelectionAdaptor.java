@@ -264,6 +264,8 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
         // If have got an edited asset - request the image once the view
         // has been sized. Otherwise display a loading spinner.
 
+        viewHolder.checkableImageView.hideProgressSpinner();
+        viewHolder.checkableImageView.setBackgroundColor( mPlaceholderBackgroundColour1 );
         if ( editedAsset != null )
           {
           viewHolder.checkableImageView.requestScaledImageOnceSized( editedAsset );
@@ -271,7 +273,6 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
         else
           {
           viewHolder.checkableImageView.clear();
-          viewHolder.checkableImageView.showProgressSpinner();
           }
 
 
@@ -319,10 +320,38 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
    *****************************************************/
   private void putItem( int index, Item item )
     {
-    if ( index < mItemList.size() ) mItemList.set( index, item );
-    else                            mItemList.add( item );
+    if ( index < mItemList.size() )
+      {
+      mItemList.set( index, item );
+      notifyItemChanged( index );
+      }
+    else
+      {
+      mItemList.add( item );
+      notifyItemInserted( mItemList.size() - 1 );
+      }
     }
 
+
+  /*****************************************************
+   *
+   * Returns the position of the AssetsAndQuantity object
+   * for use with various adapter change notification methods
+   *
+   *****************************************************/
+  public int positionOf( AssetsAndQuantity assetsAndQuantity )
+    {
+    for ( int i = 0; i < mItemList.size(); ++i )
+      {
+      Item item = mItemList.get( i );
+      if ( item.assetsAndQuantity == assetsAndQuantity )
+        {
+        return i;
+        }
+      }
+
+    return -1;
+    }
 
   /*****************************************************
    *
@@ -345,9 +374,6 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
 
     mAssetCount ++;
     mFilledItemCount ++;
-
-
-    notifyDataSetChanged();
     }
 
 

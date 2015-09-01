@@ -112,6 +112,7 @@ public class Product implements Parcelable, IGroupOrProduct
   private URL                               mMaskURL;
   private Bleed                             mMaskBleed;
   private MultipleUnitSize                  mSize;
+  private Border                            mBorder;
 
 
   ////////// Static Initialiser(s) //////////
@@ -165,6 +166,7 @@ public class Product implements Parcelable, IGroupOrProduct
     mMaskURL = (URL) sourceParcel.readSerializable();
     mMaskBleed = (Bleed) sourceParcel.readParcelable( Bleed.class.getClassLoader() );
     mSize = (MultipleUnitSize) sourceParcel.readParcelable( MultipleUnitSize.class.getClassLoader() );
+    mBorder = (Border) sourceParcel.readParcelable( Border.class.getClassLoader() );
     }
 
 
@@ -219,6 +221,7 @@ public class Product implements Parcelable, IGroupOrProduct
 
     targetParcel.writeParcelable( mMaskBleed, flags );
     targetParcel.writeParcelable( mSize, flags );
+    targetParcel.writeParcelable( mBorder, flags );
     }
 
 
@@ -476,6 +479,31 @@ public class Product implements Parcelable, IGroupOrProduct
     }
 
 
+
+  /*****************************************************
+   *
+   * Set the border
+   *
+   *****************************************************/
+  Product setBorder( Border border )
+    {
+    this.mBorder = border;
+    return this;
+    }
+
+
+
+  /*****************************************************
+   *
+   * Returns the border size for this product
+   *
+   *****************************************************/
+  public Border getBorder()
+    {
+    return mBorder;
+    }
+
+
   /*****************************************************
    *
    * Returns the cost in a specific currency, falling back
@@ -613,6 +641,7 @@ public class Product implements Parcelable, IGroupOrProduct
               .append( "\n" );
       }
 
+    stringBuilder.append( "Border         : " ).append( mBorder != null ? mBorder.toString() : null ).append( "\n" );
 
     return ( stringBuilder.toString() );
     }

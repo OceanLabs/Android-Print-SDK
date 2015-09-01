@@ -344,8 +344,8 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
    * Displays a modal dialog.
    *
    *****************************************************/
-  protected void displayModalDialog(
-          int      titleTextResourceId,
+  public void displayModalDialog(
+          String      titleText,
           String   messageText,
           int      positiveTextResourceId,
           Runnable positiveRunnable,
@@ -360,7 +360,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     DialogCallbackHandler callbackHandler = new DialogCallbackHandler( positiveRunnable, negativeRunnable );
 
     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder( this )
-            .setTitle( titleTextResourceId )
+            .setTitle( titleText )
             .setMessage( messageText )
             .setCancelable( true )
             .setOnCancelListener( callbackHandler );
@@ -388,6 +388,24 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
           Runnable negativeRunnable )
     {
     displayModalDialog( titleTextResourceId, getString( messageTextResourceId ), positiveTextResourceId, positiveRunnable, negativeTextResourceId, negativeRunnable );
+    }
+
+
+
+  /*****************************************************
+   *
+   * Displays a modal dialog.
+   *
+   *****************************************************/
+  protected void displayModalDialog(
+          int      titleTextResource,
+          String   messageText,
+          int      positiveTextResourceId,
+          Runnable positiveRunnable,
+          int      negativeTextResourceId,
+          Runnable negativeRunnable )
+    {
+    displayModalDialog( getString( titleTextResource ),  messageText, positiveTextResourceId, positiveRunnable, negativeTextResourceId, negativeRunnable );
     }
 
 

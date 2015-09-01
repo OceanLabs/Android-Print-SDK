@@ -43,6 +43,7 @@ package ly.kite.journey.reviewandedit;
 ///// Class Declaration /////
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,6 +80,7 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
   ////////// Member Variable(s) //////////
 
   private GridView                     mGridView;
+  private Parcelable                   mGridViewState;
   private Button                       mProceedOverlayButton;
 
   private AssetAndQuantityAdaptor      mAssetAndQuantityAdaptor;
@@ -176,8 +178,17 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
     super.onTop();
 
     // Create and set the adaptor
-    mAssetAndQuantityAdaptor = new AssetAndQuantityAdaptor( mKiteActivity, mAssetsAndQuantityArrayList, mProduct.getUserJourneyType(), this );
+    mAssetAndQuantityAdaptor = new AssetAndQuantityAdaptor( mKiteActivity, mAssetsAndQuantityArrayList, mProduct, this );
     mGridView.setAdapter( mAssetAndQuantityAdaptor );
+
+    // restore gridview state
+    if ( mGridViewState != null )
+      {
+      mGridView.onRestoreInstanceState( mGridViewState );
+      mGridViewState = null;
+      }
+
+    setTitle(); // restore title
     }
 
 
@@ -193,9 +204,15 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
 
 
     // Clear out the stored images to reduce memory usage
-    // when not on this screen.
+    // when not on this screen. Save state so we can return
+    // to correct scroll offset in onTop
 
-    if ( mGridView != null ) mGridView.setAdapter( null );
+
+    if ( mGridView != null )
+      {
+      mGridViewState = mGridView.onSaveInstanceState();
+      mGridView.setAdapter( null );
+      }
 
     mAssetAndQuantityAdaptor = null;
     }
@@ -275,7 +292,38 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
 
       if ( mKiteActivity instanceof ICallback )
         {
-        ( (ICallback)mKiteActivity ).reOnConfirm();
+            // firstly check if number of images user has selected meets expectations, if not
+            // prompt the user for confirmation to continue
+            int numberOfImages = 0;
+
+            for ( AssetsAndQuantity assetsAndQuantity : mAssetsAndQuantityArrayList )
+              {
+              numberOfImages += assetsAndQuantity.getQuantity();
+              }
+
+            int quantityPerPack = mProduct.getQuantityPerSheet();
+            int numberOfPacks   = ( numberOfImages + ( quantityPerPack - 1 ) ) / quantityPerPack;
+            int expectedNumberOfImages = numberOfPacks * quantityPerPack;
+            if ( numberOfImages < expectedNumberOfImages )
+              {
+              mKiteActivity.displayModalDialog(
+                getString( R.string.alert_dialog_title_pack_not_full_format_string, numberOfImages ),
+                getString( R.string.alert_dialog_message_pack_not_full_format_string, expectedNumberOfImages - numberOfImages ),
+                R.string.print_these,
+                new Runnable()
+                  {
+                  @Override
+                  public void run()
+                    {
+                    ((ICallback) mKiteActivity).reOnConfirm();
+                    }
+                  },
+                R.string.add_more, null );
+              }
+            else
+              {
+              ((ICallback) mKiteActivity).reOnConfirm();
+              }
         }
       }
     }

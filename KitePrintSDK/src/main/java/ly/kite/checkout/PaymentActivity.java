@@ -166,7 +166,6 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
     {
     super.onCreate( savedInstanceState );
 
-
     String apiKey = getIntent().getStringExtra( EXTRA_PRINT_API_KEY );
     String envString = getIntent().getStringExtra( EXTRA_PRINT_ENVIRONMENT );
 
@@ -183,7 +182,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
       }
 
 
-    KiteSDK.DefaultEnvironment env = KiteSDK.DefaultEnvironment.TEST;
+    KiteSDK.DefaultEnvironment env = KiteSDK.DefaultEnvironment.LIVE;
     mPayPalEnvironment = PayPalCard.Environment.LIVE;
     if ( envString != null )
       {
@@ -210,7 +209,8 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
 
     PayPalConfiguration payPalConfiguration = new PayPalConfiguration()
             .clientId( mKiteSDKEnvironment.getPayPalClientId() )
-            .environment( mKiteSDKEnvironment.getPayPalEnvironment() );
+            .environment( mKiteSDKEnvironment.getPayPalEnvironment() )
+            .acceptCreditCards( false );
 
     Intent intent = new Intent( this, PayPalService.class );
     intent.putExtra( PayPalService.EXTRA_PAYPAL_CONFIGURATION, payPalConfiguration );
@@ -393,7 +393,6 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
       finish();
       }
     }
-
 
   @Override
   public void onDestroy()

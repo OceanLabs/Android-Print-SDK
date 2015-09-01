@@ -140,6 +140,17 @@ public class FramedImageView extends AImageContainerFrame
     setPadding( width, width, width, width );
     }
 
+  /*****************************************************
+   *
+   * Sets a frame border around the image by setting the
+   * padding.
+   *
+   *****************************************************/
+  public void setBorder( int left, int top, int right, int bottom )
+    {
+    setPadding( left, top, right, bottom );
+    }
+
 
   /*****************************************************
    *

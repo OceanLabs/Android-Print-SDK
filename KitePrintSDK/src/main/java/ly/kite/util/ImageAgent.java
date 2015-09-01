@@ -181,6 +181,8 @@ public class ImageAgent
    *
    * Clears any outstanding load / download requests.
    *
+   * Must be called on the UI thread.
+   *
    *****************************************************/
   public void clearPendingRequests()
     {
@@ -266,7 +268,6 @@ public class ImageAgent
     {
     // First check if we have been provided with a mapping to a resource id. If so - make
     // a resource request instead.
-
     Integer resourceIdAsInteger = mURLResourceIdTable.get( imageURL.toString() );
 
     if ( resourceIdAsInteger != null )

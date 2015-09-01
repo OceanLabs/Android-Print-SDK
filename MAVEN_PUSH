@@ -1,3 +1,5 @@
+# Anyone interested in an overview on how the below steps were derived: https://github.com/shamanland/gradle-mvn-push
+
 Create and complete ~/.gradle/gradle.properties with the follow:
 
 signing.keyId=???
@@ -7,19 +9,33 @@ signing.secretKeyRingFile=/Users/???/.gnupg/secring.gpg
 NEXUS_USERNAME=???
 NEXUS_PASSWORD=???
 
-1. Update top level gradle.properties as appropriate. Include SNAPSHOT in VERSION_NAME to deploy debug snapshot for testing first
-2. CLEAN THE PROJECT (otherwise cached files can be erroneously included) then run "./gradlew uploadArchives" to push to Maven Central
-3. Check pushed snapshot: https://oss.sonatype.org/content/repositories/snapshots/ly/kite/kite-print-sdk/
-4. Run through this to ensure snapshot works: http://central.sonatype.org/pages/releasing-the-deployment.html
+0. Ensure you're on master branch!
+1. Update top level /gradle.properties as appropriate bumping the SDK version at the very least. Use semantic versioning http://semver.org/. Include SNAPSHOT in VERSION_NAME (e.g. 2.0.0-SNAPSHOT) to deploy debug snapshot for testing first. Also update KiteSDK.java version to reflect this.
+2. If not a test/snapshot release then commit changes & git tag the project with VERSION_NAME specified in previous step i.e. 'git tag 2.0.0'. git push; git push --tags;
+3. CLEAN THE PROJECT (otherwise cached files can be erroneously included) then run "./gradlew uploadArchives" to push to Maven Central
 
-Test snapshot dependency by augmenting build.gradle with the following:
 
-repositories {
-    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/'}
-}
+Depending on whether you're create a SNAPSHOT/TEST release or a PRODUCTION release, pick your path below:
 
-dependencies {
-    compile 'ly.kite:kite-print-sdk:1.1.0-SNAPSHOT@aar'
-}
+#############SNAPSHOT RELEASES for Testing (if you included -SNAPSHOT in the version name)#############
 
-5. Do release (probably using dashboard http://central.sonatype.org/pages/releasing-the-deployment.html) and check: http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22kite-print-sdk%22
+4. Check pushed snapshot was uploaded successfully: https://oss.sonatype.org/content/repositories/snapshots/ly/kite/kite-print-sdk/
+
+
+5. Test snapshot dependency by augmenting build.gradle in a new SDK Test Project with the following:
+
+     repositories {
+     		  maven { url 'https://oss.sonatype.org/content/repositories/snapshots/'}
+     }
+
+     dependencies {
+     		  compile 'ly.kite:kite-print-sdk:1.1.0-SNAPSHOT@aar'
+     }
+
+Try start the SDK from this project -- does it work as expected? If so repeat the above but with -SNAPSHOT in the VERSION_NAME
+
+
+############# PRODUCTION RELEASES #############
+4. Run through this to ensure everything works: http://central.sonatype.org/pages/releasing-the-deployment.html
+5. Do release (probably using dashboard http://central.sonatype.org/pages/releasing-the-deployment.html)
+6. keep checking http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22kite-print-sdk%22 until it goes live -- sometimes this can take a few hours. Once it shows up here you'll be able to add it as a dependency in your app build.gradle

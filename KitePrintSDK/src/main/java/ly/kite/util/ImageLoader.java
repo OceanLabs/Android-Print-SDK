@@ -138,7 +138,7 @@ public class ImageLoader
     synchronized ( mRequestQueue )
       {
       // Add the request to the queue
-      mRequestQueue.add( request );
+      mRequestQueue.addFirst( request );
 
       // If the downloader task is already running - do nothing more
       if ( mLoaderTask != null ) return;
@@ -149,7 +149,7 @@ public class ImageLoader
 
     mLoaderTask = new LoaderTask();
 
-    mLoaderTask.execute();
+    mLoaderTask.executeOnExecutor( AsyncTask.SERIAL_EXECUTOR );
     }
 
 
