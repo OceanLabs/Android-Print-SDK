@@ -53,6 +53,7 @@ import ly.kite.R;
 import ly.kite.product.Asset;
 import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.product.Border;
+import ly.kite.product.BorderF;
 import ly.kite.product.Product;
 import ly.kite.widget.FramedImageView;
 
@@ -182,28 +183,17 @@ public class AssetAndQuantityAdaptor extends BaseAdapter
       // We only need to set the overlay or border once, when the view is first created,
       // since any re-use of the view will keep the properties.
 
-      Border border = mProduct.getBorder();
+      BorderF imageBorder = mProduct.getImageBorder();
 
-      if ( border != null )
+      if ( imageBorder != null )
         {
         viewReferences.framedImageView.setBackgroundColor( mContext.getResources().getColor( android.R.color.white ) );
 
-        // The border values are values hard-coded for iOS (multiplied by 4). So to make them useful,
-        // work them out as proportions (of a maximum / 100% value) and then multiply them by the width
-        // in pixels of the parent.
-
-        float leftBorderProportion   = border.leftPixels   * BORDER_VALUE_TO_PROPORTION_MULTIPLIER;
-        float topBorderProportion    = border.topPixels    * BORDER_VALUE_TO_PROPORTION_MULTIPLIER;
-        float rightBorderProportion  = border.rightPixels  * BORDER_VALUE_TO_PROPORTION_MULTIPLIER;
-        float bottomBorderProportion = border.bottomPixels * BORDER_VALUE_TO_PROPORTION_MULTIPLIER;
-
-        int   parentWidth = parent.getWidth();
-
         viewReferences.framedImageView.setPaddingProportions(
-                leftBorderProportion,
-                topBorderProportion,
-                rightBorderProportion,
-                bottomBorderProportion );
+                imageBorder.left,
+                imageBorder.top,
+                imageBorder.right,
+                imageBorder.bottom );
         }
 
       viewReferences.framedImageView.setStencil( mProduct.getUserJourneyType().maskResourceId() );

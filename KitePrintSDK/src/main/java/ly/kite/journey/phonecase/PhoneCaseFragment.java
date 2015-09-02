@@ -40,7 +40,6 @@ package ly.kite.journey.phonecase;
 ///// Import(s) /////
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -75,9 +74,6 @@ public class PhoneCaseFragment extends AEditImageFragment
   @SuppressWarnings( "unused" )
   private static final String      LOG_TAG                            = "PhoneCaseFragment";
 
-  public  static final String      BUNDLE_KEY_ASSET_AND_QUANTITY_LIST = "assetAndQuantityList";
-  public  static final String      BUNDLE_KEY_PRODUCT                 = "product";
-
 
   ////////// Static Variable(s) //////////
 
@@ -97,12 +93,11 @@ public class PhoneCaseFragment extends AEditImageFragment
    * Creates a new instance of this fragment.
    *
    *****************************************************/
-  public static PhoneCaseFragment newInstance( ArrayList<AssetsAndQuantity> assetAndQuantityArrayList, Product product )
+  public static PhoneCaseFragment newInstance( Product product )
     {
     PhoneCaseFragment fragment = new PhoneCaseFragment();
 
     Bundle arguments = new Bundle();
-    arguments.putParcelableArrayList( BUNDLE_KEY_ASSET_AND_QUANTITY_LIST, assetAndQuantityArrayList );
     arguments.putParcelable( BUNDLE_KEY_PRODUCT, product );
 
     fragment.setArguments( arguments );
@@ -127,35 +122,7 @@ public class PhoneCaseFragment extends AEditImageFragment
     super.onCreate( savedInstanceState );
 
 
-    // We have already obtained the product in the parent fragment
-
-
-    // Get the assets
-
-    Bundle arguments = getArguments();
-
-    if ( arguments != null )
-      {
-      mAssetAndQuantityArrayList = arguments.getParcelableArrayList( BUNDLE_KEY_ASSET_AND_QUANTITY_LIST );
-
-      if ( mAssetAndQuantityArrayList == null || mAssetAndQuantityArrayList.size() < 1 )
-        {
-        Log.e( LOG_TAG, "No asset list found" );
-
-        mKiteActivity.displayModalDialog(
-                R.string.alert_dialog_title_no_asset_list,
-                R.string.alert_dialog_message_no_asset_list,
-                AKiteActivity.NO_BUTTON,
-                null,
-                R.string.Cancel,
-                mKiteActivity.new FinishRunnable()
-        );
-
-        return;
-        }
-      }
-
-
+    // TODO: Uncomment when image selection is implemented
     //this.setHasOptionsMenu( true );
     }
 
@@ -165,7 +132,7 @@ public class PhoneCaseFragment extends AEditImageFragment
    * Called the first time the options menu is created.
    *
    *****************************************************/
-// Uncomment once we implement the add photo functionality
+// TODO: Uncomment once we implement the add photo functionality
 //  @Override
 //  public boolean onCreateOptionsMenu( Menu menu )
 //    {

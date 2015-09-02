@@ -50,13 +50,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.GridView;
 
-import java.util.ArrayList;
-
 import ly.kite.R;
 import ly.kite.analytics.Analytics;
 import ly.kite.journey.AProductCreationFragment;
 import ly.kite.journey.AssetsAndQuantity;
-import ly.kite.product.Asset;
 import ly.kite.product.Product;
 
 /*****************************************************
@@ -96,13 +93,11 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
    * Creates a new instance of this fragment.
    *
    *****************************************************/
-  public static ReviewAndEditFragment newInstance( ArrayList<AssetsAndQuantity> assetsAndQuantityArrayList,
-                                                   Product                      product )
+  public static ReviewAndEditFragment newInstance( Product product )
     {
     ReviewAndEditFragment fragment = new ReviewAndEditFragment();
 
     Bundle arguments = new Bundle();
-    arguments.putParcelableArrayList( BUNDLE_KEY_ASSETS_AND_QUANTITY_LIST, assetsAndQuantityArrayList );
     arguments.putParcelable( BUNDLE_KEY_PRODUCT, product );
 
     fragment.setArguments( arguments );
@@ -126,16 +121,6 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
     {
     super.onCreate( savedInstanceState );
 
-
-    // The super class will have retrieved any asset lists and product from the arguments, so
-    // we just need to make sure we got them.
-
-    if ( ! assetListValid() ) return;
-
-    if ( ! productIsValid() ) return;
-
-
-    setTitle();
 
     if ( savedInstanceState == null )
       {
@@ -207,10 +192,10 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
     // when not on this screen. Save state so we can return
     // to correct scroll offset in onTop
 
-
     if ( mGridView != null )
       {
       mGridViewState = mGridView.onSaveInstanceState();
+
       mGridView.setAdapter( null );
       }
 

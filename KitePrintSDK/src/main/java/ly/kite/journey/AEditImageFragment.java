@@ -62,7 +62,7 @@ import ly.kite.widget.EditableConsumerImageView;
  * edit an image to fit within a mask.
  *
  *****************************************************/
-abstract public class AEditImageFragment extends AKiteFragment implements View.OnClickListener
+abstract public class AEditImageFragment extends AProductCreationFragment implements View.OnClickListener
   {
   ////////// Static Constant(s) //////////
 

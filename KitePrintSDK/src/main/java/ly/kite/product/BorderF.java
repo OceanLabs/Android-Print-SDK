@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * AProductCreationFragment.java
+ * BorderF.java
  *
  *
  * Modified MIT License
@@ -34,42 +34,56 @@
 
 ///// Package Declaration /////
 
-package ly.kite.journey;
+package ly.kite.product;
 
 
 ///// Import(s) /////
 
-import android.os.Bundle;
-import android.util.Log;
-
-import java.util.ArrayList;
-
-import ly.kite.product.Product;
+import android.content.Context;
+import android.content.res.Resources;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.util.DisplayMetrics;
 
 
 ///// Class Declaration /////
 
 /*****************************************************
  *
- * This is the abstract super-class of product creation
- * fragments. It provides some common features.
+ * This class represents a border with float values.
  *
  *****************************************************/
-abstract public class AProductCreationFragment extends AKiteFragment
+public class BorderF implements Parcelable
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "AProductCreationFrag.";
+  private static final String  LOG_TAG = "BorderF";
 
 
   ////////// Static Variable(s) //////////
 
+  public static final Parcelable.Creator<BorderF> CREATOR =
+    new Parcelable.Creator<BorderF>()
+      {
+      public BorderF createFromParcel( Parcel sourceParcel )
+        {
+        return ( new BorderF( sourceParcel ) );
+        }
+
+      public BorderF[] newArray( int size )
+        {
+        return ( new BorderF[ size ] );
+        }
+      };
+
 
   ////////// Member Variable(s) //////////
 
-  protected Product                       mProduct;
-  protected ArrayList<AssetsAndQuantity>  mAssetsAndQuantityArrayList;
+  final public float left;
+  final public float top;
+  final public float right;
+  final public float bottom;
 
 
   ////////// Static Initialiser(s) //////////
@@ -80,70 +94,78 @@ abstract public class AProductCreationFragment extends AKiteFragment
 
   ////////// Constructor(s) //////////
 
+  public BorderF( float top, float right, float bottom, float left )
+    {
+    this.top    = top;
+    this.right  = right;
+    this.bottom = bottom;
+    this.left   = left;
+    }
 
-  ////////// AKiteFragment Method(s) //////////
+  public BorderF()
+    {
+    this( 0f, 0f, 0f, 0f );
+    }
+
+  // Constructor used by parcelable interface
+  private BorderF( Parcel sourceParcel )
+    {
+    this.top    = sourceParcel.readFloat();
+    this.left   = sourceParcel.readFloat();
+    this.right  = sourceParcel.readFloat();
+    this.bottom = sourceParcel.readFloat();
+    }
+
+
+  ////////// Parcelable Method(s) //////////
 
   /*****************************************************
    *
-   * Called when the fragment is created.
+   * Describes the contents of this parcelable.
    *
    *****************************************************/
   @Override
-  public void onCreate( Bundle savedInstanceState )
+  public int describeContents()
     {
-    super.onCreate( savedInstanceState );
-
-
-    // Get the product
-
-    Bundle arguments = getArguments();
-
-    if ( arguments == null )
-      {
-      Log.e( LOG_TAG, "No arguments found" );
-
-      return;
-      }
-
-    mProduct = arguments.getParcelable( BUNDLE_KEY_PRODUCT );
-
-
-    if ( mProduct == null )
-      {
-      throw ( new IllegalStateException( "No product supplied" ) );
-      }
+    return ( 0 );
     }
 
 
   /*****************************************************
    *
-   * Called after the activity is created.
+   * Write the contents of this product to a parcel.
    *
    *****************************************************/
   @Override
-  public void onActivityCreated( Bundle savedInstanceState )
+  public void writeToParcel( Parcel targetParcel, int flags )
     {
-    super.onActivityCreated( savedInstanceState );
-
-
-    // We can't get the shared assets and quantity list until after the
-    // activity has been created.
-
-    if ( mKiteActivity != null && mKiteActivity instanceof IAssetsAndQuantityHolder )
-      {
-      mAssetsAndQuantityArrayList = ( (IAssetsAndQuantityHolder)mKiteActivity ).getAssetsAndQuantityArrayList();
-      }
-
-    if ( mAssetsAndQuantityArrayList == null )
-      {
-      throw ( new IllegalStateException( "The assets and quantity list could not be obtained" ) );
-      }
-
+    targetParcel.writeFloat( this.top );
+    targetParcel.writeFloat( this.left );
+    targetParcel.writeFloat( this.right );
+    targetParcel.writeFloat( this.bottom );
     }
 
 
   ////////// Method(s) //////////
 
+  /*****************************************************
+   *
+   * Creates a string representation of this BorderF.
+   *
+   *****************************************************/
+  @Override
+  public String toString()
+    {
+    StringBuilder stringBuilder = new StringBuilder();
+
+    stringBuilder
+            .append( "{ top = " ).append( this.top )
+            .append( ", left = " ).append( this.left )
+            .append( ", right = " ).append( this.right )
+            .append( ", bottom = " ).append( this.bottom ).append( " }" );
+
+    return ( stringBuilder.toString() );
+    }
 
 
   ////////// Inner Class(es) //////////

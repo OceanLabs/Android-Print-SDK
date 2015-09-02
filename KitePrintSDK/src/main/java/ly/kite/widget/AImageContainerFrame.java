@@ -171,6 +171,7 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
 
     if ( widthMode == MeasureSpec.AT_MOST || widthMode == MeasureSpec.EXACTLY )
       {
+      // TODO: Calculate the top and bottom properly
       // If a proportional padding was set - apply it now.
 
       if ( mLeftPaddingProportion   >= KiteSDK.FLOAT_ZERO_THRESHOLD ||

@@ -45,6 +45,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -138,14 +139,12 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
    * Creates a new instance of this fragment.
    *
    *****************************************************/
-  public static ImageSelectionFragment newInstance( ArrayList<AssetsAndQuantity> assetsAndQuantityArrayList,
-                                                    Product                      product )
+  public static ImageSelectionFragment newInstance( Product product )
     {
     ImageSelectionFragment fragment = new ImageSelectionFragment();
 
     Bundle arguments = new Bundle();
-    arguments.putParcelableArrayList( BUNDLE_KEY_ASSETS_AND_QUANTITY_LIST, assetsAndQuantityArrayList );
-    arguments.putParcelable         ( BUNDLE_KEY_PRODUCT,                  product );
+    arguments.putParcelable( BUNDLE_KEY_PRODUCT, product );
 
     fragment.setArguments( arguments );
 
@@ -177,68 +176,6 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
       mAssetIsCheckedArrayList = BooleanHelper.arrayListFrom( assetIsCheckedArray );
       }
-
-
-    // The super class will have retrieved any asset lists and product from the arguments, so
-    // we just need to make sure we got them.
-
-    if ( ! assetListValid() ) return;
-
-    if ( ! productIsValid() ) return;
-
-
-    mNumberOfColumns = getResources().getInteger( R.integer.image_selection_grid_num_columns );
-
-
-    // If we don't have a valid "is checked" list - create a new one with all the images checked.
-
-    mUncheckedImagesCount = 0;
-
-    if ( mAssetIsCheckedArrayList == null || mAssetIsCheckedArrayList.size() != mAssetsAndQuantityArrayList.size() )
-      {
-      mAssetIsCheckedArrayList = new ArrayList<>( mAssetsAndQuantityArrayList.size() );
-
-      for ( AssetsAndQuantity assetAndQuantity : mAssetsAndQuantityArrayList ) mAssetIsCheckedArrayList.add( true );
-      }
-    else
-      {
-      // We already have a valid list, so scan it and calculate the number of unchecked images.
-
-      for ( boolean isChecked : mAssetIsCheckedArrayList )
-        {
-        if ( ! isChecked ) mUncheckedImagesCount ++;
-        }
-      }
-
-
-    // We need to create a set of initial edited images - which are basically cropped
-    // to a square. We need to do these on a background thread, but We also need to make
-    // sure that we can't go further until all of them have been completed.
-
-    mUneditedAssetsRemaining = 0;
-
-    for ( AssetsAndQuantity assetsAndQuantity : mAssetsAndQuantityArrayList )
-      {
-      String productId = mProduct.getId();
-
-
-      // If we don't already have an edited asset - create one now
-
-      if ( ( productId == null ) ||
-           ( ! productId.equals( assetsAndQuantity.getEditedForProductId() ) ) )
-        {
-        mUneditedAssetsRemaining ++;
-
-        AssetImageCropper cropper = new AssetImageCropper( assetsAndQuantity, mProduct.getImageAspectRatio() );
-
-        AssetHelper.requestImage( mKiteActivity, assetsAndQuantity.getUneditedAsset(), cropper, 0, cropper );
-        }
-      }
-
-    mInitialUneditedAssetsCount = mUneditedAssetsRemaining;
-
-
-    setTitle();
     }
 
 
@@ -276,8 +213,73 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     mImageSourceGridView.setAdapter( mImageSourceAdaptor );
 
 
-    // Set up the selected images
-    setUpRecyclerView();
+    // Set up the listener(s)
+    mImageSourceGridView.setOnItemClickListener( this );
+    mClearPhotosButton.setOnClickListener( this );
+    mProceedOverlayButton.setOnClickListener( this );
+
+
+    return ( view );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the activity is created.
+   *
+   *****************************************************/
+  @Override
+  public void onActivityCreated( Bundle savedInstanceState )
+    {
+    super.onActivityCreated( savedInstanceState );
+
+
+    // If we don't have a valid "is checked" list - create a new one with all the images checked.
+
+    mUncheckedImagesCount = 0;
+
+    if ( mAssetIsCheckedArrayList == null || mAssetIsCheckedArrayList.size() != mAssetsAndQuantityArrayList.size() )
+      {
+      mAssetIsCheckedArrayList = new ArrayList<>( mAssetsAndQuantityArrayList.size() );
+
+      for ( AssetsAndQuantity assetAndQuantity : mAssetsAndQuantityArrayList ) mAssetIsCheckedArrayList.add( true );
+      }
+    else
+      {
+      // We already have a valid list, so scan it and calculate the number of unchecked images.
+
+      for ( boolean isChecked : mAssetIsCheckedArrayList )
+        {
+        if ( ! isChecked ) mUncheckedImagesCount ++;
+        }
+      }
+
+
+    // We need to create a set of initial edited images - which are basically cropped
+    // to a square. We need to do these on a background thread, but We also need to make
+    // sure that we can't go further until all of them have been completed.
+
+    mUneditedAssetsRemaining = 0;
+
+    for ( AssetsAndQuantity assetsAndQuantity : mAssetsAndQuantityArrayList )
+      {
+      String productId = mProduct.getId();
+
+
+      // If we don't already have an edited asset - create one now
+
+      if ( ( productId == null ) ||
+              ( ! productId.equals( assetsAndQuantity.getEditedForProductId() ) ) )
+        {
+        mUneditedAssetsRemaining ++;
+
+        AssetImageCropper cropper = new AssetImageCropper( assetsAndQuantity, mProduct.getImageAspectRatio() );
+
+        AssetHelper.requestImage( mKiteActivity, assetsAndQuantity.getUneditedAsset(), cropper, 0, cropper );
+        }
+      }
+
+    mInitialUneditedAssetsCount = mUneditedAssetsRemaining;
 
 
     // If there are unchecked images, then we need to show (but not animate in) the clear photos
@@ -303,15 +305,6 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
 
     showProgress( mUneditedAssetsRemaining, mInitialUneditedAssetsCount );
-
-
-    // Set up the listener(s)
-    mImageSourceGridView.setOnItemClickListener( this );
-    mClearPhotosButton.setOnClickListener( this );
-    mProceedOverlayButton.setOnClickListener( this );
-
-
-    return ( view );
     }
 
 
@@ -448,8 +441,10 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     if ( mProduct != null ) setTitle();
 
 
-    // We don't set up the recycler view or enable the proceed button until all
-    // the assets have been cropped.
+    setUpRecyclerView();
+
+
+    // We don't enable the proceed button until all the assets have been cropped
 
     if ( mUneditedAssetsRemaining < 1 )
       {
@@ -549,14 +544,14 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     else if ( view == mProceedOverlayButton )
       {
       ///// Review and Crop /////
+
       if ( mAssetsAndQuantityArrayList.isEmpty() )
         {
         mKiteActivity.displayModalDialog(R.string.alert_dialog_title_oops, R.string.alert_dialog_message_no_images_selected, R.string.OK, null, 0, null);
-
         }
       else if ( mKiteActivity instanceof ICallback )
         {
-        ( (ICallback)mKiteActivity ).isOnNext( mAssetsAndQuantityArrayList );
+        ( (ICallback)mKiteActivity ).isOnNext();
         }
       }
 
@@ -642,6 +637,11 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
    *****************************************************/
   private void setUpRecyclerView()
     {
+    if ( mNumberOfColumns == 0 )
+      {
+      mNumberOfColumns = getResources().getInteger( R.integer.image_selection_grid_num_columns );
+      }
+
     mImagePackAdaptor = new ImageSelectionAdaptor( mKiteActivity, mProduct, mAssetsAndQuantityArrayList, mAssetIsCheckedArrayList, mNumberOfColumns, this );
 
     mImageLayoutManager = new GridLayoutManager( mKiteActivity, mNumberOfColumns );
@@ -740,8 +740,8 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
       }
 
 
-    int quantityPerPack       = mProduct.getQuantityPerSheet();
-    int numberOfPacks         = ( numberOfImages + ( quantityPerPack - 1 ) ) / quantityPerPack;
+    int quantityPerPack = mProduct.getQuantityPerSheet();
+    int numberOfPacks   = ( numberOfImages + ( quantityPerPack - 1 ) ) / quantityPerPack;
 
     mKiteActivity.setTitle( getString( R.string.image_selection_title_format_string, mProduct.getName(), numberOfImages, ( numberOfPacks * quantityPerPack ) ) );
     }
@@ -872,7 +872,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
    *****************************************************/
   public interface ICallback
     {
-    public void isOnNext( ArrayList<AssetsAndQuantity> assetsAndQuantityList );
+    public void isOnNext();
     }
 
 

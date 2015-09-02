@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * AProductCreationFragment.java
+ * IAssetsAndQuantityHolder.java
  *
  *
  * Modified MIT License
@@ -39,111 +39,30 @@ package ly.kite.journey;
 
 ///// Import(s) /////
 
-import android.os.Bundle;
-import android.util.Log;
-
 import java.util.ArrayList;
-
-import ly.kite.product.Product;
 
 
 ///// Class Declaration /////
 
 /*****************************************************
  *
- * This is the abstract super-class of product creation
- * fragments. It provides some common features.
+ * This interface defines a holder for an assets and quantity
+ * list.
  *
  *****************************************************/
-abstract public class AProductCreationFragment extends AKiteFragment
+public interface IAssetsAndQuantityHolder
   {
   ////////// Static Constant(s) //////////
-
-  @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "AProductCreationFrag.";
-
-
-  ////////// Static Variable(s) //////////
-
-
-  ////////// Member Variable(s) //////////
-
-  protected Product                       mProduct;
-  protected ArrayList<AssetsAndQuantity>  mAssetsAndQuantityArrayList;
-
-
-  ////////// Static Initialiser(s) //////////
-
-
-  ////////// Static Method(s) //////////
-
-
-  ////////// Constructor(s) //////////
-
-
-  ////////// AKiteFragment Method(s) //////////
-
-  /*****************************************************
-   *
-   * Called when the fragment is created.
-   *
-   *****************************************************/
-  @Override
-  public void onCreate( Bundle savedInstanceState )
-    {
-    super.onCreate( savedInstanceState );
-
-
-    // Get the product
-
-    Bundle arguments = getArguments();
-
-    if ( arguments == null )
-      {
-      Log.e( LOG_TAG, "No arguments found" );
-
-      return;
-      }
-
-    mProduct = arguments.getParcelable( BUNDLE_KEY_PRODUCT );
-
-
-    if ( mProduct == null )
-      {
-      throw ( new IllegalStateException( "No product supplied" ) );
-      }
-    }
-
-
-  /*****************************************************
-   *
-   * Called after the activity is created.
-   *
-   *****************************************************/
-  @Override
-  public void onActivityCreated( Bundle savedInstanceState )
-    {
-    super.onActivityCreated( savedInstanceState );
-
-
-    // We can't get the shared assets and quantity list until after the
-    // activity has been created.
-
-    if ( mKiteActivity != null && mKiteActivity instanceof IAssetsAndQuantityHolder )
-      {
-      mAssetsAndQuantityArrayList = ( (IAssetsAndQuantityHolder)mKiteActivity ).getAssetsAndQuantityArrayList();
-      }
-
-    if ( mAssetsAndQuantityArrayList == null )
-      {
-      throw ( new IllegalStateException( "The assets and quantity list could not be obtained" ) );
-      }
-
-    }
 
 
   ////////// Method(s) //////////
 
+  /*****************************************************
+   *
+   * Returns the assets and quantity list.
+   *
+   *****************************************************/
+  public ArrayList<AssetsAndQuantity> getAssetsAndQuantityArrayList();
 
 
   ////////// Inner Class(es) //////////

@@ -86,6 +86,7 @@ public class ProductLoader implements HTTPJSONRequest.HTTPJSONRequestListener
   private static final String  REQUEST_FORMAT_STRING                 = "%s/template/?limit=100";
 
   private static final String  JSON_NAME_AMOUNT                      = "amount";
+  private static final String  JSON_NAME_BOTTOM                      = "bottom";
   private static final String  JSON_NAME_CURRENCY                    = "currency";
   private static final String  JSON_NAME_CENTIMETERS                 = "cm";
   private static final String  JSON_NAME_COST                        = "cost";
@@ -93,9 +94,12 @@ public class ProductLoader implements HTTPJSONRequest.HTTPJSONRequestListener
   private static final String  JSON_NAME_GROUP_IMAGE                 = "ios_sdk_class_photo";
   private static final String  JSON_NAME_GROUP_LABEL                 = "ios_sdk_product_class";
   private static final String  JSON_NAME_HEIGHT                      = "height";
+  private static final String  JSON_NAME_IMAGE_ASPECT_RATIO          = "image_aspect_ratio";
+  private static final String  JSON_NAME_IMAGE_BORDER                = "image_border";
   private static final String  JSON_NAME_IMAGES_PER_PAGE             = "images_per_page";
   private static final String  JSON_NAME_INCH                        = "inch";
   private static final String  JSON_NAME_LABEL_COLOUR                = "ios_sdk_label_color";
+  private static final String  JSON_NAME_LEFT                        = "left";
   private static final String  JSON_NAME_MASK_BLEED                  = "mask_bleed";
   private static final String  JSON_NAME_BORDER                      = "ios_image_border";
   private static final String  JSON_NAME_MASK_URL                    = "mask_url";
@@ -111,7 +115,9 @@ public class ProductLoader implements HTTPJSONRequest.HTTPJSONRequestListener
   private static final String  JSON_NAME_PRODUCT_SUBCLASS            = "ios_sdk_product_subclass";
   private static final String  JSON_NAME_PRODUCT_TYPE                = "ios_sdk_product_type";
   private static final String  JSON_NAME_PRODUCT_UI_CLASS            = "ios_sdk_ui_class";
+  private static final String  JSON_NAME_RIGHT                       = "right";
   private static final String  JSON_NAME_SHIPPING_COSTS              = "shipping_costs";
+  private static final String  JSON_NAME_TOP                         = "top";
   private static final String  JSON_NAME_WIDTH                       = "width";
 
   private static final int     DEFAULT_IMAGES_PER_PAGE               = 1;
@@ -256,14 +262,14 @@ public class ProductLoader implements HTTPJSONRequest.HTTPJSONRequestListener
    * Parses a JSON border.
    *
    ****************************************************/
-  private static Border parseBorder( JSONArray borderJSONArray ) throws JSONException
+  private static BorderF parseImageBorder( JSONObject borderJSONObject ) throws JSONException
     {
-    int top    = borderJSONArray.getInt( 0 ) * 4; // * 4 to adjust for iOS screen density baked into ios_image_border: TODO: get Tom to add android border field
-    int right  = borderJSONArray.getInt( 1 ) * 4;
-    int bottom = borderJSONArray.getInt( 2 ) * 4;
-    int left   = borderJSONArray.getInt( 3 ) * 4;
+    float top    = (float)borderJSONObject.optDouble( JSON_NAME_TOP );
+    float right  = (float)borderJSONObject.optDouble( JSON_NAME_RIGHT );
+    float bottom = (float)borderJSONObject.optDouble( JSON_NAME_BOTTOM );
+    float left   = (float)borderJSONObject.optDouble( JSON_NAME_LEFT );
 
-    return ( new Border( top, right, bottom, left ) );
+    return ( new BorderF( top, right, bottom, left ) );
     }
 
 
@@ -392,6 +398,9 @@ public class ProductLoader implements HTTPJSONRequest.HTTPJSONRequestListener
 
         productJSONObject = productJSONArray.getJSONObject( productIndex );
 
+        // Uncomment to dump out JSON
+        Log.d( LOG_TAG, "Product JSON:\n" + productJSONObject.toString() );
+
         String                           productId     = productJSONObject.getString( JSON_NAME_PRODUCT_ID );
         String                           productName   = productJSONObject.getString( JSON_NAME_PRODUCT_NAME );
         int                              imagesPerPage = productJSONObject.optInt( JSON_NAME_IMAGES_PER_PAGE, DEFAULT_IMAGES_PER_PAGE );
@@ -413,12 +422,14 @@ public class ProductLoader implements HTTPJSONRequest.HTTPJSONRequestListener
         UserJourneyType        userJourneyType     = parseUserJourneyType( productDetailJSONObject.getString( JSON_NAME_PRODUCT_UI_CLASS ) );
         String                 productCode         = productDetailJSONObject.getString( JSON_NAME_PRODUCT_CODE );
         MultipleUnitSize       size                = parseProductSize( productDetailJSONObject.getJSONObject( JSON_NAME_PRODUCT_SIZE ) );
+        float                  imageAspectRatio    = (float)productDetailJSONObject.optDouble( JSON_NAME_IMAGE_ASPECT_RATIO, Product.DEFAULT_IMAGE_ASPECT_RATIO );
 
 
 
-        URL   maskURL   = null;
-        Bleed maskBleed = null;
-        Border border = null;
+
+        URL     maskURL     = null;
+        Bleed   maskBleed   = null;
+        BorderF imageBorder = null;
 
         try
           {
@@ -432,7 +443,7 @@ public class ProductLoader implements HTTPJSONRequest.HTTPJSONRequestListener
 
         try
           {
-          border = parseBorder( productDetailJSONObject.getJSONArray( JSON_NAME_BORDER ) );
+          imageBorder = parseImageBorder( productDetailJSONObject.getJSONObject( JSON_NAME_IMAGE_BORDER ) );
           }
         catch ( JSONException je)
           {
@@ -449,7 +460,7 @@ public class ProductLoader implements HTTPJSONRequest.HTTPJSONRequestListener
                 .setLabelColour( labelColour )
                 .setMask( maskURL, maskBleed )
                 .setSize( size )
-                .setBorder( border );
+                .setCreationImage( imageAspectRatio, imageBorder );
 
         Log.i( LOG_TAG, "-- Found product --" );
         Log.i( LOG_TAG, product.toLogString( groupLabel ) );

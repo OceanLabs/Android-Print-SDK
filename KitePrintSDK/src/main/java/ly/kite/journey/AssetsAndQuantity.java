@@ -130,7 +130,8 @@ public class AssetsAndQuantity implements Parcelable
       mEditedAsset = sourceParcel.readParcelable( Asset.class.getClassLoader() );
       }
 
-    mQuantity = sourceParcel.readInt();
+    mQuantity           = sourceParcel.readInt();
+    mEditedForProductId = sourceParcel.readString();
     }
 
 
@@ -160,6 +161,7 @@ public class AssetsAndQuantity implements Parcelable
       }
 
     targetParcel.writeInt( mQuantity );
+    targetParcel.writeString( mEditedForProductId );
     }
 
 

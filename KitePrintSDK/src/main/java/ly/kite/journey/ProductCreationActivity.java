@@ -40,6 +40,7 @@ package ly.kite.journey;
 ///// Import(s) /////
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -69,7 +70,8 @@ import ly.kite.product.Product;
  * journey fragments specific to the UI class.
  *
  *****************************************************/
-public class ProductCreationActivity extends AKiteActivity implements PhoneCaseFragment.ICallback,
+public class ProductCreationActivity extends AKiteActivity implements IAssetsAndQuantityHolder,
+                                                                      PhoneCaseFragment.ICallback,
                                                                       ImageSelectionFragment.ICallback,
                                                                       ReviewAndEditFragment.ICallback,
                                                                       EditImageFragment.ICallback
@@ -80,8 +82,12 @@ public class ProductCreationActivity extends AKiteActivity implements PhoneCaseF
   @SuppressWarnings( "unused" )
   private static final String  LOG_TAG                                    = "ProductCreationActivity";
 
-  private static final String  INTENT_EXTRA_NAME_ASSETS_AND_QUANTITY_LIST = KiteSDK.INTENT_PREFIX + ".assetsAndQuantityList";
-  private static final String  INTENT_EXTRA_NAME_PRODUCT                  = KiteSDK.INTENT_PREFIX + ".product";
+  private static final boolean DEBUG_STATE                                = true;
+
+  public  static final String  INTENT_EXTRA_NAME_ASSETS_AND_QUANTITY_LIST = KiteSDK.INTENT_PREFIX + ".assetsAndQuantityList";
+  public  static final String  INTENT_EXTRA_NAME_PRODUCT                  = KiteSDK.INTENT_PREFIX + ".product";
+
+  private static final String  BUNDLE_KEY_ASSETS_AND_QUANTITY_LIST        = "assetsAndQuantityList";
 
 
   ////////// Static Variable(s) //////////
@@ -157,6 +163,8 @@ public class ProductCreationActivity extends AKiteActivity implements PhoneCaseF
   @Override
   public void onCreate( Bundle savedInstanceState )
     {
+    if ( DEBUG_STATE ) Log.d( LOG_TAG, "onCreate( savedInstanceState = " + savedInstanceState + " )" );
+
     super.onCreate( savedInstanceState );
 
 
@@ -165,6 +173,16 @@ public class ProductCreationActivity extends AKiteActivity implements PhoneCaseF
       getWindow().setStatusBarColor( getResources().getColor( R.color.translucent_status_bar ) );
       }
 
+
+    // If we have a saved instance state - try to get the assets and quantity list from it, in preference
+    // to the intent. We will probably have added to it since. We need to do this before calling
+
+    if ( savedInstanceState != null )
+      {
+      mAssetsAndQuantityArrayList = savedInstanceState.getParcelableArrayList( BUNDLE_KEY_ASSETS_AND_QUANTITY_LIST );
+
+      if ( DEBUG_STATE ) Log.d( LOG_TAG, "this = " + this + ", mAssetsAndQuantityArrayList = " + mAssetsAndQuantityArrayList );
+      }
 
 
     // Get the intent extras
@@ -187,7 +205,14 @@ public class ProductCreationActivity extends AKiteActivity implements PhoneCaseF
       return;
       }
 
-    mAssetsAndQuantityArrayList = intent.getParcelableArrayListExtra( INTENT_EXTRA_NAME_ASSETS_AND_QUANTITY_LIST );
+
+    // If we didn't get an assets and quantity list from a saved state - get the original from the intent. If
+    // all else fails - create a new empty one.
+
+    if ( mAssetsAndQuantityArrayList == null )
+      {
+      mAssetsAndQuantityArrayList = intent.getParcelableArrayListExtra( INTENT_EXTRA_NAME_ASSETS_AND_QUANTITY_LIST );
+      }
 
     if ( mAssetsAndQuantityArrayList == null ) mAssetsAndQuantityArrayList = new ArrayList<>();
 
@@ -226,8 +251,118 @@ public class ProductCreationActivity extends AKiteActivity implements PhoneCaseF
     }
 
 
+  /*****************************************************
+   *
+   * Called when the activity becomes visible.
+   *
+   *****************************************************/
+  @Override
+  public void onStart()
+    {
+    if ( DEBUG_STATE ) Log.d( LOG_TAG, "onStart()" );
+
+    super.onStart();
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the activity gains focus.
+   *
+   *****************************************************/
+  @Override
+  public void onResume()
+    {
+    if ( DEBUG_STATE ) Log.d( LOG_TAG, "onResume()" );
+
+    super.onResume();
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the activity loses focus.
+   *
+   *****************************************************/
+  @Override
+  public void onPause()
+    {
+    if ( DEBUG_STATE ) Log.d( LOG_TAG, "onPause()" );
+
+    super.onPause();
+    }
+
+
+  /*****************************************************
+   *
+   * Called to save the state.
+   *
+   *****************************************************/
+  @Override
+  public void onSaveInstanceState( Bundle outState )
+    {
+    if ( DEBUG_STATE ) Log.d( LOG_TAG, "onSaveInstanceState( outBundle = " + outState + " )" );
+
+    super.onSaveInstanceState( outState );
+
+
+    // Save the assets and quantity list
+    if ( mAssetsAndQuantityArrayList != null )
+      {
+      outState.putParcelableArrayList( BUNDLE_KEY_ASSETS_AND_QUANTITY_LIST, mAssetsAndQuantityArrayList );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the activity becomes invisible.
+   *
+   *****************************************************/
+  @Override
+  public void onStop()
+    {
+    if ( DEBUG_STATE ) Log.d( LOG_TAG, "onStop()" );
+
+    super.onStop();
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the activity is destroyed.
+   *
+   *****************************************************/
+  @Override
+  public void onDestroy()
+    {
+    if ( DEBUG_STATE ) Log.d( LOG_TAG, "onDestroy()" );
+
+    super.onDestroy();
+    }
+
+
   // TODO: We need to pass an updated assets + quantity list back to the
   // TODO: calling activity.
+
+
+  ////////// IAssetsAndQuantityHolder Method(s) //////////
+
+  /*****************************************************
+   *
+   * Returns the assets and quantity list.
+   *
+   *****************************************************/
+  public ArrayList<AssetsAndQuantity> getAssetsAndQuantityArrayList()
+    {
+    if ( DEBUG_STATE )
+      {
+      Log.d( LOG_TAG, "getAssetsAndQuantityArrayList()" );
+      Log.d( LOG_TAG, "this = " + this + ", mAssetsAndQuantityArrayList = " + mAssetsAndQuantityArrayList );
+      }
+
+    return ( mAssetsAndQuantityArrayList );
+    }
 
 
   ////////// PhoneCaseFragment.ICallback Method(s) //////////
@@ -261,13 +396,11 @@ public class ProductCreationActivity extends AKiteActivity implements PhoneCaseF
    *
    *****************************************************/
   @Override
-  public void isOnNext( ArrayList<AssetsAndQuantity> assetsAndQuantityList )
+  public void isOnNext()
     {
-    // Update the assets and quantity list. If this is the first time - it will
-    // contain cropped assets that we need.
-    mAssetsAndQuantityArrayList = assetsAndQuantityList;
+    // Move forward to the review and edit screen
 
-    ReviewAndEditFragment reviewAndEditFragment = ReviewAndEditFragment.newInstance( mAssetsAndQuantityArrayList, mProduct );
+    ReviewAndEditFragment reviewAndEditFragment = ReviewAndEditFragment.newInstance( mProduct );
 
     addFragment( reviewAndEditFragment, ReviewAndEditFragment.TAG );
     }
@@ -389,15 +522,15 @@ public class ProductCreationActivity extends AKiteActivity implements PhoneCaseF
     switch ( mProduct.getUserJourneyType() )
       {
       case CIRCLE:
-        addFragment( ImageSelectionFragment.newInstance( mAssetsAndQuantityArrayList, mProduct ), ImageSelectionFragment.TAG );
+        addFragment( ImageSelectionFragment.newInstance( mProduct ), ImageSelectionFragment.TAG );
         break;
 
       case PHONE_CASE:
-        addFragment( PhoneCaseFragment.newInstance( mAssetsAndQuantityArrayList, mProduct ), PhoneCaseFragment.TAG );
+        addFragment( PhoneCaseFragment.newInstance( mProduct ), PhoneCaseFragment.TAG );
         break;
 
       case RECTANGLE:
-        addFragment( ImageSelectionFragment.newInstance( mAssetsAndQuantityArrayList, mProduct ), ImageSelectionFragment.TAG );
+        addFragment( ImageSelectionFragment.newInstance( mProduct ), ImageSelectionFragment.TAG );
         break;
       }
 

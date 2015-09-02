@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import ly.kite.KiteSDK;
 import ly.kite.address.Country;
 import ly.kite.journey.UserJourneyType;
 
@@ -80,6 +81,8 @@ public class Product implements Parcelable, IGroupOrProduct
   public  static final float        MINIMUM_SENSIBLE_SIZE_CENTIMETERS = 0.5f;
   public  static final float        MINIMUM_SENSIBLE_SIZE_INCHES      = 0.2f;
   public  static final float        MINIMUM_SENSIBLE_SIZE_PIXELS      = 10f;
+
+  public  static final float        DEFAULT_IMAGE_ASPECT_RATIO        = SingleUnitSize.DEFAULT_ASPECT_RATIO;
 
 
   ////////// Static Variable(s) //////////
@@ -116,7 +119,8 @@ public class Product implements Parcelable, IGroupOrProduct
   private URL                               mMaskURL;
   private Bleed                             mMaskBleed;
   private MultipleUnitSize                  mSize;
-  private Border                            mBorder;
+  private float                             mImageAspectRatio;
+  private BorderF                           mImageBorderF;
 
 
   ////////// Static Initialiser(s) //////////
@@ -211,10 +215,11 @@ public class Product implements Parcelable, IGroupOrProduct
       }
 
 
-    mMaskURL = (URL) sourceParcel.readSerializable();
-    mMaskBleed = (Bleed) sourceParcel.readParcelable( Bleed.class.getClassLoader() );
-    mSize = (MultipleUnitSize) sourceParcel.readParcelable( MultipleUnitSize.class.getClassLoader() );
-    mBorder = (Border) sourceParcel.readParcelable( Border.class.getClassLoader() );
+    mMaskURL          = (URL)sourceParcel.readSerializable();
+    mMaskBleed        = (Bleed)sourceParcel.readParcelable( Bleed.class.getClassLoader() );
+    mSize             = (MultipleUnitSize)sourceParcel.readParcelable( MultipleUnitSize.class.getClassLoader() );
+    mImageAspectRatio = sourceParcel.readFloat();
+    mImageBorderF     = (BorderF)sourceParcel.readParcelable( BorderF.class.getClassLoader() );
     }
 
 
@@ -269,7 +274,8 @@ public class Product implements Parcelable, IGroupOrProduct
 
     targetParcel.writeParcelable( mMaskBleed, flags );
     targetParcel.writeParcelable( mSize, flags );
-    targetParcel.writeParcelable( mBorder, flags );
+    targetParcel.writeFloat( mImageAspectRatio );
+    targetParcel.writeParcelable( mImageBorderF, flags );
     }
 
 
@@ -535,25 +541,19 @@ public class Product implements Parcelable, IGroupOrProduct
    *****************************************************/
   public float getImageAspectRatio()
     {
-//    SingleUnitSize size = getSizeWithFallback( UnitOfLength.PIXELS );
-//
-//    if ( size != null && isSensibleSize( size ) )
-//      {
-//      return ( size.getAspectRatio() );
-//      }
-
-    return ( SingleUnitSize.DEFAULT_ASPECT_RATIO );
+    return ( mImageAspectRatio >= KiteSDK.FLOAT_ZERO_THRESHOLD ? mImageAspectRatio : DEFAULT_IMAGE_ASPECT_RATIO );
     }
 
 
   /*****************************************************
    *
-   * Set the border
+   * Sets the properties of the creation image and border.
    *
    *****************************************************/
-  Product setBorder( Border border )
+  Product setCreationImage( float aspectRatio, BorderF border )
     {
-    mBorder = border;
+    mImageAspectRatio = aspectRatio;
+    mImageBorderF     = border;
 
     return ( this );
     }
@@ -562,12 +562,12 @@ public class Product implements Parcelable, IGroupOrProduct
 
   /*****************************************************
    *
-   * Returns the border size for this product
+   * Returns the image creation border for this product.
    *
    *****************************************************/
-  public Border getBorder()
+  public BorderF getImageBorder()
     {
-    return ( mBorder );
+    return ( mImageBorderF != null ? mImageBorderF : new BorderF() );
     }
 
 
@@ -708,7 +708,8 @@ public class Product implements Parcelable, IGroupOrProduct
               .append( "\n" );
       }
 
-    stringBuilder.append( "Border         : " ).append( mBorder != null ? mBorder.toString() : null ).append( "\n" );
+    stringBuilder.append( "Image Aspect Ratio : " ).append( mImageAspectRatio >= KiteSDK.FLOAT_ZERO_THRESHOLD ? mImageAspectRatio : String.valueOf( mImageAspectRatio ) ).append( "\n" );
+    stringBuilder.append( "Image Border       : " ).append( mImageBorderF != null ? mImageBorderF.toString() : null ).append( "\n" );
 
     return ( stringBuilder.toString() );
     }
