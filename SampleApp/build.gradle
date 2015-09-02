@@ -20,13 +20,12 @@ apply plugin: 'io.fabric'
 android {
     compileSdkVersion 22
     buildToolsVersion "21.1.2"
-
     defaultConfig {
         applicationId "ly.kite.sample"
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
+        versionCode 200
+        versionName '2.0'
     }
     buildTypes {
         release {
@@ -34,12 +33,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    productFlavors {
+    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':KitePrintSDK')
-
     compile('com.crashlytics.sdk.android:crashlytics:2.4.0@aar') {
         transitive = true;
     }

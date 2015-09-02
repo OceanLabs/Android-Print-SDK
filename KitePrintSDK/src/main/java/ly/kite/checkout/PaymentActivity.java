@@ -119,8 +119,8 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
 
   private PrintOrder mPrintOrder;
   private String mAPIKey;
-  private KiteSDK.DefaultEnvironment mKiteSDKEnvironment;
-  private PayPalCard.Environment mPayPalEnvironment;
+  private KiteSDK.Environment mKiteSDKEnvironment;
+  //private PayPalCard.Environment mPayPalEnvironment;
 
   private ListView mOrderSummaryListView;
   private EditText mPromoEditText;
@@ -182,26 +182,29 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
       }
 
 
-    KiteSDK.DefaultEnvironment env = KiteSDK.DefaultEnvironment.LIVE;
-    mPayPalEnvironment = PayPalCard.Environment.LIVE;
-    if ( envString != null )
-      {
-      if ( envString.equals( ENVIRONMENT_STAGING ) )
-        {
-        env = KiteSDK.DefaultEnvironment.STAGING;
-        mPayPalEnvironment = PayPalCard.Environment.SANDBOX;
-        }
-      else if ( envString.equals( ENVIRONMENT_TEST ) )
-        {
-        env = KiteSDK.DefaultEnvironment.TEST;
-        mPayPalEnvironment = PayPalCard.Environment.SANDBOX;
-        }
-      }
+//    KiteSDK.DefaultEnvironment env = KiteSDK.DefaultEnvironment.LIVE;
+//    mPayPalEnvironment = PayPalCard.Environment.LIVE;
+//    if ( envString != null )
+//      {
+//      if ( envString.equals( ENVIRONMENT_STAGING ) )
+//        {
+//        env = KiteSDK.DefaultEnvironment.STAGING;
+//        mPayPalEnvironment = PayPalCard.Environment.SANDBOX;
+//        }
+//      else if ( envString.equals( ENVIRONMENT_TEST ) )
+//        {
+//        env = KiteSDK.DefaultEnvironment.TEST;
+//        mPayPalEnvironment = PayPalCard.Environment.SANDBOX;
+//        }
+//      }
+//
+//    mAPIKey = apiKey;
+//    mKiteSDKEnvironment = env;
+//
+//    KiteSDK.getInstance( this ).setEnvironment( apiKey, env );
 
-    mAPIKey = apiKey;
-    mKiteSDKEnvironment = env;
+    mKiteSDKEnvironment = KiteSDK.getInstance( this ).getEnvironment();
 
-    KiteSDK.getInstance( this ).setEnvironment( apiKey, env );
 
         /*
          * Start PayPal Service
@@ -232,7 +235,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
     mPromoEditText.addTextChangedListener( new PromoCodeTextWatcher() );
 
 
-    if ( mPayPalEnvironment == PayPalCard.Environment.SANDBOX )
+    if ( mKiteSDKEnvironment.getPayPalEnvironment().equals( PayPalConfiguration.ENVIRONMENT_SANDBOX ) )
       {
       setTitle( "Payment (Sandbox)" );
       }
@@ -260,7 +263,6 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
 
     outState.putParcelable( EXTRA_PRINT_ORDER, mPrintOrder );
     outState.putString( EXTRA_PRINT_API_KEY, mAPIKey );
-    outState.putSerializable( EXTRA_PRINT_ENVIRONMENT, mKiteSDKEnvironment );
     }
 
 
@@ -271,14 +273,14 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
 
     mPrintOrder = savedInstanceState.getParcelable( EXTRA_PRINT_ORDER );
     mAPIKey = savedInstanceState.getString( EXTRA_PRINT_API_KEY );
-    mKiteSDKEnvironment = (KiteSDK.DefaultEnvironment) savedInstanceState.getSerializable( EXTRA_PRINT_ENVIRONMENT );
-    KiteSDK.getInstance( this ).setEnvironment( mAPIKey, mKiteSDKEnvironment );
-
-    mPayPalEnvironment = PayPalCard.Environment.LIVE;
-    if ( mKiteSDKEnvironment == KiteSDK.DefaultEnvironment.STAGING || mKiteSDKEnvironment == KiteSDK.DefaultEnvironment.TEST )
-      {
-      mPayPalEnvironment = PayPalCard.Environment.SANDBOX;
-      }
+//    mKiteSDKEnvironment = (KiteSDK.DefaultEnvironment) savedInstanceState.getSerializable( EXTRA_PRINT_ENVIRONMENT );
+//    KiteSDK.getInstance( this ).setEnvironment( mAPIKey, mKiteSDKEnvironment );
+//
+//    mPayPalEnvironment = PayPalCard.Environment.LIVE;
+//    if ( mKiteSDKEnvironment == KiteSDK.DefaultEnvironment.STAGING || mKiteSDKEnvironment == KiteSDK.DefaultEnvironment.TEST )
+//      {
+//      mPayPalEnvironment = PayPalCard.Environment.SANDBOX;
+//      }
     }
 
 
@@ -364,7 +366,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
         dialog.setTitle( "Processing" );
         dialog.setMessage( "One moment" );
         dialog.show();
-        card.storeCard( mPayPalEnvironment, new PayPalCardVaultStorageListener()
+        card.storeCard( mKiteSDKEnvironment, new PayPalCardVaultStorageListener()
         {
         @Override
         public void onStoreSuccess( PayPalCard card )
@@ -647,7 +649,8 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
     if ( lastUsedCard != null && !lastUsedCard.hasVaultStorageExpired() )
       {
       AlertDialog.Builder builder = new AlertDialog.Builder( this );
-      if ( mPayPalEnvironment == PayPalCard.Environment.SANDBOX )
+
+      if ( mKiteSDKEnvironment.getPayPalEnvironment().equals( PayPalConfiguration.ENVIRONMENT_SANDBOX ) )
         {
         builder.setTitle( "Payment Source (Sandbox)" );
         }
@@ -738,7 +741,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
 
     SingleCurrencyAmount totalCost = mOrderPricing.getTotalCost().getDefaultAmountWithFallback();
 
-    card.chargeCard( mPayPalEnvironment,
+    card.chargeCard( mKiteSDKEnvironment,
             totalCost.getAmount(),
             getPayPalCurrency( totalCost.getCurrencyCode() ),
             "",

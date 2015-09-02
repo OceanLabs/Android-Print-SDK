@@ -85,25 +85,25 @@ public class PayPalCard implements Serializable {
         }
     }
 
-    public static enum Environment {
-
-        SANDBOX ( "api.sandbox.paypal.com", KiteSDK.PAYPAL_CLIENT_ID_SANDBOX, "" ),
-        LIVE    ( "api.paypal.com",         KiteSDK.PAYPAL_CLIENT_ID_LIVE,    "" );
-
-        private final String apiEndpoint;
-        private final String authToken;
-
-        Environment(String apiEndpoint, String authToken) {
-            this.apiEndpoint = apiEndpoint;
-            this.authToken = authToken;
-        }
-
-    Environment( String apiEndpoint, String clientId, String password )
-      {
-      this( apiEndpoint, Base64.encodeToString( ( clientId + ":" + password ).getBytes(), Base64.NO_WRAP ) );
-      }
-
-    }
+//    public static enum Environment {
+//
+//        SANDBOX ( "api.sandbox.paypal.com", KiteSDK.PAYPAL_SANDBOX_CLIENT_ID, "" ),
+//        LIVE    ( "api.paypal.com",         KiteSDK.PAYPAL_LIVE_CLIENT_ID,    "" );
+//
+//        private final String apiEndpoint;
+//        private final String authToken;
+//
+//        Environment(String apiEndpoint, String authToken) {
+//            this.apiEndpoint = apiEndpoint;
+//            this.authToken = authToken;
+//        }
+//
+//    Environment( String apiEndpoint, String clientId, String password )
+//      {
+//      this( apiEndpoint, Base64.encodeToString( ( clientId + ":" + password ).getBytes(), Base64.NO_WRAP ) );
+//      }
+//
+//    }
 
     private static final long serialVersionUID = 0L;
     private String number;
@@ -190,12 +190,12 @@ public class PayPalCard implements Serializable {
         this.cvv2 = cvv2;
     }
 
-    private void getAccessToken(final Environment env, final AccessTokenListener listener) {
+    private void getAccessToken(final KiteSDK.Environment environment, final AccessTokenListener listener) {
         AsyncTask<Void, Void, Object> requestTask = new AsyncTask<Void, Void, Object>() {
             @Override
             protected Object doInBackground(Void... voids) {
                 HttpClient httpclient = new DefaultHttpClient();
-                HttpPost req = new HttpPost(String.format("https://%s/v1/oauth2/token", env.apiEndpoint));
+                HttpPost req = new HttpPost(String.format("https://%s/v1/oauth2/token", environment.getPayPalAPIEndpoint() ));
                 req.setHeader("Content-Type", "application/x-www-form-urlencoded");
                 try {
                     req.setEntity(new StringEntity("grant_type=client_credentials"));
@@ -203,7 +203,7 @@ public class PayPalCard implements Serializable {
                     return e;
                 }
 
-                req.setHeader("Authorization", "Basic " + env.authToken);
+                req.setHeader("Authorization", "Basic " + environment.getPayPalAuthToken() );
 
                 try {
                     HttpResponse response = httpclient.execute(req);
@@ -235,8 +235,8 @@ public class PayPalCard implements Serializable {
         requestTask.execute();
     }
 
-    public void storeCard(final Environment env, final PayPalCardVaultStorageListener listener) {
-        getAccessToken(env, new AccessTokenListener() {
+    public void storeCard(final KiteSDK.Environment environment, final PayPalCardVaultStorageListener listener) {
+        getAccessToken(environment, new AccessTokenListener() {
             @Override
             public void onAccessToken(final String accessToken) {
                 final JSONObject storeJSON = new JSONObject();
@@ -256,7 +256,7 @@ public class PayPalCard implements Serializable {
                     @Override
                     protected Object doInBackground(Void... voids) {
                         HttpClient httpclient = new DefaultHttpClient();
-                        HttpPost req = new HttpPost(String.format("https://%s/v1/vault/credit-card", env.apiEndpoint));
+                        HttpPost req = new HttpPost(String.format("https://%s/v1/vault/credit-card", environment.getPayPalAPIEndpoint() ));
                         req.setHeader("Content-Type", "application/json");
                         req.setHeader("Accept-Language", "en");
                         try {
@@ -364,8 +364,8 @@ public class PayPalCard implements Serializable {
         return payment;
     }
 
-    public void chargeCard(final Environment env, final BigDecimal amount, final Currency currency, final String description, final PayPalCardChargeListener listener) {
-        getAccessToken(env, new AccessTokenListener() {
+    public void chargeCard(final KiteSDK.Environment environment, final BigDecimal amount, final Currency currency, final String description, final PayPalCardChargeListener listener) {
+        getAccessToken(environment, new AccessTokenListener() {
             @Override
             public void onAccessToken(final String accessToken) {
                 JSONObject paymentJSON = null;
@@ -382,7 +382,7 @@ public class PayPalCard implements Serializable {
                         JSONObject paymentJSON = jsons[0];
 
                         HttpClient httpclient = new DefaultHttpClient();
-                        HttpPost req = new HttpPost(String.format("https://%s/v1/payments/payment", env.apiEndpoint));
+                        HttpPost req = new HttpPost(String.format("https://%s/v1/payments/payment", environment.getPayPalAPIEndpoint() ));
                         req.setHeader("Content-Type", "application/json");
                         req.setHeader("Accept-Language", "en");
                         try {

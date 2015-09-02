@@ -616,6 +616,9 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
    *****************************************************/
   private void showProgress( int remainingCount, int totalCount )
     {
+    if ( mProgressBar == null ) return;
+
+
     // If there are no images, or none left to crop, don't show the
     // progress bar.
 

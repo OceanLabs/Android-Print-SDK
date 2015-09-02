@@ -14,7 +14,7 @@
 
     <dimen name="paging_dot_size">8dp</dimen>
 
-    <dimen name="label_width">200dp</dimen>
+    <dimen name="label_width">240dp</dimen>
     <dimen name="label_padding_top">6dp</dimen>
     <dimen name="label_padding_bottom">9dp</dimen>
     <dimen name="label_margin_bottom">20dp</dimen>

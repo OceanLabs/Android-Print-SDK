@@ -130,9 +130,11 @@ public class ProductLoader implements HTTPJSONRequest.HTTPJSONRequestListener
 
   private HTTPJSONRequest                           mHTTPJSONRequest;
   private ArrayList<Pair<ProductConsumer,Handler>>  mConsumerHandlerList;
+  private String                                    mRequestAPIKey;
 
   private ArrayList<ProductGroup>                   mLastRetrievedProductGroupList;
   private HashMap<String,Product>                   mLastRetrievedProductTable;
+  private String                                    mLastRetrievedEnvironmentAPIKey;
   private long                                      mLastRetrievedElapsedRealtimeMillis;
 
 
@@ -595,11 +597,17 @@ public class ProductLoader implements HTTPJSONRequest.HTTPJSONRequestListener
       }
 
 
-    // There is no retrieval currently in progress. If there is a previously retrieved
-    // list, and that its age is OK for what we want, pass it to the consumer
-    // immediately.
+    // There is no retrieval currently in progress. Check if there is a suitable
+    // cached list of products to return immediately. The conditions for such a
+    // list are:
+    //   - The were retrieved suitably recently
+    //   - The API key for the environment matches the current one
 
-    if ( mLastRetrievedElapsedRealtimeMillis > 0 )
+    String currentAPIKey = KiteSDK.getInstance( mContext ).getAPIKey();
+
+    if ( mLastRetrievedEnvironmentAPIKey != null &&
+         mLastRetrievedEnvironmentAPIKey.equals( currentAPIKey ) &&
+         mLastRetrievedElapsedRealtimeMillis > 0 )
       {
       long minAcceptableElapsedRealtimeMillis = (
               maximumAgeMillis >= 0
@@ -622,6 +630,7 @@ public class ProductLoader implements HTTPJSONRequest.HTTPJSONRequestListener
     mHTTPJSONRequest = new HTTPJSONRequest( mContext, HTTPJSONRequest.HttpMethod.GET, url, null, null );
     mConsumerHandlerList = new ArrayList<Pair<ProductConsumer,Handler>>();
     mConsumerHandlerList.add( new Pair<ProductConsumer,Handler>( consumer, callbackHandler ) );
+    mRequestAPIKey = currentAPIKey;
 
 
     // Kick off the retrieval
@@ -701,6 +710,7 @@ public class ProductLoader implements HTTPJSONRequest.HTTPJSONRequestListener
       // Save the query result
       mLastRetrievedProductGroupList      = productGroupList;
       mLastRetrievedProductTable          = productTable;
+      mLastRetrievedEnvironmentAPIKey     = mRequestAPIKey;
       mLastRetrievedElapsedRealtimeMillis = SystemClock.elapsedRealtime();
 
       // Pass the update products list to each of the consumers that want it

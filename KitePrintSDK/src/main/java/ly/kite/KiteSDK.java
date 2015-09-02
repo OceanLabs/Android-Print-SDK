@@ -45,6 +45,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Base64;
 import android.util.Log;
 
 import com.paypal.android.sdk.payments.PayPalConfiguration;
@@ -80,18 +81,24 @@ public class KiteSDK
   private static final String KEY_API_ENDPOINT                          = "api_endpoint";
   private static final String KEY_PAYMENT_ACTIVITY_ENVIRONMENT          = "payment_activity_environment";
   private static final String KEY_PAYPAL_ENVIRONMENT                    = "paypal_environment";
+  private static final String KEY_PAYPAL_API_ENDPOINT                   = "paypal_api_endpoint";
   private static final String KEY_PAYPAL_CLIENT_ID                      = "paypay_client_id";
+  private static final String KEY_PAYPAL_PASSWORD                       = "paypal_password";
 
   private static final String SHARED_PREFERENCES_INSTAGRAM_CLIENT_ID    = "instagram_client_id";
   private static final String SHARED_PREFERENCES_INSTAGRAM_REDIRECT_URI = "instagram_redirect_uri";
 
   private static final String SHARED_PREFERENCES_REQUEST_PHONE_NUMBER   = "request_phone_number";
 
-  public  static final String PAYPAL_CLIENT_ID_LIVE                     = "ASYVBBCHF_KwVUstugKy4qvpQaPlUeE_5beKRJHpIP2d3SA_jZrsaUDTmLQY";
-  public  static final String PAYPAL_RECIPIENT_LIVE                     = "hello@kite.ly";
+  public  static final String PAYPAL_LIVE_API_ENDPOINT                  = "api.paypal.com";
+  public  static final String PAYPAL_LIVE_CLIENT_ID                     = "ASYVBBCHF_KwVUstugKy4qvpQaPlUeE_5beKRJHpIP2d3SA_jZrsaUDTmLQY";
+  public  static final String PAYPAL_LIVE_PASSWORD                      = "";
+  //public  static final String PAYPAL_RECIPIENT_LIVE                     = "hello@kite.ly";
 
-  public  static final String PAYPAL_CLIENT_ID_SANDBOX                  = "AcEcBRDxqcCKiikjm05FyD4Sfi4pkNP98AYN67sr3_yZdBe23xEk0qhdhZLM";
-  public  static final String PAYPAL_RECIPIENT_SANDBOX                  = "sandbox-merchant@kite.ly";
+  public  static final String PAYPAL_SANDBOX_API_ENDPOINT               = "api.sandbox.paypal.com";
+  public  static final String PAYPAL_SANDBOX_CLIENT_ID                  = "AcEcBRDxqcCKiikjm05FyD4Sfi4pkNP98AYN67sr3_yZdBe23xEk0qhdhZLM";
+  public  static final String PAYPAL_SANDBOX_PASSWORD                   = "";
+  //public  static final String PAYPAL_RECIPIENT_SANDBOX                  = "sandbox-merchant@kite.ly";
 
 
   public  static final String INTENT_PREFIX                             = "ly.kite";
@@ -423,8 +430,10 @@ public class KiteSDK
     public String getName();
     public String getAPIEndpoint();
     public String getPaymentActivityEnvironment();
-    public String getPayPalClientId();
     public String getPayPalEnvironment();
+    public String getPayPalAPIEndpoint();
+    public String getPayPalClientId();
+    public String getPayPalPassword();
 
     public void writeTo( SharedPreferences.Editor editor );
     }
@@ -441,7 +450,9 @@ public class KiteSDK
     private final String  mAPIEndpoint;
     private final String  mPaymentActivityEnvironment;
     private final String  mPayPalEnvironment;
+    private final String  mPayPalAPIEndpoint;
     private final String  mPayPalClientId;
+    private final String  mPayPalPassword;
 
 
     public static final Parcelable.Creator<Environment> CREATOR =
@@ -468,13 +479,15 @@ public class KiteSDK
       }
 
 
-    Environment( String name, String apiEndpoint, String paymentActivityEnvironment, String payPalEnvironment, String payPalClientId )
+    Environment( String name, String apiEndpoint, String paymentActivityEnvironment, String payPalEnvironment, String payPalAPIEndpoint, String payPalClientId, String payPalPassword )
       {
       mName                       = name;
       mAPIEndpoint                = apiEndpoint;
       mPaymentActivityEnvironment = paymentActivityEnvironment;
       mPayPalEnvironment          = payPalEnvironment;
+      mPayPalAPIEndpoint          = payPalAPIEndpoint;
       mPayPalClientId             = payPalClientId;
+      mPayPalPassword             = payPalPassword;
       }
 
 
@@ -484,7 +497,9 @@ public class KiteSDK
       mAPIEndpoint                = templateEnvironment.getAPIEndpoint();
       mPaymentActivityEnvironment = templateEnvironment.getPaymentActivityEnvironment();
       mPayPalEnvironment          = templateEnvironment.getPayPalEnvironment();
+      mPayPalAPIEndpoint          = templateEnvironment.getPayPalAPIEndpoint();
       mPayPalClientId             = payPalClientId;
+      mPayPalPassword             = templateEnvironment.getPayPalPassword();
       }
 
 
@@ -494,7 +509,9 @@ public class KiteSDK
       mAPIEndpoint                = templateEnvironment.getAPIEndpoint();
       mPaymentActivityEnvironment = templateEnvironment.getPaymentActivityEnvironment();
       mPayPalEnvironment          = templateEnvironment.getPayPalEnvironment();
+      mPayPalAPIEndpoint          = templateEnvironment.getPayPalAPIEndpoint();
       mPayPalClientId             = templateEnvironment.getPayPalClientId();
+      mPayPalPassword             = templateEnvironment.getPayPalPassword();
       }
 
 
@@ -504,7 +521,9 @@ public class KiteSDK
       mAPIEndpoint                = sharedPreferences.getString( KEY_API_ENDPOINT, null );
       mPaymentActivityEnvironment = sharedPreferences.getString( KEY_PAYMENT_ACTIVITY_ENVIRONMENT, null );
       mPayPalEnvironment          = sharedPreferences.getString( KEY_PAYPAL_ENVIRONMENT, null );
+      mPayPalAPIEndpoint          = sharedPreferences.getString( KEY_PAYPAL_API_ENDPOINT, null );
       mPayPalClientId             = sharedPreferences.getString( KEY_PAYPAL_CLIENT_ID, null );
+      mPayPalPassword             = sharedPreferences.getString( KEY_PAYPAL_PASSWORD, null );
       }
 
 
@@ -514,7 +533,9 @@ public class KiteSDK
       mAPIEndpoint                = parcel.readString();
       mPaymentActivityEnvironment = parcel.readString();
       mPayPalEnvironment          = parcel.readString();
+      mPayPalAPIEndpoint          = parcel.readString();
       mPayPalClientId             = parcel.readString();
+      mPayPalPassword            = parcel.readString();
       }
 
 
@@ -529,7 +550,9 @@ public class KiteSDK
       parcel.writeString( mAPIEndpoint );
       parcel.writeString( mPaymentActivityEnvironment );
       parcel.writeString( mPayPalEnvironment );
+      parcel.writeString( mPayPalAPIEndpoint );
       parcel.writeString( mPayPalClientId );
+      parcel.writeString( mPayPalPassword );
       }
 
 
@@ -548,22 +571,25 @@ public class KiteSDK
       return ( mPaymentActivityEnvironment );
       }
 
-    public String getPayPalClientId()
-      {
-      return ( mPayPalClientId );
-      }
-
     public String getPayPalEnvironment()
       {
       return ( mPayPalEnvironment );
       }
 
-
-    public Environment getEnvironment()
+    public String getPayPalAPIEndpoint()
       {
-      return ( this );
+      return ( mPayPalAPIEndpoint );
       }
 
+    public String getPayPalClientId()
+      {
+      return ( mPayPalClientId );
+      }
+
+    public String getPayPalPassword()
+      {
+      return ( mPayPalPassword );
+      }
 
     public void writeTo( SharedPreferences.Editor editor )
       {
@@ -571,6 +597,12 @@ public class KiteSDK
       editor.putString( KEY_API_ENDPOINT, mAPIEndpoint );
       editor.putString( KEY_PAYPAL_ENVIRONMENT, mPayPalEnvironment );
       editor.putString( KEY_PAYPAL_CLIENT_ID, mPayPalClientId );
+      }
+
+
+    public String getPayPalAuthToken()
+      {
+      return ( Base64.encodeToString( ( mPayPalClientId + ":" + mPayPalPassword ).getBytes(), Base64.NO_WRAP ) );
       }
     }
 
@@ -582,17 +614,17 @@ public class KiteSDK
    *****************************************************/
   public static enum DefaultEnvironment implements IEnvironment
     {
-    LIVE    ( "Live",    "https://api.kite.ly/v1.4",   PaymentActivity.ENVIRONMENT_LIVE,    PayPalConfiguration.ENVIRONMENT_PRODUCTION, PAYPAL_CLIENT_ID_LIVE    ),
-    TEST    ( "Test",    "https://api.kite.ly/v1.4",   PaymentActivity.ENVIRONMENT_TEST,    PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_CLIENT_ID_SANDBOX ),
-    STAGING ( "Staging", "http://staging.api.kite.ly", PaymentActivity.ENVIRONMENT_STAGING, PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_CLIENT_ID_SANDBOX ); /* private environment intended only for Ocean Labs use, hands off :) */
+    LIVE    ( "Live",    "https://api.kite.ly/v1.4",   PaymentActivity.ENVIRONMENT_LIVE,    PayPalConfiguration.ENVIRONMENT_PRODUCTION, PAYPAL_LIVE_API_ENDPOINT,    PAYPAL_LIVE_CLIENT_ID,    PAYPAL_LIVE_PASSWORD    ),
+    TEST    ( "Test",    "https://api.kite.ly/v1.4",   PaymentActivity.ENVIRONMENT_TEST,    PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_ENDPOINT, PAYPAL_SANDBOX_CLIENT_ID, PAYPAL_SANDBOX_PASSWORD ),
+    STAGING ( "Staging", "http://staging.api.kite.ly", PaymentActivity.ENVIRONMENT_STAGING, PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_ENDPOINT, PAYPAL_SANDBOX_CLIENT_ID, PAYPAL_SANDBOX_PASSWORD ); /* private environment intended only for Ocean Labs use, hands off :) */
 
 
     private Environment  mEnvironment;
 
 
-    private DefaultEnvironment( String name, String apiEndpoint, String paymentActivityEnvironment, String payPalEnvironment, String payPalClientId )
+    private DefaultEnvironment( String name, String apiEndpoint, String paymentActivityEnvironment, String payPalEnvironment, String payPalAPIEndpoint, String payPalClientId, String payPalPassword )
       {
-      mEnvironment = new Environment( name, apiEndpoint, paymentActivityEnvironment, payPalEnvironment, payPalClientId );
+      mEnvironment = new Environment( name, apiEndpoint, paymentActivityEnvironment, payPalEnvironment, payPalAPIEndpoint, payPalClientId, payPalPassword );
       }
 
 
@@ -611,15 +643,26 @@ public class KiteSDK
       return ( mEnvironment.getPaymentActivityEnvironment() );
       }
 
+    public String getPayPalEnvironment()
+      {
+      return ( mEnvironment.getPayPalEnvironment() );
+      }
+
+    public String getPayPalAPIEndpoint()
+      {
+      return ( mEnvironment.getPayPalAPIEndpoint() );
+      }
+
     public String getPayPalClientId()
       {
       return ( mEnvironment.getPayPalClientId() );
       }
 
-    public String getPayPalEnvironment()
+    public String getPayPalPassword()
       {
-      return ( mEnvironment.getPayPalEnvironment() );
+      return ( mEnvironment.getPayPalPassword() );
       }
+
 
     public void writeTo( SharedPreferences.Editor editor )
       {
