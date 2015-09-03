@@ -198,10 +198,8 @@ public class AssetAndQuantityAdaptor extends BaseAdapter
 
       viewReferences.framedImageView.setStencil( mProduct.getUserJourneyType().maskResourceId() );
 
-
-      // Set the aspect ratio of the review image to match the product aspect ratio
-      //viewReferences.framedImageView.setImageAspectRatio( mProduct.getAspectRatio() );
-
+      // Set the aspect ratio of the review image to match the image aspect ratio
+      viewReferences.framedImageView.setImageAspectRatio( mProduct.getImageAspectRatio() );
 
       view.setTag( viewReferences );
       }
