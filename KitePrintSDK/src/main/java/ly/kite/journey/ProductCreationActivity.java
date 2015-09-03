@@ -82,8 +82,6 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
   @SuppressWarnings( "unused" )
   private static final String  LOG_TAG                                    = "ProductCreationActivity";
 
-  private static final boolean DEBUG_STATE                                = true;
-
   public  static final String  INTENT_EXTRA_NAME_ASSETS_AND_QUANTITY_LIST = KiteSDK.INTENT_PREFIX + ".assetsAndQuantityList";
   public  static final String  INTENT_EXTRA_NAME_PRODUCT                  = KiteSDK.INTENT_PREFIX + ".product";
 
@@ -163,8 +161,6 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
   @Override
   public void onCreate( Bundle savedInstanceState )
     {
-    if ( DEBUG_STATE ) Log.d( LOG_TAG, "onCreate( savedInstanceState = " + savedInstanceState + " )" );
-
     super.onCreate( savedInstanceState );
 
 
@@ -180,8 +176,6 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
     if ( savedInstanceState != null )
       {
       mAssetsAndQuantityArrayList = savedInstanceState.getParcelableArrayList( BUNDLE_KEY_ASSETS_AND_QUANTITY_LIST );
-
-      if ( DEBUG_STATE ) Log.d( LOG_TAG, "this = " + this + ", mAssetsAndQuantityArrayList = " + mAssetsAndQuantityArrayList );
       }
 
 
@@ -253,56 +247,12 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
 
   /*****************************************************
    *
-   * Called when the activity becomes visible.
-   *
-   *****************************************************/
-  @Override
-  public void onStart()
-    {
-    if ( DEBUG_STATE ) Log.d( LOG_TAG, "onStart()" );
-
-    super.onStart();
-    }
-
-
-  /*****************************************************
-   *
-   * Called when the activity gains focus.
-   *
-   *****************************************************/
-  @Override
-  public void onResume()
-    {
-    if ( DEBUG_STATE ) Log.d( LOG_TAG, "onResume()" );
-
-    super.onResume();
-    }
-
-
-  /*****************************************************
-   *
-   * Called when the activity loses focus.
-   *
-   *****************************************************/
-  @Override
-  public void onPause()
-    {
-    if ( DEBUG_STATE ) Log.d( LOG_TAG, "onPause()" );
-
-    super.onPause();
-    }
-
-
-  /*****************************************************
-   *
    * Called to save the state.
    *
    *****************************************************/
   @Override
   public void onSaveInstanceState( Bundle outState )
     {
-    if ( DEBUG_STATE ) Log.d( LOG_TAG, "onSaveInstanceState( outBundle = " + outState + " )" );
-
     super.onSaveInstanceState( outState );
 
 
@@ -313,33 +263,6 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
       }
     }
 
-
-  /*****************************************************
-   *
-   * Called when the activity becomes invisible.
-   *
-   *****************************************************/
-  @Override
-  public void onStop()
-    {
-    if ( DEBUG_STATE ) Log.d( LOG_TAG, "onStop()" );
-
-    super.onStop();
-    }
-
-
-  /*****************************************************
-   *
-   * Called when the activity is destroyed.
-   *
-   *****************************************************/
-  @Override
-  public void onDestroy()
-    {
-    if ( DEBUG_STATE ) Log.d( LOG_TAG, "onDestroy()" );
-
-    super.onDestroy();
-    }
 
 
   // TODO: We need to pass an updated assets + quantity list back to the
@@ -355,12 +278,6 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
    *****************************************************/
   public ArrayList<AssetsAndQuantity> getAssetsAndQuantityArrayList()
     {
-    if ( DEBUG_STATE )
-      {
-      Log.d( LOG_TAG, "getAssetsAndQuantityArrayList()" );
-      Log.d( LOG_TAG, "this = " + this + ", mAssetsAndQuantityArrayList = " + mAssetsAndQuantityArrayList );
-      }
-
     return ( mAssetsAndQuantityArrayList );
     }
 
