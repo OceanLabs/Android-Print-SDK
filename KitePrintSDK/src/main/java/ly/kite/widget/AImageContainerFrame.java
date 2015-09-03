@@ -169,34 +169,62 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
     int widthMode = MeasureSpec.getMode( widthMeasureSpec );
     int widthSize = MeasureSpec.getSize( widthMeasureSpec );
 
-    if ( widthMode == MeasureSpec.AT_MOST || widthMode == MeasureSpec.EXACTLY )
-      {
-      // TODO: Calculate the top and bottom properly
-      // If a proportional padding was set - apply it now.
 
+    // We only do this jiggery-pokery if the width is known and we were supplied
+    // an aspect ratio.
+
+    if ( ( widthMode == MeasureSpec.AT_MOST || widthMode == MeasureSpec.EXACTLY ) &&
+         mWidthToHeightMultiplier >= KiteSDK.FLOAT_ZERO_THRESHOLD )
+      {
+      float imageWidth;
+      float imageHeight;
+
+      // If padding proportions have been supplied, our calculations are based on the following equations:
+      //
+      // Available width =   left padding                            + image width +   right padding
+      //                 = ( image width * left padding proportion ) + image width + ( image width * right padding proportion )
+      //                 = image width * ( left padding proportion + 1 + right padding proportion )
+      //
+      // Therefore: image width = available width / ( left padding proportion + 1 + right padding proportion )
+      //
       if ( mLeftPaddingProportion   >= KiteSDK.FLOAT_ZERO_THRESHOLD ||
            mTopPaddingProportion    >= KiteSDK.FLOAT_ZERO_THRESHOLD ||
            mRightPaddingProportion  >= KiteSDK.FLOAT_ZERO_THRESHOLD ||
            mBottomPaddingProportion >= KiteSDK.FLOAT_ZERO_THRESHOLD )
         {
-        setPadding( (int)( widthSize * mLeftPaddingProportion   ),
-                    (int)( widthSize * mTopPaddingProportion    ),
-                    (int)( widthSize * mRightPaddingProportion  ),
-                    (int)( widthSize * mBottomPaddingProportion ) );
+        imageWidth = widthSize / ( mLeftPaddingProportion + 1f + mRightPaddingProportion );
+
+        // Now that we have the width, we can calculate the height using the aspect ratio
+        imageHeight = imageWidth * mWidthToHeightMultiplier;
+
+
+        // Finally, calculate and set the padding.
+
+        float leftPadding   = imageWidth * mLeftPaddingProportion;
+        float rightPadding  = imageWidth * mRightPaddingProportion;
+        float topPadding    = imageHeight * mTopPaddingProportion;
+        float bottomPadding = imageHeight * mBottomPaddingProportion;
+
+        setPadding( (int)leftPadding, (int)topPadding, (int)rightPadding, (int)bottomPadding );
         }
-
-
-      // If an image aspect ratio was set - set the image view dimensions.
-
-      if ( mWidthToHeightMultiplier >= KiteSDK.FLOAT_ZERO_THRESHOLD )
+      else
         {
-        ViewGroup.LayoutParams imageLayoutParams = mImageView.getLayoutParams();
+        // If no padding proportions have been set, then leave the padding as it is, but still calculate
+        // the image dimensions.
 
-        imageLayoutParams.width  = widthSize - ( getPaddingLeft() + getPaddingRight() );
-        imageLayoutParams.height = (int) ( imageLayoutParams.width * mWidthToHeightMultiplier );
-
-        mImageView.setLayoutParams( imageLayoutParams );
+        imageWidth  = widthSize - ( getPaddingLeft() + getPaddingRight() );
+        imageHeight = imageWidth * mWidthToHeightMultiplier;
         }
+
+
+      // Set the width and height of the image
+
+      ViewGroup.LayoutParams imageLayoutParams = mImageView.getLayoutParams();
+
+      imageLayoutParams.width  = (int)imageWidth;
+      imageLayoutParams.height = (int)imageHeight;
+
+      mImageView.setLayoutParams( imageLayoutParams );
       }
 
 
