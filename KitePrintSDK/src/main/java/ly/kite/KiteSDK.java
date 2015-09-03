@@ -595,8 +595,11 @@ public class KiteSDK
       {
       editor.putString( KEY_ENVIRONMENT_NAME, mName );
       editor.putString( KEY_API_ENDPOINT, mAPIEndpoint );
+      editor.putString( KEY_PAYMENT_ACTIVITY_ENVIRONMENT, mPaymentActivityEnvironment );
       editor.putString( KEY_PAYPAL_ENVIRONMENT, mPayPalEnvironment );
+      editor.putString( KEY_PAYPAL_API_ENDPOINT, mPayPalAPIEndpoint );
       editor.putString( KEY_PAYPAL_CLIENT_ID, mPayPalClientId );
+      editor.putString( KEY_PAYPAL_PASSWORD, mPayPalPassword );
       }
 
 
