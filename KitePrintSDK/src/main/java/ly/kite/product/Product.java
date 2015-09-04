@@ -352,6 +352,18 @@ public class Product implements Parcelable, IGroupOrProduct
 
   /*****************************************************
    *
+   * Returns false, because a product does not contain
+   * multiple prices.
+   *
+   *****************************************************/
+  public boolean containsMultiplePrices()
+    {
+    return ( false );
+    }
+
+
+  /*****************************************************
+   *
    * Returns a display price.
    *
    *****************************************************/

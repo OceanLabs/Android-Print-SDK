@@ -80,6 +80,16 @@ public interface IGroupOrProduct
 
   /*****************************************************
    *
+   * Returns true if this group or product contains
+   * multiple prices. Generally if this is a group containing
+   * multiple products, it will return true.
+   *
+   *****************************************************/
+  public boolean containsMultiplePrices();
+
+
+  /*****************************************************
+   *
    * Returns a display price.
    *
    *****************************************************/

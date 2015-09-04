@@ -16,6 +16,12 @@
         android:visibility="gone"/>
 
     <ly.kite.widget.CustomTypefaceTextView
+        android:id="@+id/from_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <ly.kite.widget.CustomTypefaceTextView
         android:id="@+id/price_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

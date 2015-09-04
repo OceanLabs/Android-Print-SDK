@@ -392,6 +392,7 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements P
         viewReferences                   = new ViewReferences();
         viewReferences.productImageView  = (LabelledImageView)view.findViewById( R.id.labelled_image_view );
         viewReferences.priceOverlayFrame = (FrameLayout)view.findViewById( R.id.price_overlay_frame );
+        viewReferences.fromTextView      = (TextView)view.findViewById( R.id.from_text_view );
         viewReferences.priceTextView     = (TextView)view.findViewById( R.id.price_text_view );
 
         view.setTag( viewReferences );
@@ -415,6 +416,7 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements P
 
         // Populate any price overlay
         if ( viewReferences.priceOverlayFrame != null ) viewReferences.priceOverlayFrame.setVisibility( View.VISIBLE );
+        if ( viewReferences.fromTextView      != null ) viewReferences.fromTextView.setVisibility( groupOrProduct.containsMultiplePrices() ? View.VISIBLE : View.GONE );
         if ( viewReferences.priceTextView     != null ) viewReferences.priceTextView.setText( groupOrProduct.getDisplayPrice() );
 
         imageURL = groupOrProduct.getDisplayImageURL();
@@ -450,6 +452,7 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements P
       {
       LabelledImageView  productImageView;
       FrameLayout        priceOverlayFrame;
+      TextView           fromTextView;
       TextView           priceTextView;
       }
 

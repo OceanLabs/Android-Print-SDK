@@ -205,6 +205,18 @@ public class ProductGroup implements Parcelable, IGroupOrProduct
 
   /*****************************************************
    *
+   * Returns true if this group contains more than one
+   * product, false otherwise.
+   *
+   *****************************************************/
+  public boolean containsMultiplePrices()
+    {
+    return ( mProductList != null && mProductList.size() > 1 );
+    }
+
+
+  /*****************************************************
+   *
    * Returns a display price. For product groups, this is
    * the lowest price of any of the products in the group.
    * Thus it may be used as a "from" price.
