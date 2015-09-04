@@ -410,15 +410,16 @@ public class ImageLoader
           request.decodeBitmap( bitmapFactoryOptions );
 
 
-          // Increase the sub-sampling until the number of bitmap pixels is within the limit
+          // Increase the sub-sampling (by powers of 2) until the number of bitmap
+          // pixels is within the limit.
 
           int sampleSize   = 1;
           int bitmapPixels = bitmapFactoryOptions.outWidth * bitmapFactoryOptions.outHeight;
 
           while ( bitmapPixels > MAX_BITMAP_PIXELS )
             {
-            sampleSize ++;
-            bitmapPixels >>>= 1;
+            sampleSize   <<= 1;   //  * 2
+            bitmapPixels >>>= 1;  //  / 2
             }
 
 
