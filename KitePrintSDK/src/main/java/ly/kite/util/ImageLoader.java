@@ -63,7 +63,9 @@ public class ImageLoader
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "ImageLoader";
+  private static final String  LOG_TAG           = "ImageLoader";
+
+  private static final int     MAX_BITMAP_PIXELS = 6000000;  // 6MP
 
 
   ////////// Static Variable(s) //////////
@@ -287,6 +289,61 @@ public class ImageLoader
       this.sourceBytes = sourceBytes;
       }
 
+
+    Bitmap decodeBitmap( BitmapFactory.Options bitmapFactoryOptions ) throws Exception
+      {
+      Bitmap bitmap;
+
+      if ( this.sourceFile != null )
+        {
+        ///// File /////
+
+        bitmap = BitmapFactory.decodeFile( this.sourceFile.getPath(), bitmapFactoryOptions );
+        }
+      else if ( this.sourceResourceId != 0 )
+        {
+        ///// Resource Id /////
+
+        bitmap = BitmapFactory.decodeResource( mContext.getResources(), this.sourceResourceId, bitmapFactoryOptions );
+        }
+      else if ( this.sourceURI != null )
+        {
+        ///// URI /////
+
+        BufferedInputStream bis = new BufferedInputStream( mContext.getContentResolver().openInputStream( this.sourceURI ) );
+
+        bitmap = BitmapFactory.decodeStream( bis, null, bitmapFactoryOptions );
+        }
+      else if ( this.sourceBitmap != null )
+        {
+        ///// Bitmap /////
+
+        bitmap = this.sourceBitmap;
+
+        // Pretend we decoded a bitmap
+        bitmapFactoryOptions.outWidth  = bitmap.getWidth();
+        bitmapFactoryOptions.outHeight = bitmap.getHeight();
+
+        // There's no point in keeping a reference to the source bitmap if it gets transformed / scaled
+        this.sourceBitmap = null;
+        }
+      else if ( this.sourceBytes != null )
+        {
+        ///// Bytes /////
+
+        bitmap = BitmapFactory.decodeByteArray( this.sourceBytes, 0, this.sourceBytes.length, bitmapFactoryOptions );
+
+        // There's no point in keeping a reference to the source bytes
+        this.sourceBytes = null;
+        }
+      else
+        {
+        throw ( new IllegalStateException( "No bitmap to decode" ) );
+        }
+
+
+      return ( bitmap );
+      }
     }
 
 
@@ -327,48 +384,63 @@ public class ImageLoader
 
         try
           {
-          // Determine what type of request this is, and load the bitmap
+          // In order to avoid running out of memory, we need to first check how big the bitmap
+          // is. If it is larger that a size limit, we need to sub sample the decoded image to bring
+          // it down.
 
-          Bitmap bitmap = null;
 
-          if ( request.sourceFile != null )
+          // Determine the bitmap size
+
+          BitmapFactory.Options bitmapFactoryOptions = new BitmapFactory.Options();
+
+          bitmapFactoryOptions.inBitmap                 = null;
+          bitmapFactoryOptions.inDensity                = 0;
+          bitmapFactoryOptions.inDither                 = false;
+          bitmapFactoryOptions.inJustDecodeBounds       = true;
+          bitmapFactoryOptions.inMutable                = false;
+          bitmapFactoryOptions.inPreferQualityOverSpeed = false;
+          bitmapFactoryOptions.inPreferredConfig        = Bitmap.Config.ARGB_8888;
+          bitmapFactoryOptions.inSampleSize             = 0;
+          bitmapFactoryOptions.inScaled                 = false;
+          bitmapFactoryOptions.inScreenDensity 	        = 0;
+          bitmapFactoryOptions.inTargetDensity 	        = 0;
+          bitmapFactoryOptions.inTempStorage 	          = null;
+          bitmapFactoryOptions.mCancel                  = false;
+
+          request.decodeBitmap( bitmapFactoryOptions );
+
+
+          // Increase the sub-sampling until the number of bitmap pixels is within the limit
+
+          int sampleSize   = 1;
+          int bitmapPixels = bitmapFactoryOptions.outWidth * bitmapFactoryOptions.outHeight;
+
+          while ( bitmapPixels > MAX_BITMAP_PIXELS )
             {
-            ///// File /////
-
-            bitmap = BitmapFactory.decodeFile( request.sourceFile.getPath() );
+            sampleSize ++;
+            bitmapPixels >>>= 1;
             }
-          else if ( request.sourceResourceId != 0 )
-            {
-            ///// Resource Id /////
 
-            bitmap = BitmapFactory.decodeResource( mContext.getResources(), request.sourceResourceId );
-            }
-          else if ( request.sourceURI != null )
-            {
-            ///// URI /////
 
-            BufferedInputStream bis = new BufferedInputStream( mContext.getContentResolver().openInputStream( request.sourceURI ) );
+          // Decode the bitmap using the calculated sample size
 
-            bitmap = BitmapFactory.decodeStream( bis );
-            }
-          else if ( request.sourceBitmap != null )
-            {
-            ///// Bitmap /////
+          bitmapFactoryOptions = new BitmapFactory.Options();
 
-            bitmap = request.sourceBitmap;
+          bitmapFactoryOptions.inBitmap                 = null;
+          bitmapFactoryOptions.inDensity                = 0;
+          bitmapFactoryOptions.inDither                 = false;
+          bitmapFactoryOptions.inJustDecodeBounds       = false;
+          bitmapFactoryOptions.inMutable                = false;
+          bitmapFactoryOptions.inPreferQualityOverSpeed = false;
+          bitmapFactoryOptions.inPreferredConfig        = Bitmap.Config.ARGB_8888;
+          bitmapFactoryOptions.inSampleSize             = sampleSize;
+          bitmapFactoryOptions.inScaled                 = false;
+          bitmapFactoryOptions.inScreenDensity 	        = 0;
+          bitmapFactoryOptions.inTargetDensity 	        = 0;
+          bitmapFactoryOptions.inTempStorage 	          = null;
+          bitmapFactoryOptions.mCancel                  = false;
 
-            // There's no point in keeping a reference to the source bitmap if it gets transformed / scaled
-            request.sourceBitmap = null;
-            }
-          else if ( request.sourceBytes != null )
-            {
-            ///// Bytes /////
-
-            bitmap = BitmapFactory.decodeByteArray( request.sourceBytes, 0, request.sourceBytes.length );
-
-            // There's no point in keeping a reference to the source bytes
-            request.sourceBytes = null;
-            }
+          Bitmap bitmap = request.decodeBitmap( bitmapFactoryOptions );
 
 
           // Perform any transformation
