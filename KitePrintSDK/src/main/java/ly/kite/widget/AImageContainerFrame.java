@@ -242,7 +242,7 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
     {
     super.onSizeChanged( width, height, previousWidth, previousHeight );
 
-    mWidth   = width;
+    mWidth  = width;
     mHeight = height;
 
     checkRequestImage();
@@ -395,9 +395,9 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
    *****************************************************/
   public void setPaddingProportions( float leftProportion, float topProportion, float rightProportion, float bottomProportion )
     {
-    mLeftPaddingProportion = leftProportion;
-    mTopPaddingProportion = topProportion;
-    mRightPaddingProportion = rightProportion;
+    mLeftPaddingProportion   = leftProportion;
+    mTopPaddingProportion    = topProportion;
+    mRightPaddingProportion  = rightProportion;
     mBottomPaddingProportion = bottomProportion;
     }
 
@@ -580,4 +580,3 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
    *****************************************************/
 
   }
-

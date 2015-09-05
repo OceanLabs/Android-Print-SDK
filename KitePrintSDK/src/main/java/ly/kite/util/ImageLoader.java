@@ -65,7 +65,7 @@ public class ImageLoader
   @SuppressWarnings( "unused" )
   private static final String  LOG_TAG           = "ImageLoader";
 
-  private static final int     MAX_BITMAP_PIXELS = 6000000;  // 6MP
+  private static final int     MAX_BITMAP_PIXELS = 6000000;  // 6MP = 3000 x 2000
 
 
   ////////// Static Variable(s) //////////
@@ -414,12 +414,17 @@ public class ImageLoader
           // pixels is within the limit.
 
           int sampleSize   = 1;
-          int bitmapPixels = bitmapFactoryOptions.outWidth * bitmapFactoryOptions.outHeight;
+          int width        = bitmapFactoryOptions.outWidth;
+          int height       = bitmapFactoryOptions.outHeight;
+          int bitmapPixels = width * height;
 
           while ( bitmapPixels > MAX_BITMAP_PIXELS )
             {
             sampleSize   <<= 1;   //  * 2
-            bitmapPixels >>>= 1;  //  / 2
+            width        >>>= 1;  //  / 2
+            height       >>>= 1;  //  / 2
+
+            bitmapPixels = width * height;
             }
 
 

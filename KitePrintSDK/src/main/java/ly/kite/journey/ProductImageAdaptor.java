@@ -81,7 +81,7 @@ public class ProductImageAdaptor extends PagerAdapter
   private View.OnClickListener  mOnClickListener;
 
   private LayoutInflater        mLayoutInflator;
-  private ImageAgent mImageLoader;
+  private ImageAgent            mImageAgent;
 
 
   ////////// Static Initialiser(s) //////////
@@ -99,7 +99,7 @@ public class ProductImageAdaptor extends PagerAdapter
     mOnClickListener = onClickListener;
 
     mLayoutInflator  = LayoutInflater.from( context );
-    mImageLoader = ImageAgent.getInstance( context );
+    mImageAgent      = ImageAgent.getInstance( context );
     }
 
 
