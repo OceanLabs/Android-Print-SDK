@@ -144,9 +144,13 @@ public class PrintOrder implements Parcelable /* , Serializable */
 
             if (getOrderPricing() != null) {
                 SingleCurrencyAmount orderCost = getOrderPricing().getTotalCost().getDefaultAmountWithFallback();
-                JSONObject customerPayment = new JSONObject();
-                customerPayment.put("currency", orderCost.getCurrencyCode());
-                customerPayment.put("amount", orderCost.getAmount().floatValue());
+                // construct customer payment object in a round about manner to guarantee 2dp amount value
+                StringBuilder builder = new StringBuilder();
+                builder.append("{");
+                builder.append("\"currency\": \"").append(orderCost.getCurrencyCode()).append("\"").append(",");
+                builder.append(String.format("\"amount\": %.2f",  orderCost.getAmount().floatValue()));
+                builder.append("}");
+                JSONObject customerPayment = new JSONObject(builder.toString());
                 json.put("customer_payment", customerPayment);
             }
 
