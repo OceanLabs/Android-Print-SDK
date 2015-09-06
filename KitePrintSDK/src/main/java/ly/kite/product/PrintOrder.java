@@ -3,6 +3,7 @@ package ly.kite.product;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import ly.kite.address.Address;
@@ -148,7 +150,7 @@ public class PrintOrder implements Parcelable /* , Serializable */
                 StringBuilder builder = new StringBuilder();
                 builder.append("{");
                 builder.append("\"currency\": \"").append(orderCost.getCurrencyCode()).append("\"").append(",");
-                builder.append(String.format("\"amount\": %.2f",  orderCost.getAmount().floatValue()));
+                builder.append(String.format(Locale.ENGLISH, "\"amount\": %.2f",  orderCost.getAmount().floatValue())); // Local.ENGLISH to force . separator instead of comma
                 builder.append("}");
                 JSONObject customerPayment = new JSONObject(builder.toString());
                 json.put("customer_payment", customerPayment);
