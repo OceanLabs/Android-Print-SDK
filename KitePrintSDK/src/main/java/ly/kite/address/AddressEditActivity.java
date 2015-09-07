@@ -154,12 +154,34 @@ public class AddressEditActivity extends AKiteActivity implements View.OnClickLi
 
   public void onSaveClicked()
     {
-    address.setRecipientName  ( mRecipientNameEditText.getText().toString() );
-    address.setLine1          ( mAddressLine1EditText.getText().toString() );
+
+    String recipient = mRecipientNameEditText.getText().toString();
+    if ( recipient.trim().length() == 0 )
+      {
+      displayModalDialog( R.string.alert_dialog_title_oops, R.string.alert_dialog_message_no_recipient, R.string.OK, null, 0, null );
+      return;
+      }
+
+    String line1 = mAddressLine1EditText.getText().toString();
+    if ( line1.trim().length() == 0 )
+      {
+      displayModalDialog( R.string.alert_dialog_title_oops, R.string.alert_dialog_message_no_line1, R.string.OK, null, 0, null );
+      return;
+      }
+
+    String postalCode = mAddressPostcodeEditText.getText().toString();
+    if ( postalCode.trim().length() == 0 )
+      {
+      displayModalDialog( R.string.alert_dialog_title_oops, R.string.alert_dialog_message_no_postal_code, R.string.OK, null, 0, null );
+      return;
+      }
+
+    address.setRecipientName  ( recipient );
+    address.setLine1          ( line1 );
     address.setLine2          ( mAddressLine2EditText.getText().toString() );
     address.setCity           ( mAddressCityEditText.getText().toString() );
     address.setStateOrCounty  ( mAddressCountyEditText.getText().toString() );
-    address.setZipOrPostalCode( mAddressPostcodeEditText.getText().toString() );
+    address.setZipOrPostalCode( postalCode );
 
     Intent output = new Intent();
     output.putExtra( EXTRA_ADDRESS, (Parcelable) address );

@@ -59,6 +59,9 @@
 
     <string name="alert_dialog_message_no_images_selected">Please select some images first.</string>
 
+    <string name="alert_dialog_message_no_recipient">Please enter a recipient name</string>
+    <string name="alert_dialog_message_no_line1">Please fill in Line 1 of the address</string>
+    <string name="alert_dialog_message_no_postal_code">Please fill in your Postcode / ZIP code</string>
 
     <string name="Add_photo">Add photo</string>
     <string name="Cancel">Cancel</string>
