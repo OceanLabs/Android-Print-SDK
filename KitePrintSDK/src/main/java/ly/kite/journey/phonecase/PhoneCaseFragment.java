@@ -80,8 +80,6 @@ public class PhoneCaseFragment extends AEditImageFragment
 
   ////////// Member Variable(s) //////////
 
-  private ArrayList<AssetsAndQuantity>  mAssetAndQuantityArrayList;
-
 
   ////////// Static Initialiser(s) //////////
 
@@ -161,11 +159,26 @@ public class PhoneCaseFragment extends AEditImageFragment
     mConfirmButton.setText( R.string.product_creation_next_button_text );
 
 
+    return ( view );
+    }
+
+
+  /*****************************************************
+   *
+   * Called after the activity is created.
+   *
+   *****************************************************/
+  @Override
+  public void onActivityCreated( Bundle savedInstanceState )
+    {
+    super.onActivityCreated( savedInstanceState );
+
+
     // Request the image and mask
 
     ImageAgent imageManager = ImageAgent.getInstance( mKiteActivity );
 
-    Asset        asset        = mAssetAndQuantityArrayList.get( 0 ).getUneditedAsset();
+    Asset        asset        = mAssetsAndQuantityArrayList.get( 0 ).getUneditedAsset();
     URL          maskURL      = mProduct.getMaskURL();
     Bleed        maskBleed    = mProduct.getMaskBleed();
 
@@ -174,9 +187,6 @@ public class PhoneCaseFragment extends AEditImageFragment
 
     AssetHelper.requestImage( mKiteActivity, asset, mEditableConsumerImageView );
     imageManager.requestImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, maskURL, mEditableConsumerImageView );
-
-
-    return ( view );
     }
 
 
