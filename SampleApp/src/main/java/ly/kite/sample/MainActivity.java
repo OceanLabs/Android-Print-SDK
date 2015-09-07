@@ -84,7 +84,7 @@ public class MainActivity extends Activity
    * Insert your Kite API keys here. These are found under your profile
    * by logging in to the developer portal at https://www.kite.ly
    **********************************************************************/
-  private static final String API_KEY_TEST                = "0453d74be957c1eb510fc2d580007294cdc31a79";
+  private static final String API_KEY_TEST                = NON_REPLACED_API_KEY;
   private static final String API_KEY_LIVE                = NON_REPLACED_API_KEY;
 
   private static final String INSTAGRAM_API_KEY           = "aa314a392fdd4de7aa287a6614ea8897";
