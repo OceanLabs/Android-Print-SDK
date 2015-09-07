@@ -27,6 +27,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import ly.kite.KiteSDK;
 import ly.kite.KiteSDKException;
@@ -358,7 +359,7 @@ public class PayPalCard implements Serializable {
         transaction.put("description", description);
         JSONObject _amount = new JSONObject();
         transaction.put("amount", _amount);
-        _amount.put("total", String.format("%.2f", amount.floatValue()));
+        _amount.put("total", String.format(Locale.ENGLISH, "%.2f", amount.floatValue())); // Local.ENGLISH to force . separator instead of comma
         _amount.put("currency", currency.code);
 
         return payment;
