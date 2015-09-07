@@ -39,6 +39,7 @@ package ly.kite.sample;
 
 ///// Import(s) /////
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -134,6 +135,21 @@ public class MainActivity extends Activity
 
     mEnvironmentSwitch = (Switch)findViewById( R.id.environment_switch );
     }
+
+      private final boolean PRODUCTION_RELEASE = false;
+
+      public void onButtonClicked(View button) {
+          ArrayList<Asset> assets = new ArrayList<>();
+          try {
+              assets.add(new Asset(new URL( "http://psps.s3.amazonaws.com/sdk_static/4.jpg" )));
+          } catch (MalformedURLException ex) {/* ignore */}
+
+          if (PRODUCTION_RELEASE) {
+              KiteSDK.startShopping(this, "YOUR_LIVE_API_KEY", KiteSDK.DefaultEnvironment.LIVE, assets);
+          } else {
+              KiteSDK.startShopping(this, "YOUR_TEST_API_KEY", KiteSDK.DefaultEnvironment.TEST, assets);
+          }
+      }
 
 
   /*****************************************************
