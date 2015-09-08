@@ -178,15 +178,24 @@ public class PhoneCaseFragment extends AEditImageFragment
 
     ImageAgent imageManager = ImageAgent.getInstance( mKiteActivity );
 
-    Asset        asset        = mAssetsAndQuantityArrayList.get( 0 ).getUneditedAsset();
-    URL          maskURL      = mProduct.getMaskURL();
-    Bleed        maskBleed    = mProduct.getMaskBleed();
+    URL        maskURL      = mProduct.getMaskURL();
+    Bleed      maskBleed    = mProduct.getMaskBleed();
 
-    mEditableConsumerImageView.setImageKey( asset );
-    mEditableConsumerImageView.setMaskExtras( maskURL, maskBleed );
+    if ( maskURL != null )
+      {
+      mEditableConsumerImageView.setMaskExtras( maskURL, maskBleed );
 
-    AssetHelper.requestImage( mKiteActivity, asset, mEditableConsumerImageView );
-    imageManager.requestImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, maskURL, mEditableConsumerImageView );
+      imageManager.requestImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, maskURL, mEditableConsumerImageView );
+      }
+
+    if ( mAssetsAndQuantityArrayList != null && mAssetsAndQuantityArrayList.size() > 0 )
+      {
+      Asset asset = mAssetsAndQuantityArrayList.get( 0 ).getUneditedAsset();
+
+      mEditableConsumerImageView.setImageKey( asset );
+
+      AssetHelper.requestImage( mKiteActivity, asset, mEditableConsumerImageView );
+      }
     }
 
 

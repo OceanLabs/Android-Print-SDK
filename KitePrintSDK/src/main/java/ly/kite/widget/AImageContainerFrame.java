@@ -110,6 +110,8 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
   private   float         mRightPaddingProportion;
   private   float         mBottomPaddingProportion;
 
+  private   boolean       mShowProgressSpinnerOnDownload;
+
   private   String        mRequestImageClass;
   private   Object        mRequestImageSource;
 
@@ -259,7 +261,7 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
   @Override
   public void onImageDownloading( Object key )
     {
-    // Ignore
+    if ( mShowProgressSpinnerOnDownload ) showProgressSpinner();
     }
 
 
@@ -436,6 +438,18 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
   public void hideProgressSpinner()
     {
     if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.GONE );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets whether the progress spinner is shown when an
+   * image is being downloaded.
+   *
+   *****************************************************/
+  public void setShowProgressSpinnerOnDownload( boolean showProgressSpinnerOnDownload )
+    {
+    mShowProgressSpinnerOnDownload = showProgressSpinnerOnDownload;
     }
 
 

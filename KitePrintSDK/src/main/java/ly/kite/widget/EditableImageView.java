@@ -503,6 +503,17 @@ public class EditableImageView extends View implements GestureDetector.OnGesture
 
   /*****************************************************
    *
+   * Returns the mask drawable.
+   *
+   *****************************************************/
+  public Drawable getMaskDrawable()
+    {
+    return ( mMaskDrawable );
+    }
+
+
+  /*****************************************************
+   *
    * Sets the image scale factor.
    *
    * Note that we bound the scale factor. This means that
@@ -644,17 +655,6 @@ public class EditableImageView extends View implements GestureDetector.OnGesture
 
     mImageMinScaleFactor = mImageScaleFactor;
     mImageMaxScaleFactor = mImageMinScaleFactor * MAX_IMAGE_ZOOM;
-    }
-
-
-  /*****************************************************
-   *
-   * Returns true if we have both bitmaps, false otherwise.
-   *
-   *****************************************************/
-  public boolean bothImagesAvailable()
-    {
-    return ( mImageBitmap != null && mMaskDrawable != null );
     }
 
 

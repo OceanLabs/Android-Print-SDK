@@ -141,6 +141,7 @@ public class ProductImageAdaptor extends PagerAdapter
     LabelledImageView labelledImageView = (LabelledImageView)view.findViewById( R.id.labelled_image_view );
 
     labelledImageView.setOnClickListener( mOnClickListener );  // The view pager won't respond to click events, so we need to add them to each page
+
     labelledImageView.requestScaledImageOnceSized( IMAGE_CLASS_STRING, imageURL );
 
 

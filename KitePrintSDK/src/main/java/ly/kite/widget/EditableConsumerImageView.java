@@ -148,9 +148,10 @@ public class EditableConsumerImageView extends FrameLayout implements IImageCons
     if ( key == mMaskKey  ) mEditableImageView.setMask( bitmap, mMaskBleed );
 
 
-    // If both images have been downloaded - remove the progress spinner
+    // If we have everything we were expecting - remove the progress spinner
 
-    if ( mEditableImageView.bothImagesAvailable() )
+    if ( ( mImageKey == null || mEditableImageView.getImageBitmap()  != null ) &&
+         ( mMaskKey  == null || mEditableImageView.getMaskDrawable() != null ) )
       {
       mProgressBar.setVisibility( View.GONE );
       }
