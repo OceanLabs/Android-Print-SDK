@@ -297,8 +297,6 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
         if ( paymentConfirmation != null )
           {
 
-          Analytics.getInstance( this ).trackPaymentCompleted( mPrintOrder, Analytics.PAYMENT_METHOD_PAYPAL );
-
           try
             {
 
@@ -750,8 +748,6 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
             @Override
             public void onChargeSuccess( PayPalCard card, String proofOfPayment )
               {
-              Analytics.getInstance( PaymentActivity.this ).trackPaymentCompleted( mPrintOrder, Analytics.PAYMENT_METHOD_CREDIT_CARD );
-
               dialog.dismiss();
               submitOrderForPrinting( proofOfPayment );
               card.saveAsLastUsedCard( PaymentActivity.this );
@@ -772,6 +768,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
     if ( proofOfPayment != null )
       {
       mPrintOrder.setProofOfPayment( proofOfPayment );
+      Analytics.getInstance( this ).trackPaymentCompleted( mPrintOrder, Analytics.PAYMENT_METHOD_PAYPAL );
       }
     //mPrintOrder.saveToHistory(this);
 
