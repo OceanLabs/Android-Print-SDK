@@ -855,8 +855,6 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
    *****************************************************/
   public void onAssetUpdated( int assetIndex, AssetsAndQuantity assetsAndQuantity )
     {
-    mAssetsAndQuantityArrayList.set( assetIndex, assetsAndQuantity );
-
     // We don't need to request any cropped image because it is the edited asset
     // that has been updated. So just updated the recycler view.
     if ( mImagePackAdaptor != null ) mImagePackAdaptor.notifyDataSetChanged();

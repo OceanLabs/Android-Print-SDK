@@ -347,9 +347,10 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
    *****************************************************/
   public void onAssetUpdated( int assetIndex, AssetsAndQuantity assetsAndQuantity )
     {
-    mAssetsAndQuantityArrayList.set( assetIndex, assetsAndQuantity );
-
-    if ( mAssetAndQuantityAdaptor != null ) mAssetAndQuantityAdaptor.notifyDataSetInvalidated();
+    if ( mAssetAndQuantityAdaptor != null )
+      {
+      mAssetAndQuantityAdaptor.notifyDataSetInvalidated();
+      }
     }
 
 

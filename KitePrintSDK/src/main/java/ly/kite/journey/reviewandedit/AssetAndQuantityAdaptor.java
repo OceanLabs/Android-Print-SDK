@@ -215,6 +215,7 @@ public class AssetAndQuantityAdaptor extends BaseAdapter
     viewReferences.quantityTextView.setText( String.valueOf( assetsAndQuantity.getQuantity() ) );
     viewReferences.assetIndex = position;
 
+    viewReferences.framedImageView.setOnClickListener( viewReferences );
     viewReferences.decreaseButton.setOnClickListener( viewReferences );
     viewReferences.increaseButton.setOnClickListener( viewReferences );
     viewReferences.editButton.setOnClickListener( viewReferences );
@@ -260,7 +261,13 @@ public class AssetAndQuantityAdaptor extends BaseAdapter
       {
       AssetsAndQuantity assetAndQuantity = mAssetsAndQuantityList.get( this.assetIndex );
 
-      if ( view == this.decreaseButton )
+      if ( view == this.framedImageView )
+        {
+        ///// (Image) /////
+
+        mListener.onEdit( this.assetIndex );
+        }
+      else if ( view == this.decreaseButton )
         {
         ///// Decrease /////
 

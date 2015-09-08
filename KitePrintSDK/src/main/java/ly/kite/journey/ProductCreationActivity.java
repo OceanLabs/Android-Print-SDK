@@ -86,6 +86,7 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
   public  static final String  INTENT_EXTRA_NAME_PRODUCT                  = KiteSDK.INTENT_PREFIX + ".product";
 
   private static final String  BUNDLE_KEY_ASSETS_AND_QUANTITY_LIST        = "assetsAndQuantityList";
+  private static final String  BUNDLE_KEY_LAST_EDITED_ASSET_INDEX         = "lastEditedAssetIndex";
 
 
   ////////// Static Variable(s) //////////
@@ -176,6 +177,7 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
     if ( savedInstanceState != null )
       {
       mAssetsAndQuantityArrayList = savedInstanceState.getParcelableArrayList( BUNDLE_KEY_ASSETS_AND_QUANTITY_LIST );
+      mLastEditedAssetIndex       = savedInstanceState.getInt( BUNDLE_KEY_LAST_EDITED_ASSET_INDEX );
       }
 
 
@@ -261,6 +263,10 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
       {
       outState.putParcelableArrayList( BUNDLE_KEY_ASSETS_AND_QUANTITY_LIST, mAssetsAndQuantityArrayList );
       }
+
+    // Save the last edited index. Otherwise if we change the orientation when editing an image, the
+    // updated image gets associated with the wrong asset when coming back.
+    outState.putInt( BUNDLE_KEY_LAST_EDITED_ASSET_INDEX, mLastEditedAssetIndex );
     }
 
 

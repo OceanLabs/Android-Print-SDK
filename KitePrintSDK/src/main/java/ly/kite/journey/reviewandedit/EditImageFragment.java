@@ -170,16 +170,6 @@ public class EditImageFragment extends AEditImageFragment
     mConfirmButton.setText( R.string.OK );
 
 
-    // Request the image and set the mask
-
-    ImageAgent imageManager = ImageAgent.getInstance( mKiteActivity );
-
-    mEditableConsumerImageView.setImageKey( mAsset );
-    mEditableConsumerImageView.setMask( mProduct.getUserJourneyType().maskResourceId(), mProduct.getImageAspectRatio() );
-
-    AssetHelper.requestImage( mKiteActivity, mAsset, mEditableConsumerImageView );
-
-
     return ( view );
     }
 
@@ -193,6 +183,28 @@ public class EditImageFragment extends AEditImageFragment
   public void onTop()
     {
     mKiteActivity.setTitle( R.string.edit_image_title );
+    }
+
+
+  /*****************************************************
+   *
+   * Called after the activity is created.
+   *
+   *****************************************************/
+  @Override
+  public void onActivityCreated( Bundle savedInstanceState )
+    {
+    super.onActivityCreated( savedInstanceState );
+
+
+    // Request the image and set the mask
+
+    ImageAgent imageManager = ImageAgent.getInstance( mKiteActivity );
+
+    mEditableConsumerImageView.setImageKey( mAsset );
+    mEditableConsumerImageView.setMask( mProduct.getUserJourneyType().maskResourceId(), mProduct.getImageAspectRatio() );
+
+    AssetHelper.requestImage( mKiteActivity, mAsset, mEditableConsumerImageView );
     }
 
 

@@ -691,8 +691,27 @@ public class EditableImageView extends View implements GestureDetector.OnGesture
     float unscaledBottom = scaledBottom / mImageScaleFactor;
 
 
+    // Convert the values to integer dimensions, and make sure the
+    // values are within bounds. Occasionally the values can go outside
+    // due to floating point rounding errors.
+
+    int x      = (int)unscaledLeft;
+    int y      = (int)unscaledTop;
+    int width  = (int)( unscaledRight  - unscaledLeft );
+    int height = (int)( unscaledBottom - unscaledTop  );
+
+    if ( x < 0 ) x = 0;
+    if ( y < 0 ) y = 0;
+
+    if ( x + width  > mImageBitmap.getWidth()  ) width  = mImageBitmap.getWidth()  - x;
+    if ( y + height > mImageBitmap.getHeight() ) height = mImageBitmap.getHeight() - y;
+
+    if ( width  < 1 ) width  = 1;
+    if ( height < 1 ) height = 1;
+
+
     // Create a new bitmap containing just the cropped part
-    Bitmap croppedImageBitmap = Bitmap.createBitmap( mImageBitmap, (int)unscaledLeft, (int)unscaledTop, (int)( unscaledRight - unscaledLeft ), (int)( unscaledBottom - unscaledTop ) );
+    Bitmap croppedImageBitmap = Bitmap.createBitmap( mImageBitmap, x, y, width, height );
 
     return ( croppedImageBitmap );
     }
