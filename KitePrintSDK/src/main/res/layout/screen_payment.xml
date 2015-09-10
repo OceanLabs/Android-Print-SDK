@@ -49,7 +49,7 @@
                 android:layout_weight="0.0"
                 android:background="@null"
                 android:enabled="false"
-                android:onClick="onPromoButtonClicked"
+                android:onPick="onPromoButtonClicked"
                 android:text="@string/payment_promo_button_text_apply"
                 android:textColor="@color/apply_button"/>
         </LinearLayout>
@@ -62,7 +62,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.0"
             android:background="#8eae4d"
-            android:onClick="onCreditCardButtonClicked"
+            android:onPick="onCreditCardButtonClicked"
             android:text="@string/payment_credit_card_button_text"
             android:textColor="@android:color/white"/>
 
@@ -73,7 +73,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.0"
             android:background="#286db3"
-            android:onClick="onPayPalButtonClicked"
+            android:onPick="onPayPalButtonClicked"
             android:text="@string/payment_paypal_button_text"
             android:textColor="@android:color/white"/>
 

@@ -42,13 +42,20 @@ package ly.kite.widget;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.TypedValue;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import ly.kite.R;
@@ -64,7 +71,7 @@ import ly.kite.R;
  * appropriate.
  *
  *****************************************************/
-public class OverlayLabel extends CustomTypefaceTextView
+public class OverlayLabel extends FrameLayout
   {
   ////////// Static Constant(s) //////////
 
@@ -82,20 +89,20 @@ public class OverlayLabel extends CustomTypefaceTextView
 
   ////////// Member Variable(s) //////////
 
-  private float  mCornerRadius;
+  private Drawable  mBackgroundOverlayDrawable;
+  private Bitmap    mBackgroundOverlayBitmap;
 
-  private RectF  mSolidRect;
-  private Paint  mSolidPaint;
+  private TextView  mLabelTextView;
+  private float     mCornerRadius;
 
-  private float  mShadowBlurRadius;
-  private float  mShadowYOffset;
-  private RectF  mShadowRect;
-  private Paint  mShadowPaint;
+  private Rect      mBackgroundOverlayBitmapRect;
+  private RectF     mSolidRect;
+  private Paint     mSolidPaint;
 
-  private int    mNormalPaddingLeft;
-  private int    mNormalPaddingTop;
-  private int    mNormalPaddingRight;
-  private int    mNormalPaddingBottom;
+  private float     mShadowBlurRadius;
+  private float     mShadowYOffset;
+  private RectF     mShadowRect;
+  private Paint     mShadowPaint;
 
 
   ////////// Static Initialiser(s) //////////
@@ -110,21 +117,21 @@ public class OverlayLabel extends CustomTypefaceTextView
     {
     super( context );
 
-    initialise();
+    initialise( context, null, 0 );
     }
 
   public OverlayLabel( Context context, AttributeSet attrs )
     {
     super( context, attrs );
 
-    initialise();
+    initialise( context, attrs, 0 );
     }
 
   public OverlayLabel( Context context, AttributeSet attrs, int defStyleAttr )
     {
     super( context, attrs, defStyleAttr );
 
-    initialise();
+    initialise( context, attrs, defStyleAttr );
     }
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -132,7 +139,7 @@ public class OverlayLabel extends CustomTypefaceTextView
     {
     super( context, attrs, defStyleAttr, defStyleRes );
 
-    initialise();
+    initialise( context, attrs, defStyleAttr );
     }
 
 
@@ -163,7 +170,7 @@ public class OverlayLabel extends CustomTypefaceTextView
     {
     super.onSizeChanged( width, height, oldWidth, oldHeight );
 
-    updateDimensions();
+    prepare();
     }
 
 
@@ -173,7 +180,7 @@ public class OverlayLabel extends CustomTypefaceTextView
    *
    *****************************************************/
   @Override
-  protected void onDraw( Canvas canvas)
+  protected void onDraw( Canvas canvas )
     {
     // Draw the background shadow
     canvas.drawRoundRect( mShadowRect, mCornerRadius, mCornerRadius, mShadowPaint );
@@ -181,7 +188,13 @@ public class OverlayLabel extends CustomTypefaceTextView
     // Draw the solid background
     canvas.drawRoundRect( mSolidRect, mCornerRadius, mCornerRadius, mSolidPaint );
 
-    // Get the the base class to draw the text
+    // Draw any overlay
+    if ( mBackgroundOverlayBitmap != null )
+      {
+      canvas.drawBitmap( mBackgroundOverlayBitmap, mBackgroundOverlayBitmapRect, mSolidRect, null );
+      }
+
+    // Draw the children
     super.onDraw( canvas );
     }
 
@@ -193,8 +206,17 @@ public class OverlayLabel extends CustomTypefaceTextView
    * Initialises this custom view.
    *
    *****************************************************/
-  private void initialise()
+  private void initialise( Context context, AttributeSet attributeSet, int defaultStyle )
     {
+    // Inflate the layout and get any view references
+
+    LayoutInflater layoutInflator = LayoutInflater.from( context );
+
+    View view = layoutInflator.inflate( R.layout.overlay_label, this, true );
+
+    mLabelTextView = (TextView)view.findViewById( R.id.label_text_view );
+
+
     mCornerRadius = DEFAULT_ROUNDED_CORNER_RADIUS;
 
     mSolidPaint = new Paint();
@@ -204,6 +226,35 @@ public class OverlayLabel extends CustomTypefaceTextView
     mShadowPaint = new Paint();
     mShadowPaint.setColor( DROP_SHADOW_COLOUR );
     mShadowPaint.setAntiAlias( true );
+
+
+    // Check the XML attributes
+
+    if ( attributeSet != null )
+      {
+      TypedArray typedArray = context.obtainStyledAttributes( attributeSet, R.styleable.OverlayLabel, defaultStyle, defaultStyle );
+
+      // See if there is a background overlay drawable
+      mBackgroundOverlayDrawable = typedArray.getDrawable( R.styleable.OverlayLabel_backgroundOverlayDrawable );
+
+      typedArray.recycle();
+      }
+
+
+    // Frames don't normally draw anything other than their children, so we need to let the parent
+    // know that we'll be drawing a background.
+    setWillNotDraw( false );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the text.
+   *
+   *****************************************************/
+  public void setText( String text )
+    {
+    if ( mLabelTextView != null ) mLabelTextView.setText( text );
     }
 
 
@@ -231,7 +282,7 @@ public class OverlayLabel extends CustomTypefaceTextView
     mShadowBlurRadius = blurRadius;
     mShadowYOffset    = yOffset;
 
-    updateDimensions();
+    prepare();
     }
 
 
@@ -240,21 +291,64 @@ public class OverlayLabel extends CustomTypefaceTextView
    * Sets up anything that depends on dimensions.
    *
    *****************************************************/
-  private void updateDimensions()
+  private void prepare()
     {
-    mSolidRect  = new RectF( mShadowBlurRadius, mShadowBlurRadius,               getWidth() - mShadowBlurRadius, getHeight() - mShadowBlurRadius - mShadowYOffset );
-    mShadowRect = new RectF( mSolidRect.left,   mSolidRect.top + mShadowYOffset, mSolidRect.right,               mSolidRect.bottom + mShadowYOffset );
+    int viewWidth  = getWidth();
+    int viewHeight = getHeight();
+
+    int solidRectWidth  = (int)( viewWidth - mShadowBlurRadius );
+    int solidRectHeight = (int)( viewHeight - mShadowBlurRadius - mShadowYOffset );
+
+    mSolidRect  = new RectF( mShadowBlurRadius, mShadowBlurRadius,               solidRectWidth,   solidRectHeight );
+    mShadowRect = new RectF( mSolidRect.left,   mSolidRect.top + mShadowYOffset, mSolidRect.right, mSolidRect.bottom + mShadowYOffset );
 
     mShadowPaint.setMaskFilter( new BlurMaskFilter( mShadowBlurRadius, BlurMaskFilter.Blur.NORMAL ) );
 
-    // We don't adjust the padding, so it needs to be set manually to center any text.
 
-    // We also need to adjust the padding to take account the shifted solid rectangle
-//    super.setPadding(
-//            (int)( mNormalPaddingLeft   + mShadowBlurRadius ),
-//            (int)( mNormalPaddingTop    + mShadowBlurRadius ),
-//            (int)( mNormalPaddingRight  + mShadowBlurRadius ),
-//            (int)( mNormalPaddingBottom + mShadowBlurRadius + mShadowYOffset ) );
+    if ( mBackgroundOverlayDrawable != null && solidRectWidth > 0 && solidRectHeight > 0 )
+      {
+      // In order to draw the overlay drawable matching the same shape as the solid rectangle, we need
+      // to prepare a bitmap, combining the rectangle amd the drawable.
+
+      // Convert the background overlay drawable into a bitmap
+
+      Bitmap drawableBitmap = Bitmap.createBitmap( solidRectWidth, solidRectHeight, Bitmap.Config.ARGB_8888 );
+      Canvas drawableCanvas = new Canvas( drawableBitmap );
+
+      mBackgroundOverlayDrawable.setBounds( 0, 0, solidRectWidth, solidRectHeight );
+      mBackgroundOverlayDrawable.draw( drawableCanvas );
+
+
+      // Create the overlay bitmap, and a temporary canvas to draw into it
+
+      mBackgroundOverlayBitmap = Bitmap.createBitmap( viewWidth, viewHeight, Bitmap.Config.ARGB_8888 );
+
+      Canvas backgroundOverlayCanvas = new Canvas( mBackgroundOverlayBitmap );
+
+
+      // Draw the solid rectangle shape on the overlay canvas to act as a mask
+
+      mBackgroundOverlayBitmapRect = new Rect( 0, 0, solidRectWidth, solidRectHeight );
+
+      RectF bitmapRectF = new RectF( 0f, 0f, solidRectWidth, solidRectHeight );
+
+      Paint paint = new Paint();
+      paint.setColor( 0xffffffff );
+      paint.setAntiAlias( true );
+
+      backgroundOverlayCanvas.drawRoundRect( bitmapRectF, mCornerRadius, mCornerRadius, paint );
+
+
+      // Draw the drawable bitmap onto the overlay canvas, clipping to the rounded rectangle
+
+      paint.setXfermode( new PorterDuffXfermode( PorterDuff.Mode.DST_ATOP ) );
+
+      backgroundOverlayCanvas.drawBitmap( drawableBitmap, mBackgroundOverlayBitmapRect, mBackgroundOverlayBitmapRect, paint );
+      }
+
+
+
+    // We don't adjust the padding - it needs to be set manually to vertically center any text.
     }
 
 

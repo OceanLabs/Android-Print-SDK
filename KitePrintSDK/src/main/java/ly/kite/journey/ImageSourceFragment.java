@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * AProductCreationFragment.java
+ * ImageSourceFragment.java
  *
  *
  * Modified MIT License
@@ -39,28 +39,33 @@ package ly.kite.journey;
 
 ///// Import(s) /////
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.GridView;
 
-import java.util.ArrayList;
+import java.util.List;
 
-import ly.kite.product.Product;
+import ly.kite.R;
+import ly.kite.product.Asset;
 
 
 ///// Class Declaration /////
 
 /*****************************************************
  *
- * This is the abstract super-class of product creation
- * fragments. It provides some common features.
+ * This activity allows the user to create a phone
+ * case design using an image.
  *
  *****************************************************/
-abstract public class AProductCreationFragment extends AKiteFragment
+public class ImageSourceFragment extends AKiteFragment
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "AProductCreationFrag.";
+  private static final String      LOG_TAG                                   = "ImageSourceFragment";
 
 
   ////////// Static Variable(s) //////////
@@ -68,8 +73,7 @@ abstract public class AProductCreationFragment extends AKiteFragment
 
   ////////// Member Variable(s) //////////
 
-  protected Product                       mProduct;
-  protected ArrayList<AssetsAndQuantity>  mAssetsAndQuantityArrayList;
+  private GridView  mGridView;
 
 
   ////////// Static Initialiser(s) //////////
@@ -77,81 +81,96 @@ abstract public class AProductCreationFragment extends AKiteFragment
 
   ////////// Static Method(s) //////////
 
+  /*****************************************************
+   *
+   * Creates a new instance of this fragment.
+   *
+   *****************************************************/
+  public static ImageSourceFragment newInstance()
+    {
+    ImageSourceFragment fragment = new ImageSourceFragment();
+
+    return ( fragment );
+    }
+
 
   ////////// Constructor(s) //////////
 
 
-  ////////// AKiteFragment Method(s) //////////
+  ////////// AEditImageFragment Method(s) //////////
 
   /*****************************************************
    *
-   * Called when the fragment is created.
+   * Returns the content view for this fragment
    *
    *****************************************************/
   @Override
-  public void onCreate( Bundle savedInstanceState )
+  public View onCreateView( LayoutInflater layoutInflator, ViewGroup container, Bundle savedInstanceState )
     {
-    super.onCreate( savedInstanceState );
+    View view = layoutInflator.inflate( R.layout.screen_image_source, container, false );
+
+    mGridView = (GridView)view.findViewById( R.id.image_source_grid_view );
 
 
-    // Get the product
+    // Set up the image source grid
 
-    Bundle arguments = getArguments();
+    ImageSourceAdaptor imageSourceAdaptor = new ImageSourceAdaptor( mKiteActivity, R.layout.grid_item_image_source_vertical, ImageSource.values() );
 
-    if ( arguments == null )
-      {
-      Log.e( LOG_TAG, "No arguments found" );
-
-      return;
-      }
-
-    mProduct = arguments.getParcelable( BUNDLE_KEY_PRODUCT );
+    mGridView.setAdapter( imageSourceAdaptor );
 
 
-    if ( mProduct == null )
-      {
-      throw ( new IllegalStateException( "No product supplied" ) );
-      }
+    return ( view );
     }
 
 
   /*****************************************************
    *
-   * Called after the activity is created.
+   * Called with the result of an activity.
    *
    *****************************************************/
   @Override
-  public void onActivityCreated( Bundle savedInstanceState )
+  public void onActivityResult( int requestCode, int resultCode, Intent returnedIntent )
     {
-    super.onActivityCreated( savedInstanceState );
+    super.onActivityResult( requestCode, resultCode, returnedIntent );
 
 
-    // We can't get the shared assets and quantity list until after the
-    // activity has been created.
+    // Get assets for any images returned
 
-    if ( mKiteActivity != null && mKiteActivity instanceof IAssetsAndQuantityHolder )
+    List<Asset> assetList = ImageSource.getAssetsFromResult( requestCode, resultCode, returnedIntent );
+
+    if ( assetList != null && assetList.size() > 0 )
       {
-      mAssetsAndQuantityArrayList = ( (IAssetsAndQuantityHolder)mKiteActivity ).getAssetsAndQuantityArrayList();
+      // TODO
       }
 
-    if ( mAssetsAndQuantityArrayList == null )
-      {
-      throw ( new IllegalStateException( "The assets and quantity list could not be obtained" ) );
-      }
+    }
 
+
+  /*****************************************************
+   *
+   * Called when the fragment is top-most.
+   *
+   *****************************************************/
+  @Override
+  public void onTop()
+    {
+    super.onTop();
+
+    mKiteActivity.setTitle( R.string.title_image_source );
     }
 
 
   ////////// Method(s) //////////
-
-
-  ////////// Inner Class(es) //////////
 
   /*****************************************************
    *
    * ...
    *
    *****************************************************/
+
+
+  ////////// Inner Class(es) //////////
+
 
   }
 

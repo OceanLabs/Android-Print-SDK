@@ -81,7 +81,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.0"
             android:background="#ffe34b"
-            android:onClick="onButtonRetryPrintClicked"
+            android:onPick="onButtonRetryPrintClicked"
             android:text="Retry"
             android:textColor="#515151"/>
 

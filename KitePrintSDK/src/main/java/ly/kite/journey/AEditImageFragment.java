@@ -51,7 +51,7 @@ import ly.kite.R;
 import ly.kite.product.Asset;
 import ly.kite.product.AssetHelper;
 import ly.kite.product.Product;
-import ly.kite.widget.EditableConsumerImageView;
+import ly.kite.widget.EditableImageContainerFrame;
 
 
 ///// Class Declaration /////
@@ -77,11 +77,11 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
 
   ////////// Member Variable(s) //////////
 
-  protected Product                       mProduct;
+  protected Product                      mProduct;
 
-  protected EditableConsumerImageView     mEditableConsumerImageView;
-  protected Button                        mCancelButton;
-  protected Button                        mConfirmButton;
+  protected EditableImageContainerFrame  mEditableConsumerImageView;
+  protected Button                       mCancelButton;
+  protected Button                       mConfirmButton;
 
 
   ////////// Static Initialiser(s) //////////
@@ -158,7 +158,7 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
     {
     View view = layoutInflator.inflate( R.layout.screen_edit_image, container, false );
 
-    mEditableConsumerImageView = (EditableConsumerImageView)view.findViewById( R.id.editable_consumer_image_view );
+    mEditableConsumerImageView = (EditableImageContainerFrame)view.findViewById( R.id.editable_consumer_image_view );
     mCancelButton              = (Button)view.findViewById( R.id.cancel_button );
     mConfirmButton             = (Button)view.findViewById( R.id.confirm_button );
 

@@ -52,19 +52,20 @@ import ly.kite.R;
  *****************************************************/
 public enum UserJourneyType
   {
-  CIRCLE ( R.drawable.filled_white_circle ),
+  CIRCLE        ( R.drawable.filled_white_circle ),
   FRAME,
   GREETING_CARD,
-  PHONE_CASE,
+  PHONE_CASE    ( true ),
   PHOTOBOOK,
   POSTCARD,
   POSTER,
-  RECTANGLE ( R.drawable.filled_white_rectangle );
+  RECTANGLE     ( R.drawable.filled_white_rectangle );
 
 
   ////////// Member Variable(s) //////////
 
-  private int  mMaskResourceId;
+  private int      mMaskResourceId;
+  private boolean  mUsesSingleImage;
 
 
   ////////// Static Initialiser(s) //////////
@@ -75,15 +76,25 @@ public enum UserJourneyType
 
   ////////// Constructor(s) //////////
 
-  private UserJourneyType( int maskResourceId )
+  private UserJourneyType( boolean usesSingleImage, int maskResourceId )
     {
-    mMaskResourceId = maskResourceId;
+    mUsesSingleImage = usesSingleImage;
+    mMaskResourceId  = maskResourceId;
     }
 
+  private UserJourneyType( boolean usesSingleImage )
+    {
+    this( usesSingleImage, 0 );
+    }
+
+  private UserJourneyType( int maskResourceId )
+    {
+    this( false, maskResourceId );
+    }
 
   private UserJourneyType()
     {
-    this( 0 );
+    this( false, 0 );
     }
 
 
@@ -98,6 +109,20 @@ public enum UserJourneyType
     {
     return ( mMaskResourceId );
     }
+
+
+  /*****************************************************
+   *
+   * Returns true if the user journey type uses a single
+   * image for creating items, false otherwise.
+   *
+   *****************************************************/
+  public boolean usesSingleImage()
+    {
+    return ( false );
+    }
+
+
 
 
   ////////// Inner Class(es) //////////

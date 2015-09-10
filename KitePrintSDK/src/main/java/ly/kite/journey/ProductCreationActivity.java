@@ -442,6 +442,15 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
    *****************************************************/
   private void addFirstFragment()
     {
+    // For all user journeys, if there are no assets - we first display the image
+    // source fragment.
+
+    if ( mAssetsAndQuantityArrayList.size() < 1 )
+      {
+      // TODO
+      }
+
+
     switch ( mProduct.getUserJourneyType() )
       {
       case CIRCLE:

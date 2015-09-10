@@ -1,10 +1,20 @@
 <menu
     xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- These lines will generate some errors but builds anyway - ignore
+         any errors.
+     -->
     <item
-        android:id="@+id/add_photo"
-        android:title="@string/Add_photo"
-        android:showAsAction="ifRoom"
-        android:icon="@drawable/ic_add_photo"/>
+        android:icon="@drawable/ic_add_photo"
+        android:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/add_photo_from_device"
+                android:title="@string/select_photo_from_device"/>
+            <item
+                android:id="@+id/add_photo_from_instagram"
+                android:title="@string/select_photo_from_instagram"/>
+        </menu>
+    </item>
 
 </menu>

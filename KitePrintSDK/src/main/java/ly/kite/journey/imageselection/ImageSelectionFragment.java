@@ -39,13 +39,11 @@ package ly.kite.journey.imageselection;
 
 ///// Import(s) /////
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,14 +57,12 @@ import android.widget.GridView;
 import android.widget.ProgressBar;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import ly.kite.KiteSDK;
-import ly.kite.instagramphotopicker.InstagramPhoto;
-import ly.kite.instagramphotopicker.InstagramPhotoPicker;
-import ly.kite.journey.AKiteActivity;
 import ly.kite.journey.AProductCreationFragment;
-import ly.kite.photopicker.Photo;
-import ly.kite.photopicker.PhotoPicker;
+import ly.kite.journey.ImageSource;
+import ly.kite.journey.ImageSourceAdaptor;
 import ly.kite.product.Asset;
 import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.product.AssetHelper;
@@ -196,11 +192,13 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     mProceedOverlayButton = (Button)view.findViewById( R.id.proceed_overlay_button );
 
 
-    // Display the image sources
+    // Determine the image sources
+
     ArrayList<ImageSource> imageSourceList = new ArrayList<>();
+
     imageSourceList.add( ImageSource.DEVICE );
 
-    // add the Instagram image source only if the SDK user has enabled it by providing a client id & redirect URI
+    // Add the Instagram image source only if the SDK user has enabled it by providing a client id & redirect URI
     String instagramClientId    = KiteSDK.getInstance( getActivity() ).getInstagramClientId();
     String instagramRedirectURI = KiteSDK.getInstance( getActivity() ).getInstagramRedirectURI();
     if ( instagramClientId != null && instagramRedirectURI != null ) imageSourceList.add( ImageSource.INSTAGRAM );
@@ -208,7 +206,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
     // Set up the image sources
 
-    mImageSourceAdaptor = new ImageSourceAdaptor( mKiteActivity, imageSourceList );
+    mImageSourceAdaptor = new ImageSourceAdaptor( mKiteActivity, R.layout.grid_item_image_source_horizontal, imageSourceList );
     mImageSourceGridView.setNumColumns( mImageSourceAdaptor.getCount() );
     mImageSourceGridView.setAdapter( mImageSourceAdaptor );
 
@@ -339,47 +337,13 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     super.onActivityResult( requestCode, resultCode, returnedIntent );
 
 
-    if ( resultCode == Activity.RESULT_OK )
+    // Get assets for any images returned and add them
+
+    List<Asset> assetList = ImageSource.getAssetsFromResult( requestCode, resultCode, returnedIntent );
+
+    if ( assetList != null )
       {
-      // Check which activity has returned photos, and create new assets for them.
-
-      if ( requestCode == AKiteActivity.ACTIVITY_REQUEST_CODE_SELECT_DEVICE_IMAGE )
-        {
-        ///// Device photos /////
-
-        Photo[] devicePhotos = PhotoPicker.getResultPhotos( returnedIntent );
-
-        if ( devicePhotos != null )
-          {
-          ArrayList<Asset> assets = new ArrayList<Asset>( devicePhotos.length );
-
-          for ( Photo devicePhoto : devicePhotos )
-            {
-            assets.add( new Asset( devicePhoto.getUri() ) );
-            }
-
-          addAssets( assets );
-          }
-
-        }
-      else if ( requestCode == AKiteActivity.ACTIVITY_REQUEST_CODE_SELECT_INSTAGRAM_IMAGE )
-        {
-        ///// Instagram photos /////
-
-        InstagramPhoto instagramPhotos[] = InstagramPhotoPicker.getResultPhotos( returnedIntent );
-
-        if ( instagramPhotos != null )
-          {
-          ArrayList<Asset> assets = new ArrayList<Asset>( instagramPhotos.length );
-
-          for ( InstagramPhoto instagramPhoto : instagramPhotos )
-            {
-            assets.add( new Asset( instagramPhoto.getFullURL() ) );
-            }
-
-          addAssets( assets );
-          }
-        }
+      addAssets( assetList );
       }
     }
 
@@ -492,10 +456,8 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
       ///// Image Source /////
 
       ImageSource imageSource = (ImageSource)mImageSourceGridView.getItemAtPosition( position );
-      int requestCode = imageSource == ImageSource.DEVICE
-              ? AKiteActivity.ACTIVITY_REQUEST_CODE_SELECT_DEVICE_IMAGE
-              : AKiteActivity.ACTIVITY_REQUEST_CODE_SELECT_INSTAGRAM_IMAGE;
-      imageSource.onClick( this, requestCode );
+
+      imageSource.onPick( this, false );
       }
     }
 
@@ -659,7 +621,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
    * Duplicates will be discarded.
    *
    *****************************************************/
-  private void addAssets( ArrayList<Asset> assets )
+  private void addAssets( List<Asset> assets )
     {
     boolean addedNewAsset = false;
 

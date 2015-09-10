@@ -62,12 +62,20 @@
         <item name="android:shadowRadius">3</item>
     </style>
 
-    <style name="KiteSDKLabel" parent="KiteSDKShadowedText">
+    <style name="KiteSDKLabel">
         <item name="android:layout_marginBottom">@dimen/label_margin_bottom</item>
         <item name="android:layout_width">@dimen/label_width</item>
         <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="KiteSDKLabelContent" parent="KiteSDKShadowedText">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">fill_parent</item>
         <item name="android:paddingTop">@dimen/label_padding_top</item>
         <item name="android:paddingBottom">@dimen/label_padding_bottom</item>
+    </style>
+
+    <style name="KiteSDKLabelText" parent="KiteSDKShadowedText">
         <item name="android:gravity">center</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textSize">@dimen/label_text_size</item>

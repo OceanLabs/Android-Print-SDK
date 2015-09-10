@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.journey.imageselection;
+package ly.kite.journey;
 
 
 ///// Import(s) /////
@@ -47,6 +47,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ly.kite.R;
@@ -74,6 +75,7 @@ public class ImageSourceAdaptor extends BaseAdapter
 
   private Context            mContext;
   private List<ImageSource>  mImageSourceList;
+  private int                mItemLayoutResourceId;
 
   private LayoutInflater     mLayoutInflator;
 
@@ -86,12 +88,33 @@ public class ImageSourceAdaptor extends BaseAdapter
 
   ////////// Constructor(s) //////////
 
-  public ImageSourceAdaptor( Context context, List<ImageSource> imageSourceList )
+  public ImageSourceAdaptor( Context context, int itemLayoutResourceId )
     {
-    mContext         = context;
-    mImageSourceList = imageSourceList;
+    mContext              = context;
+    mItemLayoutResourceId = itemLayoutResourceId;
 
-    mLayoutInflator  = LayoutInflater.from( context );
+    mLayoutInflator       = LayoutInflater.from( context );
+    }
+
+
+  public ImageSourceAdaptor( Context context, int itemLayoutResourceId, List<ImageSource> imageSourceList )
+    {
+    this( context, itemLayoutResourceId );
+
+    mImageSourceList = imageSourceList;
+    }
+
+
+  public ImageSourceAdaptor( Context context, int itemLayoutResourceId, ImageSource... imageSources )
+    {
+    this( context, itemLayoutResourceId );
+
+    mImageSourceList = new ArrayList<>();
+
+    if ( imageSources != null )
+      {
+      for ( ImageSource imageSource : imageSources ) mImageSourceList.add( imageSource );
+      }
     }
 
 
@@ -158,7 +181,7 @@ public class ImageSourceAdaptor extends BaseAdapter
       }
     else
       {
-      view = mLayoutInflator.inflate( R.layout.grid_item_image_source, null );
+      view = mLayoutInflator.inflate( mItemLayoutResourceId, null );
 
       viewReferences                = new ViewReferences();
       viewReferences.backgroundView = view.findViewById( R.id.background_view );
@@ -168,9 +191,6 @@ public class ImageSourceAdaptor extends BaseAdapter
       view.setTag( viewReferences );
       }
 
-
-    // Get the item we are displaying; set the label, and request the image from the image manager. We
-    // also need to set the size of the image. Show placeholders for any missing items.
 
     ImageSource imageSource = (ImageSource)getItem( position );
 

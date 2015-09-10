@@ -39,20 +39,23 @@ package ly.kite.journey.phonecase;
 
 ///// Import(s) /////
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.List;
 
 import ly.kite.R;
 import ly.kite.journey.AEditImageFragment;
 import ly.kite.journey.AKiteActivity;
+import ly.kite.journey.ImageSource;
 import ly.kite.product.Asset;
-import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.product.AssetHelper;
 import ly.kite.product.Bleed;
 import ly.kite.product.Product;
@@ -72,13 +75,20 @@ public class PhoneCaseFragment extends AEditImageFragment
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String      LOG_TAG                            = "PhoneCaseFragment";
+  private static final String      LOG_TAG                                   = "PhoneCaseFragment";
+
+  private static final String      BUNDLE_KEY_IMAGE_ASSET                    = "imageAsset";
+
+  private static final int         ACTIVITY_REQUEST_CODE_CHOOSE_CAMERA_PHOTO = 10;
+  private static final int         ACTIVITY_REQUEST_CODE_PHOTO_PICKER        = 11;
 
 
   ////////// Static Variable(s) //////////
 
 
   ////////// Member Variable(s) //////////
+
+  private Asset  mImageAsset;
 
 
   ////////// Static Initialiser(s) //////////
@@ -120,8 +130,15 @@ public class PhoneCaseFragment extends AEditImageFragment
     super.onCreate( savedInstanceState );
 
 
-    // TODO: Uncomment when image selection is implemented
-    //this.setHasOptionsMenu( true );
+    // See if we can find a saved asset
+
+    if ( savedInstanceState != null )
+      {
+      mImageAsset = savedInstanceState.getParcelable( BUNDLE_KEY_IMAGE_ASSET );
+      }
+
+
+    this.setHasOptionsMenu( true );
     }
 
 
@@ -130,16 +147,11 @@ public class PhoneCaseFragment extends AEditImageFragment
    * Called the first time the options menu is created.
    *
    *****************************************************/
-// TODO: Uncomment once we implement the add photo functionality
-//  @Override
-//  public boolean onCreateOptionsMenu( Menu menu )
-//    {
-//    MenuInflater menuInflator = getMenuInflater();
-//
-//    menuInflator.inflate( R.menu.add_photo, menu );
-//
-//    return ( true );
-//    }
+  @Override
+  public void onCreateOptionsMenu( Menu menu, MenuInflater menuInflator )
+    {
+    menuInflator.inflate( R.menu.add_photo, menu );
+    }
 
 
   /*****************************************************
@@ -188,13 +200,15 @@ public class PhoneCaseFragment extends AEditImageFragment
       imageManager.requestImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, maskURL, mEditableConsumerImageView );
       }
 
-    if ( mAssetsAndQuantityArrayList != null && mAssetsAndQuantityArrayList.size() > 0 )
+
+    // If we haven't already got an image asset - look in the asset list
+
+    if ( mImageAsset == null )
       {
-      Asset asset = mAssetsAndQuantityArrayList.get( 0 ).getUneditedAsset();
-
-      mEditableConsumerImageView.setImageKey( asset );
-
-      AssetHelper.requestImage( mKiteActivity, asset, mEditableConsumerImageView );
+      if ( mAssetsAndQuantityArrayList != null && mAssetsAndQuantityArrayList.size() > 0 )
+        {
+        mImageAsset = mAssetsAndQuantityArrayList.get( 0 ).getUneditedAsset();
+        }
       }
     }
 
@@ -211,17 +225,49 @@ public class PhoneCaseFragment extends AEditImageFragment
 
     int itemId = item.getItemId();
 
-    if ( itemId == R.id.add_photo )
+    if ( itemId == R.id.add_photo_from_device )
       {
-      ///// Add photo /////
+      ///// Local device photo /////
 
-      // TODO:
+      // Pick a single image from the local device
+      ImageSource.DEVICE.onPick( this, true );
+
+      return ( true );
+      }
+    else if ( itemId == R.id.add_photo_from_instagram )
+      {
+      ///// Local device photo /////
+
+      // Pick a single image from instagram
+      ImageSource.INSTAGRAM.onPick( this, true );
 
       return ( true );
       }
 
 
     return ( super.onOptionsItemSelected( item ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Called with the result of an activity.
+   *
+   *****************************************************/
+  @Override
+  public void onActivityResult( int requestCode, int resultCode, Intent returnedIntent )
+    {
+    super.onActivityResult( requestCode, resultCode, returnedIntent );
+
+
+    // Get an asset for any image returned and use it
+
+    List<Asset> assetList = ImageSource.getAssetsFromResult( requestCode, resultCode, returnedIntent );
+
+    if ( assetList != null && assetList.size() > 0 )
+      {
+      useAssetForImage( assetList.get( 0 ) );
+      }
     }
 
 
@@ -236,10 +282,56 @@ public class PhoneCaseFragment extends AEditImageFragment
     super.onTop();
 
     if ( mProduct != null ) mKiteActivity.setTitle( mProduct.getName() );
+
+    if ( mImageAsset != null ) useAssetForImage( mImageAsset );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the fragment is not top-most.
+   *
+   *****************************************************/
+  @Override
+  public void onNotTop()
+    {
+    super.onNotTop();
+
+    if ( mEditableConsumerImageView != null ) mEditableConsumerImageView.clearImage();
+    }
+
+
+  /*****************************************************
+   *
+   * Called to save the instance state.
+   *
+   *****************************************************/
+  @Override
+  public void onSaveInstanceState( Bundle outState )
+    {
+    // A different asset may have been selected by the user, which is why we save the most
+    // recent version.
+
+    Asset editedImageAsset = getEditedImageAsset();
+
+    if ( editedImageAsset != null ) outState.putParcelable( BUNDLE_KEY_IMAGE_ASSET, mImageAsset );
     }
 
 
   ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Uses the supplied asset for the photo.
+   *
+   *****************************************************/
+  private void useAssetForImage( Asset asset )
+    {
+    mEditableConsumerImageView.setImageKey( asset );
+
+    AssetHelper.requestImage( mKiteActivity, asset, mEditableConsumerImageView );
+    }
+
 
   /*****************************************************
    *

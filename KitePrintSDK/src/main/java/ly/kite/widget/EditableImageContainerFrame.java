@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * MaskedRemoteImageView.java
+ * EditableImageContainerFrame.java
  *
  *
  * Modified MIT License
@@ -58,17 +58,15 @@ import ly.kite.util.IImageConsumer;
 
 /*****************************************************
  *
- * This class is a view that displays a mask over another
- * image (such as a photo). The underlying photo/image
- * may be moved and zoomed.
+ * This class is a container for an editable masked image.
  *
  *****************************************************/
-public class EditableConsumerImageView extends FrameLayout implements IImageConsumer
+public class EditableImageContainerFrame extends FrameLayout implements IImageConsumer
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "MaskedRemoteImageView";
+  private static final String  LOG_TAG = "EditableImageContainerFrame";
 
 
   ////////// Static Variable(s) //////////
@@ -76,7 +74,7 @@ public class EditableConsumerImageView extends FrameLayout implements IImageCons
 
   ////////// Member Variable(s) //////////
 
-  private EditableImageView mEditableImageView;
+  private EditableMaskedImageView mEditableImageView;
   private ProgressBar       mProgressBar;
 
   private Object            mImageKey;
@@ -92,21 +90,21 @@ public class EditableConsumerImageView extends FrameLayout implements IImageCons
 
   ////////// Constructor(s) //////////
 
-  public EditableConsumerImageView( Context context )
+  public EditableImageContainerFrame( Context context )
     {
     super( context );
 
     initialise( context );
     }
 
-  public EditableConsumerImageView( Context context, AttributeSet attrs )
+  public EditableImageContainerFrame( Context context, AttributeSet attrs )
     {
     super( context, attrs );
 
     initialise( context );
     }
 
-  public EditableConsumerImageView( Context context, AttributeSet attrs, int defStyleAttr )
+  public EditableImageContainerFrame( Context context, AttributeSet attrs, int defStyleAttr )
     {
     super( context, attrs, defStyleAttr );
 
@@ -114,7 +112,7 @@ public class EditableConsumerImageView extends FrameLayout implements IImageCons
     }
 
   @TargetApi( Build.VERSION_CODES.LOLLIPOP )
-  public EditableConsumerImageView( Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes )
+  public EditableImageContainerFrame( Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes )
     {
     super( context, attrs, defStyleAttr, defStyleRes );
 
@@ -171,7 +169,7 @@ public class EditableConsumerImageView extends FrameLayout implements IImageCons
 
     View view = layoutInflater.inflate( R.layout.editable_consumer_image_view, this, true );
 
-    mEditableImageView = (EditableImageView)view.findViewById( R.id.editable_image_view );
+    mEditableImageView = (EditableMaskedImageView)view.findViewById( R.id.editable_image_view );
     mProgressBar     = (ProgressBar)view.findViewById( R.id.progress_bar );
     }
 
@@ -184,6 +182,17 @@ public class EditableConsumerImageView extends FrameLayout implements IImageCons
   public void setImageKey( Object key )
     {
     mImageKey = key;
+    }
+
+
+  /*****************************************************
+   *
+   * Clears the image.
+   *
+   *****************************************************/
+  public void clearImage()
+    {
+    mEditableImageView.setImageBitmap( null );
     }
 
 
@@ -215,7 +224,7 @@ public class EditableConsumerImageView extends FrameLayout implements IImageCons
    * Returns the masked image view.
    *
    *****************************************************/
-  public EditableImageView getEditableImageView()
+  public EditableMaskedImageView getEditableImageView()
     {
     return ( mEditableImageView );
     }

@@ -275,6 +275,10 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
     {
     if ( keyIsOK( key ) )
       {
+      // Make sure we don't do anything if we get the bitmap delivered
+      // more than once.
+      mExpectedKey = null;
+
       setImageBitmap( bitmap );
 
       fadeImageIn();
@@ -461,6 +465,10 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
    *****************************************************/
   public void requestScaledImageOnceSized( String imageClass, Object imageSource )
     {
+    // Don't do anything if we're already waiting for the image
+    if ( imageClass.equals( mRequestImageClass ) && imageSource.equals( mRequestImageSource ) ) return;
+
+
     clear();
 
     mRequestImageClass  = imageClass;

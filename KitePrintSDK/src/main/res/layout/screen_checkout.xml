@@ -30,7 +30,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:onClick="onChooseDeliveryAddressButtonClicked"
+                android:onPick="onChooseDeliveryAddressButtonClicked"
                 android:text="@string/shipping_delivery_address_button_text"/>
 
             <ly.kite.widget.CustomTypefaceEditText

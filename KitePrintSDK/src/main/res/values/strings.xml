@@ -15,6 +15,7 @@
 
     <string name="title_choose_product_group">Print Shop</string>
     <string name="title_create_phone_case">Create Phone Case</string>
+    <string name="title_image_source">Choose Photos</string>
 
     <string name="alert_dialog_title_pack_not_full_format_string">You\'ve selected %d photos</string>
     <string name="alert_dialog_message_pack_not_full_format_string">You can add %d more for the same price</string>
@@ -63,7 +64,9 @@
     <string name="alert_dialog_message_no_line1">Please fill in Line 1 of the address</string>
     <string name="alert_dialog_message_no_postal_code">Please fill in your Postcode / ZIP code</string>
 
-    <string name="Add_photo">Add photo</string>
+    <string name="select_photo_from_device">Choose camera photo</string>
+    <string name="select_photo_from_instagram">Choose Instagram photo</string>
+
     <string name="Cancel">Cancel</string>
     <string name="Description">Description</string>
     <string name="Details">Details</string>

@@ -1,0 +1,5 @@
+<GridView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/image_source_grid_view"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"/>

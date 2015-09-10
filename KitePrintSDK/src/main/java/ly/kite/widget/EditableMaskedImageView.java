@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * EditableImageView.java
+ * EditableMaskedImageView.java
  *
  *
  * Modified MIT License
@@ -72,12 +72,12 @@ import ly.kite.product.Bleed;
  * may be panned and scaled.
  *
  *****************************************************/
-public class EditableImageView extends View implements GestureDetector.OnGestureListener, ScaleGestureDetector.OnScaleGestureListener
+public class EditableMaskedImageView extends View implements GestureDetector.OnGestureListener, ScaleGestureDetector.OnScaleGestureListener
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String LOG_TAG                            = "EditableImageView";
+  private static final String LOG_TAG                            = "EditableMaskedImageView";
 
   private static final float  MAX_IMAGE_ZOOM                     = 3.0f;
 
@@ -132,21 +132,21 @@ public class EditableImageView extends View implements GestureDetector.OnGesture
 
   ////////// Constructor(s) //////////
 
-  public EditableImageView( Context context )
+  public EditableMaskedImageView( Context context )
     {
     super( context );
 
     initialise( context );
     }
 
-  public EditableImageView( Context context, AttributeSet attrs )
+  public EditableMaskedImageView( Context context, AttributeSet attrs )
     {
     super( context, attrs );
 
     initialise( context );
     }
 
-  public EditableImageView( Context context, AttributeSet attrs, int defStyleAttr )
+  public EditableMaskedImageView( Context context, AttributeSet attrs, int defStyleAttr )
     {
     super( context, attrs, defStyleAttr );
 
@@ -154,7 +154,7 @@ public class EditableImageView extends View implements GestureDetector.OnGesture
     }
 
   @TargetApi( Build.VERSION_CODES.LOLLIPOP )
-  public EditableImageView( Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes )
+  public EditableMaskedImageView( Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes )
     {
     super( context, attrs, defStyleAttr, defStyleRes );
 
