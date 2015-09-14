@@ -123,7 +123,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ChoosePro
 
     for ( Asset asset : assetArrayList )
       {
-      assetsAndQuantityArrayList.add( new AssetsAndQuantity( asset, 1 ) );
+      assetsAndQuantityArrayList.add( new AssetsAndQuantity( asset ) );
       }
 
     return ( assetsAndQuantityArrayList );

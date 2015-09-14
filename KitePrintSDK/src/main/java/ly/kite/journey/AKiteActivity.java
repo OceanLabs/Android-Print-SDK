@@ -446,7 +446,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
   /*****************************************************
    *
-   * Displays a fragment.
+   * Displays a fragment and adds it to the back stack.
    *
    *****************************************************/
   protected void addFragment( AKiteFragment fragment, String tag )
@@ -455,6 +455,20 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
             .beginTransaction()
             .replace( R.id.fragment_container, fragment, tag )
             .addToBackStack( tag )  // Use the tag as the name so we can find it later
+            .commit();
+    }
+
+
+  /*****************************************************
+   *
+   * Displays a fragment by replacing the current one.
+   *
+   *****************************************************/
+  protected void replaceFragment( AKiteFragment fragment, String tag )
+    {
+    mFragmentManager
+            .beginTransaction()
+            .replace( R.id.fragment_container, fragment, tag )
             .commit();
     }
 
@@ -564,6 +578,23 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   protected void popFragment()
     {
     mFragmentManager.popBackStack();
+    }
+
+
+  /*****************************************************
+   *
+   * Removes a fragment without triggering the back stack
+   * listener.
+   *
+   *****************************************************/
+  protected void popFragmentSecretly()
+    {
+    mFragmentManager.removeOnBackStackChangedListener( this );
+
+    mFragmentManager.popBackStackImmediate( ImageSourceFragment.TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE );
+
+    // Restore the back stack listener
+    mFragmentManager.addOnBackStackChangedListener( this );
     }
 
 

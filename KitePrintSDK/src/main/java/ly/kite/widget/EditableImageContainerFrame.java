@@ -74,12 +74,12 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
 
   ////////// Member Variable(s) //////////
 
-  private EditableMaskedImageView mEditableImageView;
-  private ProgressBar       mProgressBar;
+  private EditableMaskedImageView  mEditableMaskedImageView;
+  private ProgressBar              mProgressBar;
 
-  private Object            mImageKey;
-  private Object            mMaskKey;
-  private Bleed             mMaskBleed;
+  private Object                   mImageKey;
+  private Object                   mMaskKey;
+  private Bleed                    mMaskBleed;
 
 
   ////////// Static Initialiser(s) //////////
@@ -142,14 +142,14 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
   @Override
   public void onImageAvailable( Object key, Bitmap bitmap )
     {
-    if ( key == mImageKey ) mEditableImageView.setImageBitmap( bitmap );
-    if ( key == mMaskKey  ) mEditableImageView.setMask( bitmap, mMaskBleed );
+    if ( key == mImageKey ) mEditableMaskedImageView.setImageBitmap( bitmap );
+    if ( key == mMaskKey  ) mEditableMaskedImageView.setMask( bitmap, mMaskBleed );
 
 
     // If we have everything we were expecting - remove the progress spinner
 
-    if ( ( mImageKey == null || mEditableImageView.getImageBitmap()  != null ) &&
-         ( mMaskKey  == null || mEditableImageView.getMaskDrawable() != null ) )
+    if ( ( mImageKey == null || mEditableMaskedImageView.getImageBitmap()  != null ) &&
+         ( mMaskKey  == null || mEditableMaskedImageView.getMaskDrawable() != null ) )
       {
       mProgressBar.setVisibility( View.GONE );
       }
@@ -169,7 +169,7 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
 
     View view = layoutInflater.inflate( R.layout.editable_consumer_image_view, this, true );
 
-    mEditableImageView = (EditableMaskedImageView)view.findViewById( R.id.editable_image_view );
+    mEditableMaskedImageView = (EditableMaskedImageView)view.findViewById( R.id.editable_image_view );
     mProgressBar     = (ProgressBar)view.findViewById( R.id.progress_bar );
     }
 
@@ -192,7 +192,7 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
    *****************************************************/
   public void clearImage()
     {
-    mEditableImageView.setImageBitmap( null );
+    mEditableMaskedImageView.setImageBitmap( null );
     }
 
 
@@ -203,7 +203,7 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
    *****************************************************/
   public void setMask( int resourceId, float aspectRatio )
     {
-    mEditableImageView.setMask( resourceId, aspectRatio );
+    mEditableMaskedImageView.setMask( resourceId, aspectRatio );
     }
 
 
@@ -226,7 +226,7 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
    *****************************************************/
   public EditableMaskedImageView getEditableImageView()
     {
-    return ( mEditableImageView );
+    return ( mEditableMaskedImageView );
     }
 
 

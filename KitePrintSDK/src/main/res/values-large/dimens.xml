@@ -31,4 +31,8 @@
     <dimen name="cta_offset_button_width">175dp</dimen>
     <dimen name="cta_button_height">62dp</dimen>
 
+    <dimen name="image_source_vertical_spacing">6dp</dimen>
+
+    <dimen name="prompt_text_size">25sp</dimen>
+
 </resources>

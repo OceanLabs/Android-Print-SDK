@@ -439,8 +439,12 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
         {
         boolean isChecked = mSharedAssetIsCheckedList.get( item.assetIndex );
 
-        // If the state changes, we animate the transition.
-        item.viewHolder.checkableImageView.transitionChecked( isChecked );
+        if ( item.viewHolder                    != null &&
+             item.viewHolder.checkableImageView != null )
+          {
+          // If the state changes, we animate the transition.
+          item.viewHolder.checkableImageView.transitionChecked( isChecked );
+          }
         }
       }
     }

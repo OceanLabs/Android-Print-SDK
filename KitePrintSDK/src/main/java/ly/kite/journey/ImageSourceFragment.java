@@ -44,12 +44,16 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.product.Asset;
+import ly.kite.product.Product;
 
 
 ///// Class Declaration /////
@@ -60,7 +64,7 @@ import ly.kite.product.Asset;
  * case design using an image.
  *
  *****************************************************/
-public class ImageSourceFragment extends AKiteFragment
+public class ImageSourceFragment extends AProductCreationFragment implements AdapterView.OnItemClickListener
   {
   ////////// Static Constant(s) //////////
 
@@ -73,7 +77,7 @@ public class ImageSourceFragment extends AKiteFragment
 
   ////////// Member Variable(s) //////////
 
-  private GridView  mGridView;
+  private GridView  mImageSourceGridView;
 
 
   ////////// Static Initialiser(s) //////////
@@ -86,9 +90,14 @@ public class ImageSourceFragment extends AKiteFragment
    * Creates a new instance of this fragment.
    *
    *****************************************************/
-  public static ImageSourceFragment newInstance()
+  public static ImageSourceFragment newInstance( Product product )
     {
     ImageSourceFragment fragment = new ImageSourceFragment();
+
+    Bundle arguments = new Bundle();
+    arguments.putParcelable( BUNDLE_KEY_PRODUCT, product );
+
+    fragment.setArguments( arguments );
 
     return ( fragment );
     }
@@ -109,14 +118,26 @@ public class ImageSourceFragment extends AKiteFragment
     {
     View view = layoutInflator.inflate( R.layout.screen_image_source, container, false );
 
-    mGridView = (GridView)view.findViewById( R.id.image_source_grid_view );
+    mImageSourceGridView = (GridView)view.findViewById( R.id.image_source_grid_view );
+
+
+    // Determine the image sources
+
+    ArrayList<ImageSource> imageSourceList = new ArrayList<>();
+
+    imageSourceList.add( ImageSource.DEVICE );
+
+    // Add the Instagram image source only if the SDK user has enabled it by providing a client id & redirect URI
+    if ( KiteSDK.getInstance( getActivity() ).haveInstagramCredentials() ) imageSourceList.add( ImageSource.INSTAGRAM );
 
 
     // Set up the image source grid
 
-    ImageSourceAdaptor imageSourceAdaptor = new ImageSourceAdaptor( mKiteActivity, R.layout.grid_item_image_source_vertical, ImageSource.values() );
+    ImageSourceAdaptor imageSourceAdaptor = new ImageSourceAdaptor( mKiteActivity, R.layout.grid_item_image_source_vertical, imageSourceList );
 
-    mGridView.setAdapter( imageSourceAdaptor );
+    mImageSourceGridView.setAdapter( imageSourceAdaptor );
+
+    mImageSourceGridView.setOnItemClickListener( this );
 
 
     return ( view );
@@ -136,11 +157,24 @@ public class ImageSourceFragment extends AKiteFragment
 
     // Get assets for any images returned
 
-    List<Asset> assetList = ImageSource.getAssetsFromResult( requestCode, resultCode, returnedIntent );
+    List<Asset> newAssetList = ImageSource.getAssetsFromResult( requestCode, resultCode, returnedIntent );
 
-    if ( assetList != null && assetList.size() > 0 )
+    if ( newAssetList != null && newAssetList.size() > 0 )
       {
-      // TODO
+      // Add the assets to the assets / quantity list held by the activity
+
+      for ( Asset newAsset : newAssetList )
+        {
+        mAssetsAndQuantityArrayList.add( new AssetsAndQuantity( newAsset ) );
+        }
+
+
+      // If we got at least one asset - call back to the activity. Otherwise we say on this screen
+      // unless the user pressed back.
+      if ( mKiteActivity instanceof ICallback )
+        {
+        ( (ICallback)mKiteActivity ).isOnAssetsAdded();
+        }
       }
 
     }
@@ -160,6 +194,25 @@ public class ImageSourceFragment extends AKiteFragment
     }
 
 
+  ////////// AdapterView.OnItemClickListener Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when an item is clicked.
+   *
+   *****************************************************/
+  @Override
+  public void onItemClick( AdapterView<?> parent, View view, int position, long id )
+    {
+    if ( parent == mImageSourceGridView )
+      {
+      ImageSource imageSource = (ImageSource)mImageSourceGridView.getItemAtPosition( position );
+
+      imageSource.onPick( this, mProduct.getUserJourneyType().usesSingleImage() );
+      }
+    }
+
+
   ////////// Method(s) //////////
 
   /*****************************************************
@@ -170,6 +223,16 @@ public class ImageSourceFragment extends AKiteFragment
 
 
   ////////// Inner Class(es) //////////
+
+  /*****************************************************
+   *
+   * The callback interface.
+   *
+   *****************************************************/
+  public interface ICallback
+    {
+    public void isOnAssetsAdded();
+    }
 
 
   }

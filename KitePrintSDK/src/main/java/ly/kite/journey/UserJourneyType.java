@@ -119,7 +119,7 @@ public enum UserJourneyType
    *****************************************************/
   public boolean usesSingleImage()
     {
-    return ( false );
+    return ( mUsesSingleImage );
     }
 
 

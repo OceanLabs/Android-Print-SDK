@@ -75,8 +75,6 @@
     <string name="Free">Free</string>
     <string name="add_more">Add More</string>
     <string name="print_these">Print these</string>
-    <string name="IMAGES">IMAGES</string>
-    <string name="INSTAGRAM">INSTAGRAM</string>
     <string name="OK">OK</string>
     <string name="Promotional_Discount">Promotional Discount</string>
     <string name="Quality_Guarantee">Quality Guarantee</string>
@@ -86,6 +84,10 @@
     <string name="Shipping">Shipping</string>
     <string name="Size">Size</string>
     <string name="Total">Total</string>
+
+    <string name="image_source_device">CAMERA</string>
+    <string name="image_source_instagram">INSTAGRAM</string>
+    <string name="image_source_facebook">FACEBOOK</string>
 
     <string name="destination_description_gbr">UK</string>
     <string name="destination_description_europe">Europe</string>
@@ -106,9 +108,11 @@
     <string name="quality_guarantee_text">We are confident that you will be more than happy with our products. But just in case, we offer a full refund if you are not 100% happy - even if it\'s just a bad day.</string>
     <string name="product_overview_start_button_text">Start creating</string>
 
-    <string name="product_creation_next_button_text">Next</string>
+    <string name="phone_case_proceed_button_text">Next</string>
 
     <string name="address_book_empty">Address Book Empty</string>
+
+    <string name="image_source_prompt">Add photos by tapping one of the options</string>
 
     <string name="image_selection_title_format_string">%1$s - %2$d / %3$d</string>
     <string name="image_selection_pack_title_format_string">#%1$d Pack of %2$d %3$s</string>

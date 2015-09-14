@@ -68,7 +68,7 @@ public enum ImageSource
   {
   ///// Enum constants /////
 
-  DEVICE ( R.color.image_source_background_device, R.drawable.ic_add_photo_white, R.string.IMAGES )
+  DEVICE ( R.color.image_source_background_device, R.drawable.ic_add_photo_white, R.string.image_source_device )
     {
 
     public void onPick( Fragment fragment, boolean preferSingleImage )
@@ -98,7 +98,7 @@ public enum ImageSource
 
     }
 
-  ,INSTAGRAM ( R.color.image_source_background_instagram, R.drawable.ic_add_instagram_white, R.string.INSTAGRAM )
+  ,INSTAGRAM ( R.color.image_source_background_instagram, R.drawable.ic_add_instagram_white, R.string.image_source_instagram )
     {
 
     public void onPick( Fragment fragment, boolean preferSingleImage )
@@ -114,7 +114,7 @@ public enum ImageSource
       }
 
     }
-//  ,FACEBOOK
+//  ,FACEBOOK ( R.color.image_source_background_facebook, R.drawable.ic_add_instagram_white, R.string.image_source_facebook )
     ;
 
 

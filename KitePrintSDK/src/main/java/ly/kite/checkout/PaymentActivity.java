@@ -356,6 +356,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
         if ( card.getCardType() == PayPalCard.CardType.UNSUPPORTED )
           {
           showErrorDialog( "Sorry we couldn't recognize your card. Please try again manually entering your card details if necessary." );
+
           return;
           }
 
@@ -369,14 +370,16 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
         @Override
         public void onStoreSuccess( PayPalCard card )
           {
-          dialog.dismiss();
+          if ( dialog.isShowing() ) dialog.dismiss();
+
           payWithExistingCard( card );
           }
 
         @Override
         public void onError( PayPalCard card, Exception ex )
           {
-          dialog.dismiss();
+          if ( dialog.isShowing() ) dialog.dismiss();
+
           showErrorDialog( ex.getMessage() );
           }
         } );

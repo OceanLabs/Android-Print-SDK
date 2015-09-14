@@ -79,9 +79,6 @@ public class PhoneCaseFragment extends AEditImageFragment
 
   private static final String      BUNDLE_KEY_IMAGE_ASSET                    = "imageAsset";
 
-  private static final int         ACTIVITY_REQUEST_CODE_CHOOSE_CAMERA_PHOTO = 10;
-  private static final int         ACTIVITY_REQUEST_CODE_PHOTO_PICKER        = 11;
-
 
   ////////// Static Variable(s) //////////
 
@@ -168,7 +165,7 @@ public class PhoneCaseFragment extends AEditImageFragment
     mCancelButton.setVisibility( View.GONE );
 
     mConfirmButton.setVisibility( View.VISIBLE );
-    mConfirmButton.setText( R.string.product_creation_next_button_text );
+    mConfirmButton.setText( R.string.phone_case_proceed_button_text );
 
 
     return ( view );

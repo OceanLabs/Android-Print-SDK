@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -71,6 +72,7 @@ import ly.kite.product.Product;
  *
  *****************************************************/
 public class ProductCreationActivity extends AKiteActivity implements IAssetsAndQuantityHolder,
+                                                                      ImageSourceFragment.ICallback,
                                                                       PhoneCaseFragment.ICallback,
                                                                       ImageSelectionFragment.ICallback,
                                                                       ReviewAndEditFragment.ICallback,
@@ -288,6 +290,26 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
     }
 
 
+  ////////// ImageSourceFragment.ICallback Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when a phone case has been created.
+   *
+   *****************************************************/
+  @Override
+  public void isOnAssetsAdded()
+    {
+    // We want to remove the image source fragment without triggering the back stack listener - otherwise
+    // it will detect that there are no fragments and exit.
+
+    popFragmentSecretly();;
+
+
+    addFirstFragment();
+    }
+
+
   ////////// PhoneCaseFragment.ICallback Method(s) //////////
 
   /*****************************************************
@@ -447,7 +469,9 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
 
     if ( mAssetsAndQuantityArrayList.size() < 1 )
       {
-      // TODO
+      addFragment( ImageSourceFragment.newInstance( mProduct ), ImageSourceFragment.TAG );
+
+      return;
       }
 
 

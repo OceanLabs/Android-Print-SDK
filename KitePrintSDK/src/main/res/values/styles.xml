@@ -68,7 +68,7 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
 
-    <style name="KiteSDKLabelContent" parent="KiteSDKShadowedText">
+    <style name="KiteSDKLabelContent">
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">fill_parent</item>
         <item name="android:paddingTop">@dimen/label_padding_top</item>

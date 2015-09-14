@@ -295,6 +295,18 @@ public class KiteSDK
     return sKiteSDK;
     }
 
+
+  /*****************************************************
+   *
+   * Returns true if we have Instagram credentials.
+   *
+   *****************************************************/
+  public boolean haveInstagramCredentials()
+    {
+    return ( getInstagramClientId() != null && getInstagramRedirectURI() != null );
+    }
+
+
   /*****************************************************
    *
    * Sets the display of phone number entry field in checkout
@@ -345,8 +357,9 @@ public class KiteSDK
    *****************************************************/
   public String getInstagramClientId()
     {
-    SharedPreferences prefs = mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE );
-    return prefs.getString( SHARED_PREFERENCES_INSTAGRAM_CLIENT_ID, null );
+    SharedPreferences sharedPreferences = mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE );
+
+    return ( sharedPreferences.getString( SHARED_PREFERENCES_INSTAGRAM_CLIENT_ID, null ) );
     }
 
 
@@ -358,8 +371,9 @@ public class KiteSDK
    *****************************************************/
   public String getInstagramRedirectURI()
     {
-    SharedPreferences prefs = mApplicationContext.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-    return prefs.getString(SHARED_PREFERENCES_INSTAGRAM_REDIRECT_URI, null);
+    SharedPreferences sharedPreferences = mApplicationContext.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+
+    return ( sharedPreferences.getString( SHARED_PREFERENCES_INSTAGRAM_REDIRECT_URI, null ) );
     }
 
 

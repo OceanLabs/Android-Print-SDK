@@ -199,9 +199,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     imageSourceList.add( ImageSource.DEVICE );
 
     // Add the Instagram image source only if the SDK user has enabled it by providing a client id & redirect URI
-    String instagramClientId    = KiteSDK.getInstance( getActivity() ).getInstagramClientId();
-    String instagramRedirectURI = KiteSDK.getInstance( getActivity() ).getInstagramRedirectURI();
-    if ( instagramClientId != null && instagramRedirectURI != null ) imageSourceList.add( ImageSource.INSTAGRAM );
+    if ( KiteSDK.getInstance( getActivity() ).haveInstagramCredentials() ) imageSourceList.add( ImageSource.INSTAGRAM );
 
 
     // Set up the image sources
@@ -636,7 +634,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
         {
         // Start with the unedited asset, and a quantity of 1.
 
-        AssetsAndQuantity assetsAndQuantity = new AssetsAndQuantity( asset, 1 );
+        AssetsAndQuantity assetsAndQuantity = new AssetsAndQuantity( asset );
 
         mUneditedAssetsRemaining++;
 

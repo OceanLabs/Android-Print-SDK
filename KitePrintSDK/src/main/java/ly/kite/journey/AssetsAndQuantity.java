@@ -121,6 +121,12 @@ public class AssetsAndQuantity implements Parcelable
     }
 
 
+  public AssetsAndQuantity( Asset uneditedAsset )
+    {
+    this( uneditedAsset, 1 );
+    }
+
+
   private AssetsAndQuantity( Parcel sourceParcel )
     {
     mUneditedAsset = sourceParcel.readParcelable( Asset.class.getClassLoader() );
