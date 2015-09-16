@@ -51,6 +51,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -77,13 +78,17 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String LOG_TAG                            = "EditableMaskedImageView";
+  private static final String LOG_TAG                               = "EditableMaskedImageView";
 
-  private static final float  MAX_IMAGE_ZOOM                     = 3.0f;
+  private static final float  MAX_IMAGE_ZOOM                        = 3.0f;
 
-  private static final long   FLY_BACK_ANIMATION_DURATION_MILLIS = 150L;
+  private static final long   FLY_BACK_ANIMATION_DURATION_MILLIS    = 150L;
 
-  private static final int    OPAQUE_WHITE                       = 0xffffffff;
+  private static final int    OPAQUE_WHITE                          = 0xffffffff;
+
+  private static final String BUNDLE_KEY_IMAGE_CENTER_X             = "imageCenterX";
+  private static final String BUNDLE_KEY_IMAGE_CENTER_Y             = "imageCenterY";
+  private static final String BUNDLE_KEY_IMAGE_SCALE_MULTIPLIER     = "imageScaleMultiplier";
 
 
   ////////// Static Variable(s) //////////
@@ -99,7 +104,6 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
   private int                   mMaskWidth;
   private int                   mMaskHeight;
   private Bleed                 mMaskBleed;
-  private Rect                  mMaskToBlendSourceRect;
 
   private Bitmap                mImageBitmap;
   private Rect                  mImageToBlendSourceRect;
@@ -122,6 +126,10 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
 
   private GestureDetector       mGestureDetector;
   private ScaleGestureDetector  mScaleGestureDetector;
+
+  private float                 mRestoredImageScaleMultiplier;
+  private float                 mRestoredImageProportionalCenterX;
+  private float                 mRestoredImageProportionalCenterY;
 
 
   ////////// Static Initialiser(s) //////////
@@ -596,7 +604,6 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
     float halfBlendHeight           = blendHeight * 0.5f;
 
 
-    mMaskToBlendSourceRect = new Rect( 0, 0, unscaledMaskWidth, unscaledMaskHeight );
     mMaskToBlendTargetRect = new Rect(
             Math.round( halfBlendWidth - halfScaledMaskWidth ),
             Math.round( halfBlendHeight - halfScaledMaskHeight ),
@@ -625,12 +632,32 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
 
     if ( imageAspectRatio <= blendAspectRatio )
       {
-      mImageScaleFactor = blendWidth / (float)unscaledImageWidth;
+      mImageMinScaleFactor = blendWidth / (float)unscaledImageWidth;
       }
     else
       {
-      mImageScaleFactor = blendHeight / (float)unscaledImageHeight;
+      mImageMinScaleFactor = blendHeight / (float)unscaledImageHeight;
       }
+
+    mImageMaxScaleFactor = mImageMinScaleFactor * MAX_IMAGE_ZOOM;
+
+
+    // See if we want to restore a scale factor. Note that we use a multiplier
+    // which is based on the minimum scale factor, so that it will still work
+    // when the orientation is changed.
+
+    float restoredImageScaleFactor = mImageMinScaleFactor * mRestoredImageScaleMultiplier;
+
+    if ( restoredImageScaleFactor >= mImageMinScaleFactor &&
+         restoredImageScaleFactor <= mImageMaxScaleFactor )
+      {
+      mImageScaleFactor = restoredImageScaleFactor;
+      }
+    else
+      {
+      mImageScaleFactor = mImageMinScaleFactor;
+      }
+
 
     float scaledImageWidth      = unscaledImageWidth  * mImageScaleFactor;
     float halfScaledImageWidth  = scaledImageWidth * 0.5f;
@@ -641,20 +668,86 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
     mImageToBlendSourceRect = new Rect( 0, 0, unscaledImageWidth, unscaledImageHeight );
 
 
-    // If we have an already calculated target rect for the image, try and keep it. This stops
-    // the image location resetting when we go back to it.
-    if ( mImageToBlendTargetRectF == null ||
-         mImageToBlendTargetRectF.left   > 0 ||
-         mImageToBlendTargetRectF.top    > 0 ||
-         mImageToBlendTargetRectF.right  < ( blendWidth - 1 ) ||
-         mImageToBlendTargetRectF.bottom < ( blendHeight - 1 ) )
+    // See if we want to restore an image position. We only use the x and y just in case
+    // we end up applying it to a different image - the aspect ratio won't be wrong.
+
+    RectF restoredImageToBlendTargetRectF = new RectF(
+            halfBlendWidth  - (       mRestoredImageProportionalCenterX   * scaledImageWidth  ),
+            halfBlendHeight - (       mRestoredImageProportionalCenterY   * scaledImageHeight ),
+            halfBlendWidth  + ( ( 1 - mRestoredImageProportionalCenterX ) * scaledImageWidth  ),
+            halfBlendHeight + ( ( 1 - mRestoredImageProportionalCenterY ) * scaledImageHeight ) );
+
+    if ( restoredImageToBlendTargetRectF.left   <= 0f &&
+         restoredImageToBlendTargetRectF.top    <= 0f &&
+         restoredImageToBlendTargetRectF.right  >= ( blendWidth - 1) &&
+         restoredImageToBlendTargetRectF.bottom >= ( blendHeight - 1 ) )
+      {
+      mImageToBlendTargetRectF = restoredImageToBlendTargetRectF;
+      }
+    else
       {
       mImageToBlendTargetRectF = new RectF( halfBlendWidth - halfScaledImageWidth, halfBlendHeight - halfScaledImageHeight, halfBlendWidth + halfScaledImageWidth, halfBlendHeight + halfScaledImageHeight );
       }
 
 
-    mImageMinScaleFactor = mImageScaleFactor;
-    mImageMaxScaleFactor = mImageMinScaleFactor * MAX_IMAGE_ZOOM;
+    clearState();
+    }
+
+
+  /*****************************************************
+   *
+   * Saves the state to a bundle. We only save the image
+   * scale factor and position.
+   *
+   *****************************************************/
+  public void saveState( Bundle outState )
+    {
+    // Save the image size
+    if ( mImageMinScaleFactor > 0f )
+      {
+      // Save the image size relative to its min scale factor
+      outState.putFloat( BUNDLE_KEY_IMAGE_SCALE_MULTIPLIER, mImageScaleFactor / mImageMinScaleFactor );
+      }
+
+    // Save the image position as the proportional position within the image
+    // of the center of the blend rectangle.
+    if ( mImageToBlendTargetRectF != null && mBlendBitmap != null )
+      {
+      outState.putFloat( BUNDLE_KEY_IMAGE_CENTER_X, ( ( mBlendBitmap.getWidth()  * 0.5f ) - mImageToBlendTargetRectF.left ) / ( mImageToBlendTargetRectF.right  - mImageToBlendTargetRectF.left ) );
+      outState.putFloat( BUNDLE_KEY_IMAGE_CENTER_Y, ( ( mBlendBitmap.getHeight() * 0.5f ) - mImageToBlendTargetRectF.top  ) / ( mImageToBlendTargetRectF.bottom - mImageToBlendTargetRectF.top ) );
+      }
+
+    }
+
+
+  /*****************************************************
+   *
+   * Restores the state to a bundle. We only try to restore
+   * the image scale factor and position, and there is
+   * no guarantee that they will be used.
+   *
+   *****************************************************/
+  public void restoreState( Bundle inState )
+    {
+    if ( inState != null )
+      {
+      mRestoredImageProportionalCenterX = inState.getFloat( BUNDLE_KEY_IMAGE_CENTER_X );
+      mRestoredImageProportionalCenterY = inState.getFloat( BUNDLE_KEY_IMAGE_CENTER_Y );
+      mRestoredImageScaleMultiplier     = inState.getFloat( BUNDLE_KEY_IMAGE_SCALE_MULTIPLIER );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Clears any restored state.
+   *
+   *****************************************************/
+  public void clearState()
+    {
+    mRestoredImageProportionalCenterX = 0f;
+    mRestoredImageProportionalCenterY = 0f;
+    mRestoredImageScaleMultiplier     = 0f;
     }
 
 

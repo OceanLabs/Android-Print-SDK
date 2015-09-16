@@ -54,6 +54,7 @@ import java.util.List;
 import ly.kite.R;
 import ly.kite.journey.AEditImageFragment;
 import ly.kite.journey.AKiteActivity;
+import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.journey.ImageSource;
 import ly.kite.product.Asset;
 import ly.kite.product.AssetHelper;
@@ -135,7 +136,7 @@ public class PhoneCaseFragment extends AEditImageFragment
       }
 
 
-    this.setHasOptionsMenu( true );
+    setHasOptionsMenu( true );
     }
 
 
@@ -183,7 +184,14 @@ public class PhoneCaseFragment extends AEditImageFragment
     super.onActivityCreated( savedInstanceState );
 
 
-    // Request the image and mask
+    // Try to restore any previous cropping
+    if ( savedInstanceState != null )
+      {
+      mEditableImageContainerFrame.restoreState( savedInstanceState );
+      }
+
+
+    // Request the mask
 
     ImageAgent imageManager = ImageAgent.getInstance( mKiteActivity );
 
@@ -192,9 +200,9 @@ public class PhoneCaseFragment extends AEditImageFragment
 
     if ( maskURL != null )
       {
-      mEditableConsumerImageView.setMaskExtras( maskURL, maskBleed );
+      mEditableImageContainerFrame.setMaskExtras( maskURL, maskBleed );
 
-      imageManager.requestImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, maskURL, mEditableConsumerImageView );
+      imageManager.requestImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, maskURL, mEditableImageContainerFrame );
       }
 
 
@@ -257,13 +265,24 @@ public class PhoneCaseFragment extends AEditImageFragment
     super.onActivityResult( requestCode, resultCode, returnedIntent );
 
 
-    // Get an asset for any image returned and use it
+    // Get assets for any images returned
 
     List<Asset> assetList = ImageSource.getAssetsFromResult( requestCode, resultCode, returnedIntent );
 
     if ( assetList != null && assetList.size() > 0 )
       {
-      useAssetForImage( assetList.get( 0 ) );
+      // Add the assets to the shared list
+      for ( Asset asset : assetList )
+        {
+        mAssetsAndQuantityArrayList.add( 0, new AssetsAndQuantity( asset ) );
+        }
+
+
+      // Save the first asset and use it
+
+      mImageAsset = mAssetsAndQuantityArrayList.get( 0 ).getUneditedAsset();
+
+      useAssetForImage( mImageAsset, true );
       }
     }
 
@@ -280,7 +299,7 @@ public class PhoneCaseFragment extends AEditImageFragment
 
     if ( mProduct != null ) mKiteActivity.setTitle( mProduct.getName() );
 
-    if ( mImageAsset != null ) useAssetForImage( mImageAsset );
+    if ( mImageAsset != null ) useAssetForImage( mImageAsset, false );
     }
 
 
@@ -294,7 +313,7 @@ public class PhoneCaseFragment extends AEditImageFragment
     {
     super.onNotTop();
 
-    if ( mEditableConsumerImageView != null ) mEditableConsumerImageView.clearImage();
+    if ( mEditableImageContainerFrame != null ) mEditableImageContainerFrame.clearImage();
     }
 
 
@@ -309,9 +328,19 @@ public class PhoneCaseFragment extends AEditImageFragment
     // A different asset may have been selected by the user, which is why we save the most
     // recent version.
 
-    Asset editedImageAsset = getEditedImageAsset();
+    if ( mImageAsset != null )
+      {
+      outState.putParcelable( BUNDLE_KEY_IMAGE_ASSET, mImageAsset );
+      }
 
-    if ( editedImageAsset != null ) outState.putParcelable( BUNDLE_KEY_IMAGE_ASSET, mImageAsset );
+
+    // Try and save the cropping
+
+    if ( mEditableImageContainerFrame != null )
+      {
+      mEditableImageContainerFrame.saveState( outState );
+      }
+
     }
 
 
@@ -322,11 +351,13 @@ public class PhoneCaseFragment extends AEditImageFragment
    * Uses the supplied asset for the photo.
    *
    *****************************************************/
-  private void useAssetForImage( Asset asset )
+  private void useAssetForImage( Asset asset, boolean imageIsNew )
     {
-    mEditableConsumerImageView.setImageKey( asset );
+    if ( imageIsNew ) mEditableImageContainerFrame.clearState();
 
-    AssetHelper.requestImage( mKiteActivity, asset, mEditableConsumerImageView );
+    mEditableImageContainerFrame.setImageKey( asset );
+
+    AssetHelper.requestImage( mKiteActivity, asset, mEditableImageContainerFrame );
     }
 
 

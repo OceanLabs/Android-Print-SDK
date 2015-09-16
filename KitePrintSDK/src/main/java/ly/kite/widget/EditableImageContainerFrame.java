@@ -43,6 +43,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -167,7 +168,7 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
     {
     LayoutInflater layoutInflater = LayoutInflater.from( context );
 
-    View view = layoutInflater.inflate( R.layout.editable_consumer_image_view, this, true );
+    View view = layoutInflater.inflate( R.layout.editable_image_container_frame, this, true );
 
     mEditableMaskedImageView = (EditableMaskedImageView)view.findViewById( R.id.editable_image_view );
     mProgressBar     = (ProgressBar)view.findViewById( R.id.progress_bar );
@@ -227,6 +228,42 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
   public EditableMaskedImageView getEditableImageView()
     {
     return ( mEditableMaskedImageView );
+    }
+
+
+  /*****************************************************
+   *
+   * Saves the state to a bundle. We only save the image
+   * scale factor and position.
+   *
+   *****************************************************/
+  public void saveState( Bundle outState )
+    {
+    if ( mEditableMaskedImageView != null ) mEditableMaskedImageView.saveState( outState );
+    }
+
+
+  /*****************************************************
+   *
+   * Restores the state to a bundle. We only try to restore
+   * the image scale factor and position, and there is
+   * no guarantee that they will be used.
+   *
+   *****************************************************/
+  public void restoreState( Bundle inState )
+    {
+    if ( mEditableMaskedImageView != null ) mEditableMaskedImageView.restoreState( inState );
+    }
+
+
+  /*****************************************************
+   *
+   * Clears the state.
+   *
+   *****************************************************/
+  public void clearState()
+    {
+    if ( mEditableMaskedImageView != null ) mEditableMaskedImageView.clearState();
     }
 
 

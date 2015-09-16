@@ -201,10 +201,10 @@ public class EditImageFragment extends AEditImageFragment
 
     ImageAgent imageManager = ImageAgent.getInstance( mKiteActivity );
 
-    mEditableConsumerImageView.setImageKey( mAsset );
-    mEditableConsumerImageView.setMask( mProduct.getUserJourneyType().maskResourceId(), mProduct.getImageAspectRatio() );
+    mEditableImageContainerFrame.setImageKey( mAsset );
+    mEditableImageContainerFrame.setMask( mProduct.getUserJourneyType().maskResourceId(), mProduct.getImageAspectRatio() );
 
-    AssetHelper.requestImage( mKiteActivity, mAsset, mEditableConsumerImageView );
+    AssetHelper.requestImage( mKiteActivity, mAsset, mEditableImageContainerFrame );
     }
 
 

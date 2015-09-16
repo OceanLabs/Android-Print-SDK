@@ -79,7 +79,7 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
 
   protected Product                      mProduct;
 
-  protected EditableImageContainerFrame  mEditableConsumerImageView;
+  protected EditableImageContainerFrame  mEditableImageContainerFrame;
   protected Button                       mCancelButton;
   protected Button                       mConfirmButton;
 
@@ -158,9 +158,9 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
     {
     View view = layoutInflator.inflate( R.layout.screen_edit_image, container, false );
 
-    mEditableConsumerImageView = (EditableImageContainerFrame)view.findViewById( R.id.editable_consumer_image_view );
-    mCancelButton              = (Button)view.findViewById( R.id.cancel_button );
-    mConfirmButton             = (Button)view.findViewById( R.id.confirm_button );
+    mEditableImageContainerFrame = (EditableImageContainerFrame)view.findViewById( R.id.editable_consumer_image_view );
+    mCancelButton                = (Button)view.findViewById( R.id.cancel_button );
+    mConfirmButton               = (Button)view.findViewById( R.id.confirm_button );
 
 
     mCancelButton.setOnClickListener( this );
@@ -224,7 +224,10 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
    *****************************************************/
   protected Asset getEditedImageAsset()
     {
-    Bitmap editedImageBitmap = mEditableConsumerImageView.getEditableImageView().getImageCroppedToMask();
+    if ( mEditableImageContainerFrame == null ) return ( null );
+
+
+    Bitmap editedImageBitmap = mEditableImageContainerFrame.getEditableImageView().getImageCroppedToMask();
 
 
     // Sometimes users can hit the next button before we've actually got all the images, so check
