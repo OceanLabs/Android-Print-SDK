@@ -90,6 +90,7 @@ public class ProductLoader implements HTTPJSONRequest.HTTPJSONRequestListener
   private static final String  JSON_NAME_CURRENCY                    = "currency";
   private static final String  JSON_NAME_CENTIMETERS                 = "cm";
   private static final String  JSON_NAME_COST                        = "cost";
+  private static final String  JSON_NAME_DESCRIPTION                 = "description";
   private static final String  JSON_NAME_FORMATTED_AMOUNT            = "formatted";
   private static final String  JSON_NAME_GROUP_IMAGE                 = "ios_sdk_class_photo";
   private static final String  JSON_NAME_GROUP_LABEL                 = "ios_sdk_product_class";
@@ -401,11 +402,12 @@ public class ProductLoader implements HTTPJSONRequest.HTTPJSONRequestListener
         // Uncomment to dump out JSON
         Log.d( LOG_TAG, "Product JSON:\n" + productJSONObject.toString() );
 
-        String                           productId     = productJSONObject.getString( JSON_NAME_PRODUCT_ID );
-        String                           productName   = productJSONObject.getString( JSON_NAME_PRODUCT_NAME );
-        int                              imagesPerPage = productJSONObject.optInt( JSON_NAME_IMAGES_PER_PAGE, DEFAULT_IMAGES_PER_PAGE );
-        MultipleCurrencyAmount           cost          = parseCost( productJSONObject.getJSONArray( JSON_NAME_COST ) );
-        MultipleDestinationShippingCosts shippingCosts = parseShippingCosts( productJSONObject.getJSONObject( JSON_NAME_SHIPPING_COSTS ) );
+        String                           productId          = productJSONObject.getString( JSON_NAME_PRODUCT_ID );
+        String                           productName        = productJSONObject.getString( JSON_NAME_PRODUCT_NAME );
+        String                           productDescription = productJSONObject.getString( JSON_NAME_DESCRIPTION );
+        int                              imagesPerPage      = productJSONObject.optInt( JSON_NAME_IMAGES_PER_PAGE, DEFAULT_IMAGES_PER_PAGE );
+        MultipleCurrencyAmount           cost               = parseCost( productJSONObject.getJSONArray( JSON_NAME_COST ) );
+        MultipleDestinationShippingCosts shippingCosts      = parseShippingCosts( productJSONObject.getJSONObject( JSON_NAME_SHIPPING_COSTS ) );
 
 
         // Get the product detail
@@ -455,6 +457,7 @@ public class ProductLoader implements HTTPJSONRequest.HTTPJSONRequestListener
 
         Product product = new Product( productId, productCode, productName, productType, labelColour, userJourneyType, imagesPerPage )
                 .setCost( cost )
+                .setDescription( productDescription )
                 .setShippingCosts( shippingCosts )
                 .setImageURLs( heroImageURL, imageURLList )
                 .setLabelColour( labelColour )

@@ -42,7 +42,8 @@
             android:name=".checkout.PaymentActivity"
             android:label="@string/title_activity_payment"
             android:theme="@style/Theme.KiteSDK.Payment"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustPan"/>
 
         <activity
             android:name=".checkout.OrderReceiptActivity"

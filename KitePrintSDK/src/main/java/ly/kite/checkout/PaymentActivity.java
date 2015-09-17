@@ -51,12 +51,15 @@ import android.os.Looper;
 import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 import com.paypal.android.sdk.payments.PayPalPayment;
@@ -90,7 +93,7 @@ import ly.kite.product.SingleCurrencyAmount;
  * This activity displays the price / payment screen.
  *
  *****************************************************/
-public class PaymentActivity extends AKiteActivity implements IPricingConsumer
+public class PaymentActivity extends AKiteActivity implements IPricingConsumer, TextView.OnEditorActionListener
   {
   ////////// Static Constant(s) //////////
 
@@ -132,6 +135,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
   private OrderPricing mOrderPricing;
 
   private boolean mPromoButtonClearsCode;
+  private boolean mLastPriceRetrievalSucceeded;
 
 
   ////////// Static Initialiser(s) //////////
@@ -233,6 +237,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
     mProgressBar          = (ProgressBar) findViewById( R.id.progress_bar );
 
     mPromoEditText.addTextChangedListener( new PromoCodeTextWatcher() );
+    mPromoEditText.setOnEditorActionListener( this );
 
 
     if ( mKiteSDKEnvironment.getPayPalEnvironment().equals( PayPalConfiguration.ENVIRONMENT_SANDBOX ) )
@@ -429,11 +434,14 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
     {
     mOrderPricing = pricing;
 
+    mLastPriceRetrievalSucceeded = true;
+
     mPromoButton.setEnabled( true );
     mCreditCardButton.setEnabled( true );
     mCreditCardButton.setEnabled( true );
 
     mProgressBar.setVisibility( View.GONE );
+
 
     onGotPrices();
     }
@@ -447,6 +455,8 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
   @Override
   public void paOnError( Exception exception )
     {
+    mLastPriceRetrievalSucceeded = false;
+
     displayModalDialog
             (
                     R.string.alert_dialog_title_oops,
@@ -456,6 +466,30 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
                     R.string.Cancel,
                     new FinishRunnable()
             );
+    }
+
+
+  ////////// TextView.OnEditorActionListener Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when an action occurs on the editor. We use this
+   * to determine when the done button is pressed on the on-screen
+   * keyboard.
+   *
+   *****************************************************/
+  @Override
+  public boolean onEditorAction( TextView v, int actionId, KeyEvent event )
+    {
+    if ( actionId == EditorInfo.IME_ACTION_DONE )
+      {
+      onPromoButtonClicked();
+      }
+
+    // Return false even if we intercepted the done - so the keyboard
+    // will be hidden.
+
+    return ( false );
     }
 
 
@@ -600,8 +634,24 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
    *****************************************************/
   public void onPromoButtonClicked( View view )
     {
+    onPromoButtonClicked();
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the promo button is called. It may be
+   * in one of two states:
+   *   - Apply
+   *   - Clear
+   *
+   *****************************************************/
+  public void onPromoButtonClicked()
+    {
     if ( mPromoButtonClearsCode )
       {
+      String lastPromoCode = mPrintOrder.getPromoCode();
+
       mPrintOrder.clearPromoCode();
 
       mPromoEditText.setText( null );
@@ -610,6 +660,15 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
       mPromoButton.setEnabled( false );
 
       mPromoButtonClearsCode = false;
+
+
+      // If we are clearing a promo code that was successfully used - re-request the
+      // prices (i.e. without the code).
+
+      if ( lastPromoCode != null && mLastPriceRetrievalSucceeded )
+        {
+        requestPrices();
+        }
       }
     else
       {
@@ -779,6 +838,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
     dialog.setCancelable( false );
     dialog.setIndeterminate( false );
     dialog.setProgressStyle( ProgressDialog.STYLE_HORIZONTAL );
+    dialog.setProgressNumberFormat( null );   // Don't display the "N/100" text
     dialog.setTitle( "Processing" );
     dialog.setMessage( "One moment..." );
     dialog.setMax( 100 );

@@ -107,7 +107,8 @@ public class Product implements Parcelable, IGroupOrProduct
   private String                            mId;
   private String                            mCode;
   private String                            mName;
-  private String mType;
+  private String                            mDescription;
+  private String                            mType;
   private UserJourneyType                   mUserJourneyType;
   private int                               mQuantityPerSheet;
 
@@ -190,10 +191,11 @@ public class Product implements Parcelable, IGroupOrProduct
   // Constructor used by parcelable interface
   private Product( Parcel sourceParcel )
     {
-    mId    = sourceParcel.readString();
-    mCode  = sourceParcel.readString();
-    mName  = sourceParcel.readString();
-    mType  = sourceParcel.readString();
+    mId          = sourceParcel.readString();
+    mCode        = sourceParcel.readString();
+    mName        = sourceParcel.readString();
+    mDescription = sourceParcel.readString();
+    mType        = sourceParcel.readString();
 
     String userJourneyString = sourceParcel.readString();
     mUserJourneyType  = (userJourneyString != null ? UserJourneyType.valueOf( userJourneyString ) : null);
@@ -248,6 +250,7 @@ public class Product implements Parcelable, IGroupOrProduct
     targetParcel.writeString( mId );
     targetParcel.writeString( mCode );
     targetParcel.writeString( mName );
+    targetParcel.writeString( mDescription );
     targetParcel.writeString( mType );
     targetParcel.writeString( mUserJourneyType != null ? mUserJourneyType.name() : null );
     targetParcel.writeInt( mQuantityPerSheet );
@@ -325,6 +328,32 @@ public class Product implements Parcelable, IGroupOrProduct
   public UserJourneyType getUserJourneyType()
     {
     return ( mUserJourneyType );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the description.
+   *
+   * @return The product. so calls can be chained.
+   *
+   *****************************************************/
+  public Product setDescription( String description )
+    {
+    mDescription = description;
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the description.
+   *
+   *****************************************************/
+  public String getDescription()
+    {
+    return ( mDescription );
     }
 
 
@@ -694,6 +723,7 @@ public class Product implements Parcelable, IGroupOrProduct
     stringBuilder.append( "Id                 : " ).append( mId ).append( "\n" );
     stringBuilder.append( "Code               : " ).append( mCode ).append( "\n" );
     stringBuilder.append( "Name               : " ).append( mName ).append( "\n" );
+    stringBuilder.append( "Description        : " ).append( mDescription ).append( "\n" );
     stringBuilder.append( "Type               : " ).append( mType ).append( "\n" );
     stringBuilder.append( "User Journey Type  : " ).append( mUserJourneyType.name() ).append( "\n" );
     stringBuilder.append( "Quantity Per Sheet : " ).append( mQuantityPerSheet ).append( "\n" );

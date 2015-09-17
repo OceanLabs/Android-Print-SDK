@@ -50,7 +50,9 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1.0"
                     android:hint="@string/payment_promo_hint"
-                    android:textColor="@color/payment_promo_code_text_default"/>
+                    android:textColor="@color/payment_promo_code_text_default"
+                    android:singleLine="true"
+                    android:imeOptions="actionDone"/>
                 <ly.kite.widget.CustomTypefaceButton
                     android:id="@+id/promo_button"
                     android:layout_width="wrap_content"

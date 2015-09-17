@@ -242,6 +242,8 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
     TextView priceTextView              = (TextView) view.findViewById( R.id.price_text_view );
     TextView summaryDescriptionTextView = (TextView)view.findViewById( R.id.summary_description_text_view );
     TextView summaryShippingTextView    = (TextView)view.findViewById( R.id.summary_shipping_text_view );
+    View     descriptionLayout          = view.findViewById( R.id.description_layout );
+    TextView descriptionTextView        = (TextView)view.findViewById( R.id.description_text_view );
     View     sizeLayout                 = view.findViewById( R.id.size_layout );
     TextView sizeTextView               = (TextView) view.findViewById( R.id.size_text_view );
     View     quantityLayout             = view.findViewById( R.id.quantity_layout );
@@ -342,7 +344,7 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
       }
 
 
-    // Summary description
+    // Summary description. This is a short description - not to be confused with the (full) description.
 
     if ( isVisible( summaryDescriptionTextView ) )
       {
@@ -353,6 +355,28 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
               + ( Product.isSensibleSize( size ) ? " (" + sizeString + ")" : "" );
 
       summaryDescriptionTextView.setText( summaryDescription );
+      }
+
+
+    // (Full) description
+
+    String  description     = mProduct.getDescription();
+
+    boolean haveDescription = ( description != null && ( ! description.trim().equals( "" ) ) );
+
+    if ( haveDescription &&
+         descriptionLayout != null &&
+         descriptionTextView != null )
+      {
+      descriptionLayout.setVisibility( View.VISIBLE );
+      descriptionTextView.setVisibility( View.VISIBLE );
+
+      descriptionTextView.setText( description );
+      }
+    else
+      {
+      if ( descriptionLayout   != null ) descriptionLayout.setVisibility( View.GONE );
+      if ( descriptionTextView != null ) descriptionTextView.setVisibility( View.GONE );
       }
 
 

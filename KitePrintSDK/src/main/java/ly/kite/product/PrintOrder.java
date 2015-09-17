@@ -487,8 +487,6 @@ public class PrintOrder implements Parcelable /* , Serializable */
       @Override
       public void onProgress( AssetUploadRequest req, int totalAssetsUploaded, int totalAssetsToUpload, long bytesWritten, long totalAssetBytesWritten, long totalAssetBytesExpectedToWrite )
         {
-
-
         // Calculate the primary / secondary progress
         int primaryProgressPercent = Math.round( (float) totalAssetsUploaded * 100f / (float) totalAssetsToUpload );
         int secondaryProgressPercent = Math.round( (float) totalAssetBytesWritten * 100f / (float) totalAssetBytesExpectedToWrite );
