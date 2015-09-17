@@ -69,7 +69,7 @@ public void onLaunchSDKButtonClicked(View button) {
 }
 ```
 
-The `Asset` class has several constructors not shown above so that you can launch the SDK with your images in a manner that fits your application.
+The `Asset` class has several constructors not shown above so that you can launch the SDK with your images in a manner that fits your application. You can find your Kite Print API credentials under the [Credentials](https://www.kite.ly/accounts/credentials/) section of the development dashboard.
 
 ## Custom Checkout
 You can build your own UI if you don't want to use or customize the provided checkout and payment experience. You can still use the Kite Print SDK to handle the print order creation and submission: 
