@@ -16,6 +16,9 @@
 
     <color name="labelled_image_label_shadow">#20000000</color>
 
+    <color name="prompt_text_frame_background">#f0ffffff</color>
+    <color name="prompt_text_frame_text">#ff666666</color>
+
     <color name="product_overview_content_background">#f0ffffff</color>
     <color name="product_overview_details_background">#fff26c4f</color>
     <color name="product_overview_price_background">#fff6ce42</color>

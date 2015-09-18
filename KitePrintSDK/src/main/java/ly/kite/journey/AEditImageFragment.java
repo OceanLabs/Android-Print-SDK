@@ -52,6 +52,7 @@ import ly.kite.product.Asset;
 import ly.kite.product.AssetHelper;
 import ly.kite.product.Product;
 import ly.kite.widget.EditableImageContainerFrame;
+import ly.kite.widget.PromptTextFrame;
 
 
 ///// Class Declaration /////
@@ -82,6 +83,7 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
   protected EditableImageContainerFrame  mEditableImageContainerFrame;
   protected Button                       mCancelButton;
   protected Button                       mConfirmButton;
+  private   PromptTextFrame              mPromptTextFrame;
 
 
   ////////// Static Initialiser(s) //////////
@@ -161,6 +163,7 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
     mEditableImageContainerFrame = (EditableImageContainerFrame)view.findViewById( R.id.editable_consumer_image_view );
     mCancelButton                = (Button)view.findViewById( R.id.cancel_button );
     mConfirmButton               = (Button)view.findViewById( R.id.confirm_button );
+    mPromptTextFrame             = (PromptTextFrame)view.findViewById( R.id.prompt_text_frame );
 
 
     mCancelButton.setOnClickListener( this );
@@ -168,6 +171,28 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
 
 
     return ( view );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the activitiy has been created.
+   *
+   *****************************************************/
+  @Override
+  public void onActivityCreated( Bundle savedInstanceState )
+    {
+    super.onActivityCreated( savedInstanceState );
+
+
+    // Only show the prompt animation the first time this
+    // screen is displayed.
+
+    if ( savedInstanceState == null &&
+         mPromptTextFrame   != null )
+      {
+      mPromptTextFrame.startDisplayCycle();
+      }
     }
 
 

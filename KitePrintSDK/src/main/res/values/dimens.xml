@@ -19,6 +19,10 @@
     <dimen name="label_padding_bottom">9dp</dimen>
     <dimen name="label_margin_bottom">20dp</dimen>
 
+    <dimen name="prompt_text_frame_padding_horizontal">20dp</dimen>
+    <dimen name="prompt_text_frame_padding_vertical">10dp</dimen>
+    <dimen name="prompt_text_frame_text_size">18sp</dimen>
+
     <dimen name="group_or_product_grid_vertical_spacing">2dp</dimen>
     <dimen name="group_or_product_grid_horizontal_spacing">2dp</dimen>
 

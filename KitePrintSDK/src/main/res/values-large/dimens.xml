@@ -12,6 +12,10 @@
     <dimen name="label_padding_bottom">12dp</dimen>
     <dimen name="labelled_image_label_shadow_y_offset">1dp</dimen>
 
+    <dimen name="prompt_text_frame_padding_horizontal">25dp</dimen>
+    <dimen name="prompt_text_frame_padding_vertical">13dp</dimen>
+    <dimen name="prompt_text_frame_text_size">23sp</dimen>
+
     <dimen name="product_overview_paging_dots_spacing_bottom">12dp</dimen>
     <dimen name="product_overview_overlaid_start_button_spacing_bottom">20dp</dimen>
     <dimen name="product_overview_control_bar_height">62dp</dimen>
