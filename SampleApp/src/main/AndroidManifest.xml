@@ -9,6 +9,14 @@
         android:minSdkVersion="14"
         android:targetSdkVersion="22"/>
 
+
+    <!-- Used for GCM -->
+
+    <permission android:name="ly.kite.sample.permission.C2D_MESSAGE" android:protectionLevel="signature" />
+
+    <uses-permission android:name="ly.kite.sample.permission.C2D_MESSAGE"/>
+
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -23,6 +31,28 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
+        <!-- GCM -->
+
+        <receiver
+            android:name="com.google.android.gms.gcm.GcmReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="ly.kite.sample" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".GCMListenerService"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </service>
+
 
         <meta-data
             android:name="io.fabric.ApiKey"

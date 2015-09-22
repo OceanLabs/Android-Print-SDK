@@ -57,6 +57,7 @@ import android.view.ViewGroup;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
+import ly.kite.gcm.GCMRegistrationService;
 import ly.kite.product.ProductLoader;
 
 /*****************************************************
@@ -119,6 +120,11 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   public void onCreate( Bundle savedInstanceState )
     {
     super.onCreate( savedInstanceState );
+
+
+    // Check that we are registered for GCM. Comment this out if your app doesn't
+    // use Google Cloud Messaging.
+    GCMRegistrationService.start( this );
 
 
     // TODO: Fix this dirty hack

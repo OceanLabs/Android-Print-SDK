@@ -40,6 +40,7 @@ package ly.kite;
 ///// Import(s) /////
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -76,6 +77,7 @@ public class KiteSDK
 
   private static final String SHARED_PREFERENCES_NAME                   = "kite_shared_prefs";
   private static final String SHARED_PREFERENCES_KEY_API_KEY            = "api_key";
+  private static final String SHARED_PREFERENCES_KEY_UNIQUE_USER_ID     = "unique_user_id";
 
   private static final String KEY_ENVIRONMENT_NAME                      = "environment_name";
   private static final String KEY_API_ENDPOINT                          = "api_endpoint";
@@ -118,6 +120,7 @@ public class KiteSDK
   private Context      mApplicationContext;
   private String       mAPIKey;
   private Environment  mEnvironment;
+  private String       mUniqueUserId;
 
 
   ////////// Static Initialiser(s) //////////
@@ -346,6 +349,41 @@ public class KiteSDK
   public Environment getEnvironment()
     {
     return ( mEnvironment );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a unique id representing the user. This is
+   * generated and then persisted.
+   *
+   *****************************************************/
+  public String getUniqueUserId()
+    {
+    // If we don't have a cached id - see if we previously
+    // saved one and load it in. Otherwise generate a new
+    // one now and save it.
+
+    if ( mUniqueUserId == null )
+      {
+      SharedPreferences sharedPreferences = mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE );
+
+      String uniqueUserId = sharedPreferences.getString( SHARED_PREFERENCES_KEY_UNIQUE_USER_ID, null );
+
+      if ( uniqueUserId == null )
+        {
+        uniqueUserId = UUID.randomUUID().toString();
+
+        sharedPreferences
+          .edit()
+            .putString( SHARED_PREFERENCES_KEY_UNIQUE_USER_ID, uniqueUserId )
+          .commit();
+        }
+
+      mUniqueUserId = uniqueUserId;
+      }
+
+    return ( mUniqueUserId );
     }
 
 

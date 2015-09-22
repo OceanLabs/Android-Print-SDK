@@ -2,6 +2,7 @@ package ly.kite.util;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -135,9 +136,23 @@ public class HTTPJSONRequest
                         builder.append(line).append("\n");
                     }
 
-                    JSONTokener t = new JSONTokener(builder.toString());
-                    jsonResponse.json = new JSONObject(t);
+                    // If we get a body - parse it as JSON. Some endpoints don't return anything, so
+                    // if this happens we just create an empty JSON object.
+
+                    String bodyJSONString = builder.toString();
+
+                    if ( ! bodyJSONString.trim().equals( "" ) )
+                      {
+                      JSONTokener t = new JSONTokener( builder.toString() );
+                      jsonResponse.json = new JSONObject( t );
+                      }
+                    else
+                      {
+                      jsonResponse.json = new JSONObject();
+                      }
+
                     jsonResponse.httpStatusCode = response.getStatusLine().getStatusCode();
+
                 } catch (Exception e) {
                     jsonResponse.error = e;
                 }

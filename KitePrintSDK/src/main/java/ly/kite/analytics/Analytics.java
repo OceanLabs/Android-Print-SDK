@@ -81,25 +81,23 @@ public class Analytics
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                                     = "Analytics";
+  private static final String  LOG_TAG                                       = "Analytics";
 
-  private static final String  SHARED_PREFRENCES_NAME                      = "kite_sdk_analytics_shared_prefs";
-  private static final String  SHARED_PREFERENCES_KEY_UNIQUE_USER_ID       = "unique_user_id";
+  private static final String SHARED_PREFERENCES_NAME                        = "kite_sdk_analytics_shared_prefs";
 
-
-  private static final String  EVENT_NAME_SDK_LOADED                       = "Kite Loaded";
-  private static final String  EVENT_NAME_PRODUCT_SELECTION_SCREEN_VIEWED  = "Product Selection Screen Viewed";
-  private static final String  EVENT_NAME_PRODUCT_OVERVIEW_SCREEN_VIEWED   = "Product Description Screen Viewed";
-  private static final String  EVENT_NAME_CREATE_PRODUCT_SCREEN_VIEWED     = "Review Screen Viewed";
+  private static final String  EVENT_NAME_SDK_LOADED                         = "Kite Loaded";
+  private static final String  EVENT_NAME_PRODUCT_SELECTION_SCREEN_VIEWED    = "Product Selection Screen Viewed";
+  private static final String  EVENT_NAME_PRODUCT_OVERVIEW_SCREEN_VIEWED     = "Product Description Screen Viewed";
+  private static final String  EVENT_NAME_CREATE_PRODUCT_SCREEN_VIEWED       = "Review Screen Viewed";
   private static final String  EVENT_NAME_PRODUCT_ORDER_REVIEW_SCREEN_VIEWED = "Product Order Review Screen";
-  private static final String  EVENT_NAME_SHIPPING_SCREEN_VIEWED           = "Shipping Screen Viewed";
-  private static final String  EVENT_NAME_CREATE_PAYMENT_SCREEN_VIEWED     = "Payment Screen Viewed";
-  private static final String  EVENT_NAME_PAYMENT_COMPLETED                = "Payment Completed";
-  private static final String  EVENT_NAME_ORDER_SUBMISSION                 = "Print Order Submission";
+  private static final String  EVENT_NAME_SHIPPING_SCREEN_VIEWED             = "Shipping Screen Viewed";
+  private static final String  EVENT_NAME_CREATE_PAYMENT_SCREEN_VIEWED       = "Payment Screen Viewed";
+  private static final String  EVENT_NAME_PAYMENT_COMPLETED                  = "Payment Completed";
+  private static final String  EVENT_NAME_ORDER_SUBMISSION                   = "Print Order Submission";
 
 
-  private static final String  JSON_PROPERTY_NAME_EVENT                    = "event";
-  private static final String  JSON_PROPERTY_NAME_PROPERTIES               = "properties";
+  private static final String  JSON_PROPERTY_NAME_EVENT                      = "event";
+  private static final String  JSON_PROPERTY_NAME_PROPERTIES                 = "properties";
 
   private static final String  JSON_PROPERTY_NAME_API_TOKEN                = "token";
   private static final String  JSON_PROPERTY_NAME_UNIQUE_USER_ID           = "distinct_id";
@@ -171,7 +169,6 @@ public class Analytics
 
   private Context     mContext;
 
-  private String      mCachedUniqueUserId;
   private HashMap<String,Object> mCachedPropertiesMap;
   private IAnalyticsEventCallback mCachedEventCallback;
 
@@ -383,41 +380,6 @@ public class Analytics
 
   /*****************************************************
    *
-   * Returns a unique id representing the user. This is
-   * generated and then persisted.
-   *
-   *****************************************************/
-  private String getUniqueUserId()
-    {
-    // If we don't have a cached id - see if we previously
-    // saved one and load it in. Otherwise generate a new
-    // one now and save it.
-
-    if ( mCachedUniqueUserId == null )
-      {
-      SharedPreferences sharedPreferences = mContext.getSharedPreferences( SHARED_PREFRENCES_NAME, Context.MODE_PRIVATE );
-
-      String uniqueUserId = sharedPreferences.getString( SHARED_PREFERENCES_KEY_UNIQUE_USER_ID, null );
-
-      if ( uniqueUserId == null )
-        {
-        uniqueUserId = UUID.randomUUID().toString();
-
-        sharedPreferences
-          .edit()
-            .putString( SHARED_PREFERENCES_KEY_UNIQUE_USER_ID, uniqueUserId )
-          .commit();
-        }
-
-      mCachedUniqueUserId = uniqueUserId;
-      }
-
-    return ( mCachedUniqueUserId );
-    }
-
-
-  /*****************************************************
-   *
    * Returns a JSON object containing the standard properties
    * that we upload with every event.
    *
@@ -441,7 +403,7 @@ public class Analytics
       mCachedPropertiesMap = new HashMap<>();
 
       mCachedPropertiesMap.put( JSON_PROPERTY_NAME_API_TOKEN,        MixpanelAgent.API_TOKEN );
-      mCachedPropertiesMap.put( JSON_PROPERTY_NAME_UNIQUE_USER_ID,   getUniqueUserId() );
+      mCachedPropertiesMap.put( JSON_PROPERTY_NAME_UNIQUE_USER_ID,   KiteSDK.getInstance( mContext ).getUniqueUserId() );
       mCachedPropertiesMap.put( JSON_PROPERTY_NAME_APP_PACKAGE,      mContext.getPackageName() );
       mCachedPropertiesMap.put( JSON_PROPERTY_NAME_APP_NAME,         mContext.getString( mContext.getApplicationInfo().labelRes ) );
       mCachedPropertiesMap.put( JSON_PROPERTY_NAME_APP_VERSION,      BuildConfig.VERSION_NAME );

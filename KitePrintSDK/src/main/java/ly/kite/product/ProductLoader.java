@@ -83,7 +83,7 @@ public class ProductLoader implements HTTPJSONRequest.HTTPJSONRequestListener
 
   public  static final long    ANY_AGE_OK                            = -1;
 
-  private static final String  REQUEST_FORMAT_STRING                 = "%s/template/?limit=100";
+  private static final String TEMPLATE_REQUEST_FORMAT_STRING         = "%s/template/?limit=100";
 
   private static final String  JSON_NAME_AMOUNT                      = "amount";
   private static final String  JSON_NAME_BOTTOM                      = "bottom";
@@ -639,7 +639,7 @@ public class ProductLoader implements HTTPJSONRequest.HTTPJSONRequestListener
 
     // We need to perform a new retrieval. Create a new request, and consumer list containing the consumer.
 
-    String url = String.format( REQUEST_FORMAT_STRING, KiteSDK.getInstance( mContext ).getAPIEndpoint() );
+    String url = String.format( TEMPLATE_REQUEST_FORMAT_STRING, KiteSDK.getInstance( mContext ).getAPIEndpoint() );
 
     mHTTPJSONRequest = new HTTPJSONRequest( mContext, HTTPJSONRequest.HttpMethod.GET, url, null, null );
     mConsumerHandlerList = new ArrayList<Pair<ProductConsumer,Handler>>();
