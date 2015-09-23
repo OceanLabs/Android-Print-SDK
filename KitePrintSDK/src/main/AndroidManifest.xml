@@ -28,12 +28,12 @@
         <!-- Kite SDK activities -->
 
         <activity
-            android:name=".journey.ProductSelectionActivity"
+            android:name=".journey.selection.ProductSelectionActivity"
             android:theme="@style/Theme.KiteSDK.ProductSelection"
             android:launchMode="singleTop"/>
 
         <activity
-            android:name=".journey.ProductCreationActivity"
+            android:name=".journey.creation.ProductCreationActivity"
             android:theme="@style/Theme.KiteSDK.ProductCreation"
             android:launchMode="singleTop"/>
 

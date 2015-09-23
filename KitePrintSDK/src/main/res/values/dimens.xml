@@ -19,6 +19,9 @@
     <dimen name="label_padding_bottom">9dp</dimen>
     <dimen name="label_margin_bottom">20dp</dimen>
 
+    <dimen name="navigation_item_text_size">16sp</dimen>
+    <dimen name="navigation_drawer_width">240dp</dimen>
+
     <dimen name="prompt_text_frame_padding_horizontal">20dp</dimen>
     <dimen name="prompt_text_frame_padding_vertical">10dp</dimen>
     <dimen name="prompt_text_frame_text_size">18sp</dimen>

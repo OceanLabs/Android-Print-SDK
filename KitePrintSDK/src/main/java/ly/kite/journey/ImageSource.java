@@ -54,7 +54,7 @@ import ly.kite.instagramphotopicker.InstagramPhoto;
 import ly.kite.instagramphotopicker.InstagramPhotoPicker;
 import ly.kite.photopicker.Photo;
 import ly.kite.photopicker.PhotoPicker;
-import ly.kite.product.Asset;
+import ly.kite.catalogue.Asset;
 
 
 ///// Class Declaration /////

@@ -75,15 +75,15 @@ import ly.kite.pricing.IPricingConsumer;
 import ly.kite.pricing.OrderPricing;
 import ly.kite.pricing.PricingAgent;
 import ly.kite.KiteSDK;
-import ly.kite.product.MultipleCurrencyAmount;
-import ly.kite.product.PrintOrder;
-import ly.kite.product.PrintOrderSubmissionListener;
+import ly.kite.catalogue.MultipleCurrencyAmount;
+import ly.kite.catalogue.PrintOrder;
+import ly.kite.catalogue.PrintOrderSubmissionListener;
 import ly.kite.R;
 import ly.kite.payment.PayPalCard;
 import ly.kite.payment.PayPalCardChargeListener;
 import ly.kite.payment.PayPalCardVaultStorageListener;
 import ly.kite.journey.AKiteActivity;
-import ly.kite.product.SingleCurrencyAmount;
+import ly.kite.catalogue.SingleCurrencyAmount;
 
 
 ///// Class Declaration /////

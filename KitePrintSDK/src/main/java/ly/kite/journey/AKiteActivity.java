@@ -58,7 +58,7 @@ import android.view.ViewGroup;
 import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.gcm.GCMRegistrationService;
-import ly.kite.product.ProductLoader;
+import ly.kite.catalogue.CatalogueLoader;
 
 /*****************************************************
  *
@@ -128,7 +128,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
 
     // TODO: Fix this dirty hack
-    ProductLoader.getInstance( this );
+    CatalogueLoader.getInstance( this );
 
 
     // Listen for changes to the fragment back stack

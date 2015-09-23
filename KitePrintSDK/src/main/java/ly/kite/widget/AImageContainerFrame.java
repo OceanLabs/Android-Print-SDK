@@ -58,8 +58,8 @@ import java.net.URL;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
-import ly.kite.product.Asset;
-import ly.kite.product.AssetHelper;
+import ly.kite.catalogue.Asset;
+import ly.kite.catalogue.AssetHelper;
 import ly.kite.util.IImageConsumer;
 import ly.kite.util.ImageAgent;
 

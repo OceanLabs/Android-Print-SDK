@@ -45,7 +45,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.TextView;
 
 import java.math.BigDecimal;
@@ -54,14 +53,9 @@ import java.util.List;
 import java.util.Locale;
 
 import ly.kite.R;
-import ly.kite.journey.UserJourneyType;
 import ly.kite.pricing.OrderPricing;
-import ly.kite.product.Asset;
-import ly.kite.journey.AssetsAndQuantity;
-import ly.kite.product.AssetHelper;
-import ly.kite.product.MultipleCurrencyAmount;
-import ly.kite.product.SingleCurrencyAmount;
-import ly.kite.widget.FramedImageView;
+import ly.kite.catalogue.MultipleCurrencyAmount;
+import ly.kite.catalogue.SingleCurrencyAmount;
 
 
 ///// Class Declaration /////

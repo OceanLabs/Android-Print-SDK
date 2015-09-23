@@ -42,32 +42,17 @@ package ly.kite.widget;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
-import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import java.net.URL;
-
-import ly.kite.KiteSDK;
 import ly.kite.R;
-import ly.kite.product.Asset;
-import ly.kite.product.AssetHelper;
-import ly.kite.util.IImageConsumer;
-import ly.kite.util.ImageAgent;
 
 
 ///// Class Declaration /////

@@ -51,7 +51,7 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
 import ly.kite.R;
-import ly.kite.product.Bleed;
+import ly.kite.catalogue.Bleed;
 import ly.kite.util.IImageConsumer;
 
 

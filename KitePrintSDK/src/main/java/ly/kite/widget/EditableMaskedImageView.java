@@ -61,7 +61,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 
 import ly.kite.KiteSDK;
 import ly.kite.animation.ASimpleFloatPropertyAnimator;
-import ly.kite.product.Bleed;
+import ly.kite.catalogue.Bleed;
 
 
 ///// Class Declaration /////

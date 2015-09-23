@@ -17,6 +17,9 @@
     <string name="title_create_phone_case">Create Phone Case</string>
     <string name="title_image_source">Choose Photos</string>
 
+    <string name="drawer_open">Drawer open</string>
+    <string name="drawer_closed">Drawer closed</string>
+
     <string name="alert_dialog_title_pack_not_full_format_string">You\'ve selected %d photos</string>
     <string name="alert_dialog_message_pack_not_full_format_string">You can add %d more for the same price</string>
 

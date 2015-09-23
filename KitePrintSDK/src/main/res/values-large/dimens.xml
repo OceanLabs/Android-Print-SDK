@@ -12,6 +12,9 @@
     <dimen name="label_padding_bottom">12dp</dimen>
     <dimen name="labelled_image_label_shadow_y_offset">1dp</dimen>
 
+    <dimen name="navigation_item_text_size">20sp</dimen>
+    <dimen name="navigation_drawer_width">300dp</dimen>
+
     <dimen name="prompt_text_frame_padding_horizontal">25dp</dimen>
     <dimen name="prompt_text_frame_padding_vertical">13dp</dimen>
     <dimen name="prompt_text_frame_text_size">23sp</dimen>

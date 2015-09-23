@@ -40,7 +40,6 @@ package ly.kite.analytics;
 ///// Import(s) /////
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -53,7 +52,6 @@ import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
 
 import ly.kite.BuildConfig;
 import ly.kite.KiteSDK;
@@ -61,11 +59,11 @@ import ly.kite.R;
 import ly.kite.address.Address;
 import ly.kite.address.Country;
 import ly.kite.pricing.OrderPricing;
-import ly.kite.product.MultipleCurrencyAmount;
-import ly.kite.product.PrintJob;
-import ly.kite.product.PrintOrder;
-import ly.kite.product.Product;
-import ly.kite.product.SingleCurrencyAmount;
+import ly.kite.catalogue.MultipleCurrencyAmount;
+import ly.kite.catalogue.PrintJob;
+import ly.kite.catalogue.PrintOrder;
+import ly.kite.catalogue.Product;
+import ly.kite.catalogue.SingleCurrencyAmount;
 
 
 ///// Class Declaration /////

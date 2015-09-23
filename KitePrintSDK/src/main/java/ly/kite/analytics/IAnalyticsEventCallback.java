@@ -39,8 +39,8 @@ package ly.kite.analytics;
 
 ///// Import(s) /////
 
-import ly.kite.product.PrintOrder;
-import ly.kite.product.Product;
+import ly.kite.catalogue.PrintOrder;
+import ly.kite.catalogue.Product;
 
 ///// Class Declaration /////
 

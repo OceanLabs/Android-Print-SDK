@@ -44,9 +44,6 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.widget.AdapterView;
 
-import ly.kite.product.SingleUnitSize;
-import ly.kite.product.UnitOfLength;
-
 
 ///// Class Declaration /////
 

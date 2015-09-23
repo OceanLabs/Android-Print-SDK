@@ -52,9 +52,9 @@ import android.util.Log;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 
 import ly.kite.checkout.PaymentActivity;
-import ly.kite.product.Asset;
-import ly.kite.journey.ProductSelectionActivity;
-import ly.kite.product.AssetHelper;
+import ly.kite.catalogue.Asset;
+import ly.kite.journey.selection.ProductSelectionActivity;
+import ly.kite.catalogue.AssetHelper;
 import ly.kite.util.ImageAgent;
 
 

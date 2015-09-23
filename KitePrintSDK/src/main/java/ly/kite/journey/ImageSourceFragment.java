@@ -52,8 +52,9 @@ import java.util.List;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
-import ly.kite.product.Asset;
-import ly.kite.product.Product;
+import ly.kite.journey.creation.AProductCreationFragment;
+import ly.kite.catalogue.Asset;
+import ly.kite.catalogue.Product;
 
 
 ///// Class Declaration /////

@@ -3,22 +3,19 @@ package ly.kite.checkout;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Looper;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import ly.kite.product.PrintOrder;
-import ly.kite.product.PrintOrderSubmissionListener;
+import ly.kite.catalogue.PrintOrder;
+import ly.kite.catalogue.PrintOrderSubmissionListener;
 import ly.kite.R;
 
 public class OrderReceiptActivity extends Activity {
