@@ -57,7 +57,7 @@ import io.fabric.sdk.android.Fabric;
 
 import ly.kite.photopicker.Photo;
 import ly.kite.photopicker.PhotoPicker;
-import ly.kite.product.Asset;
+import ly.kite.catalogue.Asset;
 import ly.kite.KiteSDK;
 
 
@@ -84,13 +84,9 @@ public class MainActivity extends Activity
    * Insert your Kite API keys here. These are found under your profile
    * by logging in to the developer portal at https://www.kite.ly
    **********************************************************************/
-  //private static final String API_KEY_TEST                = NON_REPLACED_API_KEY;
-  //private static final String API_KEY_TEST                = "ba171b0d91b1418fbd04f7b12af1e37e42d2cb1e"; // Test
-  private static final String API_KEY_TEST                = "2d019f03d66bbb31328563dfef1569ece92bc842"; // JL Test
-  //private static final String API_KEY_TEST                = "0453d74be957c1eb510fc2d580007294cdc31a79"; // Photobox
+  private static final String API_KEY_TEST                = NON_REPLACED_API_KEY;
 
   private static final String API_KEY_LIVE                = NON_REPLACED_API_KEY;
-  //private static final String API_KEY_LIVE                = "0453d74be957c1eb510fc2d580007294cdc31a79"; // Photobox
 
   private static final String INSTAGRAM_API_KEY           = "aa314a392fdd4de7aa287a6614ea8897";
   private static final String INSTAGRAM_REDIRECT_URI      = "psapp://instagram-callback";
@@ -256,14 +252,17 @@ public class MainActivity extends Activity
     if ( apiKey.equals( NON_REPLACED_API_KEY ) )
       {
       showError( "Set API Keys", "Please set your Kite API keys at the top of the SampleApp's MainActivity.java. You can find these by logging into https://www.kite.ly." );
+
       return;
       }
 
 
     // Launch the SDK shopping journey
-    KiteSDK.startShopping( this, apiKey, environment, assets )
+    KiteSDK.getInstance( this, apiKey, environment )
       .setInstagramCredentials( INSTAGRAM_API_KEY, INSTAGRAM_REDIRECT_URI )
-      .setRequestPhoneNumber( false );
+      .setRequestPhoneNumber( false )
+      .startShopping( this, assets );  // Use this to shop all products in catalogue
+      //.startShoppingByProductId( this, assets, "pbx_squares_5x5", "pbx_squares_8x8" );  // Use this to shop specific products by id
     }
 
 

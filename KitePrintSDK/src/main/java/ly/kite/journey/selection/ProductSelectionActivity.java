@@ -39,14 +39,12 @@ package ly.kite.journey.selection;
 
 ///// Import(s) /////
 
-
-///// Class Declaration /////
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.widget.GridView;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +52,8 @@ import java.util.List;
 import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.catalogue.Catalogue;
+import ly.kite.catalogue.CatalogueLoader;
+import ly.kite.catalogue.ICatalogueConsumer;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.journey.creation.ProductCreationActivity;
@@ -62,6 +62,9 @@ import ly.kite.catalogue.Asset;
 import ly.kite.catalogue.Product;
 import ly.kite.catalogue.ProductGroup;
 import ly.kite.widget.HeaderFooterGridView;
+
+
+///// Class Declaration /////
 
 /*****************************************************
  *
@@ -72,7 +75,9 @@ import ly.kite.widget.HeaderFooterGridView;
  * journey type.
  *
  *****************************************************/
-public class ProductSelectionActivity extends AKiteActivity implements ChooseProductGroupFragment.ICallback,
+public class ProductSelectionActivity extends AKiteActivity implements ICatalogueHolder,
+                                                                       ICatalogueConsumer,
+                                                                       ChooseProductGroupFragment.ICallback,
                                                                        ChooseProductFragment.ICallback,
                                                                        ProductOverviewFragment.ICallback
   {
@@ -82,6 +87,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ChoosePro
   private static final String  LOG_TAG                         = "ProductSelectionAct.";  // Can't be more than 23 characters ... who knew?!
 
   private static final String  INTENT_EXTRA_NAME_ASSET_LIST    = KiteSDK.INTENT_PREFIX + ".assetList";
+  private static final String  INTENT_EXTRA_NAME_PRODUCT_IDS   = KiteSDK.INTENT_PREFIX + ".productIds";
 
 
   ////////// Static Variable(s) //////////
@@ -90,11 +96,18 @@ public class ProductSelectionActivity extends AKiteActivity implements ChoosePro
   ////////// Member Variable(s) //////////
 
   private ArrayList<AssetsAndQuantity>  mAssetsAndQuantityArrayList;
+  private String[]                      mProductIds;
 
+  private ProgressBar                   mProgressSpinner;
   private ChooseProductGroupFragment    mProductGroupFragment;
   private ChooseProductFragment         mProductFragment;
   private ProductOverviewFragment       mProductOverviewFragment;
   private ReviewAndEditFragment         mReviewAndCropFragment;
+
+  private CatalogueLoader               mCatalogueLoader;
+  private Catalogue                     mCatalogue;
+  private ICatalogueConsumer            mCatalogueConsumer;
+  private boolean                       mAddFragmentOnCatalogue;
 
 
   ////////// Static Initialiser(s) //////////
@@ -107,11 +120,16 @@ public class ProductSelectionActivity extends AKiteActivity implements ChoosePro
    * Convenience method for starting this activity.
    *
    *****************************************************/
-  public static void start( Context context, ArrayList<Asset> assetArrayList )
+  public static void start( Context context, ArrayList<Asset> assetArrayList, String... productIds )
     {
     Intent intent = new Intent( context, ProductSelectionActivity.class );
 
     intent.putParcelableArrayListExtra( INTENT_EXTRA_NAME_ASSET_LIST, assetArrayList );
+
+    if ( productIds != null && productIds.length > 0 )
+      {
+      intent.putExtra( INTENT_EXTRA_NAME_PRODUCT_IDS, productIds );
+      }
 
     context.startActivity( intent );
     }
@@ -162,14 +180,16 @@ public class ProductSelectionActivity extends AKiteActivity implements ChoosePro
     // Get the assets. Note that the asset list may be null, since some apps allow assets to be
     // chosen at a later stage, in which case we create an empty one here.
 
-    Intent           intent = getIntent();
-    ArrayList<Asset> assetArrayList;
+    ArrayList<Asset> assetArrayList = null;
+    Intent           intent         = getIntent();
 
-    if ( intent == null ||
-         ( assetArrayList = intent.getParcelableArrayListExtra( INTENT_EXTRA_NAME_ASSET_LIST ) ) == null )
+    if ( intent != null )
       {
-      assetArrayList = new ArrayList<Asset>();
+      assetArrayList = intent.getParcelableArrayListExtra( INTENT_EXTRA_NAME_ASSET_LIST );
+      mProductIds    = intent.getStringArrayExtra( INTENT_EXTRA_NAME_PRODUCT_IDS );
       }
+
+    if ( assetArrayList == null ) assetArrayList = new ArrayList<Asset>();
 
 
     // We convert the asset list into an assets and quantity list (long before we get
@@ -180,14 +200,28 @@ public class ProductSelectionActivity extends AKiteActivity implements ChoosePro
 
 
     // Set up the screen content
+
     setContentView( R.layout.screen_product_selection );
 
+    mProgressSpinner = (ProgressBar)findViewById( R.id.progress_spinner );
 
-    // Start the first fragment
+
+    // We need to get a filtered product catalogue before we create any fragments,
+    // since depending on how many products are returned - we can either start
+    // the choose group, choose product, or product overview fragment.
+
     if ( savedInstanceState == null )
       {
-      addFragment( mProductGroupFragment = ChooseProductGroupFragment.newInstance(), ChooseProductGroupFragment.TAG );
+      // Show the progress spinner
+      if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.VISIBLE );
+
+      mAddFragmentOnCatalogue = true;
       }
+
+
+    mCatalogueLoader = CatalogueLoader.getInstance( this );
+
+    mCatalogueLoader.requestCatalogue( KiteSDK.MAX_ACCEPTED_PRODUCT_AGE_MILLIS, mProductIds, this );
     }
 
 
@@ -216,15 +250,130 @@ public class ProductSelectionActivity extends AKiteActivity implements ChoosePro
     }
 
 
+  /*****************************************************
+   *
+   * Called some time after the activity is no longer visible.
+   *
+   *****************************************************/
+  @Override
+  protected void onStop()
+    {
+    super.onStop();
+
+    if ( mCatalogueLoader != null ) mCatalogueLoader.cancelRequests();
+    }
+
+
+  ////////// ICatalogueHolder Method(s) //////////
+
+  /*****************************************************
+   *
+   * Returns a catalogue.
+   *
+   *****************************************************/
+  @Override
+  public void getCatalogue( ICatalogueConsumer consumer )
+    {
+    if ( mCatalogue != null )
+      {
+      consumer.onCatalogueSuccess( mCatalogue );
+      }
+    else
+      {
+      mCatalogueConsumer = consumer;
+      }
+    }
+
+
+  ////////// CatalogueLoader.ICatalogueConsumer Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when the catalogue is loaded successfully.
+   *
+   *****************************************************/
+  @Override
+  public void onCatalogueSuccess( Catalogue catalogue )
+    {
+    // Some apps may wish to amend the catalogue
+    mCatalogue = getAdjustedCatalogue( catalogue );
+
+    // Hide the progress spinner
+    if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.GONE );
+
+
+    // If this is the first time we have been created - start the first fragment
+    if ( mAddFragmentOnCatalogue )
+      {
+      // Determine which fragment we need to start with
+
+      ArrayList<ProductGroup> productGroupList = mCatalogue.getProductGroupList();
+
+      if ( productGroupList != null && productGroupList.size() > 0 )
+        {
+        // If there is more than one group - start the choose group fragment
+        if ( productGroupList.size() > 1 )
+          {
+          addFragment( mProductGroupFragment = ChooseProductGroupFragment.newInstance(), ChooseProductGroupFragment.TAG );
+          }
+        else
+          {
+          ProductGroup       productGroup = productGroupList.get( 0 );
+          ArrayList<Product> productList  = productGroup.getProductList();
+
+          if ( productList != null && productList.size() > 0 )
+            {
+            // If there is more than one product - start the choose product fragment
+            if ( productList.size() > 1 )
+              {
+              addFragment( mProductFragment = ChooseProductFragment.newInstance( productGroup ), ChooseProductFragment.TAG );
+              }
+            else
+              {
+              // There is just one product - go straight to the product overview screen
+              onDisplayProductOverview( productList.get( 0 ) );
+              }
+            }
+          }
+        }
+
+      }
+
+
+    // Pass the result on to any consumer
+    if ( mCatalogueConsumer != null )
+      {
+      mCatalogueConsumer.onCatalogueSuccess( mCatalogue );
+
+      mCatalogueConsumer = null;
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the catalogue load fails.
+   *
+   *****************************************************/
+  @Override
+  public void onCatalogueError( Exception exception )
+    {
+    mCatalogue = null;
+
+    // Hide the progress spinner
+    if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.GONE );
+    }
+
+
   ////////// ChooseProductGroupFragment.ICallback Method(s) //////////
 
   /*****************************************************
    *
-   * Called when the catalogue has been successfully retrieved.
+   * Called before the product group grid view is populated.
    *
    *****************************************************/
   @Override
-  public void pgOnCatalogueSuccess( Catalogue catalogue, HeaderFooterGridView headerFooterGridView )
+  public void pgOnPrePopulateProductGroupGrid( Catalogue catalogue, HeaderFooterGridView headerFooterGridView )
     {
     // Do nothing
     }
@@ -239,7 +388,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ChoosePro
   public void pgOnProductGroupChosen( ProductGroup productGroup )
     {
     // If the product group contains more than one product - display
-    // the choose product screen. Otherwise go direct to the product
+    // the choose product screen. Otherwise go straight to the product
     // overview.
 
     List<Product> productList = productGroup.getProductList();
@@ -291,6 +440,20 @@ public class ProductSelectionActivity extends AKiteActivity implements ChoosePro
 
 
   ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Should be overridden if an app wants to adjust the
+   * catalogue in some way, such as to remove shipping
+   * to certain locations.
+   *
+   *****************************************************/
+  protected Catalogue getAdjustedCatalogue( Catalogue catalogue )
+    {
+    // The default implementation is to do nothing
+    return ( catalogue );
+    }
+
 
   /*****************************************************
    *

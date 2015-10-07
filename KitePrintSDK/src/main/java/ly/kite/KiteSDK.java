@@ -105,6 +105,7 @@ public class KiteSDK
 
   public  static final String INTENT_PREFIX                             = "ly.kite";
 
+  public  static final long   MAX_ACCEPTED_PRODUCT_AGE_MILLIS           = 1000 * 60 * 60;  // 1 hour
 
   public  static final float  FLOAT_ZERO_THRESHOLD                      = 0.0001f;
 
@@ -206,15 +207,17 @@ public class KiteSDK
   /*****************************************************
    *
    * Convenience method for initialising and Launching the
-   * shopping experience.
+   * shopping experience for a selected set of products, based
+   * on their ids.
    *
    *****************************************************/
-  static public KiteSDK startShopping( Context context, String apiKey, IEnvironment environment, ArrayList<Asset> assetArrayList )
+  static public KiteSDK startShoppingByProductId( Context context, String apiKey, IEnvironment environment, ArrayList<Asset> assetArrayList, String... productIds )
     {
     KiteSDK kiteSDK = getInstance( context, apiKey, environment );
 
-    kiteSDK.startShopping( context, assetArrayList );
-    return kiteSDK;
+    kiteSDK.startShoppingByProductId( context, assetArrayList, productIds );
+
+    return ( kiteSDK );
     }
 
 
@@ -441,10 +444,23 @@ public class KiteSDK
 
   /*****************************************************
    *
-   * Launches the shopping experience.
+   * Launches the shopping experience for all products.
    *
    *****************************************************/
   public void startShopping( Context context, ArrayList<Asset> assetArrayList )
+    {
+    startShoppingByProductId( context, assetArrayList );
+    }
+
+
+  /*****************************************************
+   *
+   * Launches the shopping experience for selected products.
+   * We have used a different method name because we may
+   * wish to filter by something else in the future.
+   *
+   *****************************************************/
+  public void startShoppingByProductId( Context context, ArrayList<Asset> assetArrayList, String... productIds )
     {
     // Clear any temporary assets
     AssetHelper.clearCachedImages( context );
@@ -455,7 +471,7 @@ public class KiteSDK
     assetArrayList = AssetHelper.toParcelableList( context, assetArrayList );
 
     // We use the activity context here, not the application context
-    ProductSelectionActivity.start( context, assetArrayList );
+    ProductSelectionActivity.start( context, assetArrayList, productIds );
     }
 
 

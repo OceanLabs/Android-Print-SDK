@@ -56,6 +56,7 @@ import java.net.URL;
 import java.util.List;
 
 import ly.kite.R;
+import ly.kite.catalogue.ICatalogueConsumer;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.journey.AKiteFragment;
 import ly.kite.catalogue.CatalogueLoader;
@@ -73,12 +74,14 @@ import ly.kite.widget.LabelledImageView;
  * Product fragments.
  *
  *****************************************************/
-abstract public class AGroupOrProductFragment extends AKiteFragment implements CatalogueLoader.CatalogueConsumer, AdapterView.OnItemClickListener
+abstract public class AGroupOrProductFragment extends AKiteFragment implements ICatalogueConsumer, AdapterView.OnItemClickListener
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  public static final String  TAG = "AGroupOrProductFragment";
+  public  static final String  TAG                    = "AGroupOrProductFragment";
+
+  private static final String  BUNDLE_KEY_PRODUCT_IDS = "productIds";
 
 
   ////////// Static Variable(s) //////////
@@ -86,10 +89,10 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements C
 
   ////////// Member Variable(s) //////////
 
-  protected HeaderFooterGridView  mGridView;
-  protected ProgressBar           mProgressBar;
+  protected String[]              mProductIds;
 
-  protected CatalogueLoader       mCatalogueLoader;
+  protected HeaderFooterGridView  mGridView;
+
   protected BaseAdapter           mGridAdaptor;
 
 
@@ -97,6 +100,25 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements C
 
 
   ////////// Static Method(s) //////////
+
+  /*****************************************************
+   *
+   * Creates common fragments arguments.
+   *
+   *****************************************************/
+  static protected Bundle addCommonArguments( AGroupOrProductFragment fragment, String... productIds )
+    {
+    Bundle arguments = new Bundle();
+
+    if ( productIds != null && productIds.length > 0 )
+      {
+      arguments.putStringArray( BUNDLE_KEY_PRODUCT_IDS, productIds );
+      }
+
+    fragment.setArguments( arguments );
+
+    return ( arguments );
+    }
 
 
   ////////// Constructor(s) //////////
@@ -113,6 +135,16 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements C
   public void onCreate( Bundle savedInstanceState )
     {
     super.onCreate( savedInstanceState );
+
+
+    // Try to get any common arguments
+
+    Bundle arguments = getArguments();
+
+    if ( arguments != null )
+      {
+      mProductIds = arguments.getStringArray( BUNDLE_KEY_PRODUCT_IDS );
+      }
     }
 
 
@@ -127,7 +159,6 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements C
     View view = layoutInflator.inflate( R.layout.screen_choose_group_or_product, container, false );
 
     mGridView    = (HeaderFooterGridView)view.findViewById( R.id.grid_view );
-    mProgressBar = (ProgressBar)view.findViewById( R.id.progress_bar );
 
 
     setManagedAdaptorView( mGridView );
@@ -166,7 +197,7 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements C
     }
 
 
-  ////////// ProductSyncer.SyncListener Method(s) //////////
+  ////////// CatalogueLoader.ICatalogueConsumer Method(s) //////////
 
   /*****************************************************
    *
@@ -178,8 +209,6 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements C
     {
     // Don't do anything if the activity is no longer visible
     if ( ! mKiteActivity.isVisible() ) return;
-
-    onProductFetchFinished();
 
     mKiteActivity.displayModalDialog
             (
@@ -202,29 +231,10 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements C
    *****************************************************/
   protected void getProducts()
     {
-    mProgressBar.setVisibility( View.VISIBLE );
-
-
-    // Request a set of products. We supply a handler because we don't want to be called
-    // back immediately - often the GridView won't have been configured correctly yet (because
-    // when we specify the number of columns it doesn't take effect immediately).
-
-    mCatalogueLoader = CatalogueLoader.getInstance( mKiteActivity );
-
-    mCatalogueLoader.getCatalogue( MAX_ACCEPTED_PRODUCT_AGE_MILLIS, this );
-    }
-
-
-  /*****************************************************
-   *
-   * Updates the UI (i.e. removes the progress spinner)
-   * when syncing has finished, regardless of whether there
-   * was an error or not.
-   *
-   *****************************************************/
-  public void onProductFetchFinished()
-    {
-    mProgressBar.setVisibility( View.GONE );
+    if ( mKiteActivity instanceof ICatalogueHolder )
+      {
+      ( (ICatalogueHolder)mKiteActivity ).getCatalogue( this );
+      }
     }
 
 

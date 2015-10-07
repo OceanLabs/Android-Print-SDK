@@ -41,8 +41,6 @@ package ly.kite.checkout;
 
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -56,7 +54,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Parcelable;
 import android.os.Bundle;
-import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -67,6 +64,7 @@ import android.widget.EditText;
 import ly.kite.KiteSDK;
 import ly.kite.analytics.Analytics;
 import ly.kite.catalogue.Catalogue;
+import ly.kite.catalogue.ICatalogueConsumer;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.pricing.PricingAgent;
 import ly.kite.catalogue.PrintJob;
@@ -74,8 +72,6 @@ import ly.kite.catalogue.PrintOrder;
 import ly.kite.R;
 import ly.kite.address.Address;
 import ly.kite.address.AddressBookActivity;
-import ly.kite.catalogue.Product;
-import ly.kite.catalogue.ProductGroup;
 import ly.kite.catalogue.CatalogueLoader;
 
 
@@ -426,9 +422,9 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
 
     final ProgressDialog progress = ProgressDialog.show( this, null, "Loading" );
 
-    CatalogueLoader.getInstance( this ).getCatalogue(
+    CatalogueLoader.getInstance( this ).requestCatalogue(
             MAXIMUM_PRODUCT_AGE_MILLIS,
-            new CatalogueLoader.CatalogueConsumer()
+            new ICatalogueConsumer()
             {
             @Override
             public void onCatalogueSuccess( Catalogue catalogue )

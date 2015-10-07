@@ -74,6 +74,7 @@ public class Catalogue
   private HashMap<String,ProductGroup>  mNameGroupTable;
   private ArrayList<ProductGroup>       mGroupList;
   private HashMap<String,Product>       mIdProductTable;
+  private HashMap<String,ProductGroup>  mProductIdGroupTable;
 
 
   ////////// Static Initialiser(s) //////////
@@ -86,9 +87,10 @@ public class Catalogue
 
   Catalogue()
     {
-    mNameGroupTable = new HashMap<>();
-    mGroupList      = new ArrayList<>();
-    mIdProductTable = new HashMap<>();
+    mNameGroupTable      = new HashMap<>();
+    mGroupList           = new ArrayList<>();
+    mIdProductTable      = new HashMap<>();
+    mProductIdGroupTable = new HashMap<>();
     }
 
   Catalogue( JSONObject userConfigJSONObject )
@@ -137,11 +139,21 @@ public class Catalogue
       }
 
 
-    // Add the product to its group
     productGroup.add( product );
 
-    // Add the product to the product id / product table
     mIdProductTable.put( product.getId(), product );
+    mProductIdGroupTable.put( product.getId(), productGroup );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the number of products in this catalogue.
+   *
+   *****************************************************/
+  public int getProductCount()
+    {
+    return ( mIdProductTable.size() );
     }
 
 
@@ -174,13 +186,36 @@ public class Catalogue
 
   /*****************************************************
    *
+   * Returns the product that has the supplied id.
+   *
+   *****************************************************/
+  public Product getProductById( String productId )
+    {
+    return ( mIdProductTable.get( productId ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the product group for the product that has
+   * the supplied id.
+   *
+   *****************************************************/
+  public ProductGroup getGroupByProductId( String productId )
+    {
+    return ( mProductIdGroupTable.get( productId ) );
+    }
+
+
+  /*****************************************************
+   *
    * Throws an exception if there is no product matching the
    * supplied id.
    *
    *****************************************************/
   public void confirmProductIdExistsOrThrow( String productId )
     {
-    if ( mIdProductTable.get( productId ) == null )
+    if ( getProductById( productId ) == null )
       {
       throw ( new IllegalStateException( "Product id " + productId + " not found in catalogue" ) );
       }
@@ -196,6 +231,44 @@ public class Catalogue
     {
     return ( mUserConfigJSONObject.optString( name ) );
     }
+
+
+  /*****************************************************
+   *
+   * Creates a copy of this catalogue that is filtered
+   * by a set of product ids.
+   *
+   * If no product ids are supplied, the returned (filtered)
+   * catalogue will contain no products.
+   *
+   *****************************************************/
+  public Catalogue createFiltered( String[] productIds )
+    {
+    // Create a catalogue with the same custom data
+    Catalogue filteredCatalogue = new Catalogue( mUserConfigJSONObject );
+
+
+    // Go through the products ids we were supplied, and try to find products
+    // for them. Any products are added to our filtered catalogue.
+
+    if ( productIds != null )
+      {
+      for ( String productId : productIds )
+        {
+        Product      product      = getProductById( productId );
+        ProductGroup productGroup = getGroupByProductId( productId );
+
+        if ( product != null && productGroup != null )
+          {
+          filteredCatalogue.addProduct( productGroup.getDisplayLabel(), productGroup.getDisplayImageURL(), product );
+          }
+        }
+      }
+
+
+    return ( filteredCatalogue );
+    }
+
 
 
   ////////// Inner Class(es) //////////

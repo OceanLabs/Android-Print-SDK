@@ -44,15 +44,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.GridView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import ly.kite.R;
 import ly.kite.analytics.Analytics;
 import ly.kite.catalogue.Catalogue;
-import ly.kite.catalogue.Product;
 import ly.kite.catalogue.ProductGroup;
 import ly.kite.widget.HeaderFooterGridView;
 
@@ -91,9 +88,11 @@ public class ChooseProductGroupFragment extends AGroupOrProductFragment
    * Creates and returns a new instance of this fragment.
    *
    *****************************************************/
-  public static ChooseProductGroupFragment newInstance()
+  public static ChooseProductGroupFragment newInstance( String... productIds )
     {
     ChooseProductGroupFragment fragment = new ChooseProductGroupFragment();
+
+    addCommonArguments( fragment, productIds );
 
     return ( fragment );
     }
@@ -148,15 +147,13 @@ public class ChooseProductGroupFragment extends AGroupOrProductFragment
   @Override
   public void onCatalogueSuccess( Catalogue catalogue )
     {
-    onProductFetchFinished();
-
     mProductGroupList = catalogue.getProductGroupList();
 
 
     // Call back to the activity in case it wants to (e.g.) add any headers / footers
     if ( mKiteActivity instanceof ICallback )
       {
-      ( (ICallback)mKiteActivity ).pgOnCatalogueSuccess( catalogue, mGridView );
+      ( (ICallback)mKiteActivity ).pgOnPrePopulateProductGroupGrid( catalogue, mGridView );
       }
 
 
@@ -190,7 +187,7 @@ public class ChooseProductGroupFragment extends AGroupOrProductFragment
 
     int adaptorIndex = mGridView.adaptorIndexFromPosition( position );
 
-    if ( adaptorIndex >= mProductGroupList.size() ) return;
+    if ( adaptorIndex < 0 || adaptorIndex >= mProductGroupList.size() ) return;
 
     ProductGroup chosenProductGroup = mProductGroupList.get( adaptorIndex );
 
@@ -212,7 +209,7 @@ public class ChooseProductGroupFragment extends AGroupOrProductFragment
    *****************************************************/
   public interface ICallback
     {
-    public void pgOnCatalogueSuccess( Catalogue catalogue, HeaderFooterGridView headerFooterGridView );
+    public void pgOnPrePopulateProductGroupGrid( Catalogue catalogue, HeaderFooterGridView headerFooterGridView );
     public void pgOnProductGroupChosen( ProductGroup productGroup );
     }
 

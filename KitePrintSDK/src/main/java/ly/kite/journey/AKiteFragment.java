@@ -60,12 +60,7 @@ abstract public class AKiteFragment extends Fragment
   public    static final String  TAG                                          = "AKiteFragment";
 
   private   static final String  BUNDLE_KEY_MANAGED_ADAPTOR_VIEW_POSITION     = "managedAdaptorViewPosition";
-  protected static final String  BUNDLE_KEY_ASSETS_AND_QUANTITY_LIST          = "assetAndQuantityList";
   protected static final String  BUNDLE_KEY_PRODUCT                           = "product";
-
-
-  public  static final long    MAX_ACCEPTED_PRODUCT_AGE_MILLIS          = 1000 * 60 * 60;  // 1 hour
-
 
 
   ////////// Static Variable(s) //////////

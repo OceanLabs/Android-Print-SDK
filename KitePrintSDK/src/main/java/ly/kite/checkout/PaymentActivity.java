@@ -682,27 +682,41 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer, 
 
   /*****************************************************
    *
-   * ...
+   * Called when the pay by PayPal button is clicked.
    *
    *****************************************************/
   public void onPayPalButtonClicked( View view )
     {
-    SingleCurrencyAmount totalCost = mOrderPricing.getTotalCost().getDefaultAmountWithFallback();
+    if ( mOrderPricing != null )
+      {
+      MultipleCurrencyAmount multipleCurrencyTotalCost = mOrderPricing.getTotalCost();
 
-    // TODO: See if we can remove the credit card payment option
-    PayPalPayment payment = new PayPalPayment(
-            totalCost.getAmount(),
-            totalCost.getCurrencyCode(),
-            "Product",
-            PayPalPayment.PAYMENT_INTENT_SALE );
+      if ( multipleCurrencyTotalCost != null )
+        {
+        SingleCurrencyAmount totalCost = multipleCurrencyTotalCost.getDefaultAmountWithFallback();
 
-    Intent intent = new Intent( this, com.paypal.android.sdk.payments.PaymentActivity.class );
+        // TODO: See if we can remove the credit card payment option
+        PayPalPayment payment = new PayPalPayment(
+                totalCost.getAmount(),
+                totalCost.getCurrencyCode(),
+                "Product",
+                PayPalPayment.PAYMENT_INTENT_SALE );
 
-    intent.putExtra( com.paypal.android.sdk.payments.PaymentActivity.EXTRA_PAYMENT, payment );
+        Intent intent = new Intent( this, com.paypal.android.sdk.payments.PaymentActivity.class );
 
-    startActivityForResult( intent, REQUEST_CODE_PAYPAL );
+        intent.putExtra( com.paypal.android.sdk.payments.PaymentActivity.EXTRA_PAYMENT, payment );
+
+        startActivityForResult( intent, REQUEST_CODE_PAYPAL );
+        }
+      }
     }
 
+
+  /*****************************************************
+   *
+   * Called when the pay by credit card button is clicked.
+   *
+   *****************************************************/
   public void onCreditCardButtonClicked( View view )
     {
     final PayPalCard lastUsedCard = PayPalCard.getLastUsedCard( this );

@@ -43,7 +43,6 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
-import android.util.Pair;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -54,8 +53,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Currency;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import ly.kite.KiteSDKException;
 import ly.kite.KiteSDK;
@@ -135,17 +134,17 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
 
   ////////// Member Variable(s) //////////
 
-  private Context                                   mContext;
+  private Context                        mContext;
 
-  private Handler                                   mSharedHandler;
+  private Handler                        mHandler;
 
-  private HTTPJSONRequest                           mHTTPJSONRequest;
-  private ArrayList<Pair<CatalogueConsumer,Handler>>  mConsumerHandlerList;
-  private String                                    mRequestAPIKey;
+  private HTTPJSONRequest                mHTTPJSONRequest;
+  private LinkedList<ICatalogueConsumer> mConsumerList;
+  private String                         mRequestAPIKey;
 
-  private Catalogue                                 mLastRetrievedCatalogue;
-  private String                                    mLastRetrievedEnvironmentAPIKey;
-  private long                                      mLastRetrievedElapsedRealtimeMillis;
+  private Catalogue                      mLastRetrievedCatalogue;
+  private String                         mLastRetrievedEnvironmentAPIKey;
+  private long                           mLastRetrievedElapsedRealtimeMillis;
 
 
   ////////// Static Initialiser(s) //////////
@@ -495,7 +494,9 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
   // Constructor is private to ensure it is a singleton
   private CatalogueLoader( Context context )
     {
-    mContext = context;
+    mContext      = context;
+    mHandler      = new Handler();
+    mConsumerList = new LinkedList<>();
     }
 
 
@@ -527,11 +528,11 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
 
         Exception exception = new KiteSDKException( errorMessage );
 
-        returnErrorToConsumers( exception );
+        postErrorToConsumers( exception );
         }
       catch ( JSONException je )
         {
-        returnErrorToConsumers( je);
+        postErrorToConsumers( je );
         }
       }
     }
@@ -545,7 +546,7 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
   @Override
   public void onError( Exception exception )
     {
-    returnErrorToConsumers( exception );
+    postErrorToConsumers( exception );
     }
 
 
@@ -562,26 +563,16 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
    * @param consumer         The sync listener for the result.
    *
    ****************************************************/
-  public void getCatalogue( long maximumAgeMillis, CatalogueConsumer consumer, Handler callbackHandler )
+  public void requestCatalogue( long maximumAgeMillis, ICatalogueConsumer consumer )
     {
-    if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "getCatalogue( maximumAgeMillis = " + maximumAgeMillis + ", consumer = " + consumer + ", callbackHandler = " + callbackHandler + " )" );
-
-
-    // If we weren't supplied a callback handler - use a shared one
-
-    if ( callbackHandler == null )
-      {
-      if ( mSharedHandler == null ) mSharedHandler = new Handler();
-
-      callbackHandler = mSharedHandler;
-      }
+    if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "requestCatalogue( maximumAgeMillis = " + maximumAgeMillis + ", consumer = " + consumer + " )" );
 
 
     // If there is currently a retrieval in progress, always wait for the result
 
     if ( mHTTPJSONRequest != null )
       {
-      mConsumerHandlerList.add( new Pair<CatalogueConsumer,Handler>( consumer, callbackHandler ) );
+      mConsumerList.addLast( consumer );
 
       return;
       }
@@ -606,7 +597,7 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
 
       if ( mLastRetrievedElapsedRealtimeMillis >= minAcceptableElapsedRealtimeMillis )
         {
-        returnCatalogueToConsumer( mLastRetrievedCatalogue, consumer, callbackHandler );
+        postCatalogueToConsumer( mLastRetrievedCatalogue, consumer );
 
         return;
         }
@@ -618,8 +609,7 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
     String url = String.format( TEMPLATE_REQUEST_FORMAT_STRING, KiteSDK.getInstance( mContext ).getAPIEndpoint() );
 
     mHTTPJSONRequest = new HTTPJSONRequest( mContext, HTTPJSONRequest.HttpMethod.GET, url, null, null );
-    mConsumerHandlerList = new ArrayList<Pair<CatalogueConsumer,Handler>>();
-    mConsumerHandlerList.add( new Pair<CatalogueConsumer,Handler>( consumer, callbackHandler ) );
+    mConsumerList.addLast( consumer );
     mRequestAPIKey = currentAPIKey;
 
 
@@ -630,7 +620,11 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
 
   /****************************************************
    *
-   * Retrieves a catalogue.
+   * Retrieves a catalogue, filtered by the supplied product
+   * ids. If there are no products ids, or the product ids don't
+   * match any actual products - the full catalogue is returned.
+   *
+   * @param productIds       A string array of product ids for filtering.
    *
    * @param maximumAgeMillis The maximum permitted time in milliseconds
    *                         since the last retrieval. If the value supplied
@@ -638,11 +632,11 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
    * @param consumer         The sync listener for the result.
    *
    ****************************************************/
-  public void getCatalogue( long maximumAgeMillis, CatalogueConsumer consumer )
+  public void requestCatalogue( long maximumAgeMillis, String[] productIds, ICatalogueConsumer consumer )
     {
-    if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "getCatalogue( maximumAgeMillis = " + maximumAgeMillis + ", consumer = " + consumer + " )" );
+    if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "getCatalogue( productIds = " + productIds + ", maximumAgeMillis = " + maximumAgeMillis + ", consumer = " + consumer + " )" );
 
-    getCatalogue( maximumAgeMillis, consumer, null );
+    requestCatalogue( maximumAgeMillis, new CatalogueFilterConsumer( productIds, consumer ) );
     }
 
 
@@ -651,30 +645,13 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
    * Retrieves a catalogue.
    *
    * @param consumer        The sync listener for the result.
-   * @param callbackHandler The handler to use when posting
-   *                        the callback.
    *
    ****************************************************/
-  public void getCatalogue( CatalogueConsumer consumer, Handler callbackHandler )
+  public void requestCatalogue( ICatalogueConsumer consumer )
     {
-    if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "getCatalogue( consumer = " + consumer + ", callbackHandler = " + callbackHandler + " )" );
+    if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "requestCatalogue( consumer = " + consumer + " )" );
 
-    getCatalogue( ANY_AGE_OK, consumer, callbackHandler );
-    }
-
-
-  /****************************************************
-   *
-   * Retrieves a catalogue.
-   *
-   * @param consumer The sync listener for the result.
-   *
-   ****************************************************/
-  public void getCatalogue( CatalogueConsumer consumer )
-    {
-    if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "getCatalogue( consumer = " + consumer + " )" );
-
-    getCatalogue( ANY_AGE_OK, consumer, null );
+    requestCatalogue( ANY_AGE_OK, consumer );
     }
 
 
@@ -706,18 +683,11 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
       mLastRetrievedEnvironmentAPIKey     = mRequestAPIKey;
       mLastRetrievedElapsedRealtimeMillis = SystemClock.elapsedRealtime();
 
-      // Pass the update products list to each of the consumers that want it
-      for ( Pair<CatalogueConsumer,Handler> consumerHandlerPair : mConsumerHandlerList )
-        {
-        returnCatalogueToConsumer( catalogue, consumerHandlerPair );
-        }
-
-      mHTTPJSONRequest     = null;
-      mConsumerHandlerList = null;
+      postCatalogueToConsumers( catalogue );
       }
     catch ( JSONException je )
       {
-      returnErrorToConsumers( je );
+      postErrorToConsumers( je );
       }
 
     }
@@ -751,80 +721,78 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
 
   /****************************************************
    *
-   * Passes the products to a consumer, either directly
-   * or using a handler.
+   * Posts the catalogue to a consumer.
    *
    ****************************************************/
-  private void returnCatalogueToConsumer( Catalogue catalogue, CatalogueConsumer consumer, Handler callbackHandler )
+  private void postCatalogueToConsumer( Catalogue catalogue, ICatalogueConsumer consumer )
     {
-    // If no handler was supplied - return the products immediately. Otherwise post the call.
+    CatalogueCallbackRunnable callbackRunnable = new CatalogueCallbackRunnable( catalogue, consumer );
 
-    if ( callbackHandler == null )
-      {
-      consumer.onCatalogueSuccess( catalogue );
-      }
-    else
-      {
-      CatalogueCallbackRunnable callbackRunnable = new CatalogueCallbackRunnable( catalogue, consumer );
-
-      callbackHandler.post( callbackRunnable );
-      }
+    mHandler.post( callbackRunnable );
     }
 
 
   /****************************************************
    *
-   * Passes the products to a consumer, either directly
-   * or using a handler.
+   * Posts the catalogue to the consumers.
    *
    ****************************************************/
-  private void returnCatalogueToConsumer( Catalogue catalogue, Pair<CatalogueConsumer, Handler> consumerHandlerPair )
+  private void postCatalogueToConsumers( Catalogue catalogue )
     {
-    returnCatalogueToConsumer( catalogue, consumerHandlerPair.first, consumerHandlerPair.second );
-    }
+    ICatalogueConsumer consumer;
 
-
-  /****************************************************
-   *
-   * Returns an error to a consumer, either directly
-   * or using a handler.
-   *
-   ****************************************************/
-  private void returnErrorToConsumer( Exception exception, CatalogueConsumer consumer, Handler callbackHandler )
-    {
-    ErrorCallbackRunnable callbackRunnable = new ErrorCallbackRunnable( exception, consumer );
-
-    callbackHandler.post( callbackRunnable );
-    }
-
-
-  /****************************************************
-   *
-   * Returns an error to the consumers.
-   *
-   ****************************************************/
-  private void returnErrorToConsumers( Exception exception )
-    {
-    // Go through each of the consumers and notify them of the error
-
-    for ( Pair<CatalogueConsumer,Handler> consumerHandlerPair : mConsumerHandlerList )
+    while ( ( consumer = mConsumerList.pollFirst() ) != null )
       {
-      returnErrorToConsumer( exception, consumerHandlerPair.first, consumerHandlerPair.second );
+      postCatalogueToConsumer( catalogue, consumer );
       }
 
 
     // Clear the request
-    mHTTPJSONRequest     = null;
-    mConsumerHandlerList = null;
+    mHTTPJSONRequest = null;
     }
 
 
   /****************************************************
    *
-   * Cancels the request.
+   * Posts an error to a consumer.
    *
    ****************************************************/
-  public void cancelSubmissionForPrinting()
+  private void postErrorToConsumer( Exception exception, ICatalogueConsumer consumer )
+    {
+    ErrorCallbackRunnable callbackRunnable = new ErrorCallbackRunnable( exception, consumer );
+
+    mHandler.post( callbackRunnable );
+    }
+
+
+  /****************************************************
+   *
+   * Posts an error to the consumers.
+   *
+   ****************************************************/
+  private void postErrorToConsumers( Exception exception )
+    {
+    // Go through each of the consumers and notify them of the error
+
+    ICatalogueConsumer consumer;
+
+    while ( ( consumer = mConsumerList.pollFirst() ) != null )
+      {
+      postErrorToConsumer( exception, consumer );
+      }
+
+
+    // Clear the request
+    mHTTPJSONRequest = null;
+    }
+
+
+  /****************************************************
+   *
+   * Cancels any outstanding request.
+   *
+   ****************************************************/
+  public void cancelRequests()
     {
     if ( mHTTPJSONRequest != null )
       {
@@ -832,6 +800,8 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
 
       mHTTPJSONRequest = null;
       }
+
+    if ( mConsumerList != null ) mConsumerList.clear();
     }
 
 
@@ -839,35 +809,61 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
 
   /*****************************************************
    *
-   * This interface defines a listener to the result of
-   * a catalogue request.
+   * This class consumes a catalogue, but then filters it
+   * down by product ids, before returning it to the ultimate
+   * consumer.
    *
    *****************************************************/
-  public interface CatalogueConsumer
+  public class CatalogueFilterConsumer implements ICatalogueConsumer
     {
-    ////////// Static Constant(s) //////////
+    private String[]           mProductIds;
+    private ICatalogueConsumer mConsumer;
 
 
-    ////////// Method(s) //////////
+    CatalogueFilterConsumer( String[] productsIds, ICatalogueConsumer consumer )
+      {
+      mProductIds = productsIds;
+      mConsumer   = consumer;
+      }
+
 
     /*****************************************************
      *
      * Called when a request completes successfully.
      *
-     * @param catalogue The retrieved catalogue.
-     *
      *****************************************************/
-    void onCatalogueSuccess( Catalogue catalogue );
+    @Override
+    public void onCatalogueSuccess( Catalogue catalogue )
+      {
+      // See if we need to do any filtering
+
+      if ( mProductIds != null && mProductIds.length > 0 )
+        {
+        Catalogue filteredCatalogue = catalogue.createFiltered( mProductIds );
+
+        // Only use the filtered catalogue if it contains at least one product.
+        // Otherwise stick with the original.
+        if ( filteredCatalogue.getProductCount() > 0 )
+          {
+          catalogue = filteredCatalogue;
+          }
+        }
+
+      mConsumer.onCatalogueSuccess( catalogue );
+      }
 
 
     /*****************************************************
      *
      * Called when a request results in an error.
      *
-     * @param exception The exception that was thrown.
-     *
      *****************************************************/
-    void onCatalogueError( Exception exception );
+    public void onCatalogueError( Exception exception )
+      {
+      // Simply pass the error through to the consumer
+      mConsumer.onCatalogueError( exception );
+      }
+
     }
 
 
@@ -879,10 +875,10 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
   private class CatalogueCallbackRunnable implements Runnable
     {
     Catalogue        mCatalogue;
-    CatalogueConsumer mConsumer;
+    ICatalogueConsumer mConsumer;
 
 
-    CatalogueCallbackRunnable( Catalogue catalogue, CatalogueConsumer consumer )
+    CatalogueCallbackRunnable( Catalogue catalogue, ICatalogueConsumer consumer )
       {
       mCatalogue = catalogue;
       mConsumer  = consumer;
@@ -904,11 +900,11 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
    *****************************************************/
   private class ErrorCallbackRunnable implements Runnable
     {
-    Exception        mException;
-    CatalogueConsumer mConsumer;
+    Exception           mException;
+    ICatalogueConsumer  mConsumer;
 
 
-    ErrorCallbackRunnable( Exception exception, CatalogueConsumer consumer )
+    ErrorCallbackRunnable( Exception exception, ICatalogueConsumer consumer )
       {
       mException = exception;
       mConsumer  = consumer;

@@ -92,15 +92,13 @@ public class ChooseProductFragment extends AGroupOrProductFragment
    * Creates and returns a new instance of this fragment.
    *
    *****************************************************/
-  public static ChooseProductFragment newInstance( ProductGroup productGroup )
+  public static ChooseProductFragment newInstance( ProductGroup productGroup, String... productIds )
     {
     ChooseProductFragment fragment = new ChooseProductFragment();
 
-    Bundle argumentBundle = new Bundle();
+    Bundle argumentBundle = addCommonArguments( fragment, productIds );
 
     argumentBundle.putParcelable( BUNDLE_KEY_PRODUCT_GROUP, productGroup );
-
-    fragment.setArguments( argumentBundle );
 
     return ( fragment );
     }
@@ -184,9 +182,6 @@ public class ChooseProductFragment extends AGroupOrProductFragment
   @Override
   public void onCatalogueSuccess( Catalogue catalogue )
     {
-    onProductFetchFinished();
-
-
     // Try and find a product list
 
     mProductList = catalogue.getProductsForGroup( mProductGroup.getDisplayLabel() );
@@ -224,7 +219,7 @@ public class ChooseProductFragment extends AGroupOrProductFragment
 
     int adaptorIndex = mGridView.adaptorIndexFromPosition( position );
 
-    if ( adaptorIndex >= mProductList.size() ) return;
+    if ( adaptorIndex < 0 || adaptorIndex >= mProductList.size() ) return;
 
     Product chosenProduct = mProductList.get( adaptorIndex );
 

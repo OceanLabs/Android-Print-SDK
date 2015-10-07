@@ -92,12 +92,13 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   ////////// Member Variable(s) //////////
 
   private   boolean           mActivityIsVisible;
+  private   boolean           mInstanceStateHasBeenSaved;
 
   private   Dialog            mDialog;
 
   protected FragmentManager   mFragmentManager;
 
-  protected AKiteFragment mTopFragment;
+  protected AKiteFragment     mTopFragment;
 
 
   ////////// Static Initialiser(s) //////////
@@ -117,7 +118,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
    *
    *****************************************************/
   @Override
-  public void onCreate( Bundle savedInstanceState )
+  protected void onCreate( Bundle savedInstanceState )
     {
     super.onCreate( savedInstanceState );
 
@@ -201,7 +202,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
    *
    *****************************************************/
   @Override
-  public void onStart()
+  protected void onStart()
     {
     super.onStart();
 
@@ -259,11 +260,25 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
   /*****************************************************
    *
+   * Called to save the instance state.
+   *
+   *****************************************************/
+  @Override
+  protected void onSaveInstanceState( Bundle outState )
+    {
+    super.onSaveInstanceState( outState );
+
+    mInstanceStateHasBeenSaved = true;
+    }
+
+
+  /*****************************************************
+   *
    * Called when the activity is no longer visible.
    *
    *****************************************************/
   @Override
-  public void onStop()
+  protected void onStop()
     {
     mActivityIsVisible = false;
 
@@ -277,7 +292,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
    *
    *****************************************************/
   @Override
-  public void onDestroy()
+  protected void onDestroy()
     {
     mActivityIsVisible = false;
 
@@ -457,11 +472,17 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
    *****************************************************/
   protected void addFragment( AKiteFragment fragment, String tag )
     {
-    mFragmentManager
-            .beginTransaction()
-            .replace( R.id.fragment_container, fragment, tag )
-            .addToBackStack( tag )  // Use the tag as the name so we can find it later
-            .commit();
+    // Make sure the instance state hasn't been saved before adding
+    // a fragment.
+
+    if ( ! mInstanceStateHasBeenSaved )
+      {
+      mFragmentManager
+              .beginTransaction()
+              .replace( R.id.fragment_container, fragment, tag )
+              .addToBackStack( tag )  // Use the tag as the name so we can find it later
+        .commit();
+      }
     }
 
 
@@ -473,9 +494,9 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   protected void replaceFragment( AKiteFragment fragment, String tag )
     {
     mFragmentManager
-            .beginTransaction()
-            .replace( R.id.fragment_container, fragment, tag )
-            .commit();
+      .beginTransaction()
+        .replace( R.id.fragment_container, fragment, tag )
+      .commit();
     }
 
 
