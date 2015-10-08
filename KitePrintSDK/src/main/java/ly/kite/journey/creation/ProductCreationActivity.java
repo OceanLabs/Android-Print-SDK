@@ -54,7 +54,7 @@ import ly.kite.checkout.CheckoutActivity;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.journey.IAssetsAndQuantityHolder;
-import ly.kite.journey.ImageSourceFragment;
+import ly.kite.journey.creation.imagesource.ImageSourceFragment;
 import ly.kite.journey.UserJourneyType;
 import ly.kite.journey.creation.imageselection.ImageSelectionFragment;
 import ly.kite.journey.creation.phonecase.PhoneCaseFragment;
@@ -225,13 +225,13 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
       Log.e( LOG_TAG, "No product found" );
 
       displayModalDialog(
-              R.string.alert_dialog_title_no_product,
-              R.string.alert_dialog_message_no_product,
-              NO_BUTTON,
-              null,
-              R.string.Cancel,
-              new FinishRunnable()
-      );
+        R.string.alert_dialog_title_no_product,
+        R.string.alert_dialog_message_no_product,
+        NO_BUTTON,
+        null,
+        R.string.Cancel,
+        new FinishRunnable()
+        );
 
       return;
       }
@@ -306,7 +306,7 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
     // We want to remove the image source fragment without triggering the back stack listener - otherwise
     // it will detect that there are no fragments and exit.
 
-    popFragmentSecretly();;
+    popFragmentSecretly();
 
 
     addFirstFragment();

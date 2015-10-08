@@ -212,14 +212,13 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
 
     if ( savedInstanceState == null )
       {
-      // Show the progress spinner
-      if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.VISIBLE );
-
       mAddFragmentOnCatalogue = true;
       }
 
 
     mCatalogueLoader = CatalogueLoader.getInstance( this );
+
+    if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.VISIBLE );
 
     mCatalogueLoader.requestCatalogue( KiteSDK.MAX_ACCEPTED_PRODUCT_AGE_MILLIS, mProductIds, this );
     }
@@ -360,8 +359,23 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
     {
     mCatalogue = null;
 
-    // Hide the progress spinner
-    if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.GONE );
+    if ( isVisible() )
+      {
+      // Hide the progress spinner
+      if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.GONE );
+
+      // Display an error dialog
+      displayModalDialog
+              (
+                      R.string.alert_dialog_title_error_retrieving_products,
+                      R.string.alert_dialog_message_error_retrieving_products,
+                      R.string.Retry,
+                      new RequestCatalogueRunnable(),
+                      R.string.Cancel,
+                      new FinishRunnable()
+              );
+      }
+
     }
 
 
@@ -473,9 +487,24 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
 
   /*****************************************************
    *
-   * ...
+   * Requests the catalogue.
    *
    *****************************************************/
+  private class RequestCatalogueRunnable implements Runnable
+    {
+    @Override
+    public void run()
+      {
+      if ( mCatalogueLoader != null )
+        {
+        if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.VISIBLE );
+
+        mCatalogueLoader.requestCatalogue( KiteSDK.MAX_ACCEPTED_PRODUCT_AGE_MILLIS, mProductIds, ProductSelectionActivity.this );
+        }
+      }
+    }
+
+
 
   }
 

@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.journey;
+package ly.kite.journey.creation.imagesource;
 
 
 ///// Import(s) /////
@@ -52,6 +52,9 @@ import java.util.List;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
+import ly.kite.journey.AssetsAndQuantity;
+import ly.kite.journey.ImageSource;
+import ly.kite.journey.ImageSourceAdaptor;
 import ly.kite.journey.creation.AProductCreationFragment;
 import ly.kite.catalogue.Asset;
 import ly.kite.catalogue.Product;

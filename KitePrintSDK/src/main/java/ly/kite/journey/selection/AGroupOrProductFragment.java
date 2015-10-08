@@ -207,18 +207,8 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements I
   @Override
   public void onCatalogueError( Exception exception )
     {
-    // Don't do anything if the activity is no longer visible
-    if ( ! mKiteActivity.isVisible() ) return;
-
-    mKiteActivity.displayModalDialog
-            (
-                    R.string.alert_dialog_title_error_retrieving_products,
-                    R.string.alert_dialog_message_error_retrieving_products,
-                    R.string.Retry,
-                    new SyncProductsRunnable(),
-                    R.string.Cancel,
-                    mKiteActivity.new FinishRunnable()
-            );
+    // Don't do anything. Catalogue load errors are dealt with
+    // by the activity.
     }
 
 
@@ -239,21 +229,6 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements I
 
 
   ////////// Inner Class(es) //////////
-
-  /*****************************************************
-   *
-   * Starts a product sync.
-   *
-   *****************************************************/
-  private class SyncProductsRunnable implements Runnable
-    {
-    @Override
-    public void run()
-      {
-      getProducts();
-      }
-    }
-
 
   /*****************************************************
    *

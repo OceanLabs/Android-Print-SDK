@@ -62,7 +62,7 @@ public class SingleCurrencyAmount implements Parcelable
   @SuppressWarnings( "unused" )
   private static final String  LOG_TAG                     = "SingleCurrencyAmount";
 
-  private static final String  FORMAL_AMOUNT_FORMAT_STRING = "$1$s $2$.2f";
+  private static final String  FORMAL_AMOUNT_FORMAT_STRING = "%1$s %2$.2f";
 
 
   ////////// Static Variable(s) //////////
@@ -261,7 +261,7 @@ public class SingleCurrencyAmount implements Parcelable
 
 
     // Format the amount formally
-    return ( String.format( FORMAL_AMOUNT_FORMAT_STRING, mCurrency, getAmountAsDouble() ) );
+    return ( String.format( FORMAL_AMOUNT_FORMAT_STRING, mCurrency.getCurrencyCode(), getAmountAsDouble() ) );
     }
 
 

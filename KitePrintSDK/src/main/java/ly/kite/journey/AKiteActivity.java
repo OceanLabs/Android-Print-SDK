@@ -59,6 +59,7 @@ import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.gcm.GCMRegistrationService;
 import ly.kite.catalogue.CatalogueLoader;
+import ly.kite.journey.creation.imagesource.ImageSourceFragment;
 
 /*****************************************************
  *
@@ -92,7 +93,10 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   ////////// Member Variable(s) //////////
 
   private   boolean           mActivityIsVisible;
-  private   boolean           mInstanceStateHasBeenSaved;
+
+  private   boolean           mCanAddFragment;
+  private   AKiteFragment     mPendingFragment;
+  private   String            mPendingFragmentTag;
 
   private   Dialog            mDialog;
 
@@ -212,6 +216,32 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
   /*****************************************************
    *
+   * Called after the activity gains focus, and guaranteed
+   * to be after the state is restored.
+   *
+   *****************************************************/
+  @Override
+  protected void onPostResume()
+    {
+    super.onPostResume();
+
+    mCanAddFragment = true;
+
+
+    // If we are waiting to add a fragment - do so now
+
+    if ( mPendingFragment != null )
+      {
+      addFragment( mPendingFragment, mPendingFragmentTag );
+
+      mPendingFragment    = null;
+      mPendingFragmentTag = null;
+      }
+    }
+
+
+  /*****************************************************
+   *
    * Called when an item in the options menu is selected.
    *
    *****************************************************/
@@ -268,7 +298,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     {
     super.onSaveInstanceState( outState );
 
-    mInstanceStateHasBeenSaved = true;
+    mCanAddFragment = false;
     }
 
 
@@ -472,17 +502,26 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
    *****************************************************/
   protected void addFragment( AKiteFragment fragment, String tag )
     {
-    // Make sure the instance state hasn't been saved before adding
-    // a fragment.
+    // If the instance state has been saved, then we don't want to commit any
+    // fragment transaction - otherwise we will get an exception on some platforms.
 
-    if ( ! mInstanceStateHasBeenSaved )
+    // However, we need to remember what was requested so that after any state
+    // has been restored, we can then add the fragment.
+
+    if ( mCanAddFragment )
       {
       mFragmentManager
-              .beginTransaction()
+        .beginTransaction()
               .replace( R.id.fragment_container, fragment, tag )
               .addToBackStack( tag )  // Use the tag as the name so we can find it later
         .commit();
       }
+    else
+      {
+      mPendingFragment    = fragment;
+      mPendingFragmentTag = tag;
+      }
+
     }
 
 

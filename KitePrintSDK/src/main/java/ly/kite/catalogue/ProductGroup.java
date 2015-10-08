@@ -44,6 +44,7 @@ package ly.kite.catalogue;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -207,12 +208,20 @@ public class ProductGroup implements Parcelable, IGroupOrProduct
    *****************************************************/
   public String getDisplayPrice()
     {
-    Locale locale       = Locale.getDefault();
-    String currencyCode = Currency.getInstance( locale ).getCurrencyCode();
-
-
     // We don't want to mess around with trying to compare prices in different
-    // currencies, so just try and get prices for the local currency.
+    // currencies, so we first need to find a currency that all prices are listed
+    // in.
+
+    Locale locale       = Locale.getDefault();
+    String currencyCode = getPreferredCurrency( Currency.getInstance( locale ).getCurrencyCode() );
+
+    if ( currencyCode == null )
+      {
+      Log.e( LOG_TAG, "No currency is supported across all products" );
+
+      return ( "?" );
+      }
+
 
     SingleCurrencyAmount lowestSingleCurrencyCost = null;
 
@@ -231,10 +240,61 @@ public class ProductGroup implements Parcelable, IGroupOrProduct
       }
 
 
-    // If we found a low price - return it as a string formated for the current locale
+    // If we found a low price - return it as a string formatted for the current locale
     if ( lowestSingleCurrencyCost != null ) return ( lowestSingleCurrencyCost.getDisplayAmountForLocale( locale ) );
 
+    return ( "?" );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the best currency code that is supported across
+   * all products (i.e. all products have a cost in that
+   * currency).
+   *
+   *****************************************************/
+  public String getPreferredCurrency( String preferredCurrencyCode )
+    {
+    // Check if the preferred currency is supported
+
+    if ( preferredCurrencyCode != null &&
+         currencyIsSupportedByAllProducts( preferredCurrencyCode ) )
+      {
+      return ( preferredCurrencyCode );
+      }
+
+
+    // Try the fallback currencies
+
+    for ( String fallbackCurrencyCode : MultipleCurrencyAmount.FALLBACK_CURRENCY_CODES )
+      {
+      if ( currencyIsSupportedByAllProducts( fallbackCurrencyCode ) ) return ( fallbackCurrencyCode );
+      }
+
+
     return ( null );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns true if every product in this group as a price
+   * available in the supplied currency code.
+   *
+   *****************************************************/
+  public boolean currencyIsSupportedByAllProducts( String currencyCode )
+    {
+    if ( currencyCode == null || currencyCode.trim().equals( "" ) ) return ( false );
+
+    for ( Product product : mProductList )
+      {
+      MultipleCurrencyAmount multipleCurrencyCost = product.getCost();
+
+      if ( multipleCurrencyCost.get( currencyCode ) == null ) return ( false );
+      }
+
+    return ( true );
     }
 
 

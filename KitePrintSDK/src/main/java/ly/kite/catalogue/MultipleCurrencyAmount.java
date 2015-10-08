@@ -73,6 +73,13 @@ public class MultipleCurrencyAmount implements Parcelable
   private static final String  FALLBACK_CURRENCY_CODE_2    = "GBP";
   private static final String  FALLBACK_CURRENCY_CODE_3    = "EUR";
 
+  public  static final String[] FALLBACK_CURRENCY_CODES =
+    {
+    FALLBACK_CURRENCY_CODE_1,
+    FALLBACK_CURRENCY_CODE_2,
+    FALLBACK_CURRENCY_CODE_3
+    };
+
 
   ////////// Static Variable(s) //////////
 
@@ -258,11 +265,12 @@ public class MultipleCurrencyAmount implements Parcelable
     if ( ( amount = get( preferredCurrencyCode ) ) != null ) return ( amount );
 
     // Next try falling back through major currencies
-    if ( ( amount = get( FALLBACK_CURRENCY_CODE_1 ) ) != null ) return ( amount );
-    if ( ( amount = get( FALLBACK_CURRENCY_CODE_2 ) ) != null ) return ( amount );
-    if ( ( amount = get( FALLBACK_CURRENCY_CODE_3 ) ) != null ) return ( amount );
+    for ( String fallbackCurrencyCode : FALLBACK_CURRENCY_CODES )
+      {
+      if ( ( amount = get( fallbackCurrencyCode ) ) != null ) return ( amount );
+      }
 
-    // Lastly try and getCost the first supported currency
+    // Lastly try and get the first supported currency
     if ( ( amount = get( 0 ) ) != null ) return ( amount );
 
     return ( null );

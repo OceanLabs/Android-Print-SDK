@@ -137,7 +137,7 @@ public class ChooseProductGroupFragment extends AGroupOrProductFragment
     }
 
 
-  ////////// ProductManager.SyncListener Method(s) //////////
+  ////////// ICatalogueConsumer Method(s) //////////
 
   /*****************************************************
    *
