@@ -125,14 +125,8 @@ public class ImageSourceFragment extends AProductCreationFragment implements Ada
     mImageSourceGridView = (GridView)view.findViewById( R.id.image_source_grid_view );
 
 
-    // Determine the image sources
-
-    ArrayList<ImageSource> imageSourceList = new ArrayList<>();
-
-    imageSourceList.add( ImageSource.DEVICE );
-
-    // Add the Instagram image source only if the SDK user has enabled it by providing a client id & redirect URI
-    if ( KiteSDK.getInstance( getActivity() ).haveInstagramCredentials() ) imageSourceList.add( ImageSource.INSTAGRAM );
+    // Get the available image sources
+    ArrayList<ImageSource> imageSourceList = KiteSDK.getInstance( mKiteActivity ).getAvailableImageSources();
 
 
     // Set up the image source grid

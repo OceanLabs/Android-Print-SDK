@@ -192,17 +192,9 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     mProceedOverlayButton = (Button)view.findViewById( R.id.proceed_overlay_button );
 
 
-    // Determine the image sources
-
-    ArrayList<ImageSource> imageSourceList = new ArrayList<>();
-
-    imageSourceList.add( ImageSource.DEVICE );
-
-    // Add the Instagram image source only if the SDK user has enabled it by providing a client id & redirect URI
-    if ( KiteSDK.getInstance( getActivity() ).haveInstagramCredentials() ) imageSourceList.add( ImageSource.INSTAGRAM );
-
-
     // Set up the image sources
+
+    ArrayList<ImageSource> imageSourceList = KiteSDK.getInstance( mKiteActivity ).getAvailableImageSources();
 
     mImageSourceAdaptor = new ImageSourceAdaptor( mKiteActivity, R.layout.grid_item_image_source_horizontal, imageSourceList );
     mImageSourceGridView.setNumColumns( mImageSourceAdaptor.getCount() );

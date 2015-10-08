@@ -40,6 +40,7 @@ package ly.kite;
 ///// Import(s) /////
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import android.content.Context;
@@ -53,6 +54,7 @@ import com.paypal.android.sdk.payments.PayPalConfiguration;
 
 import ly.kite.checkout.PaymentActivity;
 import ly.kite.catalogue.Asset;
+import ly.kite.journey.ImageSource;
 import ly.kite.journey.selection.ProductSelectionActivity;
 import ly.kite.catalogue.AssetHelper;
 import ly.kite.util.ImageAgent;
@@ -483,6 +485,24 @@ public class KiteSDK
   public String getAPIEndpoint()
     {
     return ( mEnvironment.getAPIEndpoint() );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a list of available image sources.
+   *
+   *****************************************************/
+  public ArrayList<ImageSource> getAvailableImageSources()
+    {
+    ArrayList<ImageSource> imageSourceList = new ArrayList<>();
+
+    for ( ImageSource imageSource : ImageSource.values() )
+      {
+      if ( imageSource.isAvailable( mApplicationContext ) ) imageSourceList.add( imageSource );
+      }
+
+    return ( imageSourceList );
     }
 
 

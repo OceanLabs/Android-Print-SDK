@@ -1,0 +1,18 @@
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- This file is never used, but simply allows us to define placeholder menu ids
+         that customs apps may use.
+         Note that a custom app that does not use any views that are defined in the SDK,
+         must include a similar file.
+     -->
+
+    <item
+        android:id="@+id/add_photo_from_device"
+        android:title=""/>
+
+    <item
+        android:id="@+id/add_photo_from_instagram"
+        android:title=""/>
+
+</menu>

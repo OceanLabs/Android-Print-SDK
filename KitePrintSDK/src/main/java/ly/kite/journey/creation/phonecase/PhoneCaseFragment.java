@@ -45,12 +45,14 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.net.URL;
 import java.util.List;
 
+import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.journey.creation.AEditImageFragment;
 import ly.kite.journey.AKiteActivity;
@@ -148,7 +150,26 @@ public class PhoneCaseFragment extends AEditImageFragment
   @Override
   public void onCreateOptionsMenu( Menu menu, MenuInflater menuInflator )
     {
+    // The add photo XML has menu options for all the image sources, but they might
+    // not all be enabled. So after we've inflated it, we need to go through an remove
+    // any source that isn't available.
+
     menuInflator.inflate( R.menu.add_photo, menu );
+
+    MenuItem addPhotoItem = menu.findItem( R.id.add_photo_menu_item );
+
+    if ( addPhotoItem != null )
+      {
+      SubMenu addPhotoSubMenu = addPhotoItem.getSubMenu();
+
+      if ( addPhotoSubMenu != null )
+        {
+        for ( ImageSource imageSource : KiteSDK.getInstance( mKiteActivity ).getAvailableImageSources() )
+          {
+          imageSource.addMenuItem( addPhotoSubMenu );
+          }
+        }
+      }
     }
 
 
@@ -230,7 +251,7 @@ public class PhoneCaseFragment extends AEditImageFragment
 
     int itemId = item.getItemId();
 
-    if ( itemId == R.id.add_photo_from_device )
+    if ( itemId == ImageSource.DEVICE.menuItemId() )
       {
       ///// Local device photo /////
 
@@ -239,9 +260,9 @@ public class PhoneCaseFragment extends AEditImageFragment
 
       return ( true );
       }
-    else if ( itemId == R.id.add_photo_from_instagram )
+    else if ( itemId == ImageSource.INSTAGRAM.menuItemId() )
       {
-      ///// Local device photo /////
+      ///// Instagram photo /////
 
       // Pick a single image from instagram
       ImageSource.INSTAGRAM.onPick( this, true );
