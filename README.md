@@ -62,9 +62,9 @@ public void onLaunchSDKButtonClicked(View button) {
     } catch (MalformedURLException ex) {/* ignore */}
     
     if (PRODUCTION_RELEASE) {
-        KiteSDK.startShopping(this, "<YOUR_LIVE_API_KEY>", KiteSDK.DefaultEnvironment.LIVE, assets);
+        KiteSDK.getInstance(this, "<YOUR_LIVE_API_KEY>", KiteSDK.DefaultEnvironment.LIVE).startShopping(this, assets);
     } else {
-        KiteSDK.startShopping(this, "<YOUR_TEST_API_KEY>", KiteSDK.DefaultEnvironment.TEST, assets);
+        KiteSDK.getInstance(this, "<YOUR_TEST_API_KEY>", KiteSDK.DefaultEnvironment.TEST).startShopping(this, assets);
     }
 }
 ```
