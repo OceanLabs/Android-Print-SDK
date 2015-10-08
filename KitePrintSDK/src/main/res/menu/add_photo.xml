@@ -5,16 +5,19 @@
          any errors.
      -->
     <item
+        android:id="@+id/add_photo_menu_item"
         android:icon="@drawable/ic_add_photo"
         android:showAsAction="always">
-        <menu>
-            <item
-                android:id="@+id/add_photo_from_device"
-                android:title="@string/select_photo_from_device"/>
-            <item
-                android:id="@+id/add_photo_from_instagram"
-                android:title="@string/select_photo_from_instagram"/>
+
+        <menu
+            android:id="@+id/add_photo_menu">
+
+            <!-- This is empty for now - the items will be added according to
+                 what's available.
+              -->
+
         </menu>
+
     </item>
 
 </menu>

@@ -41,9 +41,11 @@ package ly.kite.journey;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
+import android.view.Menu;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,8 +70,14 @@ public enum ImageSource
   {
   ///// Enum constants /////
 
-  DEVICE ( R.color.image_source_background_device, R.drawable.ic_add_photo_white, R.string.image_source_device )
+  DEVICE ( R.color.image_source_background_device, R.drawable.ic_add_photo_white, R.string.image_source_device, R.id.add_photo_from_device, R.string.select_photo_from_device )
     {
+
+    public boolean isAvailable( Context context )
+      {
+      // Local device images are always available
+      return ( true );
+      }
 
     public void onPick( Fragment fragment, boolean preferSingleImage )
       {
@@ -98,8 +106,14 @@ public enum ImageSource
 
     }
 
-  ,INSTAGRAM ( R.color.image_source_background_instagram, R.drawable.ic_add_instagram_white, R.string.image_source_instagram )
+  ,INSTAGRAM ( R.color.image_source_background_instagram, R.drawable.ic_add_instagram_white, R.string.image_source_instagram, R.id.add_photo_from_instagram, R.string.select_photo_from_instagram )
     {
+
+    public boolean isAvailable( Context context )
+      {
+      // Instagram images are only available if we have Instagram credentials
+      return ( KiteSDK.getInstance( context ).haveInstagramCredentials() );
+      }
 
     public void onPick( Fragment fragment, boolean preferSingleImage )
       {
@@ -114,7 +128,7 @@ public enum ImageSource
       }
 
     }
-//  ,FACEBOOK ( R.color.image_source_background_facebook, R.drawable.ic_add_instagram_white, R.string.image_source_facebook )
+//  ,FACEBOOK ( R.color.image_source_background_facebook, R.drawable.ic_add_instagram_white, R.string.image_source_facebook, R.id.add_photo_from_facebook, R.string.select_photo_from_facebook )
     ;
 
 
@@ -132,6 +146,9 @@ public enum ImageSource
   private int  mBackgroundColourResourceId;
   private int  mIconResourceId;
   private int  mLabelResourceId;
+
+  private int  mMenuItemId;
+  private int  mMenuItemTitleResourceId;
 
 
   ///// Static Method(s) /////
@@ -201,11 +218,17 @@ public enum ImageSource
 
   ///// Constructor(s) /////
 
-  private ImageSource( int backgroundColourResourceId, int iconResourceId, int labelResourceId )
+  private ImageSource( int backgroundColourResourceId,
+                       int iconResourceId,
+                       int labelResourceId,
+                       int menuItemId,
+                       int menuItemTitleResourceId )
     {
     mBackgroundColourResourceId = backgroundColourResourceId;
     mIconResourceId             = iconResourceId;
     mLabelResourceId            = labelResourceId;
+    mMenuItemId                 = menuItemId;
+    mMenuItemTitleResourceId    = menuItemTitleResourceId;
     }
 
 
@@ -223,6 +246,30 @@ public enum ImageSource
     {
     return ( mLabelResourceId );
     }
+
+  public int menuItemId()
+    {
+    return ( mMenuItemId );
+    }
+
+
+  /*****************************************************
+   *
+   * Adds this image source as a menu item.
+   *
+   *****************************************************/
+  public void addMenuItem( Menu menu )
+    {
+    menu.add( 0, mMenuItemId, ordinal(), mMenuItemTitleResourceId );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns true if this image source is available.
+   *
+   *****************************************************/
+  abstract public boolean isAvailable( Context context );
 
 
   /*****************************************************
