@@ -19,6 +19,13 @@
     <dimen name="label_padding_bottom">9dp</dimen>
     <dimen name="label_margin_bottom">20dp</dimen>
 
+    <dimen name="navigation_item_text_size">16sp</dimen>
+    <dimen name="navigation_drawer_width">240dp</dimen>
+
+    <dimen name="prompt_text_frame_padding_horizontal">20dp</dimen>
+    <dimen name="prompt_text_frame_padding_vertical">10dp</dimen>
+    <dimen name="prompt_text_frame_text_size">18sp</dimen>
+
     <dimen name="group_or_product_grid_vertical_spacing">2dp</dimen>
     <dimen name="group_or_product_grid_horizontal_spacing">2dp</dimen>
 
@@ -26,6 +33,8 @@
     <dimen name="labelled_image_label_corner_radius">2dp</dimen>
     <dimen name="labelled_image_label_shadow_blur_radius">1dp</dimen>
     <dimen name="labelled_image_label_shadow_y_offset">1dp</dimen>
+
+    <dimen name="proceed_overlay_frame_height">80dp</dimen>
 
     <dimen name="product_overview_paging_dots_spacing_bottom">10dp</dimen>
     <dimen name="product_overview_overlaid_start_button_spacing_bottom">16dp</dimen>
@@ -40,12 +49,16 @@
     <dimen name="product_overview_detail_text_margin_top">5dp</dimen>
     <dimen name="product_overview_detail_text">16sp</dimen>
 
-    <dimen name="proceed_overlay_frame_height">80dp</dimen>
+    <dimen name="product_overview_drawer_proceed_overlay_frame_height">@dimen/proceed_overlay_frame_height</dimen>
 
     <dimen name="cta_button_margin">15dp</dimen>
     <dimen name="cta_centered_button_width">200dp</dimen>
     <dimen name="cta_offset_button_width">140dp</dimen>
     <dimen name="cta_button_height">50dp</dimen>
+
+    <dimen name="image_source_vertical_spacing">5dp</dimen>
+
+    <dimen name="prompt_text_size">20sp</dimen>
 
     <item name="image_selection_image_aspect_ratio" type="dimen" format="float">1.0</item>
     <dimen name="image_selection_thumbnail_size">360px</dimen>

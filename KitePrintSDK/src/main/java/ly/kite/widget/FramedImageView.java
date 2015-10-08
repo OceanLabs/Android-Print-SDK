@@ -47,7 +47,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import ly.kite.R;
-import ly.kite.product.Border;
+import ly.kite.catalogue.Border;
 
 
 ///// Class Declaration /////

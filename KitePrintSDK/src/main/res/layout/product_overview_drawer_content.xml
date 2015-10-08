@@ -17,17 +17,30 @@
             android:paddingRight="@dimen/product_overview_content_padding_horizontal"
             android:orientation="vertical">
 
+
             <!-- Description -->
 
-            <ly.kite.widget.CustomTypefaceTextView
+            <LinearLayout
+                android:id="@+id/description_layout"
                 android:layout_marginTop="@dimen/product_overview_detail_title_margin_top"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:gravity="start"
-                android:textSize="@dimen/product_overview_detail_title"
-                android:textStyle="bold"
-                android:text="@string/Description"
-                android:visibility="gone"/>
+                android:orientation="vertical">
+                <ly.kite.widget.CustomTypefaceTextView
+                    android:layout_marginTop="@dimen/product_overview_detail_title_margin_top"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:textSize="@dimen/product_overview_detail_title"
+                    android:textStyle="bold"
+                    android:text="@string/Description"/>
+                <ly.kite.widget.CustomTypefaceTextView
+                    android:id="@+id/description_text_view"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:textSize="@dimen/product_overview_detail_text"/>
+            </LinearLayout>
 
 
             <!-- Size -->
@@ -118,12 +131,12 @@
 
             <View
                 android:layout_width="fill_parent"
-                android:layout_height="@dimen/proceed_overlay_frame_height"/>
+                android:layout_height="@dimen/product_overview_drawer_proceed_overlay_frame_height"/>
 
         </LinearLayout>
 
     </ScrollView>
 
-    <include layout="@layout/include_proceed_overlay"/>
+    <include layout="@layout/include_product_overview_drawer_proceed_overlay"/>
 
 </FrameLayout>

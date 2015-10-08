@@ -52,8 +52,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import ly.kite.product.MultipleCurrencyAmount;
-import ly.kite.product.SingleCurrencyAmount;
+import ly.kite.catalogue.MultipleCurrencyAmount;
 
 /*****************************************************
  *

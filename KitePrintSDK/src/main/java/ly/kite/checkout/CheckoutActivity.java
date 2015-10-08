@@ -41,8 +41,6 @@ package ly.kite.checkout;
 
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -56,7 +54,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Parcelable;
 import android.os.Bundle;
-import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -66,16 +63,16 @@ import android.widget.EditText;
 
 import ly.kite.KiteSDK;
 import ly.kite.analytics.Analytics;
+import ly.kite.catalogue.Catalogue;
+import ly.kite.catalogue.ICatalogueConsumer;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.pricing.PricingAgent;
-import ly.kite.product.PrintJob;
-import ly.kite.product.PrintOrder;
+import ly.kite.catalogue.PrintJob;
+import ly.kite.catalogue.PrintOrder;
 import ly.kite.R;
 import ly.kite.address.Address;
 import ly.kite.address.AddressBookActivity;
-import ly.kite.product.Product;
-import ly.kite.product.ProductGroup;
-import ly.kite.product.ProductLoader;
+import ly.kite.catalogue.CatalogueLoader;
 
 
 ///// Class Declaration /////
@@ -425,12 +422,12 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
 
     final ProgressDialog progress = ProgressDialog.show( this, null, "Loading" );
 
-    ProductLoader.getInstance( this ).getAllProducts(
+    CatalogueLoader.getInstance( this ).requestCatalogue(
             MAXIMUM_PRODUCT_AGE_MILLIS,
-            new ProductLoader.ProductConsumer()
+            new ICatalogueConsumer()
             {
             @Override
-            public void onGotProducts( ArrayList<ProductGroup> productGroupList, HashMap<String, Product> productTable )
+            public void onCatalogueSuccess( Catalogue catalogue )
               {
               progress.dismiss();
 
@@ -438,7 +435,7 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
               }
 
             @Override
-            public void onProductRetrievalError( Exception exception )
+            public void onCatalogueError( Exception exception )
               {
               progress.dismiss();
 
@@ -479,17 +476,18 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
       {
       // This will return null if there are no products, or they are out of date, but that's
       // OK because we catch any exceptions.
-      Pair<ArrayList<ProductGroup>, HashMap<String, Product>> productPair = ProductLoader.getInstance( this ).getCachedProducts( MAXIMUM_PRODUCT_AGE_MILLIS );
+      Catalogue catalogue = CatalogueLoader.getInstance( this ).getCachedCatalogue( MAXIMUM_PRODUCT_AGE_MILLIS );
 
       // Go through every print job and check that we can get a product from the product id
       for ( PrintJob job : mPrintOrder.getJobs() )
         {
-        String productId = productPair.second.get( job.getProduct().getId() ).getId();
+        catalogue.confirmProductIdExistsOrThrow( job.getProduct().getId() );
         }
       }
     catch ( Exception exception )
       {
       showRetryTemplateSyncDialog( exception );
+
       return;
       }
 

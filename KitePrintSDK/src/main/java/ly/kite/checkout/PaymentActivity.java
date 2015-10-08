@@ -51,12 +51,15 @@ import android.os.Looper;
 import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 import com.paypal.android.sdk.payments.PayPalPayment;
@@ -72,15 +75,15 @@ import ly.kite.pricing.IPricingConsumer;
 import ly.kite.pricing.OrderPricing;
 import ly.kite.pricing.PricingAgent;
 import ly.kite.KiteSDK;
-import ly.kite.product.MultipleCurrencyAmount;
-import ly.kite.product.PrintOrder;
-import ly.kite.product.PrintOrderSubmissionListener;
+import ly.kite.catalogue.MultipleCurrencyAmount;
+import ly.kite.catalogue.PrintOrder;
+import ly.kite.catalogue.PrintOrderSubmissionListener;
 import ly.kite.R;
 import ly.kite.payment.PayPalCard;
 import ly.kite.payment.PayPalCardChargeListener;
 import ly.kite.payment.PayPalCardVaultStorageListener;
 import ly.kite.journey.AKiteActivity;
-import ly.kite.product.SingleCurrencyAmount;
+import ly.kite.catalogue.SingleCurrencyAmount;
 
 
 ///// Class Declaration /////
@@ -90,7 +93,7 @@ import ly.kite.product.SingleCurrencyAmount;
  * This activity displays the price / payment screen.
  *
  *****************************************************/
-public class PaymentActivity extends AKiteActivity implements IPricingConsumer
+public class PaymentActivity extends AKiteActivity implements IPricingConsumer, TextView.OnEditorActionListener
   {
   ////////// Static Constant(s) //////////
 
@@ -132,6 +135,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
   private OrderPricing mOrderPricing;
 
   private boolean mPromoButtonClearsCode;
+  private boolean mLastPriceRetrievalSucceeded;
 
 
   ////////// Static Initialiser(s) //////////
@@ -233,6 +237,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
     mProgressBar          = (ProgressBar) findViewById( R.id.progress_bar );
 
     mPromoEditText.addTextChangedListener( new PromoCodeTextWatcher() );
+    mPromoEditText.setOnEditorActionListener( this );
 
 
     if ( mKiteSDKEnvironment.getPayPalEnvironment().equals( PayPalConfiguration.ENVIRONMENT_SANDBOX ) )
@@ -297,8 +302,6 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
         if ( paymentConfirmation != null )
           {
 
-          Analytics.getInstance( this ).trackPaymentCompleted( mPrintOrder, Analytics.PAYMENT_METHOD_PAYPAL );
-
           try
             {
 
@@ -358,6 +361,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
         if ( card.getCardType() == PayPalCard.CardType.UNSUPPORTED )
           {
           showErrorDialog( "Sorry we couldn't recognize your card. Please try again manually entering your card details if necessary." );
+
           return;
           }
 
@@ -371,14 +375,16 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
         @Override
         public void onStoreSuccess( PayPalCard card )
           {
-          dialog.dismiss();
+          if ( dialog.isShowing() ) dialog.dismiss();
+
           payWithExistingCard( card );
           }
 
         @Override
         public void onError( PayPalCard card, Exception ex )
           {
-          dialog.dismiss();
+          if ( dialog.isShowing() ) dialog.dismiss();
+
           showErrorDialog( ex.getMessage() );
           }
         } );
@@ -428,11 +434,14 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
     {
     mOrderPricing = pricing;
 
+    mLastPriceRetrievalSucceeded = true;
+
     mPromoButton.setEnabled( true );
     mCreditCardButton.setEnabled( true );
     mCreditCardButton.setEnabled( true );
 
     mProgressBar.setVisibility( View.GONE );
+
 
     onGotPrices();
     }
@@ -446,6 +455,8 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
   @Override
   public void paOnError( Exception exception )
     {
+    mLastPriceRetrievalSucceeded = false;
+
     displayModalDialog
             (
                     R.string.alert_dialog_title_oops,
@@ -455,6 +466,30 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
                     R.string.Cancel,
                     new FinishRunnable()
             );
+    }
+
+
+  ////////// TextView.OnEditorActionListener Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when an action occurs on the editor. We use this
+   * to determine when the done button is pressed on the on-screen
+   * keyboard.
+   *
+   *****************************************************/
+  @Override
+  public boolean onEditorAction( TextView v, int actionId, KeyEvent event )
+    {
+    if ( actionId == EditorInfo.IME_ACTION_DONE )
+      {
+      onPromoButtonClicked();
+      }
+
+    // Return false even if we intercepted the done - so the keyboard
+    // will be hidden.
+
+    return ( false );
     }
 
 
@@ -599,8 +634,24 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
    *****************************************************/
   public void onPromoButtonClicked( View view )
     {
+    onPromoButtonClicked();
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the promo button is called. It may be
+   * in one of two states:
+   *   - Apply
+   *   - Clear
+   *
+   *****************************************************/
+  public void onPromoButtonClicked()
+    {
     if ( mPromoButtonClearsCode )
       {
+      String lastPromoCode = mPrintOrder.getPromoCode();
+
       mPrintOrder.clearPromoCode();
 
       mPromoEditText.setText( null );
@@ -609,6 +660,15 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
       mPromoButton.setEnabled( false );
 
       mPromoButtonClearsCode = false;
+
+
+      // If we are clearing a promo code that was successfully used - re-request the
+      // prices (i.e. without the code).
+
+      if ( lastPromoCode != null && mLastPriceRetrievalSucceeded )
+        {
+        requestPrices();
+        }
       }
     else
       {
@@ -622,27 +682,41 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
 
   /*****************************************************
    *
-   * ...
+   * Called when the pay by PayPal button is clicked.
    *
    *****************************************************/
   public void onPayPalButtonClicked( View view )
     {
-    SingleCurrencyAmount totalCost = mOrderPricing.getTotalCost().getDefaultAmountWithFallback();
+    if ( mOrderPricing != null )
+      {
+      MultipleCurrencyAmount multipleCurrencyTotalCost = mOrderPricing.getTotalCost();
 
-    // TODO: See if we can remove the credit card payment option
-    PayPalPayment payment = new PayPalPayment(
-            totalCost.getAmount(),
-            totalCost.getCurrencyCode(),
-            "Product",
-            PayPalPayment.PAYMENT_INTENT_SALE );
+      if ( multipleCurrencyTotalCost != null )
+        {
+        SingleCurrencyAmount totalCost = multipleCurrencyTotalCost.getDefaultAmountWithFallback();
 
-    Intent intent = new Intent( this, com.paypal.android.sdk.payments.PaymentActivity.class );
+        // TODO: See if we can remove the credit card payment option
+        PayPalPayment payment = new PayPalPayment(
+                totalCost.getAmount(),
+                totalCost.getCurrencyCode(),
+                "Product",
+                PayPalPayment.PAYMENT_INTENT_SALE );
 
-    intent.putExtra( com.paypal.android.sdk.payments.PaymentActivity.EXTRA_PAYMENT, payment );
+        Intent intent = new Intent( this, com.paypal.android.sdk.payments.PaymentActivity.class );
 
-    startActivityForResult( intent, REQUEST_CODE_PAYPAL );
+        intent.putExtra( com.paypal.android.sdk.payments.PaymentActivity.EXTRA_PAYMENT, payment );
+
+        startActivityForResult( intent, REQUEST_CODE_PAYPAL );
+        }
+      }
     }
 
+
+  /*****************************************************
+   *
+   * Called when the pay by credit card button is clicked.
+   *
+   *****************************************************/
   public void onCreditCardButtonClicked( View view )
     {
     final PayPalCard lastUsedCard = PayPalCard.getLastUsedCard( this );
@@ -750,8 +824,6 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
             @Override
             public void onChargeSuccess( PayPalCard card, String proofOfPayment )
               {
-              Analytics.getInstance( PaymentActivity.this ).trackPaymentCompleted( mPrintOrder, Analytics.PAYMENT_METHOD_CREDIT_CARD );
-
               dialog.dismiss();
               submitOrderForPrinting( proofOfPayment );
               card.saveAsLastUsedCard( PaymentActivity.this );
@@ -772,6 +844,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
     if ( proofOfPayment != null )
       {
       mPrintOrder.setProofOfPayment( proofOfPayment );
+      Analytics.getInstance( this ).trackPaymentCompleted( mPrintOrder, Analytics.PAYMENT_METHOD_PAYPAL );
       }
     //mPrintOrder.saveToHistory(this);
 
@@ -779,6 +852,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer
     dialog.setCancelable( false );
     dialog.setIndeterminate( false );
     dialog.setProgressStyle( ProgressDialog.STYLE_HORIZONTAL );
+    dialog.setProgressNumberFormat( null );   // Don't display the "N/100" text
     dialog.setTitle( "Processing" );
     dialog.setMessage( "One moment..." );
     dialog.setMax( 100 );

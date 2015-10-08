@@ -57,7 +57,9 @@ import android.view.ViewGroup;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
-import ly.kite.product.ProductLoader;
+import ly.kite.gcm.GCMRegistrationService;
+import ly.kite.catalogue.CatalogueLoader;
+import ly.kite.journey.creation.imagesource.ImageSourceFragment;
 
 /*****************************************************
  *
@@ -92,11 +94,15 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
   private   boolean           mActivityIsVisible;
 
+  private   boolean           mCanAddFragment;
+  private   AKiteFragment     mPendingFragment;
+  private   String            mPendingFragmentTag;
+
   private   Dialog            mDialog;
 
   protected FragmentManager   mFragmentManager;
 
-  protected AKiteFragment mTopFragment;
+  protected AKiteFragment     mTopFragment;
 
 
   ////////// Static Initialiser(s) //////////
@@ -116,13 +122,18 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
    *
    *****************************************************/
   @Override
-  public void onCreate( Bundle savedInstanceState )
+  protected void onCreate( Bundle savedInstanceState )
     {
     super.onCreate( savedInstanceState );
 
 
+    // Check that we are registered for GCM. Comment this out if your app doesn't
+    // use Google Cloud Messaging.
+    GCMRegistrationService.start( this );
+
+
     // TODO: Fix this dirty hack
-    ProductLoader.getInstance( this );
+    CatalogueLoader.getInstance( this );
 
 
     // Listen for changes to the fragment back stack
@@ -195,11 +206,37 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
    *
    *****************************************************/
   @Override
-  public void onStart()
+  protected void onStart()
     {
     super.onStart();
 
     mActivityIsVisible = true;
+    }
+
+
+  /*****************************************************
+   *
+   * Called after the activity gains focus, and guaranteed
+   * to be after the state is restored.
+   *
+   *****************************************************/
+  @Override
+  protected void onPostResume()
+    {
+    super.onPostResume();
+
+    mCanAddFragment = true;
+
+
+    // If we are waiting to add a fragment - do so now
+
+    if ( mPendingFragment != null )
+      {
+      addFragment( mPendingFragment, mPendingFragmentTag );
+
+      mPendingFragment    = null;
+      mPendingFragmentTag = null;
+      }
     }
 
 
@@ -253,11 +290,25 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
   /*****************************************************
    *
+   * Called to save the instance state.
+   *
+   *****************************************************/
+  @Override
+  protected void onSaveInstanceState( Bundle outState )
+    {
+    super.onSaveInstanceState( outState );
+
+    mCanAddFragment = false;
+    }
+
+
+  /*****************************************************
+   *
    * Called when the activity is no longer visible.
    *
    *****************************************************/
   @Override
-  public void onStop()
+  protected void onStop()
     {
     mActivityIsVisible = false;
 
@@ -271,7 +322,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
    *
    *****************************************************/
   @Override
-  public void onDestroy()
+  protected void onDestroy()
     {
     mActivityIsVisible = false;
 
@@ -446,16 +497,45 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
   /*****************************************************
    *
-   * Displays a fragment.
+   * Displays a fragment and adds it to the back stack.
    *
    *****************************************************/
   protected void addFragment( AKiteFragment fragment, String tag )
     {
+    // If the instance state has been saved, then we don't want to commit any
+    // fragment transaction - otherwise we will get an exception on some platforms.
+
+    // However, we need to remember what was requested so that after any state
+    // has been restored, we can then add the fragment.
+
+    if ( mCanAddFragment )
+      {
+      mFragmentManager
+        .beginTransaction()
+              .replace( R.id.fragment_container, fragment, tag )
+              .addToBackStack( tag )  // Use the tag as the name so we can find it later
+        .commit();
+      }
+    else
+      {
+      mPendingFragment    = fragment;
+      mPendingFragmentTag = tag;
+      }
+
+    }
+
+
+  /*****************************************************
+   *
+   * Displays a fragment by replacing the current one.
+   *
+   *****************************************************/
+  protected void replaceFragment( AKiteFragment fragment, String tag )
+    {
     mFragmentManager
-            .beginTransaction()
-            .replace( R.id.fragment_container, fragment, tag )
-            .addToBackStack( tag )  // Use the tag as the name so we can find it later
-            .commit();
+      .beginTransaction()
+        .replace( R.id.fragment_container, fragment, tag )
+      .commit();
     }
 
 
@@ -564,6 +644,23 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   protected void popFragment()
     {
     mFragmentManager.popBackStack();
+    }
+
+
+  /*****************************************************
+   *
+   * Removes a fragment without triggering the back stack
+   * listener.
+   *
+   *****************************************************/
+  protected void popFragmentSecretly()
+    {
+    mFragmentManager.removeOnBackStackChangedListener( this );
+
+    mFragmentManager.popBackStackImmediate( ImageSourceFragment.TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE );
+
+    // Restore the back stack listener
+    mFragmentManager.addOnBackStackChangedListener( this );
     }
 
 

@@ -17,18 +17,23 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
+    <!-- Used for GCM -->
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
+
+
     <application>
 
 
         <!-- Kite SDK activities -->
 
         <activity
-            android:name=".journey.ProductSelectionActivity"
+            android:name=".journey.selection.ProductSelectionActivity"
             android:theme="@style/Theme.KiteSDK.ProductSelection"
             android:launchMode="singleTop"/>
 
         <activity
-            android:name=".journey.ProductCreationActivity"
+            android:name=".journey.creation.ProductCreationActivity"
             android:theme="@style/Theme.KiteSDK.ProductCreation"
             android:launchMode="singleTop"/>
 
@@ -42,7 +47,8 @@
             android:name=".checkout.PaymentActivity"
             android:label="@string/title_activity_payment"
             android:theme="@style/Theme.KiteSDK.Payment"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustPan"/>
 
         <activity
             android:name=".checkout.OrderReceiptActivity"
@@ -70,7 +76,7 @@
             android:theme="@style/Theme.KiteSDK.AddressSearch"/>
 
 
-        <!-- PayPal activities & services -->
+        <!-- PayPal -->
 
         <service
             android:name="com.paypal.android.sdk.payments.PayPalService"
@@ -94,6 +100,25 @@
 
         <activity
             android:name="io.card.payment.DataEntryActivity"/>
+
+
+        <!-- GCM -->
+
+        <service
+            android:name="ly.kite.gcm.GCMRegistrationService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.iid.InstanceID"/>
+            </intent-filter>
+        </service>
+
+        <service
+            android:name="ly.kite.gcm.GCMInstanceIDListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.iid.InstanceID"/>
+            </intent-filter>
+        </service>
 
 
     </application>

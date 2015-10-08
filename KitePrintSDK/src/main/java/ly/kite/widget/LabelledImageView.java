@@ -139,7 +139,6 @@ public class LabelledImageView extends AImageContainerFrame implements IImageCon
     // Save references to the child views
     mEmptyFrameImageView = (ImageView)view.findViewById( R.id.empty_frame_image_view );
     mOverlayLabel        = (OverlayLabel)view.findViewById( R.id.overlay_label );
-    //mProgressBar         = (ProgressBar)view.findViewById( R.id.progress_bar );
 
 
     // Set up the overlay label

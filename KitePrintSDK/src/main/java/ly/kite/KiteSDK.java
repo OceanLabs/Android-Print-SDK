@@ -40,6 +40,7 @@ package ly.kite;
 ///// Import(s) /////
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -51,9 +52,9 @@ import android.util.Log;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 
 import ly.kite.checkout.PaymentActivity;
-import ly.kite.product.Asset;
-import ly.kite.journey.ProductSelectionActivity;
-import ly.kite.product.AssetHelper;
+import ly.kite.catalogue.Asset;
+import ly.kite.journey.selection.ProductSelectionActivity;
+import ly.kite.catalogue.AssetHelper;
 import ly.kite.util.ImageAgent;
 
 
@@ -72,10 +73,11 @@ public class KiteSDK
   @SuppressWarnings( "unused" )
   private static final String  LOG_TAG = "KiteSDK";
 
-  public  static final String SDK_VERSION                               = "3.0.0";
+  public  static final String SDK_VERSION                               = "4.0.0";
 
   private static final String SHARED_PREFERENCES_NAME                   = "kite_shared_prefs";
   private static final String SHARED_PREFERENCES_KEY_API_KEY            = "api_key";
+  private static final String SHARED_PREFERENCES_KEY_UNIQUE_USER_ID     = "unique_user_id";
 
   private static final String KEY_ENVIRONMENT_NAME                      = "environment_name";
   private static final String KEY_API_ENDPOINT                          = "api_endpoint";
@@ -103,6 +105,7 @@ public class KiteSDK
 
   public  static final String INTENT_PREFIX                             = "ly.kite";
 
+  public  static final long   MAX_ACCEPTED_PRODUCT_AGE_MILLIS           = 1000 * 60 * 60;  // 1 hour
 
   public  static final float  FLOAT_ZERO_THRESHOLD                      = 0.0001f;
 
@@ -118,6 +121,7 @@ public class KiteSDK
   private Context      mApplicationContext;
   private String       mAPIKey;
   private Environment  mEnvironment;
+  private String       mUniqueUserId;
 
 
   ////////// Static Initialiser(s) //////////
@@ -203,15 +207,17 @@ public class KiteSDK
   /*****************************************************
    *
    * Convenience method for initialising and Launching the
-   * shopping experience.
+   * shopping experience for a selected set of products, based
+   * on their ids.
    *
    *****************************************************/
-  static public KiteSDK startShopping( Context context, String apiKey, IEnvironment environment, ArrayList<Asset> assetArrayList )
+  static public KiteSDK startShoppingByProductId( Context context, String apiKey, IEnvironment environment, ArrayList<Asset> assetArrayList, String... productIds )
     {
     KiteSDK kiteSDK = getInstance( context, apiKey, environment );
 
-    kiteSDK.startShopping( context, assetArrayList );
-    return kiteSDK;
+    kiteSDK.startShoppingByProductId( context, assetArrayList, productIds );
+
+    return ( kiteSDK );
     }
 
 
@@ -295,6 +301,18 @@ public class KiteSDK
     return sKiteSDK;
     }
 
+
+  /*****************************************************
+   *
+   * Returns true if we have Instagram credentials.
+   *
+   *****************************************************/
+  public boolean haveInstagramCredentials()
+    {
+    return ( getInstagramClientId() != null && getInstagramRedirectURI() != null );
+    }
+
+
   /*****************************************************
    *
    * Sets the display of phone number entry field in checkout
@@ -339,14 +357,50 @@ public class KiteSDK
 
   /*****************************************************
    *
+   * Returns a unique id representing the user. This is
+   * generated and then persisted.
+   *
+   *****************************************************/
+  public String getUniqueUserId()
+    {
+    // If we don't have a cached id - see if we previously
+    // saved one and load it in. Otherwise generate a new
+    // one now and save it.
+
+    if ( mUniqueUserId == null )
+      {
+      SharedPreferences sharedPreferences = mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE );
+
+      String uniqueUserId = sharedPreferences.getString( SHARED_PREFERENCES_KEY_UNIQUE_USER_ID, null );
+
+      if ( uniqueUserId == null )
+        {
+        uniqueUserId = UUID.randomUUID().toString();
+
+        sharedPreferences
+          .edit()
+            .putString( SHARED_PREFERENCES_KEY_UNIQUE_USER_ID, uniqueUserId )
+          .commit();
+        }
+
+      mUniqueUserId = uniqueUserId;
+      }
+
+    return ( mUniqueUserId );
+    }
+
+
+  /*****************************************************
+   *
    * Returns the instagram client id or null if one has
    * not been set.
    *
    *****************************************************/
   public String getInstagramClientId()
     {
-    SharedPreferences prefs = mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE );
-    return prefs.getString( SHARED_PREFERENCES_INSTAGRAM_CLIENT_ID, null );
+    SharedPreferences sharedPreferences = mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE );
+
+    return ( sharedPreferences.getString( SHARED_PREFERENCES_INSTAGRAM_CLIENT_ID, null ) );
     }
 
 
@@ -358,8 +412,9 @@ public class KiteSDK
    *****************************************************/
   public String getInstagramRedirectURI()
     {
-    SharedPreferences prefs = mApplicationContext.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-    return prefs.getString(SHARED_PREFERENCES_INSTAGRAM_REDIRECT_URI, null);
+    SharedPreferences sharedPreferences = mApplicationContext.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+
+    return ( sharedPreferences.getString( SHARED_PREFERENCES_INSTAGRAM_REDIRECT_URI, null ) );
     }
 
 
@@ -389,10 +444,23 @@ public class KiteSDK
 
   /*****************************************************
    *
-   * Launches the shopping experience.
+   * Launches the shopping experience for all products.
    *
    *****************************************************/
   public void startShopping( Context context, ArrayList<Asset> assetArrayList )
+    {
+    startShoppingByProductId( context, assetArrayList );
+    }
+
+
+  /*****************************************************
+   *
+   * Launches the shopping experience for selected products.
+   * We have used a different method name because we may
+   * wish to filter by something else in the future.
+   *
+   *****************************************************/
+  public void startShoppingByProductId( Context context, ArrayList<Asset> assetArrayList, String... productIds )
     {
     // Clear any temporary assets
     AssetHelper.clearCachedImages( context );
@@ -403,7 +471,7 @@ public class KiteSDK
     assetArrayList = AssetHelper.toParcelableList( context, assetArrayList );
 
     // We use the activity context here, not the application context
-    ProductSelectionActivity.start( context, assetArrayList );
+    ProductSelectionActivity.start( context, assetArrayList, productIds );
     }
 
 

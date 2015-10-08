@@ -1,4 +1,4 @@
-package ly.kite.payment;
+ package ly.kite.payment;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -20,6 +20,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -494,21 +495,40 @@ public class PayPalCard implements Serializable {
         vaultExpireDate = (Date) in.readObject();
     }
 
-    public static PayPalCard getLastUsedCard(Context c) {
-        ObjectInputStream is = null;
-        try {
-            is = new ObjectInputStream(new BufferedInputStream(c.openFileInput(PERSISTED_LUC_FILENAME)));
-            PayPalCard luc = (PayPalCard) is.readObject();
-            return luc;
-        } catch (FileNotFoundException ex) {
-            return null;
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        } finally {
-            try {
-                is.close();
-            } catch (Exception ex) { /* ignore */ }
+  public static PayPalCard getLastUsedCard( Context c )
+    {
+    ObjectInputStream is = null;
+    try
+      {
+      is = new ObjectInputStream( new BufferedInputStream( c.openFileInput( PERSISTED_LUC_FILENAME ) ) );
+      PayPalCard luc = (PayPalCard) is.readObject();
+      return luc;
+      }
+    catch ( FileNotFoundException ex )
+      {
+      return null;
+      }
+    catch ( InvalidClassException ice )
+      {
+      // There is likely to have been some sort of change to the class, so reading a previously
+      // serialised class hasn't worked. Serialisation is not such a good idea for stuff like this.
+
+      // Ignore the error (and the previous card)
+      return ( null );
+      }
+    catch ( Exception ex )
+      {
+      throw new RuntimeException( ex );
+      }
+    finally
+      {
+      try
+        {
+        is.close();
         }
+      catch ( Exception ex )
+        { /* ignore */ }
+      }
     }
 
     public static void clearLastUsedCard(Context c) {
@@ -519,7 +539,8 @@ public class PayPalCard implements Serializable {
         ObjectOutputStream os = null;
         try {
             os = new ObjectOutputStream(new BufferedOutputStream(c.openFileOutput(PERSISTED_LUC_FILENAME, Context.MODE_PRIVATE)));
-            os.writeObject(card);
+           os.writeObject(card);
+
         } catch (Exception ex) {
             // ignore, we'll just lose this last used card
         } finally {

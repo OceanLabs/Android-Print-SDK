@@ -58,8 +58,8 @@ import java.net.URL;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
-import ly.kite.product.Asset;
-import ly.kite.product.AssetHelper;
+import ly.kite.catalogue.Asset;
+import ly.kite.catalogue.AssetHelper;
 import ly.kite.util.IImageConsumer;
 import ly.kite.util.ImageAgent;
 
@@ -109,6 +109,8 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
   private   float         mTopPaddingProportion;
   private   float         mRightPaddingProportion;
   private   float         mBottomPaddingProportion;
+
+  private   boolean       mShowProgressSpinnerOnDownload;
 
   private   String        mRequestImageClass;
   private   Object        mRequestImageSource;
@@ -259,7 +261,7 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
   @Override
   public void onImageDownloading( Object key )
     {
-    // Ignore
+    if ( mShowProgressSpinnerOnDownload ) showProgressSpinner();
     }
 
 
@@ -273,6 +275,10 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
     {
     if ( keyIsOK( key ) )
       {
+      // Make sure we don't do anything if we get the bitmap delivered
+      // more than once.
+      mExpectedKey = null;
+
       setImageBitmap( bitmap );
 
       fadeImageIn();
@@ -441,12 +447,28 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
 
   /*****************************************************
    *
+   * Sets whether the progress spinner is shown when an
+   * image is being downloaded.
+   *
+   *****************************************************/
+  public void setShowProgressSpinnerOnDownload( boolean showProgressSpinnerOnDownload )
+    {
+    mShowProgressSpinnerOnDownload = showProgressSpinnerOnDownload;
+    }
+
+
+  /*****************************************************
+   *
    * Sets the source of the image to be scaled to the
    * correct size.
    *
    *****************************************************/
   public void requestScaledImageOnceSized( String imageClass, Object imageSource )
     {
+    // Don't do anything if we're already waiting for the image
+    if ( imageClass.equals( mRequestImageClass ) && imageSource.equals( mRequestImageSource ) ) return;
+
+
     clear();
 
     mRequestImageClass  = imageClass;

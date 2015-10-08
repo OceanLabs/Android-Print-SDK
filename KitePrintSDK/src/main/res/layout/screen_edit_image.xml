@@ -1,35 +1,48 @@
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:background="@color/product_creation_background"
     android:fitsSystemWindows="true">
 
-    <ly.kite.widget.EditableConsumerImageView
-        android:id="@+id/editable_consumer_image_view"
-        android:layout_margin="10dp"
+    <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1.0"/>
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        android:background="@color/product_creation_background">
 
-    <FrameLayout
+        <ly.kite.widget.EditableImageContainerFrame
+            android:id="@+id/editable_consumer_image_view"
+            android:layout_margin="10dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"/>
+
+        <FrameLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.0"
+            android:padding="@dimen/cta_button_margin">
+
+            <ly.kite.widget.CustomTypefaceButton
+                android:id="@+id/cancel_button"
+                style="@style/KiteSDKCTAButton.Offset"
+                android:layout_gravity="bottom|left"
+                android:visibility="gone"/>
+
+            <ly.kite.widget.CustomTypefaceButton
+                android:id="@+id/confirm_button"
+                style="@style/KiteSDKCTAButton.Offset"
+                android:layout_gravity="bottom|right"/>
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <ly.kite.widget.PromptTextFrame
+        android:id="@+id/prompt_text_frame"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.0"
-        android:padding="@dimen/cta_button_margin">
+        android:layout_height="fill_parent"
+        custom:promptText="@string/edit_image_prompt_text"/>
 
-        <ly.kite.widget.CustomTypefaceButton
-            android:id="@+id/cancel_button"
-            style="@style/KiteSDKCTAButton.Offset"
-            android:layout_gravity="bottom|left"
-            android:visibility="gone"/>
-
-        <ly.kite.widget.CustomTypefaceButton
-            android:id="@+id/confirm_button"
-            style="@style/KiteSDKCTAButton.Offset"
-            android:layout_gravity="bottom|right"/>
-
-    </FrameLayout>
-
-</LinearLayout>
+</FrameLayout>

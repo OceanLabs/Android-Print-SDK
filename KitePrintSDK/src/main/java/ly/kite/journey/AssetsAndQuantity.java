@@ -44,7 +44,7 @@ import android.os.Parcelable;
 
 import java.util.List;
 
-import ly.kite.product.Asset;
+import ly.kite.catalogue.Asset;
 
 
 ///// Class Declaration /////
@@ -118,6 +118,12 @@ public class AssetsAndQuantity implements Parcelable
     {
     mUneditedAsset = uneditedAsset;
     mQuantity      = quantity;
+    }
+
+
+  public AssetsAndQuantity( Asset uneditedAsset )
+    {
+    this( uneditedAsset, 1 );
     }
 
 
