@@ -248,6 +248,8 @@ public class KiteSDK
     
     setEnvironment( apiKey, environment );
 
+    clearInstagramCredentials();
+
     // Clear any temporary assets
     AssetHelper.clearCachedImages( context );
     }
@@ -281,6 +283,7 @@ public class KiteSDK
     return sKiteSDK;
     }
 
+
   /*****************************************************
    *
    * Sets the Instagram developer credentials. Doing
@@ -300,7 +303,29 @@ public class KiteSDK
       Log.e( LOG_TAG, "Unable to save instagram credentials to shared preferences" );
       }
 
-    return sKiteSDK;
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Clears the Instagram developer credentials.
+   *
+   *****************************************************/
+  public KiteSDK clearInstagramCredentials()
+    {
+    SharedPreferences.Editor editor = mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE ).edit();
+
+    editor
+      .remove( SHARED_PREFERENCES_INSTAGRAM_CLIENT_ID )
+      .remove( SHARED_PREFERENCES_INSTAGRAM_REDIRECT_URI );
+
+    if ( ! editor.commit() )
+      {
+      Log.e( LOG_TAG, "Unable to clear Instagram credentials from shared preferences" );
+      }
+
+    return ( this );
     }
 
 
@@ -332,7 +357,7 @@ public class KiteSDK
       Log.e( LOG_TAG, "Unable to save request phone number preference to shared preferences" );
       }
 
-    return sKiteSDK;
+    return ( this );
     }
 
 
