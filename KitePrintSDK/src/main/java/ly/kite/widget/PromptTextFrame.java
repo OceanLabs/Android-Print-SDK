@@ -43,12 +43,13 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Build;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
+import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -71,9 +72,9 @@ public class PromptTextFrame extends FrameLayout
   @SuppressWarnings( "unused" )
   private   static final String  LOG_TAG                           = "PromptTextFrame";
 
-  private   static final long    ENTRY_ANIMATION_DURATION_MILLIS   = 300L;
-  private   static final long    EXIT_ANIMATION_DELAY_MILLIS       = 2000L;
-  private   static final long    EXIT_ANIMATION_DURATION_MILLIS    = 300L;
+  private   static final long    IN_ANIMATION_DURATION_MILLIS      = 500L;
+  private   static final long    OUT_ANIMATION_DELAY_MILLIS        = 2000L;
+  private   static final long    OUT_ANIMATION_DURATION_MILLIS     = 500L;
 
   private   static final float   ALPHA_TRANSPARENT                 = 0f;
   private   static final float   ALPHA_OPAQUE                      = 1f;
@@ -84,7 +85,9 @@ public class PromptTextFrame extends FrameLayout
 
   ////////// Member Variable(s) //////////
 
-  private TextView  mPromptTextView;
+  private TextView   mPromptTextView;
+
+  private Animation  mInAnimation;
 
 
   ////////// Static Initialiser(s) //////////
@@ -180,21 +183,87 @@ public class PromptTextFrame extends FrameLayout
     {
     mPromptTextView.setVisibility( View.VISIBLE );
 
+    mInAnimation = new TranslateAnimation(
+            Animation.RELATIVE_TO_SELF, 0,
+            Animation.RELATIVE_TO_SELF, 0,
+            Animation.RELATIVE_TO_SELF, -1f,
+            Animation.RELATIVE_TO_SELF, 0 );
 
-    Animation animation = AnimationUtils.loadAnimation( getContext(), R.anim.prompt_text_frame );
+    mInAnimation.setDuration( IN_ANIMATION_DURATION_MILLIS );
+    mInAnimation.setFillBefore( true );
+    mInAnimation.setFillAfter( true );
+    mInAnimation.setAnimationListener( new OutAnimationTrigger() );
 
-    animation.setAnimationListener( new VisibilitySettingAnimationListener( mPromptTextView, View.GONE ) );
-
-    mPromptTextView.startAnimation( animation );
+    mPromptTextView.startAnimation( mInAnimation );
     }
-
 
   ////////// Inner Class(es) //////////
 
   /*****************************************************
    *
-   * ...
+   * Waits for a period of time, then displays the out
+   * animation.
    *
    *****************************************************/
+  private class OutAnimationTrigger implements Animation.AnimationListener, Runnable
+    {
+    @Override
+    public void onAnimationStart( Animation animation )
+      {
+      // Ignore
+      }
+
+
+    /*****************************************************
+     *
+     * Called when the in animation has finished.
+     *
+     *****************************************************/
+    @Override
+    public void onAnimationEnd( Animation animation )
+      {
+      if ( animation == mInAnimation )
+        {
+        mInAnimation = null;
+
+        // Delay before starting the out animation
+        new Handler().postDelayed( this, OUT_ANIMATION_DELAY_MILLIS );
+        }
+      }
+
+    @Override
+    public void onAnimationRepeat( Animation animation )
+      {
+      // Ignore
+      }
+
+
+    /*****************************************************
+     *
+     * Called after a delay whilst the prompt text is displayed
+     * on screen.
+     *
+     *****************************************************/
+    @Override
+    public void run()
+      {
+      // Create and start the out animation. Once the out animation
+      // has finished, we clear the animation and hide the view.
+
+      Animation outAnimation = new TranslateAnimation(
+              Animation.RELATIVE_TO_SELF, 0,
+              Animation.RELATIVE_TO_SELF, 0,
+              Animation.RELATIVE_TO_SELF, 0,
+              Animation.RELATIVE_TO_SELF, -1f );
+
+      outAnimation.setDuration( OUT_ANIMATION_DURATION_MILLIS );
+      outAnimation.setFillBefore( true );
+      outAnimation.setFillAfter( true );
+
+      outAnimation.setAnimationListener( new VisibilitySettingAnimationListener( mPromptTextView, View.GONE ) );
+
+      mPromptTextView.startAnimation( outAnimation );
+      }
+    }
 
   }

@@ -204,7 +204,9 @@ public class EditImageFragment extends AEditImageFragment
     mEditableImageContainerFrame.setImageKey( mAsset );
     mEditableImageContainerFrame.setMask( mProduct.getUserJourneyType().maskResourceId(), mProduct.getImageAspectRatio() );
 
-    AssetHelper.requestImage( mKiteActivity, mAsset, mEditableImageContainerFrame );
+    // When we have the image - kick off the prompt text display cycle if this is the first time
+    // we're loading an image.
+    AssetHelper.requestImage( mKiteActivity, mAsset, new PromptTextTrigger( mEditableImageContainerFrame ) );
     }
 
 

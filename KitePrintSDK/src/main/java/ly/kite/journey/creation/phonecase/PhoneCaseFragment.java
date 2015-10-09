@@ -214,7 +214,7 @@ public class PhoneCaseFragment extends AEditImageFragment
 
     // Request the mask
 
-    ImageAgent imageManager = ImageAgent.getInstance( mKiteActivity );
+    ImageAgent imageAgent = ImageAgent.getInstance( mKiteActivity );
 
     URL        maskURL      = mProduct.getMaskURL();
     Bleed      maskBleed    = mProduct.getMaskBleed();
@@ -223,7 +223,7 @@ public class PhoneCaseFragment extends AEditImageFragment
       {
       mEditableImageContainerFrame.setMaskExtras( maskURL, maskBleed );
 
-      imageManager.requestImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, maskURL, mEditableImageContainerFrame );
+      imageAgent.requestImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, maskURL, mEditableImageContainerFrame );
       }
 
 
@@ -378,7 +378,9 @@ public class PhoneCaseFragment extends AEditImageFragment
 
     mEditableImageContainerFrame.setImageKey( asset );
 
-    AssetHelper.requestImage( mKiteActivity, asset, mEditableImageContainerFrame );
+    // When we have the image - kick off the prompt text display cycle if this is the first time
+    // we're loading an image.
+    AssetHelper.requestImage( mKiteActivity, asset, new PromptTextTrigger( mEditableImageContainerFrame ) );
     }
 
 

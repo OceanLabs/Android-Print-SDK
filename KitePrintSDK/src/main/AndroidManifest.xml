@@ -35,7 +35,8 @@
         <activity
             android:name=".journey.creation.ProductCreationActivity"
             android:theme="@style/Theme.KiteSDK.ProductCreation"
-            android:launchMode="singleTop"/>
+            android:launchMode="singleTop"
+            android:hardwareAccelerated="true"/>
 
         <activity
             android:name=".checkout.CheckoutActivity"

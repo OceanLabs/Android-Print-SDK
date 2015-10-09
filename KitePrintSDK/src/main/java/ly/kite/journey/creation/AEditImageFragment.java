@@ -41,6 +41,7 @@ package ly.kite.journey.creation;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,6 +53,7 @@ import ly.kite.journey.AKiteActivity;
 import ly.kite.catalogue.Asset;
 import ly.kite.catalogue.AssetHelper;
 import ly.kite.catalogue.Product;
+import ly.kite.util.IImageConsumer;
 import ly.kite.widget.EditableImageContainerFrame;
 import ly.kite.widget.PromptTextFrame;
 
@@ -69,9 +71,11 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String      LOG_TAG                        = "AEditImageFragment";
+  private static final String      LOG_TAG                             = "AEditImageFragment";
 
-  public  static final String      BUNDLE_KEY_PRODUCT             = "product";
+  public  static final String      BUNDLE_KEY_PRODUCT                  = "product";
+
+  private static final long        PROMPT_ANIMATION_START_DELAY_MILLIS = 500L;
 
 
   ////////// Static Variable(s) //////////
@@ -85,6 +89,8 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
   protected Button                       mCancelButton;
   protected Button                       mConfirmButton;
   private   PromptTextFrame              mPromptTextFrame;
+
+  protected boolean                      mShowPromptText;
 
 
   ////////// Static Initialiser(s) //////////
@@ -177,7 +183,7 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
 
   /*****************************************************
    *
-   * Called when the activitiy has been created.
+   * Called when the activity has been created.
    *
    *****************************************************/
   @Override
@@ -189,10 +195,9 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
     // Only show the prompt animation the first time this
     // screen is displayed.
 
-    if ( savedInstanceState == null &&
-         mPromptTextFrame   != null )
+    if ( savedInstanceState == null && mPromptTextFrame != null )
       {
-      mPromptTextFrame.startDisplayCycle();
+      mShowPromptText = true;
       }
     }
 
@@ -294,6 +299,51 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
 
 
   ////////// Inner Class(es) //////////
+
+  /*****************************************************
+   *
+   * Intercepts the image consumer callback, and starts the
+   * prompt text display cycle, if required.
+   *
+   *****************************************************/
+  protected class PromptTextTrigger implements IImageConsumer, Runnable
+    {
+    private IImageConsumer   mEndConsumer;
+
+
+    public PromptTextTrigger( IImageConsumer endConsumer )
+      {
+      mEndConsumer = endConsumer;
+      }
+
+
+    @Override
+    public void onImageDownloading( Object key )
+      {
+      mEndConsumer.onImageDownloading( key );
+      }
+
+    @Override
+    public void onImageAvailable( Object key, Bitmap bitmap )
+      {
+      // Pass the image on to the end consumer
+      mEndConsumer.onImageAvailable( key, bitmap );
+
+      if ( mShowPromptText && mPromptTextFrame != null )
+        {
+        mShowPromptText = false;
+
+        new Handler().postDelayed( this, PROMPT_ANIMATION_START_DELAY_MILLIS );
+        }
+      }
+
+
+    @Override
+    public void run()
+      {
+      mPromptTextFrame.startDisplayCycle();
+      }
+    }
 
   }
 
