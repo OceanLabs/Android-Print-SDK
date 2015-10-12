@@ -40,6 +40,7 @@ package ly.kite.journey.selection;
 ///// Import(s) /////
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -391,9 +392,37 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements I
 
       IGroupOrProduct groupOrProduct = (IGroupOrProduct)getItem( position );
 
-      viewReferences.productImageView.setImageAspectRatio( DEFAULT_ASPECT_RATIO );
 
-      URL    imageURL;
+      // If there are only two items - alter the aspect ratio so that the images
+      // fill the screen, in either orientation.
+
+      float aspectRatio;
+
+      if ( getCount() == 2 )
+        {
+        int orientation = mContext.getResources().getConfiguration().orientation;
+
+        if ( orientation == Configuration.ORIENTATION_LANDSCAPE )
+          {
+          aspectRatio = parent.getWidth() * 0.5f / parent.getHeight();
+          }
+        else
+          {
+          aspectRatio = parent.getWidth() / ( parent.getHeight() * 0.5f );
+          }
+
+        // Make sure we only expand the height
+        if ( aspectRatio > DEFAULT_ASPECT_RATIO ) aspectRatio = DEFAULT_ASPECT_RATIO;
+        }
+      else
+        {
+        aspectRatio = DEFAULT_ASPECT_RATIO;
+        }
+
+      viewReferences.productImageView.setImageAspectRatio( aspectRatio );
+
+
+      URL imageURL;
 
       if ( groupOrProduct != null )
         {
