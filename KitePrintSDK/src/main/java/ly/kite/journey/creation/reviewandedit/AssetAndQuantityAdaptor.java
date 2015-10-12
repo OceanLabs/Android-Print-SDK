@@ -55,6 +55,7 @@ import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.catalogue.BorderF;
 import ly.kite.catalogue.Product;
 import ly.kite.widget.FramedImageView;
+import ly.kite.widget.ViewHelper;
 
 
 ///// Class Declaration /////
@@ -218,6 +219,14 @@ public class AssetAndQuantityAdaptor extends BaseAdapter
     viewReferences.decreaseButton.setOnClickListener( viewReferences );
     viewReferences.increaseButton.setOnClickListener( viewReferences );
     viewReferences.editButton.setOnClickListener( viewReferences );
+
+
+    // Scan through the view hierarchy and set any special properties. This allows apps to apply
+    // special features to the view, such as an overlay for certain products. This is either a stroke
+    // of genius, or the dirtiest hack ever ... history will decide.
+
+    ViewHelper.setAllViewProperties( view, mProduct );
+
 
     return ( view );
     }
