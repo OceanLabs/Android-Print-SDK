@@ -75,7 +75,7 @@ public class KiteSDK
   @SuppressWarnings( "unused" )
   private static final String  LOG_TAG = "KiteSDK";
 
-  public  static final String SDK_VERSION                               = "4.0.0";
+  public  static final String SDK_VERSION                               = "4.0.1";
 
   private static final String SHARED_PREFERENCES_NAME                   = "kite_shared_prefs";
   private static final String SHARED_PREFERENCES_KEY_API_KEY            = "api_key";
