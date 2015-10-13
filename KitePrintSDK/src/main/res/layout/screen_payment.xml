@@ -60,7 +60,7 @@
                     android:layout_weight="0.0"
                     android:background="@null"
                     android:enabled="false"
-                    android:onClick="onPerformPromoAction"
+                    android:onClick="onPromoButtonClicked"
                     android:text="@string/payment_promo_button_text_apply"
                     android:textColor="@color/apply_button"/>
             </LinearLayout>

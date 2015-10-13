@@ -644,7 +644,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer, 
    *   - Clear
    *
    *****************************************************/
-  public void onPerformPromoAction( View view )
+  public void onPromoButtonClicked( View view )
     {
     onPerformPromoAction();
     }
