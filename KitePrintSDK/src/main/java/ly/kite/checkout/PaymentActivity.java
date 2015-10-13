@@ -134,7 +134,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer, 
 
   private OrderPricing mOrderPricing;
 
-  private boolean mPromoButtonClearsCode;
+  private boolean mPromoActionClearsCode;
   private boolean mLastPriceRetrievalSucceeded;
 
 
@@ -239,6 +239,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer, 
     mPromoEditText.addTextChangedListener( new PromoCodeTextWatcher() );
     mPromoEditText.setOnEditorActionListener( this );
 
+    hideKeyboard();
 
     if ( mKiteSDKEnvironment.getPayPalEnvironment().equals( PayPalConfiguration.ENVIRONMENT_SANDBOX ) )
       {
@@ -483,7 +484,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer, 
     {
     if ( actionId == EditorInfo.IME_ACTION_DONE )
       {
-      onPromoButtonClicked();
+      onPerformPromoAction();
       }
 
     // Return false even if we intercepted the done - so the keyboard
@@ -541,11 +542,12 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer, 
       // A promo code was sent with the request but was invalid.
 
       // Change the colour to highlight it
+      mPromoEditText.setEnabled( true );
       mPromoEditText.setTextColor( getResources().getColor( R.color.payment_promo_code_text_error ) );
 
-      mPromoButton.setText( R.string.payment_promo_button_text_clear );
+      mPromoButton.setText( R.string.payment_promo_button_text_apply );
 
-      mPromoButtonClearsCode = true;
+      mPromoActionClearsCode = true;
 
 
       // Note that we show an error message, but we still update the
@@ -564,9 +566,19 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer, 
 
       if ( setPromoButtonEnabledState() )
         {
+        mPromoEditText.setEnabled( false );
+
         mPromoButton.setText( R.string.payment_promo_button_text_clear );
 
-        mPromoButtonClearsCode = true;
+        mPromoActionClearsCode = true;
+        }
+      else
+        {
+        mPromoEditText.setEnabled( true );
+
+        mPromoButton.setText( R.string.payment_promo_button_text_apply );
+
+        mPromoActionClearsCode = false;
         }
       }
 
@@ -632,9 +644,9 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer, 
    *   - Clear
    *
    *****************************************************/
-  public void onPromoButtonClicked( View view )
+  public void onPerformPromoAction( View view )
     {
-    onPromoButtonClicked();
+    onPerformPromoAction();
     }
 
 
@@ -646,20 +658,21 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer, 
    *   - Clear
    *
    *****************************************************/
-  public void onPromoButtonClicked()
+  public void onPerformPromoAction()
     {
-    if ( mPromoButtonClearsCode )
+    if ( mPromoActionClearsCode )
       {
       String lastPromoCode = mPrintOrder.getPromoCode();
 
       mPrintOrder.clearPromoCode();
 
+      mPromoEditText.setEnabled( true );
       mPromoEditText.setText( null );
 
       mPromoButton.setText( R.string.payment_promo_button_text_apply );
       mPromoButton.setEnabled( false );
 
-      mPromoButtonClearsCode = false;
+      mPromoActionClearsCode = false;
 
 
       // If we are clearing a promo code that was successfully used - re-request the
@@ -672,6 +685,8 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer, 
       }
     else
       {
+      hideKeyboardDelayed();
+
       mPrintOrder.setPromoCode( mPromoEditText.getText().toString() );
 
       requestPrices();
@@ -934,7 +949,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer, 
       // Change the button text back to Apply (even if we disable the button because the code is blank)
       mPromoButton.setText( R.string.payment_promo_button_text_apply );
 
-      mPromoButtonClearsCode = false;
+      mPromoActionClearsCode = false;
       }
     }
 

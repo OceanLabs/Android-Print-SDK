@@ -49,11 +49,15 @@ import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
@@ -381,6 +385,42 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
   /*****************************************************
    *
+   * Hides the on-screen keyboard.
+   *
+   *****************************************************/
+  protected void hideKeyboard()
+    {
+    //getWindow().setSoftInputMode( WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN );
+
+    InputMethodManager inputMethodManager = (InputMethodManager)getSystemService( Activity.INPUT_METHOD_SERVICE );
+
+    // Find the currently focused view, so we can grab the correct window token from it.
+    View view = getCurrentFocus();
+
+    //If no view currently has focus, create a new one, just so we can grab a window token from it
+    if ( view == null )
+      {
+      view = new View( this );
+      }
+
+    inputMethodManager.hideSoftInputFromWindow( view.getWindowToken(), 0 );
+    }
+
+
+  /*****************************************************
+   *
+   * Hides the on-screen keyboard but delayed.
+   *
+   *****************************************************/
+  @SuppressWarnings( "NewAPI" )
+  protected void hideKeyboardDelayed()
+    {
+    new Handler().post( new HideKeyboardRunnable() );
+    }
+
+
+  /*****************************************************
+   *
    * Returns true if the activity is visible, false otherwise.
    *
    *****************************************************/
@@ -681,6 +721,21 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     public void run()
       {
       finish();
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * A runnable that hides the on-screen keyboard.
+   *
+   *****************************************************/
+  public class HideKeyboardRunnable implements Runnable
+    {
+    @Override
+    public void run()
+      {
+      hideKeyboard();
       }
     }
 

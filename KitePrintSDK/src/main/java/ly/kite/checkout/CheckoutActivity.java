@@ -244,7 +244,7 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
 
 
     // hide keyboard initially
-    this.getWindow().setSoftInputMode( WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN );
+    getWindow().setSoftInputMode( WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN );
 
 
     // Request the pricing now - even though we don't use it on this screen, and it may change once
