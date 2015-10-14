@@ -610,7 +610,7 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
             Math.round( halfBlendWidth + halfScaledMaskWidth ),
             Math.round( halfBlendHeight + halfScaledMaskHeight ) );
 
-    mBlendToViewSourceRect = new Rect( 0, 0, (int)blendWidth, (int)blendHeight );
+    mBlendToViewSourceRect  = new Rect( 0, 0, (int)blendWidth, (int)blendHeight );
     mBlendToViewTargetRectF = new RectF( halfViewWidth - halfBlendWidth, halfViewHeight - halfBlendHeight, halfViewWidth + halfBlendWidth, halfViewHeight + halfBlendHeight );
 
 
@@ -619,7 +619,13 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
     mBlendCanvas = new Canvas( mBlendBitmap );
 
 
-    if ( mImageBitmap == null ) return;
+    if ( mImageBitmap == null )
+      {
+      // Make sure we don't try to draw the image if it's been cleared
+      mImageToBlendTargetRectF = null;
+
+      return;
+      }
 
 
     // The image needs to fill the mask, like the centerCropped scale type

@@ -171,7 +171,7 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
     View view = layoutInflater.inflate( R.layout.editable_image_container_frame, this, true );
 
     mEditableMaskedImageView = (EditableMaskedImageView)view.findViewById( R.id.editable_image_view );
-    mProgressBar     = (ProgressBar)view.findViewById( R.id.progress_bar );
+    mProgressBar             = (ProgressBar)view.findViewById( R.id.progress_bar );
     }
 
 
@@ -194,6 +194,20 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
   public void clearImage()
     {
     mEditableMaskedImageView.setImageBitmap( null );
+    }
+
+
+  /*****************************************************
+   *
+   * Clears the current image and sets the key for a new
+   * image.
+   *
+   *****************************************************/
+  public void clearForNewImage( Object key )
+    {
+    clearImage();
+
+    setImageKey( key );
     }
 
 

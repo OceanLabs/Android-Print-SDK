@@ -376,7 +376,7 @@ public class PhoneCaseFragment extends AEditImageFragment
     {
     if ( imageIsNew ) mEditableImageContainerFrame.clearState();
 
-    mEditableImageContainerFrame.setImageKey( asset );
+    mEditableImageContainerFrame.clearForNewImage( asset );
 
     // When we have the image - kick off the prompt text display cycle if this is the first time
     // we're loading an image.
