@@ -70,7 +70,7 @@ public class ImageLoader
 
   ////////// Static Variable(s) //////////
 
-  private static ImageLoader sImageLoader;
+  static private ImageLoader sImageLoader;
 
 
   ////////// Member Variable(s) //////////
@@ -100,6 +100,65 @@ public class ImageLoader
       }
 
     return ( sImageLoader );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a bitmap options object with common options
+   * set.
+   *
+   *****************************************************/
+  static private BitmapFactory.Options getCommonBitmapOptions( Bitmap.Config bitmapConfig )
+    {
+    BitmapFactory.Options bitmapFactoryOptions = new BitmapFactory.Options();
+
+    bitmapFactoryOptions.inBitmap                 = null;
+    bitmapFactoryOptions.inDensity                = 0;
+    bitmapFactoryOptions.inDither                 = false;
+    bitmapFactoryOptions.inMutable                = false;
+    bitmapFactoryOptions.inPreferQualityOverSpeed = false;
+    bitmapFactoryOptions.inPreferredConfig        = bitmapConfig;
+    bitmapFactoryOptions.inScaled                 = false;
+    bitmapFactoryOptions.inScreenDensity 	        = 0;
+    bitmapFactoryOptions.inTargetDensity 	        = 0;
+    bitmapFactoryOptions.inTempStorage 	          = null;
+    bitmapFactoryOptions.mCancel                  = false;
+
+    return ( bitmapFactoryOptions );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a bitmap options object for decoding bounds
+   * only.
+   *
+   *****************************************************/
+  static private BitmapFactory.Options getBoundsBitmapOptions( Bitmap.Config bitmapConfig )
+    {
+    BitmapFactory.Options bitmapFactoryOptions = getCommonBitmapOptions( bitmapConfig );
+
+    bitmapFactoryOptions.inJustDecodeBounds       = true;
+    bitmapFactoryOptions.inSampleSize             = 0;
+
+    return ( bitmapFactoryOptions );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a bitmap options object for decoding.
+   *
+   *****************************************************/
+  static private BitmapFactory.Options getFullBitmapOptions( Bitmap.Config bitmapConfig, int sampleSize )
+    {
+    BitmapFactory.Options bitmapFactoryOptions = getCommonBitmapOptions( bitmapConfig );
+
+    bitmapFactoryOptions.inJustDecodeBounds       = false;
+    bitmapFactoryOptions.inSampleSize             = sampleSize;
+
+    return ( bitmapFactoryOptions );
     }
 
 
@@ -391,21 +450,7 @@ public class ImageLoader
 
           // Determine the bitmap size
 
-          BitmapFactory.Options bitmapFactoryOptions = new BitmapFactory.Options();
-
-          bitmapFactoryOptions.inBitmap                 = null;
-          bitmapFactoryOptions.inDensity                = 0;
-          bitmapFactoryOptions.inDither                 = false;
-          bitmapFactoryOptions.inJustDecodeBounds       = true;
-          bitmapFactoryOptions.inMutable                = false;
-          bitmapFactoryOptions.inPreferQualityOverSpeed = false;
-          bitmapFactoryOptions.inPreferredConfig        = Bitmap.Config.ARGB_8888;
-          bitmapFactoryOptions.inSampleSize             = 0;
-          bitmapFactoryOptions.inScaled                 = false;
-          bitmapFactoryOptions.inScreenDensity 	        = 0;
-          bitmapFactoryOptions.inTargetDensity 	        = 0;
-          bitmapFactoryOptions.inTempStorage 	          = null;
-          bitmapFactoryOptions.mCancel                  = false;
+          BitmapFactory.Options bitmapFactoryOptions = getBoundsBitmapOptions( Bitmap.Config.ARGB_8888 );
 
           request.decodeBitmap( bitmapFactoryOptions );
 
@@ -428,25 +473,23 @@ public class ImageLoader
             }
 
 
-          // Decode the bitmap using the calculated sample size
+          // Decode the bitmap using the calculated sample size. If that fails, try
+          // dropping the bitmap config to RGB_565 (i.e. 4 bytes per pixel -> 2 bytes per pixel).
 
-          bitmapFactoryOptions = new BitmapFactory.Options();
+          Bitmap bitmap = null;
 
-          bitmapFactoryOptions.inBitmap                 = null;
-          bitmapFactoryOptions.inDensity                = 0;
-          bitmapFactoryOptions.inDither                 = false;
-          bitmapFactoryOptions.inJustDecodeBounds       = false;
-          bitmapFactoryOptions.inMutable                = false;
-          bitmapFactoryOptions.inPreferQualityOverSpeed = false;
-          bitmapFactoryOptions.inPreferredConfig        = Bitmap.Config.ARGB_8888;
-          bitmapFactoryOptions.inSampleSize             = sampleSize;
-          bitmapFactoryOptions.inScaled                 = false;
-          bitmapFactoryOptions.inScreenDensity 	        = 0;
-          bitmapFactoryOptions.inTargetDensity 	        = 0;
-          bitmapFactoryOptions.inTempStorage 	          = null;
-          bitmapFactoryOptions.mCancel                  = false;
+          try
+            {
+            bitmapFactoryOptions = getFullBitmapOptions( Bitmap.Config.ARGB_8888, sampleSize );
+            bitmap               = request.decodeBitmap( bitmapFactoryOptions );
+            }
+          catch ( OutOfMemoryError oome )
+            {
+            Log.e( LOG_TAG, "Unable to decode bitmap at ARGB_8888 - re-trying at RGB_565" );
 
-          Bitmap bitmap = request.decodeBitmap( bitmapFactoryOptions );
+            bitmapFactoryOptions = getFullBitmapOptions( Bitmap.Config.RGB_565, sampleSize );
+            bitmap               = request.decodeBitmap( bitmapFactoryOptions );
+            }
 
 
           // Perform any transformation
