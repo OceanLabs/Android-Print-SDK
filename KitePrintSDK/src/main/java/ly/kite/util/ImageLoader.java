@@ -43,14 +43,19 @@ package ly.kite.util;
 ///// Class Declaration /////
 
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 
 /*****************************************************
@@ -159,6 +164,80 @@ public class ImageLoader
     bitmapFactoryOptions.inSampleSize             = sampleSize;
 
     return ( bitmapFactoryOptions );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the orientation for an image. Used to determine
+   * how to rotate the image after loading so that it becomes
+   * the right way up.
+   *
+   *****************************************************/
+  static public int getRotationForImage( Context context, Uri uri )
+    {
+    Cursor cursor = null;
+
+    try
+      {
+      if ( uri.getScheme().equals( "content" ) )
+        {
+        ///// Content /////
+
+        String[] projection = { MediaStore.Images.ImageColumns.ORIENTATION };
+
+        cursor = context.getContentResolver().query( uri, projection, null, null, null );
+
+        if ( cursor.moveToFirst() )
+          {
+          return ( cursor.getInt( 0 ) );
+          }
+        }
+      else if ( uri.getScheme().equals( "file" ) )
+        {
+        ///// File /////
+
+        ExifInterface exif = new ExifInterface( uri.getPath() );
+
+        int rotation = degreesFromEXIFOrientation( exif.getAttributeInt( ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL ) );
+
+        return ( rotation );
+        }
+      }
+    catch ( IOException ioe )
+      {
+      Log.e( LOG_TAG, "Error checking exif", ioe );
+      }
+    finally
+      {
+      if ( cursor != null ) cursor.close();
+      }
+
+    return ( 0 );
+    }
+
+
+  /*****************************************************
+   *
+   * Converts an EXIF orientation into degrees..
+   *
+   *****************************************************/
+  static private int degreesFromEXIFOrientation( int exifOrientation )
+    {
+    if ( exifOrientation == ExifInterface.ORIENTATION_ROTATE_90 )
+      {
+      return ( 90 );
+      }
+    else if ( exifOrientation == ExifInterface.ORIENTATION_ROTATE_180 )
+      {
+      return ( 180 );
+      }
+    else if ( exifOrientation == ExifInterface.ORIENTATION_ROTATE_270 )
+      {
+      return ( 270 );
+      }
+
+    return ( 0 );
     }
 
 
@@ -349,15 +428,22 @@ public class ImageLoader
       }
 
 
-    Bitmap decodeBitmap( BitmapFactory.Options bitmapFactoryOptions ) throws Exception
+    Bitmap loadBitmap( BitmapFactory.Options bitmapFactoryOptions ) throws Exception
       {
       Bitmap bitmap;
+
+      int rotation = 0;
 
       if ( this.sourceFile != null )
         {
         ///// File /////
 
         bitmap = BitmapFactory.decodeFile( this.sourceFile.getPath(), bitmapFactoryOptions );
+
+        if ( bitmap != null )
+          {
+          rotation = getRotationForImage( mContext, Uri.fromFile( this.sourceFile ) );
+          }
         }
       else if ( this.sourceResourceId != 0 )
         {
@@ -372,6 +458,11 @@ public class ImageLoader
         BufferedInputStream bis = new BufferedInputStream( mContext.getContentResolver().openInputStream( this.sourceURI ) );
 
         bitmap = BitmapFactory.decodeStream( bis, null, bitmapFactoryOptions );
+
+        if ( bitmap != null )
+          {
+          rotation = getRotationForImage( mContext, this.sourceURI );
+          }
         }
       else if ( this.sourceBitmap != null )
         {
@@ -401,6 +492,20 @@ public class ImageLoader
         }
 
 
+      // Perform any rotation specified by the EXIF data
+
+      if ( bitmap != null && rotation != 0 )
+        {
+        // Perform the rotation by using a matrix to transform the bitmap
+
+        Matrix matrix = new Matrix();
+
+        matrix.preRotate( rotation );
+
+        bitmap = Bitmap.createBitmap( bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true );
+        }
+
+
       return ( bitmap );
       }
     }
@@ -413,7 +518,6 @@ public class ImageLoader
    *****************************************************/
   private class LoaderTask extends AsyncTask<Void,Request,Void>
     {
-
     /*****************************************************
      *
      * Entry point for background thread.
@@ -452,7 +556,7 @@ public class ImageLoader
 
           BitmapFactory.Options bitmapFactoryOptions = getBoundsBitmapOptions( Bitmap.Config.ARGB_8888 );
 
-          request.decodeBitmap( bitmapFactoryOptions );
+          request.loadBitmap( bitmapFactoryOptions );
 
 
           // Increase the sub-sampling (by powers of 2) until the number of bitmap
@@ -473,22 +577,22 @@ public class ImageLoader
             }
 
 
-          // Decode the bitmap using the calculated sample size. If that fails, try
-          // dropping the bitmap config to RGB_565 (i.e. 4 bytes per pixel -> 2 bytes per pixel).
+          // Load the bitmap using the calculated sample size. If that fails, try dropping
+          // the bitmap config to RGB_565 (i.e. from 4 bytes / pixel -> 2 bytes / pixel).
 
           Bitmap bitmap = null;
 
           try
             {
             bitmapFactoryOptions = getFullBitmapOptions( Bitmap.Config.ARGB_8888, sampleSize );
-            bitmap               = request.decodeBitmap( bitmapFactoryOptions );
+            bitmap               = request.loadBitmap( bitmapFactoryOptions );
             }
           catch ( OutOfMemoryError oome )
             {
             Log.e( LOG_TAG, "Unable to decode bitmap at ARGB_8888 - re-trying at RGB_565" );
 
             bitmapFactoryOptions = getFullBitmapOptions( Bitmap.Config.RGB_565, sampleSize );
-            bitmap               = request.decodeBitmap( bitmapFactoryOptions );
+            bitmap               = request.loadBitmap( bitmapFactoryOptions );
             }
 
 
@@ -504,7 +608,7 @@ public class ImageLoader
 
           if ( request.scaledImageWidth > 0 )
             {
-            bitmap = ImageDownscaler.scaleBitmap( bitmap, request.scaledImageWidth );
+            bitmap = ImageAgent.downscaleBitmap( bitmap, request.scaledImageWidth );
             }
 
 

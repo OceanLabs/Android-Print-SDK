@@ -192,6 +192,29 @@ public class ImageAgent
     }
 
 
+  /*****************************************************
+   *
+   * Returns a downscaled bitmap.
+   *
+   * If no scaling is required, because the scaled width is
+   * < 1, or the source bitmap is smaller than the scaled
+   * width, then the original bitmap is returned without
+   * alteration.
+   *
+   *****************************************************/
+  static public Bitmap downscaleBitmap( Bitmap sourceBitmap, int scaledWidth )
+    {
+    if ( scaledWidth < 1 || sourceBitmap.getWidth() <= scaledWidth ) return ( sourceBitmap );
+
+
+    // Calculate the height so as to maintain the aspect ratio
+
+    int scaledHeight = (int)( (float)sourceBitmap.getHeight() * (float)scaledWidth / (float)sourceBitmap.getWidth() );
+
+    return ( sourceBitmap.createScaledBitmap( sourceBitmap, scaledWidth, scaledHeight, true ) );
+    }
+
+
   ////////// Constructor(s) //////////
 
   private ImageAgent( Context context )
