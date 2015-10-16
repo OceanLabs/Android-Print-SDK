@@ -97,14 +97,41 @@ public class SingleCurrencyAmount implements Parcelable
 
   ////////// Constructor(s) //////////
 
+  /*****************************************************
+   *
+   * Constructs a new single currency amount.
+   *
+   * @param currency        The currency that the amount is in.
+   * @param amount          A BigDecimal representing the amount.
+   * @param formattedAmount A string representation of the amount.
+   *
+   * @throws IllegalArgumentException if either the currency
+   *         or the amount is null.
+   *
+   *****************************************************/
   public SingleCurrencyAmount( Currency currency, BigDecimal amount, String formattedAmount )
     {
+    if ( currency == null ) throw ( new IllegalArgumentException( "Currency must be supplied" ) );
+    if ( amount   == null ) throw ( new IllegalArgumentException( "Amount must be supplied" ) );
+
     mCurrency        = currency;
     mAmount          = amount;
     mFormattedAmount = formattedAmount;
     }
 
 
+  /*****************************************************
+   *
+   * Constructs a new single currency amount, with no formatted
+   * amount.
+   *
+   * @param currency        The currency that the amount is in.
+   * @param amount          A BigDecimal representing the amount.
+   *
+   * @throws IllegalArgumentException if either the currency
+   *         or the amount is null.
+   *
+   *****************************************************/
   public SingleCurrencyAmount( Currency currency, BigDecimal amount )
     {
     this ( currency, amount, null );
@@ -112,7 +139,7 @@ public class SingleCurrencyAmount implements Parcelable
 
 
   // Constructor used by parcelable interface
-  private SingleCurrencyAmount( Parcel parcel )
+  SingleCurrencyAmount( Parcel parcel )
     {
     mCurrency        = (Currency)parcel.readSerializable();
     mAmount          = (BigDecimal)parcel.readSerializable();
@@ -243,20 +270,34 @@ public class SingleCurrencyAmount implements Parcelable
    * would be misleading (because we would believe we were being
    * quoted in Swedish Kronor).
    *
+   * @param locale The locale for which a display amount is required.
+   *               If the locale is not supplied or suported by the device,
+   *               the display amount is always shown with a currency prefix.
+   *
    *****************************************************/
   public String getDisplayAmountForLocale( Locale locale )
     {
-    // Get the currency used by the locale
-    Currency localeCurrency = Currency.getInstance( locale );
-
-
-    // If the currency matches the current locale's currency - use the number formatter
-
-    if ( mCurrency.equals( localeCurrency ) )
+    if ( locale != null )
       {
-      NumberFormat numberFormatter = NumberFormat.getCurrencyInstance( locale );
+      // The locale may not be supported by this device.
+      try
+        {
+        // Get the currency used by the locale
+        Currency localeCurrency = Currency.getInstance( locale );
 
-      return ( numberFormatter.format( getAmountAsDouble() ) );
+        // If the currency matches the current locale's currency, use the number formatter to
+        // format the amount.
+        if ( mCurrency.equals( localeCurrency ) )
+          {
+          NumberFormat numberFormatter = NumberFormat.getCurrencyInstance( locale );
+
+          return ( numberFormatter.format( getAmountAsDouble() ) );
+          }
+        }
+      catch ( IllegalArgumentException iae )
+        {
+        // Fall through
+        }
       }
 
 
