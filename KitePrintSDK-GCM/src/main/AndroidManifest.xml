@@ -1,0 +1,32 @@
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="ly.kite.gcm"
+    android:versionCode="100"
+    android:versionName="1.0">
+
+
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
+
+
+    <application>
+
+        <service
+            android:name="ly.kite.gcm.GCMRegistrationService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.iid.InstanceID"/>
+            </intent-filter>
+        </service>
+
+        <service
+            android:name="ly.kite.gcm.GCMInstanceIDListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.iid.InstanceID"/>
+            </intent-filter>
+        </service>
+
+    </application>
+
+</manifest>

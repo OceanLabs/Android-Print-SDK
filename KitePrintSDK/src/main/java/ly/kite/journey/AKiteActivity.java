@@ -39,9 +39,6 @@ package ly.kite.journey;
 
 ///// Import(s) /////
 
-
-///// Class Declaration /////
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -61,9 +58,11 @@ import android.view.inputmethod.InputMethodManager;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
-import ly.kite.gcm.GCMRegistrationService;
 import ly.kite.catalogue.CatalogueLoader;
 import ly.kite.journey.creation.imagesource.ImageSourceFragment;
+
+
+///// Class Declaration /////
 
 /*****************************************************
  *
@@ -129,11 +128,6 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   protected void onCreate( Bundle savedInstanceState )
     {
     super.onCreate( savedInstanceState );
-
-
-    // Check that we are registered for GCM. Comment this out if your app doesn't
-    // use Google Cloud Messaging.
-    GCMRegistrationService.start( this );
 
 
     // TODO: Fix this dirty hack

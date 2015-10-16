@@ -43,7 +43,6 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -53,7 +52,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import ly.kite.KiteSDK;
-import ly.kite.R;
 import ly.kite.util.HTTPJSONRequest;
 
 
@@ -91,8 +89,7 @@ public class GCMRegistrationService extends IntentService implements HTTPJSONReq
 
   ////////// Member Variable(s) //////////
 
-  private SharedPreferences  mSharedPreferences;
-  private HTTPJSONRequest    mHTTPJSONRequest;
+  private HTTPJSONRequest  mHTTPJSONRequest;
 
 
   ////////// Static Initialiser(s) //////////

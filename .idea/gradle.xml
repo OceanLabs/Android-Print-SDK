@@ -11,6 +11,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/KitePrintSDK" />
+            <option value="$PROJECT_DIR$/KitePrintSDK-GCM" />
             <option value="$PROJECT_DIR$/SampleApp" />
           </set>
         </option>

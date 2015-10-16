@@ -1,1 +1,2 @@
+include ':KitePrintSDK-GCM'
 include 'KitePrintSDK', 'SampleApp'
