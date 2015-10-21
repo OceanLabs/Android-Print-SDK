@@ -60,8 +60,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ly.kite.KiteSDK;
+import ly.kite.journey.AImageSource;
 import ly.kite.journey.creation.AProductCreationFragment;
-import ly.kite.journey.ImageSource;
 import ly.kite.journey.ImageSourceAdaptor;
 import ly.kite.catalogue.Asset;
 import ly.kite.journey.AssetsAndQuantity;
@@ -194,7 +194,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
     // Set up the image sources
 
-    ArrayList<ImageSource> imageSourceList = KiteSDK.getInstance( mKiteActivity ).getAvailableImageSources();
+    ArrayList<AImageSource> imageSourceList = KiteSDK.getInstance( mKiteActivity ).getAvailableImageSources();
 
     mImageSourceAdaptor = new ImageSourceAdaptor( mKiteActivity, R.layout.grid_item_image_source_horizontal, imageSourceList );
     mImageSourceGridView.setNumColumns( mImageSourceAdaptor.getCount() );
@@ -329,7 +329,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
     // Get assets for any images returned and add them
 
-    List<Asset> assetList = ImageSource.getAssetsFromResult( requestCode, resultCode, returnedIntent );
+    List<Asset> assetList = KiteSDK.getInstance( mKiteActivity ).getAssetsFromPickerResult( requestCode, resultCode, returnedIntent );
 
     if ( assetList != null )
       {
@@ -445,7 +445,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
       {
       ///// Image Source /////
 
-      ImageSource imageSource = (ImageSource)mImageSourceGridView.getItemAtPosition( position );
+      AImageSource imageSource = (AImageSource)mImageSourceGridView.getItemAtPosition( position );
 
       imageSource.onPick( this, false );
       }

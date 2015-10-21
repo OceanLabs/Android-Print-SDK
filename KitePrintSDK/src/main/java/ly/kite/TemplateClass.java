@@ -52,7 +52,7 @@ public class TemplateClass
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "TemplateClass";
+  static private final String  LOG_TAG = "TemplateClass";
 
 
   ////////// Static Variable(s) //////////

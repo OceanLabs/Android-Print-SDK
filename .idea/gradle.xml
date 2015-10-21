@@ -13,6 +13,8 @@
             <option value="$PROJECT_DIR$/KitePrintSDK" />
             <option value="$PROJECT_DIR$/KitePrintSDK-GCM" />
             <option value="$PROJECT_DIR$/SampleApp" />
+            <option value="$PROJECT_DIR$/../FacebookPhotoPicker-Android/FacebookPhotoPicker-Android" />
+            <option value="$PROJECT_DIR$/../InstagramPhotoPicker-Android/instagramphotopicker" />
           </set>
         </option>
       </GradleProjectSettings>

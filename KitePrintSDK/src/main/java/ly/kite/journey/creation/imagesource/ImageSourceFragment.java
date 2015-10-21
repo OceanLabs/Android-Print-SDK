@@ -52,8 +52,8 @@ import java.util.List;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
+import ly.kite.journey.AImageSource;
 import ly.kite.journey.AssetsAndQuantity;
-import ly.kite.journey.ImageSource;
 import ly.kite.journey.ImageSourceAdaptor;
 import ly.kite.journey.creation.AProductCreationFragment;
 import ly.kite.catalogue.Asset;
@@ -126,7 +126,7 @@ public class ImageSourceFragment extends AProductCreationFragment implements Ada
 
 
     // Get the available image sources
-    ArrayList<ImageSource> imageSourceList = KiteSDK.getInstance( mKiteActivity ).getAvailableImageSources();
+    ArrayList<AImageSource> imageSourceList = KiteSDK.getInstance( mKiteActivity ).getAvailableImageSources();
 
 
     // Set up the image source grid
@@ -155,7 +155,7 @@ public class ImageSourceFragment extends AProductCreationFragment implements Ada
 
     // Get assets for any images returned
 
-    List<Asset> newAssetList = ImageSource.getAssetsFromResult( requestCode, resultCode, returnedIntent );
+    List<Asset> newAssetList = KiteSDK.getInstance( mKiteActivity ).getAssetsFromPickerResult( requestCode, resultCode, returnedIntent );
 
     if ( newAssetList != null && newAssetList.size() > 0 )
       {
@@ -204,7 +204,7 @@ public class ImageSourceFragment extends AProductCreationFragment implements Ada
     {
     if ( parent == mImageSourceGridView )
       {
-      ImageSource imageSource = (ImageSource)mImageSourceGridView.getItemAtPosition( position );
+      AImageSource imageSource = (AImageSource)mImageSourceGridView.getItemAtPosition( position );
 
       imageSource.onPick( this, mProduct.getUserJourneyType().usesSingleImage() );
       }

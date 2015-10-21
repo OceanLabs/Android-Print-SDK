@@ -67,9 +67,6 @@
     <string name="alert_dialog_message_no_line1">Please fill in Line 1 of the address</string>
     <string name="alert_dialog_message_no_postal_code">Please fill in your Postcode / ZIP code</string>
 
-    <string name="select_photo_from_device">Choose camera photo</string>
-    <string name="select_photo_from_instagram">Choose Instagram photo</string>
-
     <string name="Cancel">Cancel</string>
     <string name="Description">Description</string>
     <string name="Details">Details</string>
@@ -91,6 +88,10 @@
     <string name="image_source_device">CAMERA</string>
     <string name="image_source_instagram">INSTAGRAM</string>
     <string name="image_source_facebook">FACEBOOK</string>
+
+    <string name="select_photo_from_device">Choose camera photo</string>
+    <string name="select_photo_from_instagram">Choose Instagram photo</string>
+    <string name="select_photo_from_facebook">Choose Facebook photo</string>
 
     <string name="destination_description_gbr">UK</string>
     <string name="destination_description_europe">Europe</string>
@@ -179,7 +180,5 @@
     <string name="country_search_hint">Search Addresses</string>
     <string name="title_activity_template_sync">TemplateSyncActivity</string>
     <string name="analytics_event_callback_class_name">ly.kite.analytics.NullAnalyticsEventCallback</string>
-
-    <string name="gcm_sender_id"></string>
 
 </resources>

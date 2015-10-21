@@ -65,8 +65,8 @@ abstract public class ACache<K,V,C extends ACache.IConsumer>
 
   ////////// Member Variable(s) //////////
 
-  private HashMap<K,V>             mCacheTable;
-  private HashMap<K,ArrayList<C>>  mConsumerTable;
+  private HashMap<K,V>             mCacheMap;
+  private HashMap<K,ArrayList<C>>  mConsumerMap;
 
 
   ////////// Static Initialiser(s) //////////
@@ -79,8 +79,8 @@ abstract public class ACache<K,V,C extends ACache.IConsumer>
 
   protected ACache()
     {
-    mCacheTable    = new HashMap<>();
-    mConsumerTable = new HashMap<>();
+    mCacheMap    = new HashMap<>();
+    mConsumerMap = new HashMap<>();
     }
 
 
@@ -94,24 +94,24 @@ abstract public class ACache<K,V,C extends ACache.IConsumer>
    *****************************************************/
   protected V getCachedValue( K key )
     {
-    return ( mCacheTable.get( key ) );
+    return ( mCacheMap.get( key ) );
     }
 
 
   /*****************************************************
    *
-   * Stores a consumer.
+   * Registers a consumer's interest in the value for a key.
    *
    * @return true, if there is already a request running
    *         for the same key, false otherwise.
    *
    *****************************************************/
-  protected boolean requestAlreadyStarted( K key, C consumer )
+  protected boolean registerForValue( K key, C consumer )
     {
     // If we don't already have an entry for the key - create a new list
     // containing just this one callback.
 
-    ArrayList<C> callbackList = mConsumerTable.get( key );
+    ArrayList<C> callbackList = mConsumerMap.get( key );
 
     if ( callbackList == null )
       {
@@ -119,7 +119,7 @@ abstract public class ACache<K,V,C extends ACache.IConsumer>
 
       callbackList.add( consumer );
 
-      mConsumerTable.put( key, callbackList );
+      mConsumerMap.put( key, callbackList );
 
       return ( false );
       }
@@ -136,19 +136,19 @@ abstract public class ACache<K,V,C extends ACache.IConsumer>
 
   /*****************************************************
    *
-   * Stores a value in the cache, and distributes it to
-   * any callbacks.
+   * Stores the value in the cache, and distributes it to
+   * any consumers.
    *
    *****************************************************/
   protected void onValueAvailable( K key, V value )
     {
     // Cache the value
-    mCacheTable.put( key, value );
+    mCacheMap.put( key, value );
 
 
-    // Remove the consumer list, and supply the value to them.
+    // Remove the list of consumers, and supply the value to each one in turn.
 
-    ArrayList<C> consumerList = mConsumerTable.remove( key );
+    ArrayList<C> consumerList = mConsumerMap.remove( key );
 
     if ( consumerList != null )
       {
@@ -162,8 +162,8 @@ abstract public class ACache<K,V,C extends ACache.IConsumer>
 
   /*****************************************************
    *
-   * Distributes a value to a consumer. The consumer will
-   * never be null.
+   * Called to distribute a value to a consumer in whatever
+   * way is appropriate. The consumer will never be null.
    *
    *****************************************************/
   abstract protected void onValueAvailable( V value, C consumer );
@@ -171,14 +171,14 @@ abstract public class ACache<K,V,C extends ACache.IConsumer>
 
   /*****************************************************
    *
-   * Distributes an error to  any consumers.
+   * Distributes an error to any consumers.
    *
    *****************************************************/
   protected void onError( K key, Exception exception )
     {
     // Remove the consumer list, and supply the error to them.
 
-    ArrayList<C> consumerList = mConsumerTable.remove( key );
+    ArrayList<C> consumerList = mConsumerMap.remove( key );
 
     if ( consumerList != null )
       {

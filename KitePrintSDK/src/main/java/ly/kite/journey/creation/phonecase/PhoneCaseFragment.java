@@ -54,10 +54,10 @@ import java.util.List;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
+import ly.kite.journey.AImageSource;
 import ly.kite.journey.creation.AEditImageFragment;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.journey.AssetsAndQuantity;
-import ly.kite.journey.ImageSource;
 import ly.kite.catalogue.Asset;
 import ly.kite.catalogue.AssetHelper;
 import ly.kite.catalogue.Bleed;
@@ -164,7 +164,7 @@ public class PhoneCaseFragment extends AEditImageFragment
 
       if ( addPhotoSubMenu != null )
         {
-        for ( ImageSource imageSource : KiteSDK.getInstance( mKiteActivity ).getAvailableImageSources() )
+        for ( AImageSource imageSource : KiteSDK.getInstance( mKiteActivity ).getAvailableImageSources() )
           {
           imageSource.addMenuItem( addPhotoSubMenu );
           }
@@ -247,25 +247,16 @@ public class PhoneCaseFragment extends AEditImageFragment
   @Override
   public boolean onOptionsItemSelected( MenuItem item )
     {
-    // See what menu item was selected
-
     int itemId = item.getItemId();
 
-    if ( itemId == ImageSource.DEVICE.menuItemId() )
+
+    // If one of the image source menu items was selected - launch the appropriate picker
+
+    AImageSource imageSource = KiteSDK.getInstance( mKiteActivity ).getImageSourceByMenuItemId( itemId );
+
+    if ( imageSource != null )
       {
-      ///// Local device photo /////
-
-      // Pick a single image from the local device
-      ImageSource.DEVICE.onPick( this, true );
-
-      return ( true );
-      }
-    else if ( itemId == ImageSource.INSTAGRAM.menuItemId() )
-      {
-      ///// Instagram photo /////
-
-      // Pick a single image from instagram
-      ImageSource.INSTAGRAM.onPick( this, true );
+      imageSource.onPick( this, true );
 
       return ( true );
       }
@@ -288,7 +279,7 @@ public class PhoneCaseFragment extends AEditImageFragment
 
     // Get assets for any images returned
 
-    List<Asset> assetList = ImageSource.getAssetsFromResult( requestCode, resultCode, returnedIntent );
+    List<Asset> assetList = KiteSDK.getInstance( mKiteActivity ).getAssetsFromPickerResult( requestCode, resultCode, returnedIntent );
 
     if ( assetList != null && assetList.size() > 0 )
       {

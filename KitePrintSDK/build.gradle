@@ -34,9 +34,9 @@ android {
 
 dependencies {
     compile files('libs/PayPalAndroidSDK-2.9.10.jar')
-    compile 'com.android.support:support-v4:22.2.1'
-    compile 'com.android.support:appcompat-v7:22.2.1'
-    compile 'com.android.support:recyclerview-v7:22.2.1'
+    compile 'com.android.support:support-v4:22.1.0'
+    compile 'com.android.support:appcompat-v7:22.1.0'
+    compile 'com.android.support:recyclerview-v7:22.1.0'
     compile 'com.google.android.gms:play-services-gcm:8.1.0'
     compile 'ly.kite:instagram-photo-picker:1.1.0'
     compile 'ly.kite:photo-picker:1.1.3'

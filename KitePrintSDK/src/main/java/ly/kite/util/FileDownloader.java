@@ -70,11 +70,11 @@ public class FileDownloader
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG              = "FileDownloader";
+  private static final String  LOG_TAG                  = "FileDownloader";
 
-  private static final int     BUFFER_SIZE_IN_BYTES = 8192;  // 8 KB
+  private static final int     BUFFER_SIZE_IN_BYTES     = 8192;  // 8 KB
 
-  private static final int MAX_CONCURRENT_DOWNLOADS = 5;
+  private static final int     MAX_CONCURRENT_DOWNLOADS = 5;
 
 
   ////////// Static Variable(s) //////////
@@ -200,8 +200,8 @@ public class FileDownloader
 
   private FileDownloader( Context context )
     {
-    mContext      = context;
-    mThreadPoolExecutor = Executors.newFixedThreadPool( MAX_CONCURRENT_DOWNLOADS );
+    mContext                 = context;
+    mThreadPoolExecutor      = Executors.newFixedThreadPool( MAX_CONCURRENT_DOWNLOADS );
     mInProgressDownloadTasks = new HashMap<>();
     }
 
@@ -217,13 +217,12 @@ public class FileDownloader
    *****************************************************/
   public void clearPendingRequests()
     {
-
     for ( DownloaderTask task : mInProgressDownloadTasks.values() )
       {
       task.cancel( true );
       }
-    mInProgressDownloadTasks.clear();
 
+    mInProgressDownloadTasks.clear();
     }
 
 
@@ -236,19 +235,19 @@ public class FileDownloader
    *****************************************************/
   public void requestFileDownload( URL sourceURL, File targetDirectory, File targetFile, ICallback callback )
     {
-        if ( mInProgressDownloadTasks.get( sourceURL ) == null )
-          {
-          // no in progress task downloading this file, lets kick one off
-          DownloaderTask task = new DownloaderTask( sourceURL, targetDirectory, targetFile, callback );
-          mInProgressDownloadTasks.put( sourceURL, task );
-          task.executeOnExecutor( mThreadPoolExecutor );
-          }
-        else
-          {
-          // A download is already in progress for this file so just add to the list of callbacks that
-          // will be notified upon completion
-          mInProgressDownloadTasks.get( sourceURL ).addCallback( callback );
-          }
+    if ( mInProgressDownloadTasks.get( sourceURL ) == null )
+      {
+      // no in progress task downloading this file, lets kick one off
+      DownloaderTask task = new DownloaderTask( sourceURL, targetDirectory, targetFile, callback );
+      mInProgressDownloadTasks.put( sourceURL, task );
+      task.executeOnExecutor( mThreadPoolExecutor );
+      }
+    else
+      {
+      // A download is already in progress for this file so just add to the list of callbacks that
+      // will be notified upon completion
+      mInProgressDownloadTasks.get( sourceURL ).addCallback( callback );
+      }
     }
 
 

@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * BooleanHelper.java
+ * FacebookImageSource.java
  *
  *
  * Modified MIT License
@@ -34,29 +34,40 @@
 
 ///// Package Declaration /////
 
-package ly.kite.util;
+package ly.kite.sample;
 
 
 ///// Import(s) /////
 
+import android.app.Fragment;
+import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
+
+import java.util.List;
+
+import ly.kite.KiteSDK;
+import ly.kite.R;
+import ly.kite.catalogue.Asset;
+import ly.kite.facebookphotopicker.FacebookPhotoPicker;
+import ly.kite.instagramphotopicker.InstagramPhotoPicker;
+import ly.kite.journey.AImageSource;
+import ly.kite.photopicker.PhotoPicker;
+
 
 ///// Class Declaration /////
 
-import java.util.ArrayList;
-import java.util.List;
-
 /*****************************************************
  *
- * This class provides helper methods for use with
- * booleans.
+ * This class represents a local device image source.
  *
  *****************************************************/
-public class BooleanHelper
+public class FacebookImageSource extends AImageSource
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "BooleanHelper";
+  static private final String  LOG_TAG = "FacebookImageSource";
 
 
   ////////// Static Variable(s) //////////
@@ -70,63 +81,55 @@ public class BooleanHelper
 
   ////////// Static Method(s) //////////
 
-  /*****************************************************
-   *
-   * Converts a list of Boolean objects into an array of
-   * native booleans. Any null objects will be converted
-   * to false.
-   *
-   *****************************************************/
-  static public boolean[] arrayFrom( List<Boolean> booleanList )
-    {
-    if ( booleanList == null ) return ( null );
-
-    boolean[] booleanArray = new boolean[ booleanList.size() ];
-
-    int index = 0;
-
-    for ( Boolean booleanObject : booleanList )
-      {
-      booleanArray[ index ] = ( booleanObject != null ? booleanObject : false );  // Unboxing
-
-      index ++;
-      }
-
-    return ( booleanArray );
-    }
-
-
-  /*****************************************************
-   *
-   * Converts an array of native boooeans to a list of
-   * Boolean objects.
-   *
-   *****************************************************/
-  static public ArrayList<Boolean> arrayListFrom( boolean[] booleanArray )
-    {
-    if ( booleanArray == null ) return ( null );
-
-    ArrayList<Boolean> booleanList = new ArrayList<>( booleanArray.length );
-
-    for ( boolean booleanValue : booleanArray )
-      {
-      booleanList.add( booleanValue );  // Boxing
-      }
-
-    return ( booleanList );
-    }
-
 
   ////////// Constructor(s) //////////
 
+  public FacebookImageSource()
+    {
+    super( R.color.image_source_background_facebook,
+            R.drawable.ic_add_facebook_white,
+            R.string.image_source_facebook,
+            R.id.add_photo_from_facebook,
+            R.string.select_photo_from_facebook );
+    }
 
-  ////////// Method(s) //////////
+
+  ////////// AImageSource Method(s) //////////
 
   /*****************************************************
    *
-   * ...
+   * Returns true if the Instagram image source is available.
+   * This will be the case if we have credentials.
    *
    *****************************************************/
+  public boolean isAvailable( Context context )
+    {
+    return ( KiteSDK.getInstance( context ).haveInstagramCredentials() );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the image source is picked to select
+   * images.
+   *
+   *****************************************************/
+  public void onPick( Fragment fragment, boolean preferSingleImage )
+    {
+    FacebookPhotoPicker.startPhotoPickerForResult( fragment, getActivityRequestCode() );
+    }
+
+
+  /*****************************************************
+   *
+   * Adds any picked images to the supplied list.
+   *
+   *****************************************************/
+  @Override
+  public void getAssetsFromPickerResult( Intent data, List<Asset> assetList )
+    {
+    // TODO
+    }
 
 
   ////////// Inner Class(es) //////////

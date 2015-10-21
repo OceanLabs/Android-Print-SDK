@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * BooleanHelper.java
+ * InstagramImageSource.java
  *
  *
  * Modified MIT License
@@ -34,29 +34,37 @@
 
 ///// Package Declaration /////
 
-package ly.kite.util;
+package ly.kite.journey;
 
 
 ///// Import(s) /////
 
+import android.app.Fragment;
+import android.content.Context;
+import android.content.Intent;
+
+import java.util.List;
+
+import ly.kite.R;
+import ly.kite.KiteSDK;
+import ly.kite.catalogue.Asset;
+import ly.kite.instagramphotopicker.InstagramPhoto;
+import ly.kite.instagramphotopicker.InstagramPhotoPicker;
+
 
 ///// Class Declaration /////
 
-import java.util.ArrayList;
-import java.util.List;
-
 /*****************************************************
  *
- * This class provides helper methods for use with
- * booleans.
+ * This class represents a local device image source.
  *
  *****************************************************/
-public class BooleanHelper
+public class InstagramImageSource extends AImageSource
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "BooleanHelper";
+  static private final String  LOG_TAG = "InstagramImageSource";
 
 
   ////////// Static Variable(s) //////////
@@ -70,63 +78,70 @@ public class BooleanHelper
 
   ////////// Static Method(s) //////////
 
-  /*****************************************************
-   *
-   * Converts a list of Boolean objects into an array of
-   * native booleans. Any null objects will be converted
-   * to false.
-   *
-   *****************************************************/
-  static public boolean[] arrayFrom( List<Boolean> booleanList )
-    {
-    if ( booleanList == null ) return ( null );
-
-    boolean[] booleanArray = new boolean[ booleanList.size() ];
-
-    int index = 0;
-
-    for ( Boolean booleanObject : booleanList )
-      {
-      booleanArray[ index ] = ( booleanObject != null ? booleanObject : false );  // Unboxing
-
-      index ++;
-      }
-
-    return ( booleanArray );
-    }
-
-
-  /*****************************************************
-   *
-   * Converts an array of native boooeans to a list of
-   * Boolean objects.
-   *
-   *****************************************************/
-  static public ArrayList<Boolean> arrayListFrom( boolean[] booleanArray )
-    {
-    if ( booleanArray == null ) return ( null );
-
-    ArrayList<Boolean> booleanList = new ArrayList<>( booleanArray.length );
-
-    for ( boolean booleanValue : booleanArray )
-      {
-      booleanList.add( booleanValue );  // Boxing
-      }
-
-    return ( booleanList );
-    }
-
 
   ////////// Constructor(s) //////////
 
+  public InstagramImageSource()
+    {
+    super( R.color.image_source_background_instagram,
+           R.drawable.ic_add_instagram_white,
+           R.string.image_source_instagram,
+           R.id.add_photo_from_instagram,
+           R.string.select_photo_from_instagram );
+    }
 
-  ////////// Method(s) //////////
+
+  ////////// AImageSource Method(s) //////////
 
   /*****************************************************
    *
-   * ...
+   * Returns true if the Instagram image source is available.
+   * This will be the case if we have credentials.
    *
    *****************************************************/
+  public boolean isAvailable( Context context )
+    {
+    return ( KiteSDK.getInstance( context ).haveInstagramCredentials() );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the image source is picked to select
+   * images.
+   *
+   *****************************************************/
+  public void onPick( Fragment fragment, boolean preferSingleImage )
+    {
+    // Clicking on the Instagram image source starts our Instagram image picker library
+
+    KiteSDK kiteSDK = KiteSDK.getInstance( fragment.getActivity() );
+
+    String instagramClientId    = kiteSDK.getInstagramClientId();
+    String instagramRedirectURI = kiteSDK.getInstagramRedirectURI();
+
+    InstagramPhotoPicker.startPhotoPickerForResult( fragment, instagramClientId, instagramRedirectURI, getActivityRequestCode() );
+    }
+
+
+  /*****************************************************
+   *
+   * Adds any picked images to the supplied list.
+   *
+   *****************************************************/
+  @Override
+  public void getAssetsFromPickerResult( Intent data, List<Asset> assetList )
+    {
+    InstagramPhoto instagramPhotos[] = InstagramPhotoPicker.getResultPhotos( data );
+
+    if ( instagramPhotos != null )
+      {
+      for ( InstagramPhoto instagramPhoto : instagramPhotos )
+        {
+        assetList.add( new Asset( instagramPhoto.getFullURL() ) );
+        }
+      }
+    }
 
 
   ////////// Inner Class(es) //////////

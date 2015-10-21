@@ -43,7 +43,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -54,7 +56,9 @@ import com.paypal.android.sdk.payments.PayPalConfiguration;
 
 import ly.kite.checkout.PaymentActivity;
 import ly.kite.catalogue.Asset;
-import ly.kite.journey.ImageSource;
+import ly.kite.journey.AImageSource;
+import ly.kite.journey.DeviceImageSource;
+import ly.kite.journey.InstagramImageSource;
 import ly.kite.journey.selection.ProductSelectionActivity;
 import ly.kite.catalogue.AssetHelper;
 import ly.kite.util.ImageAgent;
@@ -73,43 +77,45 @@ public class KiteSDK
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "KiteSDK";
+  static private final String  LOG_TAG = "KiteSDK";
 
-  public  static final String SDK_VERSION                               = "3.0.0";
+  static public  final String SDK_VERSION                               = "3.0.0";
 
-  private static final String SHARED_PREFERENCES_NAME                   = "kite_shared_prefs";
-  private static final String SHARED_PREFERENCES_KEY_API_KEY            = "api_key";
-  private static final String SHARED_PREFERENCES_KEY_UNIQUE_USER_ID     = "unique_user_id";
+  static private final String SHARED_PREFERENCES_NAME                   = "kite_shared_prefs";
+  static private final String SHARED_PREFERENCES_KEY_API_KEY            = "api_key";
+  static private final String SHARED_PREFERENCES_KEY_UNIQUE_USER_ID     = "unique_user_id";
 
-  private static final String KEY_ENVIRONMENT_NAME                      = "environment_name";
-  private static final String KEY_API_ENDPOINT                          = "api_endpoint";
-  private static final String KEY_PAYMENT_ACTIVITY_ENVIRONMENT          = "payment_activity_environment";
-  private static final String KEY_PAYPAL_ENVIRONMENT                    = "paypal_environment";
-  private static final String KEY_PAYPAL_API_ENDPOINT                   = "paypal_api_endpoint";
-  private static final String KEY_PAYPAL_CLIENT_ID                      = "paypay_client_id";
-  private static final String KEY_PAYPAL_PASSWORD                       = "paypal_password";
+  static private final String KEY_ENVIRONMENT_NAME                      = "environment_name";
+  static private final String KEY_API_ENDPOINT                          = "api_endpoint";
+  static private final String KEY_PAYMENT_ACTIVITY_ENVIRONMENT          = "payment_activity_environment";
+  static private final String KEY_PAYPAL_ENVIRONMENT                    = "paypal_environment";
+  static private final String KEY_PAYPAL_API_ENDPOINT                   = "paypal_api_endpoint";
+  static private final String KEY_PAYPAL_CLIENT_ID                      = "paypay_client_id";
+  static private final String KEY_PAYPAL_PASSWORD                       = "paypal_password";
 
-  private static final String SHARED_PREFERENCES_INSTAGRAM_CLIENT_ID    = "instagram_client_id";
-  private static final String SHARED_PREFERENCES_INSTAGRAM_REDIRECT_URI = "instagram_redirect_uri";
+  static private final String SHARED_PREFERENCES_INSTAGRAM_CLIENT_ID    = "instagram_client_id";
+  static private final String SHARED_PREFERENCES_INSTAGRAM_REDIRECT_URI = "instagram_redirect_uri";
 
-  private static final String SHARED_PREFERENCES_REQUEST_PHONE_NUMBER   = "request_phone_number";
+  static private final String SHARED_PREFERENCES_REQUEST_PHONE_NUMBER   = "request_phone_number";
 
-  public  static final String PAYPAL_LIVE_API_ENDPOINT                  = "api.paypal.com";
-  public  static final String PAYPAL_LIVE_CLIENT_ID                     = "ASYVBBCHF_KwVUstugKy4qvpQaPlUeE_5beKRJHpIP2d3SA_jZrsaUDTmLQY";
-  public  static final String PAYPAL_LIVE_PASSWORD                      = "";
+  static public  final String PAYPAL_LIVE_API_ENDPOINT                  = "api.paypal.com";
+  static public  final String PAYPAL_LIVE_CLIENT_ID                     = "ASYVBBCHF_KwVUstugKy4qvpQaPlUeE_5beKRJHpIP2d3SA_jZrsaUDTmLQY";
+  static public  final String PAYPAL_LIVE_PASSWORD                      = "";
   //public  static final String PAYPAL_RECIPIENT_LIVE                     = "hello@kite.ly";
 
-  public  static final String PAYPAL_SANDBOX_API_ENDPOINT               = "api.sandbox.paypal.com";
-  public  static final String PAYPAL_SANDBOX_CLIENT_ID                  = "AcEcBRDxqcCKiikjm05FyD4Sfi4pkNP98AYN67sr3_yZdBe23xEk0qhdhZLM";
-  public  static final String PAYPAL_SANDBOX_PASSWORD                   = "";
+  static public  final String PAYPAL_SANDBOX_API_ENDPOINT               = "api.sandbox.paypal.com";
+  static public  final String PAYPAL_SANDBOX_CLIENT_ID                  = "AcEcBRDxqcCKiikjm05FyD4Sfi4pkNP98AYN67sr3_yZdBe23xEk0qhdhZLM";
+  static public  final String PAYPAL_SANDBOX_PASSWORD                   = "";
   //public  static final String PAYPAL_RECIPIENT_SANDBOX                  = "sandbox-merchant@kite.ly";
 
 
-  public  static final String INTENT_PREFIX                             = "ly.kite";
+  static public final String INTENT_PREFIX                             = "ly.kite";
 
-  public  static final long   MAX_ACCEPTED_PRODUCT_AGE_MILLIS           = 1000 * 60 * 60;  // 1 hour
+  static public final long   MAX_ACCEPTED_PRODUCT_AGE_MILLIS           = 1000 * 60 * 60;  // 1 hour
 
-  public  static final float  FLOAT_ZERO_THRESHOLD                      = 0.0001f;
+  static public final float  FLOAT_ZERO_THRESHOLD                      = 0.0001f;
+
+  static public final int ACTIVITY_REQUEST_CODE_FIRST = 10;
 
 
 
@@ -120,10 +126,12 @@ public class KiteSDK
 
   ////////// Member Variable(s) //////////
 
-  private Context      mApplicationContext;
-  private String       mAPIKey;
-  private Environment  mEnvironment;
-  private String       mUniqueUserId;
+  private Context         mApplicationContext;
+  private String          mAPIKey;
+  private Environment     mEnvironment;
+  private String          mUniqueUserId;
+
+  private AImageSource[]  mImageSources;
 
 
   ////////// Static Initialiser(s) //////////
@@ -159,6 +167,8 @@ public class KiteSDK
       try
         {
         Environment environment = new Environment( sharedPreferences );
+
+        // TODO: Load image sources
 
         sKiteSDK = new KiteSDK( context, apiKey, environment );
         }
@@ -250,6 +260,9 @@ public class KiteSDK
 
     clearInstagramCredentials();
 
+    // Set default image sources
+    setImageSources( new DeviceImageSource(), new InstagramImageSource() );
+
     // Clear any temporary assets
     AssetHelper.clearCachedImages( context );
     }
@@ -295,7 +308,7 @@ public class KiteSDK
     SharedPreferences.Editor editor = mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE ).edit();
 
     editor
-      .putString( SHARED_PREFERENCES_INSTAGRAM_CLIENT_ID,       clientId )
+      .putString( SHARED_PREFERENCES_INSTAGRAM_CLIENT_ID, clientId )
       .putString( SHARED_PREFERENCES_INSTAGRAM_REDIRECT_URI, redirectUri );
 
     if ( ! editor.commit() )
@@ -460,6 +473,37 @@ public class KiteSDK
 
   /*****************************************************
    *
+   * Sets image sources.
+   *
+   *****************************************************/
+  public KiteSDK setImageSources( AImageSource... imageSources )
+    {
+    mImageSources = imageSources;
+
+
+    // Set the activity request codes for the image sources
+
+    if ( imageSources != null )
+      {
+      int requestCode = ACTIVITY_REQUEST_CODE_FIRST;
+
+      for ( AImageSource imageSource : imageSources )
+        {
+        imageSource.setActivityRequestCode( requestCode );
+
+        requestCode ++;
+        }
+      }
+
+    // TODO: Save image sources
+
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
    * Returns an instance of the image loader.
    *
    *****************************************************/
@@ -518,16 +562,73 @@ public class KiteSDK
    * Returns a list of available image sources.
    *
    *****************************************************/
-  public ArrayList<ImageSource> getAvailableImageSources()
+  public ArrayList<AImageSource> getAvailableImageSources()
     {
-    ArrayList<ImageSource> imageSourceList = new ArrayList<>();
+    ArrayList<AImageSource> imageSourceList = new ArrayList<>();
 
-    for ( ImageSource imageSource : ImageSource.values() )
+    if ( mImageSources != null )
       {
-      if ( imageSource.isAvailable( mApplicationContext ) ) imageSourceList.add( imageSource );
+      for ( AImageSource imageSource : mImageSources )
+        {
+        if ( imageSource.isAvailable( mApplicationContext ) ) imageSourceList.add( imageSource );
+        }
       }
 
     return ( imageSourceList );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the image source that has the supplied menu
+   * item id.
+   *
+   *****************************************************/
+  public AImageSource getImageSourceByMenuItemId( int itemId )
+    {
+    if ( mImageSources != null )
+      {
+      for ( AImageSource candidateImageSource : mImageSources )
+        {
+        if ( candidateImageSource.getMenuItemId() == itemId ) return ( candidateImageSource );
+        }
+      }
+
+    return ( null );
+    }
+
+
+  /*****************************************************
+   *
+   * Interprets an activity result, and returns any assets.
+   *
+   *****************************************************/
+  public List<Asset> getAssetsFromPickerResult( int requestCode, int resultCode, Intent data )
+    {
+    if ( resultCode == Activity.RESULT_OK )
+      {
+      ArrayList<Asset> assetList = new ArrayList<>();
+
+
+      // Go through the image sources, and find the one with the matching request code
+
+      if ( mImageSources != null )
+        {
+        for ( AImageSource imageSource : mImageSources )
+          {
+          if ( imageSource.getActivityRequestCode() == requestCode )
+            {
+            imageSource.getAssetsFromPickerResult( data, assetList );
+            }
+          }
+        }
+
+
+      return ( assetList );
+      }
+
+
+    return ( null );
     }
 
 

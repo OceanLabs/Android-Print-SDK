@@ -156,7 +156,7 @@ public class PricingAgent extends ACache<String,OrderPricing,IPricingConsumer>
     // add this consumer to the list of consumers waiting for the result. Otherwise start
     // a new request.
 
-    if ( ! requestAlreadyStarted( requestURLString, consumer ) )
+    if ( ! registerForValue( requestURLString, consumer ) )
       {
       HTTPJSONRequest request = new HTTPJSONRequest( context, HTTPJSONRequest.HttpMethod.GET, requestURLString, null, null );
 
