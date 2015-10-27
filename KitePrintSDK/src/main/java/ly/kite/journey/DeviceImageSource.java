@@ -148,33 +148,39 @@ public class DeviceImageSource extends AImageSource
   @Override
   public void getAssetsFromPickerResult( Intent data, List<Asset> assetList )
     {
-    // Check for single device image
-
     if ( data != null )
       {
+      // Check for single device image
+
       Uri imageURI = data.getData();
 
       if ( imageURI != null )
         {
         assetList.add( new Asset( imageURI ) );
+
+        return;
         }
 
-      return;
-      }
 
+      // Check for multiple device images
 
-    // Check for multiple device images
-
-    Photo[] devicePhotos = PhotoPicker.getResultPhotos( data );
-
-    if ( devicePhotos != null )
-      {
-      for ( Photo devicePhoto : devicePhotos )
+      try
         {
-        assetList.add( new Asset( devicePhoto.getUri() ) );
+        Photo[] devicePhotos = PhotoPicker.getResultPhotos( data );
+
+        if ( devicePhotos != null )
+          {
+          for ( Photo devicePhoto : devicePhotos )
+            {
+            assetList.add( new Asset( devicePhoto.getUri() ) );
+            }
+          }
+        }
+      catch ( NullPointerException npe )
+        {
+        // Ignore
         }
       }
-
     }
 
 
