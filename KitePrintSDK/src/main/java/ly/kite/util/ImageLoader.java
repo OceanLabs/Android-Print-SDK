@@ -68,9 +68,11 @@ public class ImageLoader
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG           = "ImageLoader";
+  static private final String  LOG_TAG           = "ImageLoader";
 
-  private static final int     MAX_BITMAP_PIXELS = 6000000;  // 6MP = 3000 x 2000
+  static private final boolean DEBUGGING_ENABLED = true;
+
+  static private final int     MAX_BITMAP_PIXELS = 6000000;  // 6MP = 3000 x 2000
 
 
   ////////// Static Variable(s) //////////
@@ -176,10 +178,17 @@ public class ImageLoader
    *****************************************************/
   static public int getRotationForImage( Context context, Uri uri )
     {
+    if ( DEBUGGING_ENABLED )
+      {
+      Log.d( LOG_TAG, "getRotationForImage( context, uri = " + ( uri != null ? uri.toString() : "null" ) + " )" );
+      }
+
     Cursor cursor = null;
 
     try
       {
+      if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "  URI scheme = " + uri.getScheme() );
+
       if ( uri.getScheme().equals( "content" ) )
         {
         ///// Content /////
@@ -190,16 +199,24 @@ public class ImageLoader
 
         if ( cursor.moveToFirst() )
           {
-          return ( cursor.getInt( 0 ) );
+          int rotation = cursor.getInt( 0 );
+
+          if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "  Rotation = " + rotation );
+
+          return ( rotation );
           }
         }
       else if ( uri.getScheme().equals( "file" ) )
         {
         ///// File /////
 
+        if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "  URI path = " + uri.getPath() );
+
         ExifInterface exif = new ExifInterface( uri.getPath() );
 
         int rotation = degreesFromEXIFOrientation( exif.getAttributeInt( ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL ) );
+
+        if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "  Rotation = " + rotation );
 
         return ( rotation );
         }
@@ -224,6 +241,8 @@ public class ImageLoader
    *****************************************************/
   static private int degreesFromEXIFOrientation( int exifOrientation )
     {
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "degreesFromEXIFOrientation( exifOrientation = " + exifOrientation + " )" );
+
     if ( exifOrientation == ExifInterface.ORIENTATION_ROTATE_90 )
       {
       return ( 90 );
@@ -430,6 +449,12 @@ public class ImageLoader
 
     Bitmap loadBitmap( BitmapFactory.Options bitmapFactoryOptions ) throws Exception
       {
+      if ( DEBUGGING_ENABLED )
+        {
+        Log.d( LOG_TAG, "loadBitmap( bitmapFactoryOptions )" );
+        Log.d( LOG_TAG, "  Sample size = " + bitmapFactoryOptions.inSampleSize );
+        }
+
       Bitmap bitmap;
 
       int rotation = 0;
@@ -437,6 +462,8 @@ public class ImageLoader
       if ( this.sourceFile != null )
         {
         ///// File /////
+
+        if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "  Decoding file : " + this.sourceFile.getPath() );
 
         bitmap = BitmapFactory.decodeFile( this.sourceFile.getPath(), bitmapFactoryOptions );
 
@@ -449,11 +476,15 @@ public class ImageLoader
         {
         ///// Resource Id /////
 
+        if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "  Decoding resource id : " + this.sourceResourceId );
+
         bitmap = BitmapFactory.decodeResource( mContext.getResources(), this.sourceResourceId, bitmapFactoryOptions );
         }
       else if ( this.sourceURI != null )
         {
         ///// URI /////
+
+        if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "  Decoding URI : " + this.sourceURI );
 
         BufferedInputStream bis = new BufferedInputStream( mContext.getContentResolver().openInputStream( this.sourceURI ) );
 
