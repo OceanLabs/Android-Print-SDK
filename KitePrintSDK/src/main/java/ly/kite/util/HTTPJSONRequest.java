@@ -123,10 +123,13 @@ public class HTTPJSONRequest
                     }
                 }
 
-                request.setHeader( "Authorization", "ApiKey " + KiteSDK.getInstance( mContext ).getAPIKey() + ":");
+                KiteSDK kiteSDK = KiteSDK.getInstance( mContext );
+
+                request.setHeader( "Authorization", "ApiKey " + kiteSDK.getAPIKey() + ":");
                 request.setHeader( "User-Agent",    "Kite SDK Android v" + BuildConfig.VERSION_NAME );
                 request.setHeader( "X-App-Package",  mContext.getPackageName() );
                 request.setHeader( "X-App-Name",     mContext.getString( mContext.getApplicationInfo().labelRes ) );
+                request.setHeader( "X-Person-UUID",  kiteSDK.getUniqueUserId() );
 
             try {
                     HttpResponse response = httpclient.execute(request);
