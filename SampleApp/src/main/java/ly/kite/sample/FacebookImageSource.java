@@ -39,20 +39,21 @@ package ly.kite.sample;
 
 ///// Import(s) /////
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.catalogue.Asset;
 import ly.kite.facebookphotopicker.FacebookPhotoPicker;
-import ly.kite.instagramphotopicker.InstagramPhotoPicker;
 import ly.kite.journey.AImageSource;
-import ly.kite.photopicker.PhotoPicker;
+import ly.kite.photopicker.common.Photo;
 
 
 ///// Class Declaration /////
@@ -126,19 +127,27 @@ public class FacebookImageSource extends AImageSource
    *
    *****************************************************/
   @Override
-  public void getAssetsFromPickerResult( Intent data, List<Asset> assetList )
+  public void getAssetsFromPickerResult( Activity activity, Intent data, IAssetConsumer assetConsumer )
     {
-    // TODO
+    Photo facebookPhotos[] = FacebookPhotoPicker.getResultPhotos( data );
+
+    if ( facebookPhotos != null )
+      {
+      // Create an asset list, populate it, and call back to the consumer immediately.
+
+      List<Asset> assetList = new ArrayList<>( facebookPhotos.length );
+
+      for ( Photo facebookPhoto : facebookPhotos )
+        {
+        assetList.add( new Asset( facebookPhoto.getFullURL() ) );
+        }
+
+      assetConsumer.isacOnAssets( assetList );
+      }
     }
 
 
   ////////// Inner Class(es) //////////
-
-  /*****************************************************
-   *
-   * ...
-   *
-   *****************************************************/
 
   }
 

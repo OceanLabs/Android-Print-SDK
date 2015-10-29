@@ -603,13 +603,10 @@ public class KiteSDK
    * Interprets an activity result, and returns any assets.
    *
    *****************************************************/
-  public List<Asset> getAssetsFromPickerResult( int requestCode, int resultCode, Intent data )
+  public void getAssetsFromPickerResult( Activity activity, int requestCode, int resultCode, Intent data, AImageSource.IAssetConsumer assetConsumer )
     {
     if ( resultCode == Activity.RESULT_OK )
       {
-      ArrayList<Asset> assetList = new ArrayList<>();
-
-
       // Go through the image sources, and find the one with the matching request code
 
       if ( mImageSources != null )
@@ -618,17 +615,11 @@ public class KiteSDK
           {
           if ( imageSource.getActivityRequestCode() == requestCode )
             {
-            imageSource.getAssetsFromPickerResult( data, assetList );
+            imageSource.getAssetsFromPickerResult( activity, data, assetConsumer );
             }
           }
         }
-
-
-      return ( assetList );
       }
-
-
-    return ( null );
     }
 
 

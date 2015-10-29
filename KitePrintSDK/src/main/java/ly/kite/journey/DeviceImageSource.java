@@ -39,12 +39,14 @@ package ly.kite.journey;
 
 ///// Import(s) /////
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ly.kite.R;
@@ -146,10 +148,13 @@ public class DeviceImageSource extends AImageSource
    *
    *****************************************************/
   @Override
-  public void getAssetsFromPickerResult( Intent data, List<Asset> assetList )
+  public void getAssetsFromPickerResult( Activity activity, Intent data, IAssetConsumer assetConsumer )
     {
     if ( data != null )
       {
+      List<Asset> assetList = new ArrayList<>();
+
+
       // Check for single device image
 
       Uri imageURI = data.getData();
@@ -157,29 +162,32 @@ public class DeviceImageSource extends AImageSource
       if ( imageURI != null )
         {
         assetList.add( new Asset( imageURI ) );
-
-        return;
         }
 
-
-      // Check for multiple device images
-
-      try
+      else
         {
-        Photo[] devicePhotos = PhotoPicker.getResultPhotos( data );
+        // Check for multiple device images
 
-        if ( devicePhotos != null )
+        try
           {
-          for ( Photo devicePhoto : devicePhotos )
+          Photo[] devicePhotos = PhotoPicker.getResultPhotos( data );
+
+          if ( devicePhotos != null )
             {
-            assetList.add( new Asset( devicePhoto.getUri() ) );
+            for ( Photo devicePhoto : devicePhotos )
+              {
+              assetList.add( new Asset( devicePhoto.getUri() ) );
+              }
             }
           }
+        catch ( NullPointerException npe )
+          {
+          // Ignore
+          }
         }
-      catch ( NullPointerException npe )
-        {
-        // Ignore
-        }
+
+
+      assetConsumer.isacOnAssets( assetList );
       }
     }
 

@@ -73,7 +73,7 @@ import ly.kite.util.ImageAgent;
  * case design using an image.
  *
  *****************************************************/
-public class PhoneCaseFragment extends AEditImageFragment
+public class PhoneCaseFragment extends AEditImageFragment implements AImageSource.IAssetConsumer
   {
   ////////// Static Constant(s) //////////
 
@@ -278,24 +278,7 @@ public class PhoneCaseFragment extends AEditImageFragment
 
 
     // Get assets for any images returned
-
-    List<Asset> assetList = KiteSDK.getInstance( mKiteActivity ).getAssetsFromPickerResult( requestCode, resultCode, returnedIntent );
-
-    if ( assetList != null && assetList.size() > 0 )
-      {
-      // Add the assets to the shared list
-      for ( Asset asset : assetList )
-        {
-        mAssetsAndQuantityArrayList.add( 0, new AssetsAndQuantity( asset ) );
-        }
-
-
-      // Save the first asset and use it
-
-      mImageAsset = mAssetsAndQuantityArrayList.get( 0 ).getUneditedAsset();
-
-      useAssetForImage( mImageAsset, true );
-      }
+    KiteSDK.getInstance( mKiteActivity ).getAssetsFromPickerResult( mKiteActivity, requestCode, resultCode, returnedIntent, this );
     }
 
 
@@ -353,6 +336,34 @@ public class PhoneCaseFragment extends AEditImageFragment
       mEditableImageContainerFrame.saveState( outState );
       }
 
+    }
+
+
+  ////////// AImageSource.IAssetConsumer Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called with new picked assets.
+   *
+   *****************************************************/
+  @Override
+  public void isacOnAssets( List<Asset> assetList )
+    {
+    if ( assetList != null && assetList.size() > 0 )
+      {
+      // Add the assets to the shared list
+      for ( Asset asset : assetList )
+        {
+        mAssetsAndQuantityArrayList.add( 0, new AssetsAndQuantity( asset ) );
+        }
+
+
+      // Save the first asset and use it
+
+      mImageAsset = mAssetsAndQuantityArrayList.get( 0 ).getUneditedAsset();
+
+      useAssetForImage( mImageAsset, true );
+      }
     }
 
 

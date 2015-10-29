@@ -41,6 +41,7 @@ package ly.kite.journey;
 
 import java.util.List;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -194,9 +195,24 @@ abstract public class AImageSource
 
   /*****************************************************
    *
-   * Adds any picked images to the supplied list.
+   * Returns picked photos as assets. May call back to the
+   * consumer asynchronously or synchronously (i.e. from
+   * within this method).
    *
    *****************************************************/
-  abstract public void getAssetsFromPickerResult( Intent data, List<Asset> assetList );
+  abstract public void getAssetsFromPickerResult( Activity activity, Intent data, IAssetConsumer assetConsumer );
+
+
+  ///// Inner class(es) /////
+
+  /*****************************************************
+   *
+   * An asset consumer.
+   *
+   *****************************************************/
+  public interface IAssetConsumer
+    {
+    public void isacOnAssets( List<Asset> assetList );
+    }
 
   }

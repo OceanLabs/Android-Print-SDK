@@ -2,6 +2,4 @@ include 'SampleApp'
 include 'KitePrintSDK'
 include 'KitePrintSDK-GCM'
 include ':FacebookPhotoPicker-Android'
-include ':InstagramPhotoPicker-Android'
 project(':FacebookPhotoPicker-Android').projectDir = new File('../FacebookPhotoPicker-Android/FacebookPhotoPicker-Android')
-project(':InstagramPhotoPicker-Android').projectDir = new File('../InstagramPhotoPicker-Android/instagramphotopicker')

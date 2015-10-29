@@ -68,7 +68,7 @@ import ly.kite.catalogue.Product;
  * case design using an image.
  *
  *****************************************************/
-public class ImageSourceFragment extends AProductCreationFragment implements AdapterView.OnItemClickListener
+public class ImageSourceFragment extends AProductCreationFragment implements AdapterView.OnItemClickListener, AImageSource.IAssetConsumer
   {
   ////////// Static Constant(s) //////////
 
@@ -152,29 +152,8 @@ public class ImageSourceFragment extends AProductCreationFragment implements Ada
     {
     super.onActivityResult( requestCode, resultCode, returnedIntent );
 
-
     // Get assets for any images returned
-
-    List<Asset> newAssetList = KiteSDK.getInstance( mKiteActivity ).getAssetsFromPickerResult( requestCode, resultCode, returnedIntent );
-
-    if ( newAssetList != null && newAssetList.size() > 0 )
-      {
-      // Add the assets to the assets / quantity list held by the activity
-
-      for ( Asset newAsset : newAssetList )
-        {
-        mAssetsAndQuantityArrayList.add( new AssetsAndQuantity( newAsset ) );
-        }
-
-
-      // If we got at least one asset - call back to the activity. Otherwise we say on this screen
-      // unless the user pressed back.
-      if ( mKiteActivity instanceof ICallback )
-        {
-        ( (ICallback)mKiteActivity ).isOnAssetsAdded();
-        }
-      }
-
+    KiteSDK.getInstance( mKiteActivity ).getAssetsFromPickerResult( mKiteActivity, requestCode, resultCode, returnedIntent, this );
     }
 
 
@@ -207,6 +186,36 @@ public class ImageSourceFragment extends AProductCreationFragment implements Ada
       AImageSource imageSource = (AImageSource)mImageSourceGridView.getItemAtPosition( position );
 
       imageSource.onPick( this, mProduct.getUserJourneyType().usesSingleImage() );
+      }
+    }
+
+
+  ////////// AImageSource.IAssetConsumer Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called with new assets.
+   *
+   *****************************************************/
+  @Override
+  public void isacOnAssets( List<Asset> assetList )
+    {
+    if ( assetList != null && assetList.size() > 0 )
+      {
+      // Add the assets to the assets / quantity list held by the activity
+
+      for ( Asset asset : assetList )
+        {
+        mAssetsAndQuantityArrayList.add( new AssetsAndQuantity( asset ) );
+        }
+
+
+      // If we got at least one asset - call back to the activity. Otherwise we say on this screen
+      // unless the user pressed back.
+      if ( mKiteActivity instanceof ICallback )
+        {
+        ( (ICallback)mKiteActivity ).isOnAssetsAdded();
+        }
       }
     }
 

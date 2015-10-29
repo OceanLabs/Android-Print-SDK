@@ -39,10 +39,12 @@ package ly.kite.journey;
 
 ///// Import(s) /////
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ly.kite.R;
@@ -126,20 +128,26 @@ public class InstagramImageSource extends AImageSource
 
   /*****************************************************
    *
-   * Adds any picked images to the supplied list.
+   * Returns picked photos as assets.
    *
    *****************************************************/
   @Override
-  public void getAssetsFromPickerResult( Intent data, List<Asset> assetList )
+  public void getAssetsFromPickerResult( Activity activity, Intent data, IAssetConsumer assetConsumer )
     {
     InstagramPhoto instagramPhotos[] = InstagramPhotoPicker.getResultPhotos( data );
 
     if ( instagramPhotos != null )
       {
+      // Create an asset list, populate it, and call back to the consumer immediately.
+
+      List<Asset> assetList = new ArrayList<>( instagramPhotos.length );
+
       for ( InstagramPhoto instagramPhoto : instagramPhotos )
         {
         assetList.add( new Asset( instagramPhoto.getFullURL() ) );
         }
+
+      assetConsumer.isacOnAssets( assetList );
       }
     }
 

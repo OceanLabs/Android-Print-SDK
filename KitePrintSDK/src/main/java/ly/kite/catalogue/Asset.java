@@ -45,6 +45,7 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -143,7 +144,7 @@ public class Asset implements Parcelable
 
     if ( ! uri.getScheme().equalsIgnoreCase( "content" ) /*&& !uri.getScheme().equalsIgnoreCase("http") && !uri.getScheme().equalsIgnoreCase("https")*/ )
       {
-      throw new IllegalArgumentException( "Only uris with content schemes are currently supported, your scheme " + uri.getScheme() + " is not" );
+      throw new IllegalArgumentException( "Only URIs with content schemes are currently supported, your scheme " + uri.getScheme() + " is not" );
       }
 
 
@@ -157,36 +158,57 @@ public class Asset implements Parcelable
    * Constructs an asset from a remote URL.
    *
    *****************************************************/
-  public Asset( URL url )
+  public Asset( URL url, MIMEType mimeType )
     {
     // Check that we support the protocol
 
     if ( ! url.getProtocol().equalsIgnoreCase( "http" ) && !url.getProtocol().equalsIgnoreCase( "https" ) )
       {
-      throw new IllegalArgumentException( "Currently only support http and https URL schemes" );
+      throw new IllegalArgumentException( "Only HTTP and HTTPS URL schemes are supported" );
       }
 
 
-    // Check that we support the file type
+    // If the MIME type is not provided - determine it from the extension of the file in the URL
 
-    String file = url.getFile().toLowerCase();
-
-    if ( file.endsWith( JPEG_FILE_SUFFIX_PRIMARY ) || file.endsWith( JPEG_FILE_SUFFIX_SECONDARY ) )
+    if ( mimeType != null )
       {
-      mMIMEType = MIMEType.JPEG;
-      }
-    else if ( file.endsWith( PNG_FILE_SUFFIX ) )
-      {
-      mMIMEType = MIMEType.PNG;
+      mMIMEType = mimeType;
       }
     else
       {
-      throw new IllegalArgumentException( "Currently only support URL's the identify the mime mType by ending with a supported file extension i.e. '.jpeg', '.jpg' or '.png' thus '" + file + "' is not valid." );
+      // Check that we support the file type
+
+      String file = url.getFile().toLowerCase();
+
+      if ( file.endsWith( JPEG_FILE_SUFFIX_PRIMARY ) || file.endsWith( JPEG_FILE_SUFFIX_SECONDARY ) )
+        {
+        mMIMEType = MIMEType.JPEG;
+        }
+      else if ( file.endsWith( PNG_FILE_SUFFIX ) )
+        {
+        mMIMEType = MIMEType.PNG;
+        }
+      else
+        {
+        throw new IllegalArgumentException( "If the MIME type is not supplied, the URL must identify the MIME type by ending with a supported file extension i.e. '.jpeg', '.jpg' or '.png' thus '" + file + "' is not valid." );
+        }
       }
 
 
     mType      = Type.REMOTE_URL;
     mRemoteURL = url;
+    }
+
+
+  /*****************************************************
+   *
+   * Constructs an asset from a remote URL where the MIME
+   * type is not known.
+   *
+   *****************************************************/
+  public Asset( URL url )
+    {
+    this( url, null );
     }
 
 
@@ -209,8 +231,19 @@ public class Asset implements Parcelable
       }
 
 
-    mType      = Type.IMAGE_FILE;
+    mType          = Type.IMAGE_FILE;
     mImageFilePath = imagePath;
+    }
+
+
+  /*****************************************************
+   *
+   * Constructs an asset from an image file.
+   *
+   *****************************************************/
+  public Asset( File imageFile )
+    {
+    this( imageFile.getAbsolutePath() );
     }
 
 

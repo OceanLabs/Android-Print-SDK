@@ -86,7 +86,8 @@ import ly.kite.widget.VisibilitySettingAnimationListener;
  *****************************************************/
 public class ImageSelectionFragment extends AProductCreationFragment implements AdapterView.OnItemClickListener,
                                                                                 View.OnClickListener,
-                                                                                ImageSelectionAdaptor.IOnImageCheckChangeListener
+                                                                                ImageSelectionAdaptor.IOnImageCheckChangeListener,
+                                                                                AImageSource.IAssetConsumer
   {
   ////////// Static Constant(s) //////////
 
@@ -328,13 +329,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
 
     // Get assets for any images returned and add them
-
-    List<Asset> assetList = KiteSDK.getInstance( mKiteActivity ).getAssetsFromPickerResult( requestCode, resultCode, returnedIntent );
-
-    if ( assetList != null )
-      {
-      addAssets( assetList );
-      }
+    KiteSDK.getInstance( mKiteActivity ).getAssetsFromPickerResult( mKiteActivity, requestCode, resultCode, returnedIntent, this );
     }
 
 
@@ -550,6 +545,23 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     if ( mUncheckedImagesCount > 0 )
       {
       setClearPhotosButtonText();
+      }
+    }
+
+
+  ////////// AImageSource.IAssetConsumer Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called with new picked assets.
+   *
+   *****************************************************/
+  @Override
+  public void isacOnAssets( List<Asset> assetList )
+    {
+    if ( assetList != null )
+      {
+      addAssets( assetList );
       }
     }
 
