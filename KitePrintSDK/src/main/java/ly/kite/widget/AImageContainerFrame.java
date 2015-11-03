@@ -82,7 +82,7 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
   @SuppressWarnings( "unused" )
   private   static final String  LOG_TAG                           = "AImageContainerFrame";
 
-  public    static final float   DEFAULT_ASPECT_RATIO              = 1.389f;
+  //public    static final float   DEFAULT_ASPECT_RATIO              = 1.389f;
 
   private   static final Object  ANY_KEY                           = new Object();
 
@@ -172,28 +172,30 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
     int widthSize = MeasureSpec.getSize( widthMeasureSpec );
 
 
-    // We only do this jiggery-pokery if the width is known and we were supplied
-    // an aspect ratio.
+    // We only do this jiggery-pokery with the size if the width is known and we were
+    // supplied an aspect ratio.
 
     if ( ( widthMode == MeasureSpec.AT_MOST || widthMode == MeasureSpec.EXACTLY ) &&
          mWidthToHeightMultiplier >= KiteSDK.FLOAT_ZERO_THRESHOLD )
       {
       float imageWidth;
       float imageHeight;
+      float frameHeight;
 
-      // If padding proportions have been supplied, our calculations are based on the following equations:
-      //
-      // Available width =   left padding                            + image width +   right padding
-      //                 = ( image width * left padding proportion ) + image width + ( image width * right padding proportion )
-      //                 = image width * ( left padding proportion + 1 + right padding proportion )
-      //
-      // Therefore: image width = available width / ( left padding proportion + 1 + right padding proportion )
-      //
       if ( mLeftPaddingProportion   >= KiteSDK.FLOAT_ZERO_THRESHOLD ||
            mTopPaddingProportion    >= KiteSDK.FLOAT_ZERO_THRESHOLD ||
            mRightPaddingProportion  >= KiteSDK.FLOAT_ZERO_THRESHOLD ||
            mBottomPaddingProportion >= KiteSDK.FLOAT_ZERO_THRESHOLD )
         {
+
+        // If padding proportions have been supplied, our calculations are based on the following equations:
+        //
+        // Available width =   left padding                            + image width +   right padding
+        //                 = ( image width * left padding proportion ) + image width + ( image width * right padding proportion )
+        //                 = image width * ( left padding proportion + 1 + right padding proportion )
+        //
+        // Therefore: image width = available width / ( left padding proportion + 1 + right padding proportion )
+        //
         imageWidth = widthSize / ( mLeftPaddingProportion + 1f + mRightPaddingProportion );
 
         // Now that we have the width, we can calculate the height using the aspect ratio
@@ -208,6 +210,8 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
         float bottomPadding = imageHeight * mBottomPaddingProportion;
 
         setPadding( (int)leftPadding, (int)topPadding, (int)rightPadding, (int)bottomPadding );
+
+        frameHeight = topPadding + imageHeight + bottomPadding;
         }
       else
         {
@@ -216,17 +220,13 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
 
         imageWidth  = widthSize - ( getPaddingLeft() + getPaddingRight() );
         imageHeight = imageWidth * mWidthToHeightMultiplier;
+
+        frameHeight = getPaddingTop() + imageHeight + getPaddingBottom();
         }
 
 
-      // Set the width and height of the image
-
-      ViewGroup.LayoutParams imageLayoutParams = mImageView.getLayoutParams();
-
-      imageLayoutParams.width  = (int)imageWidth;
-      imageLayoutParams.height = (int)imageHeight;
-
-      mImageView.setLayoutParams( imageLayoutParams );
+      // Adjust the height measure spec to set the height of the frame
+      heightMeasureSpec = MeasureSpec.makeMeasureSpec( (int)frameHeight, widthMode );
       }
 
 

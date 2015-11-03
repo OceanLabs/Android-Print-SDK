@@ -47,6 +47,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import ly.kite.KiteSDK;
@@ -443,13 +444,13 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
    *
    *****************************************************/
   @Override
-  public void poOnCreateProduct( Product product )
+  public void poOnCreateProduct( Product product, HashMap<String,String> optionMap )
     {
     // Once the product has been chosen and the user clicks "Start Creating",
     // we then hand over to the product creation activity to choose the journey
     // depending on the product.
 
-    ProductCreationActivity.startForResult( this, mAssetsAndQuantityArrayList, product, ACTIVITY_REQUEST_CODE_CHECKOUT );
+    ProductCreationActivity.startForResult( this, mAssetsAndQuantityArrayList, product, optionMap, ACTIVITY_REQUEST_CODE_CHECKOUT );
     }
 
 

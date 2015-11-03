@@ -123,6 +123,8 @@ public class Product implements Parcelable, IGroupOrProduct
   private float                             mImageAspectRatio;
   private BorderF                           mImageBorderF;
 
+  private List<ProductOption>               mOptionList;
+
 
   ////////// Static Initialiser(s) //////////
 
@@ -176,8 +178,15 @@ public class Product implements Parcelable, IGroupOrProduct
 
   ////////// Constructor(s) //////////
 
+  private Product()
+    {
+    mOptionList = new ArrayList<>();
+    }
+
   Product( String productId, String productCode, String productName, String productType, int labelColour, UserJourneyType userJourneyType, int quantityPerSheet )
     {
+    this();
+
     mId               = productId;
     mCode             = productCode;
     mName             = productName;
@@ -191,6 +200,8 @@ public class Product implements Parcelable, IGroupOrProduct
   // Constructor used by parcelable interface
   private Product( Parcel sourceParcel )
     {
+    this();
+
     mId          = sourceParcel.readString();
     mCode        = sourceParcel.readString();
     mName        = sourceParcel.readString();
@@ -600,6 +611,32 @@ public class Product implements Parcelable, IGroupOrProduct
     }
 
 
+  /*****************************************************
+   *
+   * Sets the options.
+   *
+   *****************************************************/
+  Product setProductOptions( List<ProductOption> optionList )
+    {
+    if ( optionList != null && optionList.size() > 0 )
+      {
+      mOptionList = optionList;
+      }
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the options.
+   *
+   *****************************************************/
+  public List<ProductOption> getOptionList()
+    {
+    return ( mOptionList );
+    }
+
 
   /*****************************************************
    *
@@ -752,6 +789,25 @@ public class Product implements Parcelable, IGroupOrProduct
 
     stringBuilder.append( "Image Aspect Ratio : " ).append( mImageAspectRatio >= KiteSDK.FLOAT_ZERO_THRESHOLD ? mImageAspectRatio : String.valueOf( mImageAspectRatio ) ).append( "\n" );
     stringBuilder.append( "Image Border       : " ).append( mImageBorderF != null ? mImageBorderF.toString() : null ).append( "\n" );
+
+
+    if ( mOptionList != null && mOptionList.size() > 0 )
+      {
+      stringBuilder.append( "Options:" ).append( "\n" );
+
+      for ( ProductOption option : mOptionList )
+        {
+        stringBuilder.append( "  " ).append( option.getName() ).append( " ( " ).append( option.getCode() ).append( " )\n" );
+
+        List<ProductOption.Value> valueList = option.getValueList();
+
+        for ( ProductOption.Value value : valueList )
+          {
+          stringBuilder.append( "    " ).append( value.getName() ).append( " ( " ).append( value.getCode() ).append( " )\n" );
+          }
+        }
+      }
+
 
     return ( stringBuilder.toString() );
     }

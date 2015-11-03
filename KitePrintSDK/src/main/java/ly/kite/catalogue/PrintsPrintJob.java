@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -22,12 +23,18 @@ class PrintsPrintJob extends PrintJob {
     private List<Asset> mAssetList;
 
 
+  public PrintsPrintJob( Product product, HashMap<String,String> optionMap, List<Asset> assetList )
+    {
+    super( product, optionMap );
+
+    mAssetList = assetList;
+    }
+
   public PrintsPrintJob( Product product, List<Asset> assetList )
     {
-    super( product );
-
-    this.mAssetList = assetList;
+    this( product, null, assetList );
     }
+
 
     @Override
     public BigDecimal getCost(String currencyCode) {
@@ -75,8 +82,12 @@ class PrintsPrintJob extends PrintJob {
         JSONObject json = new JSONObject();
         try {
             json.put("template_id", getProductId());
-            json.put("assets", assets);
-            json.put("frame_contents", new JSONObject());
+
+          addProductOptions( json );
+
+          json.put( "assets", assets );
+          json.put("frame_contents", new JSONObject());
+
         } catch (JSONException ex) {
             throw new RuntimeException(ex); // this should NEVER happen :)
         }

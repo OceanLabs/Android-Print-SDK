@@ -49,7 +49,6 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.GridView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.net.MalformedURLException;
@@ -60,7 +59,6 @@ import ly.kite.R;
 import ly.kite.catalogue.ICatalogueConsumer;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.journey.AKiteFragment;
-import ly.kite.catalogue.CatalogueLoader;
 import ly.kite.catalogue.IGroupOrProduct;
 import ly.kite.util.ImageAgent;
 import ly.kite.widget.HeaderFooterGridView;
@@ -244,7 +242,7 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements I
     @SuppressWarnings( "unused" )
     private static final String  LOG_TAG              = "GroupOrProductAdaptor";
 
-    private static final float   DEFAULT_ASPECT_RATIO = 1.389f;
+    //private static final float   DEFAULT_ASPECT_RATIO = 1.389f;
 
 
     ////////// Static Variable(s) //////////
@@ -263,7 +261,6 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements I
     private URL                              mPlaceholderImageURL;
 
     private LayoutInflater                   mLayoutInflator;
-    private ImageAgent mImageLoader;
 
 
     ////////// Static Initialiser(s) //////////
@@ -282,7 +279,6 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements I
       mLayoutResourceId   = layoutResourceId;
 
       mLayoutInflator     = LayoutInflater.from( context );
-      mImageLoader        = ImageAgent.getInstance( context );
 
       mActualItemCount    = mGroupOrProductList.size();
 
@@ -393,7 +389,7 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements I
       IGroupOrProduct groupOrProduct = (IGroupOrProduct)getItem( position );
 
 
-      // If there are only two items - alter the aspect ratio so that the images
+      // If there are only two items - set the aspect ratio so that the images
       // fill the screen, in either orientation.
 
       float aspectRatio;
@@ -412,14 +408,11 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements I
           }
 
         // Make sure we only expand the height
-        if ( aspectRatio > DEFAULT_ASPECT_RATIO ) aspectRatio = DEFAULT_ASPECT_RATIO;
-        }
-      else
-        {
-        aspectRatio = DEFAULT_ASPECT_RATIO;
+        //if ( aspectRatio > DEFAULT_ASPECT_RATIO ) aspectRatio = DEFAULT_ASPECT_RATIO;
+
+        viewReferences.productImageView.setImageAspectRatio( aspectRatio );
         }
 
-      viewReferences.productImageView.setImageAspectRatio( aspectRatio );
 
 
       URL imageURL;
