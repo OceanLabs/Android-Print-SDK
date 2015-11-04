@@ -256,7 +256,7 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
       }
 
 
-    mOptionMap = intent.getParcelableExtra( INTENT_EXTRA_NAME_OPTION_MAP );
+    mOptionMap = (HashMap<String,String>)intent.getSerializableExtra( INTENT_EXTRA_NAME_OPTION_MAP );
 
     if ( mOptionMap == null ) mOptionMap = new HashMap<>( 0 );
 

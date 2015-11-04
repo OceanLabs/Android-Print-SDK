@@ -173,8 +173,8 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
     mPromptTextFrame             = (PromptTextFrame)view.findViewById( R.id.prompt_text_frame );
 
 
-    mCancelButton.setOnClickListener( this );
-    mConfirmButton.setOnClickListener( this );
+    if ( mCancelButton  != null ) mCancelButton.setOnClickListener( this );
+    if ( mConfirmButton != null ) mConfirmButton.setOnClickListener( this );
 
 
     return ( view );

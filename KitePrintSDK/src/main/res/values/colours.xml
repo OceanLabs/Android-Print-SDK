@@ -29,6 +29,7 @@
     <color name="proceed_overlay_frame_background_gradient_end_colour">#00ffffff</color>
 
     <color name="cta_button_background">#ff8cbcbf</color>
+    <color name="cta_button_text">@android:color/white</color>
 
     <color name="paging_dot_unselected">#7fffffff</color>
     <color name="paging_dot_selected">#ffffffff</color>

@@ -7,7 +7,7 @@
         android:layout_gravity="center"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:scaleType="centerCrop"
+        android:scaleType="centerInside"
         android:src="@drawable/empty_photo_frame"/>
 
     <ImageView

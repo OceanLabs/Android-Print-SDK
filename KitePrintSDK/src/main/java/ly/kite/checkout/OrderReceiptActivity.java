@@ -26,11 +26,9 @@ public class OrderReceiptActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate( savedInstanceState );
 
-        requestWindowFeature(Window.FEATURE_ACTION_BAR);
-
-        setContentView( R.layout.screen_order_receipt );
+        requestWindowFeature( Window.FEATURE_ACTION_BAR );
 
         this.printOrder = (PrintOrder) getIntent().getParcelableExtra(EXTRA_PRINT_ORDER);
 
@@ -39,33 +37,18 @@ public class OrderReceiptActivity extends Activity {
         }
 
 
-        if (getActionBar() != null) {
-            getActionBar().setDisplayHomeAsUpEnabled( true );
-        }
-
-        // Show an error dialog if we're arriving with a recent Payment success but we failed to successfully print the order.
-        if (!printOrder.isPrinted() && getParent() instanceof PaymentActivity && printOrder.getLastPrintSubmissionError() != null) {
-            showErrorDialog(printOrder.getLastPrintSubmissionError().getMessage());
-        }
-
-
-    ListView l = (ListView)findViewById( R.id.order_summary_list_view );
-    l.setAdapter( new OrderPricingAdaptor( this, printOrder.getOrderPricing() ) );
-
-    TextView orderView = (TextView)findViewById( R.id.text_view_order_id );
-    orderView.setText( printOrder.getReceipt() );
-
-    Button retryPrintButton = (Button)findViewById( R.id.button_retry_print );
-    ImageView headerView = (ImageView)findViewById( R.id.image_view_order_receipt_header );
-    if ( this.printOrder.isPrinted() )
+    if ( printOrder.isPrinted() )
       {
-      headerView.setImageResource( R.drawable.receipt_success );
-      retryPrintButton.setVisibility( View.GONE );
-      }
-    else
-      {
-      headerView.setImageResource( R.drawable.receipt_failure );
-      retryPrintButton.setVisibility( View.VISIBLE );
+      ///// Success /////
+
+      setContentView( R.layout.screen_order_receipt );
+
+      ListView listView = (ListView)findViewById( R.id.order_summary_list_view );
+
+      listView.setAdapter( new OrderPricingAdaptor( this, printOrder.getOrderPricing() ) );
+
+      TextView orderView = (TextView)findViewById( R.id.text_view_order_id );
+      orderView.setText( printOrder.getReceipt() );
 
       StringBuilder receipt = new StringBuilder();
       if ( printOrder.getProofOfPayment() != null )
@@ -85,6 +68,29 @@ public class OrderReceiptActivity extends Activity {
 
       orderView.setText( receipt );
       }
+    else
+      {
+
+      ///// Failure /////
+
+      setContentView( R.layout.screen_order_failure );
+
+      Button retryPrintButton = (Button)findViewById( R.id.button_retry_print );
+
+      if ( retryPrintButton != null ) retryPrintButton.setVisibility( View.VISIBLE );
+
+
+      // Show an error dialog if we're arriving with a recent Payment success but we failed to successfully print the order.
+      if ( getParent() instanceof PaymentActivity && printOrder.getLastPrintSubmissionError() != null )
+        {
+        showErrorDialog( printOrder.getLastPrintSubmissionError().getMessage() );
+        }
+      }
+
+
+        if (getActionBar() != null) {
+            getActionBar().setDisplayHomeAsUpEnabled( true );
+        }
 
     }
 

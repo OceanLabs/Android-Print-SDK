@@ -258,6 +258,12 @@ public class PrintOrder implements Parcelable /* , Serializable */
         return lastPrintSubmissionError;
     }
 
+    // Used for testing
+    public void clearReceipt()
+        {
+        receipt = null;
+        }
+
     public String getReceipt() {
         return receipt;
     }

@@ -183,12 +183,16 @@ public class PhoneCaseFragment extends AEditImageFragment implements AImageSourc
     {
     View view = super.onCreateView( layoutInflator, container, savedInstanceState );
 
+    if ( mCancelButton != null )
+      {
+      mCancelButton.setVisibility( View.GONE );
+      }
 
-    mCancelButton.setVisibility( View.GONE );
-
-    mConfirmButton.setVisibility( View.VISIBLE );
-    mConfirmButton.setText( R.string.phone_case_proceed_button_text );
-
+    if ( mConfirmButton != null )
+      {
+      mConfirmButton.setVisibility( View.VISIBLE );
+      mConfirmButton.setText( R.string.phone_case_proceed_button_text );
+      }
 
     return ( view );
     }

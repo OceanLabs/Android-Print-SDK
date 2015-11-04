@@ -76,6 +76,10 @@
     <string name="add_more">Add More</string>
     <string name="print_these">Print these</string>
     <string name="OK">OK</string>
+    <string name="Order_Id">Order Id</string>
+    <string name="ORDER_ID">ORDER ID</string>
+    <string name="Order_Summary">Order Summary</string>
+    <string name="ORDER_SUMMARY">ORDER SUMMARY</string>
     <string name="Promotional_Discount">Promotional Discount</string>
     <string name="Quality_Guarantee">Quality Guarantee</string>
     <string name="Quantity">Quantity</string>
@@ -168,6 +172,8 @@
     <string name="feedback_email_subject">Kite Android App Support</string>
     <string name="feedback_email_text">Please tell us your full name:\n\nPlease provide any voucher code used in your transaction:\n\nWhat is your phone number (in case we need to call and discuss your issue)?\n\nWhat is the issue you are having with the Kite Sample app?\n\nWhich Android device (phone/tablet) are you using?\n\n================================\n\nThanks a lot.\nWe’ll be sure to get back to you just as soon as we can.\nKite Team</string>
 
+
+    <string name="order_failure_message">Something went wrong.\nPlease try again.</string>
 
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>

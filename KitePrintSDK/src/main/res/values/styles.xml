@@ -87,7 +87,7 @@
         <item name="android:background">@color/cta_button_background</item>
         <item name="android:gravity">center</item>
         <item name="android:textSize">@dimen/control_label_text_size</item>
-        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textColor">@color/cta_button_text</item>
     </style>
 
     <style name="KiteSDKCTAButton.ReviewAndCrop"/>
