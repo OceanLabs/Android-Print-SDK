@@ -70,7 +70,7 @@ public class ImageLoader
   @SuppressWarnings( "unused" )
   static private final String  LOG_TAG           = "ImageLoader";
 
-  static private final boolean DEBUGGING_ENABLED = true;
+  static private final boolean DEBUGGING_ENABLED = false;
 
   static private final int     MAX_BITMAP_PIXELS = 6000000;  // 6MP = 3000 x 2000
 

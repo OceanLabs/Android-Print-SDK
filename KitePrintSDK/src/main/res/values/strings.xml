@@ -3,6 +3,8 @@
 
     <string name="app_name">Kite SDK</string>
 
+    <string name="analytics_event_callback_class_name">ly.kite.analytics.NullAnalyticsEventCallback</string>
+
     <string name="custom_typeface_file_name"></string>
 
     <string name="unit_centimeters">centimeters</string>
@@ -68,6 +70,7 @@
     <string name="alert_dialog_message_no_postal_code">Please fill in your Postcode / ZIP code</string>
 
     <string name="Cancel">Cancel</string>
+    <string name="Continue_Shopping">Continue Shopping</string>
     <string name="Description">Description</string>
     <string name="Details">Details</string>
     <string name="Done">Done</string>
@@ -193,6 +196,5 @@
     <string name="search_title">Search</string>
     <string name="country_search_hint">Search Addresses</string>
     <string name="title_activity_template_sync">TemplateSyncActivity</string>
-    <string name="analytics_event_callback_class_name">ly.kite.analytics.NullAnalyticsEventCallback</string>
 
 </resources>

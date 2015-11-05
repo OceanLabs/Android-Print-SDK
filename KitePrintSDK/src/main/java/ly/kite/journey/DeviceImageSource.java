@@ -119,24 +119,12 @@ public class DeviceImageSource extends AImageSource
     // If the caller would prefer a single image then use the system photo picker. Otherwise
     // use the photo picker.
 
-    if ( preferSingleImage )
-      {
-      Intent intent = new Intent( Intent.ACTION_GET_CONTENT );
-      intent.setType( "image/*" );
+    // There seems to be a bug with determining the orientation of URI-based images on
+    // (e.g.) Samsung S6, so we need to always use the photo picker (which returns file
+    // paths) rather than the built-in gallery picker (which returns URIs).
 
-      try
-        {
-        fragment.startActivityForResult( Intent.createChooser( intent, fragment.getString( R.string.select_photo_from_device ) ), getActivityRequestCode() );
-        }
-      catch ( Exception exception )
-        {
-        Log.e( LOG_TAG, "Unable to start activity for chooser intent", exception );
-        }
-      }
-    else
-      {
-      PhotoPicker.startPhotoPickerForResult( fragment, getActivityRequestCode() );
-      }
+    // TODO: Get the photo picker to respond to the request for a single image
+    PhotoPicker.startPhotoPickerForResult( fragment, getActivityRequestCode() );
     }
 
 
@@ -155,35 +143,21 @@ public class DeviceImageSource extends AImageSource
       List<Asset> assetList = new ArrayList<>();
 
 
-      // Check for single device image
-
-      Uri imageURI = data.getData();
-
-      if ( imageURI != null )
+      try
         {
-        assetList.add( new Asset( imageURI ) );
-        }
+        Photo[] devicePhotos = PhotoPicker.getResultPhotos( data );
 
-      else
-        {
-        // Check for multiple device images
-
-        try
+        if ( devicePhotos != null )
           {
-          Photo[] devicePhotos = PhotoPicker.getResultPhotos( data );
-
-          if ( devicePhotos != null )
+          for ( Photo devicePhoto : devicePhotos )
             {
-            for ( Photo devicePhoto : devicePhotos )
-              {
-              assetList.add( new Asset( devicePhoto.getUri() ) );
-              }
+            assetList.add( new Asset( devicePhoto.getUri() ) );
             }
           }
-        catch ( NullPointerException npe )
-          {
-          // Ignore
-          }
+        }
+      catch ( NullPointerException npe )
+        {
+        // Ignore
         }
 
 

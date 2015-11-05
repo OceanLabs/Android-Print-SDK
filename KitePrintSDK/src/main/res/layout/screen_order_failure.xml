@@ -23,14 +23,14 @@
         <include layout="@layout/include_powered_by"/>
 
         <ly.kite.widget.CustomTypefaceButton
-            android:id="@+id/button_retry_print"
-            android:layout_marginTop="30dp"
+            android:id="@+id/retry_print_button"
+            android:layout_margin="20dp"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.0"
             android:background="#ffe34b"
-            android:onClick="onButtonRetryPrintClicked"
-            android:text="Retry"
+            android:onClick="onRetryPrintClicked"
+            android:text="@string/Retry"
             android:textColor="#515151"/>
 
     </LinearLayout>
