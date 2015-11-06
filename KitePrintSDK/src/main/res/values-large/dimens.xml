@@ -1,5 +1,10 @@
 <resources>
 
+    <dimen name="screen_horizontal_margin">20dp</dimen>
+    <dimen name="screen_horizontal_half_margin">10dp</dimen>
+    <dimen name="screen_vertical_margin">20dp</dimen>
+    <dimen name="screen_vertical_half_margin">10dp</dimen>
+
     <dimen name="control_label_text_size">20sp</dimen>
     <dimen name="label_text_size">20sp</dimen>
 

@@ -1,19 +1,45 @@
-<FrameLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.0"
+        android:scaleType="centerCrop"
+        android:adjustViewBounds="true"
+        android:src="@drawable/receipt_failure"/>
 
     <LinearLayout
+        android:layout_marginTop="20dp"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:orientation="vertical">
+        android:layout_weight="1.0"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/screen_horizontal_margin"
+        android:paddingTop="@dimen/screen_vertical_margin"
+        android:paddingRight="@dimen/screen_horizontal_margin"
+        android:paddingBottom="@dimen/screen_vertical_margin">
 
-        <ImageView
+        <ly.kite.widget.CustomTypefaceTextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:scaleType="centerCrop"
-            android:adjustViewBounds="true"
-            android:src="@drawable/receipt_failure"/>
+            android:layout_weight="0.0"
+            android:text="@string/Payment_Id"
+            android:textColor="#515151"
+            android:textSize="16sp"/>
+
+        <ly.kite.widget.CustomTypefaceTextView
+            android:id="@+id/payment_id_text_view"
+            android:layout_marginTop="10dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.0"
+            android:textColor="#515151"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
 
         <FrameLayout
             android:layout_width="fill_parent"
@@ -24,7 +50,6 @@
 
         <ly.kite.widget.CustomTypefaceButton
             android:id="@+id/retry_print_button"
-            android:layout_margin="20dp"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.0"
@@ -35,4 +60,4 @@
 
     </LinearLayout>
 
-</FrameLayout>
+</LinearLayout>

@@ -84,31 +84,14 @@ public class OrderReceiptActivity extends Activity
 
       setContentView( R.layout.screen_order_receipt );
 
-      ListView listView = (ListView) findViewById( R.id.order_summary_list_view );
+      ListView listView        = (ListView)findViewById( R.id.order_summary_list_view );
+      TextView orderIdTextView = (TextView)findViewById( R.id.order_id_text_view );
+
 
       listView.setAdapter( new OrderPricingAdaptor( this, mPrintOrder.getOrderPricing() ) );
 
-      TextView orderView = (TextView) findViewById( R.id.text_view_order_id );
-      orderView.setText( mPrintOrder.getReceipt() );
 
-      StringBuilder receipt = new StringBuilder();
-
-      if ( mPrintOrder.getProofOfPayment() != null )
-        {
-        receipt.append( mPrintOrder.getProofOfPayment() );
-        }
-
-      if ( mPrintOrder.getPromoCode() != null )
-        {
-        if ( receipt.length() > 0 )
-          {
-          receipt.append( " " );
-          }
-
-        receipt.append( "PROMO-" ).append( mPrintOrder.getPromoCode() );
-        }
-
-      orderView.setText( receipt );
+      if ( orderIdTextView != null ) orderIdTextView.setText( mPrintOrder.getReceipt() );
 
       // If the order was successful - disable the back action
       if ( actionBar != null ) getActionBar().setDisplayHomeAsUpEnabled( false );
@@ -119,7 +102,20 @@ public class OrderReceiptActivity extends Activity
 
       setContentView( R.layout.screen_order_failure );
 
-      Button retryPrintButton = (Button) findViewById( R.id.retry_print_button );
+      TextView paymentIdTextView = (TextView)findViewById( R.id.payment_id_text_view );
+      Button   retryPrintButton  = (Button)findViewById( R.id.retry_print_button );
+
+
+      if ( paymentIdTextView != null )
+        {
+        StringBuilder receipt = new StringBuilder();
+
+        if ( mPrintOrder.getProofOfPayment() != null )
+          {
+          paymentIdTextView.setText( mPrintOrder.getProofOfPayment() );
+          }
+        }
+
 
       // Show an error dialog if we're arriving with a recent Payment success but we failed to successfully print the order.
       if ( getParent() instanceof PaymentActivity && mPrintOrder.getLastPrintSubmissionError() != null )

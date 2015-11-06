@@ -83,6 +83,8 @@
     <string name="ORDER_ID">ORDER ID</string>
     <string name="Order_Summary">Order Summary</string>
     <string name="ORDER_SUMMARY">ORDER SUMMARY</string>
+    <string name="Payment_Id">Payment Id</string>
+    <string name="PAYMENT_ID">PAYMENT ID</string>
     <string name="Promotional_Discount">Promotional Discount</string>
     <string name="Quality_Guarantee">Quality Guarantee</string>
     <string name="Quantity">Quantity</string>
