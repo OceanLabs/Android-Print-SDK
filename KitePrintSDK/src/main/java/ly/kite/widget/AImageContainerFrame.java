@@ -47,7 +47,6 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.FrameLayout;
@@ -352,7 +351,7 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
 
     if ( attributeSet != null )
       {
-      TypedArray typedArray = context.obtainStyledAttributes( attributeSet, R.styleable.FixableImageFrame, defaultStyle, defaultStyle );
+      TypedArray typedArray = context.obtainStyledAttributes( attributeSet, R.styleable.ImageContainerFrame, defaultStyle, defaultStyle );
 
 
       // If an aspect ratio was defined in the XML then set it now.
@@ -360,7 +359,7 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
 
       TypedValue value = new TypedValue();
 
-      if ( typedArray.getValue( R.styleable.FixableImageFrame_aspectRatio, value ) )
+      if ( typedArray.getValue( R.styleable.ImageContainerFrame_aspectRatio, value ) )
         {
         setImageAspectRatio( value.getFloat() );
         }

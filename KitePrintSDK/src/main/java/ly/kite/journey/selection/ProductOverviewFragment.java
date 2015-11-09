@@ -249,7 +249,7 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
     mProductImageViewPager              = (ViewPager) view.findViewById( R.id.view_pager );
     mOverlaidComponents                 = view.findViewById( R.id.overlaid_components );
     mPagingDots                         = (PagingDots) view.findViewById( R.id.paging_dots );
-    mOverlaidStartButton                = (Button) view.findViewById( R.id.overlaid_start_button );
+    mOverlaidStartButton                = (Button)view.findViewById( R.id.overlaid_start_button );
     mSlidingOverlayFrame                = (SlidingOverlayFrame) view.findViewById( R.id.sliding_overlay_frame );
     mDrawerControlLayout                = view.findViewById( R.id.drawer_control_layout );
     mProductOptionsLayout               = (ViewGroup)view.findViewById( R.id.product_options_layout );
@@ -324,7 +324,7 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
 
     mProductImageViewPager.setOnPageChangeListener( mPagingDots );
 
-    mOverlaidComponents.setAlpha( slidingDrawerIsExpanded ? 0f : 1f );  // If the drawer starts open, these components need to be invisible
+    if ( mOverlaidComponents != null ) mOverlaidComponents.setAlpha( slidingDrawerIsExpanded ? 0f : 1f );  // If the drawer starts open, these components need to be invisible
 
 
     if ( mSlidingOverlayFrame != null )
@@ -519,7 +519,7 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
 
     if ( mDrawerControlLayout != null ) mDrawerControlLayout.setOnClickListener( this );
 
-    mOverlaidStartButton.setOnClickListener( this );
+    if ( mOverlaidStartButton != null ) mOverlaidStartButton.setOnClickListener( this );
 
 
     return ( view );

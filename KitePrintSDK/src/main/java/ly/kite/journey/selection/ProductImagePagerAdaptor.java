@@ -131,7 +131,7 @@ public class ProductImagePagerAdaptor extends PagerAdapter
 
     // Inflate the view
 
-    View view = mLayoutInflator.inflate( R.layout.product_overview_image, null );
+    View view = mLayoutInflator.inflate( R.layout.pager_item_product_overview_image, null );
 
     container.addView( view );
 
