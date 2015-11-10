@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * CheckableImageView.java
+ * AREFrameLayout.java
  *
  *
  * Modified MIT License
@@ -43,30 +43,22 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.widget.ImageView;
-
-import ly.kite.R;
+import android.widget.FrameLayout;
 
 
 ///// Class Declaration /////
 
 /*****************************************************
  *
- * This class overlays a check mark on an image view.
+ * This class is an aspect ratio enforced frame layout.
  *
  *****************************************************/
-public class CheckableImageView extends AAREImageContainerFrame
+public class AREFrameLayout extends FrameLayout
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                         = "CheckableImageView";
-
-  private static final long    CHECK_ANIMATION_DURATION_MILLIS = 200L;
+  static private final String  LOG_TAG = "AREFrameLayout";
 
 
   ////////// Static Variable(s) //////////
@@ -74,8 +66,7 @@ public class CheckableImageView extends AAREImageContainerFrame
 
   ////////// Member Variable(s) //////////
 
-  private boolean    mIsChecked;
-  private ImageView  mCheckImageView;
+  private AspectRatioEnforcer  mAspectRatioEnforcer;
 
 
   ////////// Static Initialiser(s) //////////
@@ -86,45 +77,49 @@ public class CheckableImageView extends AAREImageContainerFrame
 
   ////////// Constructor(s) //////////
 
-  public CheckableImageView( Context context )
+  public AREFrameLayout( Context context )
     {
     super( context );
+
+    initialise( context, null, 0 );
     }
 
-  public CheckableImageView( Context context, AttributeSet attrs )
+  public AREFrameLayout( Context context, AttributeSet attrs )
     {
     super( context, attrs );
+
+    initialise( context, attrs, 0 );
     }
 
-  public CheckableImageView( Context context, AttributeSet attrs, int defStyleAttr )
+  public AREFrameLayout( Context context, AttributeSet attrs, int defStyleAttr )
     {
     super( context, attrs, defStyleAttr );
+
+    initialise( context, attrs, defStyleAttr );
     }
 
-  @TargetApi( Build.VERSION_CODES.LOLLIPOP )
-  public CheckableImageView( Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes )
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+  public AREFrameLayout( Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes )
     {
     super( context, attrs, defStyleAttr, defStyleRes );
+
+    initialise( context, attrs, defStyleAttr );
     }
 
 
-  ////////// AFixableImageFrame Method(s) //////////
+  ////////// View Method(s) //////////
 
   /*****************************************************
    *
-   * Returns the content view.
+   * Called to measure the view.
    *
    *****************************************************/
   @Override
-  protected View onCreateView( Context context, AttributeSet attributeSet, int defaultStyle )
+  protected void onMeasure( int widthMeasureSpec, int heightMeasureSpec )
     {
-    LayoutInflater layoutInflator = LayoutInflater.from( context );
+    mAspectRatioEnforcer.onMeasure( this, widthMeasureSpec, heightMeasureSpec );
 
-    View view = layoutInflator.inflate( R.layout.checkable_image_view, this, true );
-
-    mCheckImageView = (ImageView)view.findViewById( R.id.check_image_view );
-
-    return ( view );
+    super.onMeasure( mAspectRatioEnforcer.getWidthMeasureSpec(), mAspectRatioEnforcer.getHeightMeasureSpec() );
     }
 
 
@@ -132,65 +127,22 @@ public class CheckableImageView extends AAREImageContainerFrame
 
   /*****************************************************
    *
-   * Sets the checked state.
+   * Initialises this view.
    *
    *****************************************************/
-  public void setChecked( boolean isChecked )
+  private void initialise( Context context, AttributeSet attrs, int defStyleAttr )
     {
-    mIsChecked = isChecked;
-
-    int visibility = ( isChecked ? View.VISIBLE : View.GONE );
-
-    mCheckImageView.setAnimation( null );
-    mCheckImageView.setVisibility( visibility );
-    }
-
-
-  /*****************************************************
-   *
-   * Sets the checked state, but animates any transition.
-   *
-   *****************************************************/
-  public void transitionChecked( boolean isChecked )
-    {
-    boolean wasChecked = mIsChecked;
-
-    setChecked( isChecked );
-
-    Animation animation       = null;
-    int       finalVisibility = 0;
-
-    if ( ! wasChecked && isChecked )
-      {
-      ///// Animate in /////
-
-      animation = new AlphaAnimation( 0f, 1f );
-
-      finalVisibility = View.VISIBLE;
-      }
-    else if ( wasChecked && ! isChecked )
-      {
-      ///// Animate out /////
-
-      animation = new AlphaAnimation( 1f, 0f );
-      //animation.setFillAfter( true );
-
-      finalVisibility = View.GONE;
-      }
-
-
-    if ( animation != null )
-      {
-      animation.setDuration( CHECK_ANIMATION_DURATION_MILLIS );
-      animation.setAnimationListener( new VisibilitySettingAnimationListener( mCheckImageView, finalVisibility ) );
-
-      mCheckImageView.startAnimation( animation );
-      }
-
+    mAspectRatioEnforcer = new AspectRatioEnforcer( context, attrs, defStyleAttr );
     }
 
 
   ////////// Inner Class(es) //////////
+
+  /*****************************************************
+   *
+   * ...
+   *
+   *****************************************************/
 
   }
 

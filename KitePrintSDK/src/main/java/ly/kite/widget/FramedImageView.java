@@ -57,7 +57,7 @@ import ly.kite.catalogue.Border;
  * This class overlays a frame on a standard image view.
  *
  *****************************************************/
-public class FramedImageView extends AImageContainerFrame
+public class FramedImageView extends AAREImageContainerFrame
   {
   ////////// Static Constant(s) //////////
 

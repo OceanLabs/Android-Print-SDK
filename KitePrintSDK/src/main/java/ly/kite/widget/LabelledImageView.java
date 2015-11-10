@@ -43,16 +43,13 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 
 import ly.kite.util.IImageConsumer;
 
@@ -68,7 +65,7 @@ import ly.kite.R;
  * stage, fading them in where appropriate.
  *
  *****************************************************/
-public class LabelledImageView extends AImageContainerFrame implements IImageConsumer, Animation.AnimationListener
+public class LabelledImageView extends AAREImageContainerFrame implements IImageConsumer, Animation.AnimationListener
   {
   ////////// Static Constant(s) //////////
 

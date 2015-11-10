@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * AImageContainerFrame.java
+ * AAREImageContainerFrame.java
  *
  *
  * Modified MIT License
@@ -74,12 +74,12 @@ import ly.kite.util.ImageAgent;
  * The widget is also an image consumer.
  *
  *****************************************************/
-abstract public class AImageContainerFrame extends FrameLayout implements IImageConsumer, Animation.AnimationListener
+abstract public class AAREImageContainerFrame extends FrameLayout implements IImageConsumer, Animation.AnimationListener
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private   static final String  LOG_TAG                           = "AImageContainerFrame";
+  private   static final String  LOG_TAG                           = "AAREImageContainerFrame";
 
   //public    static final float   DEFAULT_ASPECT_RATIO              = 1.389f;
 
@@ -96,27 +96,22 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
 
   ////////// Member Variable(s) //////////
 
-  private   int           mWidth;
-  private   int           mHeight;
+  private   int                  mWidth;
+  private   int                  mHeight;
 
-  protected ImageView     mImageView;
-  protected ProgressBar   mProgressSpinner;
+  protected ImageView            mImageView;
+  protected ProgressBar          mProgressSpinner;
 
-  private   float         mWidthToHeightMultiplier;
+  private   AspectRatioEnforcer  mAspectRatioEnforcer;
 
-  private   float         mLeftPaddingProportion;
-  private   float         mTopPaddingProportion;
-  private   float         mRightPaddingProportion;
-  private   float         mBottomPaddingProportion;
+  private   boolean              mShowProgressSpinnerOnDownload;
 
-  private   boolean       mShowProgressSpinnerOnDownload;
+  private   String               mRequestImageClass;
+  private   Object               mRequestImageSource;
 
-  private   String        mRequestImageClass;
-  private   Object        mRequestImageSource;
+  private   Object               mExpectedKey;
 
-  private   Object        mExpectedKey;
-
-  protected Animation     mFadeInAnimation;
+  protected Animation            mFadeInAnimation;
 
 
   ////////// Static Initialiser(s) //////////
@@ -127,21 +122,21 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
 
   ////////// Constructor(s) //////////
 
-  public AImageContainerFrame( Context context )
+  public AAREImageContainerFrame( Context context )
     {
     super( context );
 
     initialise( context, null, 0 );
     }
 
-  public AImageContainerFrame( Context context, AttributeSet attrs )
+  public AAREImageContainerFrame( Context context, AttributeSet attrs )
     {
     super( context, attrs );
 
     initialise( context, attrs, 0 );
     }
 
-  public AImageContainerFrame( Context context, AttributeSet attrs, int defStyleAttr )
+  public AAREImageContainerFrame( Context context, AttributeSet attrs, int defStyleAttr )
     {
     super( context, attrs, defStyleAttr );
 
@@ -149,7 +144,7 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
     }
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-  public AImageContainerFrame( Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes )
+  public AAREImageContainerFrame( Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes )
     {
     super( context, attrs, defStyleAttr, defStyleRes );
 
@@ -167,69 +162,9 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
   @Override
   protected void onMeasure( int widthMeasureSpec, int heightMeasureSpec )
     {
-    int widthMode = MeasureSpec.getMode( widthMeasureSpec );
-    int widthSize = MeasureSpec.getSize( widthMeasureSpec );
+    mAspectRatioEnforcer.onMeasure( this, widthMeasureSpec, heightMeasureSpec );
 
-
-    // We only do this jiggery-pokery with the size if the width is known and we were
-    // supplied an aspect ratio.
-
-    if ( ( widthMode == MeasureSpec.AT_MOST || widthMode == MeasureSpec.EXACTLY ) &&
-         mWidthToHeightMultiplier >= KiteSDK.FLOAT_ZERO_THRESHOLD )
-      {
-      float imageWidth;
-      float imageHeight;
-      float frameHeight;
-
-      if ( mLeftPaddingProportion   >= KiteSDK.FLOAT_ZERO_THRESHOLD ||
-           mTopPaddingProportion    >= KiteSDK.FLOAT_ZERO_THRESHOLD ||
-           mRightPaddingProportion  >= KiteSDK.FLOAT_ZERO_THRESHOLD ||
-           mBottomPaddingProportion >= KiteSDK.FLOAT_ZERO_THRESHOLD )
-        {
-
-        // If padding proportions have been supplied, our calculations are based on the following equations:
-        //
-        // Available width =   left padding                            + image width +   right padding
-        //                 = ( image width * left padding proportion ) + image width + ( image width * right padding proportion )
-        //                 = image width * ( left padding proportion + 1 + right padding proportion )
-        //
-        // Therefore: image width = available width / ( left padding proportion + 1 + right padding proportion )
-        //
-        imageWidth = widthSize / ( mLeftPaddingProportion + 1f + mRightPaddingProportion );
-
-        // Now that we have the width, we can calculate the height using the aspect ratio
-        imageHeight = imageWidth * mWidthToHeightMultiplier;
-
-
-        // Finally, calculate and set the padding.
-
-        float leftPadding   = imageWidth * mLeftPaddingProportion;
-        float rightPadding  = imageWidth * mRightPaddingProportion;
-        float topPadding    = imageHeight * mTopPaddingProportion;
-        float bottomPadding = imageHeight * mBottomPaddingProportion;
-
-        setPadding( (int)leftPadding, (int)topPadding, (int)rightPadding, (int)bottomPadding );
-
-        frameHeight = topPadding + imageHeight + bottomPadding;
-        }
-      else
-        {
-        // If no padding proportions have been set, then leave the padding as it is, but still calculate
-        // the image dimensions.
-
-        imageWidth  = widthSize - ( getPaddingLeft() + getPaddingRight() );
-        imageHeight = imageWidth * mWidthToHeightMultiplier;
-
-        frameHeight = getPaddingTop() + imageHeight + getPaddingBottom();
-        }
-
-
-      // Adjust the height measure spec to set the height of the frame
-      heightMeasureSpec = MeasureSpec.makeMeasureSpec( (int)frameHeight, widthMode );
-      }
-
-
-    super.onMeasure( widthMeasureSpec, heightMeasureSpec );
+    super.onMeasure( mAspectRatioEnforcer.getWidthMeasureSpec(), mAspectRatioEnforcer.getHeightMeasureSpec() );
     }
 
 
@@ -346,28 +281,7 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
     mImageView       = (ImageView)view.findViewById( R.id.image_view );
     mProgressSpinner = (ProgressBar)view.findViewById( R.id.progress_spinner );
 
-
-    // Check the XML attributes
-
-    if ( attributeSet != null )
-      {
-      TypedArray typedArray = context.obtainStyledAttributes( attributeSet, R.styleable.ImageContainerFrame, defaultStyle, defaultStyle );
-
-
-      // If an aspect ratio was defined in the XML then set it now.
-      // ** Otherwise leave it at its uninitialised value **
-
-      TypedValue value = new TypedValue();
-
-      if ( typedArray.getValue( R.styleable.ImageContainerFrame_aspectRatio, value ) )
-        {
-        setImageAspectRatio( value.getFloat() );
-        }
-
-
-      typedArray.recycle();
-      }
-
+    mAspectRatioEnforcer = new AspectRatioEnforcer( context, attributeSet, defaultStyle );
     }
 
 
@@ -387,7 +301,7 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
    *****************************************************/
   public void setImageAspectRatio( float aspectRatio )
     {
-    mWidthToHeightMultiplier = 1.0f / aspectRatio;
+    mAspectRatioEnforcer.setAspectRatio( aspectRatio );
     }
 
 
@@ -400,10 +314,7 @@ abstract public class AImageContainerFrame extends FrameLayout implements IImage
    *****************************************************/
   public void setPaddingProportions( float leftProportion, float topProportion, float rightProportion, float bottomProportion )
     {
-    mLeftPaddingProportion   = leftProportion;
-    mTopPaddingProportion    = topProportion;
-    mRightPaddingProportion  = rightProportion;
-    mBottomPaddingProportion = bottomProportion;
+    mAspectRatioEnforcer.setPaddingProportions( leftProportion, topProportion, rightProportion, bottomProportion );
     }
 
 
