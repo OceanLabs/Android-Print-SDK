@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * IImageConsumer.java
+ * CustomTypefaceSetter.java
  *
  *
  * Modified MIT License
@@ -34,51 +34,91 @@
 
 ///// Package Declaration /////
 
-package ly.kite.util;
+package ly.kite.widget;
 
 
 ///// Import(s) /////
 
-import android.graphics.Bitmap;
-
 
 ///// Class Declaration /////
 
+import android.content.Context;
+import android.graphics.Typeface;
+import android.widget.TextView;
+
+import ly.kite.R;
+
 /*****************************************************
  *
- * This interface defines an image consumer. This
- * is used by classes that use local / remote images,
- * and is used to return the image to the consumer.
+ * This class sets a custom typeface for components.
  *
  *****************************************************/
-public interface IImageConsumer
+public class CustomTypefaceSetter
   {
+  ////////// Static Constant(s) //////////
+
+  @SuppressWarnings( "unused" )
+  static private final String  LOG_TAG = "CustomTypefaceSetter";
+
+
+  ////////// Static Variable(s) //////////
+
+
+  ////////// Member Variable(s) //////////
+
+
+  ////////// Static Initialiser(s) //////////
+
+
+  ////////// Static Method(s) //////////
+
+  /*****************************************************
+   *
+   * Sets the typeface for a component.
+   *
+   *****************************************************/
+  static public void setTypeface( Context context, TextView textView )
+    {
+    // If a custom typeface has been defined in the resources - try to use it, but make sure
+    // we keep the current style.
+
+    String customFont = context.getResources().getString( R.string.custom_typeface_file_name );
+
+    if ( customFont != null && ! customFont.equals( "" ) )
+      {
+      Typeface customTypeface = TypefaceCache.getTypeface( context, customFont );
+
+      if ( customTypeface != null )
+        {
+        int style = textView.getTypeface().getStyle();
+
+        textView.setTypeface( customTypeface, style );
+        }
+
+      }
+
+    }
+
+
+  ////////// Constructor(s) //////////
+
+
   ////////// Method(s) //////////
 
   /*****************************************************
    *
-   * Called for remote images when they are not available
-   * locally, and will thus be downloaded.
+   * ...
    *
    *****************************************************/
-  public void onImageDownloading( Object key );
 
+
+  ////////// Inner Class(es) //////////
 
   /*****************************************************
    *
-   * Called when an image is available.
+   * ...
    *
    *****************************************************/
-  public void onImageAvailable( Object key, Bitmap bitmap );
-
-
-  /*****************************************************
-   *
-   * Called when an image could not be loaded. An exception
-   * may or may not be additionally returned.
-   *
-   *****************************************************/
-  public void onImageUnavailable( Object key, Exception exception );
 
   }
 

@@ -420,6 +420,17 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
 
   /*****************************************************
    *
+   * Clears the image.
+   *
+   *****************************************************/
+  public void clearImage()
+    {
+    setImageBitmap( null );
+    }
+
+
+  /*****************************************************
+   *
    * Sets the image bitmap.
    *
    *****************************************************/
@@ -446,7 +457,18 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
 
   /*****************************************************
    *
-   * Sets the mask bitmap.
+   * Clears the mask.
+   *
+   *****************************************************/
+  public void clearMask()
+    {
+    setMask( null, 0f, null );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the mask.
    *
    *****************************************************/
   public void setMask( Drawable drawable, float aspectRatio, Bleed bleed )

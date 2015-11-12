@@ -926,6 +926,19 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
         if ( mProceedOverlayButton != null ) mProceedOverlayButton.setEnabled( true );
         }
       }
+
+
+    /*****************************************************
+     *
+     * Called when an image could not be loaded.
+     *
+     *****************************************************/
+    @Override
+    public void onImageUnavailable( Object key, Exception exception )
+      {
+      // TODO
+      }
+
     }
 
 

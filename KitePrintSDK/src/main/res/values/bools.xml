@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <bool name="show_product_group_image_progress_spinner">false</bool>
+    <bool name="show_product_image_progress_spinner">false</bool>
+    <bool name="show_product_overview_image_progress_spinner">false</bool>
+
+</resources>

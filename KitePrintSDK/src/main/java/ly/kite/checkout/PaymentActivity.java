@@ -60,6 +60,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 import com.paypal.android.sdk.payments.PayPalPayment;
@@ -120,9 +121,9 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer, 
 
   ////////// Member Variable(s) //////////
 
-  private PrintOrder mPrintOrder;
-  private String mAPIKey;
-  private KiteSDK.Environment mKiteSDKEnvironment;
+  private PrintOrder           mPrintOrder;
+  private String               mAPIKey;
+  private KiteSDK.Environment  mKiteSDKEnvironment;
   //private PayPalCard.Environment mPayPalEnvironment;
 
   private ListView mOrderSummaryListView;
@@ -135,6 +136,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer, 
   private OrderPricing mOrderPricing;
 
   private boolean mPromoActionClearsCode;
+  private String mLastSubmittedPromoCode;
   private boolean mLastPriceRetrievalSucceeded;
 
 
@@ -433,13 +435,13 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer, 
   @Override
   public void paOnSuccess( OrderPricing pricing )
     {
-    mOrderPricing = pricing;
+    mOrderPricing                = pricing;
 
     mLastPriceRetrievalSucceeded = true;
 
     mPromoButton.setEnabled( true );
     mCreditCardButton.setEnabled( true );
-    mCreditCardButton.setEnabled( true );
+    mPayPalButton.setEnabled( true );
 
     mProgressBar.setVisibility( View.GONE );
 
@@ -459,14 +461,14 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer, 
     mLastPriceRetrievalSucceeded = false;
 
     displayModalDialog
-            (
-                    R.string.alert_dialog_title_oops,
-                    getString( R.string.alert_dialog_message_pricing_format_string, exception.getMessage() ),
-                    R.string.Retry,
-                    new RetrievePricingRunnable(),
-                    R.string.Cancel,
-                    new FinishRunnable()
-            );
+      (
+      R.string.alert_dialog_title_oops,
+      getString( R.string.alert_dialog_message_pricing_format_string, exception.getMessage() ),
+      R.string.Retry,
+      new RetrievePricingRunnable(),
+      R.string.Cancel,
+      new FinishRunnable()
+      );
     }
 
 
@@ -503,7 +505,11 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer, 
    *****************************************************/
   void requestPrices()
     {
-    mOrderPricing = PricingAgent.getInstance().requestPricing( this, mPrintOrder, this );
+    mLastSubmittedPromoCode = mPromoEditText.getText().toString();
+
+    if ( mLastSubmittedPromoCode.trim().equals( "" ) ) mLastSubmittedPromoCode = null;
+
+    mOrderPricing  = PricingAgent.getInstance().requestPricing( this, mPrintOrder, mLastSubmittedPromoCode, this );
 
 
     // If the pricing wasn't cached - disable the buttons, and show the progress spinner, whilst
@@ -545,7 +551,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer, 
       mPromoEditText.setEnabled( true );
       mPromoEditText.setTextColor( getResources().getColor( R.color.payment_promo_code_text_error ) );
 
-      mPromoButton.setText( R.string.payment_promo_button_text_apply );
+      mPromoButton.setText( R.string.payment_promo_button_text_clear );
 
       mPromoActionClearsCode = true;
 
@@ -559,7 +565,10 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer, 
       }
     else
       {
-      // Either there was no promo code, or it was valid.
+      // Either there was no promo code, or it was valid. Save which ever it was.
+
+      mPrintOrder.setPromoCode( mLastSubmittedPromoCode );
+
 
       // If there is a promo code - change the text to "Clear" immediately following a retrieval. It
       // will get changed back to "Apply" as soon as the field is changed.
@@ -662,10 +671,6 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer, 
     {
     if ( mPromoActionClearsCode )
       {
-      String lastPromoCode = mPrintOrder.getPromoCode();
-
-      mPrintOrder.clearPromoCode();
-
       mPromoEditText.setEnabled( true );
       mPromoEditText.setText( null );
 
@@ -678,7 +683,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer, 
       // If we are clearing a promo code that was successfully used - re-request the
       // prices (i.e. without the code).
 
-      if ( lastPromoCode != null && mLastPriceRetrievalSucceeded )
+      if ( mLastSubmittedPromoCode != null && mLastPriceRetrievalSucceeded )
         {
         requestPrices();
         }
@@ -686,8 +691,6 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer, 
     else
       {
       hideKeyboardDelayed();
-
-      mPrintOrder.setPromoCode( mPromoEditText.getText().toString() );
 
       requestPrices();
       }

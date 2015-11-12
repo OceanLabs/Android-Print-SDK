@@ -50,11 +50,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
@@ -114,14 +112,13 @@ public class FileDownloader
 
   /*****************************************************
    *
-   * Either downloads a file from the remote URL, or loads
-   * one from resources, and saves it to the output file.
+   * Downloads a file from a remote URL to a local file
    *
-   * @return true, if the file was downloaded successfully.
-   * @return false, otherwise.
+   * @return null, if the file was downloaded successfully
+   * @return Exception, if an exception was thrown
    *
    *****************************************************/
-  static public boolean download( URL sourceURL, File targetDirectory, File targetFile )
+  static public Exception download( URL sourceURL, File targetDirectory, File targetFile )
     {
     // Make sure the directory exists
     targetDirectory.mkdirs();
@@ -155,7 +152,8 @@ public class FileDownloader
 
 
       tempTargetFile.renameTo( targetFile );
-      return ( true );
+
+      return ( null );
       }
     catch ( IOException ioe )
       {
@@ -165,7 +163,7 @@ public class FileDownloader
       if ( tempTargetFile != null ) tempTargetFile.delete();
       targetFile.delete();
 
-      return ( false );
+      return ( ioe );
       }
     finally
       {
@@ -177,7 +175,7 @@ public class FileDownloader
           }
         catch ( IOException ioe )
           {
-          // Ignore
+          return ( ioe );
           }
         }
 
@@ -189,7 +187,7 @@ public class FileDownloader
           }
         catch ( IOException ioe )
           {
-          // Ignore
+          return ( ioe );
           }
         }
       }
@@ -260,7 +258,8 @@ public class FileDownloader
    *****************************************************/
   public interface ICallback
     {
-    public void onFileDownloaded( URL sourceURL, File targetDirectory, File targetFile );
+    public void onDownloadSuccess( URL sourceURL, File targetDirectory, File targetFile );
+    public void onDownloadFailure( URL sourceURL, Exception exception );
     }
 
 
@@ -270,13 +269,12 @@ public class FileDownloader
    * The downloader task.
    *
    *****************************************************/
-  private class DownloaderTask extends AsyncTask< Void, Void, Void >
+  private class DownloaderTask extends AsyncTask< Void, Void, Exception >
     {
-
-    private final URL mSourceURL;
-    private final File mTargetDirectory;
-    private final File mTargetFile;
-    private final List<ICallback> mCallbacks;
+    private final URL              mSourceURL;
+    private final File             mTargetDirectory;
+    private final File             mTargetFile;
+    private final List<ICallback>  mCallbacks;
 
     public DownloaderTask( URL sourceURL, File targetDirectory, File targetFile, ICallback callback )
       {
@@ -296,28 +294,32 @@ public class FileDownloader
      * Entry point for background thread.
      *
      *****************************************************/
-
     @Override
-    protected Void doInBackground( Void... params )
+    protected Exception doInBackground( Void... params )
       {
-      if (  !mTargetFile.exists() )
+      if (  ! mTargetFile.exists() )
         {
-        download( mSourceURL, mTargetDirectory, mTargetFile );
+        return ( download( mSourceURL, mTargetDirectory, mTargetFile ) );
         }
 
-      return null;
+      return ( null );
       }
 
+
     @Override
-    protected void onPostExecute(Void v)
+    protected void onPostExecute( Exception resultException )
       {
-      for (ICallback callback : mCallbacks)
+      if ( resultException == null )
         {
-        callback.onFileDownloaded( mSourceURL, mTargetDirectory, mTargetFile );
+        for ( ICallback callback : mCallbacks ) callback.onDownloadSuccess( mSourceURL, mTargetDirectory, mTargetFile );
+        }
+      else
+        {
+        for ( ICallback callback : mCallbacks ) callback.onDownloadFailure( mSourceURL, resultException );
         }
 
-        mInProgressDownloadTasks.remove( mSourceURL );
-        }
+      mInProgressDownloadTasks.remove( mSourceURL );
+      }
     }
 
 

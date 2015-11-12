@@ -216,21 +216,6 @@ public class PhoneCaseFragment extends AEditImageFragment implements AImageSourc
       }
 
 
-    // Request the mask
-
-    ImageAgent imageAgent = ImageAgent.getInstance( mKiteActivity );
-
-    URL        maskURL      = mProduct.getMaskURL();
-    Bleed      maskBleed    = mProduct.getMaskBleed();
-
-    if ( maskURL != null )
-      {
-      mEditableImageContainerFrame.setMaskExtras( maskURL, maskBleed );
-
-      imageAgent.requestImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, maskURL, mEditableImageContainerFrame );
-      }
-
-
     // If we haven't already got an image asset - look in the asset list
 
     if ( mImageAsset == null )
@@ -297,22 +282,6 @@ public class PhoneCaseFragment extends AEditImageFragment implements AImageSourc
     super.onTop();
 
     if ( mProduct != null ) mKiteActivity.setTitle( mProduct.getName() );
-
-    if ( mImageAsset != null ) useAssetForImage( mImageAsset, false );
-    }
-
-
-  /*****************************************************
-   *
-   * Called when the fragment is not top-most.
-   *
-   *****************************************************/
-  @Override
-  public void onNotTop()
-    {
-    super.onNotTop();
-
-    if ( mEditableImageContainerFrame != null ) mEditableImageContainerFrame.clearImage();
     }
 
 
@@ -338,6 +307,39 @@ public class PhoneCaseFragment extends AEditImageFragment implements AImageSourc
     if ( mEditableImageContainerFrame != null )
       {
       mEditableImageContainerFrame.saveState( outState );
+      }
+
+    }
+
+
+  /*****************************************************
+   *
+   * Requests all images.
+   *
+   *****************************************************/
+  @Override
+  protected void startImageRequests()
+    {
+    // Request the mask
+
+    ImageAgent imageAgent = ImageAgent.getInstance( mKiteActivity );
+
+    URL        maskURL      = mProduct.getMaskURL();
+    Bleed      maskBleed    = mProduct.getMaskBleed();
+
+    if ( maskURL != null )
+      {
+      mEditableImageContainerFrame.setMaskExtras( maskURL, maskBleed );
+
+      imageAgent.requestImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, maskURL, mEditableImageContainerFrame );
+      }
+
+
+    // Request the image
+
+    if ( mImageAsset != null )
+      {
+      useAssetForImage( mImageAsset, false );
       }
 
     }
@@ -386,7 +388,7 @@ public class PhoneCaseFragment extends AEditImageFragment implements AImageSourc
 
     // When we have the image - kick off the prompt text display cycle if this is the first time
     // we're loading an image.
-    AssetHelper.requestImage( mKiteActivity, asset, new PromptTextTrigger( mEditableImageContainerFrame ) );
+    AssetHelper.requestImage( mKiteActivity, asset, mEditableImageContainerFrame );
     }
 
 

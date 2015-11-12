@@ -39,8 +39,11 @@ package ly.kite;
 
 ///// Import(s) /////
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import android.app.Activity;
@@ -76,46 +79,45 @@ public class KiteSDK
   {
   ////////// Static Constant(s) //////////
 
-  @SuppressWarnings( "unused" )
-  static private final String  LOG_TAG = "KiteSDK";
+  static private final String LOG_TAG                                             = "KiteSDK";
 
-  static public  final String SDK_VERSION                               = "3.0.0";
+  static public  final String SDK_VERSION                                         = "3.0.0";
 
-  static private final String SHARED_PREFERENCES_NAME                   = "kite_shared_prefs";
-  static private final String SHARED_PREFERENCES_KEY_API_KEY            = "api_key";
-  static private final String SHARED_PREFERENCES_KEY_UNIQUE_USER_ID     = "unique_user_id";
+  static private final String SHARED_PREFERENCES_NAME                             = "kite_shared_prefs";
 
-  static private final String KEY_ENVIRONMENT_NAME                      = "environment_name";
-  static private final String KEY_API_ENDPOINT                          = "api_endpoint";
-  static private final String KEY_PAYMENT_ACTIVITY_ENVIRONMENT          = "payment_activity_environment";
-  static private final String KEY_PAYPAL_ENVIRONMENT                    = "paypal_environment";
-  static private final String KEY_PAYPAL_API_ENDPOINT                   = "paypal_api_endpoint";
-  static private final String KEY_PAYPAL_CLIENT_ID                      = "paypay_client_id";
-  static private final String KEY_PAYPAL_PASSWORD                       = "paypal_password";
+  static private final String SHARED_PREFERENCES_KEY_API_KEY                      = "api_key";
+  static private final String SHARED_PREFERENCES_KEY_UNIQUE_USER_ID               = "unique_user_id";
+  static private final String SHARED_PREFERENCES_KEY_ENVIRONMENT_NAME             = "environment_name";
+  static private final String SHARED_PREFERENCES_KEY_API_ENDPOINT                 = "api_endpoint";
+  static private final String SHARED_PREFERENCES_KEY_IMAGE_SOURCES                = "image_sources";
 
-  static private final String SHARED_PREFERENCES_INSTAGRAM_CLIENT_ID    = "instagram_client_id";
-  static private final String SHARED_PREFERENCES_INSTAGRAM_REDIRECT_URI = "instagram_redirect_uri";
+  static private final String SHARED_PREFERENCES_KEY_PAYMENT_ACTIVITY_ENVIRONMENT = "payment_activity_environment";
+  static private final String SHARED_PREFERENCES_KEY_PAYPAL_ENVIRONMENT           = "paypal_environment";
+  static private final String SHARED_PREFERENCES_KEY_PAYPAL_API_ENDPOINT          = "paypal_api_endpoint";
+  static private final String SHARED_PREFERENCES_KEY_PAYPAL_CLIENT_ID             = "paypay_client_id";
+  static private final String SHARED_PREFERENCES_KEY_PAYPAL_PASSWORD              = "paypal_password";
 
-  static private final String SHARED_PREFERENCES_REQUEST_PHONE_NUMBER   = "request_phone_number";
+  static private final String SHARED_PREFERENCES_KEY_INSTAGRAM_CLIENT_ID          = "instagram_client_id";
+  static private final String SHARED_PREFERENCES_KEY_INSTAGRAM_REDIRECT_URI       = "instagram_redirect_uri";
 
-  static public  final String PAYPAL_LIVE_API_ENDPOINT                  = "api.paypal.com";
-  static public  final String PAYPAL_LIVE_CLIENT_ID                     = "ASYVBBCHF_KwVUstugKy4qvpQaPlUeE_5beKRJHpIP2d3SA_jZrsaUDTmLQY";
-  static public  final String PAYPAL_LIVE_PASSWORD                      = "";
-  //public  static final String PAYPAL_RECIPIENT_LIVE                     = "hello@kite.ly";
+  static private final String SHARED_PREFERENCES_KEY_REQUEST_PHONE_NUMBER         = "request_phone_number";
 
-  static public  final String PAYPAL_SANDBOX_API_ENDPOINT               = "api.sandbox.paypal.com";
-  static public  final String PAYPAL_SANDBOX_CLIENT_ID                  = "AcEcBRDxqcCKiikjm05FyD4Sfi4pkNP98AYN67sr3_yZdBe23xEk0qhdhZLM";
-  static public  final String PAYPAL_SANDBOX_PASSWORD                   = "";
-  //public  static final String PAYPAL_RECIPIENT_SANDBOX                  = "sandbox-merchant@kite.ly";
+  static public  final String PAYPAL_LIVE_API_ENDPOINT                            = "api.paypal.com";
+  static public  final String PAYPAL_LIVE_CLIENT_ID                               = "ASYVBBCHF_KwVUstugKy4qvpQaPlUeE_5beKRJHpIP2d3SA_jZrsaUDTmLQY";
+  static public  final String PAYPAL_LIVE_PASSWORD                                = "";
+
+  static public  final String PAYPAL_SANDBOX_API_ENDPOINT                         = "api.sandbox.paypal.com";
+  static public  final String PAYPAL_SANDBOX_CLIENT_ID                            = "AcEcBRDxqcCKiikjm05FyD4Sfi4pkNP98AYN67sr3_yZdBe23xEk0qhdhZLM";
+  static public  final String PAYPAL_SANDBOX_PASSWORD                             = "";
 
 
-  static public final String INTENT_PREFIX                             = "ly.kite";
+  static public final String INTENT_PREFIX                                        = "ly.kite";
 
-  static public final long   MAX_ACCEPTED_PRODUCT_AGE_MILLIS           = 1000 * 60 * 60;  // 1 hour
+  static public final long   MAX_ACCEPTED_PRODUCT_AGE_MILLIS                      = 1000 * 60 * 60;  // 1 hour
 
-  static public final float  FLOAT_ZERO_THRESHOLD                      = 0.0001f;
+  static public final float  FLOAT_ZERO_THRESHOLD                                 = 0.0001f;
 
-  static public final int ACTIVITY_REQUEST_CODE_FIRST = 10;
+  static public final int    ACTIVITY_REQUEST_CODE_FIRST                          = 10;
 
 
 
@@ -149,34 +151,7 @@ public class KiteSDK
     {
     if ( sKiteSDK == null )
       {
-      // We need to create an instance, but we have only been
-      // given a context, so we need to try and load a previously
-      // saved environment.
-
-      SharedPreferences sharedPreferences = context.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE );
-
-
-      String apiKey = sharedPreferences.getString( SHARED_PREFERENCES_KEY_API_KEY, null );
-
-      if ( apiKey == null ) throw ( new IllegalStateException( "Unable to find persisted API key ... have you initialised the SDK?" ) );
-
-
-
-      if ( apiKey == null ) throw ( new IllegalStateException( "Unable to find persisted environment name ... have you initialised the SDK?" ) );
-
-      try
-        {
-        Environment environment = new Environment( sharedPreferences );
-
-        // TODO: Load image sources
-
-        sKiteSDK = new KiteSDK( context, apiKey, environment );
-        }
-      catch ( Exception exception )
-        {
-        Log.e( LOG_TAG, "Unable to load previous environment", exception );
-        }
-
+      sKiteSDK = new KiteSDK( context, context.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE ) );
       }
 
     return ( sKiteSDK );
@@ -187,7 +162,7 @@ public class KiteSDK
    *
    * Returns a singleton instance of the SDK. Note that
    * if there is already an instance of the SDK, it will
-   * have its environment set to the supplied values.
+   * be re-initialised with the supplied values.
    *
    *****************************************************/
   static public KiteSDK getInstance( Context context, String apiKey, IEnvironment environment )
@@ -252,10 +227,54 @@ public class KiteSDK
 
   ////////// Constructor(s) //////////
 
-  private KiteSDK( Context context, String apiKey, IEnvironment environment )
+  /*****************************************************
+   *
+   * Creates a new instance by reading in previously persisted
+   * values.
+   *
+   *****************************************************/
+  private KiteSDK( Context context )
     {
     mApplicationContext = context.getApplicationContext();
-    
+    }
+
+
+  /*****************************************************
+   *
+   * Creates a new instance from shared preferences.
+   *
+   *****************************************************/
+  private KiteSDK( Context context, SharedPreferences sharedPreferences )
+    {
+    this( context );
+
+
+    String apiKey = sharedPreferences.getString( SHARED_PREFERENCES_KEY_API_KEY, null );
+
+    if ( apiKey == null ) throw ( new IllegalStateException( "Unable to load API key ... have you initialised the SDK?" ) );
+
+
+    Environment environment = new Environment( sharedPreferences );
+
+    if ( environment == null ) throw ( new IllegalStateException( "Unable to load environment ... have you initialised the SDK?" ) );
+
+
+    setEnvironment( apiKey, environment );
+
+    setImageSourcesByClassName( sharedPreferences.getStringSet( SHARED_PREFERENCES_KEY_IMAGE_SOURCES, null ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Creates a new instance with the supplied Kite API key
+   * and environment.
+   *
+   *****************************************************/
+  private KiteSDK( Context context, String apiKey, IEnvironment environment )
+    {
+    this( context );
+
     setEnvironment( apiKey, environment );
 
     clearInstagramCredentials();
@@ -293,7 +312,7 @@ public class KiteSDK
       Log.e( LOG_TAG, "Unable to save current environment to shared preferences" );
       }
 
-    return sKiteSDK;
+    return ( sKiteSDK );
     }
 
 
@@ -308,8 +327,8 @@ public class KiteSDK
     SharedPreferences.Editor editor = mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE ).edit();
 
     editor
-      .putString( SHARED_PREFERENCES_INSTAGRAM_CLIENT_ID, clientId )
-      .putString( SHARED_PREFERENCES_INSTAGRAM_REDIRECT_URI, redirectUri );
+      .putString( SHARED_PREFERENCES_KEY_INSTAGRAM_CLIENT_ID, clientId )
+      .putString( SHARED_PREFERENCES_KEY_INSTAGRAM_REDIRECT_URI, redirectUri );
 
     if ( ! editor.commit() )
       {
@@ -330,8 +349,8 @@ public class KiteSDK
     SharedPreferences.Editor editor = mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE ).edit();
 
     editor
-      .remove( SHARED_PREFERENCES_INSTAGRAM_CLIENT_ID )
-      .remove( SHARED_PREFERENCES_INSTAGRAM_REDIRECT_URI );
+      .remove( SHARED_PREFERENCES_KEY_INSTAGRAM_CLIENT_ID )
+      .remove( SHARED_PREFERENCES_KEY_INSTAGRAM_REDIRECT_URI );
 
     if ( ! editor.commit() )
       {
@@ -363,7 +382,7 @@ public class KiteSDK
     {
     SharedPreferences.Editor editor = mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE ).edit();
 
-    editor.putBoolean( SHARED_PREFERENCES_REQUEST_PHONE_NUMBER, requestPhoneNumber );
+    editor.putBoolean( SHARED_PREFERENCES_KEY_REQUEST_PHONE_NUMBER, requestPhoneNumber );
 
     if ( ! editor.commit() )
       {
@@ -440,7 +459,7 @@ public class KiteSDK
     {
     SharedPreferences sharedPreferences = mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE );
 
-    return ( sharedPreferences.getString( SHARED_PREFERENCES_INSTAGRAM_CLIENT_ID, null ) );
+    return ( sharedPreferences.getString( SHARED_PREFERENCES_KEY_INSTAGRAM_CLIENT_ID, null ) );
     }
 
 
@@ -454,7 +473,7 @@ public class KiteSDK
     {
     SharedPreferences sharedPreferences = mApplicationContext.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
 
-    return ( sharedPreferences.getString( SHARED_PREFERENCES_INSTAGRAM_REDIRECT_URI, null ) );
+    return ( sharedPreferences.getString( SHARED_PREFERENCES_KEY_INSTAGRAM_REDIRECT_URI, null ) );
     }
 
 
@@ -467,7 +486,50 @@ public class KiteSDK
   public boolean getRequestPhoneNumber()
     {
     SharedPreferences prefs = mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE );
-    return prefs.getBoolean( SHARED_PREFERENCES_REQUEST_PHONE_NUMBER, true );
+
+    return ( prefs.getBoolean( SHARED_PREFERENCES_KEY_REQUEST_PHONE_NUMBER, true ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets image sources.
+   *
+   *****************************************************/
+  public KiteSDK setImageSourcesByClassName( Set<String> classNameSet )
+    {
+    List<AImageSource> imageSourceList = new ArrayList<>();
+
+    if ( classNameSet != null )
+      {
+      // Try to dynamically load each of the image sources
+
+      for ( String className : classNameSet )
+        {
+        try
+          {
+          Class<?>       imageSourceClass            = Class.forName( className );
+          Constructor<?> imageSourceClassConstructor = imageSourceClass.getConstructor();
+          AImageSource   imageSource                 = (AImageSource)imageSourceClassConstructor.newInstance();
+
+          imageSourceList.add( imageSource );
+          }
+        catch ( Exception e )
+          {
+          Log.e( LOG_TAG, "Unable to load image source " + className, e );
+          }
+        }
+      }
+
+
+    // Convert the list to an array
+
+    AImageSource[] imageSources = new AImageSource[ imageSourceList.size() ];
+
+    imageSourceList.toArray( imageSources );
+
+
+    return ( setImageSources( imageSources ) );
     }
 
 
@@ -481,21 +543,30 @@ public class KiteSDK
     mImageSources = imageSources;
 
 
-    // Set the activity request codes for the image sources
+    HashSet<String> classNameSet = new HashSet<>();
 
     if ( imageSources != null )
       {
+      // Iterate through every image source. For each one, set its activity
+      // request code, and add its class name to a set.
+
       int requestCode = ACTIVITY_REQUEST_CODE_FIRST;
 
       for ( AImageSource imageSource : imageSources )
         {
-        imageSource.setActivityRequestCode( requestCode );
+        imageSource.setActivityRequestCode( requestCode ++ );
 
-        requestCode ++;
+        classNameSet.add( imageSource.getClass().getName() );
         }
       }
 
-    // TODO: Save image sources
+
+    // Save the class names. This may be an empty set.
+
+    mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE )
+            .edit()
+            .putStringSet( SHARED_PREFERENCES_KEY_IMAGE_SOURCES, classNameSet )
+      .apply();
 
 
     return ( this );
@@ -722,13 +793,13 @@ public class KiteSDK
 
     Environment( SharedPreferences sharedPreferences )
       {
-      mName                       = sharedPreferences.getString( KEY_ENVIRONMENT_NAME, null );
-      mAPIEndpoint                = sharedPreferences.getString( KEY_API_ENDPOINT, null );
-      mPaymentActivityEnvironment = sharedPreferences.getString( KEY_PAYMENT_ACTIVITY_ENVIRONMENT, null );
-      mPayPalEnvironment          = sharedPreferences.getString( KEY_PAYPAL_ENVIRONMENT, null );
-      mPayPalAPIEndpoint          = sharedPreferences.getString( KEY_PAYPAL_API_ENDPOINT, null );
-      mPayPalClientId             = sharedPreferences.getString( KEY_PAYPAL_CLIENT_ID, null );
-      mPayPalPassword             = sharedPreferences.getString( KEY_PAYPAL_PASSWORD, null );
+      mName                       = sharedPreferences.getString( SHARED_PREFERENCES_KEY_ENVIRONMENT_NAME, null );
+      mAPIEndpoint                = sharedPreferences.getString( SHARED_PREFERENCES_KEY_API_ENDPOINT, null );
+      mPaymentActivityEnvironment = sharedPreferences.getString( SHARED_PREFERENCES_KEY_PAYMENT_ACTIVITY_ENVIRONMENT, null );
+      mPayPalEnvironment          = sharedPreferences.getString( SHARED_PREFERENCES_KEY_PAYPAL_ENVIRONMENT, null );
+      mPayPalAPIEndpoint          = sharedPreferences.getString( SHARED_PREFERENCES_KEY_PAYPAL_API_ENDPOINT, null );
+      mPayPalClientId             = sharedPreferences.getString( SHARED_PREFERENCES_KEY_PAYPAL_CLIENT_ID, null );
+      mPayPalPassword             = sharedPreferences.getString( SHARED_PREFERENCES_KEY_PAYPAL_PASSWORD, null );
       }
 
 
@@ -798,13 +869,13 @@ public class KiteSDK
 
     public void writeTo( SharedPreferences.Editor editor )
       {
-      editor.putString( KEY_ENVIRONMENT_NAME, mName );
-      editor.putString( KEY_API_ENDPOINT, mAPIEndpoint );
-      editor.putString( KEY_PAYMENT_ACTIVITY_ENVIRONMENT, mPaymentActivityEnvironment );
-      editor.putString( KEY_PAYPAL_ENVIRONMENT, mPayPalEnvironment );
-      editor.putString( KEY_PAYPAL_API_ENDPOINT, mPayPalAPIEndpoint );
-      editor.putString( KEY_PAYPAL_CLIENT_ID, mPayPalClientId );
-      editor.putString( KEY_PAYPAL_PASSWORD, mPayPalPassword );
+      editor.putString( SHARED_PREFERENCES_KEY_ENVIRONMENT_NAME, mName );
+      editor.putString( SHARED_PREFERENCES_KEY_API_ENDPOINT, mAPIEndpoint );
+      editor.putString( SHARED_PREFERENCES_KEY_PAYMENT_ACTIVITY_ENVIRONMENT, mPaymentActivityEnvironment );
+      editor.putString( SHARED_PREFERENCES_KEY_PAYPAL_ENVIRONMENT, mPayPalEnvironment );
+      editor.putString( SHARED_PREFERENCES_KEY_PAYPAL_API_ENDPOINT, mPayPalAPIEndpoint );
+      editor.putString( SHARED_PREFERENCES_KEY_PAYPAL_CLIENT_ID, mPayPalClientId );
+      editor.putString( SHARED_PREFERENCES_KEY_PAYPAL_PASSWORD, mPayPalPassword );
       }
 
 

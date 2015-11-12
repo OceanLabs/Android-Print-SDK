@@ -45,6 +45,7 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -67,7 +68,9 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "EditableImageContainerFrame";
+  private static final String  LOG_TAG           = "EditableImageContain...";
+
+  private static final boolean DEBUGGING_ENABLED = true;
 
 
   ////////// Static Variable(s) //////////
@@ -81,6 +84,8 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
   private Object                   mImageKey;
   private Object                   mMaskKey;
   private Bleed                    mMaskBleed;
+
+  private ICallback                mCallback;
 
 
   ////////// Static Initialiser(s) //////////
@@ -131,7 +136,9 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
   @Override
   public void onImageDownloading( Object key )
     {
-    mProgressBar.setVisibility( View.VISIBLE );
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "onImageDownloading( key = " + key + " )" );
+
+    if ( mProgressBar != null ) mProgressBar.setVisibility( View.VISIBLE );
     }
 
 
@@ -143,6 +150,8 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
   @Override
   public void onImageAvailable( Object key, Bitmap bitmap )
     {
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "onImageAvailable( key = " + key + ", bitmap = " + bitmap + " )" );
+
     if ( key == mImageKey ) mEditableMaskedImageView.setImageBitmap( bitmap );
     if ( key == mMaskKey  ) mEditableMaskedImageView.setMask( bitmap, mMaskBleed );
 
@@ -152,8 +161,24 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
     if ( ( mImageKey == null || mEditableMaskedImageView.getImageBitmap()  != null ) &&
          ( mMaskKey  == null || mEditableMaskedImageView.getMaskDrawable() != null ) )
       {
-      mProgressBar.setVisibility( View.GONE );
+      if ( mProgressBar != null ) mProgressBar.setVisibility( View.GONE );
+
+      if ( mCallback != null ) mCallback.onImageAndMaskLoaded();
       }
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the remote image could not be loaded.
+   *
+   *****************************************************/
+  @Override
+  public void onImageUnavailable( Object key, Exception exception )
+    {
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "onImageUnavailable( key = " + key + ", exception = " + exception + " )" );
+
+    if ( mCallback != null ) mCallback.onImageLoadError( exception );
     }
 
 
@@ -177,12 +202,52 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
 
   /*****************************************************
    *
+   * Sets the callback.
+   *
+   *****************************************************/
+  public void setCallback( ICallback callback )
+    {
+    mCallback = callback;
+    }
+
+
+  /*****************************************************
+   *
    * Sets the key for the image request.
    *
    *****************************************************/
   public void setImageKey( Object key )
     {
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "setImageKey( key = " + key + " )" );
+
     mImageKey = key;
+    }
+
+
+  /*****************************************************
+   *
+   * Clears the image and mask.
+   *
+   *****************************************************/
+  public void clearAll()
+    {
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "clearAll()" );
+
+    clearImage();
+    clearMask();
+    }
+
+
+  /*****************************************************
+   *
+   * Clears the mask.
+   *
+   *****************************************************/
+  public void clearMask()
+    {
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "clearMask()" );
+
+    mEditableMaskedImageView.clearMask();
     }
 
 
@@ -193,7 +258,9 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
    *****************************************************/
   public void clearImage()
     {
-    mEditableMaskedImageView.setImageBitmap( null );
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "clearImage()" );
+
+    mEditableMaskedImageView.clearImage();
     }
 
 
@@ -205,6 +272,8 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
    *****************************************************/
   public void clearForNewImage( Object key )
     {
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "clearForNewImage( key = " + key + " )" );
+
     clearImage();
 
     setImageKey( key );
@@ -218,6 +287,8 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
    *****************************************************/
   public void setMask( int resourceId, float aspectRatio )
     {
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "setMask( resourceId = " + resourceId + ", aspectRatio = " + aspectRatio + " )" );
+
     mEditableMaskedImageView.setMask( resourceId, aspectRatio );
     }
 
@@ -229,6 +300,8 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
    *****************************************************/
   public void setMaskExtras( Object key, Bleed maskBleed )
     {
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "setMaskExtras( key = " + key + ", maskBleed = " + maskBleed + " )" );
+
     mMaskKey   = key;
     mMaskBleed = maskBleed;
     }
@@ -285,9 +358,14 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
 
   /*****************************************************
    *
-   * ...
+   * A callback.
    *
    *****************************************************/
+  public interface ICallback
+    {
+    public void onImageAndMaskLoaded();
+    public void onImageLoadError( Exception exception );
+    }
 
   }
 

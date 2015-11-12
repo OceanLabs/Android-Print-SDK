@@ -144,6 +144,18 @@ public class ImageCache implements IImageConsumer
     }
 
 
+  /*****************************************************
+   *
+   * Called when an image could not be loaded.
+   *
+   *****************************************************/
+  @Override
+  public void onImageUnavailable( Object key, Exception exception )
+    {
+    // TODO
+    }
+
+
   ////////// Method(s) //////////
 
   /*****************************************************

@@ -232,16 +232,32 @@ public class ImageAgent
 
   /*****************************************************
    *
+   * Adds a single mapping from a URL to a resource id. This
+   * is useful if we want to pre-cache any images.
+   *
+   *****************************************************/
+  public ImageAgent addResourceMapping( String urlString, int resourceId  )
+    {
+    mURLResourceIdTable.put( urlString, resourceId );
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
    * Adds a set of mappings from URLs to resource ids. This
    * is useful if we want to pre-cache any images.
    *
    *****************************************************/
-  public void addResourceMappings( Pair<String,Integer>... resourceMappings )
+  public ImageAgent addResourceMappings( Pair<String,Integer>... resourceMappings )
     {
     for ( Pair<String,Integer> resourceMapping : resourceMappings )
       {
       mURLResourceIdTable.put( resourceMapping.first, resourceMapping.second );
       }
+
+    return ( this );
     }
 
 
@@ -456,11 +472,18 @@ public class ImageAgent
 
 
     @Override
-    public void onFileDownloaded( URL sourceURL, File targetDirectory, File targetFile )
+    public void onDownloadSuccess( URL sourceURL, File targetDirectory, File targetFile )
       {
       // Once the image has downloaded - immediately request that it be loaded
       mImageLoader.requestImageLoad( mKey, targetFile, mImageTransformer, mScaledImageWidth, mImageConsumer );
       }
+
+    @Override
+    public void onDownloadFailure( URL sourceURL, Exception exception )
+      {
+      mImageConsumer.onImageUnavailable( mKey, exception );
+      }
+
     }
 
   }

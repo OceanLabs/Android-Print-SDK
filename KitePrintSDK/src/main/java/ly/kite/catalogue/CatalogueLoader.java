@@ -83,6 +83,7 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
   private static final String  LOG_TAG                               = "CatalogueLoader";
 
   private static final boolean DISPLAY_DEBUGGING                     = false;
+  private static final boolean DISPLAY_PRE_CACHING_INFO              = false;
 
   public  static final long    ANY_AGE_OK                            = -1;
 
@@ -455,7 +456,7 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
         productJSONObject = productJSONArray.getJSONObject( productIndex );
 
         // Uncomment to dump out JSON
-        Log.d( LOG_TAG, "Product JSON:\n" + productJSONObject.toString() );
+        //Log.d( LOG_TAG, "Product JSON:\n" + productJSONObject.toString() );
 
         String                           productId          = productJSONObject.getString( JSON_NAME_PRODUCT_ID );
         String                           productName        = productJSONObject.getString( JSON_NAME_PRODUCT_NAME );
@@ -480,8 +481,6 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
         String                 productCode         = productDetailJSONObject.getString( JSON_NAME_PRODUCT_CODE );
         MultipleUnitSize       size                = parseProductSize( productDetailJSONObject.getJSONObject( JSON_NAME_PRODUCT_SIZE ) );
         float                  imageAspectRatio    = (float)productDetailJSONObject.optDouble( JSON_NAME_IMAGE_ASPECT_RATIO, Product.DEFAULT_IMAGE_ASPECT_RATIO );
-
-
 
 
         URL     maskURL     = null;
@@ -542,8 +541,9 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
 
 
         // Add the product to the catalogue
-
         catalogue.addProduct( groupLabel, groupImageURL, product );
+
+        if ( DISPLAY_PRE_CACHING_INFO ) catalogue.displayPreCachingInfo();
         }
       catch ( Exception exception )
         {

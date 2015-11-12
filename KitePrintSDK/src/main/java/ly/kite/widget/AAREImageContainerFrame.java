@@ -220,6 +220,18 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
     }
 
 
+  /*****************************************************
+   *
+   * Called when an image could not be loaded.
+   *
+   *****************************************************/
+  @Override
+  public void onImageUnavailable( Object key, Exception exception )
+    {
+    // TODO
+    }
+
+
   ////////// Animation.AnimationListener Method(s) //////////
 
   /*****************************************************
@@ -282,6 +294,20 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
     mProgressSpinner = (ProgressBar)view.findViewById( R.id.progress_spinner );
 
     mAspectRatioEnforcer = new AspectRatioEnforcer( context, attributeSet, defaultStyle );
+
+
+    // Check for specific XML attributes
+
+    if ( attributeSet != null )
+      {
+      TypedArray typedArray = context.obtainStyledAttributes( attributeSet, R.styleable.ImageContainerFrame, defaultStyle, defaultStyle );
+
+      // See if there is a forced label colour
+      setShowProgressSpinnerOnDownload( typedArray.getBoolean( R.styleable.ImageContainerFrame_showProgressSpinnerOnDownload, false ) );
+
+      typedArray.recycle();
+      }
+
     }
 
 

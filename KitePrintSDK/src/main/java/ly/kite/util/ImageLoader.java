@@ -399,6 +399,7 @@ public class ImageLoader
     IImageConsumer     imageConsumer;
 
     Bitmap             bitmap;
+    Exception          exception;
 
 
     private Request( Object key, IImageTransformer imageTransformer, int scaledImageWidth, IImageConsumer imageConsumer )
@@ -652,6 +653,10 @@ public class ImageLoader
         catch ( Exception exception )
           {
           Log.e( LOG_TAG, "Unable to load bitmap", exception );
+
+          request.exception = exception;
+
+          publishProgress( request );
           }
 
         }
@@ -668,8 +673,17 @@ public class ImageLoader
       {
       Request request = requests[ 0 ];
 
-      // Callback to the consumer with the bitmap
-      request.imageConsumer.onImageAvailable( request.key, request.bitmap );
+
+      // Callback to the consumer with the result.
+
+      if ( request.bitmap != null )
+        {
+        request.imageConsumer.onImageAvailable  ( request.key, request.bitmap );
+        }
+      else
+        {
+        request.imageConsumer.onImageUnavailable( request.key, request.exception );
+        }
       }
 
 

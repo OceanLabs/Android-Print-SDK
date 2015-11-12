@@ -41,7 +41,6 @@ package ly.kite.journey.creation;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,7 +52,6 @@ import ly.kite.journey.AKiteActivity;
 import ly.kite.catalogue.Asset;
 import ly.kite.catalogue.AssetHelper;
 import ly.kite.catalogue.Product;
-import ly.kite.util.IImageConsumer;
 import ly.kite.widget.EditableImageContainerFrame;
 import ly.kite.widget.PromptTextFrame;
 
@@ -66,7 +64,7 @@ import ly.kite.widget.PromptTextFrame;
  * edit an image to fit within a mask.
  *
  *****************************************************/
-abstract public class AEditImageFragment extends AProductCreationFragment implements View.OnClickListener
+abstract public class AEditImageFragment extends AProductCreationFragment implements View.OnClickListener, EditableImageContainerFrame.ICallback
   {
   ////////// Static Constant(s) //////////
 
@@ -173,8 +171,15 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
     mPromptTextFrame             = (PromptTextFrame)view.findViewById( R.id.prompt_text_frame );
 
 
-    if ( mCancelButton  != null ) mCancelButton.setOnClickListener( this );
-    if ( mConfirmButton != null ) mConfirmButton.setOnClickListener( this );
+    mEditableImageContainerFrame.setCallback( this );
+
+    if ( mCancelButton != null ) mCancelButton.setOnClickListener( this );
+
+    if ( mConfirmButton != null )
+      {
+      // The confirm button is not enabled until both image and mask are loaded
+      mConfirmButton.setEnabled( false );
+      }
 
 
     return ( view );
@@ -199,6 +204,34 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
       {
       mShowPromptText = true;
       }
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the fragment is top-most.
+   *
+   *****************************************************/
+  @Override
+  public void onTop()
+    {
+    super.onTop();
+
+    startImageRequests();
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the fragment is not top-most.
+   *
+   *****************************************************/
+  @Override
+  public void onNotTop()
+    {
+    super.onNotTop();
+
+    if ( mEditableImageContainerFrame != null ) mEditableImageContainerFrame.clearAll();
     }
 
 
@@ -227,7 +260,67 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
     }
 
 
+  ////////// EditableImageContainerFrame.INotificationCallback Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when both the image and the mask have been
+   * loaded.
+   *
+   *****************************************************/
+  @Override
+  public void onImageAndMaskLoaded()
+    {
+    // Once both the image and the mask have been loaded -
+    // display any prompt text.
+
+    if ( mShowPromptText && mPromptTextFrame != null )
+      {
+      mShowPromptText = false;
+
+      mPromptTextFrame.startDisplayCycle();
+      }
+
+
+    // Enable any confirm button
+
+    if ( mConfirmButton != null )
+      {
+      mConfirmButton.setEnabled( true );
+
+      mConfirmButton.setOnClickListener( this );
+      }
+
+    }
+
+
+  /*****************************************************
+   *
+   * Called when an image could not be loaded.
+   *
+   *****************************************************/
+  @Override
+  public void onImageLoadError( Exception exception )
+    {
+    mKiteActivity.displayModalDialog(
+            R.string.alert_dialog_title_load_image,
+            R.string.alert_dialog_message_could_not_load_image,
+            R.string.Retry,
+            new StartImageRequestsRunnable(),
+            R.string.Cancel,
+            mKiteActivity.new FinishRunnable() );
+    }
+
+
   ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Requests all images.
+   *
+   *****************************************************/
+  abstract protected void startImageRequests();
+
 
   /*****************************************************
    *
@@ -302,46 +395,15 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
 
   /*****************************************************
    *
-   * Intercepts the image consumer callback, and starts the
-   * prompt text display cycle, if required.
+   * Starts any image requests.
    *
    *****************************************************/
-  protected class PromptTextTrigger implements IImageConsumer, Runnable
+  private class StartImageRequestsRunnable implements Runnable
     {
-    private IImageConsumer   mEndConsumer;
-
-
-    public PromptTextTrigger( IImageConsumer endConsumer )
-      {
-      mEndConsumer = endConsumer;
-      }
-
-
-    @Override
-    public void onImageDownloading( Object key )
-      {
-      mEndConsumer.onImageDownloading( key );
-      }
-
-    @Override
-    public void onImageAvailable( Object key, Bitmap bitmap )
-      {
-      // Pass the image on to the end consumer
-      mEndConsumer.onImageAvailable( key, bitmap );
-
-      if ( mShowPromptText && mPromptTextFrame != null )
-        {
-        mShowPromptText = false;
-
-        new Handler().postDelayed( this, PROMPT_ANIMATION_START_DELAY_MILLIS );
-        }
-      }
-
-
     @Override
     public void run()
       {
-      mPromptTextFrame.startDisplayCycle();
+      startImageRequests();
       }
     }
 

@@ -876,6 +876,18 @@ public class AssetHelper
 
     /*****************************************************
      *
+     * Called when an image could not be loaded.
+     *
+     *****************************************************/
+    @Override
+    public void onImageUnavailable( Object key, Exception exception )
+      {
+      // TODO
+      }
+
+
+    /*****************************************************
+     *
      * Encodes a bitmap into JPEG data on a background
      * thread.
      *

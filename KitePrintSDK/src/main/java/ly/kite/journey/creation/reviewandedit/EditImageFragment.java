@@ -197,16 +197,24 @@ public class EditImageFragment extends AEditImageFragment
     super.onActivityCreated( savedInstanceState );
 
 
-    // Request the image and set the mask
+    // Set the mask
+    mEditableImageContainerFrame.setMask( mProduct.getUserJourneyType().maskResourceId(), mProduct.getImageAspectRatio() );
+    }
 
+
+  /*****************************************************
+   *
+   * Requests all images.
+   *
+   *****************************************************/
+  @Override
+  protected void startImageRequests()
+    {
     ImageAgent imageManager = ImageAgent.getInstance( mKiteActivity );
 
     mEditableImageContainerFrame.setImageKey( mAsset );
-    mEditableImageContainerFrame.setMask( mProduct.getUserJourneyType().maskResourceId(), mProduct.getImageAspectRatio() );
 
-    // When we have the image - kick off the prompt text display cycle if this is the first time
-    // we're loading an image.
-    AssetHelper.requestImage( mKiteActivity, mAsset, new PromptTextTrigger( mEditableImageContainerFrame ) );
+    AssetHelper.requestImage( mKiteActivity, mAsset, mEditableImageContainerFrame );
     }
 
 

@@ -155,13 +155,8 @@ public class LabelledImageView extends AAREImageContainerFrame implements IImage
       {
       TypedArray typedArray = context.obtainStyledAttributes( attributeSet, R.styleable.LabelledImageView, defaultStyle, defaultStyle );
 
-
       // See if there is a forced label colour
-
-      TypedValue value = new TypedValue();
-
       mForcedLabelColour = typedArray.getColor( R.styleable.LabelledImageView_forcedLabelColour, NO_FORCED_LABEL_COLOUR );
-
 
       typedArray.recycle();
       }

@@ -112,10 +112,12 @@ public class PricingAgent extends ACache<String,OrderPricing,IPricingConsumer>
 
   /*****************************************************
    *
-   * Retrieves the price information for an order.
+   * Retrieves the price information for an order. The promo
+   * code is passed in separately because we don't want to
+   * store it in the order until we know it's valid.
    *
    *****************************************************/
-  public OrderPricing requestPricing( Context context, PrintOrder order, IPricingConsumer consumer )
+  public OrderPricing requestPricing( Context context, PrintOrder order, String promoCode, IPricingConsumer consumer )
     {
     // Construct the request URL first, because we also use it as the caching key.
 
@@ -136,8 +138,6 @@ public class PricingAgent extends ACache<String,OrderPricing,IPricingConsumer>
       {
       shippingCountryCode = Country.getInstance().iso3Code();
       }
-
-    String promoCode = order.getPromoCode();
 
     if ( promoCode == null ) promoCode = "";
 
