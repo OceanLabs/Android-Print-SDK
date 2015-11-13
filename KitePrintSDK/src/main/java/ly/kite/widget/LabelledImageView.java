@@ -176,6 +176,8 @@ public class LabelledImageView extends AAREImageContainerFrame implements IImage
   @Override
   public void onImageDownloading( Object key )
     {
+    super.onImageDownloading( key );
+
     mEmptyFrameImageView.setVisibility( View.VISIBLE );
     mImageView.setVisibility( View.INVISIBLE );
 

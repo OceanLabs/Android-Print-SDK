@@ -231,12 +231,12 @@ public class FileDownloader
    * Must be called on the UI thread.
    *
    *****************************************************/
-  public void requestFileDownload( URL sourceURL, File targetDirectory, File targetFile, ICallback callback )
+  public void requestFileDownload( URL sourceURL, File targetDirectory, File targetFile, boolean forceDownload, ICallback callback )
     {
     if ( mInProgressDownloadTasks.get( sourceURL ) == null )
       {
-      // no in progress task downloading this file, lets kick one off
-      DownloaderTask task = new DownloaderTask( sourceURL, targetDirectory, targetFile, callback );
+      // No in-progress task downloading this file, lets kick one off
+      DownloaderTask task = new DownloaderTask( sourceURL, targetDirectory, targetFile, forceDownload, callback );
       mInProgressDownloadTasks.put( sourceURL, task );
       task.executeOnExecutor( mThreadPoolExecutor );
       }
@@ -246,6 +246,19 @@ public class FileDownloader
       // will be notified upon completion
       mInProgressDownloadTasks.get( sourceURL ).addCallback( callback );
       }
+    }
+
+
+  /*****************************************************
+   *
+   * Requests a file to be downloaded.
+   *
+   * Must be called on the UI thread.
+   *
+   *****************************************************/
+  public void requestFileDownload( URL sourceURL, File targetDirectory, File targetFile, ICallback callback )
+    {
+    requestFileDownload( sourceURL, targetDirectory, targetFile, false, callback );
     }
 
 
@@ -274,13 +287,16 @@ public class FileDownloader
     private final URL              mSourceURL;
     private final File             mTargetDirectory;
     private final File             mTargetFile;
+    private final boolean          mForceDownload;
     private final List<ICallback>  mCallbacks;
 
-    public DownloaderTask( URL sourceURL, File targetDirectory, File targetFile, ICallback callback )
+    public DownloaderTask( URL sourceURL, File targetDirectory, File targetFile, boolean forceDownload, ICallback callback )
       {
-      mSourceURL = sourceURL;
+      mSourceURL       = sourceURL;
       mTargetDirectory = targetDirectory;
-      mTargetFile = targetFile;
+      mTargetFile      = targetFile;
+      mForceDownload   = forceDownload;
+
       mCallbacks = new ArrayList<>();
       mCallbacks.add( callback );
       }
@@ -297,7 +313,7 @@ public class FileDownloader
     @Override
     protected Exception doInBackground( Void... params )
       {
-      if (  ! mTargetFile.exists() )
+      if (  mForceDownload || ( ! mTargetFile.exists() ) )
         {
         return ( download( mSourceURL, mTargetDirectory, mTargetFile ) );
         }

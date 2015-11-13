@@ -76,6 +76,8 @@ public class ImageAgent
   @SuppressWarnings( "unused" )
   private static final String  LOG_TAG                   = "ImageAgent";
 
+  private static final boolean FORCE_FILE_DOWNLOAD       = false;
+
   private static final int     LOAD_BUFFER_SIZE_IN_BYTES = 8192;  // 8 KB
 
 
@@ -352,13 +354,17 @@ public class ImageAgent
     {
     // First check if we have been provided with a mapping to a resource id. If so - make
     // a resource request instead.
-    Integer resourceIdAsInteger = mURLResourceIdTable.get( imageURL.toString() );
 
-    if ( resourceIdAsInteger != null )
+    if ( ! FORCE_FILE_DOWNLOAD )
       {
-      requestImage( key, resourceIdAsInteger, imageTransformer, scaledImageWidth, imageConsumer );
+      Integer resourceIdAsInteger = mURLResourceIdTable.get( imageURL.toString() );
 
-      return;
+      if ( resourceIdAsInteger != null )
+        {
+        requestImage( key, resourceIdAsInteger, imageTransformer, scaledImageWidth, imageConsumer );
+
+        return;
+        }
       }
 
 
@@ -375,7 +381,7 @@ public class ImageAgent
     File imageDirectory = new File( imageDirectoryPath );
     File imageFile      = new File( imageFilePath );
 
-    if ( imageFile.exists() )
+    if ( ( ! FORCE_FILE_DOWNLOAD ) && imageFile.exists() )
       {
       // Make a request to load the image
 

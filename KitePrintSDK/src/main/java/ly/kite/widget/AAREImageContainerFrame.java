@@ -45,6 +45,7 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
@@ -79,16 +80,15 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private   static final String  LOG_TAG                           = "AAREImageContainerFrame";
+  static private final String  LOG_TAG                           = "AAREImageContainerFrame";
 
-  //public    static final float   DEFAULT_ASPECT_RATIO              = 1.389f;
+  static private final boolean DEBUGGING_IS_ENABLED              = false;
 
-  private   static final Object  ANY_KEY                           = new Object();
+  static private final Object  ANY_KEY                           = new Object();
 
-  private   static final long    FADE_IN_ANIMATION_DURATION_MILLIS = 300L;
-  private   static final float   ALPHA_TRANSPARENT                 = 0.0f;
-  private   static final float   ALPHA_OPAQUE                      = 1.0f;
-
+  static private final long    FADE_IN_ANIMATION_DURATION_MILLIS = 300L;
+  static private final float   ALPHA_TRANSPARENT                 = 0.0f;
+  static private final float   ALPHA_OPAQUE                      = 1.0f;
 
 
   ////////// Static Variable(s) //////////
@@ -195,6 +195,8 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
   @Override
   public void onImageDownloading( Object key )
     {
+    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "onImageDownloading( key = " + key + " )" );
+
     if ( mShowProgressSpinnerOnDownload ) showProgressSpinner();
     }
 
@@ -207,6 +209,8 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
   @Override
   public void onImageAvailable( Object key, Bitmap bitmap )
     {
+    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "onImageAvailable( key = " + key + ", bitmap = " + bitmap + " )" );
+
     if ( keyIsOK( key ) )
       {
       // Make sure we don't do anything if we get the bitmap delivered
@@ -228,6 +232,8 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
   @Override
   public void onImageUnavailable( Object key, Exception exception )
     {
+    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "onImageUnavailable( key = " + key + ", exception = " + exception + " )" );
+
     // TODO
     }
 
@@ -287,11 +293,12 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
   protected void initialise( Context context, AttributeSet attributeSet, int defaultStyle )
     {
     // Get the view
+
     View view = onCreateView( context, attributeSet, defaultStyle );
 
-    // Get the views
     mImageView       = (ImageView)view.findViewById( R.id.image_view );
     mProgressSpinner = (ProgressBar)view.findViewById( R.id.progress_spinner );
+
 
     mAspectRatioEnforcer = new AspectRatioEnforcer( context, attributeSet, defaultStyle );
 
@@ -302,8 +309,7 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
       {
       TypedArray typedArray = context.obtainStyledAttributes( attributeSet, R.styleable.ImageContainerFrame, defaultStyle, defaultStyle );
 
-      // See if there is a forced label colour
-      setShowProgressSpinnerOnDownload( typedArray.getBoolean( R.styleable.ImageContainerFrame_showProgressSpinnerOnDownload, false ) );
+      setShowProgressSpinnerOnDownload( typedArray.getBoolean( R.styleable.ImageContainerFrame_showProgressSpinnerOnDownload, mShowProgressSpinnerOnDownload ) );
 
       typedArray.recycle();
       }
@@ -351,10 +357,12 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
    *****************************************************/
   public void setImageBitmap( Bitmap bitmap )
     {
+    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "setImageBitmap( bitmap = " + bitmap + " )" );
+
     mImageView.setVisibility( View.VISIBLE );
     mImageView.setImageBitmap( bitmap );
 
-    // Automatically clear any progress spinner
+    // Automatically clear any progress spinner, even if the bitmap is null.
     hideProgressSpinner();
     }
 
@@ -366,7 +374,16 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
    *****************************************************/
   public void showProgressSpinner()
     {
-    if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.VISIBLE );
+    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "showProgressSpinner()" );
+
+    if ( mProgressSpinner != null )
+      {
+      mProgressSpinner.setVisibility( View.VISIBLE );
+      }
+    else
+      {
+      if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "  mProgressSpinner = null" );
+      }
     }
 
 
@@ -377,7 +394,9 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
    *****************************************************/
   public void hideProgressSpinner()
     {
-    if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.GONE );
+    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "hideProgressSpinner()" );
+
+    if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.INVISIBLE );
     }
 
 
@@ -389,6 +408,8 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
    *****************************************************/
   public void setShowProgressSpinnerOnDownload( boolean showProgressSpinnerOnDownload )
     {
+    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "setShowProgressSpinnerOnDownload( showProgressSpinnerOnDownload = " + showProgressSpinnerOnDownload + " )" );
+
     mShowProgressSpinnerOnDownload = showProgressSpinnerOnDownload;
     }
 
@@ -401,6 +422,8 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
    *****************************************************/
   public void requestScaledImageOnceSized( String imageClass, Object imageSource )
     {
+    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "requestScaledImageOnceSized( imageClass = " + imageClass + ", imageSource = " + imageSource + " )" );
+
     // Don't do anything if we're already waiting for the image
     if ( imageClass.equals( mRequestImageClass ) && imageSource.equals( mRequestImageSource ) ) return;
 
@@ -422,6 +445,8 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
    *****************************************************/
   public void requestScaledImageOnceSized( Asset asset )
     {
+    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "requestScaledImageOnceSized( asset = " + asset + " )" );
+
     requestScaledImageOnceSized( AssetHelper.IMAGE_CLASS_STRING_ASSET, asset );
     }
 
@@ -434,6 +459,8 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
    *****************************************************/
   private void checkRequestImage()
     {
+    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "checkRequestImage()" );
+
     if ( mWidth > 0 && mHeight > 0 && mRequestImageSource != null )
       {
       if ( mRequestImageSource instanceof Asset )
@@ -460,6 +487,8 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
    *****************************************************/
   public void clearForNewImage( Object expectedKey )
     {
+    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "clearForNewImage( expectedKey = " + expectedKey + " )" );
+
     setExpectedKey( expectedKey );
 
     setImageBitmap( null );
@@ -474,6 +503,8 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
    *****************************************************/
   public void clearForAnyImage()
     {
+    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "clearForAnyImage()" );
+
     setExpectedKey( ANY_KEY );
 
     mImageView.setImageBitmap( null );
@@ -487,6 +518,8 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
    *****************************************************/
   public void clear()
     {
+    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "clear()" );
+
     clearForNewImage( null );
     }
 
@@ -498,6 +531,8 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
    *****************************************************/
   public void setExpectedKey( Object key )
     {
+    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "setExpectedKey( key = " + key + " )" );
+
     mExpectedKey = key;
     }
 
