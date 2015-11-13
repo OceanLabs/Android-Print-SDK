@@ -2,5 +2,7 @@
 <resources>
     <declare-styleable name="LabelledImageView">
         <attr name="forcedLabelColour" format="color"/>
+        <attr name="labelOpacity"      format="float"/>
+        <attr name="hideLabelShadow"   format="boolean"/>
     </declare-styleable>
 </resources>

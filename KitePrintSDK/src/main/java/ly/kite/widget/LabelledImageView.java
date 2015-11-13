@@ -158,6 +158,12 @@ public class LabelledImageView extends AAREImageContainerFrame implements IImage
       // See if there is a forced label colour
       mForcedLabelColour = typedArray.getColor( R.styleable.LabelledImageView_forcedLabelColour, NO_FORCED_LABEL_COLOUR );
 
+      // Check for label opacity
+      mOverlayLabel.setLabelOpacity( typedArray.getFloat( R.styleable.LabelledImageView_labelOpacity, 1f ) );
+
+      // See if the label shadow should be hidden
+      mOverlayLabel.setHideLabelShadow( typedArray.getBoolean( R.styleable.LabelledImageView_hideLabelShadow, false ) );
+
       typedArray.recycle();
       }
 
