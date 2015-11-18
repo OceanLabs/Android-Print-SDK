@@ -119,7 +119,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
   private ICatalogueConsumer            mCatalogueConsumer;
   private boolean                       mAddFragmentOnCatalogue;
 
-  private HashMap<String,String>        mProductOptionMap;
+  private HashMap<String,String> mProductOptionValueMap;
 
 
   ////////// Static Initialiser(s) //////////
@@ -163,6 +163,26 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
       }
 
     return ( assetsAndQuantityArrayList );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the value from a list corresponding to the supplied
+   * value code, or the first, if the code is not found or null.
+   *
+   *****************************************************/
+  static protected ProductOption.Value getValueForCode( List<ProductOption.Value> valueList, String soughtValueCode )
+    {
+    if ( soughtValueCode != null )
+      {
+      for ( ProductOption.Value candidateOptionValue : valueList )
+        {
+        if ( candidateOptionValue.getCode().equals( soughtValueCode ) ) return ( candidateOptionValue );
+        }
+      }
+
+    return ( valueList.get( 0 ) );
     }
 
 
@@ -226,11 +246,11 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
       {
       mAddFragmentOnCatalogue = true;
 
-      mProductOptionMap = new HashMap<>();
+      mProductOptionValueMap = new HashMap<>();
       }
     else
       {
-      mProductOptionMap = (HashMap<String,String>)savedInstanceState.getSerializable( BUNDLE_KEY_OPTION_MAP );
+      mProductOptionValueMap = (HashMap<String,String>)savedInstanceState.getSerializable( BUNDLE_KEY_OPTION_MAP );
       }
 
 
@@ -278,7 +298,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
     super.onSaveInstanceState( outState );
 
     // Save the selected product options, so we can restore them later
-    if ( outState != null ) outState.putSerializable( BUNDLE_KEY_OPTION_MAP, mProductOptionMap );
+    if ( outState != null ) outState.putSerializable( BUNDLE_KEY_OPTION_MAP, mProductOptionValueMap );
     }
 
 
@@ -484,55 +504,19 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
     if ( productOptionsLayout == null ) return;
 
 
+
+    // Go through each of the options. Get the view for each one, and add it to the
+    // option layout.
+
     LayoutInflater layoutInflater = LayoutInflater.from( this );
-
-
-    // Go through each of the options. Create a view for each one, and a spinner adaptor
-    // for the option values. We also need to save a reference to the spinner so we can
-    // get the chosen options when we move on.
 
     int optionIndex = 0;
 
     for ( ProductOption option : product.getOptionList() )
       {
-      String optionCode = option.getCode();
+      View optionView = getOptionView( optionIndex, option, layoutInflater );
 
-
-      // Create a spinner for the option and add it to the layout
-
-      View     optionView    = layoutInflater.inflate( R.layout.product_option, null );
-
-      TextView nameTextView  = (TextView)optionView.findViewById( R.id.option_name_text_view );
-      Spinner  valuesSpinner = (Spinner)optionView.findViewById( R.id.option_values_spinner );
-
-      nameTextView.setText( option.getName() );
-
-      ArrayList<ProductOption.Value> valueList = option.getValueList();
-
-      ArrayAdapter<ProductOption.Value> valueArrayAdaptor = new ArrayAdapter<>( this, R.layout.list_item_product_option_value, R.id.value_text_view, valueList );
-
-      valuesSpinner.setAdapter( valueArrayAdaptor );
-
-      productOptionsLayout.addView( optionView );
-
-
-      // If there is already an entry in the option map - set the spinner value from it. Otherwise
-      // create a default entry now.
-
-      String valueCode = mProductOptionMap.get( optionCode );
-
-      if ( valueCode != null )
-        {
-        valuesSpinner.setSelection( valueList.indexOf( valueCode ) );
-        }
-      else
-        {
-        mProductOptionMap.put( optionCode, valueArrayAdaptor.getItem( 0 ).getCode() );
-        }
-
-      // Set up any listener(s)
-      onSetOptionSpinnerListeners( optionIndex, option, valuesSpinner, valueList );
-
+      if ( optionView != null ) productOptionsLayout.addView( optionView );
 
       optionIndex ++;
       }
@@ -551,7 +535,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
     // we then hand over to the product creation activity to choose the journey
     // depending on the product.
 
-    ProductCreationActivity.startForResult( this, mAssetsAndQuantityArrayList, product, mProductOptionMap, ACTIVITY_REQUEST_CODE_CHECKOUT );
+    ProductCreationActivity.startForResult( this, mAssetsAndQuantityArrayList, product, mProductOptionValueMap, ACTIVITY_REQUEST_CODE_CHECKOUT );
     }
 
 
@@ -587,6 +571,55 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
 
   /*****************************************************
    *
+   * Returns a view for a product option.
+   *
+   *****************************************************/
+  protected View getOptionView( int optionIndex, ProductOption option, LayoutInflater layoutInflator )
+    {
+    String optionCode = option.getCode();
+
+
+    // Create a spinner for the option and add it to the layout
+
+    View     optionView    = layoutInflator.inflate( R.layout.product_option, null );
+
+    TextView nameTextView  = (TextView)optionView.findViewById( R.id.option_name_text_view );
+    Spinner  valuesSpinner = (Spinner)optionView.findViewById( R.id.option_values_spinner );
+
+    nameTextView.setText( option.getName() );
+
+    ArrayList<ProductOption.Value> valueList = option.getValueList();
+
+    ArrayAdapter<ProductOption.Value> valueArrayAdaptor = new ArrayAdapter<>( this, R.layout.list_item_product_option_value, R.id.value_text_view, valueList );
+
+    valuesSpinner.setAdapter( valueArrayAdaptor );
+
+
+    // If there is already an entry in the option map - set the spinner value from it. Otherwise
+    // create a default entry now.
+
+    String valueCode = mProductOptionValueMap.get( optionCode );
+
+    if ( valueCode != null )
+      {
+      valuesSpinner.setSelection( valueList.indexOf( valueCode ) );
+      }
+    else
+      {
+      mProductOptionValueMap.put( optionCode, valueArrayAdaptor.getItem( 0 ).getCode() );
+      }
+
+
+    // Set up any listener(s)
+    onSetOptionSpinnerListeners( optionIndex, option, valuesSpinner, valueList );
+
+
+    return ( optionView );
+    }
+
+
+  /*****************************************************
+   *
    * Sets up any listeners on an options spinner.
    *
    *****************************************************/
@@ -601,9 +634,70 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
    * Sets a product option.
    *
    *****************************************************/
-  protected void setProductOption( String optionCode, String valueCode )
+  protected void setValueCodeForOption( String optionCode, String valueCode )
     {
-    mProductOptionMap.put( optionCode, valueCode );
+    mProductOptionValueMap.put( optionCode, valueCode );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets a product option.
+   *
+   *****************************************************/
+  protected void setValueForOption( String optionCode, ProductOption.Value value )
+    {
+    setValueCodeForOption( optionCode, value.getCode() );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a product option code.
+   *
+   *****************************************************/
+  protected String getValueCodeForOption( String optionCode )
+    {
+    return ( mProductOptionValueMap.get( optionCode ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the value index corresponding to the supplied
+   * option code, or 0, if the code is not found or null.
+   *
+   *****************************************************/
+  protected int getValueIndexForOption( String optionCode, List<ProductOption.Value> valueList )
+    {
+    String soughtValueCode = getValueCodeForOption( optionCode );
+
+    if ( soughtValueCode != null )
+      {
+      int valueIndex = 0;
+
+      for ( ProductOption.Value candidateOptionValue : valueList )
+        {
+        if ( candidateOptionValue.getCode().equals( soughtValueCode ) ) return ( valueIndex );
+
+        valueIndex++;
+        }
+      }
+
+    return ( 0 );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the product option value corresponding to the
+   * supplied option code, or the first one, if the code is
+   * not found or null.
+   *
+   *****************************************************/
+  protected ProductOption.Value getValueForOption( String optionCode, List<ProductOption.Value> valueList )
+    {
+    return ( valueList.get( getValueIndexForOption( optionCode, valueList ) ) );
     }
 
 
@@ -653,7 +747,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
       String optionCode = mOption.getCode();
       String valueCode  = ( (ProductOption.Value)parent.getItemAtPosition( position ) ).getCode();
 
-      mProductOptionMap.put( optionCode, valueCode );
+      mProductOptionValueMap.put( optionCode, valueCode );
       }
 
     @Override
