@@ -12,6 +12,7 @@
         android:textStyle="bold"/>
     <Spinner
         android:id="@+id/option_values_spinner"
+        style="@style/ProductOverviewOption_Spinner"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="start"

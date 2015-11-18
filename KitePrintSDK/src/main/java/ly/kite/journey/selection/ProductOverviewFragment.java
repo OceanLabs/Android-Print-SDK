@@ -120,15 +120,13 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
 
   private Product                  mProduct;
 
-  private HashMap<String,Spinner>  mOptionCodeSpinnerMap;
-
   private View                     mOverlaidComponents;
   private ViewPager                mProductImageViewPager;
   private PagingDots               mPagingDots;
   private Button                   mOverlaidStartButton;
   private SlidingOverlayFrame      mSlidingOverlayFrame;
   private View                     mDrawerControlLayout;
-  private ViewGroup                mProductOptionsLayout;
+  //private ViewGroup                mProductOptionsLayout;
   private ImageView                mOpenCloseDrawerIconImageView;
   private Button                   mProceedOverlayButton;
 
@@ -184,13 +182,13 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
       Log.e( TAG, "No arguments found" );
 
       mKiteActivity.displayModalDialog(
-              R.string.alert_dialog_title_no_arguments,
-              R.string.alert_dialog_message_no_arguments,
-              AKiteActivity.NO_BUTTON,
-              null,
-              R.string.Cancel,
-              mKiteActivity.new FinishRunnable()
-      );
+        R.string.alert_dialog_title_no_arguments,
+        R.string.alert_dialog_message_no_arguments,
+        AKiteActivity.NO_BUTTON,
+        null,
+        R.string.Cancel,
+        mKiteActivity.new FinishRunnable()
+        );
 
       return;
       }
@@ -214,8 +212,6 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
       return;
       }
 
-
-    mOptionCodeSpinnerMap = new HashMap<>();
     }
 
 
@@ -252,7 +248,7 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
     mOverlaidStartButton                = (Button)view.findViewById( R.id.overlaid_start_button );
     mSlidingOverlayFrame                = (SlidingOverlayFrame) view.findViewById( R.id.sliding_overlay_frame );
     mDrawerControlLayout                = view.findViewById( R.id.drawer_control_layout );
-    mProductOptionsLayout               = (ViewGroup)view.findViewById( R.id.product_options_layout );
+    //mProductOptionsLayout               = (ViewGroup)view.findViewById( R.id.product_options_layout );
     mOpenCloseDrawerIconImageView       = (ImageView) view.findViewById( R.id.open_close_drawer_icon_image_view );
     mProceedOverlayButton               = (Button)view.findViewById( R.id.proceed_overlay_button );
     TextView priceTextView              = (TextView) view.findViewById( R.id.price_text_view );
@@ -335,8 +331,12 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
       }
 
 
-    // If there is space on screen for product options - populate it
-    if ( mProductOptionsLayout != null ) populateProductOptions( mProductOptionsLayout, mProduct );
+    // Populate any product options. The activity is responsible for this because custom apps
+    // will want to do their own thing.
+    if ( mKiteActivity instanceof ICallback )
+      {
+      ( (ICallback)mKiteActivity ).poOnPopulateOptions( mProduct, view );
+      }
 
 
     SingleUnitSize                   size             = mProduct.getSizeWithFallback( UnitOfLength.CENTIMETERS );
@@ -626,7 +626,7 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
       }
     else
       {
-      onCreateProduct( mProduct, mOptionCodeSpinnerMap );
+      onCreateProduct( mProduct );
       }
     }
 
@@ -638,35 +638,35 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
    * Populates the product options layout.
    *
    *****************************************************/
-  protected void populateProductOptions( ViewGroup productOptionsLayout, Product product )
-    {
-    LayoutInflater layoutInflater = LayoutInflater.from( mKiteActivity );
-
-
-    // Go through each of the options. Create a view for each one, and a spinner adaptor
-    // for the option values. We also need to save a reference to the spinner so we can
-    // get the chosen options when we move on.
-
-    for ( ProductOption option : product.getOptionList() )
-      {
-      View     optionView    = layoutInflater.inflate( R.layout.product_option, null );
-
-      TextView nameTextView  = (TextView)optionView.findViewById( R.id.option_name_text_view );
-      Spinner  valuesSpinner = (Spinner)optionView.findViewById( R.id.option_values_spinner );
-
-      nameTextView.setText( option.getName() );
-
-      ArrayAdapter<ProductOption.Value> valueArrayAdaptor = new ArrayAdapter<>( mKiteActivity, R.layout.list_item_product_option_value, R.id.value_text_view, option.getValueList() );
-
-      valuesSpinner.setAdapter( valueArrayAdaptor );
-
-      productOptionsLayout.addView( optionView );
-
-
-      // Save the spinner for the option code
-      mOptionCodeSpinnerMap.put( option.getCode(), valuesSpinner );
-      }
-    }
+//  protected void populateProductOptions( ViewGroup productOptionsLayout, Product product )
+//    {
+//    LayoutInflater layoutInflater = LayoutInflater.from( mKiteActivity );
+//
+//
+//    // Go through each of the options. Create a view for each one, and a spinner adaptor
+//    // for the option values. We also need to save a reference to the spinner so we can
+//    // get the chosen options when we move on.
+//
+//    for ( ProductOption option : product.getOptionList() )
+//      {
+//      View     optionView    = layoutInflater.inflate( R.layout.product_option, null );
+//
+//      TextView nameTextView  = (TextView)optionView.findViewById( R.id.option_name_text_view );
+//      Spinner  valuesSpinner = (Spinner)optionView.findViewById( R.id.option_values_spinner );
+//
+//      nameTextView.setText( option.getName() );
+//
+//      ArrayAdapter<ProductOption.Value> valueArrayAdaptor = new ArrayAdapter<>( mKiteActivity, R.layout.list_item_product_option_value, R.id.value_text_view, option.getValueList() );
+//
+//      valuesSpinner.setAdapter( valueArrayAdaptor );
+//
+//      productOptionsLayout.addView( optionView );
+//
+//
+//      // Save the spinner for the option code
+//      mOptionCodeSpinnerMap.put( option.getCode(), valuesSpinner );
+//      }
+//    }
 
 
   /*****************************************************
@@ -711,14 +711,12 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
    * Called when one of the start creating buttons is clicked.
    *
    *****************************************************/
-  public void onCreateProduct( Product product, HashMap<String,Spinner> optionCodeSpinnerMap )
+  public void onCreateProduct( Product product )
     {
     // Call back to the activity
     if ( mKiteActivity instanceof ICallback )
       {
-      HashMap<String, String> optionMap = getOptionMap( optionCodeSpinnerMap );
-
-      ( (ICallback) mKiteActivity ).poOnCreateProduct( mProduct, optionMap );
+      ( (ICallback) mKiteActivity ).poOnCreateProduct( mProduct );
       }
     }
 
@@ -800,7 +798,8 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
    *****************************************************/
   public interface ICallback
     {
-    public void poOnCreateProduct( Product product, HashMap<String,String> optionMap );
+    public void poOnPopulateOptions( Product product, View rootView );
+    public void poOnCreateProduct( Product product );
     }
 
   }

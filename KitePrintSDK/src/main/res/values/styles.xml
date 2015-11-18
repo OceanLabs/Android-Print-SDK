@@ -100,4 +100,6 @@
         <item name="android:layout_width">@dimen/cta_offset_button_width</item>
     </style>
 
+    <style name="ProductOverviewOption_Spinner"/>
+
 </resources>

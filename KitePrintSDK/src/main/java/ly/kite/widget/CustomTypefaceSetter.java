@@ -79,6 +79,9 @@ public class CustomTypefaceSetter
    *****************************************************/
   static public void setTypeface( Context context, TextView textView )
     {
+    if ( textView == null ) return;
+
+
     // If a custom typeface has been defined in the resources - try to use it, but make sure
     // we keep the current style.
 
@@ -90,9 +93,19 @@ public class CustomTypefaceSetter
 
       if ( customTypeface != null )
         {
-        int style = textView.getTypeface().getStyle();
+        Typeface currentTypeface = textView.getTypeface();
 
-        textView.setTypeface( customTypeface, style );
+        if ( currentTypeface != null )
+          {
+          int style = currentTypeface.getStyle();
+
+          textView.setTypeface( customTypeface, style );
+          }
+        else
+          {
+          textView.setTypeface( customTypeface );
+          }
+
         }
 
       }

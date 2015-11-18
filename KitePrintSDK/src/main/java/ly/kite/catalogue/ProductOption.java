@@ -42,6 +42,9 @@ package ly.kite.catalogue;
 
 ///// Class Declaration /////
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,10 +66,10 @@ public class ProductOption
 
   ////////// Member Variable(s) //////////
 
-  final private String       mCode;
-  final private String       mName;
+  final private String            mCode;
+  final private String            mName;
 
-  final private List<Value>  mValueList;
+  final private ArrayList<Value>  mValueList;
 
 
   ////////// Static Initialiser(s) //////////
@@ -126,7 +129,7 @@ public class ProductOption
    * Returns a list of values for this option.
    *
    *****************************************************/
-  public List<Value> getValueList()
+  public ArrayList<Value> getValueList()
     {
     return ( mValueList );
     }
@@ -139,11 +142,32 @@ public class ProductOption
    * An option value.
    *
    *****************************************************/
-  public class Value
+  public static class Value implements Parcelable
     {
-    private String mCode;
-    private String mName;
+    ////////// Static Variable(s) //////////
 
+    public static final Parcelable.Creator<Value> CREATOR =
+      new Parcelable.Creator<Value>()
+        {
+        public Value createFromParcel( Parcel sourceParcel )
+          {
+          return ( new Value( sourceParcel ) );
+          }
+
+        public Value[] newArray( int size )
+          {
+          return ( new Value[ size ] );
+          }
+        };
+
+
+    ////////// Member Variable(s) //////////
+
+    private String  mCode;
+    private String  mName;
+
+
+    ////////// Constructor(s) //////////
 
     Value( String code, String name )
       {
@@ -151,6 +175,30 @@ public class ProductOption
       mName = name;
       }
 
+    Value( Parcel sourceParcel )
+      {
+      mCode = sourceParcel.readString();
+      mName = sourceParcel.readString();
+      }
+
+
+    ////////// Parcelable Method(s) //////////
+
+    @Override
+    public int describeContents()
+      {
+      return ( 0 );
+      }
+
+    @Override
+    public void writeToParcel( Parcel dest, int flags )
+      {
+      dest.writeString( mCode );
+      dest.writeString( mName );
+      }
+
+
+    ////////// Method(s) //////////
 
     public String getCode()
       {
@@ -167,6 +215,7 @@ public class ProductOption
       {
       return ( mName );
       }
+
     }
 
   }
