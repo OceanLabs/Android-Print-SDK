@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * BooleanHelper.java
+ * BooleanUtils.java
  *
  *
  * Modified MIT License
@@ -47,16 +47,15 @@ import java.util.List;
 
 /*****************************************************
  *
- * This class provides helper methods for use with
- * booleans.
+ * This class provides methods for use with booleans.
  *
  *****************************************************/
-public class BooleanHelper
+public class BooleanUtils
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "BooleanHelper";
+  private static final String  LOG_TAG = "BooleanUtils";
 
 
   ////////// Static Variable(s) //////////

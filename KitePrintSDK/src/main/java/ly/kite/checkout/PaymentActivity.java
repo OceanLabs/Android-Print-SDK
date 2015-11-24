@@ -43,6 +43,7 @@ import java.math.BigDecimal;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -51,6 +52,7 @@ import android.os.Looper;
 import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
@@ -94,7 +96,8 @@ import ly.kite.catalogue.SingleCurrencyAmount;
  * This activity displays the price / payment screen.
  *
  *****************************************************/
-public class PaymentActivity extends AKiteActivity implements IPricingConsumer, TextView.OnEditorActionListener
+public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
+                                                              TextView.OnEditorActionListener
   {
   ////////// Static Constant(s) //////////
 
@@ -737,6 +740,18 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer, 
    *****************************************************/
   public void onCreditCardButtonClicked( View view )
     {
+    // Check if a different credit card fragment has been declared
+
+    String creditCardFragmentClassName = getString( R.string.credit_card_fragment_class_name );
+
+    if ( creditCardFragmentClassName != null && ( ! creditCardFragmentClassName.trim().equals( "" ) ) )
+      {
+      payWithExternalCardFragment( creditCardFragmentClassName );
+
+      return;
+      }
+
+
     final PayPalCard lastUsedCard = PayPalCard.getLastUsedCard( this );
     if ( lastUsedCard != null && !lastUsedCard.hasVaultStorageExpired() )
       {
@@ -773,6 +788,36 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer, 
       payWithNewCard();
       }
     }
+
+
+  private void payWithExternalCardFragment( String fragmentClassName )
+    {
+    try
+      {
+      Class<?> fragmentClass = Class.forName( fragmentClassName );
+
+      ICreditCardFragment creditCardFragment = (ICreditCardFragment)fragmentClass.newInstance();
+
+      creditCardFragment.display( this );
+      }
+    catch ( ClassNotFoundException cnfe )
+      {
+      Log.e( LOG_TAG, "Unable to find external card fragment: " + fragmentClassName, cnfe );
+      }
+    catch ( InstantiationException ie )
+      {
+      Log.e( LOG_TAG, "Unable to instantiate external card fragment: " + fragmentClassName, ie );
+      }
+    catch ( IllegalAccessException iae )
+      {
+      Log.e( LOG_TAG, "Unable to access external card fragment: " + fragmentClassName, iae );
+      }
+    catch ( ClassCastException cce )
+      {
+      Log.e( LOG_TAG, "External card fragment is not an instance of ICreditCardFragment: " + fragmentClassName, cce );
+      }
+    }
+
 
   private void payWithNewCard()
     {
@@ -857,11 +902,12 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer, 
     }
 
 
-  private void submitOrderForPrinting( String proofOfPayment )
+  public void submitOrderForPrinting( String paymentId )
     {
-    if ( proofOfPayment != null )
+    if ( paymentId != null )
       {
-      mPrintOrder.setProofOfPayment( proofOfPayment );
+      mPrintOrder.setProofOfPayment( paymentId );
+
       Analytics.getInstance( this ).trackPaymentCompleted( mPrintOrder, Analytics.PAYMENT_METHOD_PAYPAL );
       }
     //mPrintOrder.saveToHistory(this);

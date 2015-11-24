@@ -102,6 +102,8 @@ public class KiteSDK
 
   static private final String SHARED_PREFERENCES_KEY_REQUEST_PHONE_NUMBER         = "request_phone_number";
 
+  static private final String SHARED_PREFERENCES_CUSTOM_PARAMETER_KEY_PREFIX      = "custom_parameter_";
+
   static public  final String PAYPAL_LIVE_API_ENDPOINT                            = "api.paypal.com";
   static public  final String PAYPAL_LIVE_CLIENT_ID                               = "ASYVBBCHF_KwVUstugKy4qvpQaPlUeE_5beKRJHpIP2d3SA_jZrsaUDTmLQY";
   static public  final String PAYPAL_LIVE_PASSWORD                                = "";
@@ -403,6 +405,7 @@ public class KiteSDK
     return ( mAPIKey );
     }
 
+
   /*****************************************************
    *
    * Returns the environment.
@@ -570,6 +573,51 @@ public class KiteSDK
 
 
     return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets a custom parameter.
+   *
+   *****************************************************/
+  public KiteSDK setCustomString( String name, String value )
+    {
+    // Check that the parameter name doesn't start with the custom prefix
+
+    if ( name.startsWith( SHARED_PREFERENCES_CUSTOM_PARAMETER_KEY_PREFIX ) )
+      {
+      throw ( new IllegalArgumentException( "Custom parameter names must not start with " + SHARED_PREFERENCES_CUSTOM_PARAMETER_KEY_PREFIX ) );
+      }
+
+
+    mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE )
+      .edit()
+        .putString( SHARED_PREFERENCES_CUSTOM_PARAMETER_KEY_PREFIX + name, value )
+      .apply();
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the value of a custom parameter.
+   *
+   *****************************************************/
+  public String getCustomString( String name, String defaultValue )
+    {
+    // Check that the parameter name doesn't start with the custom prefix
+
+    if ( name.startsWith( SHARED_PREFERENCES_CUSTOM_PARAMETER_KEY_PREFIX ) )
+      {
+      throw ( new IllegalArgumentException( "Custom parameter names must not start with " + SHARED_PREFERENCES_CUSTOM_PARAMETER_KEY_PREFIX ) );
+      }
+
+
+    return ( mApplicationContext
+               .getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE )
+               .getString( SHARED_PREFERENCES_CUSTOM_PARAMETER_KEY_PREFIX + name, defaultValue ) );
     }
 
 

@@ -43,7 +43,6 @@ import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 ///// Class Declaration /////
@@ -86,14 +85,14 @@ public class BooleanHelperTest extends TestCase
 
   public void testArrayFrom1()
     {
-    Assert.assertEquals( null, BooleanHelper.arrayFrom( null ) );
+    Assert.assertEquals( null, BooleanUtils.arrayFrom( null ) );
     }
 
   public void testArrayFrom2()
     {
     ArrayList<Boolean> booleanList = new ArrayList<>();
 
-    boolean[] booleanArray = BooleanHelper.arrayFrom( booleanList );
+    boolean[] booleanArray = BooleanUtils.arrayFrom( booleanList );
 
     Assert.assertNotNull( booleanArray );
     Assert.assertEquals( 0, booleanArray.length );
@@ -104,7 +103,7 @@ public class BooleanHelperTest extends TestCase
     ArrayList<Boolean> booleanList = new ArrayList<>();
     booleanList.add( true );
 
-    boolean[] booleanArray = BooleanHelper.arrayFrom( booleanList );
+    boolean[] booleanArray = BooleanUtils.arrayFrom( booleanList );
 
     Assert.assertNotNull( booleanArray );
     Assert.assertEquals( 1, booleanArray.length );
@@ -118,7 +117,7 @@ public class BooleanHelperTest extends TestCase
     booleanList.add( null );
     booleanList.add( false );
 
-    boolean[] booleanArray = BooleanHelper.arrayFrom( booleanList );
+    boolean[] booleanArray = BooleanUtils.arrayFrom( booleanList );
 
     Assert.assertNotNull( booleanArray );
     Assert.assertEquals( 3, booleanArray.length );
@@ -136,14 +135,14 @@ public class BooleanHelperTest extends TestCase
 
   public void testArrayListFrom1()
     {
-    Assert.assertEquals( null, BooleanHelper.arrayListFrom( null ) );
+    Assert.assertEquals( null, BooleanUtils.arrayListFrom( null ) );
     }
 
   public void testArrayListFrom2()
     {
     final boolean[] booleanArray = {};
 
-    ArrayList booleanList = BooleanHelper.arrayListFrom( booleanArray );
+    ArrayList booleanList = BooleanUtils.arrayListFrom( booleanArray );
 
     Assert.assertNotNull( booleanList );
     Assert.assertEquals( 0, booleanList.size() );
@@ -153,7 +152,7 @@ public class BooleanHelperTest extends TestCase
     {
     final boolean[] booleanArray = { true };
 
-    ArrayList booleanList = BooleanHelper.arrayListFrom( booleanArray );
+    ArrayList booleanList = BooleanUtils.arrayListFrom( booleanArray );
 
     Assert.assertNotNull( booleanList );
     Assert.assertEquals( 1, booleanList.size() );
@@ -164,7 +163,7 @@ public class BooleanHelperTest extends TestCase
     {
     final boolean[] booleanArray = { true, false, true, false };
 
-    ArrayList booleanList = BooleanHelper.arrayListFrom( booleanArray );
+    ArrayList booleanList = BooleanUtils.arrayListFrom( booleanArray );
 
     Assert.assertNotNull( booleanList );
     Assert.assertEquals( 4, booleanList.size() );

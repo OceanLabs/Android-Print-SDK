@@ -5,6 +5,8 @@
 
     <string name="analytics_event_callback_class_name">ly.kite.analytics.NullAnalyticsEventCallback</string>
 
+    <string name="credit_card_fragment_class_name"></string>
+
     <string name="custom_typeface_file_name"></string>
 
     <string name="unit_centimeters">centimeters</string>
@@ -81,11 +83,13 @@
     <string name="Free">Free</string>
     <string name="add_more">Add More</string>
     <string name="print_these">Print these</string>
+    <string name="Processing_">Processing ...</string>
     <string name="OK">OK</string>
     <string name="Order_Id">Order Id</string>
     <string name="ORDER_ID">ORDER ID</string>
     <string name="Order_Summary">Order Summary</string>
     <string name="ORDER_SUMMARY">ORDER SUMMARY</string>
+    <string name="Pay">Pay</string>
     <string name="Payment_Id">Payment Id</string>
     <string name="PAYMENT_ID">PAYMENT ID</string>
     <string name="Promotional_Discount">Promotional Discount</string>
@@ -181,8 +185,15 @@
     <string name="feedback_email_subject">Kite Android App Support</string>
     <string name="feedback_email_text">Please tell us your full name:\n\nPlease provide any voucher code used in your transaction:\n\nWhat is your phone number (in case we need to call and discuss your issue)?\n\nWhat is the issue you are having with the Kite Sample app?\n\nWhich Android device (phone/tablet) are you using?\n\n================================\n\nThanks a lot.\nWe’ll be sure to get back to you just as soon as we can.\nKite Team</string>
 
-
     <string name="order_failure_message">Something went wrong.\nPlease try again.</string>
+
+    <string name="Card_Number">Card Number</string>
+    <string name="Expires">Expires</string>
+    <string name="CVV">CVV</string>
+
+    <string name="card_error_invalid_number">Invalid card number</string>
+    <string name="card_error_invalid_expiry_date">Invalid expiry date</string>
+    <string name="card_error_invalid_cvv">Invalid verification value</string>
 
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>

@@ -17,6 +17,14 @@
     <dimen name="label_padding_bottom">12dp</dimen>
     <dimen name="labelled_image_label_shadow_y_offset">1dp</dimen>
 
+    <dimen name="form_field_label_text_size">18sp</dimen>
+    <dimen name="form_field_entry_text_size">20sp</dimen>
+
+    <dimen name="credit_card_form_height">200dp</dimen>
+
+    <dimen name="progress_dialog_message_padding">25dp</dimen>
+    <dimen name="progress_dialog_message_text_size">23sp</dimen>
+
     <dimen name="navigation_item_text_size">20sp</dimen>
     <dimen name="navigation_drawer_width">300dp</dimen>
 

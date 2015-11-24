@@ -69,7 +69,7 @@ import ly.kite.catalogue.AssetHelper;
 import ly.kite.catalogue.Product;
 
 import ly.kite.R;
-import ly.kite.util.BooleanHelper;
+import ly.kite.util.BooleanUtils;
 import ly.kite.util.IImageConsumer;
 import ly.kite.util.IImageTransformer;
 import ly.kite.util.ImageAgent;
@@ -171,7 +171,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
       {
       boolean[] assetIsCheckedArray = savedInstanceState.getBooleanArray( BUNDLE_KEY_ASSET_IS_CHECKED_ARRAY );
 
-      mAssetIsCheckedArrayList = BooleanHelper.arrayListFrom( assetIsCheckedArray );
+      mAssetIsCheckedArrayList = BooleanUtils.arrayListFrom( assetIsCheckedArray );
       }
     }
 
@@ -311,7 +311,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     // We need to convert the Boolean list into a boolean array before we can
     // add it to the bundle.
 
-    boolean[] isCheckedArray = BooleanHelper.arrayFrom( mAssetIsCheckedArrayList );
+    boolean[] isCheckedArray = BooleanUtils.arrayFrom( mAssetIsCheckedArrayList );
 
     outState.putBooleanArray( BUNDLE_KEY_ASSET_IS_CHECKED_ARRAY, isCheckedArray );
     }

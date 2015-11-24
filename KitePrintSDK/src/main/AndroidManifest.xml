@@ -40,12 +40,18 @@
             android:theme="@style/Theme.KiteSDK.Checkout"
             android:screenOrientation="portrait"/>
 
+
+        <!-- TODO: When we unlock this activity from portrait only, we need to make sure we don't
+             TODO: kill it when changing orientation, as we might be in the middle of performing
+             TODO: a credit card authorisation.
+             -->
         <activity
             android:name=".checkout.PaymentActivity"
             android:label="@string/title_activity_payment"
             android:theme="@style/Theme.KiteSDK.Payment"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustPan"/>
+
 
         <activity
             android:name=".checkout.OrderReceiptActivity"

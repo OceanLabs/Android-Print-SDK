@@ -73,13 +73,18 @@ public class PrintOrder implements Parcelable /* , Serializable */
         return jobs;
     }
 
-    public void setProofOfPayment(String proofOfPayment) {
-        if (!proofOfPayment.startsWith("AP-") && !proofOfPayment.startsWith("PAY-")) {
-            throw new IllegalArgumentException("Proof of payment must be a PayPal REST payment confirmation id or a PayPal Adaptive PayPalCard pay key i.e. PAY-... or AP-...");
+    public void setProofOfPayment( String proofOfPayment )
+      {
+      if ( proofOfPayment == null ||
+           ( ! proofOfPayment.startsWith( "AP-"  ) &&
+             ! proofOfPayment.startsWith( "PAY-" ) &&
+             ! proofOfPayment.startsWith( "tok_" ) ) )
+        {
+        throw new IllegalArgumentException( "Proof of payment must start with AP-, PAY-, or tok_ : " + proofOfPayment );
         }
 
-        this.proofOfPayment = proofOfPayment;
-    }
+      this.proofOfPayment = proofOfPayment;
+      }
 
     public String getProofOfPayment() {
         return proofOfPayment;

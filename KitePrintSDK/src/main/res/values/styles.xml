@@ -102,4 +102,16 @@
 
     <style name="ProductOverviewOption_Spinner"/>
 
+    <style name="KiteSDKFormFieldLabelText">
+        <item name="android:gravity">left|center_vertical</item>
+        <item name="android:textColor">@color/form_field_label_text</item>
+        <item name="android:textSize">@dimen/form_field_label_text_size</item>
+    </style>
+
+    <style name="KiteSDKFormFieldEntryText">
+        <item name="android:gravity">left|center_vertical</item>
+        <item name="android:textColor">@color/form_field_entry_text</item>
+        <item name="android:textSize">@dimen/form_field_entry_text_size</item>
+    </style>
+
 </resources>

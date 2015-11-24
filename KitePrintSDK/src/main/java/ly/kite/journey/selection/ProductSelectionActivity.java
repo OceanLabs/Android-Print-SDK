@@ -499,10 +499,29 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
   @Override
   public void poOnPopulateOptions( Product product, View view )
     {
+    // Check that there's a product options layout
+
     ViewGroup productOptionsLayout = (ViewGroup)view.findViewById( R.id.product_options_layout );
 
-    if ( productOptionsLayout == null ) return;
+    if ( productOptionsLayout == null )
+      {
+      return;
+      }
 
+
+    // Get the product options list. If it is empty - hide the layout.
+
+    List<ProductOption> productOptionList = product.getOptionList();
+
+    if ( productOptionList == null || productOptionList.size() < 1 )
+      {
+      productOptionsLayout.setVisibility( View.GONE );
+
+      return;
+      }
+
+
+    productOptionsLayout.setVisibility( View.VISIBLE );
 
 
     // Go through each of the options. Get the view for each one, and add it to the
@@ -512,7 +531,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
 
     int optionIndex = 0;
 
-    for ( ProductOption option : product.getOptionList() )
+    for ( ProductOption option : productOptionList )
       {
       View optionView = getOptionView( optionIndex, option, layoutInflater );
 
