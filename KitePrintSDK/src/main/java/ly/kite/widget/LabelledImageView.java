@@ -46,6 +46,7 @@ import android.content.res.TypedArray;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
@@ -70,9 +71,15 @@ public class LabelledImageView extends AAREImageContainerFrame implements IImage
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                           = "LabelledImageView";
+  private static final String  LOG_TAG                      = "LabelledImageView";
 
-  private static final int     NO_FORCED_LABEL_COLOUR            = 0x00000000;
+  private static final int     IMAGE_ANCHOR_GRAVITY_NONE    = 0;
+  private static final int     IMAGE_ANCHOR_GRAVITY_LEFT    = 1;
+  private static final int     IMAGE_ANCHOR_GRAVITY_TOP     = 2;
+  private static final int     IMAGE_ANCHOR_GRAVITY_RIGHT   = 3;
+  private static final int     IMAGE_ANCHOR_GRAVITY_BOTTOM  = 4;
+
+  private static final int     NO_FORCED_LABEL_COLOUR       = 0x00000000;
 
 
   ////////// Static Variable(s) //////////
@@ -80,10 +87,10 @@ public class LabelledImageView extends AAREImageContainerFrame implements IImage
 
   ////////// Member Variable(s) //////////
 
-  private ImageView     mEmptyFrameImageView;
-  private OverlayLabel  mOverlayLabel;
+  private ImageView            mEmptyFrameImageView;
+  private OverlayLabel         mOverlayLabel;
 
-  private int           mForcedLabelColour;
+  private int                  mForcedLabelColour;
 
 
   ////////// Static Initialiser(s) //////////
@@ -135,6 +142,7 @@ public class LabelledImageView extends AAREImageContainerFrame implements IImage
 
     // Save references to the child views
     mEmptyFrameImageView = (ImageView)view.findViewById( R.id.empty_frame_image_view );
+    ImageView imageView  = (ImageView)view.findViewById( R.id.image_view );
     mOverlayLabel        = (OverlayLabel)view.findViewById( R.id.overlay_label );
 
 
@@ -154,6 +162,26 @@ public class LabelledImageView extends AAREImageContainerFrame implements IImage
     if ( attributeSet != null )
       {
       TypedArray typedArray = context.obtainStyledAttributes( attributeSet, R.styleable.LabelledImageView, defaultStyle, defaultStyle );
+
+
+      if ( imageView != null && imageView instanceof AnchorableImageView )
+        {
+        AnchorableImageView anchorableImageView = (AnchorableImageView)imageView;
+
+
+        // See if there is an image anchor gravity
+
+        int imageAnchorGravity = typedArray.getInt( R.styleable.LabelledImageView_imageAnchorGravity, IMAGE_ANCHOR_GRAVITY_NONE );
+
+        switch ( imageAnchorGravity )
+          {
+          case IMAGE_ANCHOR_GRAVITY_LEFT:   anchorableImageView.setAnchorGravity( Gravity.LEFT );   break;
+          case IMAGE_ANCHOR_GRAVITY_TOP:    anchorableImageView.setAnchorGravity( Gravity.TOP );    break;
+          case IMAGE_ANCHOR_GRAVITY_RIGHT:  anchorableImageView.setAnchorGravity( Gravity.RIGHT );  break;
+          case IMAGE_ANCHOR_GRAVITY_BOTTOM: anchorableImageView.setAnchorGravity( Gravity.BOTTOM ); break;
+          }
+        }
+
 
       // See if there is a forced label colour
       mForcedLabelColour = typedArray.getColor( R.styleable.LabelledImageView_forcedLabelColour, NO_FORCED_LABEL_COLOUR );

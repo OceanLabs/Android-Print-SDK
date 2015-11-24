@@ -10,7 +10,7 @@
         android:scaleType="centerInside"
         android:src="@drawable/empty_photo_frame"/>
 
-    <ImageView
+    <ly.kite.widget.AnchorableImageView
         android:id="@+id/image_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
