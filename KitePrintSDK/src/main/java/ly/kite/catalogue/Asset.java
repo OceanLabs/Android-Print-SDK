@@ -176,21 +176,22 @@ public class Asset implements Parcelable
       }
     else
       {
-      // Check that we support the file type
+      // Check that we support the file type. Use the path, since the file will have the query string
+      // appended to it.
 
-      String file = url.getFile().toLowerCase();
+      String path = url.getPath().toLowerCase();
 
-      if ( file.endsWith( JPEG_FILE_SUFFIX_PRIMARY ) || file.endsWith( JPEG_FILE_SUFFIX_SECONDARY ) )
+      if ( path.endsWith( JPEG_FILE_SUFFIX_PRIMARY ) || path.endsWith( JPEG_FILE_SUFFIX_SECONDARY ) )
         {
         mMIMEType = MIMEType.JPEG;
         }
-      else if ( file.endsWith( PNG_FILE_SUFFIX ) )
+      else if ( path.endsWith( PNG_FILE_SUFFIX ) )
         {
         mMIMEType = MIMEType.PNG;
         }
       else
         {
-        throw new IllegalArgumentException( "If the MIME type is not supplied, the URL must identify the MIME type by ending with a supported file extension i.e. '.jpeg', '.jpg' or '.png' thus '" + file + "' is not valid." );
+        throw new IllegalArgumentException( "If the MIME type is not supplied, the URL must identify the MIME type by ending with a supported file extension i.e. '.jpeg', '.jpg' or '.png' thus '" + path + "' is not valid." );
         }
       }
 
