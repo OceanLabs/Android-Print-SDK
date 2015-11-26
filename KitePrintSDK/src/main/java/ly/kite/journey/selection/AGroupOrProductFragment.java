@@ -424,9 +424,29 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements I
         viewReferences.productImageView.setLabel( groupOrProduct.getDisplayLabel(), groupOrProduct.getDisplayLabelColour() );
 
         // Populate any price overlay
-        if ( viewReferences.priceOverlayFrame != null ) viewReferences.priceOverlayFrame.setVisibility( View.VISIBLE );
-        if ( viewReferences.fromTextView      != null ) viewReferences.fromTextView.setVisibility( groupOrProduct.containsMultiplePrices() ? View.VISIBLE : View.GONE );
-        if ( viewReferences.priceTextView     != null ) viewReferences.priceTextView.setText( groupOrProduct.getDisplayPrice() );
+
+        String displayPrice = groupOrProduct.getDisplayPrice();
+
+
+        // We only display the price overlay if there's a display price. In the case of a product group
+        // this will be if there is a common currency.
+
+        if ( displayPrice != null )
+          {
+          if ( viewReferences.priceOverlayFrame != null ) viewReferences.priceOverlayFrame.setVisibility( View.VISIBLE );
+          if ( viewReferences.fromTextView      != null ) viewReferences.fromTextView.setVisibility( groupOrProduct.containsMultiplePrices() ? View.VISIBLE : View.GONE );
+          if ( viewReferences.priceTextView     != null )
+            {
+            viewReferences.priceTextView.setVisibility( View.VISIBLE );
+            viewReferences.priceTextView.setText( displayPrice );
+            }
+          }
+        else
+          {
+          if ( viewReferences.priceOverlayFrame != null ) viewReferences.priceOverlayFrame.setVisibility( View.GONE );
+          if ( viewReferences.fromTextView      != null ) viewReferences.fromTextView.setVisibility( View.GONE );
+          if ( viewReferences.priceTextView     != null ) viewReferences.priceTextView.setVisibility( View.GONE );
+          }
 
         imageURL = groupOrProduct.getDisplayImageURL();
         }

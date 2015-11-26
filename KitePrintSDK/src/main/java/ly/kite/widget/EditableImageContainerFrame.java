@@ -70,7 +70,7 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
   @SuppressWarnings( "unused" )
   private static final String  LOG_TAG           = "EditableImageContain...";
 
-  private static final boolean DEBUGGING_ENABLED = true;
+  private static final boolean DEBUGGING_ENABLED = false;
 
 
   ////////// Static Variable(s) //////////

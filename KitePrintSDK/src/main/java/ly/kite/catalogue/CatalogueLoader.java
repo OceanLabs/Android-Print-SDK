@@ -82,6 +82,8 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
   @SuppressWarnings("unused")
   private static final String  LOG_TAG                               = "CatalogueLoader";
 
+  private static final boolean DISPLAY_PRODUCT_JSON                  = false;
+  private static final boolean DISPLAY_PRODUCTS                      = true;
   private static final boolean DISPLAY_DEBUGGING                     = false;
   private static final boolean DISPLAY_PRE_CACHING_INFO              = false;
 
@@ -455,8 +457,10 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
 
         productJSONObject = productJSONArray.getJSONObject( productIndex );
 
-        // Uncomment to dump out JSON
-        //Log.d( LOG_TAG, "Product JSON:\n" + productJSONObject.toString() );
+        if ( DISPLAY_PRODUCT_JSON )
+          {
+          Log.d( LOG_TAG, "Product JSON:\n" + productJSONObject.toString() );
+          }
 
         String                           productId          = productJSONObject.getString( JSON_NAME_PRODUCT_ID );
         String                           productName        = productJSONObject.getString( JSON_NAME_PRODUCT_NAME );
@@ -527,11 +531,15 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
                 .setCreationImage( imageAspectRatio, imageBorder )
                 .setProductOptions( productOptionList );
 
-        Log.i( LOG_TAG, "-- Found product --" );
-        Log.i( LOG_TAG, product.toLogString( groupLabel ) );
+        if ( DISPLAY_PRODUCTS )
+          {
+          Log.i( LOG_TAG, "-- Found product --" );
+          Log.i( LOG_TAG, product.toLogString( groupLabel ) );
+          }
 
 
         // Only use products for which we have a defined user journey
+
         if ( ! ProductCreationActivity.isSupported( userJourneyType ) )
           {
           Log.i( LOG_TAG, "-- Product discarded: no user journey --" );

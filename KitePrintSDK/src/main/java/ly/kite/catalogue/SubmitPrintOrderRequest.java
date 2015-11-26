@@ -1,6 +1,7 @@
 package ly.kite.catalogue;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,7 +13,13 @@ import ly.kite.util.HTTPJSONRequest;
 /**
  * Created by deonbotha on 09/02/2014.
  */
-class SubmitPrintOrderRequest {
+class SubmitPrintOrderRequest
+  {
+  static private final String  LOG_TAG                  = "SubmitPrintOrderRequest";
+
+  static private final boolean DISPLAY_PRINT_ORDER_JSON = true;
+
+
     private final PrintOrder printOrder;
     private HTTPJSONRequest req;
 
@@ -24,6 +31,9 @@ class SubmitPrintOrderRequest {
         assert req == null : "you can only submit a request once";
 
         JSONObject json = printOrder.getJSONRepresentation();
+
+    if ( DISPLAY_PRINT_ORDER_JSON ) Log.d( LOG_TAG, "Print Order JSON:\n" + json.toString() );
+
         String url = String.format("%s/print", KiteSDK.getInstance( context ).getAPIEndpoint());
         req = new HTTPJSONRequest( context, HTTPJSONRequest.HttpMethod.POST, url, null, json.toString());
         req.start(new HTTPJSONRequest.HTTPJSONRequestListener() {

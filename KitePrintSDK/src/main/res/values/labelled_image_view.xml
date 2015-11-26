@@ -9,6 +9,8 @@
             <enum name="bottom" value="4"/>
         </attr>
 
+        <attr name="imageAnchorPoint"  format="float"/>
+
         <attr name="forcedLabelColour" format="color"/>
 
         <attr name="labelOpacity"      format="float"/>

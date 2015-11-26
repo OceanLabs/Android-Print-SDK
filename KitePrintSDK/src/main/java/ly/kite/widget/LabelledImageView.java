@@ -180,6 +180,13 @@ public class LabelledImageView extends AAREImageContainerFrame implements IImage
           case IMAGE_ANCHOR_GRAVITY_RIGHT:  anchorableImageView.setAnchorGravity( Gravity.RIGHT );  break;
           case IMAGE_ANCHOR_GRAVITY_BOTTOM: anchorableImageView.setAnchorGravity( Gravity.BOTTOM ); break;
           }
+
+
+        // Check the image anchor point
+
+        float imageAnchorPoint = typedArray.getFloat( R.styleable.LabelledImageView_imageAnchorPoint, 0f );
+
+        anchorableImageView.setAnchorPoint( imageAnchorPoint );
         }
 
 

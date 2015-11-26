@@ -182,23 +182,9 @@ public class EditImageFragment extends AEditImageFragment
   @Override
   public void onTop()
     {
+    super.onTop();
+
     mKiteActivity.setTitle( R.string.edit_image_title );
-    }
-
-
-  /*****************************************************
-   *
-   * Called after the activity is created.
-   *
-   *****************************************************/
-  @Override
-  public void onActivityCreated( Bundle savedInstanceState )
-    {
-    super.onActivityCreated( savedInstanceState );
-
-
-    // Set the mask
-    mEditableImageContainerFrame.setMask( mProduct.getUserJourneyType().maskResourceId(), mProduct.getImageAspectRatio() );
     }
 
 
@@ -210,6 +196,12 @@ public class EditImageFragment extends AEditImageFragment
   @Override
   protected void startImageRequests()
     {
+    // Set the mask
+    mEditableImageContainerFrame.setMask( mProduct.getUserJourneyType().maskResourceId(), mProduct.getImageAspectRatio() );
+
+
+    // Request the asset image
+
     ImageAgent imageManager = ImageAgent.getInstance( mKiteActivity );
 
     mEditableImageContainerFrame.setImageKey( mAsset );

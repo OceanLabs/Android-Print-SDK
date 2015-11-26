@@ -13,7 +13,7 @@
         android:layerType="hardware">
 
         <ly.kite.widget.EditableImageContainerFrame
-            android:id="@+id/editable_consumer_image_view"
+            android:id="@+id/editable_image_container_frame"
             android:layout_margin="10dp"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"

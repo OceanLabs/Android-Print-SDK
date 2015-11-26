@@ -165,7 +165,7 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
     {
     View view = layoutInflator.inflate( R.layout.screen_edit_image, container, false );
 
-    mEditableImageContainerFrame = (EditableImageContainerFrame)view.findViewById( R.id.editable_consumer_image_view );
+    mEditableImageContainerFrame = (EditableImageContainerFrame)view.findViewById( R.id.editable_image_container_frame );
     mCancelButton                = (Button)view.findViewById( R.id.cancel_button );
     mConfirmButton               = (Button)view.findViewById( R.id.confirm_button );
     mPromptTextFrame             = (PromptTextFrame)view.findViewById( R.id.prompt_text_frame );

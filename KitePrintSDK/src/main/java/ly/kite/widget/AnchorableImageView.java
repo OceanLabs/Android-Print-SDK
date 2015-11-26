@@ -62,6 +62,8 @@ public class AnchorableImageView extends ImageView
   ////////// Member Variable(s) //////////
 
   private int      mAnchorGravity;
+  private float    mAnchorPoint;
+
   private boolean  mAnchored;
 
   private int      mLeft;
@@ -158,7 +160,7 @@ public class AnchorableImageView extends ImageView
 
   /*****************************************************
    *
-   * Sets the anchor position.
+   * Sets the anchor gravity.
    *
    *****************************************************/
   public void setAnchorGravity( int gravity )
@@ -184,7 +186,28 @@ public class AnchorableImageView extends ImageView
 
   /*****************************************************
    *
+   * Sets the anchor point. This is the point on the image
+   * (as a proportion of the image size) that is fixed to
+   * the anchor position (defined by the gravity).
+   *
+   * Has no effect if the anchor gravity is not set.
+   *
+   *****************************************************/
+  public void setAnchorPoint( float point )
+    {
+    mAnchorPoint = point;
+
+    if ( mAnchored ) calculateDrawableBounds( getWidth(), getHeight() );
+
+    invalidate();
+    }
+
+
+  /*****************************************************
+   *
    * Calculates the drawable bounds.
+   *
+   * TODO: Factor in the anchor point
    *
    *****************************************************/
   private void calculateDrawableBounds( int viewWidth, int viewHeight )
@@ -219,7 +242,7 @@ public class AnchorableImageView extends ImageView
                          scaleType == ScaleType.FIT_XY         );
 
 
-    // Calculate the image scale factor according to whether we're filling the view or not
+    // Calculate the scale factor according to whether we're filling the view or not
 
     float widthScaleFactor  = (float)viewWidth  / (float)drawableWidth;
     float heightScaleFactor = (float)viewHeight / (float)drawableHeight;

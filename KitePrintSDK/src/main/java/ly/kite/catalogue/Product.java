@@ -766,6 +766,9 @@ public class Product implements Parcelable, IGroupOrProduct
     stringBuilder.append( "Quantity Per Sheet : " ).append( mQuantityPerSheet ).append( "\n" );
     stringBuilder.append( "Hero Image URL     : " ).append( mHeroImageURL.toString() ).append( "\n" );
 
+    stringBuilder.append( "Prices :" ).append( "\n" );
+    stringBuilder.append( mCost != null ? mCost.toString() : "null" ).append( "\n" );
+
     stringBuilder.append( "  ..." ).append( "\n" );
 
     stringBuilder.append( "Mask URL           : " ).append( mMaskURL != null ? mMaskURL.toString() : null ).append( "\n" );
@@ -773,7 +776,7 @@ public class Product implements Parcelable, IGroupOrProduct
 
     stringBuilder.append( "  ..." ).append( "\n" );
 
-    stringBuilder.append( "Sizes:" ).append( "\n" );
+    stringBuilder.append( "Sizes :" ).append( "\n" );
 
     for ( SingleUnitSize singleUnitSize : mSize.getAll() )
       {

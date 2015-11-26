@@ -7,7 +7,7 @@
     android:fitsSystemWindows="true">
 
     <ly.kite.widget.EditableImageContainerFrame
-        android:id="@+id/editable_consumer_image_view"
+        android:id="@+id/editable_image_container_frame"
         android:layout_margin="5dp"
         android:layout_width="wrap_content"
         android:layout_weight="1.0"
