@@ -81,7 +81,6 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
                                                                       ImageSelectionFragment.ICallback,
                                                                       ReviewAndEditFragment.ICallback,
                                                                       EditImageFragment.ICallback
-
   {
   ////////// Static Constant(s) //////////
 
@@ -262,7 +261,7 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
 
 
     // Set up the screen content
-    setContentView( R.layout.screen_product_selection );
+    setContentView( R.layout.screen_product_creation );
 
 
     // Start the first fragment
