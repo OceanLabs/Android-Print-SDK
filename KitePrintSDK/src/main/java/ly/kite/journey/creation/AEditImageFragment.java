@@ -171,7 +171,7 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
     mPromptTextFrame             = (PromptTextFrame)view.findViewById( R.id.prompt_text_frame );
 
 
-    mEditableImageContainerFrame.setCallback( this );
+    if ( mEditableImageContainerFrame != null ) mEditableImageContainerFrame.setCallback( this );
 
     if ( mCancelButton != null ) mCancelButton.setOnClickListener( this );
 
