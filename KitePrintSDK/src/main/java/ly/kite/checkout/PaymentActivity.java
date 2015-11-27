@@ -191,26 +191,6 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
       }
 
 
-//    KiteSDK.DefaultEnvironment env = KiteSDK.DefaultEnvironment.LIVE;
-//    mPayPalEnvironment = PayPalCard.Environment.LIVE;
-//    if ( envString != null )
-//      {
-//      if ( envString.equals( ENVIRONMENT_STAGING ) )
-//        {
-//        env = KiteSDK.DefaultEnvironment.STAGING;
-//        mPayPalEnvironment = PayPalCard.Environment.SANDBOX;
-//        }
-//      else if ( envString.equals( ENVIRONMENT_TEST ) )
-//        {
-//        env = KiteSDK.DefaultEnvironment.TEST;
-//        mPayPalEnvironment = PayPalCard.Environment.SANDBOX;
-//        }
-//      }
-//
-//    mAPIKey = apiKey;
-//    mKiteSDKEnvironment = env;
-//
-//    KiteSDK.getInstance( this ).setEnvironment( apiKey, env );
 
     mKiteSDKEnvironment = KiteSDK.getInstance( this ).getEnvironment();
 
@@ -284,14 +264,6 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
 
     mPrintOrder = savedInstanceState.getParcelable( EXTRA_PRINT_ORDER );
     mAPIKey = savedInstanceState.getString( EXTRA_PRINT_API_KEY );
-//    mKiteSDKEnvironment = (KiteSDK.DefaultEnvironment) savedInstanceState.getSerializable( EXTRA_PRINT_ENVIRONMENT );
-//    KiteSDK.getInstance( this ).setEnvironment( mAPIKey, mKiteSDKEnvironment );
-//
-//    mPayPalEnvironment = PayPalCard.Environment.LIVE;
-//    if ( mKiteSDKEnvironment == KiteSDK.DefaultEnvironment.STAGING || mKiteSDKEnvironment == KiteSDK.DefaultEnvironment.TEST )
-//      {
-//      mPayPalEnvironment = PayPalCard.Environment.SANDBOX;
-//      }
     }
 
 
@@ -316,8 +288,6 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
             if ( proofOfPayment != null )
               {
               String paymentId = proofOfPayment.getPaymentId();
-
-              //String proofOfPayment = paymentConfirmation.toJSONObject().getJSONObject("proof_of_payment").getJSONObject("adaptive_payment").getString( "pay_key" );
 
               if ( paymentId != null )
                 {
@@ -354,6 +324,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
         if ( !scanResult.isExpiryValid() )
           {
           showErrorDialog( "Sorry it looks like that card has expired. Please try again." );
+
           return;
           }
 
@@ -522,7 +493,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
       {
       mPromoButton.setEnabled( false );
       mCreditCardButton.setEnabled( false );
-      mCreditCardButton.setEnabled( false );
+      mPayPalButton.setEnabled( false );
 
       mProgressBar.setVisibility( View.VISIBLE );
 
@@ -700,7 +671,6 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
     }
 
 
-
   /*****************************************************
    *
    * Called when the pay by PayPal button is clicked.
@@ -831,43 +801,6 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
     }
 
 
-  public static PayPalCard.Currency getPayPalCurrency( String currencyCode )
-    {
-    if ( currencyCode.equals( "GBP" ) )
-      {
-      return PayPalCard.Currency.GBP;
-      }
-    else if ( currencyCode.equals( "EUR" ) )
-      {
-      return PayPalCard.Currency.EUR;
-      }
-    else if ( currencyCode.equals( "USD" ) )
-      {
-      return PayPalCard.Currency.USD;
-      }
-    else if ( currencyCode.equals( "SGD" ) )
-      {
-      return PayPalCard.Currency.SGD;
-      }
-    else if ( currencyCode.equals( "AUD" ) )
-      {
-      return PayPalCard.Currency.AUD;
-      }
-    else if ( currencyCode.equals( "NZD" ) )
-      {
-      return PayPalCard.Currency.NZD;
-      }
-    else if ( currencyCode.equals( "CAD" ) )
-      {
-      return PayPalCard.Currency.CAD;
-      }
-    else
-      {
-      return PayPalCard.Currency.GBP;
-      }
-    }
-
-
   private void payWithExistingCard( PayPalCard card )
     {
     final ProgressDialog dialog = new ProgressDialog( this );
@@ -880,7 +813,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
 
     card.chargeCard( mKiteSDKEnvironment,
             totalCost.getAmount(),
-            getPayPalCurrency( totalCost.getCurrencyCode() ),
+            totalCost.getCurrencyCode(),
             "",
             new PayPalCardChargeListener()
             {

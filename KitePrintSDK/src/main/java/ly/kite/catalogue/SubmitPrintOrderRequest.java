@@ -17,7 +17,7 @@ class SubmitPrintOrderRequest
   {
   static private final String  LOG_TAG                  = "SubmitPrintOrderRequest";
 
-  static private final boolean DISPLAY_PRINT_ORDER_JSON = true;
+  static private final boolean DISPLAY_PRINT_ORDER_JSON = false;
 
 
     private final PrintOrder printOrder;

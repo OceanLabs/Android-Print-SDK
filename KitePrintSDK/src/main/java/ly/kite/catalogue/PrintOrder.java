@@ -3,6 +3,7 @@ package ly.kite.catalogue;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,10 +25,15 @@ import ly.kite.pricing.OrderPricing;
 public class PrintOrder implements Parcelable /* , Serializable */
     {
 
+    static private final String LOG_TAG = "PrintOrder";
+
     private static final String PERSISTED_PRINT_ORDERS_FILENAME = "print_orders";
     private static final int NOT_PERSITED = -1;
 
     private static final long serialVersionUID = 0L;
+
+    static private final String JSON_NAME_LOCALE = "locale";
+
 
     private Address shippingAddress;
     private String proofOfPayment;
@@ -144,21 +150,33 @@ public class PrintOrder implements Parcelable /* , Serializable */
                 jobs.put(job.getJSONRepresentation());
             }
 
-            if (userData != null) {
-                json.put("user_data", userData);
-            }
 
-            if (getOrderPricing() != null) {
-                SingleCurrencyAmount orderCost = getOrderPricing().getTotalCost().getDefaultAmountWithFallback();
-                // construct customer payment object in a round about manner to guarantee 2dp amount value
-                StringBuilder builder = new StringBuilder();
-                builder.append("{");
-                builder.append("\"currency\": \"").append(orderCost.getCurrencyCode()).append("\"").append(",");
-                builder.append(String.format(Locale.ENGLISH, "\"amount\": %.2f",  orderCost.getAmount().floatValue())); // Local.ENGLISH to force . separator instead of comma
-                builder.append("}");
-                JSONObject customerPayment = new JSONObject(builder.toString());
-                json.put("customer_payment", customerPayment);
-            }
+        // Make sure we always have user data, and put the default locale into it
+
+        if ( userData == null ) userData = new JSONObject();
+
+        userData.put( JSON_NAME_LOCALE, Locale.getDefault().toString() );
+
+        json.put( "user_data", userData );
+
+
+        // Add the customer payment information
+
+        OrderPricing orderPricing = getOrderPricing();
+
+        if ( orderPricing != null )
+          {
+          SingleCurrencyAmount orderTotalCost = orderPricing.getTotalCost().getDefaultAmountWithFallback();
+          // construct customer payment object in a round about manner to guarantee 2dp amount value
+          StringBuilder builder = new StringBuilder();
+          builder.append( "{" );
+          builder.append( "\"currency\": \"" ).append( orderTotalCost.getCurrencyCode() ).append( "\"" ).append( "," );
+          builder.append( String.format( Locale.ENGLISH, "\"amount\": %.2f", orderTotalCost.getAmount().floatValue() ) ); // Local.ENGLISH to force . separator instead of comma
+          builder.append( "}" );
+          JSONObject customerPayment = new JSONObject( builder.toString() );
+          json.put( "customer_payment", customerPayment );
+          }
+
 
             if (shippingAddress != null) {
                 JSONObject sajson = new JSONObject();

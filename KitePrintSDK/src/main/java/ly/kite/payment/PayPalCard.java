@@ -69,43 +69,6 @@ public class PayPalCard implements Serializable {
         }
     }
 
-    public static enum Currency {
-        GBP("GBP"),
-        USD("USD"),
-        EUR("EUR"),
-        NZD("NZD"),
-        SGD("SGD"),
-        AUD("AUD"),
-        CAD("CAD");
-
-
-
-        private final String  code;
-
-        Currency(String code) {
-            this.code = code;
-        }
-    }
-
-//    public static enum Environment {
-//
-//        SANDBOX ( "api.sandbox.paypal.com", KiteSDK.PAYPAL_SANDBOX_CLIENT_ID, "" ),
-//        LIVE    ( "api.paypal.com",         KiteSDK.PAYPAL_LIVE_CLIENT_ID,    "" );
-//
-//        private final String apiEndpoint;
-//        private final String authToken;
-//
-//        Environment(String apiEndpoint, String authToken) {
-//            this.apiEndpoint = apiEndpoint;
-//            this.authToken = authToken;
-//        }
-//
-//    Environment( String apiEndpoint, String clientId, String password )
-//      {
-//      this( apiEndpoint, Base64.encodeToString( ( clientId + ":" + password ).getBytes(), Base64.NO_WRAP ) );
-//      }
-//
-//    }
 
     private static final long serialVersionUID = 0L;
     private String number;
@@ -326,7 +289,7 @@ public class PayPalCard implements Serializable {
         });
     }
 
-    private JSONObject createPaymentJSON(BigDecimal amount, Currency currency, String description) throws JSONException {
+    private JSONObject createPaymentJSON(BigDecimal amount, String currencyCode, String description) throws JSONException {
         JSONObject fundingInstrument = new JSONObject();
         if (number != null) {
             // take payment directly using full card number
@@ -361,18 +324,18 @@ public class PayPalCard implements Serializable {
         JSONObject _amount = new JSONObject();
         transaction.put("amount", _amount);
         _amount.put("total", String.format(Locale.ENGLISH, "%.2f", amount.floatValue())); // Local.ENGLISH to force . separator instead of comma
-        _amount.put("currency", currency.code);
+        _amount.put("currency", currencyCode);
 
         return payment;
     }
 
-    public void chargeCard(final KiteSDK.Environment environment, final BigDecimal amount, final Currency currency, final String description, final PayPalCardChargeListener listener) {
+    public void chargeCard(final KiteSDK.Environment environment, final BigDecimal amount, final String currencyCode, final String description, final PayPalCardChargeListener listener) {
         getAccessToken(environment, new AccessTokenListener() {
             @Override
             public void onAccessToken(final String accessToken) {
                 JSONObject paymentJSON = null;
                 try {
-                    paymentJSON = createPaymentJSON(amount, currency, description);
+                    paymentJSON = createPaymentJSON(amount, currencyCode, description);
                 } catch (JSONException ex) {
                     listener.onError(PayPalCard.this, ex);
                     return;
