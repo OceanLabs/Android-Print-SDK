@@ -1,4 +1,4 @@
-package ly.kite.payment;
+package ly.kite.paypal;
 
 /**
  * Created by deonbotha on 16/02/2014.

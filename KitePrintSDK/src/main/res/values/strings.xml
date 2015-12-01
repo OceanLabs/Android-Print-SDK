@@ -195,6 +195,22 @@
     <string name="card_error_invalid_expiry_date">Invalid expiry date</string>
     <string name="card_error_invalid_cvv">Invalid verification value</string>
 
+    <string name="order_submission_message_uploading">Uploading images</string>
+    <string name="order_submission_message_posted">Posted</string>
+    <string name="order_submission_message_received">Received</string>
+    <string name="order_submission_message_accepted">Accepted</string>
+    <string name="order_submission_message_validated">Validated</string>
+    <string name="order_submission_message_processed">Processed</string>
+
+    <string name="alert_dialog_title_order_submission_error">Order Submission Error</string>
+    <string name="alert_dialog_title_order_timeout">Order Submission Timeout</string>
+    <string name="alert_dialog_message_order_timeout">Your order does not appear to have been processed yet. It may be that the servers are currently busy and the payment is simply taking time.\n\nWould you like to wait a little longer, or give up and do something else?</string>
+    <string name="order_timeout_button_wait">Wait</string>
+    <string name="order_timeout_button_give_up">Give up</string>
+
+    <string name="alert_dialog_title_order_cancelled">Order Cancelled</string>
+    <string name="alert_dialog_message_order_cancelled">Something has gone wrong - your order appears to have been cancelled during submission.</string>
+
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>

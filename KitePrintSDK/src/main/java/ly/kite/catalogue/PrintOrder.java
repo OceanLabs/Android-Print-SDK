@@ -3,7 +3,6 @@ package ly.kite.catalogue;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,6 +16,8 @@ import java.util.Locale;
 import java.util.Set;
 
 import ly.kite.address.Address;
+import ly.kite.api.AssetUploadRequest;
+import ly.kite.api.SubmitPrintOrderRequest;
 import ly.kite.pricing.OrderPricing;
 
 /**
@@ -27,10 +28,7 @@ public class PrintOrder implements Parcelable /* , Serializable */
 
     static private final String LOG_TAG = "PrintOrder";
 
-    private static final String PERSISTED_PRINT_ORDERS_FILENAME = "print_orders";
-    private static final int NOT_PERSITED = -1;
-
-    private static final long serialVersionUID = 0L;
+    private static final int NOT_PERSISTED = -1;
 
     static private final String JSON_NAME_LOCALE = "locale";
 
@@ -49,9 +47,9 @@ public class PrintOrder implements Parcelable /* , Serializable */
     private SubmitPrintOrderRequest printOrderReq;
     private Date lastPrintSubmissionDate;
     private String receipt;
-    private PrintOrderSubmissionListener submissionListener;
+    private ISubmissionProgressListener submissionListener;
     private Exception lastPrintSubmissionError;
-    private int storageIdentifier = NOT_PERSITED;
+    private int storageIdentifier = NOT_PERSISTED;
 
     private String promoCode;
 
@@ -128,7 +126,7 @@ public class PrintOrder implements Parcelable /* , Serializable */
         return userData;
     }
 
-    JSONObject getJSONRepresentation() {
+    public JSONObject getJSONRepresentation() {
         try {
             JSONObject json = new JSONObject();
             if (proofOfPayment != null)
@@ -281,14 +279,19 @@ public class PrintOrder implements Parcelable /* , Serializable */
         return lastPrintSubmissionError;
     }
 
+    public void setReceipt( String receipt )
+      {
+      this.receipt = receipt;
+      }
+
     // Used for testing
     public void clearReceipt()
         {
-        receipt = null;
+        this.receipt = null;
         }
 
     public String getReceipt() {
-        return receipt;
+        return this.receipt;
     }
 
     public void addPrintJob(PrintJob job) {
@@ -315,7 +318,7 @@ public class PrintOrder implements Parcelable /* , Serializable */
             return;
         }
 
-        startAssetUpload(context);
+        startAssetUpload( context );
     }
 
     private void startAssetUpload(final Context context) {
@@ -332,7 +335,7 @@ public class PrintOrder implements Parcelable /* , Serializable */
         assetUploadReq.uploadAssets( context, assetsToUpload, new MyAssetUploadRequestListener( context ) );
     }
 
-    public void submitForPrinting(Context context, PrintOrderSubmissionListener listener) {
+    public void submitForPrinting(Context context, ISubmissionProgressListener listener) {
         if (userSubmittedForPrinting) throw new AssertionError("A PrintOrder can only be submitted once unless you cancel the previous submission");
         //if (proofOfPayment == null) throw new AssertionError("You must provide a proofOfPayment before you can submit a print order");
         if (printOrderReq != null) throw new AssertionError("A PrintOrder request should not already be in progress");
@@ -354,22 +357,25 @@ public class PrintOrder implements Parcelable /* , Serializable */
 
         // Step 2: Submit print order to the server. Print Job JSON can now reference real asset ids.
         printOrderReq = new SubmitPrintOrderRequest(this);
-        printOrderReq.submitForPrinting( context, new SubmitPrintOrderRequestListener() {
-            @Override
-            public void onSubmissionComplete(SubmitPrintOrderRequest req, String orderIdReceipt) {
-                receipt = orderIdReceipt;
-                submissionListener.onSubmissionComplete(PrintOrder.this, orderIdReceipt);
-                printOrderReq = null;
+        printOrderReq.submitForPrinting( context, new SubmitPrintOrderRequest.IProgressListener()
+        {
+        @Override
+        public void onSubmissionComplete( SubmitPrintOrderRequest req, String orderId )
+            {
+            setReceipt( orderId );
+            submissionListener.onSubmissionComplete( PrintOrder.this, orderId );
+            printOrderReq = null;
             }
 
-            @Override
-            public void onError(SubmitPrintOrderRequest req, Exception error) {
-                userSubmittedForPrinting = false;
-                lastPrintSubmissionError = error;
-                submissionListener.onError(PrintOrder.this, error);
-                printOrderReq = null;
+        @Override
+        public void onError( SubmitPrintOrderRequest req, Exception error )
+            {
+            userSubmittedForPrinting = false;
+            lastPrintSubmissionError = error;
+            submissionListener.onError( PrintOrder.this, error );
+            printOrderReq = null;
             }
-        });
+        } );
     }
 
     public void cancelSubmissionOrPreemptedAssetUpload() {
@@ -501,7 +507,7 @@ public class PrintOrder implements Parcelable /* , Serializable */
       }
 
 
-    private class MyAssetUploadRequestListener implements AssetUploadRequestListener
+    private class MyAssetUploadRequestListener implements AssetUploadRequest.IProgressListener
       {
       private Context  mContext;
 
@@ -591,5 +597,15 @@ public class PrintOrder implements Parcelable /* , Serializable */
           }
         }
       }
+
+
+    public interface ISubmissionProgressListener
+        {
+        void onProgress( PrintOrder printOrder, int primaryProgressPercent, int secondaryProgressPercent );
+
+        void onSubmissionComplete( PrintOrder printOrder, String orderId );
+
+        void onError( PrintOrder printOrder, Exception error );
+        }
 
     }

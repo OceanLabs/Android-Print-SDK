@@ -5,18 +5,18 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Looper;
+import android.os.Parcelable;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import ly.kite.catalogue.PrintOrder;
-import ly.kite.catalogue.PrintOrderSubmissionListener;
 import ly.kite.R;
 
 public class OrderReceiptActivity extends Activity
@@ -24,6 +24,16 @@ public class OrderReceiptActivity extends Activity
   public static final String EXTRA_PRINT_ORDER = "ly.kite.EXTRA_PRINT_ORDER";
 
   private PrintOrder mPrintOrder;
+
+
+  static public void startForResult( Activity activity, PrintOrder printOrder, int requestCode )
+    {
+    Intent intent = new Intent( activity, OrderReceiptActivity.class );
+
+    intent.putExtra( OrderReceiptActivity.EXTRA_PRINT_ORDER, (Parcelable)printOrder );
+
+    activity.startActivityForResult( intent, requestCode );
+    }
 
 
   @Override
@@ -153,7 +163,7 @@ public class OrderReceiptActivity extends Activity
     dialog.setMax( 100 );
     dialog.show();
 
-    mPrintOrder.submitForPrinting( this, new PrintOrderSubmissionListener()
+    mPrintOrder.submitForPrinting( this, new PrintOrder.ISubmissionProgressListener()
     {
     @Override
     public void onProgress( PrintOrder printOrder, int primaryProgressPercent, int secondaryProgressPercent )

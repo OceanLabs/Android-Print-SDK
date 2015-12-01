@@ -495,9 +495,8 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
       return;
       }
 
-    KiteSDK kiteSDK = KiteSDK.getInstance( this );
 
-    PaymentActivity.start( this, mPrintOrder, kiteSDK.getAPIKey(), kiteSDK.getEnvironment().getPaymentActivityEnvironment(), REQUEST_CODE_PAYMENT );
+    PaymentActivity.startForResult( this, mPrintOrder, REQUEST_CODE_PAYMENT );
     }
 
   boolean isEmailValid( CharSequence email )

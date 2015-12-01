@@ -43,13 +43,10 @@ import java.math.BigDecimal;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Looper;
-import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -62,7 +59,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 import com.paypal.android.sdk.payments.PayPalPayment;
@@ -74,17 +70,17 @@ import io.card.payment.CardIOActivity;
 import io.card.payment.CreditCard;
 
 import ly.kite.analytics.Analytics;
+import ly.kite.api.OrderState;
 import ly.kite.pricing.IPricingConsumer;
 import ly.kite.pricing.OrderPricing;
 import ly.kite.pricing.PricingAgent;
 import ly.kite.KiteSDK;
 import ly.kite.catalogue.MultipleCurrencyAmount;
 import ly.kite.catalogue.PrintOrder;
-import ly.kite.catalogue.PrintOrderSubmissionListener;
 import ly.kite.R;
-import ly.kite.payment.PayPalCard;
-import ly.kite.payment.PayPalCardChargeListener;
-import ly.kite.payment.PayPalCardVaultStorageListener;
+import ly.kite.paypal.PayPalCard;
+import ly.kite.paypal.PayPalCardChargeListener;
+import ly.kite.paypal.PayPalCardVaultStorageListener;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.catalogue.SingleCurrencyAmount;
 
@@ -104,9 +100,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
   @SuppressWarnings("unused")
   private static final String LOG_TAG = "PaymentActivity";
 
-  public static final String EXTRA_PRINT_ORDER = "ly.kite.EXTRA_PRINT_ORDER";
-  public static final String EXTRA_PRINT_ENVIRONMENT = "ly.kite.EXTRA_PRINT_ENVIRONMENT";
-  public static final String EXTRA_PRINT_API_KEY = "ly.kite.EXTRA_PRINT_API_KEY";
+  public static final String KEY_ORDER = "ly.kite.ORDER";
 
   public static final String ENVIRONMENT_STAGING = "ly.kite.ENVIRONMENT_STAGING";
   public static final String ENVIRONMENT_LIVE = "ly.kite.ENVIRONMENT_LIVE";
@@ -124,7 +118,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
 
   ////////// Member Variable(s) //////////
 
-  private PrintOrder           mPrintOrder;
+  private PrintOrder           mOrder;
   private String               mAPIKey;
   private KiteSDK.Environment  mKiteSDKEnvironment;
   //private PayPalCard.Environment mPayPalEnvironment;
@@ -148,13 +142,11 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
 
   ////////// Static Method(s) //////////
 
-  public static void start( Activity activity, PrintOrder printOrder, String apiKey, String environmentName, int requestCode )
+  public static void startForResult( Activity activity, PrintOrder printOrder, int requestCode )
     {
     Intent intent = new Intent( activity, PaymentActivity.class );
 
-    intent.putExtra( PaymentActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder );
-    intent.putExtra( PaymentActivity.EXTRA_PRINT_API_KEY, apiKey );
-    intent.putExtra( PaymentActivity.EXTRA_PRINT_ENVIRONMENT, environmentName );
+    intent.putExtra( KEY_ORDER, printOrder );
 
     activity.startActivityForResult( intent, requestCode );
     }
@@ -175,21 +167,29 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
     {
     super.onCreate( savedInstanceState );
 
-    String apiKey = getIntent().getStringExtra( EXTRA_PRINT_API_KEY );
-    String envString = getIntent().getStringExtra( EXTRA_PRINT_ENVIRONMENT );
 
-    mPrintOrder = (PrintOrder) getIntent().getParcelableExtra( EXTRA_PRINT_ORDER );
+    // First look for a saved order (because it might have changed since we were first
+    // created. If none if found - get it from the intent.
 
-    if ( apiKey == null )
+    if ( savedInstanceState != null )
       {
-      throw new IllegalArgumentException( "You must specify an API key string extra in the intent used to start the PaymentActivity" );
+      mOrder = savedInstanceState.getParcelable( KEY_ORDER );
       }
 
-    if ( mPrintOrder == null )
+    if ( mOrder == null )
       {
-      throw new IllegalArgumentException( "You must specify a PrintOrder object extra in the intent used to start the PaymentActivity" );
+      Intent intent = getIntent();
+
+      if ( intent != null )
+        {
+        mOrder = intent.getParcelableExtra( KEY_ORDER );
+        }
       }
 
+    if ( mOrder == null )
+      {
+      throw new IllegalArgumentException( "There must either be a saved Print Order, or one supplied in the intent used to start the Payment Activity" );
+      }
 
 
     mKiteSDKEnvironment = KiteSDK.getInstance( this ).getEnvironment();
@@ -242,7 +242,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
 
     if ( savedInstanceState == null )
       {
-      Analytics.getInstance( this ).trackPaymentScreenViewed( mPrintOrder );
+      Analytics.getInstance( this ).trackPaymentScreenViewed( mOrder );
       }
     }
 
@@ -252,18 +252,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
     {
     super.onSaveInstanceState( outState );
 
-    outState.putParcelable( EXTRA_PRINT_ORDER, mPrintOrder );
-    outState.putString( EXTRA_PRINT_API_KEY, mAPIKey );
-    }
-
-
-  @Override
-  public void onRestoreInstanceState( Bundle savedInstanceState )
-    {
-    super.onRestoreInstanceState( savedInstanceState );
-
-    mPrintOrder = savedInstanceState.getParcelable( EXTRA_PRINT_ORDER );
-    mAPIKey = savedInstanceState.getString( EXTRA_PRINT_API_KEY );
+    outState.putParcelable( KEY_ORDER, mOrder );
     }
 
 
@@ -483,7 +472,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
 
     if ( mLastSubmittedPromoCode.trim().equals( "" ) ) mLastSubmittedPromoCode = null;
 
-    mOrderPricing  = PricingAgent.getInstance().requestPricing( this, mPrintOrder, mLastSubmittedPromoCode, this );
+    mOrderPricing  = PricingAgent.getInstance().requestPricing( this, mOrder, mLastSubmittedPromoCode, this );
 
 
     // If the pricing wasn't cached - disable the buttons, and show the progress spinner, whilst
@@ -541,7 +530,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
       {
       // Either there was no promo code, or it was valid. Save which ever it was.
 
-      mPrintOrder.setPromoCode( mLastSubmittedPromoCode );
+      mOrder.setPromoCode( mLastSubmittedPromoCode );
 
 
       // If there is a promo code - change the text to "Clear" immediately following a retrieval. It
@@ -570,7 +559,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
 
     MultipleCurrencyAmount totalCost = mOrderPricing.getTotalCost();
 
-    mPrintOrder.setOrderPricing( mOrderPricing );
+    mOrder.setOrderPricing( mOrderPricing );
 
 
     // If the cost is zero, we change the button text
@@ -839,12 +828,19 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
     {
     if ( paymentId != null )
       {
-      mPrintOrder.setProofOfPayment( paymentId );
+      mOrder.setProofOfPayment( paymentId );
 
-      Analytics.getInstance( this ).trackPaymentCompleted( mPrintOrder, Analytics.PAYMENT_METHOD_PAYPAL );
+      Analytics.getInstance( this ).trackPaymentCompleted( mOrder, Analytics.PAYMENT_METHOD_PAYPAL );
       }
-    //mPrintOrder.saveToHistory(this);
 
+
+    submitOrder();
+    }
+
+
+  public void submitOrder()
+    {
+    // TODO: Use a dialog fragment
     final ProgressDialog dialog = new ProgressDialog( this );
     dialog.setCancelable( false );
     dialog.setIndeterminate( false );
@@ -855,50 +851,18 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
     dialog.setMax( 100 );
     dialog.show();
 
-    mPrintOrder.submitForPrinting( this, new PrintOrderSubmissionListener()
-    {
-    @Override
-    public void onProgress( PrintOrder printOrder, int primaryProgressPercent, int secondaryProgressPercent )
-      {
-      if ( Looper.myLooper() != Looper.getMainLooper() )
-        throw new AssertionError( "Should be calling back on the main thread" );
-      dialog.setProgress( primaryProgressPercent );
-      dialog.setSecondaryProgress( secondaryProgressPercent );
-      dialog.setMessage( "Uploading images" );
-      }
 
-    @Override
-    public void onSubmissionComplete( PrintOrder printOrder, String orderIdReceipt )
-      {
-      if ( Looper.myLooper() != Looper.getMainLooper() )
-        throw new AssertionError( "Should be calling back on the main thread" );
-      //mPrintOrder.saveToHistory(PaymentActivity.this);
-      dialog.dismiss();
-      Intent i = new Intent( PaymentActivity.this, OrderReceiptActivity.class );
-      i.putExtra( OrderReceiptActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder );
-      startActivityForResult( i, REQUEST_CODE_RECEIPT );
+    // Submit the print order
 
-      Analytics.getInstance( PaymentActivity.this ).trackOrderSubmission( printOrder );
-      }
+    OrderProgressListener orderProgressListener = new OrderProgressListener( dialog );
 
-    @Override
-    public void onError( PrintOrder printOrder, Exception error )
-      {
-      if ( Looper.myLooper() != Looper.getMainLooper() )
-        throw new AssertionError( "Should be calling back on the main thread" );
-      //mPrintOrder.saveToHistory(PaymentActivity.this);
-      dialog.dismiss();
-      //showErrorDialog(error.getMessage());
+    OrderSubmitter orderSubmitter = new OrderSubmitter( this, mOrder, orderProgressListener );
 
-      Intent i = new Intent( PaymentActivity.this, OrderReceiptActivity.class );
-      i.putExtra( OrderReceiptActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder );
-      startActivityForResult( i, REQUEST_CODE_RECEIPT );
-      }
-    } );
+    orderSubmitter.submit();
     }
 
 
-  ////////// Inner Class(es) //////////
+    ////////// Inner Class(es) //////////
 
   /*****************************************************
    *
@@ -949,5 +913,173 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
       requestPrices();
       }
     }
-  }
 
+
+  /*****************************************************
+   *
+   * Listens to progress updates from order submission
+   * and polling.
+   *
+   *****************************************************/
+  private class OrderProgressListener implements OrderSubmitter.IProgressListener
+    {
+    private ProgressDialog  mProgressDialog;
+
+
+    OrderProgressListener( ProgressDialog progressDialog )
+      {
+      mProgressDialog = progressDialog;
+      }
+
+
+    /*****************************************************
+     *
+     * Called with order submission progress.
+     *
+     *****************************************************/
+    public void onOrderUpdate( PrintOrder order, OrderState state, int primaryProgressPercent, int secondaryProgressPercent )
+      {
+      // Determine what the order state is, and set the progress dialog accordingly
+
+      switch ( state )
+        {
+        case UPLOADING:
+          mProgressDialog.setIndeterminate( false );
+          mProgressDialog.setProgress( primaryProgressPercent );
+          mProgressDialog.setSecondaryProgress( secondaryProgressPercent );
+          mProgressDialog.setMessage( getString( R.string.order_submission_message_uploading ) );
+          break;
+
+        // The progress bar becomes indeterminate once the images have been uploaded
+
+        case POSTED:
+          mProgressDialog.setIndeterminate( true );
+          mProgressDialog.setMessage( getString( R.string.order_submission_message_posted ) );
+          break;
+
+        case RECEIVED:
+          mProgressDialog.setIndeterminate( true );
+          mProgressDialog.setMessage( getString( R.string.order_submission_message_received ) );
+          break;
+
+        case ACCEPTED:
+          mProgressDialog.setIndeterminate( true );
+          mProgressDialog.setMessage( getString( R.string.order_submission_message_accepted ) );
+          break;
+
+        case VALIDATED:
+
+          // Fall through
+
+        case PROCESSED:
+
+          onOrderSuccess( order );
+
+          break;
+
+        case CANCELLED:
+
+          mProgressDialog.dismiss();
+
+          displayModalDialog
+            (
+            R.string.alert_dialog_title_order_cancelled,
+            R.string.alert_dialog_message_order_cancelled,
+            R.string.OK,
+            null,
+            NO_BUTTON,
+            null
+            );
+
+          break;
+        }
+      }
+
+
+    /*****************************************************
+     *
+     * Called when there is an error submitting the order.
+     *
+     *****************************************************/
+    public void onOrderError( PrintOrder order, Exception exception )
+      {
+      mProgressDialog.dismiss();
+
+      displayModalDialog
+              (
+                      R.string.alert_dialog_title_order_submission_error,
+                      exception.getMessage(),
+                      R.string.OK,
+                      null,
+                      NO_BUTTON,
+                      null
+              );
+
+      // We no longer seem to have a route into the receipt screen on error
+      //OrderReceiptActivity.startForResult( PaymentActivity.this, order, REQUEST_CODE_RECEIPT );
+      }
+
+
+    @Override
+    public void onOrderDuplicate( PrintOrder order, String originalOrderId )
+      {
+      // We do need to replace any order id with the original one
+      order.setReceipt( originalOrderId );
+
+
+      // A duplicate is treated in the same way as a successful submission, since it means
+      // the proof of payment has already been accepted and processed.
+
+      onOrderSuccess( order );
+      }
+
+
+    @Override
+    public void onOrderTimeout( PrintOrder order )
+      {
+      mProgressDialog.dismiss();
+
+      displayModalDialog
+        (
+        R.string.alert_dialog_title_order_timeout,
+        R.string.alert_dialog_message_order_timeout,
+        R.string.order_timeout_button_wait,
+        new SubmitOrderRunnable(),
+        R.string.order_timeout_button_give_up,
+        null
+        );
+      }
+
+
+    /*****************************************************
+     *
+     * Proceeds to the receipt screen.
+     *
+     *****************************************************/
+    private void onOrderSuccess( PrintOrder order )
+      {
+      mProgressDialog.dismiss();
+
+      Analytics.getInstance( PaymentActivity.this ).trackOrderSubmission( order );
+
+      OrderReceiptActivity.startForResult( PaymentActivity.this, order, REQUEST_CODE_RECEIPT );
+      }
+
+    }
+
+
+  /*****************************************************
+   *
+   * Submits the order.
+   *
+   *****************************************************/
+  private class SubmitOrderRunnable implements Runnable
+    {
+    @Override
+    public void run()
+      {
+      submitOrder();
+      }
+    }
+
+  }

@@ -1,8 +1,7 @@
- package ly.kite.payment;
+ package ly.kite.paypal;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Base64;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -306,6 +305,7 @@ public class PayPalCard implements Serializable {
             token.put("credit_card_id", vaultId);
         }
 
+    // TODO: Intent is here
         JSONObject payment = new JSONObject();
         payment.put("intent", "sale");
 

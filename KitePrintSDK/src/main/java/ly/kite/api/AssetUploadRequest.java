@@ -1,4 +1,4 @@
-package ly.kite.catalogue;
+package ly.kite.api;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -18,12 +18,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ly.kite.KiteSDK;
+import ly.kite.catalogue.Asset;
+import ly.kite.catalogue.AssetHelper;
 import ly.kite.util.HTTPJSONRequest;
 
 /**
  * Created by deonbotha on 07/02/2014.
  */
-class AssetUploadRequest {
+public class AssetUploadRequest {
 
     private Context mContext;
 
@@ -32,7 +34,7 @@ class AssetUploadRequest {
     private int numOutstandingAsyncOpertions = 0;
     private boolean notifiedUploadListenerOfOutcome = false;
 
-    AssetUploadRequest( Context context )
+    public AssetUploadRequest( Context context )
         {
         mContext = context;
         }
@@ -52,13 +54,13 @@ class AssetUploadRequest {
         }
     }
 
-    public void uploadAsset(Asset asset, Context context, AssetUploadRequestListener uploadListener) {
+    public void uploadAsset(Asset asset, Context context, IProgressListener uploadListener) {
         ArrayList<Asset> list = new ArrayList<Asset>();
         list.add(asset);
         uploadAssets(context, list, uploadListener);
     }
 
-    public void uploadAssets( Context context, final List<Asset> assets, final AssetUploadRequestListener uploadListener) {
+    public void uploadAssets( Context context, final List<Asset> assets, final IProgressListener uploadListener) {
         ArrayList<Asset> urlsToRegister = new ArrayList<Asset>();
         ArrayList<Asset> assetsToUpload = new ArrayList<Asset>();
 
@@ -101,7 +103,7 @@ class AssetUploadRequest {
         }
     }
 
-    private void completedOutstandingAsyncOperation(List<Asset> assets, Exception ex, AssetUploadRequestListener listener) {
+    private void completedOutstandingAsyncOperation(List<Asset> assets, Exception ex, IProgressListener listener) {
         if (cancelled || notifiedUploadListenerOfOutcome) {
             return;
         }
@@ -381,4 +383,15 @@ class AssetUploadRequest {
         void onUploadComplete();
         void onError(Exception ex);
     }
+
+
+  public interface IProgressListener
+    {
+    void onProgress( AssetUploadRequest req, int totalAssetsUploaded, int totalAssetsToUpload, long bytesWritten, long totalAssetBytesWritten, long totalAssetBytesExpectedToWrite );
+
+    void onUploadComplete( AssetUploadRequest req, List<Asset> assets );
+
+    void onError( AssetUploadRequest req, Exception error );
+    }
+
 }

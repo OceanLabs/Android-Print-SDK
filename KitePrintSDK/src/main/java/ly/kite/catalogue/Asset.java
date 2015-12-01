@@ -469,7 +469,7 @@ public class Asset implements Parcelable
    * Saves the results of uploading.
    *
    *****************************************************/
-  void markAsUploaded( long assetId, URL previewURL )
+  public void markAsUploaded( long assetId, URL previewURL )
     {
     mHasBeenUploaded = true;
     mId              = assetId;

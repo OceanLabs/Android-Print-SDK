@@ -430,7 +430,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
    *
    *****************************************************/
   public void displayModalDialog(
-          String      titleText,
+          String   titleText,
           String   messageText,
           int      positiveTextResourceId,
           Runnable positiveRunnable,
