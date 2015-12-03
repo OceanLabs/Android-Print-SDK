@@ -131,6 +131,8 @@ public class HTTPJSONRequest
                 request.setHeader( "X-App-Name",     mContext.getString( mContext.getApplicationInfo().labelRes ) );
                 request.setHeader( "X-Person-UUID",  kiteSDK.getUniqueUserId() );
 
+            String bodyJSONString = null;
+
             try {
                     HttpResponse response = httpclient.execute(request);
                     BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
@@ -142,11 +144,11 @@ public class HTTPJSONRequest
                     // If we get a body - parse it as JSON. Some endpoints don't return anything, so
                     // if this happens we just create an empty JSON object.
 
-                    String bodyJSONString = builder.toString();
+                    bodyJSONString = builder.toString();
 
                     if ( ! bodyJSONString.trim().equals( "" ) )
                       {
-                      JSONTokener t = new JSONTokener( builder.toString() );
+                      JSONTokener t = new JSONTokener( bodyJSONString );
                       jsonResponse.json = new JSONObject( t );
                       }
                     else
@@ -157,6 +159,7 @@ public class HTTPJSONRequest
                     jsonResponse.httpStatusCode = response.getStatusLine().getStatusCode();
 
                 } catch (Exception e) {
+                    Log.e( LOG_TAG, "Unable to parse body: " + bodyJSONString, e );
                     jsonResponse.error = e;
                 }
 

@@ -82,9 +82,10 @@ public class PrintOrder implements Parcelable /* , Serializable */
       if ( proofOfPayment == null ||
            ( ! proofOfPayment.startsWith( "AP-"  ) &&
              ! proofOfPayment.startsWith( "PAY-" ) &&
+             ! proofOfPayment.startsWith( "PAUTH-" ) &&
              ! proofOfPayment.startsWith( "tok_" ) ) )
         {
-        throw new IllegalArgumentException( "Proof of payment must start with AP-, PAY-, or tok_ : " + proofOfPayment );
+        throw new IllegalArgumentException( "Proof of payment must start with AP-, PAY-, PAUTH-, or tok_ : " + proofOfPayment );
         }
 
       this.proofOfPayment = proofOfPayment;

@@ -150,6 +150,7 @@ public class Analytics
 
   public  static final String  PAYMENT_METHOD_PAYPAL                       = "PayPal";
   public  static final String  PAYMENT_METHOD_CREDIT_CARD                  = "Credit Card";
+  public  static final String  PAYMENT_METHOD_FREE                         = "Free";
 
   private static final String  JSON_PROPERTY_VALUE_YES                     = "Yes";
   private static final String  JSON_PROPERTY_VALUE_NO                      = "No";

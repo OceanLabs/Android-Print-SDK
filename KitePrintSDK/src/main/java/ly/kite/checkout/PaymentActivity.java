@@ -78,9 +78,9 @@ import ly.kite.KiteSDK;
 import ly.kite.catalogue.MultipleCurrencyAmount;
 import ly.kite.catalogue.PrintOrder;
 import ly.kite.R;
-import ly.kite.paypal.PayPalCard;
-import ly.kite.paypal.PayPalCardChargeListener;
-import ly.kite.paypal.PayPalCardVaultStorageListener;
+import ly.kite.payment.PayPalCard;
+import ly.kite.payment.PayPalCardChargeListener;
+import ly.kite.payment.PayPalCardVaultStorageListener;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.catalogue.SingleCurrencyAmount;
 
@@ -112,6 +112,9 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
   private static final int REQUEST_CODE_CREDITCARD = 1;
   private static final int REQUEST_CODE_RECEIPT = 2;
 
+  private static final String PAYPAL_PROOF_OF_PAYMENT_PREFIX_ORIGINAL      = "PAY-";
+  private static final String PAYPAL_PROOF_OF_PAYMENT_PREFIX_AUTHORISATION = "PAUTH-";
+
 
   ////////// Static Variable(s) //////////
 
@@ -142,13 +145,42 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
 
   ////////// Static Method(s) //////////
 
-  public static void startForResult( Activity activity, PrintOrder printOrder, int requestCode )
+  /*****************************************************
+   *
+   * Convenience method for starting this activity.
+   *
+   *****************************************************/
+  static public void startForResult( Activity activity, PrintOrder printOrder, int requestCode )
     {
     Intent intent = new Intent( activity, PaymentActivity.class );
 
     intent.putExtra( KEY_ORDER, printOrder );
 
     activity.startActivityForResult( intent, requestCode );
+    }
+
+
+  /*****************************************************
+   *
+   * Converts the prefix on a proof of payment to indicate
+   * that it is an authorisation not a sale.
+   *
+   *****************************************************/
+  static private String authorisationProofOfPaymentFrom( String originalProofOfPayment )
+    {
+    if ( originalProofOfPayment == null ) return ( null );
+
+
+    // Find a suitable substitution
+
+    if ( originalProofOfPayment.startsWith( PAYPAL_PROOF_OF_PAYMENT_PREFIX_ORIGINAL ) )
+      {
+      return ( PAYPAL_PROOF_OF_PAYMENT_PREFIX_AUTHORISATION + originalProofOfPayment.substring( PAYPAL_PROOF_OF_PAYMENT_PREFIX_ORIGINAL.length() ) );
+      }
+
+
+    // If we can't find a substitution - return the original unchanged
+    return ( originalProofOfPayment );
     }
 
 
@@ -280,7 +312,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
 
               if ( paymentId != null )
                 {
-                submitOrderForPrinting( paymentId );
+                submitOrderForPrinting( paymentId, Analytics.PAYMENT_METHOD_PAYPAL );
                 }
               else
                 {
@@ -573,7 +605,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
       @Override
       public void onClick( View view )
         {
-        submitOrderForPrinting( null );
+        submitOrderForPrinting( null, Analytics.PAYMENT_METHOD_FREE );
         }
       } );
       }
@@ -680,7 +712,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
                 totalCost.getAmount(),
                 totalCost.getCurrencyCode(),
                 "Product",
-                PayPalPayment.PAYMENT_INTENT_SALE );
+                PayPalPayment.PAYMENT_INTENT_AUTHORIZE );  // The payment is actually taken on the server
 
         Intent intent = new Intent( this, com.paypal.android.sdk.payments.PaymentActivity.class );
 
@@ -800,7 +832,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
 
     SingleCurrencyAmount totalCost = mOrderPricing.getTotalCost().getDefaultAmountWithFallback();
 
-    card.chargeCard( mKiteSDKEnvironment,
+    card.authoriseCard( mKiteSDKEnvironment,
             totalCost.getAmount(),
             totalCost.getCurrencyCode(),
             "",
@@ -810,7 +842,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
             public void onChargeSuccess( PayPalCard card, String proofOfPayment )
               {
               dialog.dismiss();
-              submitOrderForPrinting( proofOfPayment );
+              submitOrderForPrinting( proofOfPayment, Analytics.PAYMENT_METHOD_CREDIT_CARD );
               card.saveAsLastUsedCard( PaymentActivity.this );
               }
 
@@ -824,15 +856,14 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
     }
 
 
-  public void submitOrderForPrinting( String paymentId )
+  public void submitOrderForPrinting( String paymentId, String analyticsPaymentMethod )
     {
     if ( paymentId != null )
       {
-      mOrder.setProofOfPayment( paymentId );
+      mOrder.setProofOfPayment( authorisationProofOfPaymentFrom( paymentId ) );
 
-      Analytics.getInstance( this ).trackPaymentCompleted( mOrder, Analytics.PAYMENT_METHOD_PAYPAL );
+      Analytics.getInstance( this ).trackPaymentCompleted( mOrder, analyticsPaymentMethod );
       }
-
 
     submitOrder();
     }
@@ -937,6 +968,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
      * Called with order submission progress.
      *
      *****************************************************/
+    @Override
     public void onOrderUpdate( PrintOrder order, OrderState state, int primaryProgressPercent, int secondaryProgressPercent )
       {
       // Determine what the order state is, and set the progress dialog accordingly
@@ -945,6 +977,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
         {
         case UPLOADING:
           mProgressDialog.setIndeterminate( false );
+          //mProgressDialog.setProgressPercentFormat( NumberFormat.getPercentInstance() );
           mProgressDialog.setProgress( primaryProgressPercent );
           mProgressDialog.setSecondaryProgress( secondaryProgressPercent );
           mProgressDialog.setMessage( getString( R.string.order_submission_message_uploading ) );
@@ -954,26 +987,53 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
 
         case POSTED:
           mProgressDialog.setIndeterminate( true );
+          mProgressDialog.setProgressPercentFormat( null );
           mProgressDialog.setMessage( getString( R.string.order_submission_message_posted ) );
           break;
 
         case RECEIVED:
           mProgressDialog.setIndeterminate( true );
+          mProgressDialog.setProgressPercentFormat( null );
           mProgressDialog.setMessage( getString( R.string.order_submission_message_received ) );
           break;
 
         case ACCEPTED:
           mProgressDialog.setIndeterminate( true );
+          mProgressDialog.setProgressPercentFormat( null );
           mProgressDialog.setMessage( getString( R.string.order_submission_message_accepted ) );
           break;
 
+        // We shouldn't get any other states, but if we do - display its name
+        default:
+          mProgressDialog.setIndeterminate( true );
+          mProgressDialog.setProgressPercentFormat( null );
+          mProgressDialog.setMessage( state.name() );
+          break;
+        }
+      }
+
+
+    /*****************************************************
+     *
+     * Called with order submission progress.
+     *
+     *****************************************************/
+    @Override
+    public void onOrderComplete( PrintOrder order, OrderState state )
+      {
+      // Determine what the order state is, and set the progress dialog accordingly
+
+      switch ( state )
+        {
         case VALIDATED:
 
           // Fall through
 
         case PROCESSED:
 
-          onOrderSuccess( order );
+          // Fall through
+
+        default:
 
           break;
 
@@ -982,17 +1042,21 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
           mProgressDialog.dismiss();
 
           displayModalDialog
-            (
-            R.string.alert_dialog_title_order_cancelled,
-            R.string.alert_dialog_message_order_cancelled,
-            R.string.OK,
-            null,
-            NO_BUTTON,
-            null
-            );
+                  (
+                          R.string.alert_dialog_title_order_cancelled,
+                          R.string.alert_dialog_message_order_cancelled,
+                          R.string.OK,
+                          null,
+                          NO_BUTTON,
+                          null
+                  );
 
-          break;
+          return;
         }
+
+
+      // For anything that's not cancelled - go to the receipt screen
+      onOrderSuccess( order );
       }
 
 

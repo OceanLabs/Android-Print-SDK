@@ -156,22 +156,25 @@ public class OrderSubmitter implements PrintOrder.ISubmissionProgressListener, O
   @Override
   public void osOnSuccess( OrderStatusRequest request, OrderState state )
     {
-    // Notify the listener of the status
-    mProgressListener.onOrderUpdate( mOrder, state, 0, 0 );
-
-
-    // Processed or cancelled orders are in their final state and will not change, so
-    // there's no point in checking them again.
-
-    if ( state != OrderState.PROCESSED && state != OrderState.CANCELLED )
+    // If the order is in one of these states - stop polling
+    if ( state == OrderState.VALIDATED ||
+         state == OrderState.PROCESSED ||
+         state == OrderState.CANCELLED )
       {
-      // Check if we have timed out
+      mProgressListener.onOrderComplete( mOrder, state );
+      }
+    else
+      {
+      // If we have timed out - inform the listener and stop
       if ( SystemClock.elapsedRealtime() >= mPollingEndElapsedRealtimeMillis )
         {
         mProgressListener.onOrderTimeout( mOrder );
         }
       else
         {
+        // Update the listener with the intermediate state
+        mProgressListener.onOrderUpdate( mOrder, state, 0, 0 );
+
         // The order is not complete but we haven't timed out, so re-poll after a delay
         mHandler.postDelayed( new PollStatusRunnable(), POLLING_INTERVAL_MILLIS );
         }
@@ -259,8 +262,9 @@ public class OrderSubmitter implements PrintOrder.ISubmissionProgressListener, O
    *****************************************************/
   public interface IProgressListener
     {
-    public void onOrderTimeout( PrintOrder order );
     public void onOrderUpdate( PrintOrder order, OrderState state, int primaryProgressPercent, int secondaryProgressPercent );
+    public void onOrderComplete( PrintOrder order, OrderState state );
+    public void onOrderTimeout( PrintOrder order );
     public void onOrderError( PrintOrder order, Exception exception );
     public void onOrderDuplicate( PrintOrder order, String originalOrderId );
     }
