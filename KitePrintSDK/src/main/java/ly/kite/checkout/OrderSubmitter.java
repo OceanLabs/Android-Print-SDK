@@ -63,7 +63,7 @@ public class OrderSubmitter implements PrintOrder.ISubmissionProgressListener, O
   @SuppressWarnings( "unused" )
   static private final String  LOG_TAG                 = "OrderSubmitter";
 
-  static private final long    POLLING_TIMEOUT_MILLIS  = 1000 * 10;  // 10 seconds
+  static private final long    POLLING_TIMEOUT_MILLIS  = 1000 * 20;  // 20 seconds
   static private final long    POLLING_INTERVAL_MILLIS = 1000 * 2;   //  2 seconds
 
 
@@ -191,7 +191,7 @@ public class OrderSubmitter implements PrintOrder.ISubmissionProgressListener, O
   @Override
   public void osOnError( OrderStatusRequest request, OrderStatusRequest.ErrorType errorType, String originalOrderId, Exception exception )
     {
-    // If there is an error - return it to the listener immediately
+    // Check the type of error
 
     if ( errorType == OrderStatusRequest.ErrorType.DUPLICATE )
       {

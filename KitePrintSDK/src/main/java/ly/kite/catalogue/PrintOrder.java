@@ -364,8 +364,10 @@ public class PrintOrder implements Parcelable /* , Serializable */
         public void onSubmissionComplete( SubmitPrintOrderRequest req, String orderId )
             {
             setReceipt( orderId );
-            submissionListener.onSubmissionComplete( PrintOrder.this, orderId );
+
             printOrderReq = null;
+
+            submissionListener.onSubmissionComplete( PrintOrder.this, orderId );
             }
 
         @Override
@@ -373,8 +375,10 @@ public class PrintOrder implements Parcelable /* , Serializable */
             {
             userSubmittedForPrinting = false;
             lastPrintSubmissionError = error;
-            submissionListener.onError( PrintOrder.this, error );
+
             printOrderReq = null;
+
+            submissionListener.onError( PrintOrder.this, error );
             }
         } );
     }

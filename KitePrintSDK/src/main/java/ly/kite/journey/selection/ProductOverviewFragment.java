@@ -126,7 +126,6 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
   private Button                   mOverlaidStartButton;
   private SlidingOverlayFrame      mSlidingOverlayFrame;
   private View                     mDrawerControlLayout;
-  //private ViewGroup                mProductOptionsLayout;
   private ImageView                mOpenCloseDrawerIconImageView;
   private Button                   mProceedOverlayButton;
 
@@ -194,7 +193,7 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
       }
 
 
-    mProduct = (Product) arguments.getParcelable( BUNDLE_KEY_PRODUCT );
+    mProduct = (Product)arguments.getParcelable( BUNDLE_KEY_PRODUCT );
 
     if ( mProduct == null )
       {
