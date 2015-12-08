@@ -45,16 +45,17 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
+// Uncomment to include Crashlytics (Fabric) crash reporting
+//import com.crashlytics.android.Crashlytics;
+//import io.fabric.sdk.android.Fabric;
 
-import io.fabric.sdk.android.Fabric;
-
+import ly.kite.journey.DeviceImageSource;
+import ly.kite.journey.InstagramImageSource;
 import ly.kite.photopicker.Photo;
 import ly.kite.photopicker.PhotoPicker;
 import ly.kite.catalogue.Asset;
@@ -76,20 +77,23 @@ public class MainActivity extends Activity
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                      = "MainActivity";
+  private static final String  LOG_TAG                    = "MainActivity";
 
-  private static final String NON_REPLACED_API_KEY          = "REPLACE_ME";
+  private static final String  REPLACE_DETAILS_HERE       = "REPLACE_ME";
 
   /**********************************************************************
    * Insert your Kite API keys here. These are found under your profile
    * by logging in to the developer portal at https://www.kite.ly
    **********************************************************************/
-  private static final String API_KEY_TEST                = NON_REPLACED_API_KEY;
+  private static final String API_KEY_TEST                = REPLACE_DETAILS_HERE;
+  private static final String API_KEY_LIVE                = REPLACE_DETAILS_HERE;
 
-  private static final String API_KEY_LIVE                = NON_REPLACED_API_KEY;
 
-  private static final String INSTAGRAM_API_KEY           = "aa314a392fdd4de7aa287a6614ea8897";
-  private static final String INSTAGRAM_REDIRECT_URI      = "psapp://instagram-callback";
+  /**********************************************************************
+   * Insert your Instagram details here.
+   **********************************************************************/
+  private static final String INSTAGRAM_API_KEY           = REPLACE_DETAILS_HERE;
+  private static final String INSTAGRAM_REDIRECT_URI      = REPLACE_DETAILS_HERE;
 
 
   private static final int    REQUEST_CODE_SELECT_PICTURE = 1;
@@ -126,8 +130,8 @@ public class MainActivity extends Activity
     super.onCreate( savedInstanceState );
 
 
-    // Initialise crash reporting
-    Fabric.with( this, new Crashlytics() );
+    // Uncomment to including Crashlytics (Fabric) crash reporting
+    //Fabric.with( this, new Crashlytics() );
 
 
     // Set up the screen
@@ -249,7 +253,7 @@ public class MainActivity extends Activity
 
 
     // Check that the API has been set in code
-    if ( apiKey.equals( NON_REPLACED_API_KEY ) )
+    if ( apiKey.equals( REPLACE_DETAILS_HERE ) )
       {
       showError( "Set API Keys", "Please set your Kite API keys at the top of the SampleApp's MainActivity.java. You can find these by logging into https://www.kite.ly." );
 
@@ -258,9 +262,19 @@ public class MainActivity extends Activity
 
 
     // Launch the SDK shopping journey
+
     KiteSDK.getInstance( this, apiKey, environment )
-      .setInstagramCredentials( INSTAGRAM_API_KEY, INSTAGRAM_REDIRECT_URI )
+
+      // Uncomment this if you want all image sources, and you have defined all the credentials. The
+      // default is for the device image source , and the Instagram image source (assuming you have
+      // also defined the instagram credentials.
+      //.setImageSources( new DeviceImageSource(), new InstagramImageSource(), new FacebookImageSource() )
+
+      // Uncomment this if you have defined Instagram credentials
+      //.setInstagramCredentials( INSTAGRAM_API_KEY, INSTAGRAM_REDIRECT_URI )
+
       .setRequestPhoneNumber( false )
+
       .startShopping( this, assets );  // Use this to shop all products in catalogue
       //.startShoppingByProductId( this, assets, "pbx_squares_5x5", "pbx_squares_8x8" );  // Use this to shop specific products by id
     }
