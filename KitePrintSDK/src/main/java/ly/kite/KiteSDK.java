@@ -81,7 +81,7 @@ public class KiteSDK
 
   static private final String LOG_TAG                                             = "KiteSDK";
 
-  static public  final String SDK_VERSION                                         = "3.0.0";
+  public  static final String SDK_VERSION                                         = "4.0.1";
 
   static private final String SHARED_PREFERENCES_NAME                             = "kite_shared_prefs";
 
