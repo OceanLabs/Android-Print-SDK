@@ -42,7 +42,7 @@ android {
                 // Comment the next line if you are including Facebook as an image source
                 exclude '**/FacebookImageSource.java'
 
-                // Commend the next line if you are including push messaging
+                // Comment the next line if you are including push messaging
                 exclude '**/GCMListenerService.java'
             }
         }
@@ -66,7 +66,7 @@ dependencies {
     //compile project(':KitePrintSDK-GCM')
 
     // Uncomment to include Facebook as an image source
-    //compile project(':FacebookPhotoPicker-Android')
+    //compile 'ly.kite:facebook-photo-picker:1.1.0'
 
     // Uncomment to include Crashlytics (Fabric) crash reporting
     //compile('com.crashlytics.sdk.android:crashlytics:2.4.0@aar') {

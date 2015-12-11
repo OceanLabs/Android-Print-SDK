@@ -99,13 +99,13 @@ public class FacebookImageSource extends AImageSource
 
   /*****************************************************
    *
-   * Returns true if the Instagram image source is available.
-   * This will be the case if we have credentials.
+   * Returns true if the Facebook image source is available.
+   * We always assume this is true.
    *
    *****************************************************/
   public boolean isAvailable( Context context )
     {
-    return ( KiteSDK.getInstance( context ).haveInstagramCredentials() );
+    return ( true );
     }
 
 

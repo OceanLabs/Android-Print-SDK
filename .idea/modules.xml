@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Android-Print-SDK.iml" filepath="$PROJECT_DIR$/Android-Print-SDK.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../FacebookPhotoPicker-Android/FacebookPhotoPicker/FacebookPhotoPicker-Android.iml" filepath="$PROJECT_DIR$/../FacebookPhotoPicker-Android/FacebookPhotoPicker/FacebookPhotoPicker-Android.iml" />
       <module fileurl="file://$PROJECT_DIR$/KitePrintSDK/KitePrintSDK.iml" filepath="$PROJECT_DIR$/KitePrintSDK/KitePrintSDK.iml" />
       <module fileurl="file://$PROJECT_DIR$/KitePrintSDK-GCM/KitePrintSDK-GCM.iml" filepath="$PROJECT_DIR$/KitePrintSDK-GCM/KitePrintSDK-GCM.iml" />
       <module fileurl="file://$PROJECT_DIR$/SampleApp/SampleApp.iml" filepath="$PROJECT_DIR$/SampleApp/SampleApp.iml" />
