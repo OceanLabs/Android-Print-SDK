@@ -39,12 +39,10 @@ package ly.kite.journey.selection;
 
 ///// Import(s) /////
 
-
-///// Class Declaration /////
-
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,16 +52,22 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
 import ly.kite.R;
 import ly.kite.address.Country;
 import ly.kite.analytics.Analytics;
+import ly.kite.catalogue.Catalogue;
+import ly.kite.catalogue.ProductOption;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.journey.AKiteFragment;
 import ly.kite.catalogue.MultipleCurrencyAmount;
@@ -76,6 +80,9 @@ import ly.kite.catalogue.SingleDestinationShippingCost;
 import ly.kite.widget.BellInterpolator;
 import ly.kite.widget.PagingDots;
 import ly.kite.widget.SlidingOverlayFrame;
+
+
+///// Class Declaration /////
 
 /*****************************************************
  *
@@ -111,18 +118,18 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
 
   ////////// Member Variable(s) //////////
 
-  private Product              mProduct;
+  private Product                  mProduct;
 
-  private View                 mOverlaidComponents;
-  private ViewPager            mProductImageViewPager;
-  private PagingDots           mPagingDots;
-  private Button               mOverlaidStartButton;
-  private SlidingOverlayFrame  mSlidingOverlayFrame;
-  private View                 mDrawerControlLayout;
-  private ImageView            mOpenCloseDrawerIconImageView;
-  private Button               mProceedOverlayButton;
+  private View                     mOverlaidComponents;
+  private ViewPager                mProductImageViewPager;
+  private PagingDots               mPagingDots;
+  private Button                   mOverlaidStartButton;
+  private SlidingOverlayFrame      mSlidingOverlayFrame;
+  private View                     mDrawerControlLayout;
+  private ImageView                mOpenCloseDrawerIconImageView;
+  private Button                   mProceedOverlayButton;
 
-  private PagerAdapter         mProductImageAdaptor;
+  private PagerAdapter             mProductImageAdaptor;
 
 
   ////////// Static Initialiser(s) //////////
@@ -174,19 +181,19 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
       Log.e( TAG, "No arguments found" );
 
       mKiteActivity.displayModalDialog(
-              R.string.alert_dialog_title_no_arguments,
-              R.string.alert_dialog_message_no_arguments,
-              AKiteActivity.NO_BUTTON,
-              null,
-              R.string.Cancel,
-              mKiteActivity.new FinishRunnable()
-      );
+        R.string.alert_dialog_title_no_arguments,
+        R.string.alert_dialog_message_no_arguments,
+        AKiteActivity.NO_BUTTON,
+        null,
+        R.string.Cancel,
+        mKiteActivity.new FinishRunnable()
+        );
 
       return;
       }
 
 
-    mProduct = (Product) arguments.getParcelable( BUNDLE_KEY_PRODUCT );
+    mProduct = (Product)arguments.getParcelable( BUNDLE_KEY_PRODUCT );
 
     if ( mProduct == null )
       {
@@ -203,6 +210,7 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
 
       return;
       }
+
     }
 
 
@@ -236,9 +244,10 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
     mProductImageViewPager              = (ViewPager) view.findViewById( R.id.view_pager );
     mOverlaidComponents                 = view.findViewById( R.id.overlaid_components );
     mPagingDots                         = (PagingDots) view.findViewById( R.id.paging_dots );
-    mOverlaidStartButton                = (Button) view.findViewById( R.id.overlaid_start_button );
+    mOverlaidStartButton                = (Button)view.findViewById( R.id.overlaid_start_button );
     mSlidingOverlayFrame                = (SlidingOverlayFrame) view.findViewById( R.id.sliding_overlay_frame );
     mDrawerControlLayout                = view.findViewById( R.id.drawer_control_layout );
+    //mProductOptionsLayout               = (ViewGroup)view.findViewById( R.id.product_options_layout );
     mOpenCloseDrawerIconImageView       = (ImageView) view.findViewById( R.id.open_close_drawer_icon_image_view );
     mProceedOverlayButton               = (Button)view.findViewById( R.id.proceed_overlay_button );
     TextView priceTextView              = (TextView) view.findViewById( R.id.price_text_view );
@@ -310,7 +319,7 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
 
     mProductImageViewPager.setOnPageChangeListener( mPagingDots );
 
-    mOverlaidComponents.setAlpha( slidingDrawerIsExpanded ? 0f : 1f );  // If the drawer starts open, these components need to be invisible
+    if ( mOverlaidComponents != null ) mOverlaidComponents.setAlpha( slidingDrawerIsExpanded ? 0f : 1f );  // If the drawer starts open, these components need to be invisible
 
 
     if ( mSlidingOverlayFrame != null )
@@ -318,6 +327,14 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
       mSlidingOverlayFrame.snapToExpandedState( slidingDrawerIsExpanded );
       mSlidingOverlayFrame.setSlideAnimationDuration( SLIDE_ANIMATION_DURATION_MILLIS );
       mOpenCloseDrawerIconImageView.setRotation( slidingDrawerIsExpanded ? OPEN_CLOSE_ICON_ROTATION_DOWN : OPEN_CLOSE_ICON_ROTATION_UP );
+      }
+
+
+    // Populate any product options. The activity is responsible for this because custom apps
+    // will want to do their own thing.
+    if ( mKiteActivity instanceof ICallback )
+      {
+      ( (ICallback)mKiteActivity ).poOnPopulateOptions( mProduct, view );
       }
 
 
@@ -366,8 +383,8 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
 
     boolean haveDescription = ( description != null && ( ! description.trim().equals( "" ) ) );
 
-    if ( haveDescription &&
-         descriptionLayout != null &&
+    if ( haveDescription             &&
+         descriptionLayout   != null &&
          descriptionTextView != null )
       {
       descriptionLayout.setVisibility( View.VISIBLE );
@@ -501,7 +518,7 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
 
     if ( mDrawerControlLayout != null ) mDrawerControlLayout.setOnClickListener( this );
 
-    mOverlaidStartButton.setOnClickListener( this );
+    if ( mOverlaidStartButton != null ) mOverlaidStartButton.setOnClickListener( this );
 
 
     return ( view );
@@ -608,12 +625,48 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
       }
     else
       {
-      onCreateProduct();
+      onCreateProduct( mProduct );
       }
     }
 
 
   ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Populates the product options layout.
+   *
+   *****************************************************/
+//  protected void populateProductOptions( ViewGroup productOptionsLayout, Product product )
+//    {
+//    LayoutInflater layoutInflater = LayoutInflater.from( mKiteActivity );
+//
+//
+//    // Go through each of the options. Create a view for each one, and a spinner adaptor
+//    // for the option values. We also need to save a reference to the spinner so we can
+//    // get the chosen options when we move on.
+//
+//    for ( ProductOption option : product.getOptionList() )
+//      {
+//      View     optionView    = layoutInflater.inflate( R.layout.product_option, null );
+//
+//      TextView nameTextView  = (TextView)optionView.findViewById( R.id.option_name_text_view );
+//      Spinner  valuesSpinner = (Spinner)optionView.findViewById( R.id.option_values_spinner );
+//
+//      nameTextView.setText( option.getName() );
+//
+//      ArrayAdapter<ProductOption.Value> valueArrayAdaptor = new ArrayAdapter<>( mKiteActivity, R.layout.list_item_product_option_value, R.id.value_text_view, option.getValueList() );
+//
+//      valuesSpinner.setAdapter( valueArrayAdaptor );
+//
+//      productOptionsLayout.addView( optionView );
+//
+//
+//      // Save the spinner for the option code
+//      mOptionCodeSpinnerMap.put( option.getCode(), valuesSpinner );
+//      }
+//    }
+
 
   /*****************************************************
    *
@@ -628,15 +681,41 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
 
   /*****************************************************
    *
+   * Returns a map of product option codes to chosen value
+   * codes.
+   *
+   *****************************************************/
+  protected HashMap<String,String> getOptionMap( HashMap<String,Spinner> optionCodeSpinnerMap )
+    {
+    HashMap<String,String> optionMap = new HashMap<>( optionCodeSpinnerMap.size() );
+
+
+    // Go through the product options
+
+    for ( String optionCode : optionCodeSpinnerMap.keySet() )
+      {
+      Spinner             optionSpinner = optionCodeSpinnerMap.get( optionCode );
+      ProductOption.Value optionValue   = (ProductOption.Value)optionSpinner.getSelectedItem();
+
+      optionMap.put( optionCode, optionValue.getCode() );
+      }
+
+
+    return ( optionMap );
+    }
+
+
+  /*****************************************************
+   *
    * Called when one of the start creating buttons is clicked.
    *
    *****************************************************/
-  public void onCreateProduct()
+  public void onCreateProduct( Product product )
     {
     // Call back to the activity
     if ( mKiteActivity instanceof ICallback )
       {
-      ( (ICallback)mKiteActivity ).poOnCreateProduct( mProduct );
+      ( (ICallback) mKiteActivity ).poOnCreateProduct( mProduct );
       }
     }
 
@@ -718,6 +797,7 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
    *****************************************************/
   public interface ICallback
     {
+    public void poOnPopulateOptions( Product product, View rootView );
     public void poOnCreateProduct( Product product );
     }
 

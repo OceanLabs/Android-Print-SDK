@@ -60,8 +60,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ly.kite.KiteSDK;
+import ly.kite.journey.AImageSource;
 import ly.kite.journey.creation.AProductCreationFragment;
-import ly.kite.journey.ImageSource;
 import ly.kite.journey.ImageSourceAdaptor;
 import ly.kite.catalogue.Asset;
 import ly.kite.journey.AssetsAndQuantity;
@@ -69,7 +69,7 @@ import ly.kite.catalogue.AssetHelper;
 import ly.kite.catalogue.Product;
 
 import ly.kite.R;
-import ly.kite.util.BooleanHelper;
+import ly.kite.util.BooleanUtils;
 import ly.kite.util.IImageConsumer;
 import ly.kite.util.IImageTransformer;
 import ly.kite.util.ImageAgent;
@@ -86,7 +86,8 @@ import ly.kite.widget.VisibilitySettingAnimationListener;
  *****************************************************/
 public class ImageSelectionFragment extends AProductCreationFragment implements AdapterView.OnItemClickListener,
                                                                                 View.OnClickListener,
-                                                                                ImageSelectionAdaptor.IOnImageCheckChangeListener
+                                                                                ImageSelectionAdaptor.IOnImageCheckChangeListener,
+                                                                                AImageSource.IAssetConsumer
   {
   ////////// Static Constant(s) //////////
 
@@ -170,7 +171,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
       {
       boolean[] assetIsCheckedArray = savedInstanceState.getBooleanArray( BUNDLE_KEY_ASSET_IS_CHECKED_ARRAY );
 
-      mAssetIsCheckedArrayList = BooleanHelper.arrayListFrom( assetIsCheckedArray );
+      mAssetIsCheckedArrayList = BooleanUtils.arrayListFrom( assetIsCheckedArray );
       }
     }
 
@@ -194,7 +195,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
     // Set up the image sources
 
-    ArrayList<ImageSource> imageSourceList = KiteSDK.getInstance( mKiteActivity ).getAvailableImageSources();
+    ArrayList<AImageSource> imageSourceList = KiteSDK.getInstance( mKiteActivity ).getAvailableImageSources();
 
     mImageSourceAdaptor = new ImageSourceAdaptor( mKiteActivity, R.layout.grid_item_image_source_horizontal, imageSourceList );
     mImageSourceGridView.setNumColumns( mImageSourceAdaptor.getCount() );
@@ -310,7 +311,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     // We need to convert the Boolean list into a boolean array before we can
     // add it to the bundle.
 
-    boolean[] isCheckedArray = BooleanHelper.arrayFrom( mAssetIsCheckedArrayList );
+    boolean[] isCheckedArray = BooleanUtils.arrayFrom( mAssetIsCheckedArrayList );
 
     outState.putBooleanArray( BUNDLE_KEY_ASSET_IS_CHECKED_ARRAY, isCheckedArray );
     }
@@ -328,13 +329,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
 
     // Get assets for any images returned and add them
-
-    List<Asset> assetList = ImageSource.getAssetsFromResult( requestCode, resultCode, returnedIntent );
-
-    if ( assetList != null )
-      {
-      addAssets( assetList );
-      }
+    KiteSDK.getInstance( mKiteActivity ).getAssetsFromPickerResult( mKiteActivity, requestCode, resultCode, returnedIntent, this );
     }
 
 
@@ -445,7 +440,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
       {
       ///// Image Source /////
 
-      ImageSource imageSource = (ImageSource)mImageSourceGridView.getItemAtPosition( position );
+      AImageSource imageSource = (AImageSource)mImageSourceGridView.getItemAtPosition( position );
 
       imageSource.onPick( this, false );
       }
@@ -550,6 +545,23 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     if ( mUncheckedImagesCount > 0 )
       {
       setClearPhotosButtonText();
+      }
+    }
+
+
+  ////////// AImageSource.IAssetConsumer Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called with new picked assets.
+   *
+   *****************************************************/
+  @Override
+  public void isacOnAssets( List<Asset> assetList )
+    {
+    if ( assetList != null )
+      {
+      addAssets( assetList );
       }
     }
 
@@ -914,6 +926,19 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
         if ( mProceedOverlayButton != null ) mProceedOverlayButton.setEnabled( true );
         }
       }
+
+
+    /*****************************************************
+     *
+     * Called when an image could not be loaded.
+     *
+     *****************************************************/
+    @Override
+    public void onImageUnavailable( Object key, Exception exception )
+      {
+      // TODO
+      }
+
     }
 
 

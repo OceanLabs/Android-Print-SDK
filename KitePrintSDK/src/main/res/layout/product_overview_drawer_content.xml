@@ -120,14 +120,14 @@
                 android:gravity="start"
                 android:textSize="@dimen/product_overview_detail_title"
                 android:textStyle="bold"
-                android:text="@string/Quality_Guarantee"/>
+                android:text="@string/product_overview_guarantee_title"/>
 
             <ly.kite.widget.CustomTypefaceTextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:gravity="start"
                 android:textSize="@dimen/product_overview_detail_text"
-                android:text="@string/quality_guarantee_text"/>
+                android:text="@string/product_overview_guarantee_text"/>
 
             <View
                 android:layout_width="fill_parent"

@@ -126,11 +126,11 @@ public class AssetHelper
 
   /*****************************************************
    *
-   * Creates a new asset from a bitmap, but writes it out
-   * to a file. The file path is automatically generated.
+   * Generates the file path of a cached asset file, and ensures
+   * that the directory exists.
    *
    *****************************************************/
-  static public Asset createAsCachedFile( Context context, byte[] imageBytes, Asset.MIMEType mimeType )
+  static public String prepareForCachedFile( Context context, Asset.MIMEType mimeType )
     {
     // Generate a random file name within the cache
     Pair<String,String> imageDirectoryAndFilePath = ImageAgent.getInstance( context ).getImageDirectoryAndFilePath( IMAGE_CLASS_STRING_ASSET, UUID.randomUUID().toString() );
@@ -139,7 +139,19 @@ public class AssetHelper
 
     imageDirectory.mkdirs();
 
-    return ( createAsCachedFile( imageBytes, imageDirectoryAndFilePath.second + mimeType.primaryFileSuffix() ) );
+    return ( imageDirectoryAndFilePath.second + mimeType.primaryFileSuffix() );
+    }
+
+
+  /*****************************************************
+   *
+   * Creates a new asset from a bitmap, but writes it out
+   * to a file. The file path is automatically generated.
+   *
+   *****************************************************/
+  static public Asset createAsCachedFile( Context context, byte[] imageBytes, Asset.MIMEType mimeType )
+    {
+    return ( createAsCachedFile( imageBytes, prepareForCachedFile( context, mimeType ) ) );
     }
 
 
@@ -151,15 +163,7 @@ public class AssetHelper
    *****************************************************/
   static public Asset createAsCachedFile( Context context, Bitmap bitmap )
     {
-    // Generate a random file name within the cache
-    Pair<String,String> imageDirectoryAndFilePath = ImageAgent.getInstance( context ).getImageDirectoryAndFilePath( IMAGE_CLASS_STRING_ASSET, UUID.randomUUID().toString() );
-
-
-    // Ensure that the directory exists
-
-    File imageDirectory = new File( imageDirectoryAndFilePath.first );
-
-    imageDirectory.mkdirs();
+    String filePath = prepareForCachedFile( context, MIMEType.JPEG );
 
 
     // Encode the bitmap directly to the filesystem, to avoid using more memory than necessary.
@@ -169,8 +173,6 @@ public class AssetHelper
 
     try
       {
-      String filePath = imageDirectoryAndFilePath.second + MIMEType.JPEG.primaryFileSuffix();
-
       fos = new FileOutputStream( filePath );
       bos = new BufferedOutputStream( fos );
 
@@ -869,6 +871,18 @@ public class AssetHelper
       // we don't know how long it will take.
 
       execute( bitmap );
+      }
+
+
+    /*****************************************************
+     *
+     * Called when an image could not be loaded.
+     *
+     *****************************************************/
+    @Override
+    public void onImageUnavailable( Object key, Exception exception )
+      {
+      // TODO
       }
 
 

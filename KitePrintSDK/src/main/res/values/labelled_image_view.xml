@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="LabelledImageView">
+
+        <attr name="imageAnchorGravity" format="enum">
+            <enum name="left"   value="1"/>
+            <enum name="top"    value="2"/>
+            <enum name="right"  value="3"/>
+            <enum name="bottom" value="4"/>
+        </attr>
+
+        <attr name="imageAnchorPoint"  format="float"/>
+
         <attr name="forcedLabelColour" format="color"/>
+
+        <attr name="labelOpacity"      format="float"/>
+
+        <attr name="hideLabelShadow"   format="boolean"/>
+
     </declare-styleable>
 </resources>

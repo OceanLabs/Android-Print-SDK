@@ -76,6 +76,8 @@ public class ImageAgent
   @SuppressWarnings( "unused" )
   private static final String  LOG_TAG                   = "ImageAgent";
 
+  private static final boolean FORCE_FILE_DOWNLOAD       = false;
+
   private static final int     LOAD_BUFFER_SIZE_IN_BYTES = 8192;  // 8 KB
 
 
@@ -192,6 +194,29 @@ public class ImageAgent
     }
 
 
+  /*****************************************************
+   *
+   * Returns a downscaled bitmap.
+   *
+   * If no scaling is required, because the scaled width is
+   * < 1, or the source bitmap is smaller than the scaled
+   * width, then the original bitmap is returned without
+   * alteration.
+   *
+   *****************************************************/
+  static public Bitmap downscaleBitmap( Bitmap sourceBitmap, int scaledWidth )
+    {
+    if ( scaledWidth < 1 || sourceBitmap.getWidth() <= scaledWidth ) return ( sourceBitmap );
+
+
+    // Calculate the height so as to maintain the aspect ratio
+
+    int scaledHeight = (int)( (float)sourceBitmap.getHeight() * (float)scaledWidth / (float)sourceBitmap.getWidth() );
+
+    return ( sourceBitmap.createScaledBitmap( sourceBitmap, scaledWidth, scaledHeight, true ) );
+    }
+
+
   ////////// Constructor(s) //////////
 
   private ImageAgent( Context context )
@@ -209,16 +234,32 @@ public class ImageAgent
 
   /*****************************************************
    *
+   * Adds a single mapping from a URL to a resource id. This
+   * is useful if we want to pre-cache any images.
+   *
+   *****************************************************/
+  public ImageAgent addResourceMapping( String urlString, int resourceId  )
+    {
+    mURLResourceIdTable.put( urlString, resourceId );
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
    * Adds a set of mappings from URLs to resource ids. This
    * is useful if we want to pre-cache any images.
    *
    *****************************************************/
-  public void addResourceMappings( Pair<String,Integer>... resourceMappings )
+  public ImageAgent addResourceMappings( Pair<String,Integer>... resourceMappings )
     {
     for ( Pair<String,Integer> resourceMapping : resourceMappings )
       {
       mURLResourceIdTable.put( resourceMapping.first, resourceMapping.second );
       }
+
+    return ( this );
     }
 
 
@@ -313,13 +354,17 @@ public class ImageAgent
     {
     // First check if we have been provided with a mapping to a resource id. If so - make
     // a resource request instead.
-    Integer resourceIdAsInteger = mURLResourceIdTable.get( imageURL.toString() );
 
-    if ( resourceIdAsInteger != null )
+    if ( ! FORCE_FILE_DOWNLOAD )
       {
-      requestImage( key, resourceIdAsInteger, imageTransformer, scaledImageWidth, imageConsumer );
+      Integer resourceIdAsInteger = mURLResourceIdTable.get( imageURL.toString() );
 
-      return;
+      if ( resourceIdAsInteger != null )
+        {
+        requestImage( key, resourceIdAsInteger, imageTransformer, scaledImageWidth, imageConsumer );
+
+        return;
+        }
       }
 
 
@@ -336,7 +381,7 @@ public class ImageAgent
     File imageDirectory = new File( imageDirectoryPath );
     File imageFile      = new File( imageFilePath );
 
-    if ( imageFile.exists() )
+    if ( ( ! FORCE_FILE_DOWNLOAD ) && imageFile.exists() )
       {
       // Make a request to load the image
 
@@ -433,11 +478,18 @@ public class ImageAgent
 
 
     @Override
-    public void onFileDownloaded( URL sourceURL, File targetDirectory, File targetFile )
+    public void onDownloadSuccess( URL sourceURL, File targetDirectory, File targetFile )
       {
       // Once the image has downloaded - immediately request that it be loaded
       mImageLoader.requestImageLoad( mKey, targetFile, mImageTransformer, mScaledImageWidth, mImageConsumer );
       }
+
+    @Override
+    public void onDownloadFailure( URL sourceURL, Exception exception )
+      {
+      mImageConsumer.onImageUnavailable( mKey, exception );
+      }
+
     }
 
   }

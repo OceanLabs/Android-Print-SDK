@@ -3,6 +3,10 @@
 
     <string name="app_name">Kite SDK</string>
 
+    <string name="analytics_event_callback_class_name">ly.kite.analytics.NullAnalyticsEventCallback</string>
+
+    <string name="credit_card_fragment_class_name"></string>
+
     <string name="custom_typeface_file_name"></string>
 
     <string name="unit_centimeters">centimeters</string>
@@ -45,7 +49,7 @@
     <string name="alert_dialog_message_no_product">There was an error: no product was found. Please check the log for more details.</string>
 
     <string name="alert_dialog_title_error_retrieving_products">Error Retrieving Products</string>
-    <string name="alert_dialog_message_error_retrieving_products">There was an error retrieving the products. Please check that you have a network connection, and/or the log for more details</string>
+    <string name="alert_dialog_message_error_retrieving_products">There was an error retrieving the products. Please check your internet connection, or the log for more details</string>
 
     <string name="alert_dialog_title_no_product_group_label">No Product Group</string>
     <string name="alert_dialog_message_no_product_group_label">There was an error: no product group was found. Please check the log for more details.</string>
@@ -56,10 +60,13 @@
     <string name="alert_dialog_title_create_order">Create Order</string>
     <string name="alert_dialog_message_no_cropped_image_asset">There was an internal error - Kite was unable to create a cropped image asset.</string>
 
+    <string name="alert_dialog_title_load_image">Could Not Load Image</string>
+    <string name="alert_dialog_message_could_not_load_image">An image could not be loaded. Please check your internet connection, or the log for more details.</string>
+
     <string name="alert_dialog_title_delete_photo">Delete Photo?</string>
     <string name="alert_dialog_message_delete_photo">Are you sure you want to delete this photo?</string>
-    <string name="alert_dialog_delete_photo_cancel_text">No - keep it</string>
-    <string name="alert_dialog_delete_photo_confirm_text">Yes - delete it</string>
+    <string name="alert_dialog_delete_photo_cancel_text">Keep</string>
+    <string name="alert_dialog_delete_photo_confirm_text">Delete</string>
 
     <string name="alert_dialog_message_no_images_selected">Please select some images first.</string>
 
@@ -67,10 +74,8 @@
     <string name="alert_dialog_message_no_line1">Please fill in Line 1 of the address</string>
     <string name="alert_dialog_message_no_postal_code">Please fill in your Postcode / ZIP code</string>
 
-    <string name="select_photo_from_device">Choose camera photo</string>
-    <string name="select_photo_from_instagram">Choose Instagram photo</string>
-
     <string name="Cancel">Cancel</string>
+    <string name="Continue_Shopping">Continue Shopping</string>
     <string name="Description">Description</string>
     <string name="Details">Details</string>
     <string name="Done">Done</string>
@@ -78,9 +83,16 @@
     <string name="Free">Free</string>
     <string name="add_more">Add More</string>
     <string name="print_these">Print these</string>
+    <string name="Processing_">Processing ...</string>
     <string name="OK">OK</string>
+    <string name="Order_Id">Order Id</string>
+    <string name="ORDER_ID">ORDER ID</string>
+    <string name="Order_Summary">Order Summary</string>
+    <string name="ORDER_SUMMARY">ORDER SUMMARY</string>
+    <string name="Pay">Pay</string>
+    <string name="Payment_Id">Payment Id</string>
+    <string name="PAYMENT_ID">PAYMENT ID</string>
     <string name="Promotional_Discount">Promotional Discount</string>
-    <string name="Quality_Guarantee">Quality Guarantee</string>
     <string name="Quantity">Quantity</string>
     <string name="Retry">Retry</string>
     <string name="Select_Image">Select Image</string>
@@ -91,6 +103,10 @@
     <string name="image_source_device">CAMERA</string>
     <string name="image_source_instagram">INSTAGRAM</string>
     <string name="image_source_facebook">FACEBOOK</string>
+
+    <string name="select_photo_from_device">Choose camera photo</string>
+    <string name="select_photo_from_instagram">Choose Instagram photo</string>
+    <string name="select_photo_from_facebook">Choose Facebook photo</string>
 
     <string name="destination_description_gbr">UK</string>
     <string name="destination_description_europe">Europe</string>
@@ -108,7 +124,9 @@
 
     <string name="product_free_worldwide_shipping">Free Worldwide Shipping</string>
 
-    <string name="quality_guarantee_text">We are confident that you will be more than happy with our products. But just in case, we offer a full refund if you are not 100% happy - even if it\'s just a bad day.</string>
+    <string name="product_overview_guarantee_title">Quality Guarantee</string>
+    <string name="product_overview_guarantee_text">We are confident that you will be more than happy with our products. But just in case, we offer a full refund if you are not 100% happy - even if it\'s just a bad day.</string>
+
     <string name="product_overview_start_button_text">Start creating</string>
 
     <string name="phone_case_proceed_button_text">Next</string>
@@ -160,6 +178,39 @@
     <string name="payment_credit_card_button_text_free">Checkout for Free!</string>
     <string name="payment_paypal_button_text">Pay with PayPal</string>
 
+
+    <string name="send_email_chooser_title">Send Email</string>
+
+    <string name="feedback_email_recipient">info@kite.ly</string>
+    <string name="feedback_email_subject">Kite Android App Support</string>
+    <string name="feedback_email_text">Please tell us your full name:\n\nPlease provide any voucher code used in your transaction:\n\nWhat is your phone number (in case we need to call and discuss your issue)?\n\nWhat is the issue you are having with the Kite Sample app?\n\nWhich Android device (phone/tablet) are you using?\n\n================================\n\nThanks a lot.\nWe’ll be sure to get back to you just as soon as we can.\nKite Team</string>
+
+    <string name="order_failure_message">Something went wrong.\nPlease try again.</string>
+
+    <string name="Card_Number">Card Number</string>
+    <string name="Expires">Expires</string>
+    <string name="CVV">CVV</string>
+
+    <string name="card_error_invalid_number">Invalid card number</string>
+    <string name="card_error_invalid_expiry_date">Invalid expiry date</string>
+    <string name="card_error_invalid_cvv">Invalid verification value</string>
+
+    <string name="order_submission_message_uploading">Uploading images</string>
+    <string name="order_submission_message_posted">Posted</string>
+    <string name="order_submission_message_received">Received</string>
+    <string name="order_submission_message_accepted">Accepted</string>
+    <string name="order_submission_message_validated">Validated</string>
+    <string name="order_submission_message_processed">Processed</string>
+
+    <string name="alert_dialog_title_order_submission_error">Order Submission Error</string>
+    <string name="alert_dialog_title_order_timeout">Order Submission Timeout</string>
+    <string name="alert_dialog_message_order_timeout">Your order does not appear to have been processed yet. It may be that the servers are currently busy and the payment is simply taking time.\n\nWould you like to wait a little longer, or give up and do something else?</string>
+    <string name="order_timeout_button_wait">Wait</string>
+    <string name="order_timeout_button_give_up">Give up</string>
+
+    <string name="alert_dialog_title_order_cancelled">Order Cancelled</string>
+    <string name="alert_dialog_message_order_cancelled">Something has gone wrong - your order appears to have been cancelled during submission.</string>
+
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>
@@ -178,8 +229,5 @@
     <string name="search_title">Search</string>
     <string name="country_search_hint">Search Addresses</string>
     <string name="title_activity_template_sync">TemplateSyncActivity</string>
-    <string name="analytics_event_callback_class_name">ly.kite.analytics.NullAnalyticsEventCallback</string>
-
-    <string name="gcm_sender_id"></string>
 
 </resources>

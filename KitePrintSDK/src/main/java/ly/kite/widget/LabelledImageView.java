@@ -43,16 +43,14 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 
 import ly.kite.util.IImageConsumer;
 
@@ -68,14 +66,20 @@ import ly.kite.R;
  * stage, fading them in where appropriate.
  *
  *****************************************************/
-public class LabelledImageView extends AImageContainerFrame implements IImageConsumer, Animation.AnimationListener
+public class LabelledImageView extends AAREImageContainerFrame implements IImageConsumer, Animation.AnimationListener
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                           = "LabelledImageView";
+  private static final String  LOG_TAG                      = "LabelledImageView";
 
-  private static final int     NO_FORCED_LABEL_COLOUR            = 0x00000000;
+  private static final int     IMAGE_ANCHOR_GRAVITY_NONE    = 0;
+  private static final int     IMAGE_ANCHOR_GRAVITY_LEFT    = 1;
+  private static final int     IMAGE_ANCHOR_GRAVITY_TOP     = 2;
+  private static final int     IMAGE_ANCHOR_GRAVITY_RIGHT   = 3;
+  private static final int     IMAGE_ANCHOR_GRAVITY_BOTTOM  = 4;
+
+  private static final int     NO_FORCED_LABEL_COLOUR       = 0x00000000;
 
 
   ////////// Static Variable(s) //////////
@@ -83,10 +87,10 @@ public class LabelledImageView extends AImageContainerFrame implements IImageCon
 
   ////////// Member Variable(s) //////////
 
-  private ImageView     mEmptyFrameImageView;
-  private OverlayLabel  mOverlayLabel;
+  private ImageView            mEmptyFrameImageView;
+  private OverlayLabel         mOverlayLabel;
 
-  private int           mForcedLabelColour;
+  private int                  mForcedLabelColour;
 
 
   ////////// Static Initialiser(s) //////////
@@ -138,6 +142,7 @@ public class LabelledImageView extends AImageContainerFrame implements IImageCon
 
     // Save references to the child views
     mEmptyFrameImageView = (ImageView)view.findViewById( R.id.empty_frame_image_view );
+    ImageView imageView  = (ImageView)view.findViewById( R.id.image_view );
     mOverlayLabel        = (OverlayLabel)view.findViewById( R.id.overlay_label );
 
 
@@ -159,12 +164,40 @@ public class LabelledImageView extends AImageContainerFrame implements IImageCon
       TypedArray typedArray = context.obtainStyledAttributes( attributeSet, R.styleable.LabelledImageView, defaultStyle, defaultStyle );
 
 
+      if ( imageView != null && imageView instanceof AnchorableImageView )
+        {
+        AnchorableImageView anchorableImageView = (AnchorableImageView)imageView;
+
+
+        // See if there is an image anchor gravity
+
+        int imageAnchorGravity = typedArray.getInt( R.styleable.LabelledImageView_imageAnchorGravity, IMAGE_ANCHOR_GRAVITY_NONE );
+
+        switch ( imageAnchorGravity )
+          {
+          case IMAGE_ANCHOR_GRAVITY_LEFT:   anchorableImageView.setAnchorGravity( Gravity.LEFT );   break;
+          case IMAGE_ANCHOR_GRAVITY_TOP:    anchorableImageView.setAnchorGravity( Gravity.TOP );    break;
+          case IMAGE_ANCHOR_GRAVITY_RIGHT:  anchorableImageView.setAnchorGravity( Gravity.RIGHT );  break;
+          case IMAGE_ANCHOR_GRAVITY_BOTTOM: anchorableImageView.setAnchorGravity( Gravity.BOTTOM ); break;
+          }
+
+
+        // Check the image anchor point
+
+        float imageAnchorPoint = typedArray.getFloat( R.styleable.LabelledImageView_imageAnchorPoint, 0f );
+
+        anchorableImageView.setAnchorPoint( imageAnchorPoint );
+        }
+
+
       // See if there is a forced label colour
-
-      TypedValue value = new TypedValue();
-
       mForcedLabelColour = typedArray.getColor( R.styleable.LabelledImageView_forcedLabelColour, NO_FORCED_LABEL_COLOUR );
 
+      // Check for label opacity
+      mOverlayLabel.setLabelOpacity( typedArray.getFloat( R.styleable.LabelledImageView_labelOpacity, 1f ) );
+
+      // See if the label shadow should be hidden
+      mOverlayLabel.setHideLabelShadow( typedArray.getBoolean( R.styleable.LabelledImageView_hideLabelShadow, false ) );
 
       typedArray.recycle();
       }
@@ -184,6 +217,8 @@ public class LabelledImageView extends AImageContainerFrame implements IImageCon
   @Override
   public void onImageDownloading( Object key )
     {
+    super.onImageDownloading( key );
+
     mEmptyFrameImageView.setVisibility( View.VISIBLE );
     mImageView.setVisibility( View.INVISIBLE );
 

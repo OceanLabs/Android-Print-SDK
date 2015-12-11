@@ -54,10 +54,10 @@ import java.util.List;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
+import ly.kite.journey.AImageSource;
 import ly.kite.journey.creation.AEditImageFragment;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.journey.AssetsAndQuantity;
-import ly.kite.journey.ImageSource;
 import ly.kite.catalogue.Asset;
 import ly.kite.catalogue.AssetHelper;
 import ly.kite.catalogue.Bleed;
@@ -73,7 +73,7 @@ import ly.kite.util.ImageAgent;
  * case design using an image.
  *
  *****************************************************/
-public class PhoneCaseFragment extends AEditImageFragment
+public class PhoneCaseFragment extends AEditImageFragment implements AImageSource.IAssetConsumer
   {
   ////////// Static Constant(s) //////////
 
@@ -164,7 +164,7 @@ public class PhoneCaseFragment extends AEditImageFragment
 
       if ( addPhotoSubMenu != null )
         {
-        for ( ImageSource imageSource : KiteSDK.getInstance( mKiteActivity ).getAvailableImageSources() )
+        for ( AImageSource imageSource : KiteSDK.getInstance( mKiteActivity ).getAvailableImageSources() )
           {
           imageSource.addMenuItem( addPhotoSubMenu );
           }
@@ -183,12 +183,16 @@ public class PhoneCaseFragment extends AEditImageFragment
     {
     View view = super.onCreateView( layoutInflator, container, savedInstanceState );
 
+    if ( mCancelButton != null )
+      {
+      mCancelButton.setVisibility( View.GONE );
+      }
 
-    mCancelButton.setVisibility( View.GONE );
-
-    mConfirmButton.setVisibility( View.VISIBLE );
-    mConfirmButton.setText( R.string.phone_case_proceed_button_text );
-
+    if ( mConfirmButton != null )
+      {
+      mConfirmButton.setVisibility( View.VISIBLE );
+      mConfirmButton.setText( R.string.phone_case_proceed_button_text );
+      }
 
     return ( view );
     }
@@ -212,21 +216,6 @@ public class PhoneCaseFragment extends AEditImageFragment
       }
 
 
-    // Request the mask
-
-    ImageAgent imageManager = ImageAgent.getInstance( mKiteActivity );
-
-    URL        maskURL      = mProduct.getMaskURL();
-    Bleed      maskBleed    = mProduct.getMaskBleed();
-
-    if ( maskURL != null )
-      {
-      mEditableImageContainerFrame.setMaskExtras( maskURL, maskBleed );
-
-      imageManager.requestImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, maskURL, mEditableImageContainerFrame );
-      }
-
-
     // If we haven't already got an image asset - look in the asset list
 
     if ( mImageAsset == null )
@@ -247,25 +236,16 @@ public class PhoneCaseFragment extends AEditImageFragment
   @Override
   public boolean onOptionsItemSelected( MenuItem item )
     {
-    // See what menu item was selected
-
     int itemId = item.getItemId();
 
-    if ( itemId == ImageSource.DEVICE.menuItemId() )
+
+    // If one of the image source menu items was selected - launch the appropriate picker
+
+    AImageSource imageSource = KiteSDK.getInstance( mKiteActivity ).getImageSourceByMenuItemId( itemId );
+
+    if ( imageSource != null )
       {
-      ///// Local device photo /////
-
-      // Pick a single image from the local device
-      ImageSource.DEVICE.onPick( this, true );
-
-      return ( true );
-      }
-    else if ( itemId == ImageSource.INSTAGRAM.menuItemId() )
-      {
-      ///// Instagram photo /////
-
-      // Pick a single image from instagram
-      ImageSource.INSTAGRAM.onPick( this, true );
+      imageSource.onPick( this, true );
 
       return ( true );
       }
@@ -287,24 +267,7 @@ public class PhoneCaseFragment extends AEditImageFragment
 
 
     // Get assets for any images returned
-
-    List<Asset> assetList = ImageSource.getAssetsFromResult( requestCode, resultCode, returnedIntent );
-
-    if ( assetList != null && assetList.size() > 0 )
-      {
-      // Add the assets to the shared list
-      for ( Asset asset : assetList )
-        {
-        mAssetsAndQuantityArrayList.add( 0, new AssetsAndQuantity( asset ) );
-        }
-
-
-      // Save the first asset and use it
-
-      mImageAsset = mAssetsAndQuantityArrayList.get( 0 ).getUneditedAsset();
-
-      useAssetForImage( mImageAsset, true );
-      }
+    KiteSDK.getInstance( mKiteActivity ).getAssetsFromPickerResult( mKiteActivity, requestCode, resultCode, returnedIntent, this );
     }
 
 
@@ -319,22 +282,6 @@ public class PhoneCaseFragment extends AEditImageFragment
     super.onTop();
 
     if ( mProduct != null ) mKiteActivity.setTitle( mProduct.getName() );
-
-    if ( mImageAsset != null ) useAssetForImage( mImageAsset, false );
-    }
-
-
-  /*****************************************************
-   *
-   * Called when the fragment is not top-most.
-   *
-   *****************************************************/
-  @Override
-  public void onNotTop()
-    {
-    super.onNotTop();
-
-    if ( mEditableImageContainerFrame != null ) mEditableImageContainerFrame.clearImage();
     }
 
 
@@ -365,6 +312,67 @@ public class PhoneCaseFragment extends AEditImageFragment
     }
 
 
+  /*****************************************************
+   *
+   * Requests all images.
+   *
+   *****************************************************/
+  @Override
+  protected void startImageRequests()
+    {
+    // Request the mask
+
+    ImageAgent imageAgent = ImageAgent.getInstance( mKiteActivity );
+
+    URL        maskURL      = mProduct.getMaskURL();
+    Bleed      maskBleed    = mProduct.getMaskBleed();
+
+    if ( maskURL != null )
+      {
+      mEditableImageContainerFrame.setMaskExtras( maskURL, maskBleed );
+
+      imageAgent.requestImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, maskURL, mEditableImageContainerFrame );
+      }
+
+
+    // Request the image
+
+    if ( mImageAsset != null )
+      {
+      useAssetForImage( mImageAsset, false );
+      }
+
+    }
+
+
+  ////////// AImageSource.IAssetConsumer Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called with new picked assets.
+   *
+   *****************************************************/
+  @Override
+  public void isacOnAssets( List<Asset> assetList )
+    {
+    if ( assetList != null && assetList.size() > 0 )
+      {
+      // Add the assets to the shared list
+      for ( Asset asset : assetList )
+        {
+        mAssetsAndQuantityArrayList.add( 0, new AssetsAndQuantity( asset ) );
+        }
+
+
+      // Save the first asset and use it
+
+      mImageAsset = mAssetsAndQuantityArrayList.get( 0 ).getUneditedAsset();
+
+      useAssetForImage( mImageAsset, true );
+      }
+    }
+
+
   ////////// Method(s) //////////
 
   /*****************************************************
@@ -376,8 +384,10 @@ public class PhoneCaseFragment extends AEditImageFragment
     {
     if ( imageIsNew ) mEditableImageContainerFrame.clearState();
 
-    mEditableImageContainerFrame.setImageKey( asset );
+    mEditableImageContainerFrame.clearForNewImage( asset );
 
+    // When we have the image - kick off the prompt text display cycle if this is the first time
+    // we're loading an image.
     AssetHelper.requestImage( mKiteActivity, asset, mEditableImageContainerFrame );
     }
 

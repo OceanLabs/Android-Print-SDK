@@ -99,6 +99,9 @@ public class OverlayLabel extends FrameLayout
   private RectF     mSolidRect;
   private Paint     mSolidPaint;
 
+
+  private boolean   mShowLabelShadow;
+
   private float     mShadowBlurRadius;
   private float     mShadowYOffset;
   private RectF     mShadowRect;
@@ -156,7 +159,10 @@ public class OverlayLabel extends FrameLayout
     // We intercept this and set the paint colour. The base text view
     // doesn't draw the background; we draw it ourselves.
 
+    int alpha = mSolidPaint.getAlpha();
+
     mSolidPaint.setColor( colour );
+    mSolidPaint.setAlpha( alpha );  // Restore the original alpha
     }
 
 
@@ -183,7 +189,7 @@ public class OverlayLabel extends FrameLayout
   protected void onDraw( Canvas canvas )
     {
     // Draw the background shadow
-    canvas.drawRoundRect( mShadowRect, mCornerRadius, mCornerRadius, mShadowPaint );
+    if ( mShowLabelShadow ) canvas.drawRoundRect( mShadowRect, mCornerRadius, mCornerRadius, mShadowPaint );
 
     // Draw the solid background
     canvas.drawRoundRect( mSolidRect, mCornerRadius, mCornerRadius, mSolidPaint );
@@ -226,6 +232,9 @@ public class OverlayLabel extends FrameLayout
     mShadowPaint = new Paint();
     mShadowPaint.setColor( DROP_SHADOW_COLOUR );
     mShadowPaint.setAntiAlias( true );
+
+
+    mShowLabelShadow = true;
 
 
     // Check the XML attributes
@@ -283,6 +292,28 @@ public class OverlayLabel extends FrameLayout
     mShadowYOffset    = yOffset;
 
     prepare();
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the label opacity, between 0.0f and 1.0f.
+   *
+   *****************************************************/
+  public void setLabelOpacity( float opacity )
+    {
+    mSolidPaint.setAlpha( (int)( opacity * 255f ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets whether the label drop shadow is hidden.
+   *
+   *****************************************************/
+  public void setHideLabelShadow( boolean hideLabelShadow )
+    {
+    mShowLabelShadow = ! hideLabelShadow;
     }
 
 

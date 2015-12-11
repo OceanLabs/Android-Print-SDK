@@ -5,4 +5,5 @@
     android:id="@+id/labelled_image_view"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    custom:aspectRatio="@dimen/group_or_product_image_aspect_ratio"/>
+    custom:aspectRatio="@dimen/group_or_product_image_aspect_ratio"
+    custom:showProgressSpinnerOnDownload="@bool/show_product_group_image_progress_spinner"/>

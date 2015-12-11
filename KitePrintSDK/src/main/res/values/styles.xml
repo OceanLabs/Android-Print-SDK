@@ -63,6 +63,7 @@
     </style>
 
     <style name="KiteSDKLabel">
+        <item name="android:layout_gravity">bottom|center_horizontal</item>
         <item name="android:layout_marginBottom">@dimen/label_margin_bottom</item>
         <item name="android:layout_width">@dimen/label_width</item>
         <item name="android:layout_height">wrap_content</item>
@@ -86,7 +87,7 @@
         <item name="android:background">@color/cta_button_background</item>
         <item name="android:gravity">center</item>
         <item name="android:textSize">@dimen/control_label_text_size</item>
-        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textColor">@color/cta_button_text</item>
     </style>
 
     <style name="KiteSDKCTAButton.ReviewAndCrop"/>
@@ -97,6 +98,20 @@
 
     <style name="KiteSDKCTAButton.Offset">
         <item name="android:layout_width">@dimen/cta_offset_button_width</item>
+    </style>
+
+    <style name="ProductOverviewOption_Spinner"/>
+
+    <style name="KiteSDKFormFieldLabelText">
+        <item name="android:gravity">left|center_vertical</item>
+        <item name="android:textColor">@color/form_field_label_text</item>
+        <item name="android:textSize">@dimen/form_field_label_text_size</item>
+    </style>
+
+    <style name="KiteSDKFormFieldEntryText">
+        <item name="android:gravity">left|center_vertical</item>
+        <item name="android:textColor">@color/form_field_entry_text</item>
+        <item name="android:textSize">@dimen/form_field_entry_text_size</item>
     </style>
 
 </resources>

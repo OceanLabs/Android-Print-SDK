@@ -1,90 +1,69 @@
-<FrameLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:background="@android:color/white">
+
+    <ImageView
+        android:id="@+id/image_view_order_receipt_header"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.0"
+        android:scaleType="centerInside"
+        android:adjustViewBounds="true"
+        android:src="@drawable/receipt_success"/>
 
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:layout_weight="1.0"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/screen_horizontal_margin"
+        android:paddingTop="@dimen/screen_vertical_margin"
+        android:paddingRight="@dimen/screen_horizontal_margin"
+        android:paddingBottom="@dimen/screen_vertical_margin">
 
-        <ImageView
-            android:id="@+id/image_view_order_receipt_header"
+        <ListView
+            android:id="@+id/order_summary_list_view"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:scaleType="centerCrop"
-            android:adjustViewBounds="true"
-            android:src="@drawable/receipt_success"/>
+            android:layout_weight="1.0"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="0dp"/>
 
-        <FrameLayout
+        <ly.kite.widget.CustomTypefaceTextView
+            android:id="@+id/text_view_order_id_description"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1.0">
+            android:layout_weight="0.0"
+            android:padding="10dp"
+            android:text="@string/Order_Id"
+            android:textColor="#515151"
+            android:textSize="16sp"/>
 
-            <LinearLayout
-                android:layout_gravity="top"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <ListView
-                    android:id="@+id/order_summary_list_view"
-                    android:layout_marginTop="@dimen/activity_vertical_margin"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1.0"
-                    android:divider="@android:color/transparent"
-                    android:dividerHeight="0dp"
-                    android:paddingBottom="@dimen/activity_vertical_margin"
-                    android:paddingLeft="@dimen/activity_horizontal_margin"
-                    android:paddingRight="@dimen/activity_horizontal_margin"
-                    android:paddingTop="@dimen/activity_vertical_margin"/>
-
-                <LinearLayout
-                    android:id="@+id/order_id_container"
-                    android:layout_marginTop="20dp"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.0"
-                    android:orientation="horizontal"
-                    android:padding="20dp">
-                    <ly.kite.widget.CustomTypefaceTextView
-                        android:id="@+id/text_view_order_id_description"
-                        android:layout_width="wrap_content"
-                        android:layout_weight="0.0"
-                        android:layout_height="fill_parent"
-                        android:gravity="left|center_vertical"
-                        android:text="Order Id"
-                        android:textColor="#515151"
-                        android:textSize="18sp"/>
-                    <ly.kite.widget.CustomTypefaceTextView
-                        android:id="@+id/text_view_order_id"
-                        android:layout_width="wrap_content"
-                        android:layout_weight="1.0"
-                        android:layout_height="fill_parent"
-                        android:gravity="right|center_vertical"
-                        android:textColor="#515151"
-                        android:textSize="18sp"
-                        android:textStyle="bold"/>
-                </LinearLayout>
-
-            </LinearLayout>
-
-        </FrameLayout>
+        <ly.kite.widget.CustomTypefaceTextView
+            android:id="@+id/order_id_text_view"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.0"
+            android:padding="10dp"
+            android:textColor="#515151"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
 
         <include layout="@layout/include_powered_by"/>
 
         <ly.kite.widget.CustomTypefaceButton
-            android:id="@+id/button_retry_print"
-            android:layout_marginTop="30dp"
+            android:id="@+id/continue_shopping_button"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.0"
             android:background="#ffe34b"
-            android:onClick="onButtonRetryPrintClicked"
-            android:text="Retry"
+            android:onClick="onContinueShoppingClicked"
+            android:text="@string/Continue_Shopping"
             android:textColor="#515151"/>
 
     </LinearLayout>
 
-</FrameLayout>
+</LinearLayout>

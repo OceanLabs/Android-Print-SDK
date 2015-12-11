@@ -203,6 +203,7 @@ public class ProductGroup implements Parcelable, IGroupOrProduct
    *
    * Returns a display price. For product groups, this is
    * the lowest price of any of the products in the group.
+   *
    * Thus it may be used as a "from" price.
    *
    *****************************************************/
@@ -219,7 +220,7 @@ public class ProductGroup implements Parcelable, IGroupOrProduct
       {
       Log.e( LOG_TAG, "No currency is supported across all products" );
 
-      return ( "?" );
+      return ( null );
       }
 
 
@@ -243,7 +244,7 @@ public class ProductGroup implements Parcelable, IGroupOrProduct
     // If we found a low price - return it as a string formatted for the current locale
     if ( lowestSingleCurrencyCost != null ) return ( lowestSingleCurrencyCost.getDisplayAmountForLocale( locale ) );
 
-    return ( "?" );
+    return ( null );
     }
 
 

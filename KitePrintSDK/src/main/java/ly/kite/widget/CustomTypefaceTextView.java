@@ -118,16 +118,7 @@ public class CustomTypefaceTextView extends TextView
    *****************************************************/
   private void initialise( Context context )
     {
-    // If a custom typeface has been defined in the resources - try to use it.
-
-    String customFont = context.getResources().getString( R.string.custom_typeface_file_name );
-
-    if ( customFont != null && ! customFont.equals( "" ) )
-      {
-      Typeface customTypeface = TypefaceCache.getTypeface( context, customFont );
-
-      if ( customTypeface != null ) setTypeface( customTypeface );
-      }
+    CustomTypefaceSetter.setTypeface( context, this );
     }
 
 

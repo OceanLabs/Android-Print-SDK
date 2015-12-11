@@ -43,10 +43,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import ly.kite.KiteSDK;
@@ -54,6 +61,7 @@ import ly.kite.R;
 import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.CatalogueLoader;
 import ly.kite.catalogue.ICatalogueConsumer;
+import ly.kite.catalogue.ProductOption;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.journey.creation.ProductCreationActivity;
@@ -89,6 +97,8 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
   private static final String  INTENT_EXTRA_NAME_ASSET_LIST    = KiteSDK.INTENT_PREFIX + ".assetList";
   private static final String  INTENT_EXTRA_NAME_PRODUCT_IDS   = KiteSDK.INTENT_PREFIX + ".productIds";
 
+  private static final String  BUNDLE_KEY_OPTION_MAP           = "optionMap";
+
 
   ////////// Static Variable(s) //////////
 
@@ -108,6 +118,8 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
   private Catalogue                     mCatalogue;
   private ICatalogueConsumer            mCatalogueConsumer;
   private boolean                       mAddFragmentOnCatalogue;
+
+  private HashMap<String,String> mProductOptionValueMap;
 
 
   ////////// Static Initialiser(s) //////////
@@ -151,6 +163,26 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
       }
 
     return ( assetsAndQuantityArrayList );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the value from a list corresponding to the supplied
+   * value code, or the first, if the code is not found or null.
+   *
+   *****************************************************/
+  static protected ProductOption.Value getValueForCode( List<ProductOption.Value> valueList, String soughtValueCode )
+    {
+    if ( soughtValueCode != null )
+      {
+      for ( ProductOption.Value candidateOptionValue : valueList )
+        {
+        if ( candidateOptionValue.getCode().equals( soughtValueCode ) ) return ( candidateOptionValue );
+        }
+      }
+
+    return ( valueList.get( 0 ) );
     }
 
 
@@ -213,6 +245,12 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
     if ( savedInstanceState == null )
       {
       mAddFragmentOnCatalogue = true;
+
+      mProductOptionValueMap = new HashMap<>();
+      }
+    else
+      {
+      mProductOptionValueMap = (HashMap<String,String>)savedInstanceState.getSerializable( BUNDLE_KEY_OPTION_MAP );
       }
 
 
@@ -246,6 +284,21 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
 
       if ( assetsAndQuantityArrayList != null ) mAssetsAndQuantityArrayList = assetsAndQuantityArrayList;
       }
+    }
+
+
+  /*****************************************************
+   *
+   * Called to save the instance state.
+   *
+   *****************************************************/
+  @Override
+  protected void onSaveInstanceState( Bundle outState )
+    {
+    super.onSaveInstanceState( outState );
+
+    // Save the selected product options, so we can restore them later
+    if ( outState != null ) outState.putSerializable( BUNDLE_KEY_OPTION_MAP, mProductOptionValueMap );
     }
 
 
@@ -439,6 +492,58 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
 
   /*****************************************************
    *
+   * Called to populate any product options. The default
+   * is to just populate any options layout with spinners.
+   *
+   *****************************************************/
+  @Override
+  public void poOnPopulateOptions( Product product, View view )
+    {
+    // Check that there's a product options layout
+
+    ViewGroup productOptionsLayout = (ViewGroup)view.findViewById( R.id.product_options_layout );
+
+    if ( productOptionsLayout == null )
+      {
+      return;
+      }
+
+
+    // Get the product options list. If it is empty - hide the layout.
+
+    List<ProductOption> productOptionList = product.getOptionList();
+
+    if ( productOptionList == null || productOptionList.size() < 1 )
+      {
+      productOptionsLayout.setVisibility( View.GONE );
+
+      return;
+      }
+
+
+    productOptionsLayout.setVisibility( View.VISIBLE );
+
+
+    // Go through each of the options. Get the view for each one, and add it to the
+    // option layout.
+
+    LayoutInflater layoutInflater = LayoutInflater.from( this );
+
+    int optionIndex = 0;
+
+    for ( ProductOption option : productOptionList )
+      {
+      View optionView = getOptionView( optionIndex, option, layoutInflater );
+
+      if ( optionView != null ) productOptionsLayout.addView( optionView );
+
+      optionIndex ++;
+      }
+    }
+
+
+  /*****************************************************
+   *
    * Called when the user wishes to create a product.
    *
    *****************************************************/
@@ -449,7 +554,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
     // we then hand over to the product creation activity to choose the journey
     // depending on the product.
 
-    ProductCreationActivity.startForResult( this, mAssetsAndQuantityArrayList, product, ACTIVITY_REQUEST_CODE_CHECKOUT );
+    ProductCreationActivity.startForResult( this, mAssetsAndQuantityArrayList, product, mProductOptionValueMap, ACTIVITY_REQUEST_CODE_CHECKOUT );
     }
 
 
@@ -483,6 +588,138 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
     }
 
 
+  /*****************************************************
+   *
+   * Returns a view for a product option.
+   *
+   *****************************************************/
+  protected View getOptionView( int optionIndex, ProductOption option, LayoutInflater layoutInflator )
+    {
+    String optionCode = option.getCode();
+
+
+    // Create a spinner for the option and add it to the layout
+
+    View     optionView    = layoutInflator.inflate( R.layout.product_option, null );
+
+    TextView nameTextView  = (TextView)optionView.findViewById( R.id.option_name_text_view );
+    Spinner  valuesSpinner = (Spinner)optionView.findViewById( R.id.option_values_spinner );
+
+    nameTextView.setText( option.getName() );
+
+    ArrayList<ProductOption.Value> valueList = option.getValueList();
+
+    ArrayAdapter<ProductOption.Value> valueArrayAdaptor = new ArrayAdapter<>( this, R.layout.list_item_product_option_value, R.id.value_text_view, valueList );
+
+    valuesSpinner.setAdapter( valueArrayAdaptor );
+
+
+    // If there is already an entry in the option map - set the spinner value from it. Otherwise
+    // create a default entry now.
+
+    String valueCode = mProductOptionValueMap.get( optionCode );
+
+    if ( valueCode != null )
+      {
+      valuesSpinner.setSelection( valueList.indexOf( valueCode ) );
+      }
+    else
+      {
+      mProductOptionValueMap.put( optionCode, valueArrayAdaptor.getItem( 0 ).getCode() );
+      }
+
+
+    // Set up any listener(s)
+    onSetOptionSpinnerListeners( optionIndex, option, valuesSpinner, valueList );
+
+
+    return ( optionView );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets up any listeners on an options spinner.
+   *
+   *****************************************************/
+  protected void onSetOptionSpinnerListeners( int optionIndex, ProductOption option, Spinner spinner, ArrayList<ProductOption.Value> valueList )
+    {
+    spinner.setOnItemSelectedListener( new SpinnerItemClickListener( option ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets a product option.
+   *
+   *****************************************************/
+  protected void setValueCodeForOption( String optionCode, String valueCode )
+    {
+    mProductOptionValueMap.put( optionCode, valueCode );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets a product option.
+   *
+   *****************************************************/
+  protected void setValueForOption( String optionCode, ProductOption.Value value )
+    {
+    setValueCodeForOption( optionCode, value.getCode() );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a product option code.
+   *
+   *****************************************************/
+  protected String getValueCodeForOption( String optionCode )
+    {
+    return ( mProductOptionValueMap.get( optionCode ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the value index corresponding to the supplied
+   * option code, or 0, if the code is not found or null.
+   *
+   *****************************************************/
+  protected int getValueIndexForOption( String optionCode, List<ProductOption.Value> valueList )
+    {
+    String soughtValueCode = getValueCodeForOption( optionCode );
+
+    if ( soughtValueCode != null )
+      {
+      int valueIndex = 0;
+
+      for ( ProductOption.Value candidateOptionValue : valueList )
+        {
+        if ( candidateOptionValue.getCode().equals( soughtValueCode ) ) return ( valueIndex );
+
+        valueIndex++;
+        }
+      }
+
+    return ( 0 );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the product option value corresponding to the
+   * supplied option code, or the first one, if the code is
+   * not found or null.
+   *
+   *****************************************************/
+  protected ProductOption.Value getValueForOption( String optionCode, List<ProductOption.Value> valueList )
+    {
+    return ( valueList.get( getValueIndexForOption( optionCode, valueList ) ) );
+    }
+
+
   ////////// Inner Class(es) //////////
 
   /*****************************************************
@@ -505,6 +742,39 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
     }
 
 
+  /*****************************************************
+   *
+   * Spinner listener.
+   *
+   *****************************************************/
+  protected class SpinnerItemClickListener implements Spinner.OnItemSelectedListener
+    {
+    private ProductOption           mOption;
+
+
+    public SpinnerItemClickListener( ProductOption option )
+      {
+      mOption    = option;
+      }
+
+
+    @Override
+    public void onItemSelected( AdapterView<?> parent, View view, int position, long id )
+      {
+      // Update the option in the option map with the new selected value
+
+      String optionCode = mOption.getCode();
+      String valueCode  = ( (ProductOption.Value)parent.getItemAtPosition( position ) ).getCode();
+
+      mProductOptionValueMap.put( optionCode, valueCode );
+      }
+
+    @Override
+    public void onNothingSelected( AdapterView<?> parent )
+      {
+      // Ignore
+      }
+    }
 
   }
 

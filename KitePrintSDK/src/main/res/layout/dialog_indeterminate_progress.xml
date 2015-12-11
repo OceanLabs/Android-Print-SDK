@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="@dimen/screen_horizontal_margin"
+    android:paddingTop="@dimen/screen_vertical_margin"
+    android:paddingRight="@dimen/screen_horizontal_margin"
+    android:paddingBottom="@dimen/screen_vertical_margin"
+    android:orientation="vertical">
+
+    <ly.kite.widget.CustomTypefaceTextView
+        android:id="@+id/message_text_view"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/progress_dialog_message_padding"
+        android:gravity="center"
+        android:textSize="@dimen/progress_dialog_message_text_size"/>
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <ProgressBar
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            style="?android:indeterminateProgressStyle"/>
+
+    </FrameLayout>
+
+</LinearLayout>

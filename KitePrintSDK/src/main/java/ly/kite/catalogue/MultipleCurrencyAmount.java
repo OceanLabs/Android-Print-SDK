@@ -388,6 +388,29 @@ public class MultipleCurrencyAmount implements Parcelable
     }
 
 
+  /*****************************************************
+   *
+   * Returns the amounts as a string.
+   *
+   *****************************************************/
+  @Override
+  public String toString()
+    {
+    StringBuilder stringBuilder = new StringBuilder();
+
+    for ( SingleCurrencyAmount singleCurrencyAmount : mCurrencyAmountTable.values() )
+      {
+      stringBuilder
+              .append( "  " )
+              .append( singleCurrencyAmount.getCurrencyCode() )
+              .append( " " )
+              .append( singleCurrencyAmount.getAmountAsDouble() );
+      }
+
+    return ( stringBuilder.toString() );
+    }
+
+
   ////////// Inner Class(es) //////////
 
   /*****************************************************

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="@dimen/screen_horizontal_margin"
+    android:paddingTop="@dimen/screen_vertical_margin"
+    android:paddingRight="@dimen/screen_horizontal_margin"
+    android:paddingBottom="@dimen/screen_vertical_margin"
+    android:orientation="vertical">
+
+
+    <include layout="@layout/include_credit_card_form"/>
+
+
+    <ly.kite.widget.CustomTypefaceTextView
+        android:id="@+id/error_text_view"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/credit_card_error_message_vertical_padding"
+        android:paddingBottom="@dimen/credit_card_error_message_vertical_padding"
+        android:gravity="center"
+        android:textColor="@color/error_text"/>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_marginRight="@dimen/screen_horizontal_half_margin"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="fill_parent"
+            android:text="@string/Cancel"/>
+
+        <Button
+            android:id="@+id/proceed_button"
+            android:layout_marginLeft="@dimen/screen_horizontal_half_margin"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="fill_parent"
+            android:text="@string/Pay"/>
+
+    </LinearLayout>
+
+
+</LinearLayout>

@@ -1,0 +1,7 @@
+<ly.kite.widget.LabelledImageView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/labelled_image_view"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    custom:showProgressSpinnerOnDownload="@bool/show_product_overview_image_progress_spinner"/>

@@ -1,11 +1,17 @@
 buildscript {
     repositories {
+
         mavenCentral()
-        maven { url 'https://maven.fabric.io/public' }
+
+        // Uncomment to include Crashlytics (Fabric) crash reporting
+        //maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
+
         classpath 'com.android.tools.build:gradle:1.2.3'
-        classpath 'io.fabric.tools:gradle:1.+'
+
+        // Uncomment to include Crashlytics (Fabric) crash reporting
+        //classpath 'io.fabric.tools:gradle:1.+'
     }
 }
 
@@ -15,17 +21,31 @@ repositories {
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
+
+// Uncomment to include Crashlytics (Fabric) crash reporting
+//apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 22
-    buildToolsVersion "21.1.2"
+    buildToolsVersion '22.0.1'
     defaultConfig {
         applicationId "ly.kite.sample"
-        minSdkVersion 14
+        minSdkVersion 15
         targetSdkVersion 22
         versionCode 200
         versionName '2.0'
+    }
+    sourceSets {
+        main {
+            java {
+
+                // Comment the next line if you are including Facebook as an image source
+                exclude '**/FacebookImageSource.java'
+
+                // Comment the next line if you are including push messaging
+                exclude '**/GCMListenerService.java'
+            }
+        }
     }
     buildTypes {
         release {
@@ -38,9 +58,18 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(dir: 'libs', include: ['*.jar'] )
+
     compile project(':KitePrintSDK')
-    compile('com.crashlytics.sdk.android:crashlytics:2.4.0@aar') {
-        transitive = true;
-    }
+
+    // Uncomment to include push messaging
+    //compile project(':KitePrintSDK-GCM')
+
+    // Uncomment to include Facebook as an image source
+    //compile 'ly.kite:facebook-photo-picker:1.1.0'
+
+    // Uncomment to include Crashlytics (Fabric) crash reporting
+    //compile('com.crashlytics.sdk.android:crashlytics:2.4.0@aar') {
+    //    transitive = true;
+    //}
 }

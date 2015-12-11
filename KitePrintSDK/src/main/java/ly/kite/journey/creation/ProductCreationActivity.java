@@ -40,6 +40,7 @@ package ly.kite.journey.creation;
 ///// Import(s) /////
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -80,7 +81,6 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
                                                                       ImageSelectionFragment.ICallback,
                                                                       ReviewAndEditFragment.ICallback,
                                                                       EditImageFragment.ICallback
-
   {
   ////////// Static Constant(s) //////////
 
@@ -89,6 +89,7 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
 
   public  static final String  INTENT_EXTRA_NAME_ASSETS_AND_QUANTITY_LIST = KiteSDK.INTENT_PREFIX + ".assetsAndQuantityList";
   public  static final String  INTENT_EXTRA_NAME_PRODUCT                  = KiteSDK.INTENT_PREFIX + ".product";
+  public  static final String  INTENT_EXTRA_NAME_OPTION_MAP               = KiteSDK.INTENT_PREFIX + ".optionMap";
 
   private static final String  BUNDLE_KEY_ASSETS_AND_QUANTITY_LIST        = "assetsAndQuantityList";
   private static final String  BUNDLE_KEY_LAST_EDITED_ASSET_INDEX         = "lastEditedAssetIndex";
@@ -103,6 +104,7 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
 
   private ArrayList<AssetsAndQuantity>  mAssetsAndQuantityArrayList;
   private Product                       mProduct;
+  private HashMap<String,String>        mOptionMap;
 
   private int                           mLastEditedAssetIndex;
 
@@ -143,14 +145,30 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
   static public void startForResult( Activity                      activity,
                                      ArrayList<AssetsAndQuantity>  assetsAndQuantityArrayList,
                                      Product                       product,
+                                     HashMap<String,String>        optionMap,
                                      int                           requestCode )
     {
     Intent intent = new Intent( activity, ProductCreationActivity.class );
 
     intent.putParcelableArrayListExtra( INTENT_EXTRA_NAME_ASSETS_AND_QUANTITY_LIST, assetsAndQuantityArrayList );
     intent.putExtra( INTENT_EXTRA_NAME_PRODUCT, product );
+    intent.putExtra( INTENT_EXTRA_NAME_OPTION_MAP, optionMap );
 
     activity.startActivityForResult( intent, requestCode );
+    }
+
+
+  /*****************************************************
+   *
+   * Starts this activity.
+   *
+   *****************************************************/
+  static public void startForResult( Activity                      activity,
+                                     ArrayList<AssetsAndQuantity>  assetsAndQuantityArrayList,
+                                     Product                       product,
+                                     int                           requestCode )
+    {
+    startForResult( activity, assetsAndQuantityArrayList, product, new HashMap<String,String>( 0 ), requestCode );
     }
 
 
@@ -237,8 +255,13 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
       }
 
 
+    mOptionMap = (HashMap<String,String>)intent.getSerializableExtra( INTENT_EXTRA_NAME_OPTION_MAP );
+
+    if ( mOptionMap == null ) mOptionMap = new HashMap<>( 0 );
+
+
     // Set up the screen content
-    setContentView( R.layout.screen_product_selection );
+    setContentView( R.layout.screen_product_creation );
 
 
     // Start the first fragment
@@ -327,8 +350,7 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
 
     PrintOrder printOrder = new PrintOrder();
 
-    printOrder.addPrintJob( PrintJob.createPrintJob( mProduct, imageAsset ) );
-
+    printOrder.addPrintJob( PrintJob.createPrintJob( mProduct, mOptionMap, imageAsset ) );
 
     // Start the check-out activity
     CheckoutActivity.start( this, printOrder, ACTIVITY_REQUEST_CODE_CHECKOUT );

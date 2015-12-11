@@ -40,6 +40,7 @@ package ly.kite.journey.selection;
 ///// Import(s) /////
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,7 +49,6 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.GridView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.net.MalformedURLException;
@@ -59,7 +59,6 @@ import ly.kite.R;
 import ly.kite.catalogue.ICatalogueConsumer;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.journey.AKiteFragment;
-import ly.kite.catalogue.CatalogueLoader;
 import ly.kite.catalogue.IGroupOrProduct;
 import ly.kite.util.ImageAgent;
 import ly.kite.widget.HeaderFooterGridView;
@@ -243,7 +242,7 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements I
     @SuppressWarnings( "unused" )
     private static final String  LOG_TAG              = "GroupOrProductAdaptor";
 
-    private static final float   DEFAULT_ASPECT_RATIO = 1.389f;
+    //private static final float   DEFAULT_ASPECT_RATIO = 1.389f;
 
 
     ////////// Static Variable(s) //////////
@@ -262,7 +261,6 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements I
     private URL                              mPlaceholderImageURL;
 
     private LayoutInflater                   mLayoutInflator;
-    private ImageAgent mImageLoader;
 
 
     ////////// Static Initialiser(s) //////////
@@ -281,7 +279,6 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements I
       mLayoutResourceId   = layoutResourceId;
 
       mLayoutInflator     = LayoutInflater.from( context );
-      mImageLoader        = ImageAgent.getInstance( context );
 
       mActualItemCount    = mGroupOrProductList.size();
 
@@ -391,9 +388,34 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements I
 
       IGroupOrProduct groupOrProduct = (IGroupOrProduct)getItem( position );
 
-      viewReferences.productImageView.setImageAspectRatio( DEFAULT_ASPECT_RATIO );
 
-      URL    imageURL;
+      // If there are only two items - set the aspect ratio so that the images
+      // fill the screen, in either orientation.
+
+      float aspectRatio;
+
+      if ( getCount() == 2 )
+        {
+        int orientation = mContext.getResources().getConfiguration().orientation;
+
+        if ( orientation == Configuration.ORIENTATION_LANDSCAPE )
+          {
+          aspectRatio = parent.getWidth() * 0.5f / parent.getHeight();
+          }
+        else
+          {
+          aspectRatio = parent.getWidth() / ( parent.getHeight() * 0.5f );
+          }
+
+        // Make sure we only expand the height
+        //if ( aspectRatio > DEFAULT_ASPECT_RATIO ) aspectRatio = DEFAULT_ASPECT_RATIO;
+
+        viewReferences.productImageView.setImageAspectRatio( aspectRatio );
+        }
+
+
+
+      URL imageURL;
 
       if ( groupOrProduct != null )
         {
@@ -402,9 +424,29 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements I
         viewReferences.productImageView.setLabel( groupOrProduct.getDisplayLabel(), groupOrProduct.getDisplayLabelColour() );
 
         // Populate any price overlay
-        if ( viewReferences.priceOverlayFrame != null ) viewReferences.priceOverlayFrame.setVisibility( View.VISIBLE );
-        if ( viewReferences.fromTextView      != null ) viewReferences.fromTextView.setVisibility( groupOrProduct.containsMultiplePrices() ? View.VISIBLE : View.GONE );
-        if ( viewReferences.priceTextView     != null ) viewReferences.priceTextView.setText( groupOrProduct.getDisplayPrice() );
+
+        String displayPrice = groupOrProduct.getDisplayPrice();
+
+
+        // We only display the price overlay if there's a display price. In the case of a product group
+        // this will be if there is a common currency.
+
+        if ( displayPrice != null )
+          {
+          if ( viewReferences.priceOverlayFrame != null ) viewReferences.priceOverlayFrame.setVisibility( View.VISIBLE );
+          if ( viewReferences.fromTextView      != null ) viewReferences.fromTextView.setVisibility( groupOrProduct.containsMultiplePrices() ? View.VISIBLE : View.GONE );
+          if ( viewReferences.priceTextView     != null )
+            {
+            viewReferences.priceTextView.setVisibility( View.VISIBLE );
+            viewReferences.priceTextView.setText( displayPrice );
+            }
+          }
+        else
+          {
+          if ( viewReferences.priceOverlayFrame != null ) viewReferences.priceOverlayFrame.setVisibility( View.GONE );
+          if ( viewReferences.fromTextView      != null ) viewReferences.fromTextView.setVisibility( View.GONE );
+          if ( viewReferences.priceTextView     != null ) viewReferences.priceTextView.setVisibility( View.GONE );
+          }
 
         imageURL = groupOrProduct.getDisplayImageURL();
         }

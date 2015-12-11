@@ -39,8 +39,10 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ListView;
 
 import ly.kite.R;
@@ -75,8 +77,8 @@ abstract public class AHomeActivity extends ProductSelectionActivity
   private static final float  SIMULATED_Y_PRECISION        = 0.1f;
   private static final int    DEVICE_ID                    = 1;
 
-  private static final long   DOWN_EVENT_DELAY_MILLIS      = 1000L;
-  private static final long   UP_EVENT_DELAY_MILLIS        = 1000L;
+  private static final long   OPEN_MENU_DELAY_MILLIS       = 500L;
+  private static final long   CLOSE_MENU_DELAY_MILLIS      = 100L;
 
 
   ////////// Static Variable(s) //////////
@@ -87,7 +89,8 @@ abstract public class AHomeActivity extends ProductSelectionActivity
   protected DrawerLayout           mDrawerLayout;
   protected ListView               mNavigationDrawerListView;
 
-  private   boolean                mShowDrawerOnResume;
+  private   boolean                mShowMenuOnce;
+  private   Handler                mHandler;
 
   private   ActionBarDrawerToggle  mDrawerToggle;
 
@@ -128,78 +131,10 @@ abstract public class AHomeActivity extends ProductSelectionActivity
 
     if ( savedInstanceState == null && Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2 )
       {
-      mShowDrawerOnResume = true;
+      mHandler = new Handler();
+
+      mShowMenuOnce = true;
       }
-    }
-
-
-  /*****************************************************
-   *
-   * Called when the activity becomes visible.
-   *
-   *****************************************************/
-  @Override
-  protected void onResume()
-    {
-    super.onResume();
-
-
-    // We display a hint of the menu by simulating a pointer down touch event, and then releasing
-    // it after a short time.
-
-    if ( mShowDrawerOnResume )
-      {
-      mShowDrawerOnResume = false;
-
-      final Handler handler = new Handler();
-
-      handler.postDelayed( new Runnable()
-      {
-      public void run()
-        {
-        final long uptimeMillis = SystemClock.uptimeMillis();
-
-        mDrawerLayout.onTouchEvent(
-                MotionEvent.obtain(
-                        uptimeMillis,
-                        uptimeMillis,
-                        MotionEvent.ACTION_DOWN,
-                        SIMULATED_TOUCH_X,
-                        SIMULATED_TOUCH_Y,
-                        NORMAL_PRESSURE,
-                        SIMULATED_TOUCH_SIZE,
-                        NO_META_STATE_FLAGS,
-                        SIMULATED_X_PRECISION,
-                        SIMULATED_Y_PRECISION,
-                        DEVICE_ID,
-                        MotionEvent.EDGE_LEFT ) );
-
-
-        handler.postDelayed( new Runnable()
-        {
-        public void run()
-          {
-          mDrawerLayout.onTouchEvent(
-                  MotionEvent.obtain(
-                          uptimeMillis + UP_EVENT_DELAY_MILLIS,
-                          uptimeMillis + UP_EVENT_DELAY_MILLIS,
-                          MotionEvent.ACTION_UP,
-                          SIMULATED_TOUCH_X,
-                          SIMULATED_TOUCH_Y,
-                          NORMAL_PRESSURE,
-                          SIMULATED_TOUCH_SIZE,
-                          NO_META_STATE_FLAGS,
-                          SIMULATED_X_PRECISION,
-                          SIMULATED_Y_PRECISION,
-                          DEVICE_ID,
-                          MotionEvent.EDGE_LEFT ) );
-          }
-        }, UP_EVENT_DELAY_MILLIS );
-
-        }
-      }, DOWN_EVENT_DELAY_MILLIS );
-      }
-
     }
 
 
@@ -278,6 +213,22 @@ abstract public class AHomeActivity extends ProductSelectionActivity
       // We display the logo on the home page
       actionBar.setDisplayShowTitleEnabled( false );
       actionBar.setDisplayShowCustomEnabled( true );
+
+
+      // If we need to show the menu on this devices - start the process now
+
+      if ( mShowMenuOnce )
+        {
+        mShowMenuOnce = false;
+
+
+        // Open and close the menu
+
+        mHandler = new Handler();
+
+        mHandler.postDelayed( new OpenMenuRunnable(), OPEN_MENU_DELAY_MILLIS );
+        }
+
       }
     else
       {
@@ -331,5 +282,63 @@ abstract public class AHomeActivity extends ProductSelectionActivity
 
 
   ////////// Inner Class(es) //////////
+
+  /*****************************************************
+   *
+   * Runnable to open the menu.
+   *
+   *****************************************************/
+  private class OpenMenuRunnable implements Runnable, DrawerLayout.DrawerListener
+    {
+    public void run()
+      {
+      // Override the drawer listener so we know when it has fully opened.
+      mDrawerLayout.setDrawerListener( this );
+
+      mDrawerLayout.openDrawer( Gravity.LEFT );
+      }
+
+    @Override
+    public void onDrawerSlide( View drawerView, float slideOffset )
+      {
+      // Ignore
+      }
+
+    @Override
+    public void onDrawerOpened( View drawerView )
+      {
+      // We no longer need to listen for drawer events
+      mDrawerLayout.setDrawerListener( null );
+
+      mHandler.postDelayed( new CloseMenuRunnable(), CLOSE_MENU_DELAY_MILLIS );
+      }
+
+    @Override
+    public void onDrawerClosed( View drawerView )
+      {
+      // Ignore
+      }
+
+    @Override
+    public void onDrawerStateChanged( int newState )
+      {
+      // Ignore
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Runnable to close the menu.
+   *
+   *****************************************************/
+  private class CloseMenuRunnable implements Runnable
+    {
+    public void run()
+      {
+      mDrawerLayout.closeDrawers();
+      }
+    }
+
 
   }

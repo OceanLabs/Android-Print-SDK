@@ -43,14 +43,19 @@ package ly.kite.util;
 ///// Class Declaration /////
 
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 
 /*****************************************************
@@ -63,14 +68,16 @@ public class ImageLoader
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG           = "ImageLoader";
+  static private final String  LOG_TAG              = "ImageLoader";
 
-  private static final int     MAX_BITMAP_PIXELS = 6000000;  // 6MP = 3000 x 2000
+  static private final boolean DEBUGGING_IS_ENABLED = false;
+
+  static private final int     MAX_BITMAP_PIXELS    = 6000000;  // 6MP = 3000 x 2000
 
 
   ////////// Static Variable(s) //////////
 
-  private static ImageLoader sImageLoader;
+  static private ImageLoader sImageLoader;
 
 
   ////////// Member Variable(s) //////////
@@ -100,6 +107,156 @@ public class ImageLoader
       }
 
     return ( sImageLoader );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a bitmap options object with common options
+   * set.
+   *
+   *****************************************************/
+  static private BitmapFactory.Options getCommonBitmapOptions( Bitmap.Config bitmapConfig )
+    {
+    BitmapFactory.Options bitmapFactoryOptions = new BitmapFactory.Options();
+
+    bitmapFactoryOptions.inBitmap                 = null;
+    bitmapFactoryOptions.inDensity                = 0;
+    bitmapFactoryOptions.inDither                 = false;
+    bitmapFactoryOptions.inMutable                = false;
+    bitmapFactoryOptions.inPreferQualityOverSpeed = false;
+    bitmapFactoryOptions.inPreferredConfig        = bitmapConfig;
+    bitmapFactoryOptions.inScaled                 = false;
+    bitmapFactoryOptions.inScreenDensity 	        = 0;
+    bitmapFactoryOptions.inTargetDensity 	        = 0;
+    bitmapFactoryOptions.inTempStorage 	          = null;
+    bitmapFactoryOptions.mCancel                  = false;
+
+    return ( bitmapFactoryOptions );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a bitmap options object for decoding bounds
+   * only.
+   *
+   *****************************************************/
+  static private BitmapFactory.Options getBoundsBitmapOptions( Bitmap.Config bitmapConfig )
+    {
+    BitmapFactory.Options bitmapFactoryOptions = getCommonBitmapOptions( bitmapConfig );
+
+    bitmapFactoryOptions.inJustDecodeBounds       = true;
+    bitmapFactoryOptions.inSampleSize             = 0;
+
+    return ( bitmapFactoryOptions );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a bitmap options object for decoding.
+   *
+   *****************************************************/
+  static private BitmapFactory.Options getFullBitmapOptions( Bitmap.Config bitmapConfig, int sampleSize )
+    {
+    BitmapFactory.Options bitmapFactoryOptions = getCommonBitmapOptions( bitmapConfig );
+
+    bitmapFactoryOptions.inJustDecodeBounds       = false;
+    bitmapFactoryOptions.inSampleSize             = sampleSize;
+
+    return ( bitmapFactoryOptions );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the orientation for an image. Used to determine
+   * how to rotate the image after loading so that it becomes
+   * the right way up.
+   *
+   *****************************************************/
+  static public int getRotationForImage( Context context, Uri uri )
+    {
+    if ( DEBUGGING_IS_ENABLED )
+      {
+      Log.d( LOG_TAG, "getRotationForImage( context, uri = " + ( uri != null ? uri.toString() : "null" ) + " )" );
+      }
+
+    Cursor cursor = null;
+
+    try
+      {
+      if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "  URI scheme = " + uri.getScheme() );
+
+      if ( uri.getScheme().equals( "content" ) )
+        {
+        ///// Content /////
+
+        String[] projection = { MediaStore.Images.ImageColumns.ORIENTATION };
+
+        cursor = context.getContentResolver().query( uri, projection, null, null, null );
+
+        if ( cursor.moveToFirst() )
+          {
+          int rotation = cursor.getInt( 0 );
+
+          if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "  Rotation = " + rotation );
+
+          return ( rotation );
+          }
+        }
+      else if ( uri.getScheme().equals( "file" ) )
+        {
+        ///// File /////
+
+        if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "  URI path = " + uri.getPath() );
+
+        ExifInterface exif = new ExifInterface( uri.getPath() );
+
+        int rotation = degreesFromEXIFOrientation( exif.getAttributeInt( ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL ) );
+
+        if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "  Rotation = " + rotation );
+
+        return ( rotation );
+        }
+      }
+    catch ( IOException ioe )
+      {
+      Log.e( LOG_TAG, "Error checking exif", ioe );
+      }
+    finally
+      {
+      if ( cursor != null ) cursor.close();
+      }
+
+    return ( 0 );
+    }
+
+
+  /*****************************************************
+   *
+   * Converts an EXIF orientation into degrees..
+   *
+   *****************************************************/
+  static private int degreesFromEXIFOrientation( int exifOrientation )
+    {
+    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "degreesFromEXIFOrientation( exifOrientation = " + exifOrientation + " )" );
+
+    if ( exifOrientation == ExifInterface.ORIENTATION_ROTATE_90 )
+      {
+      return ( 90 );
+      }
+    else if ( exifOrientation == ExifInterface.ORIENTATION_ROTATE_180 )
+      {
+      return ( 180 );
+      }
+    else if ( exifOrientation == ExifInterface.ORIENTATION_ROTATE_270 )
+      {
+      return ( 270 );
+      }
+
+    return ( 0 );
     }
 
 
@@ -242,6 +399,7 @@ public class ImageLoader
     IImageConsumer     imageConsumer;
 
     Bitmap             bitmap;
+    Exception          exception;
 
 
     private Request( Object key, IImageTransformer imageTransformer, int scaledImageWidth, IImageConsumer imageConsumer )
@@ -290,19 +448,36 @@ public class ImageLoader
       }
 
 
-    Bitmap decodeBitmap( BitmapFactory.Options bitmapFactoryOptions ) throws Exception
+    Bitmap loadBitmap( BitmapFactory.Options bitmapFactoryOptions ) throws Exception
       {
+      if ( DEBUGGING_IS_ENABLED )
+        {
+        Log.d( LOG_TAG, "loadBitmap( bitmapFactoryOptions )" );
+        Log.d( LOG_TAG, "  Sample size = " + bitmapFactoryOptions.inSampleSize );
+        }
+
       Bitmap bitmap;
+
+      int rotation = 0;
 
       if ( this.sourceFile != null )
         {
         ///// File /////
 
+        if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "  Decoding file : " + this.sourceFile.getPath() );
+
         bitmap = BitmapFactory.decodeFile( this.sourceFile.getPath(), bitmapFactoryOptions );
+
+        if ( bitmap != null )
+          {
+          rotation = getRotationForImage( mContext, Uri.fromFile( this.sourceFile ) );
+          }
         }
       else if ( this.sourceResourceId != 0 )
         {
         ///// Resource Id /////
+
+        if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "  Decoding resource id : " + this.sourceResourceId );
 
         bitmap = BitmapFactory.decodeResource( mContext.getResources(), this.sourceResourceId, bitmapFactoryOptions );
         }
@@ -310,9 +485,16 @@ public class ImageLoader
         {
         ///// URI /////
 
+        if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "  Decoding URI : " + this.sourceURI );
+
         BufferedInputStream bis = new BufferedInputStream( mContext.getContentResolver().openInputStream( this.sourceURI ) );
 
         bitmap = BitmapFactory.decodeStream( bis, null, bitmapFactoryOptions );
+
+        if ( bitmap != null )
+          {
+          rotation = getRotationForImage( mContext, this.sourceURI );
+          }
         }
       else if ( this.sourceBitmap != null )
         {
@@ -342,6 +524,20 @@ public class ImageLoader
         }
 
 
+      // Perform any rotation specified by the EXIF data
+
+      if ( bitmap != null && rotation != 0 )
+        {
+        // Perform the rotation by using a matrix to transform the bitmap
+
+        Matrix matrix = new Matrix();
+
+        matrix.preRotate( rotation );
+
+        bitmap = Bitmap.createBitmap( bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true );
+        }
+
+
       return ( bitmap );
       }
     }
@@ -354,7 +550,6 @@ public class ImageLoader
    *****************************************************/
   private class LoaderTask extends AsyncTask<Void,Request,Void>
     {
-
     /*****************************************************
      *
      * Entry point for background thread.
@@ -391,23 +586,9 @@ public class ImageLoader
 
           // Determine the bitmap size
 
-          BitmapFactory.Options bitmapFactoryOptions = new BitmapFactory.Options();
+          BitmapFactory.Options bitmapFactoryOptions = getBoundsBitmapOptions( Bitmap.Config.ARGB_8888 );
 
-          bitmapFactoryOptions.inBitmap                 = null;
-          bitmapFactoryOptions.inDensity                = 0;
-          bitmapFactoryOptions.inDither                 = false;
-          bitmapFactoryOptions.inJustDecodeBounds       = true;
-          bitmapFactoryOptions.inMutable                = false;
-          bitmapFactoryOptions.inPreferQualityOverSpeed = false;
-          bitmapFactoryOptions.inPreferredConfig        = Bitmap.Config.ARGB_8888;
-          bitmapFactoryOptions.inSampleSize             = 0;
-          bitmapFactoryOptions.inScaled                 = false;
-          bitmapFactoryOptions.inScreenDensity 	        = 0;
-          bitmapFactoryOptions.inTargetDensity 	        = 0;
-          bitmapFactoryOptions.inTempStorage 	          = null;
-          bitmapFactoryOptions.mCancel                  = false;
-
-          request.decodeBitmap( bitmapFactoryOptions );
+          request.loadBitmap( bitmapFactoryOptions );
 
 
           // Increase the sub-sampling (by powers of 2) until the number of bitmap
@@ -428,25 +609,23 @@ public class ImageLoader
             }
 
 
-          // Decode the bitmap using the calculated sample size
+          // Load the bitmap using the calculated sample size. If that fails, try dropping
+          // the bitmap config to RGB_565 (i.e. from 4 bytes / pixel -> 2 bytes / pixel).
 
-          bitmapFactoryOptions = new BitmapFactory.Options();
+          Bitmap bitmap = null;
 
-          bitmapFactoryOptions.inBitmap                 = null;
-          bitmapFactoryOptions.inDensity                = 0;
-          bitmapFactoryOptions.inDither                 = false;
-          bitmapFactoryOptions.inJustDecodeBounds       = false;
-          bitmapFactoryOptions.inMutable                = false;
-          bitmapFactoryOptions.inPreferQualityOverSpeed = false;
-          bitmapFactoryOptions.inPreferredConfig        = Bitmap.Config.ARGB_8888;
-          bitmapFactoryOptions.inSampleSize             = sampleSize;
-          bitmapFactoryOptions.inScaled                 = false;
-          bitmapFactoryOptions.inScreenDensity 	        = 0;
-          bitmapFactoryOptions.inTargetDensity 	        = 0;
-          bitmapFactoryOptions.inTempStorage 	          = null;
-          bitmapFactoryOptions.mCancel                  = false;
+          try
+            {
+            bitmapFactoryOptions = getFullBitmapOptions( Bitmap.Config.ARGB_8888, sampleSize );
+            bitmap               = request.loadBitmap( bitmapFactoryOptions );
+            }
+          catch ( OutOfMemoryError oome )
+            {
+            Log.e( LOG_TAG, "Unable to decode bitmap at ARGB_8888 - re-trying at RGB_565" );
 
-          Bitmap bitmap = request.decodeBitmap( bitmapFactoryOptions );
+            bitmapFactoryOptions = getFullBitmapOptions( Bitmap.Config.RGB_565, sampleSize );
+            bitmap               = request.loadBitmap( bitmapFactoryOptions );
+            }
 
 
           // Perform any transformation
@@ -461,7 +640,7 @@ public class ImageLoader
 
           if ( request.scaledImageWidth > 0 )
             {
-            bitmap = ImageDownscaler.scaleBitmap( bitmap, request.scaledImageWidth );
+            bitmap = ImageAgent.downscaleBitmap( bitmap, request.scaledImageWidth );
             }
 
 
@@ -474,6 +653,10 @@ public class ImageLoader
         catch ( Exception exception )
           {
           Log.e( LOG_TAG, "Unable to load bitmap", exception );
+
+          request.exception = exception;
+
+          publishProgress( request );
           }
 
         }
@@ -490,8 +673,17 @@ public class ImageLoader
       {
       Request request = requests[ 0 ];
 
-      // Callback to the consumer with the bitmap
-      request.imageConsumer.onImageAvailable( request.key, request.bitmap );
+
+      // Callback to the consumer with the result.
+
+      if ( request.bitmap != null )
+        {
+        request.imageConsumer.onImageAvailable  ( request.key, request.bitmap );
+        }
+      else
+        {
+        request.imageConsumer.onImageUnavailable( request.key, request.exception );
+        }
       }
 
 

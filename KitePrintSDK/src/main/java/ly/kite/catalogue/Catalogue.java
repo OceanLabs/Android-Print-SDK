@@ -270,6 +270,65 @@ public class Catalogue
     }
 
 
+  /*****************************************************
+   *
+   * Displays information in the log for image pre-caching
+   * purposes.
+   *
+   *****************************************************/
+  public void displayPreCachingInfo()
+    {
+    ArrayList<String> curlList    = new ArrayList<>();
+    ArrayList<String> mappingList = new ArrayList<>();
+
+
+    // Go through every group
+
+    int groupIndex = 0;
+
+    for ( ProductGroup group : mGroupList )
+      {
+      String urlString    = group.getDisplayImageURL().toString();
+      String resourceName = "precached_group_" + String.valueOf( groupIndex );
+      String resourceFile = resourceName + ".jpg";
+
+      curlList.add( "curl " + urlString + " > " + resourceFile );
+      mappingList.add( ".addResourceMapping( \"" + urlString + "\", R.drawable." + resourceName + " )" );
+
+      groupIndex ++;
+      }
+
+
+    // Go through every product
+
+    int productIndex = 0;
+
+    for ( Product product : mIdProductTable.values() )
+      {
+      String urlString    = product.getDisplayImageURL().toString();
+      String resourceName = "precached_product_" + String.valueOf( productIndex );
+      String resourceFile = resourceName + ".jpg";
+
+      curlList.add( "curl " + urlString + " > " + resourceFile );
+      mappingList.add( ".addResourceMapping( \"" + urlString + "\", R.drawable." + resourceName + " )" );
+
+      productIndex ++;
+      }
+
+
+    // Print out all the curl commands
+    for ( String curlCommand : curlList )
+      {
+      Log.i( LOG_TAG, curlCommand );
+      }
+
+    // Print out all the resource mappings
+    for ( String resourceMapping : mappingList )
+      {
+      Log.i( LOG_TAG, resourceMapping );
+      }
+    }
+
 
   ////////// Inner Class(es) //////////
 

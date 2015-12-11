@@ -73,11 +73,11 @@ public class ImageSourceAdaptor extends BaseAdapter
 
   ////////// Member Variable(s) //////////
 
-  private Context            mContext;
-  private List<ImageSource>  mImageSourceList;
-  private int                mItemLayoutResourceId;
+  private Context             mContext;
+  private List<AImageSource>  mImageSourceList;
+  private int                 mItemLayoutResourceId;
 
-  private LayoutInflater     mLayoutInflator;
+  private LayoutInflater      mLayoutInflator;
 
 
   ////////// Static Initialiser(s) //////////
@@ -97,7 +97,7 @@ public class ImageSourceAdaptor extends BaseAdapter
     }
 
 
-  public ImageSourceAdaptor( Context context, int itemLayoutResourceId, List<ImageSource> imageSourceList )
+  public ImageSourceAdaptor( Context context, int itemLayoutResourceId, List<AImageSource> imageSourceList )
     {
     this( context, itemLayoutResourceId );
 
@@ -105,7 +105,7 @@ public class ImageSourceAdaptor extends BaseAdapter
     }
 
 
-  public ImageSourceAdaptor( Context context, int itemLayoutResourceId, ImageSource... imageSources )
+  public ImageSourceAdaptor( Context context, int itemLayoutResourceId, AImageSource... imageSources )
     {
     this( context, itemLayoutResourceId );
 
@@ -113,7 +113,7 @@ public class ImageSourceAdaptor extends BaseAdapter
 
     if ( imageSources != null )
       {
-      for ( ImageSource imageSource : imageSources ) mImageSourceList.add( imageSource );
+      for ( AImageSource imageSource : imageSources ) mImageSourceList.add( imageSource );
       }
     }
 
@@ -192,11 +192,11 @@ public class ImageSourceAdaptor extends BaseAdapter
       }
 
 
-    ImageSource imageSource = (ImageSource)getItem( position );
+    AImageSource imageSource = (AImageSource)getItem( position );
 
-    viewReferences.backgroundView.setBackgroundColor( mContext.getResources().getColor( imageSource.backgroundColourResourceId() ) );
-    viewReferences.iconImageView.setImageResource( imageSource.iconResourceId() );
-    viewReferences.labelTextView.setText( imageSource.labelResourceId() );
+    viewReferences.backgroundView.setBackgroundColor( mContext.getResources().getColor( imageSource.getBackgroundColourResourceId() ) );
+    viewReferences.iconImageView.setImageResource( imageSource.getIconResourceId() );
+    viewReferences.labelTextView.setText( imageSource.getLabelResourceId() );
 
 
     return ( view );

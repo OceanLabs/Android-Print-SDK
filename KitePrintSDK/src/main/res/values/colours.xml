@@ -12,12 +12,17 @@
     <color name="progress_bar_background">#00000000</color>
     <color name="progress_bar_foreground">#ff8cbcbf</color>
 
+    <color name="error_text">#ffff0000</color>
+
     <color name="light_grey">#d3d3d3</color>
 
     <color name="labelled_image_label_shadow">#20000000</color>
 
     <color name="prompt_text_frame_background">#f0ffffff</color>
     <color name="prompt_text_frame_text">#ff666666</color>
+
+    <color name="form_field_label_text">@android:color/black</color>
+    <color name="form_field_entry_text">@android:color/black</color>
 
     <color name="product_overview_content_background">#f0ffffff</color>
     <color name="product_overview_details_background">#fff26c4f</color>
@@ -29,6 +34,7 @@
     <color name="proceed_overlay_frame_background_gradient_end_colour">#00ffffff</color>
 
     <color name="cta_button_background">#ff8cbcbf</color>
+    <color name="cta_button_text">@android:color/white</color>
 
     <color name="paging_dot_unselected">#7fffffff</color>
     <color name="paging_dot_selected">#ffffffff</color>

@@ -260,16 +260,13 @@ public class OrderPricingAdaptor extends BaseAdapter
     viewReferences.descriptionTextView.setText( item.description );
     viewReferences.amountTextView.setText( item.amount );
 
-    if ( item.isBold )
-      {
-      viewReferences.descriptionTextView.setTypeface( Typeface.DEFAULT_BOLD );
-      viewReferences.amountTextView.setTypeface( Typeface.DEFAULT_BOLD );
-      }
-    else
-      {
-      viewReferences.descriptionTextView.setTypeface( Typeface.DEFAULT );
-      viewReferences.amountTextView.setTypeface( Typeface.DEFAULT );
-      }
+
+    // Change the style appropriately
+
+    int style = ( item.isBold ? Typeface.BOLD : Typeface.NORMAL );
+
+    viewReferences.descriptionTextView.setTypeface( viewReferences.descriptionTextView.getTypeface(), style );
+    viewReferences.amountTextView     .setTypeface( viewReferences.amountTextView.getTypeface(),      style );
 
 
     return ( view );

@@ -8,10 +8,9 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:scaleType="centerInside"
-        android:adjustViewBounds="true"
         android:src="@drawable/empty_photo_frame"/>
 
-    <ImageView
+    <ly.kite.widget.AnchorableImageView
         android:id="@+id/image_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -21,7 +20,6 @@
     <ly.kite.widget.OverlayLabel
         android:id="@+id/overlay_label"
         style="@style/KiteSDKLabel"
-        android:layout_gravity="bottom|center_horizontal"
         android:visibility="invisible"/>
 
     <ProgressBar

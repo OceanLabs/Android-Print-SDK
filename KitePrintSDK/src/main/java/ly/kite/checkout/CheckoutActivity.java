@@ -66,6 +66,7 @@ import ly.kite.analytics.Analytics;
 import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.ICatalogueConsumer;
 import ly.kite.journey.AKiteActivity;
+import ly.kite.pricing.IPricingConsumer;
 import ly.kite.pricing.PricingAgent;
 import ly.kite.catalogue.PrintJob;
 import ly.kite.catalogue.PrintOrder;
@@ -106,6 +107,9 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
 
   private static final int    REQUEST_CODE_PAYMENT       = 1;
   private static final int    REQUEST_CODE_ADDRESS_BOOK  = 2;
+
+  private static final String           NO_PROMO_CODE_YET            = null;
+  private static final IPricingConsumer DONT_BOTHER_RETURNING_PRICES = null;
 
 
   ////////// Static Variable(s) //////////
@@ -244,13 +248,13 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
 
 
     // hide keyboard initially
-    this.getWindow().setSoftInputMode( WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN );
+    getWindow().setSoftInputMode( WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN );
 
 
     // Request the pricing now - even though we don't use it on this screen, and it may change once
     // a shipping address has been chosen (if the shipping address country is different to the default
     // locale). This is to minimise any delay to the user.
-    PricingAgent.getInstance().requestPricing( this, mPrintOrder, null );
+    PricingAgent.getInstance().requestPricing( this, mPrintOrder, NO_PROMO_CODE_YET, DONT_BOTHER_RETURNING_PRICES );
 
 
     if ( savedInstanceState == null )
@@ -322,7 +326,7 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
 
         // Re-request the pricing if the shipping address changes, just in case the shipping
         // price changes.
-        PricingAgent.getInstance().requestPricing( this, mPrintOrder, null );
+        PricingAgent.getInstance().requestPricing( this, mPrintOrder, NO_PROMO_CODE_YET, DONT_BOTHER_RETURNING_PRICES );
         }
       }
     }
@@ -491,9 +495,8 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
       return;
       }
 
-    KiteSDK kiteSDK = KiteSDK.getInstance( this );
 
-    PaymentActivity.start( this, mPrintOrder, kiteSDK.getAPIKey(), kiteSDK.getEnvironment().getPaymentActivityEnvironment(), REQUEST_CODE_PAYMENT );
+    PaymentActivity.startForResult( this, mPrintOrder, REQUEST_CODE_PAYMENT );
     }
 
   boolean isEmailValid( CharSequence email )

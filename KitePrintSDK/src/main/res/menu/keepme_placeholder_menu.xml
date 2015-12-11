@@ -15,4 +15,8 @@
         android:id="@+id/add_photo_from_instagram"
         android:title=""/>
 
+    <item
+        android:id="@+id/add_photo_from_facebook"
+        android:title=""/>
+
 </menu>

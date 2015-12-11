@@ -9,14 +9,16 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical"
-        android:background="@color/product_creation_background">
+        android:background="@color/product_creation_background"
+        android:layerType="hardware">
 
         <ly.kite.widget.EditableImageContainerFrame
-            android:id="@+id/editable_consumer_image_view"
+            android:id="@+id/editable_image_container_frame"
             android:layout_margin="10dp"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1.0"/>
+            android:layout_weight="1.0"
+            android:layerType="hardware"/>
 
         <FrameLayout
             android:layout_width="fill_parent"
@@ -43,6 +45,7 @@
         android:id="@+id/prompt_text_frame"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        custom:promptText="@string/edit_image_prompt_text"/>
+        custom:promptText="@string/edit_image_prompt_text"
+        android:layerType="hardware"/>
 
 </FrameLayout>

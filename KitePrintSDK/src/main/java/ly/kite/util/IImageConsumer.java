@@ -71,5 +71,14 @@ public interface IImageConsumer
    *****************************************************/
   public void onImageAvailable( Object key, Bitmap bitmap );
 
+
+  /*****************************************************
+   *
+   * Called when an image could not be loaded. An exception
+   * may or may not be additionally returned.
+   *
+   *****************************************************/
+  public void onImageUnavailable( Object key, Exception exception );
+
   }
 

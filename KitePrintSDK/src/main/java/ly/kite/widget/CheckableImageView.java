@@ -59,7 +59,7 @@ import ly.kite.R;
  * This class overlays a check mark on an image view.
  *
  *****************************************************/
-public class CheckableImageView extends AImageContainerFrame
+public class CheckableImageView extends AAREImageContainerFrame
   {
   ////////// Static Constant(s) //////////
 

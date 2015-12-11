@@ -55,6 +55,7 @@ import java.util.ArrayList;
 import java.util.Currency;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import ly.kite.KiteSDKException;
 import ly.kite.KiteSDK;
@@ -81,7 +82,10 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
   @SuppressWarnings("unused")
   private static final String  LOG_TAG                               = "CatalogueLoader";
 
+  private static final boolean DISPLAY_PRODUCT_JSON                  = false;
+  private static final boolean DISPLAY_PRODUCTS                      = false;
   private static final boolean DISPLAY_DEBUGGING                     = false;
+  private static final boolean DISPLAY_PRE_CACHING_INFO              = false;
 
   public  static final long    ANY_AGE_OK                            = -1;
 
@@ -106,6 +110,9 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
   private static final String  JSON_NAME_MASK_BLEED                  = "mask_bleed";
   private static final String  JSON_NAME_BORDER                      = "ios_image_border";
   private static final String  JSON_NAME_MASK_URL                    = "mask_url";
+  private static final String  JSON_NAME_OPTIONS                     = "options";
+  private static final String  JSON_NAME_OPTION_NAME                 = "name";
+  private static final String  JSON_NAME_OPTION_CODE                 = "code";
   private static final String  JSON_NAME_PIXELS                      = "px";
   private static final String  JSON_NAME_PRODUCT_ARRAY               = "objects";
   private static final String  JSON_NAME_PRODUCT_CODE                = "product_code";
@@ -120,8 +127,11 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
   private static final String  JSON_NAME_PRODUCT_UI_CLASS            = "ios_sdk_ui_class";
   private static final String  JSON_NAME_RIGHT                       = "right";
   private static final String  JSON_NAME_SHIPPING_COSTS              = "shipping_costs";
+  private static final String  JSON_NAME_SUPPORTED_OPTIONS           = "supported_options";
   private static final String  JSON_NAME_TOP                         = "top";
   private static final String  JSON_NAME_USER_CONFIG                 = "user_config";
+  private static final String  JSON_NAME_VALUE_NAME                  = "name";
+  private static final String  JSON_NAME_VALUE_CODE                  = "code";
   private static final String  JSON_NAME_WIDTH                       = "width";
 
   private static final int     DEFAULT_IMAGES_PER_PAGE               = 1;
@@ -377,6 +387,57 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
 
   /****************************************************
    *
+   * Parses JSON product options.
+   *
+   ****************************************************/
+  private static List<ProductOption> parseProductOptions( JSONArray optionJSONArray )
+    {
+    List<ProductOption> optionList = new ArrayList<>();
+
+    if ( optionJSONArray != null )
+      {
+      int optionCount = optionJSONArray.length();
+
+      for ( int optionIndex = 0; optionIndex < optionCount; optionIndex ++ )
+        {
+        try
+          {
+          JSONObject optionJSONObject = optionJSONArray.getJSONObject( optionIndex );
+
+          String     optionCode       = optionJSONObject.getString( JSON_NAME_OPTION_CODE );
+          String     optionName       = optionJSONObject.getString( JSON_NAME_OPTION_NAME );
+
+          JSONArray  valueJSONArray   = optionJSONObject.getJSONArray( JSON_NAME_OPTIONS );
+
+          ProductOption productOption = new ProductOption( optionCode, optionName );
+
+          int valueCount = valueJSONArray.length();
+
+          for ( int valueIndex = 0; valueIndex < valueCount; valueIndex ++ )
+            {
+            JSONObject valueJSONObject = valueJSONArray.getJSONObject( valueIndex );
+
+            String valueCode = valueJSONObject.getString( JSON_NAME_VALUE_CODE );
+            String valueName = valueJSONObject.getString( JSON_NAME_VALUE_NAME );
+
+            productOption.addValue( valueCode, valueName );
+            }
+
+          optionList.add( productOption );
+          }
+        catch ( JSONException je )
+          {
+          Log.e( LOG_TAG, "Unable to parse product options: " + optionJSONArray.toString(), je );
+          }
+        }
+      }
+
+    return ( optionList );
+    }
+
+
+  /****************************************************
+   *
    * Parses a JSON products array.
    *
    ****************************************************/
@@ -396,8 +457,10 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
 
         productJSONObject = productJSONArray.getJSONObject( productIndex );
 
-        // Uncomment to dump out JSON
-        Log.d( LOG_TAG, "Product JSON:\n" + productJSONObject.toString() );
+        if ( DISPLAY_PRODUCT_JSON )
+          {
+          Log.d( LOG_TAG, "Product JSON:\n" + productJSONObject.toString() );
+          }
 
         String                           productId          = productJSONObject.getString( JSON_NAME_PRODUCT_ID );
         String                           productName        = productJSONObject.getString( JSON_NAME_PRODUCT_NAME );
@@ -424,8 +487,6 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
         float                  imageAspectRatio    = (float)productDetailJSONObject.optDouble( JSON_NAME_IMAGE_ASPECT_RATIO, Product.DEFAULT_IMAGE_ASPECT_RATIO );
 
 
-
-
         URL     maskURL     = null;
         Bleed   maskBleed   = null;
         BorderF imageBorder = null;
@@ -450,6 +511,13 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
           }
 
 
+        // Get any product options
+
+        JSONArray productOptionJSONArray = productDetailJSONObject.optJSONArray( JSON_NAME_SUPPORTED_OPTIONS );
+
+        List<ProductOption> productOptionList = parseProductOptions( productOptionJSONArray );
+
+
         // Create the product and display it
 
         Product product = new Product( productId, productCode, productName, productType, labelColour, userJourneyType, imagesPerPage )
@@ -460,13 +528,18 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
                 .setLabelColour( labelColour )
                 .setMask( maskURL, maskBleed )
                 .setSize( size )
-                .setCreationImage( imageAspectRatio, imageBorder );
+                .setCreationImage( imageAspectRatio, imageBorder )
+                .setProductOptions( productOptionList );
 
-        Log.i( LOG_TAG, "-- Found product --" );
-        Log.i( LOG_TAG, product.toLogString( groupLabel ) );
+        if ( DISPLAY_PRODUCTS )
+          {
+          Log.i( LOG_TAG, "-- Found product --" );
+          Log.i( LOG_TAG, product.toLogString( groupLabel ) );
+          }
 
 
         // Only use products for which we have a defined user journey
+
         if ( ! ProductCreationActivity.isSupported( userJourneyType ) )
           {
           Log.i( LOG_TAG, "-- Product discarded: no user journey --" );
@@ -476,8 +549,9 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
 
 
         // Add the product to the catalogue
-
         catalogue.addProduct( groupLabel, groupImageURL, product );
+
+        if ( DISPLAY_PRE_CACHING_INFO ) catalogue.displayPreCachingInfo();
         }
       catch ( Exception exception )
         {

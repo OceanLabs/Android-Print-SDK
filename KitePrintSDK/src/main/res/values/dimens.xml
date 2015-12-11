@@ -1,8 +1,13 @@
 <resources>
 
     <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="screen_horizontal_margin">16dp</dimen>
+    <dimen name="screen_horizontal_half_margin">8dp</dimen>
+    <dimen name="screen_vertical_margin">16dp</dimen>
+    <dimen name="screen_vertical_half_margin">8dp</dimen>
+
+    <dimen name="activity_horizontal_margin">@dimen/screen_horizontal_margin</dimen>
+    <dimen name="activity_vertical_margin">@dimen/screen_vertical_margin</dimen>
 
     <dimen name="action_bar_home_as_up_icon_left_spacing">10dp</dimen>
     <dimen name="action_bar_title_text_left_spacing">10dp</dimen>
@@ -10,11 +15,20 @@
     <dimen name="control_label_text_size">16sp</dimen>
     <dimen name="label_text_size">16sp</dimen>
 
+    <dimen name="form_field_label_text_size">15sp</dimen>
+    <dimen name="form_field_entry_text_size">16sp</dimen>
+
+    <dimen name="credit_card_form_height">160dp</dimen>
+    <dimen name="credit_card_error_message_vertical_padding">20dp</dimen>
+
+    <dimen name="progress_dialog_message_padding">20dp</dimen>
+    <dimen name="progress_dialog_message_text_size">18sp</dimen>
+
     <dimen name="small_progress_bar_height">3dp</dimen>
 
     <dimen name="paging_dot_size">8dp</dimen>
 
-    <dimen name="label_width">240dp</dimen>
+    <dimen name="label_width">230dp</dimen>
     <dimen name="label_padding_top">6dp</dimen>
     <dimen name="label_padding_bottom">9dp</dimen>
     <dimen name="label_margin_bottom">20dp</dimen>

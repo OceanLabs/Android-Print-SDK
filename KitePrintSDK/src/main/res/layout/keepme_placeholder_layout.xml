@@ -45,4 +45,10 @@
         android:layout_height="wrap_content"
         android:visibility="gone"/>
 
+    <ViewGroup
+        android:id="@+id/product_options_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
 </FrameLayout>
