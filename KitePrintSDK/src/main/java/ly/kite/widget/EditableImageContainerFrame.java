@@ -354,6 +354,34 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
     }
 
 
+  /*****************************************************
+   *
+   * Requests a vertical flip.
+   *
+   *****************************************************/
+  public void requestVerticalFlip()
+    {
+    if ( mEditableMaskedImageView != null )
+      {
+      mEditableMaskedImageView.requestVerticalFlip();
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Requests an anticlockwise rotation.
+   *
+   *****************************************************/
+  public void requestAnticlockwiseRotation()
+    {
+    if ( mEditableMaskedImageView != null )
+      {
+      mEditableMaskedImageView.requestAnticlockwiseRotation();
+      }
+    }
+
+
   ////////// Inner Class(es) //////////
 
   /*****************************************************

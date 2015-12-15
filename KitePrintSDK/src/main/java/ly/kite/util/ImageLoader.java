@@ -123,7 +123,6 @@ public class ImageLoader
     bitmapFactoryOptions.inBitmap                 = null;
     bitmapFactoryOptions.inDensity                = 0;
     bitmapFactoryOptions.inDither                 = false;
-    bitmapFactoryOptions.inMutable                = false;
     bitmapFactoryOptions.inPreferQualityOverSpeed = false;
     bitmapFactoryOptions.inPreferredConfig        = bitmapConfig;
     bitmapFactoryOptions.inScaled                 = false;
@@ -147,6 +146,7 @@ public class ImageLoader
     BitmapFactory.Options bitmapFactoryOptions = getCommonBitmapOptions( bitmapConfig );
 
     bitmapFactoryOptions.inJustDecodeBounds       = true;
+    bitmapFactoryOptions.inMutable                = false;
     bitmapFactoryOptions.inSampleSize             = 0;
 
     return ( bitmapFactoryOptions );
@@ -163,6 +163,7 @@ public class ImageLoader
     BitmapFactory.Options bitmapFactoryOptions = getCommonBitmapOptions( bitmapConfig );
 
     bitmapFactoryOptions.inJustDecodeBounds       = false;
+    bitmapFactoryOptions.inMutable                = true;
     bitmapFactoryOptions.inSampleSize             = sampleSize;
 
     return ( bitmapFactoryOptions );
