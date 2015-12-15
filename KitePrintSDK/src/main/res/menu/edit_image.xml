@@ -1,0 +1,19 @@
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- These lines will generate some errors but builds anyway - ignore
+         any errors.
+     -->
+    <item
+        android:id="@+id/rotate_menu_item"
+        android:title="@string/Rotate"
+        android:icon="@drawable/ic_rotate_anticlockwise"
+        android:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/flip_menu_item"
+        android:title="@string/Flip"
+        android:icon="@drawable/ic_flip_vertically"
+        android:showAsAction="ifRoom"/>
+
+</menu>

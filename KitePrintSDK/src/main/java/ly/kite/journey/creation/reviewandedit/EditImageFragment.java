@@ -42,10 +42,16 @@ package ly.kite.journey.creation.reviewandedit;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 
+import ly.kite.KiteSDK;
 import ly.kite.R;
+import ly.kite.journey.AImageSource;
 import ly.kite.journey.creation.AEditImageFragment;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.catalogue.Asset;
@@ -149,6 +155,8 @@ public class EditImageFragment extends AEditImageFragment
         }
       }
 
+
+    setHasOptionsMenu( true );
     }
 
 
@@ -171,6 +179,18 @@ public class EditImageFragment extends AEditImageFragment
 
 
     return ( view );
+    }
+
+
+  /*****************************************************
+   *
+   * Called the first time the options menu is created.
+   *
+   *****************************************************/
+  @Override
+  public void onCreateOptionsMenu( Menu menu, MenuInflater menuInflator )
+    {
+    menuInflator.inflate( R.menu.edit_image, menu );
     }
 
 

@@ -43,16 +43,20 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import ly.kite.KiteSDK;
 import ly.kite.R;
+import ly.kite.journey.AImageSource;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.catalogue.Asset;
 import ly.kite.catalogue.AssetHelper;
 import ly.kite.catalogue.Product;
 import ly.kite.widget.EditableImageContainerFrame;
+import ly.kite.widget.EditableMaskedImageView;
 import ly.kite.widget.PromptTextFrame;
 
 
@@ -209,6 +213,36 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
 
   /*****************************************************
    *
+   * Called when an item in the options menu is selected.
+   *
+   *****************************************************/
+  @Override
+  public boolean onOptionsItemSelected( MenuItem item )
+    {
+    int itemId = item.getItemId();
+
+
+    if ( itemId == R.id.rotate_menu_item )
+      {
+      ///// Rotate /////
+
+      if ( mEditableImageContainerFrame != null ) mEditableImageContainerFrame.requestAnticlockwiseRotation();
+      // TODO
+      }
+    else if ( itemId == R.id.flip_menu_item )
+      {
+      ///// Flip /////
+
+      if ( mEditableImageContainerFrame != null ) mEditableImageContainerFrame.requestVerticalFlip();
+      }
+
+
+    return ( super.onOptionsItemSelected( item ) );
+    }
+
+
+  /*****************************************************
+   *
    * Called when the fragment is top-most.
    *
    *****************************************************/
@@ -260,7 +294,7 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
     }
 
 
-  ////////// EditableImageContainerFrame.INotificationCallback Method(s) //////////
+  ////////// EditableImageContainerFrame.ICallback Method(s) //////////
 
   /*****************************************************
    *

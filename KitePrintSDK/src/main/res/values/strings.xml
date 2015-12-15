@@ -80,6 +80,7 @@
     <string name="Details">Details</string>
     <string name="Done">Done</string>
     <string name="Edit">Edit</string>
+    <string name="Flip">Flip</string>
     <string name="Free">Free</string>
     <string name="add_more">Add More</string>
     <string name="print_these">Print these</string>
@@ -93,6 +94,7 @@
     <string name="Payment_Id">Payment Id</string>
     <string name="PAYMENT_ID">PAYMENT ID</string>
     <string name="Promotional_Discount">Promotional Discount</string>
+    <string name="Rotate">Rotate</string>
     <string name="Quantity">Quantity</string>
     <string name="Retry">Retry</string>
     <string name="Select_Image">Select Image</string>

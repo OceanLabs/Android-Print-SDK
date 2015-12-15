@@ -42,7 +42,6 @@ package ly.kite.util;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.util.Log;
 import android.util.Pair;
 
 import java.io.File;
@@ -214,6 +213,95 @@ public class ImageAgent
     int scaledHeight = (int)( (float)sourceBitmap.getHeight() * (float)scaledWidth / (float)sourceBitmap.getWidth() );
 
     return ( sourceBitmap.createScaledBitmap( sourceBitmap, scaledWidth, scaledHeight, true ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Vertically flips the supplied bitmap. It is
+   * flipped in place, so the bitmap must be mutable.
+   *
+   *****************************************************/
+  static public void verticallyFlipBitmap( Bitmap bitmap )
+    {
+    if ( bitmap == null ) return;
+
+    int imageWidth      = bitmap.getWidth();
+    int imageHeight     = bitmap.getHeight();
+    int imageHalfHeight = imageHeight >>> 1;
+
+    int[] topRow    = new int[ imageWidth ];
+    int[] bottomRow = new int[ imageWidth ];
+
+    for ( int y = 0; y < imageHalfHeight; y ++ )
+      {
+      bitmap.getPixels( topRow,    0, imageWidth, 0,                   y, imageWidth, 1 );
+      bitmap.getPixels( bottomRow, 0, imageWidth, 0, imageHeight - y - 1, imageWidth, 1 );
+
+      bitmap.setPixels( bottomRow, 0, imageWidth, 0, y, imageWidth, 1 );
+      bitmap.setPixels( topRow,    0, imageWidth, 0, imageHeight - y - 1, imageWidth, 1 );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Rotates the supplied bitmap anticlockwise.
+   *
+   *****************************************************/
+  static public Bitmap rotateAnticlockwiseBitmap( Bitmap sourceBitmap )
+    {
+    if ( sourceBitmap == null ) return ( null );
+
+
+    int width  = sourceBitmap.getWidth();
+    int height = sourceBitmap.getHeight();
+
+
+    // Create a new Bitmap for the rotated image
+
+    Bitmap targetBitmap = null;
+
+    Bitmap.Config bitmapConfig = sourceBitmap.getConfig();
+
+    try
+      {
+      targetBitmap = Bitmap.createBitmap( height, width, bitmapConfig );
+      }
+    catch ( OutOfMemoryError oome )
+      {
+      // If we ran out of memory trying to create a bitmap with full colour space, try
+      // again using a reduced colour space.
+
+      if ( bitmapConfig == Bitmap.Config.ARGB_8888 )
+        {
+        try
+          {
+          targetBitmap = Bitmap.createBitmap( height, width, Bitmap.Config.RGB_565 );
+          }
+        catch ( OutOfMemoryError oome2 )
+          {
+          // Give up
+          }
+        }
+      }
+
+    if ( targetBitmap == null ) return ( sourceBitmap );
+
+
+    // Scan the source bitmap in columns
+
+    int[] column = new int[ height ];
+
+    for ( int x = 0; x < width; x ++ )
+      {
+      // Convert the column from the source to a row in the target
+      sourceBitmap.getPixels( column, 0,      1, x,             0,      1, height );
+      targetBitmap.setPixels( column, 0, height, 0, width - x - 1, height,      1 );
+      }
+
+
+    return ( targetBitmap );
     }
 
 

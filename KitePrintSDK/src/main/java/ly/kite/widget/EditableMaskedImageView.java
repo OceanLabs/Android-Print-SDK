@@ -62,6 +62,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import ly.kite.KiteSDK;
 import ly.kite.animation.ASimpleFloatPropertyAnimator;
 import ly.kite.catalogue.Bleed;
+import ly.kite.util.ImageAgent;
 
 
 ///// Class Declaration /////
@@ -776,6 +777,38 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
     mRestoredImageProportionalCenterX = 0f;
     mRestoredImageProportionalCenterY = 0f;
     mRestoredImageScaleMultiplier     = 0f;
+    }
+
+
+  /*****************************************************
+   *
+   * Requests a vertical flip.
+   *
+   *****************************************************/
+  public void requestVerticalFlip()
+    {
+    if ( mImageBitmap != null )
+      {
+      ImageAgent.verticallyFlipBitmap( mImageBitmap );
+
+      invalidate();
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Requests an anticlockwise rotation.
+   *
+   *****************************************************/
+  public void requestAnticlockwiseRotation()
+    {
+    if ( mImageBitmap != null )
+      {
+      Bitmap rotatedBitmap = ImageAgent.rotateAnticlockwiseBitmap( mImageBitmap );
+
+      setImageBitmap( rotatedBitmap );
+      }
     }
 
 

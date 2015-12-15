@@ -154,7 +154,7 @@ public class PhoneCaseFragment extends AEditImageFragment implements AImageSourc
     // not all be enabled. So after we've inflated it, we need to go through an remove
     // any source that isn't available.
 
-    menuInflator.inflate( R.menu.add_photo, menu );
+    menuInflator.inflate( R.menu.phone_case, menu );
 
     MenuItem addPhotoItem = menu.findItem( R.id.add_photo_menu_item );
 
