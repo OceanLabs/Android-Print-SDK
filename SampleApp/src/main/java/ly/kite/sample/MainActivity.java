@@ -73,7 +73,7 @@ import ly.kite.KiteSDK;
  *
  *****************************************************/
 public class MainActivity extends Activity
-  {
+{
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
@@ -127,7 +127,7 @@ public class MainActivity extends Activity
    *****************************************************/
   @Override
   protected void onCreate( Bundle savedInstanceState )
-    {
+  {
     super.onCreate( savedInstanceState );
 
 
@@ -140,7 +140,7 @@ public class MainActivity extends Activity
     setContentView( R.layout.screen_main );
 
     mEnvironmentSwitch = (Switch)findViewById( R.id.environment_switch );
-    }
+  }
 
 
   /*****************************************************
@@ -149,39 +149,39 @@ public class MainActivity extends Activity
    *
    *****************************************************/
   public void onActivityResult( int requestCode, int resultCode, Intent data )
-    {
+  {
     if ( requestCode == REQUEST_CODE_CHECKOUT )
-      {
+    {
       ///// Check out /////
 
       if ( resultCode == Activity.RESULT_OK )
-        {
-        Toast.makeText( this, "User successfully checked out!", Toast.LENGTH_LONG ).show();
-        }
-      else if ( resultCode == Activity.RESULT_CANCELED )
-        {
-        Toast.makeText( this, "User cancelled checkout :(", Toast.LENGTH_LONG ).show();
-        }
-      }
-    else if ( requestCode == REQUEST_CODE_SELECT_PICTURE )
       {
+        Toast.makeText( this, "User successfully checked out!", Toast.LENGTH_LONG ).show();
+      }
+      else if ( resultCode == Activity.RESULT_CANCELED )
+      {
+        Toast.makeText( this, "User cancelled checkout :(", Toast.LENGTH_LONG ).show();
+      }
+    }
+    else if ( requestCode == REQUEST_CODE_SELECT_PICTURE )
+    {
       ///// Select gallery picture /////
 
       if ( resultCode == RESULT_OK )
-        {
+      {
         Photo[] photos = PhotoPicker.getResultPhotos( data );
 
         ArrayList<Asset> assetArrayList = new ArrayList<Asset>();
 
         for ( Photo photo : photos )
-          {
+        {
           assetArrayList.add( new Asset( photo.getUri() ) );
-          }
+        }
 
         checkoutWithAssets( assetArrayList );
-        }
       }
     }
+  }
 
   ////////// Method(s) //////////
 
@@ -191,10 +191,10 @@ public class MainActivity extends Activity
    *
    *****************************************************/
   public void onGalleryButtonClicked( View view )
-    {
+  {
     // Launch the picture selector
     PhotoPicker.startPhotoPickerForResult( this, REQUEST_CODE_SELECT_PICTURE );
-    }
+  }
 
 
   /*****************************************************
@@ -204,7 +204,7 @@ public class MainActivity extends Activity
    *
    *****************************************************/
   public void onRemoteButtonClicked( View view )
-    {
+  {
     // Create some assets from remote URLs
 
     ArrayList<Asset> assetArrayList = new ArrayList<Asset>();
@@ -212,18 +212,18 @@ public class MainActivity extends Activity
     assetArrayList.add( new Asset( R.drawable.instagram1 ) );
 
     try
-      {
+    {
       assetArrayList.add( new Asset( new URL( "http://psps.s3.amazonaws.com/sdk_static/1.jpg" ) ) );
       assetArrayList.add( new Asset( new URL( "http://psps.s3.amazonaws.com/sdk_static/2.jpg" ) ) );
       assetArrayList.add( new Asset( new URL( "http://psps.s3.amazonaws.com/sdk_static/3.jpg" ) ) );
       assetArrayList.add( new Asset( new URL( "http://psps.s3.amazonaws.com/sdk_static/4.jpg" ) ) );
-      }
+    }
     catch ( Exception ex )
-      {
-      }
+    {
+    }
 
     checkoutWithAssets( assetArrayList );
-    }
+  }
 
 
   /*****************************************************
@@ -233,7 +233,7 @@ public class MainActivity extends Activity
    *
    *****************************************************/
   private void checkoutWithAssets( ArrayList<Asset> assets )
-    {
+  {
     String               apiKey;
     KiteSDK.IEnvironment  environment;
 
@@ -242,15 +242,15 @@ public class MainActivity extends Activity
     // of the on-screen switch.
 
     if ( mEnvironmentSwitch.isChecked() )
-      {
+    {
       apiKey      = API_KEY_LIVE;
       environment = KiteSDK.DefaultEnvironment.LIVE;
-      }
+    }
     else
-      {
+    {
       apiKey      = API_KEY_TEST;
       environment = KiteSDK.DefaultEnvironment.TEST;
-      }
+    }
 
 
     // Check that the API has been set in code
@@ -259,7 +259,7 @@ public class MainActivity extends Activity
       showError( "Set API Keys", "Please set your Kite API keys at the top of the SampleApp's MainActivity.java. You can find these by logging into https://www.kite.ly." );
 
       return;
-      }
+    }
 
 
     // Launch the SDK shopping journey
@@ -287,13 +287,13 @@ public class MainActivity extends Activity
    *
    *****************************************************/
   private void showError( String title, String message )
-    {
+  {
     new AlertDialog.Builder( this )
-      .setTitle( title )
-      .setMessage( message )
-      .setPositiveButton( "OK", null )
-      .show();
-    }
+            .setTitle( title )
+            .setMessage( message )
+            .setPositiveButton( "OK", null )
+            .show();
+  }
 
 
   ////////// Inner Class(es) //////////
@@ -304,4 +304,4 @@ public class MainActivity extends Activity
    *
    *****************************************************/
 
-  }
+}
