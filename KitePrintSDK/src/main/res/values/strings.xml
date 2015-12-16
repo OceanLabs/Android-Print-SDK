@@ -128,7 +128,7 @@
     <string name="product_free_worldwide_shipping">Free Worldwide Shipping</string>
 
     <string name="product_overview_guarantee_title">Quality Guarantee</string>
-    <string name="product_overview_guarantee_text">We are confident that you will be more than happy with our products. But just in case, we offer a full refund if you are not 100% happy - even if it\'s just a bad day.</string>
+    <string name="product_overview_guarantee_text" formatted="false">We are confident that you will be more than happy with our products. But just in case, we offer a full refund if you are not 100% happy - even if it\'s just a bad day.</string>
 
     <string name="product_overview_start_button_text">Start creating</string>
 
