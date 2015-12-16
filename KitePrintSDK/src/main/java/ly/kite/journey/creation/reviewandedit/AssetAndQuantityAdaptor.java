@@ -171,7 +171,7 @@ public class AssetAndQuantityAdaptor extends BaseAdapter
       }
     else
       {
-      view                            = mLayoutInflator.inflate( R.layout.grid_item_review_and_crop, null );
+      view                            = mLayoutInflator.inflate( R.layout.grid_item_review_and_crop, parent, false );
       viewReferences                  = new ViewReferences();
       viewReferences.framedImageView  = (FramedImageView)view.findViewById( R.id.framed_image_view );
       viewReferences.quantityTextView = (TextView)view.findViewById( R.id.quantity_text_view );

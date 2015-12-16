@@ -249,7 +249,7 @@ public class PayPalCard implements Serializable {
                                 storageResponse.number = json.getString("number");
                                 storageResponse.vaultId = json.getString("id");
                                 String vaultExpireDateStr = json.getString("valid_until");
-                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz", Locale.UK );
 
                                 storageResponse.vaultExpireDate = dateFormat.parse(vaultExpireDateStr.replaceAll("Z$", "+0000"));
                                 return storageResponse;

@@ -207,42 +207,6 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
       throw new IllegalArgumentException( "You must specify a PrintOrder object extra that actually has some jobs for printing i.e. PrintOrder.getJobs().size() > 0" );
       }
 
-//    KiteSDK.Environment environment = null;
-//
-//    if ( envString == null )
-//      {
-//      environment = KiteSDK.getInstance( this ).getEnvironment();
-//
-//      if ( environment == null )
-//        {
-//        throw new IllegalArgumentException( "You must specify an environment string extra in the intent used to start the CheckoutActivity or with KitePrintSDK.initialize" );
-//        }
-//      }
-//    else
-//      {
-//      if ( envString.equals( ENVIRONMENT_STAGING ) )
-//        {
-//        environment = KiteSDK.DefaultEnvironment.STAGING;
-//        }
-//      else if ( envString.equals( ENVIRONMENT_TEST ) )
-//        {
-//        environment = KiteSDK.DefaultEnvironment.TEST;
-//        }
-//      else if ( envString.equals( ENVIRONMENT_LIVE ) )
-//        {
-//        environment = KiteSDK.DefaultEnvironment.LIVE;
-//        }
-//      else
-//        {
-//        throw new IllegalArgumentException( "Bad print environment extra: " + envString );
-//        }
-//      }
-//
-//    mAPIKey      = apiKey;
-//    mEnvironment = environment;
-//
-//    KiteSDK.getInstance( this ).setEnvironment( apiKey, environment );
-
 
     mProceedButton.setText( R.string.shipping_proceed_button_text );
 
@@ -273,8 +237,6 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
     super.onSaveInstanceState( outState );
 
     outState.putParcelable( EXTRA_PRINT_ORDER, mPrintOrder );
-//    outState.putString( EXTRA_PRINT_API_KEY, mAPIKey );
-//    outState.putParcelable( EXTRA_PRINT_ENVIRONMENT, mEnvironment );
     }
 
   @Override
@@ -283,10 +245,6 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
     super.onRestoreInstanceState( savedInstanceState );
 
     mPrintOrder  = savedInstanceState.getParcelable( EXTRA_PRINT_ORDER );
-//    mAPIKey      = savedInstanceState.getString( EXTRA_PRINT_API_KEY );
-//    mEnvironment = (KiteSDK.DefaultEnvironment) savedInstanceState.getSerializable( EXTRA_PRINT_ENVIRONMENT );
-//
-//    KiteSDK.getInstance( this ).setEnvironment( mAPIKey, mEnvironment );
     }
 
   @Override
@@ -352,21 +310,6 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
     startActivityForResult( i, REQUEST_CODE_ADDRESS_BOOK );
     }
 
-//  private String getPaymentActivityEnvironment()
-//    {
-//    switch ( mEnvironment )
-//      {
-//      case LIVE:
-//        return PaymentActivity.ENVIRONMENT_LIVE;
-//      case STAGING:
-//        return PaymentActivity.ENVIRONMENT_STAGING;
-//      case TEST:
-//        return PaymentActivity.ENVIRONMENT_TEST;
-//      default:
-//        throw new IllegalStateException( "oops" );
-//      }
-//    }
-
   private void showErrorDialog( String title, String message )
     {
     AlertDialog.Builder builder = new AlertDialog.Builder( this );
@@ -419,7 +362,7 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
     SharedPreferences.Editor editor = settings.edit();
     editor.putString( SHIPPING_PREFERENCE_EMAIL, email );
     editor.putString( SHIPPING_PREFERENCE_PHONE, phone );
-    editor.commit();
+    editor.apply();
 
 
     // Make sure we have up-to-date products before we proceed

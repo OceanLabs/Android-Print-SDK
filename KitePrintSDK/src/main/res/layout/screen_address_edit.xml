@@ -94,7 +94,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:background="#57ae2e"
-                android:onClick="onSaveClicked"
                 android:text="Save"
                 android:textColor="@android:color/white"
                 android:visibility="invisible"/>

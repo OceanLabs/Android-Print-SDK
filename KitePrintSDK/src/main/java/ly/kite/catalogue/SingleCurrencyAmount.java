@@ -302,7 +302,7 @@ public class SingleCurrencyAmount implements Parcelable
 
 
     // Format the amount formally
-    return ( String.format( FORMAL_AMOUNT_FORMAT_STRING, mCurrency.getCurrencyCode(), getAmountAsDouble() ) );
+    return ( String.format( Locale.getDefault(), FORMAL_AMOUNT_FORMAT_STRING, mCurrency.getCurrencyCode(), getAmountAsDouble() ) );
     }
 
 

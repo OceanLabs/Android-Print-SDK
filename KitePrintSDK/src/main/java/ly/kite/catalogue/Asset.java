@@ -49,6 +49,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 
 ///// Class Declaration /////
@@ -179,7 +180,7 @@ public class Asset implements Parcelable
       // Check that we support the file type. Use the path, since the file will have the query string
       // appended to it.
 
-      String path = url.getPath().toLowerCase();
+      String path = url.getPath().toLowerCase( Locale.UK );
 
       if ( path.endsWith( JPEG_FILE_SUFFIX_PRIMARY ) || path.endsWith( JPEG_FILE_SUFFIX_SECONDARY ) )
         {
@@ -222,7 +223,7 @@ public class Asset implements Parcelable
     {
     // Check that we support the file type
 
-    String path = imagePath.toLowerCase();
+    String path = imagePath.toLowerCase( Locale.UK );
 
     if ( ! path.endsWith( JPEG_FILE_SUFFIX_PRIMARY   ) &&
          ! path.endsWith( JPEG_FILE_SUFFIX_SECONDARY ) &&

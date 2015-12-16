@@ -1,11 +1,12 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
+<menu
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="ly.kite.address.AddressSearchActivity" >
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:id="@+id/search"
         android:title="@string/search_title"
         android:icon="@drawable/ic_search_black"
         android:showAsAction="collapseActionView|always"
-        android:actionViewClass="android.widget.SearchView" />
+        android:actionViewClass="android.widget.SearchView"
+          tools:ignore="AppCompatResource"/>
 
 </menu>

@@ -533,7 +533,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
 
     for ( ProductOption option : productOptionList )
       {
-      View optionView = getOptionView( optionIndex, option, layoutInflater );
+      View optionView = getOptionView( optionIndex, option, layoutInflater, productOptionsLayout );
 
       if ( optionView != null ) productOptionsLayout.addView( optionView );
 
@@ -593,14 +593,14 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
    * Returns a view for a product option.
    *
    *****************************************************/
-  protected View getOptionView( int optionIndex, ProductOption option, LayoutInflater layoutInflator )
+  protected View getOptionView( int optionIndex, ProductOption option, LayoutInflater layoutInflator, ViewGroup parent )
     {
     String optionCode = option.getCode();
 
 
     // Create a spinner for the option and add it to the layout
 
-    View     optionView    = layoutInflator.inflate( R.layout.product_option, null );
+    View     optionView    = layoutInflator.inflate( R.layout.product_option, parent, false );
 
     TextView nameTextView  = (TextView)optionView.findViewById( R.id.option_name_text_view );
     Spinner  valuesSpinner = (Spinner)optionView.findViewById( R.id.option_values_spinner );

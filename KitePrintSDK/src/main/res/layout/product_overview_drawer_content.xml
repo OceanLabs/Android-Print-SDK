@@ -12,7 +12,7 @@
         <LinearLayout
             android:layout_gravity="top"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             android:paddingLeft="@dimen/product_overview_content_padding_horizontal"
             android:paddingRight="@dimen/product_overview_content_padding_horizontal"
             android:orientation="vertical">
