@@ -8,9 +8,11 @@
 
     <!-- Used for GCM -->
 
+    <!-- Uncomment if using push messaging
     <permission android:name="ly.kite.sample.permission.C2D_MESSAGE" android:protectionLevel="signature" />
 
     <uses-permission android:name="ly.kite.sample.permission.C2D_MESSAGE"/>
+    -->
 
 
     <application
@@ -31,6 +33,8 @@
 
         <!-- GCM -->
 
+        <!-- Uncomment if using push messaging
+
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
             android:exported="true"
@@ -49,10 +53,17 @@
             </intent-filter>
         </service>
 
+        -->
+
+
+        <!-- Uncomment if using Crashlytics
 
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="a20b9e9795a45b9206a841b1ee086c15a2b5b39b" />
+            android:value="Insert API key here"/>
+
+        -->
+
 
     </application>
 
