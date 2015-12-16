@@ -4,7 +4,8 @@
     <FrameLayout
         android:layout_gravity="bottom"
         android:layout_width="fill_parent"
-        android:layout_height="@dimen/proceed_overlay_frame_height">
+        android:layout_height="@dimen/proceed_overlay_frame_height"
+        android:layout_weight="0.0">
 
         <LinearLayout
             android:layout_width="fill_parent"

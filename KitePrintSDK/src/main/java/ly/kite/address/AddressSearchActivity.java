@@ -278,7 +278,7 @@ public class AddressSearchActivity extends Activity implements ActionBar.OnNavig
             View v = convertView;
             if (convertView == null) {
                 LayoutInflater li = (LayoutInflater) viewGroup.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                v = li.inflate(R.layout.address_search_result_list_item, null);
+                v = li.inflate(R.layout.address_search_result_list_item, viewGroup, false);
             }
 
             Address a = (Address) getItem(position);

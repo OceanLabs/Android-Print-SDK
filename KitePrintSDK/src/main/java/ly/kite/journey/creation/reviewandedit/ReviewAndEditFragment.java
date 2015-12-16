@@ -292,7 +292,7 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
             if ( numberOfImages < expectedNumberOfImages )
               {
               mKiteActivity.displayModalDialog(
-                getString( R.string.alert_dialog_title_pack_not_full_format_string, numberOfImages ),
+                getString( R.string.alert_dialog_title_pack_not_full_format_string, numberOfImages, getResources().getQuantityString( R.plurals.photo_plurals, numberOfImages ) ),
                 getString( R.string.alert_dialog_message_pack_not_full_format_string, expectedNumberOfImages - numberOfImages ),
                 R.string.print_these,
                 new Runnable()

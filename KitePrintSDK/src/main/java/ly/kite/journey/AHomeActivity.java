@@ -68,15 +68,6 @@ abstract public class AHomeActivity extends ProductSelectionActivity
   @SuppressWarnings( "unused" )
   private static final String LOG_TAG                      = "AHomeActivity";
 
-  private static final int    SIMULATED_TOUCH_X            = 1;
-  private static final int    SIMULATED_TOUCH_Y            = 1;
-  private static final float  NORMAL_PRESSURE              = 1.0f;
-  private static final float  SIMULATED_TOUCH_SIZE         = 0.1f;
-  private static final int    NO_META_STATE_FLAGS          = 0;
-  private static final float  SIMULATED_X_PRECISION        = 0.1f;
-  private static final float  SIMULATED_Y_PRECISION        = 0.1f;
-  private static final int    DEVICE_ID                    = 1;
-
   private static final long   OPEN_MENU_DELAY_MILLIS       = 500L;
   private static final long   CLOSE_MENU_DELAY_MILLIS      = 100L;
 

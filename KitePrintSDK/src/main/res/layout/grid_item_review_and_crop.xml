@@ -24,6 +24,7 @@
         <ly.kite.widget.CustomTypefaceTextView
             android:id="@+id/quantity_text_view"
             android:layout_width="@dimen/cta_button_height"
+            android:layout_weight="0.0"
             android:layout_height="fill_parent"
             android:background="@color/review_and_crop_quantity_highlight"
             android:gravity="center"
@@ -36,6 +37,7 @@
             android:layout_marginTop="2dp"
             android:layout_marginBottom="2dp"
             android:layout_width="@dimen/cta_button_height"
+            android:layout_weight="0.0"
             android:layout_height="@dimen/cta_button_height"
             android:background="@android:color/white"
             android:gravity="center"
@@ -49,6 +51,7 @@
             android:layout_marginTop="2dp"
             android:layout_marginBottom="2dp"
             android:layout_width="@dimen/cta_button_height"
+            android:layout_weight="0.0"
             android:layout_height="@dimen/cta_button_height"
             android:background="@android:color/white"
             android:gravity="center"

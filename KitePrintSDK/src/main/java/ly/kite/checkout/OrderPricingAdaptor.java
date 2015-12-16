@@ -244,7 +244,7 @@ public class OrderPricingAdaptor extends BaseAdapter
       }
     else
       {
-      view                               = mLayoutInflator.inflate( R.layout.list_item_order_pricing, null );
+      view                               = mLayoutInflator.inflate( R.layout.list_item_order_pricing, parent, false );
       viewReferences                     = new ViewReferences();
       viewReferences.descriptionTextView = (TextView)view.findViewById( R.id.description_text_view );
       viewReferences.amountTextView      = (TextView)view.findViewById( R.id.amount_text_view );

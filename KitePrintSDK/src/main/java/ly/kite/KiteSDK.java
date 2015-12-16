@@ -439,10 +439,9 @@ public class KiteSDK
         {
         uniqueUserId = UUID.randomUUID().toString();
 
-        sharedPreferences
-          .edit()
-            .putString( SHARED_PREFERENCES_KEY_UNIQUE_USER_ID, uniqueUserId )
-          .commit();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString( SHARED_PREFERENCES_KEY_UNIQUE_USER_ID, uniqueUserId );
+        editor.apply();
         }
 
       mUniqueUserId = uniqueUserId;

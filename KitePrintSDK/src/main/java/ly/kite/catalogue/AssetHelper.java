@@ -56,6 +56,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.UUID;
 
 import ly.kite.util.IImageConsumer;
@@ -340,7 +341,7 @@ public class AssetHelper
 
       case IMAGE_FILE:
 
-        String imagePath = asset.getImageFilePath().toLowerCase();
+        String imagePath = asset.getImageFilePath().toLowerCase( Locale.UK );
 
         if ( imagePath.endsWith( Asset.JPEG_FILE_SUFFIX_PRIMARY ) || imagePath.endsWith( Asset.JPEG_FILE_SUFFIX_SECONDARY ) )
           {

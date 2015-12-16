@@ -19,8 +19,7 @@
             <android.support.v4.view.ViewPager
                 android:id="@+id/view_pager"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1.0"
+                android:layout_height="fill_parent"
                 android:layerType="hardware"/>
             <LinearLayout
                 android:id="@+id/overlaid_components"
@@ -48,7 +47,8 @@
 
         <View
             android:layout_width="fill_parent"
-            android:layout_height="@dimen/product_overview_control_bar_height"/>
+            android:layout_height="@dimen/product_overview_control_bar_height"
+            android:layout_weight="0.0"/>
 
     </LinearLayout>
 
@@ -57,7 +57,6 @@
         android:id="@+id/sliding_overlay_frame"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:elevation="10dp"
         custom:expandDirection="up"
         custom:alwaysVisibleView="@layout/product_overview_drawer_control_bar"
         custom:revealedView="@layout/product_overview_drawer_content"/>

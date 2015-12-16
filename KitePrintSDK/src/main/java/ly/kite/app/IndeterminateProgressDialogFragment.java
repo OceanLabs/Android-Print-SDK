@@ -159,7 +159,7 @@ public class IndeterminateProgressDialogFragment extends DialogFragment
   @Override
   public View onCreateView( LayoutInflater layoutInflator, ViewGroup container, Bundle savedInstanceState )
     {
-    View view = layoutInflator.inflate( R.layout.dialog_indeterminate_progress, null );
+    View view = layoutInflator.inflate( R.layout.dialog_indeterminate_progress, container, false );
 
     TextView messageTextView = (TextView)view.findViewById( R.id.message_text_view );
 

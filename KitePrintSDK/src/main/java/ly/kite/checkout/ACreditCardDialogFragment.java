@@ -124,7 +124,7 @@ abstract public class ACreditCardDialogFragment extends DialogFragment implement
   @Override
   public View onCreateView( LayoutInflater layoutInflator, ViewGroup container, Bundle savedInstanceState )
     {
-    View view = layoutInflator.inflate( R.layout.dialog_credit_card, null );
+    View view = layoutInflator.inflate( R.layout.dialog_credit_card, container, false );
 
     mCardNumberEditText  = (EditText)view.findViewById( R.id.card_number_edit_text );
     mExpiryMonthEditText = (EditText)view.findViewById( R.id.expiry_month_edit_text );
