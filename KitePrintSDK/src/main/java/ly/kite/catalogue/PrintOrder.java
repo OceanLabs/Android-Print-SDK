@@ -29,6 +29,9 @@ public class PrintOrder implements Parcelable /* , Serializable */
     static private final String LOG_TAG = "PrintOrder";
 
     private static final int NOT_PERSISTED = -1;
+    private static final int JOB_TYPE_POSTCARD = 0;
+    private static final int JOB_TYPE_GREETING_CARD = 1;
+    private static final int JOB_TYPE_PRINTS = 2;
 
     static private final String JSON_NAME_LOCALE = "locale";
 
@@ -296,7 +299,7 @@ public class PrintOrder implements Parcelable /* , Serializable */
     }
 
     public void addPrintJob(PrintJob job) {
-        if (!(job instanceof PrintsPrintJob || job instanceof PostcardPrintJob )) {
+        if (!(job instanceof PrintsPrintJob || job instanceof PostcardPrintJob || job instanceof GreetingCardPrintJob )) {
             throw new IllegalArgumentException("Currently only support PrintsPrintJobs & PostcardPrintJob, if any further jobs " +
                     "classes are added support for them must be added to the Parcelable interface in particular readTypedList must work ;)");
         }
@@ -414,10 +417,13 @@ public class PrintOrder implements Parcelable /* , Serializable */
         p.writeInt( jobs.size() );
         for (PrintJob job : jobs) {
             if (job instanceof PostcardPrintJob) {
-                p.writeInt(1);
+                p.writeInt(JOB_TYPE_POSTCARD);
+                job.writeToParcel(p, flags);
+            } else if (job instanceof GreetingCardPrintJob) {
+                p.writeInt(JOB_TYPE_GREETING_CARD);
                 job.writeToParcel(p, flags);
             } else {
-                p.writeInt(0);
+                p.writeInt(JOB_TYPE_PRINTS);
                 job.writeToParcel(p, flags);
             }
         }
@@ -449,13 +455,22 @@ public class PrintOrder implements Parcelable /* , Serializable */
 
         int numJobs = p.readInt();
         for (int i = 0; i < numJobs; ++i) {
-            boolean postcardJob = p.readInt() == 1;
-            if (postcardJob) {
-                PostcardPrintJob job = PostcardPrintJob.CREATOR.createFromParcel(p);
-                this.jobs.add(job);
-            } else {
-                PrintsPrintJob job = PrintsPrintJob.CREATOR.createFromParcel(p);
-                this.jobs.add(job);
+            int jobType = p.readInt();
+            switch (jobType) {
+                case JOB_TYPE_POSTCARD: {
+                    PostcardPrintJob job = PostcardPrintJob.CREATOR.createFromParcel(p);
+                    this.jobs.add(job);
+                    break;
+                }
+                case JOB_TYPE_GREETING_CARD: {
+                    GreetingCardPrintJob job = GreetingCardPrintJob.CREATOR.createFromParcel(p);
+                    this.jobs.add(job);
+                    break;
+                }
+                default: {
+                    PrintsPrintJob job = PrintsPrintJob.CREATOR.createFromParcel(p);
+                    this.jobs.add(job);
+                }
             }
         }
 
