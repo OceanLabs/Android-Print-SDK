@@ -51,10 +51,10 @@ public class GreetingCardPrintJob extends PrintJob {
     @Override
     List<Asset> getAssetsForUploading() {
         ArrayList<Asset> assets = new ArrayList<Asset>();
-        assets.add( mFrontImageAsset );
-        assets.add( mBackImageAsset );
-        assets.add( mInsideLeftImageAsset );
-        assets.add( mInsideRightImageAsset );
+        if (mFrontImageAsset != null) assets.add( mFrontImageAsset );
+        if (mBackImageAsset != null) assets.add( mBackImageAsset );
+        if (mInsideLeftImageAsset != null) assets.add( mInsideLeftImageAsset );
+        if (mInsideRightImageAsset != null) assets.add( mInsideRightImageAsset );
         return assets;
     }
 
