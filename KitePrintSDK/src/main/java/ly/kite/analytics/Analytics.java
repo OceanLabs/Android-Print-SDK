@@ -341,7 +341,7 @@ public class Analytics
 
   private Analytics( Context context )
     {
-    mContext = context;
+    mContext = context.getApplicationContext();
     }
 
 
