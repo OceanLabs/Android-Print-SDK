@@ -570,7 +570,7 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
   // Constructor is private to ensure it is a singleton
   private CatalogueLoader( Context context )
     {
-    mContext      = context;
+    mContext      = context.getApplicationContext();
     mHandler      = new Handler();
     mConsumerList = new LinkedList<>();
     }

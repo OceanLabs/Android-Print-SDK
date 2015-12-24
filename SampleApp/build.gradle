@@ -62,6 +62,9 @@ dependencies {
 
     compile project(':KitePrintSDK')
 
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.3.1'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.3.1'
+
     // Uncomment to include push messaging
     //compile project(':KitePrintSDK-GCM')
 
