@@ -240,7 +240,7 @@ public class ImageLoader
    * Converts an EXIF orientation into degrees..
    *
    *****************************************************/
-  static private int degreesFromEXIFOrientation( int exifOrientation )
+  static int degreesFromEXIFOrientation( int exifOrientation )
     {
     if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "degreesFromEXIFOrientation( exifOrientation = " + exifOrientation + " )" );
 

@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * ACacheTest.java
+ * ACacheTests.java
  *
  *
  * Modified MIT License
@@ -50,12 +50,12 @@ import junit.framework.TestCase;
  * This class tests the abstract cache class.
  *
  *****************************************************/
-public class ACacheTest extends TestCase
+public class ACacheTests extends TestCase
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "ACacheTest";
+  private static final String  LOG_TAG = "ACacheTests";
 
 
   ////////// Static Variable(s) //////////

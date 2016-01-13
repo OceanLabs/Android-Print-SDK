@@ -59,6 +59,4 @@ public interface IImageTransformer
    *
    *****************************************************/
   public Bitmap getTransformedBitmap( Bitmap originalBitmap );
-
   }
-
