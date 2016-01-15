@@ -99,7 +99,7 @@
     <string name="alert_dialog_message_no_proof_of_payment">No proof of payment found in payment confirmation</string>
     <string name="alert_dialog_message_no_paypal_confirmation">No payment confirmation received from PayPal</string>
     <string name="alert_dialog_message_card_expired">Sorry it looks like that card has expired. Please try again.</string>
-    <string name="alert_dialog_message_card_not_recognised">Sorry we couldn't recognise your card. Please try again manually entering your card details if necessary.</string>
+    <string name="alert_dialog_message_card_not_recognised">Sorry we couldn\'t recognise your card. Please try again manually entering your card details if necessary.</string>
 
     <string name="alert_dialog_item_pay_with_new_card">Pay with new card</string>
     <string name="alert_dialog_item_pay_with_existing_card_format_string">Pay with card ending %1$s</string>
