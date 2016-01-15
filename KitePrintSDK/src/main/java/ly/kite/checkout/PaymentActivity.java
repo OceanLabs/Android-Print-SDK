@@ -260,11 +260,11 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
 
     if ( mKiteSDKEnvironment.getPayPalEnvironment().equals( PayPalConfiguration.ENVIRONMENT_SANDBOX ) )
       {
-      setTitle( "Payment (Sandbox)" );
+      setTitle( R.string.title_payment_sandbox );
       }
     else
       {
-      setTitle( "Payment" );
+      setTitle( R.string.title_payment );
       }
 
 
@@ -316,12 +316,12 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
                 }
               else
                 {
-                showErrorDialog( "No payment id found in proof of payment" );
+                showErrorDialog( R.string.alert_dialog_message_no_payment_id );
                 }
               }
             else
               {
-              showErrorDialog( "No proof of payment found in payment confirmation" );
+              showErrorDialog( R.string.alert_dialog_message_no_proof_of_payment );
               }
 
             }
@@ -332,7 +332,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
           }
         else
           {
-          showErrorDialog( "No payment confirmation received from PayPal" );
+          showErrorDialog( R.string.alert_dialog_message_no_paypal_confirmation );
           }
         }
       }
@@ -344,7 +344,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
 
         if ( !scanResult.isExpiryValid() )
           {
-          showErrorDialog( "Sorry it looks like that card has expired. Please try again." );
+          showErrorDialog( R.string.alert_dialog_message_card_expired );
 
           return;
           }
@@ -358,15 +358,15 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
 
         if ( card.getCardType() == PayPalCard.CardType.UNSUPPORTED )
           {
-          showErrorDialog( "Sorry we couldn't recognize your card. Please try again manually entering your card details if necessary." );
+          showErrorDialog( R.string.alert_dialog_message_card_not_recognised );
 
           return;
           }
 
         final ProgressDialog dialog = new ProgressDialog( this );
         dialog.setCancelable( false );
-        dialog.setTitle( "Processing" );
-        dialog.setMessage( "One moment" );
+        dialog.setTitle( R.string.alert_dialog_title_processing );
+        dialog.setMessage( getString( R.string.alert_dialog_message_processing ) );
         dialog.show();
         card.storeCard( mKiteSDKEnvironment, new PayPalCardVaultStorageListener()
         {
@@ -750,14 +750,14 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
 
       if ( mKiteSDKEnvironment.getPayPalEnvironment().equals( PayPalConfiguration.ENVIRONMENT_SANDBOX ) )
         {
-        builder.setTitle( "Payment Source (Sandbox)" );
+        builder.setTitle( R.string.title_payment_source_sandbox );
         }
       else
         {
-        builder.setTitle( "Payment Source" );
+        builder.setTitle( R.string.title_payment_source );
         }
 
-      builder.setItems( new String[]{ "Pay with new card", "Pay with card ending " + lastUsedCard.getLastFour() }, new DialogInterface.OnClickListener()
+      builder.setItems( new String[]{ getString( R.string.alert_dialog_item_pay_with_new_card ), getString( R.string.alert_dialog_item_pay_with_existing_card_format_string, lastUsedCard.getLastFour() ) }, new DialogInterface.OnClickListener()
       {
       @Override
       public void onClick( DialogInterface dialogInterface, int itemIndex )
@@ -826,8 +826,8 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
     {
     final ProgressDialog dialog = new ProgressDialog( this );
     dialog.setCancelable( false );
-    dialog.setTitle( "Processing" );
-    dialog.setMessage( "One moment" );
+    dialog.setTitle( R.string.alert_dialog_title_processing );
+    dialog.setMessage( getString( R.string.alert_dialog_message_processing ) );
     dialog.show();
 
     SingleCurrencyAmount totalCost = mOrderPricing.getTotalCost().getDefaultAmountWithFallback();
@@ -877,8 +877,8 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
     dialog.setIndeterminate( false );
     dialog.setProgressStyle( ProgressDialog.STYLE_HORIZONTAL );
     dialog.setProgressNumberFormat( null );   // Don't display the "N/100" text
-    dialog.setTitle( "Processing" );
-    dialog.setMessage( "One moment..." );
+    dialog.setTitle( R.string.alert_dialog_title_processing );
+    dialog.setMessage( getString( R.string.alert_dialog_message_processing ) );
     dialog.setMax( 100 );
     dialog.show();
 

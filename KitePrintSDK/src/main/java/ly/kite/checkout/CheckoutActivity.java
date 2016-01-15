@@ -313,9 +313,14 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
   private void showErrorDialog( String title, String message )
     {
     AlertDialog.Builder builder = new AlertDialog.Builder( this );
-    builder.setTitle( title ).setMessage( message ).setPositiveButton( "OK", null );
+    builder.setTitle( title ).setMessage( message ).setPositiveButton( R.string.OK, null );
     Dialog d = builder.create();
     d.show();
+    }
+
+  private void showErrorDialog( int titleResourceId, int messageResourceId )
+    {
+    showErrorDialog( getString( titleResourceId ), getString( messageResourceId ) );
     }
 
   public void onProceedButtonClicked()
@@ -325,19 +330,19 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
 
     if ( mPrintOrder.getShippingAddress() == null )
       {
-      showErrorDialog( "Invalid Delivery Address", "Please choose a delivery address" );
+      showErrorDialog( R.string.alert_dialog_title_invalid_delivery_address, R.string.alert_dialog_message_invalid_delivery_address );
       return;
       }
 
     if ( !isEmailValid( email ) )
       {
-      showErrorDialog( "Invalid Email Address", "Please enter a valid email address" );
+      showErrorDialog( R.string.alert_dialog_title_invalid_email_address, R.string.alert_dialog_message_invalid_email_address );
       return;
       }
 
     if ( KiteSDK.getInstance( this ).getRequestPhoneNumber() && phone.length() < 5 )
       {
-      showErrorDialog( "Invalid Phone Number", "Please enter a valid phone number" );
+      showErrorDialog( R.string.alert_dialog_title_invalid_phone_number, R.string.alert_dialog_message_invalid_phone_number );
       return;
       }
 
@@ -367,7 +372,7 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
 
     // Make sure we have up-to-date products before we proceed
 
-    final ProgressDialog progress = ProgressDialog.show( this, null, "Loading" );
+    final ProgressDialog progress = ProgressDialog.show( this, null, getString( R.string.Loading ) );
 
     CatalogueLoader.getInstance( this ).requestCatalogue(
             MAXIMUM_PRODUCT_AGE_MILLIS,
@@ -395,14 +400,14 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
   private void showRetryTemplateSyncDialog( Exception error )
     {
     AlertDialog.Builder builder = new AlertDialog.Builder( CheckoutActivity.this );
-    builder.setTitle( "Oops" );
+    builder.setTitle( R.string.alert_dialog_title_oops );
     builder.setMessage( error.getLocalizedMessage() );
     if ( error instanceof UnknownHostException || error instanceof SocketTimeoutException )
       {
-      builder.setMessage( "Please check your internet connectivity and then try again" );
+      builder.setMessage( R.string.alert_dialog_message_connectivity );
       }
 
-    builder.setPositiveButton( "Retry", new DialogInterface.OnClickListener()
+    builder.setPositiveButton( R.string.Retry, new DialogInterface.OnClickListener()
     {
     @Override
     public void onClick( DialogInterface dialogInterface, int i )
@@ -410,7 +415,7 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
       onProceedButtonClicked();
       }
     } );
-    builder.setNegativeButton( "Cancel", null );
+    builder.setNegativeButton( R.string.Cancel, null );
     builder.show();
     }
 

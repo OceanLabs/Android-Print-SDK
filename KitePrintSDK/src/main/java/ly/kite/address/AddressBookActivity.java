@@ -230,7 +230,7 @@ public class AddressBookActivity extends AKiteActivity
         final Address address = (Address) mAddressBookListAdaptor.getItem( (int) position );
         AlertDialog.Builder builder = new AlertDialog.Builder( AddressBookActivity.this );
         builder.setTitle( address.toString() )
-                .setItems( new String[]{ "Edit Address", "Delete Address" }, new DialogInterface.OnClickListener()
+                .setItems( new String[]{ getString( R.string.button_text_edit_address ), getString( R.string.button_text_delete_address ) }, new DialogInterface.OnClickListener()
                 {
                 @Override
                 public void onClick( DialogInterface dialogInterface, int i )

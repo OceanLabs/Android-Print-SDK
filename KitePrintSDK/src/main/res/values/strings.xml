@@ -21,6 +21,10 @@
     <string name="title_choose_product_group">Print Shop</string>
     <string name="title_create_phone_case">Create Phone Case</string>
     <string name="title_image_source">Choose Photos</string>
+    <string name="title_payment_sandbox">Payment (Sandbox)</string>
+    <string name="title_payment">Payment</string>
+    <string name="title_payment_source_sandbox">Payment Source (Sandbox)</string>
+    <string name="title_payment_source">Payment Source</string>
 
     <string name="drawer_open">Drawer open</string>
     <string name="drawer_closed">Drawer closed</string>
@@ -75,8 +79,37 @@
     <string name="alert_dialog_message_no_line1">Please fill in Line 1 of the address</string>
     <string name="alert_dialog_message_no_postal_code">Please fill in your Postcode / ZIP code</string>
 
+    <string name="alert_dialog_title_invalid_delivery_address">Invalid Delivery Address</string>
+    <string name="alert_dialog_message_invalid_delivery_address">Please choose a delivery address</string>
+
+    <string name="alert_dialog_title_invalid_email_address">Invalid Email Address</string>
+    <string name="alert_dialog_message_invalid_email_address">Please enter a valid email address</string>
+
+    <string name="alert_dialog_title_invalid_phone_number">Invalid Phone Number</string>
+    <string name="alert_dialog_message_invalid_phone_number">Please enter a valid phone number</string>
+
+    <string name="alert_dialog_message_connectivity">Please check your internet connectivity and then try again</string>
+
+    <string name="alert_dialog_title_processing">@string/Processing_</string>
+    <string name="alert_dialog_message_processing">One moment &#8230;</string>
+
+    <string name="alert_dialog_message_uploading_images">Uploading images</string>
+
+    <string name="alert_dialog_message_no_payment_id">No payment id found in proof of payment</string>
+    <string name="alert_dialog_message_no_proof_of_payment">No proof of payment found in payment confirmation</string>
+    <string name="alert_dialog_message_no_paypal_confirmation">No payment confirmation received from PayPal</string>
+    <string name="alert_dialog_message_card_expired">Sorry it looks like that card has expired. Please try again.</string>
+    <string name="alert_dialog_message_card_not_recognised">Sorry we couldn't recognise your card. Please try again manually entering your card details if necessary.</string>
+
+    <string name="alert_dialog_item_pay_with_new_card">Pay with new card</string>
+    <string name="alert_dialog_item_pay_with_existing_card_format_string">Pay with card ending %1$s</string>
+
+    <string name="button_symbol_increment">+</string>
+    <string name="button_symbol_decrement">-</string>
+
     <string name="Cancel">Cancel</string>
     <string name="Continue_Shopping">Continue Shopping</string>
+    <string name="Country">Country</string>
     <string name="Description">Description</string>
     <string name="Details">Details</string>
     <string name="Done">Done</string>
@@ -84,8 +117,8 @@
     <string name="Flip">Flip</string>
     <string name="Free">Free</string>
     <string name="add_more">Add More</string>
-    <string name="print_these">Print these</string>
-    <string name="Processing_">Processing &#8230;</string>
+    <string name="Loading">Loading</string>
+    <string name="No_Results">No Results</string>
     <string name="OK">OK</string>
     <string name="Order_Id">Order Id</string>
     <string name="ORDER_ID">ORDER ID</string>
@@ -94,10 +127,13 @@
     <string name="Pay">Pay</string>
     <string name="Payment_Id">Payment Id</string>
     <string name="PAYMENT_ID">PAYMENT ID</string>
+    <string name="print_these">Print these</string>
+    <string name="Processing_">Processing &#8230;</string>
     <string name="Promotional_Discount">Promotional Discount</string>
     <string name="Rotate">Rotate</string>
     <string name="Quantity">Quantity</string>
     <string name="Retry">Retry</string>
+    <string name="Save">Save</string>
     <string name="Select_Image">Select Image</string>
     <string name="Shipping">Shipping</string>
     <string name="Size">Size</string>
@@ -152,6 +188,13 @@
 
     <string name="edit_image_title">Edit image</string>
 
+    <string name="address_hint_text_recipient">Name</string>
+    <string name="address_hint_text_line_1">Line 1</string>
+    <string name="address_hint_text_line_2">Line 2</string>
+    <string name="address_hint_text_city">City</string>
+    <string name="address_hint_text_county_or_state">County / State</string>
+    <string name="address_hint_text_postcode_or_zip">Postcode / ZIP code</string>
+
     <string name="shipping_delivery_address_button_text">Choose Delivery Address</string>
     <string name="shipping_email_hint_text">Email</string>
     <string name="shipping_phone_hint_text">Phone number</string>
@@ -160,6 +203,15 @@
     <string name="shipping_proceed_button_text">Next</string>
 
     <string name="address_search_prompt">Search for addresses above</string>
+
+    <string name="address_search_hint_format_string">Search %1$s</string>
+    <string name="address_search_empty_results">Search for addresses above</string>
+    <string name="address_search_dialog_title">Fetching Details</string>
+    <string name="address_search_dialog_message">Fetching address details</string>
+    <string name="address_search_no_results">No results found</string>
+
+    <string name="button_text_edit_address">Edit Address</string>
+    <string name="button_text_delete_address">Delete Address</string>
 
     <string name="address_edit_proceed_button_text">Save</string>
 

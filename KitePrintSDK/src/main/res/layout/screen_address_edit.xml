@@ -20,7 +20,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:hint="Name"
+                android:hint="@string/address_hint_text_recipient"
                 android:inputType="textCapWords"
                 android:lines="1"
                 android:maxLines="1"
@@ -31,7 +31,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:hint="Line 1"
+                android:hint="@string/address_hint_text_line_1"
                 android:inputType="textCapWords"
                 android:lines="1"
                 android:maxLines="1"
@@ -42,7 +42,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:hint="Line 2"
+                android:hint="@string/address_hint_text_line_2"
                 android:inputType="textCapWords"
                 android:lines="1"
                 android:maxLines="1"
@@ -53,7 +53,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:hint="City"
+                android:hint="@string/address_hint_text_city"
                 android:inputType="textCapWords"
                 android:lines="1"
                 android:maxLines="1"
@@ -64,7 +64,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:hint="County / State"
+                android:hint="@string/address_hint_text_county_or_state"
                 android:inputType="textCapWords"
                 android:lines="1"
                 android:maxLines="1"
@@ -75,7 +75,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:hint="Postcode / ZIP code"
+                android:hint="@string/address_hint_text_postcode_or_zip"
                 android:inputType="textCapCharacters"
                 android:lines="1"
                 android:maxLines="1"
@@ -86,7 +86,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:text="Country"/>
+                android:text="@string/Country"/>
 
             <!-- Placeholder that is the same as save button to allow scrollview to show country spinner -->
             <ly.kite.widget.CustomTypefaceButton
@@ -94,7 +94,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:background="#57ae2e"
-                android:text="Save"
+                android:text="@string/Save"
                 android:textColor="@android:color/white"
                 android:visibility="invisible"/>
 

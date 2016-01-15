@@ -115,7 +115,7 @@ public class AddressSearchActivity extends Activity implements ActionBar.OnNavig
     public boolean onNavigationItemSelected(int i, long position) {
         Country selectedCountry = Country.values()[ (int)position ];
         if (searchView != null) {
-            searchView.setQueryHint("Search " + selectedCountry.displayName());
+            searchView.setQueryHint( getString( R.string.address_search_hint_format_string, selectedCountry.displayName() ) );
         }
         return true;
     }
@@ -134,7 +134,7 @@ public class AddressSearchActivity extends Activity implements ActionBar.OnNavig
         getMenuInflater().inflate(R.menu.address_search, menu);
         searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         Country c = Country.values()[ getActionBar().getSelectedNavigationIndex() ];
-        searchView.setQueryHint("Search " + c.displayName());
+        searchView.setQueryHint( getString( R.string.address_search_hint_format_string, c.displayName() ) );
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -156,7 +156,7 @@ public class AddressSearchActivity extends Activity implements ActionBar.OnNavig
                     adapter.setAddresses(null);
 
                     TextView empty = (TextView) findViewById(R.id.empty);
-                    empty.setText("Search for addresses above");
+                    empty.setText( R.string.address_search_empty_results );
                     return true;
                 }
 
@@ -187,8 +187,8 @@ public class AddressSearchActivity extends Activity implements ActionBar.OnNavig
         }
 
         final ProgressDialog dialog = new ProgressDialog(this);
-        dialog.setTitle("Fetching Details");
-        dialog.setMessage("Fetching address details");
+        dialog.setTitle( R.string.address_search_dialog_title );
+        dialog.setMessage( getString( R.string.address_search_dialog_message ) );
         dialog.show();
 
         dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
@@ -229,7 +229,7 @@ public class AddressSearchActivity extends Activity implements ActionBar.OnNavig
     public void onMultipleChoices(AddressSearchRequest req, List<Address> options) {
         if (options.size() == 0) {
             TextView empty = (TextView) findViewById(R.id.empty);
-            empty.setText("No results found");
+            empty.setText( R.string.address_search_no_results );
         }
         ListView addressSearchResults = (ListView) findViewById(R.id.list_view_address_search_results);
         AddressSearchResultAdapter adapter = (AddressSearchResultAdapter) addressSearchResults.getAdapter();
@@ -244,7 +244,7 @@ public class AddressSearchActivity extends Activity implements ActionBar.OnNavig
 
     public void onError(AddressSearchRequest req, Exception error) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Oops!").setMessage(error.getMessage()).setPositiveButton("OK", null);
+        builder.setTitle( R.string.alert_dialog_title_oops ).setMessage(error.getMessage()).setPositiveButton( R.string.OK, null);
         Dialog d = builder.create();
         d.show();
     }
