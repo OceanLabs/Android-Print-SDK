@@ -118,9 +118,8 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
   ////////// Member Variable(s) //////////
 
   private PrintOrder           mPrintOrder;
-//  private String               mAPIKey;
-//  private KiteSDK.Environment  mEnvironment;
 
+  private Button               mAddressPickerButton;
   private EditText             mEmailEditText;
   private EditText             mPhoneEditText;
   private Button               mProceedButton;
@@ -160,9 +159,10 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
 
     setContentView( R.layout.screen_checkout );
 
-    mEmailEditText = (EditText)findViewById( R.id.email_edit_text );
-    mPhoneEditText = (EditText)findViewById( R.id.phone_edit_text );
-    mProceedButton = (Button)findViewById( R.id.proceed_overlay_button );
+    mAddressPickerButton = (Button)findViewById( R.id.address_picker_button );
+    mEmailEditText       = (EditText)findViewById( R.id.email_edit_text );
+    mPhoneEditText       = (EditText)findViewById( R.id.phone_edit_text );
+    mProceedButton       = (Button)findViewById( R.id.proceed_overlay_button );
 
 
     // Restore email address and phone number from history
@@ -183,19 +183,32 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
       }
 
 
-    String apiKey = getIntent().getStringExtra( EXTRA_PRINT_API_KEY );
-    String envString = getIntent().getStringExtra( EXTRA_PRINT_ENVIRONMENT );
+    //String apiKey = getIntent().getStringExtra( EXTRA_PRINT_API_KEY );
+    //String envString = getIntent().getStringExtra( EXTRA_PRINT_ENVIRONMENT );
 
-    mPrintOrder = (PrintOrder) getIntent().getParcelableExtra( EXTRA_PRINT_ORDER );
 
-    if ( apiKey == null )
+    // If we have saved an updated print order, then use that. Otherwise get it
+    // from the original intent.
+
+    if ( savedInstanceState != null )
       {
-      apiKey = KiteSDK.getInstance( this ).getAPIKey();
-      if ( apiKey == null )
-        {
-        throw new IllegalArgumentException( "You must specify an API key string extra in the intent used to start the CheckoutActivity or with KitePrintSDK.initialize" );
-        }
+      mPrintOrder = savedInstanceState.getParcelable( EXTRA_PRINT_ORDER );
       }
+
+    if ( mPrintOrder == null )
+      {
+      mPrintOrder = (PrintOrder)getIntent().getParcelableExtra( EXTRA_PRINT_ORDER );
+      }
+
+
+//    if ( apiKey == null )
+//      {
+//      apiKey = KiteSDK.getInstance( this ).getAPIKey();
+//      if ( apiKey == null )
+//        {
+//        throw new IllegalArgumentException( "You must specify an API key string extra in the intent used to start the CheckoutActivity or with KitePrintSDK.initialize" );
+//        }
+//      }
 
     if ( mPrintOrder == null )
       {
@@ -208,6 +221,18 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
       }
 
 
+    // See if we already have a shipping address
+
+    Address shippingAddress = mPrintOrder.getShippingAddress();
+
+    if ( shippingAddress != null )
+      {
+      // Update the button text, but don't request prices since
+      // we're going to do it anyway.
+      onUpdateShippingAddress( shippingAddress, false );
+      }
+
+
     mProceedButton.setText( R.string.shipping_proceed_button_text );
 
 
@@ -215,9 +240,9 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
     getWindow().setSoftInputMode( WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN );
 
 
-    // Request the pricing now - even though we don't use it on this screen, and it may change once
+    // Request the pricing now. Note that we don't actually use it on this screen, and it may change once
     // a shipping address has been chosen (if the shipping address country is different to the default
-    // locale). This is to minimise any delay to the user.
+    // locale). However, if the pricing doesn't change then we save time when going to the payment screen.
     PricingAgent.getInstance().requestPricing( this, mPrintOrder, NO_PROMO_CODE_YET, DONT_BOTHER_RETURNING_PRICES );
 
 
@@ -237,14 +262,6 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
     super.onSaveInstanceState( outState );
 
     outState.putParcelable( EXTRA_PRINT_ORDER, mPrintOrder );
-    }
-
-  @Override
-  protected void onRestoreInstanceState( Bundle savedInstanceState )
-    {
-    super.onRestoreInstanceState( savedInstanceState );
-
-    mPrintOrder  = savedInstanceState.getParcelable( EXTRA_PRINT_ORDER );
     }
 
   @Override
@@ -277,14 +294,11 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
       {
       if ( resultCode == RESULT_OK )
         {
-        Address address = data.getParcelableExtra( AddressBookActivity.EXTRA_ADDRESS );
-        mPrintOrder.setShippingAddress( address );
-        Button chooseAddressButton = (Button) findViewById( R.id.address_picker_button );
-        chooseAddressButton.setText( address.toString() );
+        Address shippingAddress = data.getParcelableExtra( AddressBookActivity.EXTRA_ADDRESS );
 
-        // Re-request the pricing if the shipping address changes, just in case the shipping
-        // price changes.
-        PricingAgent.getInstance().requestPricing( this, mPrintOrder, NO_PROMO_CODE_YET, DONT_BOTHER_RETURNING_PRICES );
+        mPrintOrder.setShippingAddress( shippingAddress );
+
+        onUpdateShippingAddress( shippingAddress, true );
         }
       }
     }
@@ -303,6 +317,21 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
 
 
   ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when the shipping address changes.
+   *
+   *****************************************************/
+  private void onUpdateShippingAddress( Address shippingAddress, boolean requestPrices )
+    {
+    mAddressPickerButton.setText( shippingAddress.toString() );
+
+    // Re-request the pricing if the shipping address changes, just in case the shipping
+    // price changes.
+    if ( requestPrices ) PricingAgent.getInstance().requestPricing( this, mPrintOrder, NO_PROMO_CODE_YET, DONT_BOTHER_RETURNING_PRICES );
+    }
+
 
   public void onChooseDeliveryAddressButtonClicked( View view )
     {

@@ -56,6 +56,8 @@ import org.json.JSONTokener;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.util.Locale;
 import java.util.Map;
 
 import ly.kite.BuildConfig;
@@ -291,6 +293,15 @@ public class HTTPJSONRequest
       request.setHeader( "X-App-Package", mContext.getPackageName() );
       request.setHeader( "X-App-Name", mContext.getString( mContext.getApplicationInfo().labelRes ) );
       request.setHeader( "X-Person-UUID", kiteSDK.getUniqueUserId() );
+
+
+      String languageCode = Locale.getDefault().getLanguage();
+
+      if ( languageCode != null && ( ! languageCode.trim().equals( "" ) ) )
+        {
+        request.setHeader( "Accept-Language", languageCode );
+        }
+
 
       String bodyJSONString = null;
 

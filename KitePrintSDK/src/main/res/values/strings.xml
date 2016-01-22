@@ -54,7 +54,7 @@
     <string name="alert_dialog_message_no_product">There was an error: no product was found. Please check the log for more details.</string>
 
     <string name="alert_dialog_title_error_retrieving_products">Error Retrieving Products</string>
-    <string name="alert_dialog_message_error_retrieving_products">There was an error retrieving the products. Please check your internet connection, or the log for more details</string>
+    <string name="alert_dialog_message_error_retrieving_products">There was an error retrieving the products. Please check your internet connection, or the log for more details.</string>
 
     <string name="alert_dialog_title_no_product_group_label">No Product Group</string>
     <string name="alert_dialog_message_no_product_group_label">There was an error: no product group was found. Please check the log for more details.</string>

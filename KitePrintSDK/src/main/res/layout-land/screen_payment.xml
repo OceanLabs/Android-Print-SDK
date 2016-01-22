@@ -1,0 +1,153 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <LinearLayout
+        android:layout_gravity="top"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
+
+
+        <!-- Progress banner -->
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/progress_banner_landscape_height"
+            android:orientation="horizontal">
+            <View
+                android:layout_width="0dp"
+                android:layout_weight="0.25"
+                android:layout_height="fill_parent"
+                android:background="@color/progress_banner_left_filler"/>
+            <ImageView
+                android:id="@+id/checkout_progress_indicator"
+                android:layout_width="0dp"
+                android:layout_weight="0.50"
+                android:layout_height="fill_parent"
+                android:src="@drawable/checkout_progress_indicator2"/>
+            <View
+                android:layout_width="0dp"
+                android:layout_weight="0.25"
+                android:layout_height="fill_parent"
+                android:background="@color/progress_banner_right_filler"/>
+        </LinearLayout>
+
+
+        <!-- Two-column content -->
+
+        <LinearLayout
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:orientation="horizontal">
+
+            <!-- Left column -->
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="0.5"
+                android:layout_height="fill_parent"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin">
+
+                <ListView
+                    android:id="@+id/order_summary_list_view"
+                    android:layout_gravity="top"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.0"
+                    android:divider="@android:color/transparent"
+                    android:dividerHeight="0dp"/>
+
+                <ly.kite.widget.CustomTypefaceButton
+                    android:id="@+id/credit_card_button"
+                    android:layout_marginTop="30dp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.0"
+                    android:background="#8eae4d"
+                    android:onClick="onCreditCardButtonClicked"
+                    android:text="@string/payment_credit_card_button_text"
+                    android:textColor="@android:color/white"/>
+
+            </LinearLayout>
+
+
+            <!-- Right column -->
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_weight="0.5"
+                android:layout_height="fill_parent"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin">
+
+                <LinearLayout
+                    android:layout_gravity="bottom"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:id="@+id/container_promo_code"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.0"
+                        android:orientation="horizontal">
+                        <ly.kite.widget.CustomTypefaceEditText
+                            android:id="@+id/promo_edit_text"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1.0"
+                            android:hint="@string/payment_promo_hint"
+                            android:textColor="@color/payment_promo_code_text_default"
+                            android:singleLine="true"
+                            android:imeOptions="actionDone"/>
+                        <ly.kite.widget.CustomTypefaceButton
+                            android:id="@+id/promo_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.0"
+                            android:background="@null"
+                            android:enabled="false"
+                            android:onClick="onPromoButtonClicked"
+                            android:text="@string/payment_promo_button_text_apply"
+                            android:textColor="@color/apply_button"/>
+                    </LinearLayout>
+
+
+                    <ly.kite.widget.CustomTypefaceButton
+                        android:id="@+id/paypal_button"
+                        android:layout_marginTop="10dp"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.0"
+                        android:background="#286db3"
+                        android:onClick="onPayPalButtonClicked"
+                        android:text="@string/payment_paypal_button_text"
+                        android:textColor="@android:color/white"/>
+
+                </LinearLayout>
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+
+</FrameLayout>

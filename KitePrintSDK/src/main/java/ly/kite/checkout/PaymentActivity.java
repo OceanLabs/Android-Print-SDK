@@ -268,6 +268,10 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
       }
 
 
+    // TODO: We need to create a retained Fragment to encapsulate the payment processing. This
+    // TODO: is to deal with a configuration (orientation) change.
+
+
     // Get the pricing information
     requestPrices();
 

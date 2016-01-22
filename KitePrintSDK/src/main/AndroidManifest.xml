@@ -30,45 +30,35 @@
         <activity
             android:name=".checkout.CheckoutActivity"
             android:label="@string/title_activity_checkout"
-            android:theme="@style/Theme.KiteSDK.Checkout"
-            android:screenOrientation="portrait"/>
+            android:theme="@style/Theme.KiteSDK.Checkout"/>
 
 
-        <!-- TODO: When we unlock this activity from portrait only, we need to make sure we don't
-             TODO: kill it when changing orientation, as we might be in the middle of performing
-             TODO: a credit card authorisation.
-             -->
         <activity
             android:name=".checkout.PaymentActivity"
             android:label="@string/title_activity_payment"
             android:theme="@style/Theme.KiteSDK.Payment"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustPan"/>
 
 
         <activity
             android:name=".checkout.OrderReceiptActivity"
             android:label="@string/title_activity_order_receipt"
-            android:screenOrientation="portrait"
             android:theme="@style/Theme.KiteSDK.OrderReceipt"/>
 
         <activity
             android:name=".address.AddressBookActivity"
             android:label="@string/title_activity_address_book"
-            android:screenOrientation="portrait"
             android:theme="@style/Theme.KiteSDK.AddressBook"/>
 
         <activity
             android:name=".address.AddressEditActivity"
             android:label="@string/title_activity_address_edit"
-            android:screenOrientation="portrait"
             android:theme="@style/Theme.KiteSDK.AddressEdit"
             android:windowSoftInputMode="adjustResize"/>
 
         <activity
             android:name=".address.AddressSearchActivity"
             android:label="@string/title_activity_address_search"
-            android:screenOrientation="portrait"
             android:theme="@style/Theme.KiteSDK.AddressSearch"/>
 
 

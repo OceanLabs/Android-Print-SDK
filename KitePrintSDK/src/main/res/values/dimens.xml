@@ -86,4 +86,6 @@
 
     <dimen name="payment_item_text_size">16sp</dimen>
 
+    <dimen name="progress_banner_landscape_height">40dp</dimen>
+
 </resources>
