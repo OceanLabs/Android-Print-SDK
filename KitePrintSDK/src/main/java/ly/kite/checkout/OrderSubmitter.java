@@ -40,6 +40,7 @@ package ly.kite.checkout;
 ///// Import(s) /////
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Handler;
 import android.os.SystemClock;
 
@@ -72,7 +73,7 @@ public class OrderSubmitter implements PrintOrder.ISubmissionProgressListener, O
 
   ////////// Member Variable(s) //////////
 
-  private Activity           mActivity;
+  private Context            mContext;
   private PrintOrder         mOrder;
   private IProgressListener  mProgressListener;
 
@@ -90,9 +91,9 @@ public class OrderSubmitter implements PrintOrder.ISubmissionProgressListener, O
 
   ////////// Constructor(s) //////////
 
-  public OrderSubmitter( Activity activity, PrintOrder order, IProgressListener progressListener )
+  public OrderSubmitter( Context context, PrintOrder order, IProgressListener progressListener )
     {
-    mActivity         = activity;
+    mContext          = context;
     mOrder            = order;
     mProgressListener = progressListener;
 
@@ -218,7 +219,7 @@ public class OrderSubmitter implements PrintOrder.ISubmissionProgressListener, O
 
     if ( mOrder.getReceipt() == null )
       {
-      mOrder.submitForPrinting( mActivity, this );
+      mOrder.submitForPrinting( mContext, this );
       }
     else
       {
@@ -249,7 +250,7 @@ public class OrderSubmitter implements PrintOrder.ISubmissionProgressListener, O
    *****************************************************/
   private void pollOrderStatus()
     {
-    new OrderStatusRequest( mActivity, this ).start( mOrder.getReceipt() );
+    new OrderStatusRequest( mContext, this ).start( mOrder.getReceipt() );
     }
 
 
