@@ -538,20 +538,20 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
           }
 
 
-        // Only use products for which we have a defined user journey
+        // Add the product to the catalogue. If it doesn't have a supported
+        // user journey, then we add it has a discarded product.
 
-        if ( ! ProductCreationActivity.isSupported( userJourneyType ) )
+        if ( ProductCreationActivity.isSupported( userJourneyType ) )
+          {
+          catalogue.addProduct( groupLabel, groupImageURL, product );
+
+          }
+        else
           {
           Log.i( LOG_TAG, "-- Product discarded: no user journey --" );
 
-          continue next_product;
+          catalogue.addDiscardedProduct( product );
           }
-
-
-        // Add the product to the catalogue
-        catalogue.addProduct( groupLabel, groupImageURL, product );
-
-        if ( DISPLAY_PRE_CACHING_INFO ) catalogue.displayPreCachingInfo();
         }
       catch ( Exception exception )
         {
@@ -560,6 +560,9 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
         // Ignore individual errors - try and get as many products as possible
         }
       }
+
+
+    if ( DISPLAY_PRE_CACHING_INFO ) catalogue.displayPreCachingInfo();
     }
 
 
