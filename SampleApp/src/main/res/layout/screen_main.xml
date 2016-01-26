@@ -57,20 +57,28 @@
             android:layout_gravity="center"
             android:orientation="vertical">
             <Button
-                android:id="@+id/button_gallery"
+                android:id="@+id/print_local_button"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:onClick="onGalleryButtonClicked"
-                android:text="@string/main_activity_gallery_button_text"
-                android:textSize="@dimen/control_label_text_size"/>
+                android:text="@string/main_print_local_button_text"
+                android:textSize="@dimen/control_label_text_size"
+                android:onClick="onPrintLocalButtonClicked"/>
             <Button
-                android:id="@+id/button_remote"
+                android:id="@+id/print_remote_button"
                 android:layout_marginTop="@dimen/main_button_spacing"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:onClick="onRemoteButtonClicked"
-                android:text="@string/main_activity_remote_button_text"
-                android:textSize="@dimen/control_label_text_size"/>
+                android:text="@string/main_print_remote_button_text"
+                android:textSize="@dimen/control_label_text_size"
+                android:onClick="onPrintRemoteButtonClicked"/>
+            <Button
+                android:id="@+id/print_postcard_button"
+                android:layout_marginTop="@dimen/main_button_spacing"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/main_print_postcard_button_text"
+                android:textSize="@dimen/control_label_text_size"
+                android:onClick="onPrintPostcardButtonClicked"/>
         </LinearLayout>
 
     </FrameLayout>

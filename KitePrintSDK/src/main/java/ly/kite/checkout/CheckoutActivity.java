@@ -130,14 +130,27 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
 
   ////////// Static Method(s) //////////
 
-  static public void start( Activity activity, PrintOrder printOrder, int requestCode )
+  /*****************************************************
+   *
+   * Starts the activity for result.
+   *
+   *****************************************************/
+  static public void startForResult( Activity activity, PrintOrder order, int requestCode )
     {
     Intent intent = new Intent( activity, CheckoutActivity.class );
 
-    intent.putExtra( EXTRA_PRINT_ORDER, (Parcelable) printOrder );
+    intent.putExtra( EXTRA_PRINT_ORDER, (Parcelable) order );
 
     activity.startActivityForResult( intent, requestCode );
     }
+
+
+  @Deprecated
+  static public void start( Activity activity, PrintOrder order, int requestCode )
+    {
+    startForResult( activity, order, requestCode );
+    }
+
 
   ////////// Constructor(s) //////////
 

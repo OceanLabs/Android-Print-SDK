@@ -112,7 +112,7 @@ public class OrderStatusRequest implements HTTPJSONRequest.HTTPJSONRequestListen
   @Override
   public void onSuccess( int httpStatusCode, JSONObject jsonObject )
     {
-    Log.d( LOG_TAG, "onSuccess( httpStatusCode = " + httpStatusCode + ", jsonObject = " + jsonObject.toString() + " )" );
+    //Log.d( LOG_TAG, "onSuccess( httpStatusCode = " + httpStatusCode + ", jsonObject = " + jsonObject.toString() + " )" );
 
     if ( httpStatusCode >= 200 && httpStatusCode <= 299 )
       {
