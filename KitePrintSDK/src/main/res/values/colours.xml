@@ -58,4 +58,13 @@
     <color name="payment_promo_code_text_default">@android:color/black</color>
     <color name="payment_promo_code_text_error">#ffff0000</color>
 
+    <color name="progress_banner_left_filler">@android:color/transparent</color>
+    <color name="progress_banner_right_filler">@android:color/transparent</color>
+
+    <color name="success_banner_left_filler">@android:color/white</color>
+    <color name="success_banner_right_filler">@android:color/white</color>
+
+    <color name="failure_banner_left_filler">@android:color/white</color>
+    <color name="failure_banner_right_filler">@android:color/white</color>
+
 </resources>

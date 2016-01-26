@@ -123,14 +123,16 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
     {
     switch ( type )
       {
-      case CIRCLE:        return ( true );
-      case FRAME:         break;
-      case GREETINGCARD:  break;
-      case PHONE_CASE:    return ( true );
-      case PHOTOBOOK:     break;
-      case POSTCARD:      break;
-      case POSTER:        break;
-      case RECTANGLE:     return ( true );
+      case CIRCLE:
+      case GREETINGCARD:
+      case PHONE_CASE:
+      case RECTANGLE:
+        return ( true );
+
+      case FRAME:
+      case PHOTOBOOK:
+      case POSTCARD:
+      case POSTER:
       }
 
     return ( false );
@@ -503,15 +505,13 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
     switch ( mProduct.getUserJourneyType() )
       {
       case CIRCLE:
+      case RECTANGLE:
+      case GREETINGCARD:
         addFragment( ImageSelectionFragment.newInstance( mProduct ), ImageSelectionFragment.TAG );
         break;
 
       case PHONE_CASE:
         addFragment( PhoneCaseFragment.newInstance( mProduct ), PhoneCaseFragment.TAG );
-        break;
-
-      case RECTANGLE:
-        addFragment( ImageSelectionFragment.newInstance( mProduct ), ImageSelectionFragment.TAG );
         break;
       }
 

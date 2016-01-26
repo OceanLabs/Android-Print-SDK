@@ -125,6 +125,8 @@ public class ImageAgent
    *****************************************************/
   static public String toSafeString( String sourceString )
     {
+    if ( sourceString == null ) return ( "" );
+
     int length = sourceString.length();
 
     char[] targetCharArray = new char[ length ];

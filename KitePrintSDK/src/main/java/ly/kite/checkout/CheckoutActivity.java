@@ -118,9 +118,8 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
   ////////// Member Variable(s) //////////
 
   private PrintOrder           mPrintOrder;
-//  private String               mAPIKey;
-//  private KiteSDK.Environment  mEnvironment;
 
+  private Button               mAddressPickerButton;
   private EditText             mEmailEditText;
   private EditText             mPhoneEditText;
   private Button               mProceedButton;
@@ -131,14 +130,27 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
 
   ////////// Static Method(s) //////////
 
-  static public void start( Activity activity, PrintOrder printOrder, int requestCode )
+  /*****************************************************
+   *
+   * Starts the activity for result.
+   *
+   *****************************************************/
+  static public void startForResult( Activity activity, PrintOrder order, int requestCode )
     {
     Intent intent = new Intent( activity, CheckoutActivity.class );
 
-    intent.putExtra( EXTRA_PRINT_ORDER, (Parcelable) printOrder );
+    intent.putExtra( EXTRA_PRINT_ORDER, (Parcelable) order );
 
     activity.startActivityForResult( intent, requestCode );
     }
+
+
+  @Deprecated
+  static public void start( Activity activity, PrintOrder order, int requestCode )
+    {
+    startForResult( activity, order, requestCode );
+    }
+
 
   ////////// Constructor(s) //////////
 
@@ -160,9 +172,10 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
 
     setContentView( R.layout.screen_checkout );
 
-    mEmailEditText = (EditText)findViewById( R.id.email_edit_text );
-    mPhoneEditText = (EditText)findViewById( R.id.phone_edit_text );
-    mProceedButton = (Button)findViewById( R.id.proceed_overlay_button );
+    mAddressPickerButton = (Button)findViewById( R.id.address_picker_button );
+    mEmailEditText       = (EditText)findViewById( R.id.email_edit_text );
+    mPhoneEditText       = (EditText)findViewById( R.id.phone_edit_text );
+    mProceedButton       = (Button)findViewById( R.id.proceed_overlay_button );
 
 
     // Restore email address and phone number from history
@@ -183,19 +196,32 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
       }
 
 
-    String apiKey = getIntent().getStringExtra( EXTRA_PRINT_API_KEY );
-    String envString = getIntent().getStringExtra( EXTRA_PRINT_ENVIRONMENT );
+    //String apiKey = getIntent().getStringExtra( EXTRA_PRINT_API_KEY );
+    //String envString = getIntent().getStringExtra( EXTRA_PRINT_ENVIRONMENT );
 
-    mPrintOrder = (PrintOrder) getIntent().getParcelableExtra( EXTRA_PRINT_ORDER );
 
-    if ( apiKey == null )
+    // If we have saved an updated print order, then use that. Otherwise get it
+    // from the original intent.
+
+    if ( savedInstanceState != null )
       {
-      apiKey = KiteSDK.getInstance( this ).getAPIKey();
-      if ( apiKey == null )
-        {
-        throw new IllegalArgumentException( "You must specify an API key string extra in the intent used to start the CheckoutActivity or with KitePrintSDK.initialize" );
-        }
+      mPrintOrder = savedInstanceState.getParcelable( EXTRA_PRINT_ORDER );
       }
+
+    if ( mPrintOrder == null )
+      {
+      mPrintOrder = (PrintOrder)getIntent().getParcelableExtra( EXTRA_PRINT_ORDER );
+      }
+
+
+//    if ( apiKey == null )
+//      {
+//      apiKey = KiteSDK.getInstance( this ).getAPIKey();
+//      if ( apiKey == null )
+//        {
+//        throw new IllegalArgumentException( "You must specify an API key string extra in the intent used to start the CheckoutActivity or with KitePrintSDK.initialize" );
+//        }
+//      }
 
     if ( mPrintOrder == null )
       {
@@ -208,6 +234,18 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
       }
 
 
+    // See if we already have a shipping address
+
+    Address shippingAddress = mPrintOrder.getShippingAddress();
+
+    if ( shippingAddress != null )
+      {
+      // Update the button text, but don't request prices since
+      // we're going to do it anyway.
+      onUpdateShippingAddress( shippingAddress, false );
+      }
+
+
     mProceedButton.setText( R.string.shipping_proceed_button_text );
 
 
@@ -215,9 +253,9 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
     getWindow().setSoftInputMode( WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN );
 
 
-    // Request the pricing now - even though we don't use it on this screen, and it may change once
+    // Request the pricing now. Note that we don't actually use it on this screen, and it may change once
     // a shipping address has been chosen (if the shipping address country is different to the default
-    // locale). This is to minimise any delay to the user.
+    // locale). However, if the pricing doesn't change then we save time when going to the payment screen.
     PricingAgent.getInstance().requestPricing( this, mPrintOrder, NO_PROMO_CODE_YET, DONT_BOTHER_RETURNING_PRICES );
 
 
@@ -237,14 +275,6 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
     super.onSaveInstanceState( outState );
 
     outState.putParcelable( EXTRA_PRINT_ORDER, mPrintOrder );
-    }
-
-  @Override
-  protected void onRestoreInstanceState( Bundle savedInstanceState )
-    {
-    super.onRestoreInstanceState( savedInstanceState );
-
-    mPrintOrder  = savedInstanceState.getParcelable( EXTRA_PRINT_ORDER );
     }
 
   @Override
@@ -277,14 +307,11 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
       {
       if ( resultCode == RESULT_OK )
         {
-        Address address = data.getParcelableExtra( AddressBookActivity.EXTRA_ADDRESS );
-        mPrintOrder.setShippingAddress( address );
-        Button chooseAddressButton = (Button) findViewById( R.id.address_picker_button );
-        chooseAddressButton.setText( address.toString() );
+        Address shippingAddress = data.getParcelableExtra( AddressBookActivity.EXTRA_ADDRESS );
 
-        // Re-request the pricing if the shipping address changes, just in case the shipping
-        // price changes.
-        PricingAgent.getInstance().requestPricing( this, mPrintOrder, NO_PROMO_CODE_YET, DONT_BOTHER_RETURNING_PRICES );
+        mPrintOrder.setShippingAddress( shippingAddress );
+
+        onUpdateShippingAddress( shippingAddress, true );
         }
       }
     }
@@ -304,6 +331,21 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
 
   ////////// Method(s) //////////
 
+  /*****************************************************
+   *
+   * Called when the shipping address changes.
+   *
+   *****************************************************/
+  private void onUpdateShippingAddress( Address shippingAddress, boolean requestPrices )
+    {
+    mAddressPickerButton.setText( shippingAddress.toString() );
+
+    // Re-request the pricing if the shipping address changes, just in case the shipping
+    // price changes.
+    if ( requestPrices ) PricingAgent.getInstance().requestPricing( this, mPrintOrder, NO_PROMO_CODE_YET, DONT_BOTHER_RETURNING_PRICES );
+    }
+
+
   public void onChooseDeliveryAddressButtonClicked( View view )
     {
     Intent i = new Intent( this, AddressBookActivity.class );
@@ -313,9 +355,14 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
   private void showErrorDialog( String title, String message )
     {
     AlertDialog.Builder builder = new AlertDialog.Builder( this );
-    builder.setTitle( title ).setMessage( message ).setPositiveButton( "OK", null );
+    builder.setTitle( title ).setMessage( message ).setPositiveButton( R.string.OK, null );
     Dialog d = builder.create();
     d.show();
+    }
+
+  private void showErrorDialog( int titleResourceId, int messageResourceId )
+    {
+    showErrorDialog( getString( titleResourceId ), getString( messageResourceId ) );
     }
 
   public void onProceedButtonClicked()
@@ -325,19 +372,19 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
 
     if ( mPrintOrder.getShippingAddress() == null )
       {
-      showErrorDialog( "Invalid Delivery Address", "Please choose a delivery address" );
+      showErrorDialog( R.string.alert_dialog_title_invalid_delivery_address, R.string.alert_dialog_message_invalid_delivery_address );
       return;
       }
 
     if ( !isEmailValid( email ) )
       {
-      showErrorDialog( "Invalid Email Address", "Please enter a valid email address" );
+      showErrorDialog( R.string.alert_dialog_title_invalid_email_address, R.string.alert_dialog_message_invalid_email_address );
       return;
       }
 
     if ( KiteSDK.getInstance( this ).getRequestPhoneNumber() && phone.length() < 5 )
       {
-      showErrorDialog( "Invalid Phone Number", "Please enter a valid phone number" );
+      showErrorDialog( R.string.alert_dialog_title_invalid_phone_number, R.string.alert_dialog_message_invalid_phone_number );
       return;
       }
 
@@ -367,7 +414,7 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
 
     // Make sure we have up-to-date products before we proceed
 
-    final ProgressDialog progress = ProgressDialog.show( this, null, "Loading" );
+    final ProgressDialog progress = ProgressDialog.show( this, null, getString( R.string.Loading ) );
 
     CatalogueLoader.getInstance( this ).requestCatalogue(
             MAXIMUM_PRODUCT_AGE_MILLIS,
@@ -395,14 +442,14 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
   private void showRetryTemplateSyncDialog( Exception error )
     {
     AlertDialog.Builder builder = new AlertDialog.Builder( CheckoutActivity.this );
-    builder.setTitle( "Oops" );
+    builder.setTitle( R.string.alert_dialog_title_oops );
     builder.setMessage( error.getLocalizedMessage() );
     if ( error instanceof UnknownHostException || error instanceof SocketTimeoutException )
       {
-      builder.setMessage( "Please check your internet connectivity and then try again" );
+      builder.setMessage( R.string.alert_dialog_message_connectivity );
       }
 
-    builder.setPositiveButton( "Retry", new DialogInterface.OnClickListener()
+    builder.setPositiveButton( R.string.Retry, new DialogInterface.OnClickListener()
     {
     @Override
     public void onClick( DialogInterface dialogInterface, int i )
@@ -410,7 +457,7 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
       onProceedButtonClicked();
       }
     } );
-    builder.setNegativeButton( "Cancel", null );
+    builder.setNegativeButton( R.string.Cancel, null );
     builder.show();
     }
 

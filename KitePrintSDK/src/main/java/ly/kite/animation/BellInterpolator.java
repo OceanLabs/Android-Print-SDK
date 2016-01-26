@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.widget;
+package ly.kite.animation;
 
 
 ///// Import(s) /////

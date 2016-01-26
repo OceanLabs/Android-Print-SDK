@@ -1,0 +1,122 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:background="@android:color/white">
+
+
+    <!-- Success banner -->
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.0"
+        android:orientation="horizontal">
+        <View
+            android:layout_width="0dp"
+            android:layout_weight="0.3"
+            android:layout_height="fill_parent"
+            android:background="@color/success_banner_left_filler"/>
+        <ly.kite.widget.VerticallyScalingImageView
+            android:id="@+id/image_view_order_receipt_header"
+            android:layout_width="0dp"
+            android:layout_weight="0.4"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:src="@drawable/receipt_success"/>
+        <View
+            android:layout_width="0dp"
+            android:layout_weight="0.3"
+            android:layout_height="fill_parent"
+            android:background="@color/success_banner_right_filler"/>
+    </LinearLayout>
+
+
+    <!-- Two-column content -->
+
+    <LinearLayout
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.0"
+        android:orientation="horizontal">
+
+
+        <!-- Left column -->
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="fill_parent"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:orientation="vertical">
+
+            <ListView
+                android:id="@+id/order_summary_list_view"
+                android:layout_gravity="top"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.0"
+                android:divider="@android:color/transparent"
+                android:dividerHeight="0dp"/>
+
+            <include layout="@layout/include_powered_by"/>
+
+        </LinearLayout>
+
+
+        <!-- Right column -->
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="fill_parent"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin">
+
+            <LinearLayout
+                android:layout_gravity="bottom"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <ly.kite.widget.CustomTypefaceTextView
+                    android:id="@+id/text_view_order_id_description"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.0"
+                    android:padding="10dp"
+                    android:text="@string/Order_Id"
+                    android:textColor="#515151"
+                    android:textSize="16sp"/>
+
+                <ly.kite.widget.CustomTypefaceTextView
+                    android:id="@+id/order_id_text_view"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.0"
+                    android:padding="10dp"
+                    android:textColor="#515151"
+                    android:textSize="16sp"
+                    android:textStyle="bold"/>
+
+                <ly.kite.widget.CustomTypefaceButton
+                    android:id="@+id/continue_shopping_button"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#ffe34b"
+                    android:onClick="onContinueShoppingClicked"
+                    android:text="@string/Continue_Shopping"
+                    android:textColor="#515151"/>
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+
+</LinearLayout>

@@ -126,17 +126,21 @@ public class FileDownloader
 
     // Retrieve the image
 
-    InputStream inputStream  = null;
+    InputStream      inputStream      = null;
     FileOutputStream fileOutputStream = null;
 
-    // use temp file as initial download target as elsewhere i.e. ImageAgent.requestImage we
+    // Use temp file as initial download target as elsewhere i.e. ImageAgent.requestImage we
     // assume file existence means completed download and this download likely occurs on a different
     // thread.
+
     File tempTargetFile = null;
+
     try
       {
       Log.i( LOG_TAG, "Downloading: " + sourceURL.toString() + " -> " + targetFile.getPath() );
+
       tempTargetFile = File.createTempFile( targetFile.getName(), ".tmp" );
+
       inputStream = sourceURL.openStream();
 
       fileOutputStream = new FileOutputStream( tempTargetFile );
@@ -160,13 +164,18 @@ public class FileDownloader
       Log.e( LOG_TAG, "Unable to download to file", ioe );
 
       // Clean up any damaged files
+
       if ( tempTargetFile != null ) tempTargetFile.delete();
+
       targetFile.delete();
+
 
       return ( ioe );
       }
     finally
       {
+      // Make sure the streams are closed before we finish
+
       if ( fileOutputStream != null )
         {
         try
@@ -215,9 +224,9 @@ public class FileDownloader
    *****************************************************/
   public void clearPendingRequests()
     {
-    for ( DownloaderTask task : mInProgressDownloadTasks.values() )
+    for ( DownloaderTask downloaderTask : mInProgressDownloadTasks.values() )
       {
-      task.cancel( true );
+      downloaderTask.cancel( true );
       }
 
     mInProgressDownloadTasks.clear();
@@ -235,15 +244,19 @@ public class FileDownloader
     {
     if ( mInProgressDownloadTasks.get( sourceURL ) == null )
       {
-      // No in-progress task downloading this file, lets kick one off
-      DownloaderTask task = new DownloaderTask( sourceURL, targetDirectory, targetFile, forceDownload, callback );
-      mInProgressDownloadTasks.put( sourceURL, task );
-      task.executeOnExecutor( mThreadPoolExecutor );
+      // No in-progress task downloading this file, let's kick one off
+
+      DownloaderTask downloaderTask = new DownloaderTask( sourceURL, targetDirectory, targetFile, forceDownload, callback );
+
+      mInProgressDownloadTasks.put( sourceURL, downloaderTask );
+
+      downloaderTask.executeOnExecutor( mThreadPoolExecutor );
       }
     else
       {
       // A download is already in progress for this file so just add to the list of callbacks that
       // will be notified upon completion
+
       mInProgressDownloadTasks.get( sourceURL ).addCallback( callback );
       }
     }
@@ -290,6 +303,7 @@ public class FileDownloader
     private final boolean          mForceDownload;
     private final List<ICallback>  mCallbacks;
 
+
     public DownloaderTask( URL sourceURL, File targetDirectory, File targetFile, boolean forceDownload, ICallback callback )
       {
       mSourceURL       = sourceURL;
@@ -301,9 +315,12 @@ public class FileDownloader
       mCallbacks.add( callback );
       }
 
-    public void addCallback( ICallback callback ) {
-        mCallbacks.add( callback );
-    }
+
+    public void addCallback( ICallback callback )
+      {
+      mCallbacks.add( callback );
+      }
+
 
     /*****************************************************
      *

@@ -42,7 +42,7 @@
             android:background="@android:color/white"
             android:gravity="center"
             android:textColor="@color/review_and_crop_quantity_highlight"
-            android:text="-"
+            android:text="@string/button_symbol_decrement"
             android:textSize="@dimen/review_and_crop_plus_minus_text_size"/>
 
         <ly.kite.widget.CustomTypefaceButton
@@ -56,7 +56,7 @@
             android:background="@android:color/white"
             android:gravity="center"
             android:textColor="@color/review_and_crop_quantity_highlight"
-            android:text="+"
+            android:text="@string/button_symbol_increment"
             android:textSize="@dimen/review_and_crop_plus_minus_text_size"/>
 
         <ly.kite.widget.CustomTypefaceButton

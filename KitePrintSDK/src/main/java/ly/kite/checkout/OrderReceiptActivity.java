@@ -158,8 +158,8 @@ public class OrderReceiptActivity extends Activity
     dialog.setCancelable( false );
     dialog.setIndeterminate( false );
     dialog.setProgressStyle( ProgressDialog.STYLE_HORIZONTAL );
-    dialog.setTitle( "Processing" );
-    dialog.setMessage( "One moment..." );
+    dialog.setTitle( R.string.alert_dialog_title_processing );
+    dialog.setMessage( getString( R.string.alert_dialog_message_processing ) );
     dialog.setMax( 100 );
     dialog.show();
 
@@ -172,7 +172,7 @@ public class OrderReceiptActivity extends Activity
         throw new AssertionError( "Should be calling back on the main thread" );
       dialog.setProgress( primaryProgressPercent );
       dialog.setSecondaryProgress( secondaryProgressPercent );
-      dialog.setMessage( "Uploading images" );
+      dialog.setMessage( getString( R.string.alert_dialog_message_uploading_images ) );
       }
 
     @Override
@@ -200,7 +200,7 @@ public class OrderReceiptActivity extends Activity
   private void showErrorDialog( String message )
     {
     AlertDialog.Builder builder = new AlertDialog.Builder( this );
-    builder.setTitle( "Oops!" ).setMessage( message ).setPositiveButton( "OK", null );
+    builder.setTitle( R.string.alert_dialog_title_oops ).setMessage( message ).setPositiveButton( R.string.OK, null );
     Dialog d = builder.create();
     d.show();
     }

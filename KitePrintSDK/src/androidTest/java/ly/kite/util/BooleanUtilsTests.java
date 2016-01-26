@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * BooleanHelperTest.java
+ * BooleanHelperTests.java
  *
  *
  * Modified MIT License
@@ -52,12 +52,12 @@ import java.util.ArrayList;
  * This class tests the boolean helper class.
  *
  *****************************************************/
-public class BooleanHelperTest extends TestCase
+public class BooleanUtilsTests extends TestCase
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "BooleanHelperTest";
+  private static final String  LOG_TAG = "BooleanHelperTests";
 
 
   ////////// Static Variable(s) //////////

@@ -73,14 +73,27 @@ public abstract class PrintJob implements Parcelable {
     return new PrintsPrintJob( product, null, assets );
     }
 
-    public static PrintJob createPostcardPrintJob(Product product, HashMap<String,String> optionMap, Asset frontImageAsset, String message, Address address) {
-        return new PostcardPrintJob(product, optionMap, frontImageAsset, message, address);
+
+  public static PrintJob createPostcardPrintJob( Product product, HashMap<String, String> optionMap, Asset frontImageAsset, String message, Address address )
+    {
+    return new PostcardPrintJob( product, optionMap, frontImageAsset, null, message, address );
     }
 
   public static PrintJob createPostcardPrintJob( Product product, Asset frontImageAsset, String message, Address address )
     {
-    return new PostcardPrintJob( product, null, frontImageAsset, message, address );
+    return new PostcardPrintJob( product, frontImageAsset, message, address );
     }
+
+  public static PrintJob createPostcardPrintJob( Product product, Asset frontImageAsset, Asset backImageAsset )
+    {
+    return new PostcardPrintJob( product, frontImageAsset, backImageAsset );
+    }
+
+  public static PrintJob createPostcardPrintJob( Product product, Asset frontImageAsset, Asset backImageAsset, String message, Address address )
+    {
+    return new PostcardPrintJob( product, frontImageAsset, backImageAsset, message, address );
+    }
+
 
   public Product getProduct()
     {

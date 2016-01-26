@@ -43,6 +43,7 @@ import java.math.BigDecimal;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -93,7 +94,8 @@ import ly.kite.catalogue.SingleCurrencyAmount;
  *
  *****************************************************/
 public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
-                                                              TextView.OnEditorActionListener
+                                                              TextView.OnEditorActionListener,
+                                                              OrderSubmitter.IProgressListener
   {
   ////////// Static Constant(s) //////////
 
@@ -138,6 +140,9 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
   private boolean mPromoActionClearsCode;
   private String mLastSubmittedPromoCode;
   private boolean mLastPriceRetrievalSucceeded;
+
+  private OrderSubmissionFragment  mOrderSubmissionFragment;
+  private ProgressDialog           mOrderSubmissionProgressDialog;
 
 
   ////////// Static Initialiser(s) //////////
@@ -260,12 +265,19 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
 
     if ( mKiteSDKEnvironment.getPayPalEnvironment().equals( PayPalConfiguration.ENVIRONMENT_SANDBOX ) )
       {
-      setTitle( "Payment (Sandbox)" );
+      setTitle( R.string.title_payment_sandbox );
       }
     else
       {
-      setTitle( "Payment" );
+      setTitle( R.string.title_payment );
       }
+
+
+    // See if there is a retained order submission fragment already running
+
+    FragmentManager fragmentManager = getFragmentManager();
+
+    mOrderSubmissionFragment = (OrderSubmissionFragment)fragmentManager.findFragmentByTag( OrderSubmissionFragment.TAG );
 
 
     // Get the pricing information
@@ -316,12 +328,12 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
                 }
               else
                 {
-                showErrorDialog( "No payment id found in proof of payment" );
+                showErrorDialog( R.string.alert_dialog_message_no_payment_id );
                 }
               }
             else
               {
-              showErrorDialog( "No proof of payment found in payment confirmation" );
+              showErrorDialog( R.string.alert_dialog_message_no_proof_of_payment );
               }
 
             }
@@ -332,7 +344,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
           }
         else
           {
-          showErrorDialog( "No payment confirmation received from PayPal" );
+          showErrorDialog( R.string.alert_dialog_message_no_paypal_confirmation );
           }
         }
       }
@@ -344,7 +356,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
 
         if ( !scanResult.isExpiryValid() )
           {
-          showErrorDialog( "Sorry it looks like that card has expired. Please try again." );
+          showErrorDialog( R.string.alert_dialog_message_card_expired );
 
           return;
           }
@@ -358,15 +370,15 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
 
         if ( card.getCardType() == PayPalCard.CardType.UNSUPPORTED )
           {
-          showErrorDialog( "Sorry we couldn't recognize your card. Please try again manually entering your card details if necessary." );
+          showErrorDialog( R.string.alert_dialog_message_card_not_recognised );
 
           return;
           }
 
         final ProgressDialog dialog = new ProgressDialog( this );
         dialog.setCancelable( false );
-        dialog.setTitle( "Processing" );
-        dialog.setMessage( "One moment" );
+        dialog.setTitle( R.string.alert_dialog_title_processing );
+        dialog.setMessage( getString( R.string.alert_dialog_message_processing ) );
         dialog.show();
         card.storeCard( mKiteSDKEnvironment, new PayPalCardVaultStorageListener()
         {
@@ -488,6 +500,179 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
     // will be hidden.
 
     return ( false );
+    }
+
+
+  ////////// OrderSubmitter.IProgressListener Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called with order submission progress.
+   *
+   *****************************************************/
+  @Override
+  public void onOrderUpdate( PrintOrder order, OrderState state, int primaryProgressPercent, int secondaryProgressPercent )
+    {
+    // Get or create the progress dialog
+    ProgressDialog progressDialog = getProgressDialog();
+
+
+    // Determine what the order state is, and set the progress dialog accordingly
+
+    switch ( state )
+      {
+      case UPLOADING:
+        progressDialog.setIndeterminate( false );
+        //mProgressDialog.setProgressPercentFormat( NumberFormat.getPercentInstance() );
+        progressDialog.setProgress( primaryProgressPercent );
+        progressDialog.setSecondaryProgress( secondaryProgressPercent );
+        progressDialog.setMessage( getString( R.string.order_submission_message_uploading ) );
+        break;
+
+      // The progress bar becomes indeterminate once the images have been uploaded
+
+      case POSTED:
+        progressDialog.setIndeterminate( true );
+        progressDialog.setProgressPercentFormat( null );
+        progressDialog.setMessage( getString( R.string.order_submission_message_posted ) );
+        break;
+
+      case RECEIVED:
+        progressDialog.setIndeterminate( true );
+        progressDialog.setProgressPercentFormat( null );
+        progressDialog.setMessage( getString( R.string.order_submission_message_received ) );
+        break;
+
+      case ACCEPTED:
+        progressDialog.setIndeterminate( true );
+        progressDialog.setProgressPercentFormat( null );
+        progressDialog.setMessage( getString( R.string.order_submission_message_accepted ) );
+        break;
+
+      // We shouldn't get any other states, but if we do - display its name
+      default:
+        progressDialog.setIndeterminate( true );
+        progressDialog.setProgressPercentFormat( null );
+        progressDialog.setMessage( state.name() );
+        break;
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Called with order submission progress.
+   *
+   *****************************************************/
+  @Override
+  public void onOrderComplete( PrintOrder order, OrderState state )
+    {
+    // Determine what the order state is, and set the progress dialog accordingly
+
+    switch ( state )
+      {
+      case VALIDATED:
+
+        // Fall through
+
+      case PROCESSED:
+
+        // Fall through
+
+      default:
+
+        break;
+
+      case CANCELLED:
+
+        cleanUpAfterOrderSubmission();
+
+        displayModalDialog
+                (
+                        R.string.alert_dialog_title_order_cancelled,
+                        R.string.alert_dialog_message_order_cancelled,
+                        R.string.OK,
+                        null,
+                        NO_BUTTON,
+                        null
+                );
+
+        return;
+      }
+
+
+    // For anything that's not cancelled - go to the receipt screen
+    onOrderSuccess( order );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when there is an error submitting the order.
+   *
+   *****************************************************/
+  public void onOrderError( PrintOrder order, Exception exception )
+    {
+    cleanUpAfterOrderSubmission();
+
+    displayModalDialog
+            (
+                    R.string.alert_dialog_title_order_submission_error,
+                    exception.getMessage(),
+                    R.string.OK,
+                    null,
+                    NO_BUTTON,
+                    null
+            );
+
+    // We no longer seem to have a route into the receipt screen on error
+    //OrderReceiptActivity.startForResult( PaymentActivity.this, order, REQUEST_CODE_RECEIPT );
+    }
+
+
+  @Override
+  public void onOrderDuplicate( PrintOrder order, String originalOrderId )
+    {
+    // We do need to replace any order id with the original one
+    order.setReceipt( originalOrderId );
+
+
+    // A duplicate is treated in the same way as a successful submission, since it means
+    // the proof of payment has already been accepted and processed.
+
+    onOrderSuccess( order );
+    }
+
+
+  @Override
+  public void onOrderTimeout( PrintOrder order )
+    {
+    cleanUpAfterOrderSubmission();
+
+    displayModalDialog
+            (
+                    R.string.alert_dialog_title_order_timeout,
+                    R.string.alert_dialog_message_order_timeout,
+                    R.string.order_timeout_button_wait,
+                    new SubmitOrderRunnable(),
+                    R.string.order_timeout_button_give_up,
+                    null
+            );
+    }
+
+
+  /*****************************************************
+   *
+   * Proceeds to the receipt screen.
+   *
+   *****************************************************/
+  private void onOrderSuccess( PrintOrder order )
+    {
+    cleanUpAfterOrderSubmission();
+
+    Analytics.getInstance( PaymentActivity.this ).trackOrderSubmission( order );
+
+    OrderReceiptActivity.startForResult( PaymentActivity.this, order, REQUEST_CODE_RECEIPT );
     }
 
 
@@ -750,14 +935,14 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
 
       if ( mKiteSDKEnvironment.getPayPalEnvironment().equals( PayPalConfiguration.ENVIRONMENT_SANDBOX ) )
         {
-        builder.setTitle( "Payment Source (Sandbox)" );
+        builder.setTitle( R.string.title_payment_source_sandbox );
         }
       else
         {
-        builder.setTitle( "Payment Source" );
+        builder.setTitle( R.string.title_payment_source );
         }
 
-      builder.setItems( new String[]{ "Pay with new card", "Pay with card ending " + lastUsedCard.getLastFour() }, new DialogInterface.OnClickListener()
+      builder.setItems( new String[]{ getString( R.string.alert_dialog_item_pay_with_new_card ), getString( R.string.alert_dialog_item_pay_with_existing_card_format_string, lastUsedCard.getLastFour() ) }, new DialogInterface.OnClickListener()
       {
       @Override
       public void onClick( DialogInterface dialogInterface, int itemIndex )
@@ -826,8 +1011,8 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
     {
     final ProgressDialog dialog = new ProgressDialog( this );
     dialog.setCancelable( false );
-    dialog.setTitle( "Processing" );
-    dialog.setMessage( "One moment" );
+    dialog.setTitle( R.string.alert_dialog_title_processing );
+    dialog.setMessage( getString( R.string.alert_dialog_message_processing ) );
     dialog.show();
 
     SingleCurrencyAmount totalCost = mOrderPricing.getTotalCost().getDefaultAmountWithFallback();
@@ -869,31 +1054,86 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
     }
 
 
+  /*****************************************************
+   *
+   * Submits the order for processing.
+   *
+   *****************************************************/
   public void submitOrder()
     {
-    // TODO: Use a dialog fragment
-    final ProgressDialog dialog = new ProgressDialog( this );
-    dialog.setCancelable( false );
-    dialog.setIndeterminate( false );
-    dialog.setProgressStyle( ProgressDialog.STYLE_HORIZONTAL );
-    dialog.setProgressNumberFormat( null );   // Don't display the "N/100" text
-    dialog.setTitle( "Processing" );
-    dialog.setMessage( "One moment..." );
-    dialog.setMax( 100 );
-    dialog.show();
+    // Submit the order using the order submission fragment
 
+    mOrderSubmissionFragment = new OrderSubmissionFragment();
 
-    // Submit the print order
+    getFragmentManager()
+      .beginTransaction()
+        .add( mOrderSubmissionFragment, OrderSubmissionFragment.TAG )
+      .commit();
 
-    OrderProgressListener orderProgressListener = new OrderProgressListener( dialog );
-
-    OrderSubmitter orderSubmitter = new OrderSubmitter( this, mOrder, orderProgressListener );
-
-    orderSubmitter.submit();
+    mOrderSubmissionFragment.submit( getApplicationContext(), mOrder );
     }
 
 
-    ////////// Inner Class(es) //////////
+  /*****************************************************
+   *
+   * Returns a progress dialog.
+   *
+   *****************************************************/
+  private ProgressDialog getProgressDialog()
+    {
+    // If there isn't already a progress dialog - create one now
+
+    if ( mOrderSubmissionProgressDialog == null )
+      {
+      mOrderSubmissionProgressDialog = new ProgressDialog( this );
+
+      mOrderSubmissionProgressDialog.setCancelable( false );
+      mOrderSubmissionProgressDialog.setIndeterminate( false );
+      mOrderSubmissionProgressDialog.setProgressStyle( ProgressDialog.STYLE_HORIZONTAL );
+      mOrderSubmissionProgressDialog.setProgressNumberFormat( null );   // Don't display the "N/100" text
+      mOrderSubmissionProgressDialog.setTitle( R.string.alert_dialog_title_processing );
+      mOrderSubmissionProgressDialog.setMessage( getString( R.string.alert_dialog_message_processing ) );
+      mOrderSubmissionProgressDialog.setMax( 100 );
+      }
+
+    if ( ! mOrderSubmissionProgressDialog.isShowing() ) mOrderSubmissionProgressDialog.show();
+
+    return ( mOrderSubmissionProgressDialog );
+    }
+
+
+  /*****************************************************
+   *
+   * Cleans up after order submission has finished.
+   *
+   *****************************************************/
+  private void cleanUpAfterOrderSubmission()
+    {
+    // Make sure the progress dialog is gone
+
+    if ( mOrderSubmissionProgressDialog != null )
+      {
+      mOrderSubmissionProgressDialog.dismiss();
+
+      mOrderSubmissionProgressDialog = null;
+      }
+
+
+    // Make sure the fragment is gone
+
+    if ( mOrderSubmissionFragment != null )
+      {
+      getFragmentManager()
+        .beginTransaction()
+          .remove( mOrderSubmissionFragment )
+        .commit();
+
+      mOrderSubmissionFragment = null;
+      }
+    }
+
+
+  ////////// Inner Class(es) //////////
 
   /*****************************************************
    *
@@ -943,192 +1183,6 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
       {
       requestPrices();
       }
-    }
-
-
-  /*****************************************************
-   *
-   * Listens to progress updates from order submission
-   * and polling.
-   *
-   *****************************************************/
-  private class OrderProgressListener implements OrderSubmitter.IProgressListener
-    {
-    private ProgressDialog  mProgressDialog;
-
-
-    OrderProgressListener( ProgressDialog progressDialog )
-      {
-      mProgressDialog = progressDialog;
-      }
-
-
-    /*****************************************************
-     *
-     * Called with order submission progress.
-     *
-     *****************************************************/
-    @Override
-    public void onOrderUpdate( PrintOrder order, OrderState state, int primaryProgressPercent, int secondaryProgressPercent )
-      {
-      // Determine what the order state is, and set the progress dialog accordingly
-
-      switch ( state )
-        {
-        case UPLOADING:
-          mProgressDialog.setIndeterminate( false );
-          //mProgressDialog.setProgressPercentFormat( NumberFormat.getPercentInstance() );
-          mProgressDialog.setProgress( primaryProgressPercent );
-          mProgressDialog.setSecondaryProgress( secondaryProgressPercent );
-          mProgressDialog.setMessage( getString( R.string.order_submission_message_uploading ) );
-          break;
-
-        // The progress bar becomes indeterminate once the images have been uploaded
-
-        case POSTED:
-          mProgressDialog.setIndeterminate( true );
-          mProgressDialog.setProgressPercentFormat( null );
-          mProgressDialog.setMessage( getString( R.string.order_submission_message_posted ) );
-          break;
-
-        case RECEIVED:
-          mProgressDialog.setIndeterminate( true );
-          mProgressDialog.setProgressPercentFormat( null );
-          mProgressDialog.setMessage( getString( R.string.order_submission_message_received ) );
-          break;
-
-        case ACCEPTED:
-          mProgressDialog.setIndeterminate( true );
-          mProgressDialog.setProgressPercentFormat( null );
-          mProgressDialog.setMessage( getString( R.string.order_submission_message_accepted ) );
-          break;
-
-        // We shouldn't get any other states, but if we do - display its name
-        default:
-          mProgressDialog.setIndeterminate( true );
-          mProgressDialog.setProgressPercentFormat( null );
-          mProgressDialog.setMessage( state.name() );
-          break;
-        }
-      }
-
-
-    /*****************************************************
-     *
-     * Called with order submission progress.
-     *
-     *****************************************************/
-    @Override
-    public void onOrderComplete( PrintOrder order, OrderState state )
-      {
-      // Determine what the order state is, and set the progress dialog accordingly
-
-      switch ( state )
-        {
-        case VALIDATED:
-
-          // Fall through
-
-        case PROCESSED:
-
-          // Fall through
-
-        default:
-
-          break;
-
-        case CANCELLED:
-
-          mProgressDialog.dismiss();
-
-          displayModalDialog
-                  (
-                          R.string.alert_dialog_title_order_cancelled,
-                          R.string.alert_dialog_message_order_cancelled,
-                          R.string.OK,
-                          null,
-                          NO_BUTTON,
-                          null
-                  );
-
-          return;
-        }
-
-
-      // For anything that's not cancelled - go to the receipt screen
-      onOrderSuccess( order );
-      }
-
-
-    /*****************************************************
-     *
-     * Called when there is an error submitting the order.
-     *
-     *****************************************************/
-    public void onOrderError( PrintOrder order, Exception exception )
-      {
-      mProgressDialog.dismiss();
-
-      displayModalDialog
-              (
-                      R.string.alert_dialog_title_order_submission_error,
-                      exception.getMessage(),
-                      R.string.OK,
-                      null,
-                      NO_BUTTON,
-                      null
-              );
-
-      // We no longer seem to have a route into the receipt screen on error
-      //OrderReceiptActivity.startForResult( PaymentActivity.this, order, REQUEST_CODE_RECEIPT );
-      }
-
-
-    @Override
-    public void onOrderDuplicate( PrintOrder order, String originalOrderId )
-      {
-      // We do need to replace any order id with the original one
-      order.setReceipt( originalOrderId );
-
-
-      // A duplicate is treated in the same way as a successful submission, since it means
-      // the proof of payment has already been accepted and processed.
-
-      onOrderSuccess( order );
-      }
-
-
-    @Override
-    public void onOrderTimeout( PrintOrder order )
-      {
-      mProgressDialog.dismiss();
-
-      displayModalDialog
-        (
-        R.string.alert_dialog_title_order_timeout,
-        R.string.alert_dialog_message_order_timeout,
-        R.string.order_timeout_button_wait,
-        new SubmitOrderRunnable(),
-        R.string.order_timeout_button_give_up,
-        null
-        );
-      }
-
-
-    /*****************************************************
-     *
-     * Proceeds to the receipt screen.
-     *
-     *****************************************************/
-    private void onOrderSuccess( PrintOrder order )
-      {
-      mProgressDialog.dismiss();
-
-      Analytics.getInstance( PaymentActivity.this ).trackOrderSubmission( order );
-
-      OrderReceiptActivity.startForResult( PaymentActivity.this, order, REQUEST_CODE_RECEIPT );
-      }
-
     }
 
 

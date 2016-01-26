@@ -50,7 +50,8 @@ import java.util.LinkedList;
 
 /*****************************************************
  *
- * This class implements a MRU-LRU image cache.
+ * This class implements a MRU-LRU image cache, and
+ * may be used as an intermediary image consumer.
  *
  *****************************************************/
 public class ImageCache implements IImageConsumer
@@ -101,6 +102,9 @@ public class ImageCache implements IImageConsumer
    *
    * Called when the image is being downloaded.
    *
+   * Passes the notification on to any consumer waiting for
+   * the image.
+   *
    *****************************************************/
   @Override
   public void onImageDownloading( Object key )
@@ -123,6 +127,9 @@ public class ImageCache implements IImageConsumer
    * in a child class if we want to do anything with
    * the image before caching it, but remember that it
    * is on the UI thread.
+   *
+   * Stores the image in the cache and then passes it on
+   * to any consumer waiting for it.
    *
    *****************************************************/
   @Override
@@ -148,11 +155,22 @@ public class ImageCache implements IImageConsumer
    *
    * Called when an image could not be loaded.
    *
+   * Passes the error on to any consumer waiting for the
+   * image.
+   *
    *****************************************************/
   @Override
   public void onImageUnavailable( Object key, Exception exception )
     {
-    // TODO
+    // Find the corresponding pending image
+
+    PendingImage pendingImage = mPendingTable.remove( key );
+
+    if ( pendingImage == null ) return;
+
+
+    // Notify the end consumer
+    pendingImage.consumer.onImageUnavailable( key, exception );
     }
 
 
@@ -160,7 +178,13 @@ public class ImageCache implements IImageConsumer
 
   /*****************************************************
    *
-   * Returns an image, if it is in the cache, null otherwise.
+   * Returns an image from the cache.
+   *
+   * @param key The key object used to identify the image, such
+   *            as a URL or URI, or string file path.
+   *
+   * @return The cached bitmap, if it is in the cache,
+   *         null otherwise.
    *
    *****************************************************/
   public Bitmap getImage( Object key )
@@ -186,6 +210,13 @@ public class ImageCache implements IImageConsumer
    *
    * Stores a pending request.
    *
+   * @param key The key object used to identify the image.
+   *
+   * @param consumer The end consumer that is waiting for the
+   *                 image. The cache will store the image once
+   *                 it has been loaded, and then pass it on
+   *                 to the consumer.
+   *
    *****************************************************/
   public void addPendingImage( Object key, IImageConsumer consumer )
     {
@@ -196,6 +227,12 @@ public class ImageCache implements IImageConsumer
   /*****************************************************
    *
    * Adds an image to the cache.
+   *
+   * @param key The key object used to identify the image.
+   *
+   * @param bitmap The bitmap to be stored. Note that the
+   *               bitmap is only added to the cache; any
+   *               consumer will not be notified.
    *
    *****************************************************/
   public void addImage( Object key, Bitmap bitmap )
@@ -234,7 +271,8 @@ public class ImageCache implements IImageConsumer
 
   /*****************************************************
    *
-   * Holds an image.
+   * Holds an image, together with its key and approximate
+   * size.
    *
    *****************************************************/
   private class Holder

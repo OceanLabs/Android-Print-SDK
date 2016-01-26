@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * SlidingOverlayFrame.java
+ * PagingDots.java
  *
  *
  * Copyright (c) 2012, JL

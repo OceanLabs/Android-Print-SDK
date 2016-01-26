@@ -1,0 +1,147 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.0">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+            <!-- Progress banner -->
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/progress_banner_landscape_height"
+                android:orientation="horizontal">
+                <View
+                    android:layout_width="0dp"
+                    android:layout_weight="0.25"
+                    android:layout_height="fill_parent"
+                    android:background="@color/progress_banner_left_filler"/>
+                <ImageView
+                    android:id="@+id/checkout_progress_indicator"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.50"
+                    android:layout_height="fill_parent"
+                    android:src="@drawable/checkout_progress_indicator1"/>
+                <View
+                    android:layout_width="0dp"
+                    android:layout_weight="0.25"
+                    android:layout_height="fill_parent"
+                    android:background="@color/progress_banner_right_filler"/>
+            </LinearLayout>
+
+
+            <!-- Two-column content -->
+
+            <LinearLayout
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <FrameLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="0.5"
+                    android:layout_height="fill_parent"
+                    android:paddingLeft="@dimen/activity_horizontal_margin"
+                    android:paddingRight="@dimen/activity_horizontal_margin">
+
+                    <ly.kite.widget.CustomTypefaceButton
+                        android:id="@+id/address_picker_button"
+                        android:layout_gravity="top"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/shipping_delivery_address_button_text"
+                        android:onClick="onChooseDeliveryAddressButtonClicked"/>
+
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="0.5"
+                    android:layout_height="fill_parent"
+                    android:paddingLeft="@dimen/activity_horizontal_margin"
+                    android:paddingRight="@dimen/activity_horizontal_margin">
+
+                    <LinearLayout
+                        android:layout_gravity="top"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <ly.kite.widget.CustomTypefaceEditText
+                            android:id="@+id/email_edit_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/shipping_email_hint_text"
+                            android:inputType="textEmailAddress"
+                            android:maxLines="1"
+                            android:singleLine="true"/>
+
+                        <ly.kite.widget.CustomTypefaceTextView
+                            android:layout_marginTop="@dimen/activity_vertical_margin"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/shipping_email_reason"/>
+
+                        <ly.kite.widget.CustomTypefaceEditText
+                            android:id="@+id/phone_edit_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/activity_vertical_margin"
+                            android:hint="@string/shipping_phone_hint_text"
+                            android:inputType="phone"
+                            android:maxLines="1"
+                            android:singleLine="true"/>
+
+                        <ly.kite.widget.CustomTypefaceTextView
+                            android:id="@+id/phone_require_reason"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/activity_vertical_margin"
+                            android:text="@string/shipping_phone_reason"/>
+
+                    </LinearLayout>
+
+                </FrameLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+    <!-- Footer: powered by / proceed button -->
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="fill_parent">
+            <include layout="@layout/include_powered_by"/>
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="fill_parent">
+            <include layout="@layout/include_proceed_overlay"/>
+        </FrameLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

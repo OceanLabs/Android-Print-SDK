@@ -76,6 +76,8 @@ public class Catalogue
   private HashMap<String,Product>       mIdProductTable;
   private HashMap<String,ProductGroup>  mProductIdGroupTable;
 
+  private HashMap<String,Product>       mIdDiscardedProductTable;
+
 
   ////////// Static Initialiser(s) //////////
 
@@ -87,10 +89,12 @@ public class Catalogue
 
   Catalogue()
     {
-    mNameGroupTable      = new HashMap<>();
-    mGroupList           = new ArrayList<>();
-    mIdProductTable      = new HashMap<>();
-    mProductIdGroupTable = new HashMap<>();
+    mNameGroupTable          = new HashMap<>();
+    mGroupList               = new ArrayList<>();
+    mIdProductTable          = new HashMap<>();
+    mProductIdGroupTable     = new HashMap<>();
+
+    mIdDiscardedProductTable = new HashMap<>();
     }
 
   Catalogue( JSONObject userConfigJSONObject )
@@ -148,6 +152,20 @@ public class Catalogue
 
   /*****************************************************
    *
+   * Adds a discarded product to the catalogue. This is
+   * used for references purposes to allow products to be
+   * ordered even if we don't have journeys for them, or
+   * they have been filtered out.
+   *
+   *****************************************************/
+  void addDiscardedProduct( Product product )
+    {
+    mIdDiscardedProductTable.put( product.getId(), product );
+    }
+
+
+  /*****************************************************
+   *
    * Returns the number of products in this catalogue.
    *
    *****************************************************/
@@ -191,7 +209,16 @@ public class Catalogue
    *****************************************************/
   public Product getProductById( String productId )
     {
-    return ( mIdProductTable.get( productId ) );
+    // Check in both tables for the product
+
+    Product product;
+
+    if ( ( product = mIdProductTable.get( productId ) ) != null )
+      {
+      return ( product );
+      }
+
+    return ( mIdDiscardedProductTable.get( productId ) );
     }
 
 
@@ -248,8 +275,13 @@ public class Catalogue
     Catalogue filteredCatalogue = new Catalogue( mUserConfigJSONObject );
 
 
-    // Go through the products ids we were supplied, and try to find products
-    // for them. Any products are added to our filtered catalogue.
+    // For each product corresponding to an id in the filter list - add it to
+    // the filtered catalogue.
+
+    // Note that currently we do not retain the remaining products as discarded
+    // products. It seems unlikely that we will want to filter products out and
+    // then order them anyway. We also don't look for filtered products in the
+    // original discarded list, because we can't display a UI for them anyway.
 
     if ( productIds != null )
       {

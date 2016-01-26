@@ -515,6 +515,17 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
   /*****************************************************
    *
+   * Displays an error dialog.
+   *
+   *****************************************************/
+  protected void showErrorDialog( int messageResourceId )
+    {
+    showErrorDialog( getString( messageResourceId ) );
+    }
+
+
+  /*****************************************************
+   *
    * Ensures any dialog is gone.
    *
    *****************************************************/
