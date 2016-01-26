@@ -125,7 +125,7 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
       {
       case CIRCLE:        return ( true );
       case FRAME:         break;
-      case GREETING_CARD: break;
+      case GREETINGCARD:  break;
       case PHONE_CASE:    return ( true );
       case PHOTOBOOK:     break;
       case POSTCARD:      break;

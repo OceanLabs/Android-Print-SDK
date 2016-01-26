@@ -54,7 +54,7 @@ public enum UserJourneyType
   {
   CIRCLE        ( R.drawable.filled_white_circle ),
   FRAME,
-  GREETING_CARD,
+  GREETINGCARD,
   PHONE_CASE    ( true ),
   PHOTOBOOK,
   POSTCARD,

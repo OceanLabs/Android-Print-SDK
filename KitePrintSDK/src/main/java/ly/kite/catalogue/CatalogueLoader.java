@@ -351,7 +351,9 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
   private static UserJourneyType parseUserJourneyType( String userJourneyTypeJSONString )
     {
     // At the moment, these match the names of the enum constants
-
+    if (userJourneyTypeJSONString.equals("GREETINGCARD")) {
+      userJourneyTypeJSONString = "RECTANGLE";
+    }
     try
       {
       return ( UserJourneyType.valueOf( userJourneyTypeJSONString ) );
@@ -571,7 +573,7 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
   // Constructor is private to ensure it is a singleton
   private CatalogueLoader( Context context )
     {
-    mContext      = context;
+    mContext      = context.getApplicationContext();
     mHandler      = new Handler();
     mConsumerList = new LinkedList<>();
     }
