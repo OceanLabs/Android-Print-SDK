@@ -32,8 +32,8 @@ android {
         applicationId "ly.kite.sample"
         minSdkVersion 15
         targetSdkVersion 22
-        versionCode 200
-        versionName '2.0'
+        versionCode 201
+        versionName '2.1'
     }
     sourceSets {
         main {
@@ -58,16 +58,12 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'] )
-
+    compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':KitePrintSDK')
-
     // Uncomment to include push messaging
     //compile project(':KitePrintSDK-GCM')
-
     // Uncomment to include Facebook as an image source
     //compile 'ly.kite:facebook-photo-picker:1.1.0'
-
     // Uncomment to include Crashlytics (Fabric) crash reporting
     //compile('com.crashlytics.sdk.android:crashlytics:2.4.0@aar') {
     //    transitive = true;
