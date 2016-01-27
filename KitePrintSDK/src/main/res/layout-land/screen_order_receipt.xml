@@ -110,7 +110,8 @@
                     android:background="#ffe34b"
                     android:onClick="onContinueShoppingClicked"
                     android:text="@string/Continue_Shopping"
-                    android:textColor="#515151"/>
+                    android:textColor="#515151"
+                    android:textSize="@dimen/control_label_text_size"/>
 
             </LinearLayout>
 

@@ -73,7 +73,8 @@
                     android:background="#8eae4d"
                     android:onClick="onCreditCardButtonClicked"
                     android:text="@string/payment_credit_card_button_text"
-                    android:textColor="@android:color/white"/>
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/control_label_text_size"/>
 
             </LinearLayout>
 
@@ -130,7 +131,8 @@
                         android:background="#286db3"
                         android:onClick="onPayPalButtonClicked"
                         android:text="@string/payment_paypal_button_text"
-                        android:textColor="@android:color/white"/>
+                        android:textColor="@android:color/white"
+                        android:textSize="@dimen/control_label_text_size"/>
 
                 </LinearLayout>
 

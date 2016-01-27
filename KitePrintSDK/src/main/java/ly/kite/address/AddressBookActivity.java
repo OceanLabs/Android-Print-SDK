@@ -317,7 +317,7 @@ public class AddressBookActivity extends AKiteActivity
       if ( convertView == null )
         {
         LayoutInflater li = (LayoutInflater) viewGroup.getContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-        v = li.inflate( R.layout.address_book_list_item, viewGroup, false );
+        v = li.inflate( R.layout.list_item_address_book, viewGroup, false );
         }
 
       Address a = (Address) getItem( position );

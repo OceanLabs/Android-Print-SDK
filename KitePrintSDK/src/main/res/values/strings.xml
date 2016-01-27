@@ -198,8 +198,8 @@
     <string name="shipping_delivery_address_button_text">Choose Delivery Address</string>
     <string name="shipping_email_hint_text">Email</string>
     <string name="shipping_phone_hint_text">Phone number</string>
-    <string name="shipping_email_reason">Your email is required so that we can send you order confirmation updates</string>
-    <string name="shipping_phone_reason">Your phone number is required in case there are any delivery issues</string>
+    <string name="shipping_email_reason">Your email is required so that we can send you order confirmation updates.</string>
+    <string name="shipping_phone_reason">Your phone number is required in case there are any delivery issues.</string>
     <string name="shipping_proceed_button_text">Next</string>
 
     <string name="address_search_prompt">Search for addresses above</string>

@@ -2,4 +2,7 @@
 
     <dimen name="product_overview_content_height">300dp</dimen>
 
+    <dimen name="image_source_border_size">20dp</dimen>
+    <dimen name="image_source_text_spacing">10dp</dimen>
+
 </resources>

@@ -5,8 +5,11 @@
     <dimen name="screen_vertical_margin">20dp</dimen>
     <dimen name="screen_vertical_half_margin">10dp</dimen>
 
-    <dimen name="control_label_text_size">20sp</dimen>
+    <dimen name="control_label_text_size">19sp</dimen>
     <dimen name="label_text_size">20sp</dimen>
+    <dimen name="explanation_text_size">18sp</dimen>
+    <dimen name="prompt_text_size">25sp</dimen>
+    <dimen name="empty_text_size">18sp</dimen>
 
     <dimen name="paging_dot_size">10dp</dimen>
 
@@ -53,6 +56,13 @@
 
     <dimen name="image_source_vertical_spacing">6dp</dimen>
 
-    <dimen name="prompt_text_size">25sp</dimen>
+    <dimen name="progress_banner_landscape_height">50dp</dimen>
+
+    <dimen name="delivery_address_button_text_size">18sp</dimen>
+
+    <dimen name="address_book_title_text_size">18sp</dimen>
+    <dimen name="address_book_detail_text_size">18sp</dimen>
+
+    <dimen name="payment_item_text_size">20sp</dimen>
 
 </resources>

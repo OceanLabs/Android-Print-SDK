@@ -4,7 +4,7 @@
     android:id="@+id/background_view"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:padding="10dp"
+    android:padding="@dimen/image_source_border_size"
     android:orientation="horizontal"
     android:baselineAligned="false">
 
@@ -25,12 +25,13 @@
         android:layout_height="fill_parent">
         <ly.kite.widget.CustomTypefaceTextView
             android:id="@+id/label_text_view"
-            android:layout_marginLeft="5dp"
+            android:layout_marginLeft="@dimen/image_source_text_spacing"
             android:layout_gravity="left|center_vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:textColor="@android:color/white"/>
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/control_label_text_size"/>
     </FrameLayout>
 
 </LinearLayout>

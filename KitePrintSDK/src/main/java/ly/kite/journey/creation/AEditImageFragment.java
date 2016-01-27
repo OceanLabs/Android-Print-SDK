@@ -227,7 +227,6 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
       ///// Rotate /////
 
       if ( mEditableImageContainerFrame != null ) mEditableImageContainerFrame.requestAnticlockwiseRotation();
-      // TODO
       }
     else if ( itemId == R.id.flip_menu_item )
       {
