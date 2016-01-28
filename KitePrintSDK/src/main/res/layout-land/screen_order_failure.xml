@@ -16,7 +16,7 @@
             android:layout_width="0dp"
             android:layout_weight="0.3"
             android:layout_height="fill_parent"
-            android:background="@color/success_banner_left_filler"/>
+            android:background="@color/failure_banner_left_filler"/>
         <ly.kite.widget.VerticallyScalingImageView
             android:layout_width="0dp"
             android:layout_weight="0.4"
@@ -27,7 +27,7 @@
             android:layout_width="0dp"
             android:layout_weight="0.3"
             android:layout_height="fill_parent"
-            android:background="@color/success_banner_right_filler"/>
+            android:background="@color/failure_banner_right_filler"/>
     </LinearLayout>
 
 
