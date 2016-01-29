@@ -6,14 +6,14 @@
         android:id="@+id/rotate_menu_item"
         android:title="@string/Rotate"
         android:icon="@drawable/ic_rotate_anticlockwise"
-        android:showAsAction="ifRoom"
+        android:showAsAction="always"
         tools:ignore="AppCompatResource"/>
 
     <item
         android:id="@+id/flip_menu_item"
         android:title="@string/Flip"
         android:icon="@drawable/ic_flip_vertically"
-        android:showAsAction="ifRoom"
+        android:showAsAction="always"
         tools:ignore="AppCompatResource"/>
 
 </menu>
