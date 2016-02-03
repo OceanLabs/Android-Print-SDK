@@ -513,8 +513,8 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
 
         // Get any background / highlight images
 
-        String backgroundImageURLString = productDetailJSONObject.optString( JSON_NAME_BACKGROUND_IMAGE_URL );
-        String highlightImageURLString  = productDetailJSONObject.optString( JSON_NAME_HIGHLIGHTS_URL );
+        String backgroundImageURLString = productDetailJSONObject.optString( JSON_NAME_BACKGROUND_IMAGE_URL, null );
+        String highlightImageURLString  = productDetailJSONObject.optString( JSON_NAME_HIGHLIGHTS_URL,       null );
 
 
         // Get any product options
