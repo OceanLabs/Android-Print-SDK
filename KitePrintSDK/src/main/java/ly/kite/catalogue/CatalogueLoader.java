@@ -92,6 +92,7 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
   private static final String TEMPLATE_REQUEST_FORMAT_STRING         = "%s/template/?limit=100";
 
   private static final String  JSON_NAME_AMOUNT                      = "amount";
+  private static final String  JSON_NAME_BACKGROUND_IMAGE_URL        = "product_background_image_url";
   private static final String  JSON_NAME_BOTTOM                      = "bottom";
   private static final String  JSON_NAME_CURRENCY                    = "currency";
   private static final String  JSON_NAME_CENTIMETERS                 = "cm";
@@ -113,6 +114,7 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
   private static final String  JSON_NAME_OPTIONS                     = "options";
   private static final String  JSON_NAME_OPTION_NAME                 = "name";
   private static final String  JSON_NAME_OPTION_CODE                 = "code";
+  private static final String  JSON_NAME_HIGHLIGHTS_URL              = "product_highlights_url";
   private static final String  JSON_NAME_PIXELS                      = "px";
   private static final String  JSON_NAME_PRODUCT_ARRAY               = "objects";
   private static final String  JSON_NAME_PRODUCT_CODE                = "product_code";
@@ -509,6 +511,12 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
           }
 
 
+        // Get any background / highlight images
+
+        String backgroundImageURLString = productDetailJSONObject.optString( JSON_NAME_BACKGROUND_IMAGE_URL );
+        String highlightImageURLString  = productDetailJSONObject.optString( JSON_NAME_HIGHLIGHTS_URL );
+
+
         // Get any product options
 
         JSONArray productOptionJSONArray = productDetailJSONObject.optJSONArray( JSON_NAME_SUPPORTED_OPTIONS );
@@ -528,6 +536,18 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
                 .setSize( size )
                 .setCreationImage( imageAspectRatio, imageBorder )
                 .setProductOptions( productOptionList );
+
+
+        if ( backgroundImageURLString != null )
+          {
+          product.addUnderImage( new URL( backgroundImageURLString ) );
+          }
+
+        if ( highlightImageURLString != null )
+          {
+          product.addOverImage( new URL( highlightImageURLString ) );
+          }
+
 
         if ( DISPLAY_PRODUCTS )
           {

@@ -123,6 +123,9 @@ public class Product implements Parcelable, IGroupOrProduct
   private float                             mImageAspectRatio;
   private BorderF                           mImageBorderF;
 
+  private ArrayList<URL>                    mUnderImageURLList;
+  private ArrayList<URL>                    mOverImageURLList;
+
   private List<ProductOption>               mOptionList;
 
 
@@ -166,7 +169,7 @@ public class Product implements Parcelable, IGroupOrProduct
     // Check that both dimensions are sensible
 
     if ( size.getWidth() >= minimumSensibleSize  &&
-            size.getHeight() >= minimumSensibleSize )
+         size.getHeight() >= minimumSensibleSize )
       {
       return ( true );
       }
@@ -176,11 +179,57 @@ public class Product implements Parcelable, IGroupOrProduct
     }
 
 
+  /*****************************************************
+   *
+   * Writes an array list of URLs to a parcel.
+   *
+   *****************************************************/
+  static private void writeToParcel( ArrayList<URL> urlList, Parcel targetParcel )
+    {
+    if ( urlList != null )
+      {
+      targetParcel.writeInt( urlList.size() );
+
+      for ( URL url : urlList )
+        {
+        targetParcel.writeSerializable( url );
+        }
+      }
+    else
+      {
+      targetParcel.writeInt( 0 );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Reads an array list of URLs from a parcel.
+   *
+   *****************************************************/
+  static private ArrayList<URL> readURLList( Parcel sourceParcel )
+    {
+    int urlCount = sourceParcel.readInt();
+
+    ArrayList<URL> urlList = new ArrayList<>();
+
+    for ( int index = 0; index < urlCount; index++ )
+      {
+      urlList.add( (URL)sourceParcel.readSerializable() );
+      }
+
+    return ( urlList );
+    }
+
+
   ////////// Constructor(s) //////////
 
   private Product()
     {
-    mOptionList = new ArrayList<>();
+    mUnderImageURLList = new ArrayList<>( 0 );
+    mOverImageURLList  = new ArrayList<>( 0 );
+
+    mOptionList = new ArrayList<>( 0 );
     }
 
   Product( String productId, String productCode, String productName, String productType, int labelColour, UserJourneyType userJourneyType, int quantityPerSheet )
@@ -217,22 +266,19 @@ public class Product implements Parcelable, IGroupOrProduct
     mHeroImageURL     = (URL) sourceParcel.readSerializable();
     mLabelColour      = sourceParcel.readInt();
 
-
-    int imageURLCount = sourceParcel.readInt();
-
-    mImageURLList = new ArrayList<URL>();
-
-    for ( int index = 0; index < imageURLCount; index++ )
-      {
-      mImageURLList.add( (URL) sourceParcel.readSerializable() );
-      }
-
+    mImageURLList = readURLList( sourceParcel );
 
     mMaskURL          = (URL)sourceParcel.readSerializable();
     mMaskBleed        = (Bleed)sourceParcel.readParcelable( Bleed.class.getClassLoader() );
     mSize             = (MultipleUnitSize)sourceParcel.readParcelable( MultipleUnitSize.class.getClassLoader() );
     mImageAspectRatio = sourceParcel.readFloat();
     mImageBorderF     = (BorderF)sourceParcel.readParcelable( BorderF.class.getClassLoader() );
+
+    mOptionList = new ArrayList<>();
+    sourceParcel.readList( mOptionList, ProductOption.class.getClassLoader() );
+
+    mUnderImageURLList = readURLList( sourceParcel );
+    mOverImageURLList  = readURLList( sourceParcel );
     }
 
 
@@ -270,19 +316,7 @@ public class Product implements Parcelable, IGroupOrProduct
     targetParcel.writeSerializable( mHeroImageURL );
     targetParcel.writeInt( mLabelColour );
 
-    if ( mImageURLList != null )
-      {
-      targetParcel.writeInt( mImageURLList.size() );
-
-      for ( URL imageURL : mImageURLList )
-        {
-        targetParcel.writeSerializable( imageURL );
-        }
-      }
-    else
-      {
-      targetParcel.writeInt( 0 );
-      }
+    writeToParcel( mImageURLList, targetParcel );
 
     targetParcel.writeSerializable( mMaskURL );
 
@@ -290,6 +324,11 @@ public class Product implements Parcelable, IGroupOrProduct
     targetParcel.writeParcelable( mSize, flags );
     targetParcel.writeFloat( mImageAspectRatio );
     targetParcel.writeParcelable( mImageBorderF, flags );
+
+    targetParcel.writeList( mOptionList );
+
+    writeToParcel( mUnderImageURLList, targetParcel );
+    writeToParcel( mOverImageURLList,  targetParcel );
     }
 
 
@@ -613,6 +652,54 @@ public class Product implements Parcelable, IGroupOrProduct
 
   /*****************************************************
    *
+   * Adds an under image.
+   *
+   *****************************************************/
+  Product addUnderImage( URL underImageURL )
+    {
+    mUnderImageURLList.add( underImageURL );
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the under images.
+   *
+   *****************************************************/
+  public ArrayList<URL> getUnderImageURLList()
+    {
+    return ( mUnderImageURLList );
+    }
+
+
+  /*****************************************************
+   *
+   * Adds an over image.
+   *
+   *****************************************************/
+  Product addOverImage( URL overImageURL )
+    {
+    mOverImageURLList.add( overImageURL );
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the over images.
+   *
+   *****************************************************/
+  public ArrayList<URL> getOverImageURLList()
+    {
+    return ( mOverImageURLList );
+    }
+
+
+  /*****************************************************
+   *
    * Sets the options.
    *
    *****************************************************/
@@ -792,6 +879,28 @@ public class Product implements Parcelable, IGroupOrProduct
 
     stringBuilder.append( "Image Aspect Ratio : " ).append( mImageAspectRatio >= KiteSDK.FLOAT_ZERO_THRESHOLD ? mImageAspectRatio : String.valueOf( mImageAspectRatio ) ).append( "\n" );
     stringBuilder.append( "Image Border       : " ).append( mImageBorderF != null ? mImageBorderF.toString() : null ).append( "\n" );
+
+
+    if ( mUnderImageURLList != null && mUnderImageURLList.size() > 0 )
+      {
+      stringBuilder.append( "Under images:" ).append( "\n" );
+
+      for ( URL underImageURL : mUnderImageURLList )
+        {
+        stringBuilder.append( "  " ).append( underImageURL.toString() ).append( "\n" );
+        }
+      }
+
+
+    if ( mOverImageURLList != null && mOverImageURLList.size() > 0 )
+      {
+      stringBuilder.append( "Over images:" ).append( "\n" );
+
+      for ( URL overImageURL : mOverImageURLList )
+        {
+        stringBuilder.append( "  " ).append( overImageURL.toString() ).append( "\n" );
+        }
+      }
 
 
     if ( mOptionList != null && mOptionList.size() > 0 )

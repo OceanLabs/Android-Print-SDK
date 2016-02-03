@@ -50,6 +50,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import ly.kite.KiteSDK;
@@ -63,6 +64,7 @@ import ly.kite.catalogue.AssetHelper;
 import ly.kite.catalogue.Bleed;
 import ly.kite.catalogue.Product;
 import ly.kite.util.ImageAgent;
+import ly.kite.widget.EditableImageContainerFrame;
 
 
 ///// Class Declaration /////
@@ -209,13 +211,6 @@ public class PhoneCaseFragment extends AEditImageFragment implements AImageSourc
     super.onActivityCreated( savedInstanceState );
 
 
-    // Try to restore any previous cropping
-    if ( savedInstanceState != null )
-      {
-      mEditableImageContainerFrame.restoreState( savedInstanceState );
-      }
-
-
     // If we haven't already got an image asset - look in the asset list
 
     if ( mImageAsset == null )
@@ -225,6 +220,28 @@ public class PhoneCaseFragment extends AEditImageFragment implements AImageSourc
         mImageAsset = mAssetsAndQuantityArrayList.get( 0 ).getUneditedAsset();
         }
       }
+
+
+    if ( mEditableImageContainerFrame != null )
+      {
+
+      // Try to restore any previous cropping
+
+      if ( savedInstanceState != null )
+        {
+        mEditableImageContainerFrame.restoreState( savedInstanceState );
+        }
+
+
+      // Define the loadable images
+
+      mEditableImageContainerFrame
+              .setImage( mImageAsset )
+              .setMask( mProduct.getMaskURL(), mProduct.getMaskBleed() )
+              .setUnderImages( mProduct.getUnderImageURLList() )
+              .setOverImages( mProduct.getOverImageURLList() );
+      }
+
     }
 
 
@@ -312,39 +329,6 @@ public class PhoneCaseFragment extends AEditImageFragment implements AImageSourc
     }
 
 
-  /*****************************************************
-   *
-   * Requests all images.
-   *
-   *****************************************************/
-  @Override
-  protected void startImageRequests()
-    {
-    // Request the mask
-
-    ImageAgent imageAgent = ImageAgent.getInstance( mKiteActivity );
-
-    URL        maskURL      = mProduct.getMaskURL();
-    Bleed      maskBleed    = mProduct.getMaskBleed();
-
-    if ( maskURL != null )
-      {
-      mEditableImageContainerFrame.setMaskExtras( maskURL, maskBleed );
-
-      imageAgent.requestImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, maskURL, mEditableImageContainerFrame );
-      }
-
-
-    // Request the image
-
-    if ( mImageAsset != null )
-      {
-      useAssetForImage( mImageAsset, false );
-      }
-
-    }
-
-
   ////////// AImageSource.IAssetConsumer Method(s) //////////
 
   /*****************************************************
@@ -382,13 +366,12 @@ public class PhoneCaseFragment extends AEditImageFragment implements AImageSourc
    *****************************************************/
   private void useAssetForImage( Asset asset, boolean imageIsNew )
     {
-    if ( imageIsNew ) mEditableImageContainerFrame.clearState();
+    if ( mEditableImageContainerFrame != null )
+      {
+      if ( imageIsNew ) mEditableImageContainerFrame.clearState();
 
-    mEditableImageContainerFrame.clearForNewImage( asset );
-
-    // When we have the image - kick off the prompt text display cycle if this is the first time
-    // we're loading an image.
-    AssetHelper.requestImage( mKiteActivity, asset, mEditableImageContainerFrame );
+      mEditableImageContainerFrame.setAndLoadImage( asset );
+      }
     }
 
 

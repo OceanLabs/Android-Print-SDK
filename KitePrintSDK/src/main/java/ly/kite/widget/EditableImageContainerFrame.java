@@ -51,9 +51,16 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
+import java.net.URL;
+import java.util.ArrayList;
+
 import ly.kite.R;
+import ly.kite.catalogue.Asset;
+import ly.kite.catalogue.AssetHelper;
 import ly.kite.catalogue.Bleed;
+import ly.kite.journey.AKiteActivity;
 import ly.kite.util.IImageConsumer;
+import ly.kite.util.ImageAgent;
 
 
 ///// Class Declaration /////
@@ -79,11 +86,22 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
   ////////// Member Variable(s) //////////
 
   private EditableMaskedImageView  mEditableMaskedImageView;
-  private ProgressBar              mProgressBar;
+  private ProgressBar              mProgressSpinner;
 
-  private Object                   mImageKey;
-  private Object                   mMaskKey;
+  private Asset                    mImageAsset;
+
+  private URL                      mMaskURL;
   private Bleed                    mMaskBleed;
+
+  private ArrayList<URL>           mUnderImageURLList;
+  private ArrayList<URL>           mOverImageURLList;
+
+  private Object                   mExpectedImageKey;
+  private Object                   mExpectedMaskKey;
+  private Object[]                 mExpectedUnderImageKeys;
+  private Object[]                 mExpectedOverImageKeys;
+
+  private int                      mExpectedImageCount;
 
   private ICallback                mCallback;
 
@@ -138,7 +156,7 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
     {
     if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "onImageDownloading( key = " + key + " )" );
 
-    if ( mProgressBar != null ) mProgressBar.setVisibility( View.VISIBLE );
+    if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.VISIBLE );
     }
 
 
@@ -152,19 +170,7 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
     {
     if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "onImageAvailable( key = " + key + ", bitmap = " + bitmap + " )" );
 
-    if ( key == mImageKey ) mEditableMaskedImageView.setImageBitmap( bitmap );
-    if ( key == mMaskKey  ) mEditableMaskedImageView.setMask( bitmap, mMaskBleed );
-
-
-    // If we have everything we were expecting - remove the progress spinner
-
-    if ( ( mImageKey == null || mEditableMaskedImageView.getImageBitmap()  != null ) &&
-         ( mMaskKey  == null || mEditableMaskedImageView.getMaskDrawable() != null ) )
-      {
-      if ( mProgressBar != null ) mProgressBar.setVisibility( View.GONE );
-
-      if ( mCallback != null ) mCallback.onImageAndMaskLoaded();
-      }
+    onLoadResult( key, bitmap );
     }
 
 
@@ -178,7 +184,7 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
     {
     if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "onImageUnavailable( key = " + key + ", exception = " + exception + " )" );
 
-    if ( mCallback != null ) mCallback.onImageLoadError( exception );
+    onLoadResult( key, null );
     }
 
 
@@ -196,7 +202,7 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
     View view = layoutInflater.inflate( R.layout.editable_image_container_frame, this, true );
 
     mEditableMaskedImageView = (EditableMaskedImageView)view.findViewById( R.id.editable_image_view );
-    mProgressBar             = (ProgressBar)view.findViewById( R.id.progress_bar );
+    mProgressSpinner         = (ProgressBar)view.findViewById( R.id.progress_bar );
     }
 
 
@@ -213,70 +219,77 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
 
   /*****************************************************
    *
-   * Sets the key for the image request.
-   *
-   *****************************************************/
-  public void setImageKey( Object key )
-    {
-    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "setImageKey( key = " + key + " )" );
-
-    mImageKey = key;
-    }
-
-
-  /*****************************************************
-   *
    * Clears the image and mask.
    *
    *****************************************************/
-  public void clearAll()
+  public void unloadAllImages()
     {
-    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "clearAll()" );
-
-    clearImage();
-    clearMask();
-    }
-
-
-  /*****************************************************
-   *
-   * Clears the mask.
-   *
-   *****************************************************/
-  public void clearMask()
-    {
-    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "clearMask()" );
-
-    mEditableMaskedImageView.clearMask();
-    }
-
-
-  /*****************************************************
-   *
-   * Clears the image.
-   *
-   *****************************************************/
-  public void clearImage()
-    {
-    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "clearImage()" );
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "unloadAllImages()" );
 
     mEditableMaskedImageView.clearImage();
+
+    mEditableMaskedImageView.clearMask();
+
+    mEditableMaskedImageView.clearUnderOverImages();
     }
 
 
   /*****************************************************
    *
-   * Clears the current image and sets the key for a new
-   * image.
+   * Sets the image asset.
    *
    *****************************************************/
-  public void clearForNewImage( Object key )
+  public EditableImageContainerFrame setImage( Asset imageAsset )
     {
-    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "clearForNewImage( key = " + key + " )" );
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "setImage( imageAsset = " + imageAsset + " )" );
 
-    clearImage();
+    mImageAsset = imageAsset;
 
-    setImageKey( key );
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Removes the current image from memory, sets the new
+   * one, and loads it.
+   *
+   *****************************************************/
+  public void setAndLoadImage( Asset imageAsset )
+    {
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "setAndLoadImage( imageAsset = " + imageAsset + " )" );
+
+    // Unload the current image
+    mEditableMaskedImageView.clearImage();
+
+    // Set the new image
+    setImage( imageAsset );
+
+
+    // Load the new image
+
+    if ( imageAsset != null )
+      {
+      mExpectedImageCount++;
+
+      loadImage();
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the mask as a URL.
+   *
+   *****************************************************/
+  public EditableImageContainerFrame setMask( URL maskURL, Bleed maskBleed )
+    {
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "setMask( maskURL = " + maskURL + ", maskBleed = " + maskBleed + " )" );
+
+    mMaskURL   = maskURL;
+    mMaskBleed = maskBleed;
+
+    return ( this );
     }
 
 
@@ -295,15 +308,231 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
 
   /*****************************************************
    *
-   * Sets the request key and bleed for the mask.
+   * Sets the under image URLs.
    *
    *****************************************************/
-  public void setMaskExtras( Object key, Bleed maskBleed )
+  public EditableImageContainerFrame setUnderImages( ArrayList<URL> underImageURLList )
     {
-    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "setMaskExtras( key = " + key + ", maskBleed = " + maskBleed + " )" );
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "setUnderImages( underImageURLList )" );
 
-    mMaskKey   = key;
-    mMaskBleed = maskBleed;
+    mUnderImageURLList = underImageURLList;
+
+    if ( underImageURLList != null ) mExpectedUnderImageKeys = new Object[ underImageURLList.size() ];
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the over image URLs.
+   *
+   *****************************************************/
+  public EditableImageContainerFrame setOverImages( ArrayList<URL> overImageURLList )
+    {
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "setOverImages( overImageURLList )" );
+
+    mOverImageURLList = overImageURLList;
+
+    if ( overImageURLList != null ) mExpectedOverImageKeys = new Object[ overImageURLList.size() ];
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Requests that the image be loaded asynchronously.
+   *
+   *****************************************************/
+  private void loadImage()
+    {
+    mExpectedImageKey = mImageAsset;
+
+    AssetHelper.requestImage( getContext(), mImageAsset, this );
+    }
+
+
+  /*****************************************************
+   *
+   * Requests that all the image be loaded asynchronously.
+   *
+   *****************************************************/
+  public void loadAllImages()
+    {
+    mExpectedImageCount = 0;
+
+
+    boolean loadImage;
+
+    if ( loadImage = ( mImageAsset != null && mExpectedImageKey != mImageAsset ) )
+      {
+      mExpectedImageCount ++;
+      }
+
+
+    boolean loadMask;
+
+    if ( loadMask = ( mMaskURL != null && mExpectedMaskKey != mMaskURL ) )
+      {
+      mExpectedImageCount ++;
+      }
+
+
+    boolean loadUnderImages;
+
+    if ( loadUnderImages = ( mUnderImageURLList != null && mUnderImageURLList.size() > 0 ) )
+      {
+      mExpectedImageCount += mUnderImageURLList.size();
+      }
+
+
+    boolean loadOverImages;
+
+    if ( loadOverImages = ( mOverImageURLList != null && mOverImageURLList.size() > 0 ) )
+      {
+      mExpectedImageCount += mOverImageURLList.size();
+      }
+
+
+    if ( loadImage )
+      {
+      loadImage();
+      }
+
+
+    if ( loadMask )
+      {
+      mExpectedMaskKey = mMaskURL;
+
+      ImageAgent.getInstance( getContext() ).requestImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, mMaskURL, this );
+      }
+
+
+    if ( loadUnderImages )
+      {
+      for ( int underImageIndex = 0; underImageIndex < mUnderImageURLList.size(); underImageIndex ++ )
+        {
+        URL underImageURL = mUnderImageURLList.get( underImageIndex );
+
+        if ( underImageURL != null && mExpectedUnderImageKeys[ underImageIndex ] != underImageURL )
+          {
+          mExpectedUnderImageKeys[ underImageIndex ] = underImageURL;
+
+          ImageAgent.getInstance( getContext() ).requestImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, underImageURL, this );
+          }
+        }
+      }
+
+
+    if ( loadOverImages )
+      {
+      for ( int overImageIndex = 0; overImageIndex < mUnderImageURLList.size(); overImageIndex ++ )
+        {
+        URL overImageURL = mOverImageURLList.get( overImageIndex );
+
+        if ( overImageURL != null && mExpectedOverImageKeys[ overImageIndex ] != overImageURL )
+          {
+          mExpectedOverImageKeys[ overImageIndex ] = overImageURL;
+
+          ImageAgent.getInstance( getContext() ).requestImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, overImageURL, this );
+          }
+        }
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Called when an image finishes loading either successfully
+   * or unsuccessfully.
+   *
+   *****************************************************/
+  private void onLoadResult( Object key, Bitmap bitmap )
+    {
+    // Check for the image
+
+    if ( key == mExpectedImageKey )
+      {
+      mExpectedImageCount --;
+
+      mExpectedImageKey = null;
+
+      if ( bitmap != null ) mEditableMaskedImageView.setImageBitmap( bitmap );
+      }
+
+
+    // Check for the mask
+
+    if ( key == mExpectedMaskKey )
+      {
+      mExpectedImageCount --;
+
+      mExpectedMaskKey = null;
+
+      if ( bitmap != null ) mEditableMaskedImageView.setMask( bitmap, mMaskBleed );
+      }
+
+
+    // Check for an under image
+
+    if ( mExpectedUnderImageKeys != null )
+      {
+      for ( int underImageIndex = 0; underImageIndex < mExpectedUnderImageKeys.length; underImageIndex ++ )
+        {
+        if ( key == mExpectedUnderImageKeys[ underImageIndex ] )
+          {
+          mExpectedImageCount --;
+
+          mExpectedUnderImageKeys[ underImageIndex ] = null;
+
+          if ( bitmap != null ) mEditableMaskedImageView.setUnderImage( underImageIndex, bitmap );
+          }
+        }
+      }
+
+
+    // Check for an over image
+
+    if ( mExpectedOverImageKeys != null )
+      {
+      for ( int overImageIndex = 0; overImageIndex < mExpectedOverImageKeys.length; overImageIndex ++ )
+        {
+        if ( key == mExpectedOverImageKeys[ overImageIndex ] )
+          {
+          mExpectedImageCount --;
+
+          mExpectedOverImageKeys[ overImageIndex ] = null;
+
+          if ( bitmap != null ) mEditableMaskedImageView.setOverImage( overImageIndex, bitmap );
+          }
+        }
+      }
+
+
+    // See if everything we were expected has finished loading
+
+    if ( mExpectedImageCount <= 0 && mCallback != null )
+      {
+      // Hide any progress spinner
+      if ( mProgressSpinner != null )
+        {
+        mProgressSpinner.setVisibility( View.GONE );
+        }
+
+      // The result depends on whether the image and mask loaded OK. we check with the
+      // container, because it may have been supplied a mask from a resource.
+
+      if ( mEditableMaskedImageView.getImageBitmap()  != null &&
+           mEditableMaskedImageView.getMaskDrawable() != null )
+        {
+        mCallback.onLoadComplete();
+        }
+      else
+        {
+        mCallback.onLoadError();
+        }
+      }
     }
 
 
@@ -391,8 +620,8 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
    *****************************************************/
   public interface ICallback
     {
-    public void onImageAndMaskLoaded();
-    public void onImageLoadError( Exception exception );
+    public void onLoadComplete();
+    public void onLoadError();
     }
 
   }

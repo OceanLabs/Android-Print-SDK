@@ -48,15 +48,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import ly.kite.KiteSDK;
 import ly.kite.R;
-import ly.kite.journey.AImageSource;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.catalogue.Asset;
 import ly.kite.catalogue.AssetHelper;
 import ly.kite.catalogue.Product;
 import ly.kite.widget.EditableImageContainerFrame;
-import ly.kite.widget.EditableMaskedImageView;
 import ly.kite.widget.PromptTextFrame;
 
 
@@ -175,15 +172,13 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
     mPromptTextFrame             = (PromptTextFrame)view.findViewById( R.id.prompt_text_frame );
 
 
+    // If there is a container frame - set the callback.
     if ( mEditableImageContainerFrame != null ) mEditableImageContainerFrame.setCallback( this );
 
     if ( mCancelButton != null ) mCancelButton.setOnClickListener( this );
 
-    if ( mConfirmButton != null )
-      {
-      // The confirm button is not enabled until both image and mask are loaded
-      mConfirmButton.setEnabled( false );
-      }
+    // The confirm button is not enabled until both image and mask are loaded
+    if ( mConfirmButton != null ) mConfirmButton.setEnabled( false );
 
 
     return ( view );
@@ -250,7 +245,7 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
     {
     super.onTop();
 
-    startImageRequests();
+    if ( mEditableImageContainerFrame != null ) mEditableImageContainerFrame.loadAllImages();
     }
 
 
@@ -264,7 +259,7 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
     {
     super.onNotTop();
 
-    if ( mEditableImageContainerFrame != null ) mEditableImageContainerFrame.clearAll();
+    if ( mEditableImageContainerFrame != null ) mEditableImageContainerFrame.unloadAllImages();
     }
 
 
@@ -302,7 +297,7 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
    *
    *****************************************************/
   @Override
-  public void onImageAndMaskLoaded()
+  public void onLoadComplete()
     {
     // Once both the image and the mask have been loaded -
     // display any prompt text.
@@ -333,27 +328,19 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
    *
    *****************************************************/
   @Override
-  public void onImageLoadError( Exception exception )
+  public void onLoadError()
     {
     mKiteActivity.displayModalDialog(
             R.string.alert_dialog_title_load_image,
             R.string.alert_dialog_message_could_not_load_image,
             R.string.Retry,
-            new StartImageRequestsRunnable(),
+            new LoadAllImagesRunnable(),
             R.string.Cancel,
             mKiteActivity.new FinishRunnable() );
     }
 
 
   ////////// Method(s) //////////
-
-  /*****************************************************
-   *
-   * Requests all images.
-   *
-   *****************************************************/
-  abstract protected void startImageRequests();
-
 
   /*****************************************************
    *
@@ -431,12 +418,12 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
    * Starts any image requests.
    *
    *****************************************************/
-  private class StartImageRequestsRunnable implements Runnable
+  private class LoadAllImagesRunnable implements Runnable
     {
     @Override
     public void run()
       {
-      startImageRequests();
+      mEditableImageContainerFrame.loadAllImages();
       }
     }
 

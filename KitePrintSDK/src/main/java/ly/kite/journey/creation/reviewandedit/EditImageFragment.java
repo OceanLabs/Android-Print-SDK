@@ -58,6 +58,7 @@ import ly.kite.catalogue.Asset;
 import ly.kite.catalogue.AssetHelper;
 import ly.kite.catalogue.Product;
 import ly.kite.util.ImageAgent;
+import ly.kite.widget.EditableImageContainerFrame;
 
 
 ///// Class Declaration /////
@@ -184,6 +185,28 @@ public class EditImageFragment extends AEditImageFragment
 
   /*****************************************************
    *
+   * Called after the activity is created.
+   *
+   *****************************************************/
+  @Override
+  public void onActivityCreated( Bundle savedInstanceState )
+    {
+    super.onActivityCreated( savedInstanceState );
+
+
+    if ( mEditableImageContainerFrame != null )
+      {
+      // Define the loadable images
+
+      mEditableImageContainerFrame
+              .setImage( mAsset )
+              .setMask( mProduct.getUserJourneyType().maskResourceId(), mProduct.getImageAspectRatio() );
+      }
+    }
+
+
+  /*****************************************************
+   *
    * Called the first time the options menu is created.
    *
    *****************************************************/
@@ -205,28 +228,6 @@ public class EditImageFragment extends AEditImageFragment
     super.onTop();
 
     mKiteActivity.setTitle( R.string.edit_image_title );
-    }
-
-
-  /*****************************************************
-   *
-   * Requests all images.
-   *
-   *****************************************************/
-  @Override
-  protected void startImageRequests()
-    {
-    // Set the mask
-    mEditableImageContainerFrame.setMask( mProduct.getUserJourneyType().maskResourceId(), mProduct.getImageAspectRatio() );
-
-
-    // Request the asset image
-
-    ImageAgent imageManager = ImageAgent.getInstance( mKiteActivity );
-
-    mEditableImageContainerFrame.setImageKey( mAsset );
-
-    AssetHelper.requestImage( mKiteActivity, mAsset, mEditableImageContainerFrame );
     }
 
 
