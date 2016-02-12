@@ -114,7 +114,7 @@ public class DeviceImageSource extends AImageSource
    * images.
    *
    *****************************************************/
-  public void onPick( Fragment fragment, boolean preferSingleImage )
+  public void onPick( Fragment fragment, int maxImageCount )
     {
     // If the caller would prefer a single image then use the system photo picker. Otherwise
     // use the photo picker.
@@ -123,7 +123,7 @@ public class DeviceImageSource extends AImageSource
     // (e.g.) Samsung S6, so we need to always use the photo picker (which returns file
     // paths) rather than the built-in gallery picker (which returns URIs).
 
-    // TODO: Get the photo picker to respond to the request for a single image
+    // TODO: Max image count is ignored for now
     PhotoPicker.startPhotoPickerForResult( fragment, getActivityRequestCode() );
     }
 

@@ -61,7 +61,9 @@ abstract public class AImageSource
   {
   ///// Static Constant(s) /////
 
-  private static final String  LOG_TAG = "AImageSource";
+  static private final String  LOG_TAG                = "AImageSource";
+
+  static public  final int     UNLIMITED_NO_OF_IMAGES = 0;
 
 
   ///// Member Variable(s) /////
@@ -190,7 +192,29 @@ abstract public class AImageSource
    * Called when this image source is clicked.
    *
    *****************************************************/
-  abstract public void onPick( Fragment fragment, boolean preferSingleImage );
+  abstract public void onPick( Fragment fragment, int maxImageCount );
+
+
+  /*****************************************************
+   *
+   * Called when this image source is clicked.
+   *
+   *****************************************************/
+  public void onPick( Fragment fragment )
+    {
+    onPick( fragment, UNLIMITED_NO_OF_IMAGES );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when this image source is clicked.
+   *
+   *****************************************************/
+  public void onPick( Fragment fragment, boolean selectSingleImage )
+    {
+    onPick( fragment, ( selectSingleImage ? 1 : UNLIMITED_NO_OF_IMAGES ) );
+    }
 
 
   /*****************************************************

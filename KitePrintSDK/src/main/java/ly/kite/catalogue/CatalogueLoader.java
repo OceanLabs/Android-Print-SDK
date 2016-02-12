@@ -562,7 +562,6 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
         if ( ProductCreationActivity.isSupported( userJourneyType ) )
           {
           catalogue.addProduct( groupLabel, groupImageURL, product );
-
           }
         else
           {

@@ -113,8 +113,10 @@ public class InstagramImageSource extends AImageSource
    * images.
    *
    *****************************************************/
-  public void onPick( Fragment fragment, boolean preferSingleImage )
+  public void onPick( Fragment fragment, int maxImageCount )
     {
+    // TODO: Max image count is ignored for now
+
     // Clicking on the Instagram image source starts our Instagram image picker library
 
     KiteSDK kiteSDK = KiteSDK.getInstance( fragment.getActivity() );

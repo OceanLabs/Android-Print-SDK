@@ -1,0 +1,5 @@
+<ly.kite.imagepicker.ImagePickerGridView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/image_picker_grid_view"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"/>

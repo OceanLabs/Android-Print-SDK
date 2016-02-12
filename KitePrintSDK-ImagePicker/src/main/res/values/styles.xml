@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.ImagePicker" parent="android:Theme.DeviceDefault.Light">
+        <item name="android:actionBarStyle">@style/Theme.ImagePicker.ActionBar</item>
+    </style>
+
+    <style name="Theme.ImagePicker.ActionBar" parent="android:Widget.ActionBar">
+        <item name="android:displayOptions">homeAsUp|showTitle</item>
+        <item name="android:background">@color/opaque_action_bar</item>
+    </style>
+
+</resources>
