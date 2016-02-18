@@ -1,11 +1,11 @@
 /*****************************************************
  *
- * UserJourneyType.java
+ * ImageViewConsumer.java
  *
  *
  * Modified MIT License
  *
- * Copyright (c) 2010-2015 Kite Tech Ltd. https://www.kite.ly
+ * Copyright (c) 2010-2016 Kite Tech Ltd. https://www.kite.ly
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,10 +34,14 @@
 
 ///// Package Declaration /////
 
-package ly.kite.journey;
+package ly.kite.util;
 
 
 ///// Import(s) /////
+
+import android.graphics.Bitmap;
+import android.util.Log;
+import android.widget.ImageView;
 
 import ly.kite.R;
 
@@ -46,26 +50,24 @@ import ly.kite.R;
 
 /*****************************************************
  *
- * This enum defines a type of user journey through the
- * shopping process.
+ * This class enables a standard ImageView to become
+ * an image consumer. The key is stored as a tag.
  *
  *****************************************************/
-public enum UserJourneyType
+public class ImageViewConsumer implements IImageConsumer
   {
-  CIRCLE        ( R.drawable.filled_white_circle ),
-  FRAME,
-  GREETINGCARD,
-  PHONE_CASE    ( true ),
-  PHOTOBOOK     ( R.drawable.filled_white_rectangle ),
-  POSTCARD,
-  POSTER,
-  RECTANGLE     ( R.drawable.filled_white_rectangle );
+  ////////// Static Constant(s) //////////
+
+  @SuppressWarnings( "unused" )
+  static private final String  LOG_TAG = "ImageViewConsumer";
+
+
+  ////////// Static Variable(s) //////////
 
 
   ////////// Member Variable(s) //////////
 
-  private int      mMaskResourceId;
-  private boolean  mUsesSingleImage;
+  private ImageView  mImageView;
 
 
   ////////// Static Initialiser(s) //////////
@@ -76,53 +78,65 @@ public enum UserJourneyType
 
   ////////// Constructor(s) //////////
 
-  private UserJourneyType( boolean usesSingleImage, int maskResourceId )
+  public ImageViewConsumer( Object key, ImageView imageView )
     {
-    mUsesSingleImage = usesSingleImage;
-    mMaskResourceId  = maskResourceId;
-    }
+    if ( key       == null ) throw ( new IllegalArgumentException( "No key supplied" ) );
+    if ( imageView == null ) throw ( new IllegalArgumentException( "No image view supplied" ) );
 
-  private UserJourneyType( boolean usesSingleImage )
-    {
-    this( usesSingleImage, 0 );
-    }
+    mImageView = imageView;
 
-  private UserJourneyType( int maskResourceId )
-    {
-    this( false, maskResourceId );
-    }
-
-  private UserJourneyType()
-    {
-    this( false, 0 );
+    imageView.setTag( R.id.image_view_consumer_key, key );
     }
 
 
-  ////////// Method(s) //////////
+  ////////// IImageConsumer Method(s) //////////
 
   /*****************************************************
    *
-   * Returns the resource id of the mask.
+   * Called if the image is being downloaded.
    *
    *****************************************************/
-  public int maskResourceId()
+  @Override
+  public void onImageDownloading( Object key )
     {
-    return ( mMaskResourceId );
+    Object imageViewKey = mImageView.getTag( R.id.image_view_consumer_key );
+
+    if ( imageViewKey != null && imageViewKey.equals( key ) )
+      {
+      // Currently do nothing, although we could display
+      // a loading image.
+      }
     }
 
 
-  /*****************************************************
-   *
-   * Returns true if the user journey type uses a single
-   * image for creating items, false otherwise.
-   *
-   *****************************************************/
-  public boolean usesSingleImage()
+  @Override
+  public void onImageAvailable( Object key, Bitmap bitmap )
     {
-    return ( mUsesSingleImage );
+    Object imageViewKey = mImageView.getTag( R.id.image_view_consumer_key );
+
+    if ( imageViewKey != null && imageViewKey.equals( key ) )
+      {
+      mImageView.setTag( R.id.image_view_consumer_key, null );
+      mImageView.setImageBitmap( bitmap );
+      }
     }
 
 
+  @Override
+  public void onImageUnavailable( Object key, Exception exception )
+    {
+    Object imageViewKey = mImageView.getTag( R.id.image_view_consumer_key );
+
+    if ( imageViewKey != null && imageViewKey.equals( key ) )
+      {
+      Log.e( LOG_TAG, "Unable to load image for key: " + key, exception );
+
+      // Don't clear the key, in case for some reason it loads subsequently
+
+      // Currently do nothing, although we could display
+      // an error indicator image.
+      }
+    }
 
 
   ////////// Inner Class(es) //////////

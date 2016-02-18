@@ -43,6 +43,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -59,6 +61,7 @@ import ly.kite.journey.creation.imagesource.ImageSourceFragment;
 import ly.kite.journey.UserJourneyType;
 import ly.kite.journey.creation.imageselection.ImageSelectionFragment;
 import ly.kite.journey.creation.phonecase.PhoneCaseFragment;
+import ly.kite.journey.creation.photobook.PhotobookFragment;
 import ly.kite.journey.creation.reviewandedit.EditImageFragment;
 import ly.kite.journey.creation.reviewandedit.ReviewAndEditFragment;
 import ly.kite.catalogue.Asset;
@@ -79,6 +82,7 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
                                                                       ImageSourceFragment.ICallback,
                                                                       PhoneCaseFragment.ICallback,
                                                                       ImageSelectionFragment.ICallback,
+                                                                      PhotobookFragment.ICallback,
                                                                       ReviewAndEditFragment.ICallback,
                                                                       EditImageFragment.ICallback
   {
@@ -126,11 +130,11 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
       case CIRCLE:
       case GREETINGCARD:
       case PHONE_CASE:
+      case PHOTOBOOK:
       case RECTANGLE:
         return ( true );
 
       case FRAME:
-      case PHOTOBOOK:
       case POSTCARD:
       case POSTER:
       }
@@ -170,7 +174,7 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
                                      Product                       product,
                                      int                           requestCode )
     {
-    startForResult( activity, assetsAndQuantityArrayList, product, new HashMap<String,String>( 0 ), requestCode );
+    startForResult( activity, assetsAndQuantityArrayList, product, new HashMap<String, String>( 0 ), requestCode );
     }
 
 
@@ -378,6 +382,50 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
     }
 
 
+  ////////// PhotobookFragment.ICallback Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called to edit an asset.
+   *
+   *****************************************************/
+  @Override
+  public void pbOnEdit( int assetIndex )
+    {
+    editAsset( assetIndex );
+    }
+
+
+  /*****************************************************
+   *
+   * Called to move on to payment.
+   *
+   *****************************************************/
+  @Override
+  public void pbOnNext()
+    {
+    // Create a new list containing just edited assets
+
+    ArrayList<Asset> assetArrayList = new ArrayList<>();
+
+    for ( AssetsAndQuantity assetsAndQuantity : mAssetsAndQuantityArrayList )
+      {
+      assetArrayList.add( assetsAndQuantity.getEditedAsset() );
+      }
+
+
+    // Create the print order
+
+    PrintOrder printOrder = new PrintOrder();
+
+    printOrder.addPrintJob( PrintJob.createPrintJob( mProduct, assetArrayList ) );
+
+
+    // Start the check-out activity
+    CheckoutActivity.startForResult( this, printOrder, ACTIVITY_REQUEST_CODE_CHECKOUT );
+    }
+
+
   ////////// ReviewAndEditFragment.ICallback Method(s) //////////
 
   /*****************************************************
@@ -388,13 +436,7 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
   @Override
   public void reOnEdit( int assetIndex )
     {
-    // Start the edit fragment
-
-    EditImageFragment editImageFragment = EditImageFragment.newInstance( mAssetsAndQuantityArrayList.get( assetIndex ).getUneditedAsset(), mProduct );
-
-    addFragment( editImageFragment, EditImageFragment.TAG );
-
-    mLastEditedAssetIndex = assetIndex;
+    editAsset( assetIndex );
     }
 
 
@@ -428,7 +470,7 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
 
 
     // Start the check-out activity
-    CheckoutActivity.start( this, printOrder, ACTIVITY_REQUEST_CODE_CHECKOUT );
+    CheckoutActivity.startForResult( this, printOrder, ACTIVITY_REQUEST_CODE_CHECKOUT );
     }
 
 
@@ -466,18 +508,29 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
     popFragment();
 
 
-    // Notify the review and edit fragment
+    // Once an image has been edited, we need to notify any fragments that use it. A fragment
+    // identifies itself as wanting to be notified by implementing the IUpdatedAssetListener
+    // interface.
 
-    ReviewAndEditFragment reviewAndEditFragment = (ReviewAndEditFragment)mFragmentManager.findFragmentByTag( ReviewAndEditFragment.TAG );
+    int entryCount = mFragmentManager.getBackStackEntryCount();
 
-    if ( reviewAndEditFragment != null ) reviewAndEditFragment.onAssetUpdated( mLastEditedAssetIndex, assetsAndQuantity );
+    for ( int entryIndex = 0; entryIndex < entryCount; entryIndex ++ )
+      {
+      FragmentManager.BackStackEntry entry = mFragmentManager.getBackStackEntryAt( entryIndex );
 
+      if ( entry != null )
+        {
+        int fragmentId = entry.getId();
 
-    // Notify the image selection fragment
+        Fragment fragment = mFragmentManager.findFragmentById( fragmentId );
 
-    ImageSelectionFragment imageSelectionFragment = (ImageSelectionFragment)mFragmentManager.findFragmentByTag( ImageSelectionFragment.TAG );
+        if ( fragment != null && fragment instanceof IUpdatedAssetListener )
+          {
+          ( (IUpdatedAssetListener) fragment ).onAssetUpdated( mLastEditedAssetIndex, assetsAndQuantity );
+          }
+        }
+      }
 
-    imageSelectionFragment.onAssetUpdated( mLastEditedAssetIndex, assetsAndQuantity );
     }
 
 
@@ -513,8 +566,29 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
       case PHONE_CASE:
         addFragment( PhoneCaseFragment.newInstance( mProduct ), PhoneCaseFragment.TAG );
         break;
+
+      case PHOTOBOOK:
+        addFragment( PhotobookFragment.newInstance( mProduct ), PhotobookFragment.TAG );
+        break;
       }
 
+    }
+
+
+  /*****************************************************
+   *
+   * Edits an asset.
+   *
+   *****************************************************/
+  private void editAsset( int assetIndex )
+    {
+    // Start the edit fragment
+
+    EditImageFragment editImageFragment = EditImageFragment.newInstance( mAssetsAndQuantityArrayList.get( assetIndex ).getUneditedAsset(), mProduct );
+
+    addFragment( editImageFragment, EditImageFragment.TAG );
+
+    mLastEditedAssetIndex = assetIndex;
     }
 
 

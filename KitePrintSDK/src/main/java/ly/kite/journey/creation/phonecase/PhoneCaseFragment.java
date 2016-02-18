@@ -80,9 +80,9 @@ public class PhoneCaseFragment extends AEditImageFragment implements AImageSourc
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String      LOG_TAG                                   = "PhoneCaseFragment";
+  static private final String      LOG_TAG                                   = "PhoneCaseFragment";
 
-  private static final String      BUNDLE_KEY_IMAGE_ASSET                    = "imageAsset";
+  static private final String      BUNDLE_KEY_IMAGE_ASSET                    = "imageAsset";
 
 
   ////////// Static Variable(s) //////////
@@ -152,26 +152,7 @@ public class PhoneCaseFragment extends AEditImageFragment implements AImageSourc
   @Override
   public void onCreateOptionsMenu( Menu menu, MenuInflater menuInflator )
     {
-    // The add photo XML has menu options for all the image sources, but they might
-    // not all be enabled. So after we've inflated it, we need to go through an remove
-    // any source that isn't available.
-
-    menuInflator.inflate( R.menu.phone_case, menu );
-
-    MenuItem addPhotoItem = menu.findItem( R.id.add_photo_menu_item );
-
-    if ( addPhotoItem != null )
-      {
-      SubMenu addPhotoSubMenu = addPhotoItem.getSubMenu();
-
-      if ( addPhotoSubMenu != null )
-        {
-        for ( AImageSource imageSource : KiteSDK.getInstance( mKiteActivity ).getAvailableImageSources() )
-          {
-          imageSource.addMenuItem( addPhotoSubMenu );
-          }
-        }
-      }
+    onCreateOptionsMenu( menu, menuInflator, R.menu.phone_case );
     }
 
 
@@ -253,22 +234,7 @@ public class PhoneCaseFragment extends AEditImageFragment implements AImageSourc
   @Override
   public boolean onOptionsItemSelected( MenuItem item )
     {
-    int itemId = item.getItemId();
-
-
-    // If one of the image source menu items was selected - launch the appropriate picker
-
-    AImageSource imageSource = KiteSDK.getInstance( mKiteActivity ).getImageSourceByMenuItemId( itemId );
-
-    if ( imageSource != null )
-      {
-      imageSource.onPick( this, true );
-
-      return ( true );
-      }
-
-
-    return ( super.onOptionsItemSelected( item ) );
+    return ( super.onOptionsItemSelected( item, AImageSource.SINGLE_IMAGE ) );
     }
 
 

@@ -356,6 +356,7 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
     return ( -1 );
     }
 
+
   /*****************************************************
    *
    * Adds an asset. This is used both by our constructor,

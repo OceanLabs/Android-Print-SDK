@@ -1,4 +1,3 @@
-include ':KitePrintSDK-Photopicker'
 include 'SampleApp'
 include 'KitePrintSDK'
 include 'KitePrintSDK-GCM'

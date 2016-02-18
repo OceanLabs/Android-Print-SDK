@@ -1,11 +1,11 @@
 /*****************************************************
  *
- * UserJourneyType.java
+ * IEditedAssetSubscriber.java
  *
  *
  * Modified MIT License
  *
- * Copyright (c) 2010-2015 Kite Tech Ltd. https://www.kite.ly
+ * Copyright (c) 2010-2016 Kite Tech Ltd. https://www.kite.ly
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,104 +34,28 @@
 
 ///// Package Declaration /////
 
-package ly.kite.journey;
+package ly.kite.journey.creation;
 
 
 ///// Import(s) /////
 
-import ly.kite.R;
+import ly.kite.journey.AssetsAndQuantity;
 
 
 ///// Class Declaration /////
 
 /*****************************************************
  *
- * This enum defines a type of user journey through the
- * shopping process.
+ * This interface identifies a fragment that wishes to
+ * be notified when an asset is edited.
  *
  *****************************************************/
-public enum UserJourneyType
+public interface IUpdatedAssetListener
   {
-  CIRCLE        ( R.drawable.filled_white_circle ),
-  FRAME,
-  GREETINGCARD,
-  PHONE_CASE    ( true ),
-  PHOTOBOOK     ( R.drawable.filled_white_rectangle ),
-  POSTCARD,
-  POSTER,
-  RECTANGLE     ( R.drawable.filled_white_rectangle );
-
-
-  ////////// Member Variable(s) //////////
-
-  private int      mMaskResourceId;
-  private boolean  mUsesSingleImage;
-
-
-  ////////// Static Initialiser(s) //////////
-
-
-  ////////// Static Method(s) //////////
-
-
-  ////////// Constructor(s) //////////
-
-  private UserJourneyType( boolean usesSingleImage, int maskResourceId )
-    {
-    mUsesSingleImage = usesSingleImage;
-    mMaskResourceId  = maskResourceId;
-    }
-
-  private UserJourneyType( boolean usesSingleImage )
-    {
-    this( usesSingleImage, 0 );
-    }
-
-  private UserJourneyType( int maskResourceId )
-    {
-    this( false, maskResourceId );
-    }
-
-  private UserJourneyType()
-    {
-    this( false, 0 );
-    }
-
-
-  ////////// Method(s) //////////
-
   /*****************************************************
    *
-   * Returns the resource id of the mask.
+   * Called when an asset is updated.
    *
    *****************************************************/
-  public int maskResourceId()
-    {
-    return ( mMaskResourceId );
-    }
-
-
-  /*****************************************************
-   *
-   * Returns true if the user journey type uses a single
-   * image for creating items, false otherwise.
-   *
-   *****************************************************/
-  public boolean usesSingleImage()
-    {
-    return ( mUsesSingleImage );
-    }
-
-
-
-
-  ////////// Inner Class(es) //////////
-
-  /*****************************************************
-   *
-   * ...
-   *
-   *****************************************************/
-
+  public void onAssetUpdated( int assetIndex, AssetsAndQuantity assetsAndQuantity );
   }
-

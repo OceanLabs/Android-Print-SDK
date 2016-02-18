@@ -47,6 +47,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.util.Pair;
 import android.webkit.MimeTypeMap;
+import android.widget.ImageView;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -59,11 +60,13 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.UUID;
 
+import ly.kite.R;
 import ly.kite.util.IImageConsumer;
 import ly.kite.util.IImageTransformer;
 import ly.kite.util.ImageAgent;
 import ly.kite.catalogue.Asset.Type;
 import ly.kite.catalogue.Asset.MIMEType;
+import ly.kite.util.ImageViewConsumer;
 
 
 ///// Class Declaration /////
@@ -507,6 +510,28 @@ public class AssetHelper
   static public void requestImage( Context context, Asset asset, IImageConsumer imageConsumer )
     {
     requestImage( context, asset, null, 0, imageConsumer );
+    }
+
+
+  /*****************************************************
+   *
+   * Requests an image bitmap from an asset.
+   *
+   * Must be called on the UI thread.
+   *
+   *****************************************************/
+  static public void requestImage( Context context, Asset asset, ImageView imageView )
+    {
+    // Try and determine the size of the image view
+
+    int width = imageView.getMeasuredWidth();
+
+    if ( width < 1 )
+      {
+      width = context.getResources().getDimensionPixelSize( R.dimen.image_default_resize_width );
+      }
+
+    requestImage( context, asset, null, width, new ImageViewConsumer( asset, imageView ) );
     }
 
 

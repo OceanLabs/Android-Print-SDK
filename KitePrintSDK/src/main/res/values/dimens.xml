@@ -82,6 +82,27 @@
 
     <dimen name="image_check_size">28dp</dimen>
 
+    <dimen name="image_default_resize_width">100px</dimen>
+
+
+    <dimen name="page_number_text_inset">10dp</dimen>
+    <dimen name="page_number_text_size">14sp</dimen>
+
+    <dimen name="photobook_add_image_size">15dp</dimen>
+
+    <dimen name="photobook_front_cover_width">150dp</dimen>
+    <dimen name="photobook_front_cover_height">150dp</dimen>
+    <dimen name="photobook_front_cover_padding">20dp</dimen>
+
+    <dimen name="photobook_instructions_text_size">18sp</dimen>
+    <dimen name="photobook_instructions_text_padding">10dp</dimen>
+
+    <dimen name="photobook_content_spacing">10dp</dimen>
+    <dimen name="photobook_content_width">290dp</dimen>
+    <dimen name="photobook_content_height">145dp</dimen>
+    <dimen name="photobook_content_padding">20dp</dimen>
+
+
     <item name="review_and_crop_image_aspect_ratio" type="dimen" format="float">1.0</item>
     <dimen name="review_and_crop_quantity_text_size">18sp</dimen>
     <dimen name="review_and_crop_plus_minus_text_size">28sp</dimen>

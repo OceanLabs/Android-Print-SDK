@@ -61,9 +61,10 @@ abstract public class AImageSource
   {
   ///// Static Constant(s) /////
 
-  static private final String  LOG_TAG                = "AImageSource";
+  static private final String  LOG_TAG          = "AImageSource";
 
-  static public  final int     UNLIMITED_NO_OF_IMAGES = 0;
+  static public  final int     UNLIMITED_IMAGES      = 0;
+  static public  final int     SINGLE_IMAGE          = 1;
 
 
   ///// Member Variable(s) /////
@@ -202,7 +203,7 @@ abstract public class AImageSource
    *****************************************************/
   public void onPick( Fragment fragment )
     {
-    onPick( fragment, UNLIMITED_NO_OF_IMAGES );
+    onPick( fragment, UNLIMITED_IMAGES );
     }
 
 
@@ -213,7 +214,7 @@ abstract public class AImageSource
    *****************************************************/
   public void onPick( Fragment fragment, boolean selectSingleImage )
     {
-    onPick( fragment, ( selectSingleImage ? 1 : UNLIMITED_NO_OF_IMAGES ) );
+    onPick( fragment, ( selectSingleImage ? 1 : UNLIMITED_IMAGES ) );
     }
 
 

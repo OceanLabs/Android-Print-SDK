@@ -40,7 +40,6 @@ package ly.kite.journey.creation.imageselection;
 ///// Import(s) /////
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -54,7 +53,6 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,14 +63,11 @@ import ly.kite.journey.creation.AProductCreationFragment;
 import ly.kite.journey.ImageSourceAdaptor;
 import ly.kite.catalogue.Asset;
 import ly.kite.journey.AssetsAndQuantity;
-import ly.kite.catalogue.AssetHelper;
 import ly.kite.catalogue.Product;
 
 import ly.kite.R;
+import ly.kite.journey.creation.IUpdatedAssetListener;
 import ly.kite.util.BooleanUtils;
-import ly.kite.util.IImageConsumer;
-import ly.kite.util.IImageTransformer;
-import ly.kite.util.ImageAgent;
 import ly.kite.widget.VisibilitySettingAnimationListener;
 
 
@@ -87,7 +82,7 @@ import ly.kite.widget.VisibilitySettingAnimationListener;
 public class ImageSelectionFragment extends AProductCreationFragment implements AdapterView.OnItemClickListener,
                                                                                 View.OnClickListener,
                                                                                 ImageSelectionAdaptor.IOnImageCheckChangeListener,
-                                                                                AImageSource.IAssetConsumer
+                                                                                IUpdatedAssetListener
   {
   ////////// Static Constant(s) //////////
 
@@ -98,8 +93,6 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
   private static final long        CLEAR_PHOTOS_BUTTON_ANIMATION_DURATION_MILLIS   = 300L;
   private static final long        PROCEED_BUTTON_BUTTON_ANIMATION_DURATION_MILLIS = CLEAR_PHOTOS_BUTTON_ANIMATION_DURATION_MILLIS;
-
-  private static final int         PROGRESS_COMPLETE                               = 100;  // 100%
 
 
   ////////// Static Variable(s) //////////
@@ -112,14 +105,9 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
   private int                          mNumberOfColumns;
 
-  private int                          mInitialUneditedAssetsCount;
-  private int                          mUneditedAssetsRemaining;
-
   private BaseAdapter                  mImageSourceAdaptor;
   private GridView                     mImageSourceGridView;
-  private ProgressBar                  mProgressBar;
   private Button                       mClearPhotosButton;
-  private Button                       mProceedOverlayButton;
 
   private RecyclerView                 mImageRecyclerView;
   private GridLayoutManager            mImageLayoutManager;
@@ -186,11 +174,11 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     {
     View view = layoutInflator.inflate( R.layout.screen_image_selection, container, false );
 
+    super.onViewCreated( view );
+
     mImageSourceGridView  = (GridView)view.findViewById( R.id.image_source_grid_view );
-    mProgressBar          = (ProgressBar)view.findViewById( R.id.progress_bar );
     mImageRecyclerView    = (RecyclerView)view.findViewById( R.id.image_recycler_view );
     mClearPhotosButton    = (Button)view.findViewById( R.id.clear_photos_button );
-    mProceedOverlayButton = (Button)view.findViewById( R.id.proceed_overlay_button );
 
 
     // Set up the image sources
@@ -244,31 +232,8 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
       }
 
 
-    // We need to create a set of initial edited images - which are basically cropped
-    // to a square. We need to do these on a background thread, but We also need to make
-    // sure that we can't go further until all of them have been completed.
-
-    mUneditedAssetsRemaining = 0;
-
-    for ( AssetsAndQuantity assetsAndQuantity : mAssetsAndQuantityArrayList )
-      {
-      String productId = mProduct.getId();
-
-
-      // If we don't already have an edited asset - create one now
-
-      if ( ( productId == null ) ||
-              ( ! productId.equals( assetsAndQuantity.getEditedForProductId() ) ) )
-        {
-        mUneditedAssetsRemaining ++;
-
-        AssetImageCropper cropper = new AssetImageCropper( assetsAndQuantity, mProduct.getImageAspectRatio() );
-
-        AssetHelper.requestImage( mKiteActivity, assetsAndQuantity.getUneditedAsset(), cropper, 0, cropper );
-        }
-      }
-
-    mInitialUneditedAssetsCount = mUneditedAssetsRemaining;
+    // Get cropped versions of assets.
+    requestCroppedAssets();
 
 
     // If there are unchecked images, then we need to show (but not animate in) the clear photos
@@ -291,9 +256,6 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
 
     mProceedOverlayButton.setText( R.string.image_selection_proceed_button_text );
-
-
-    showProgress( mUneditedAssetsRemaining, mInitialUneditedAssetsCount );
     }
 
 
@@ -314,22 +276,6 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     boolean[] isCheckedArray = BooleanUtils.arrayFrom( mAssetIsCheckedArrayList );
 
     outState.putBooleanArray( BUNDLE_KEY_ASSET_IS_CHECKED_ARRAY, isCheckedArray );
-    }
-
-
-  /*****************************************************
-   *
-   * Called with the result of an activity.
-   *
-   *****************************************************/
-  @Override
-  public void onActivityResult( int requestCode, int resultCode, Intent returnedIntent )
-    {
-    super.onActivityResult( requestCode, resultCode, returnedIntent );
-
-
-    // Get assets for any images returned and add them
-    KiteSDK.getInstance( mKiteActivity ).getAssetsFromPickerResult( mKiteActivity, requestCode, resultCode, returnedIntent, this );
     }
 
 
@@ -386,23 +332,9 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     {
     super.onTop();
 
-
     if ( mProduct != null ) setTitle();
 
-
     setUpRecyclerView();
-
-
-    // We don't enable the proceed button until all the assets have been cropped
-
-    if ( mUneditedAssetsRemaining < 1 )
-      {
-      mProceedOverlayButton.setEnabled( true );
-      }
-    else
-      {
-      mProceedOverlayButton.setEnabled( false );
-      }
     }
 
 
@@ -423,6 +355,50 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     if ( mImageRecyclerView != null ) mImageRecyclerView.setAdapter( null );
 
     mImagePackAdaptor = null;
+    }
+
+
+  /*****************************************************
+   *
+   * Called when an image is cropped.
+   *
+   *****************************************************/
+  protected void onImageCropped( AssetsAndQuantity assetsAndQuantity )
+    {
+    // Update the adaptor with the edited (cropped) image
+
+    if ( mImagePackAdaptor != null )
+      {
+      int position = mImagePackAdaptor.positionOf( assetsAndQuantity );
+
+      if ( position >= 0 ) mImagePackAdaptor.notifyItemChanged( position );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Called when a new asset is added.
+   *
+   *****************************************************/
+  @Override
+  protected void onAssetAdded( AssetsAndQuantity assetsAndQuantity )
+    {
+    mAssetIsCheckedArrayList.add( true );
+
+    mImagePackAdaptor.addAsset( assetsAndQuantity );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when at least one new asset has been added.
+   *
+   *****************************************************/
+  @Override
+  protected void onNewAssets()
+    {
+    setTitle();
     }
 
 
@@ -549,50 +525,23 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     }
 
 
-  ////////// AImageSource.IAssetConsumer Method(s) //////////
-
-  /*****************************************************
-   *
-   * Called with new picked assets.
-   *
-   *****************************************************/
-  @Override
-  public void isacOnAssets( List<Asset> assetList )
-    {
-    if ( assetList != null )
-      {
-      addAssets( assetList );
-      }
-    }
-
-
   ////////// Method(s) //////////
 
   /*****************************************************
    *
-   * Shows the cropping progress.
+   * Updates the assets and quantity.
    *
    *****************************************************/
-  private void showProgress( int remainingCount, int totalCount )
+  @Override
+  public void onAssetUpdated( int assetIndex, AssetsAndQuantity assetsAndQuantity )
     {
-    if ( mProgressBar == null ) return;
-
-
-    // If there are no images, or none left to crop, don't show the
-    // progress bar.
-
-    if ( totalCount < 1 || remainingCount < 1 )
-      {
-      mProgressBar.setVisibility( View.INVISIBLE );
-      }
-    else
-      {
-      mProgressBar.setVisibility( View.VISIBLE );
-
-      mProgressBar.setProgress( PROGRESS_COMPLETE * ( totalCount - remainingCount ) / totalCount );
-      }
+    // We don't need to request any cropped image because it is the edited asset
+    // that has been updated. So just updated the recycler view.
+    if ( mImagePackAdaptor != null ) mImagePackAdaptor.notifyDataSetChanged();
     }
 
+
+  ////////// Method(s) //////////
 
   /*****************************************************
    *
@@ -614,72 +563,6 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     mImageRecyclerView.setLayoutManager( mImageLayoutManager );
 
     mImageRecyclerView.setAdapter( mImagePackAdaptor );
-    }
-
-
-  /*****************************************************
-   *
-   * Adds new unedited assets to the users collection.
-   * Duplicates will be discarded.
-   *
-   *****************************************************/
-  private void addAssets( List<Asset> assets )
-    {
-    boolean addedNewAsset = false;
-
-    for ( Asset asset : assets )
-      {
-      // We don't allow duplicate images, so first check that the asset isn't already in
-      // our list. Note that we don't check the scenario where the image is the same but
-      // from a different source - a byte by byte comparison would take too long, and a
-      // duplicate is unlikely anyway.
-
-      if ( ! AssetsAndQuantity.uneditedAssetIsInList( mAssetsAndQuantityArrayList, asset ) )
-        {
-        // Start with the unedited asset, and a quantity of 1.
-
-        AssetsAndQuantity assetsAndQuantity = new AssetsAndQuantity( asset );
-
-        mUneditedAssetsRemaining++;
-
-
-        // Create an edited version of the asset. We are basically doing the same thing we did
-        // when we were created, but just for the new asset. We are doing this in the background
-        // again, so we need to disable the proceed button again.
-
-        if ( ! addedNewAsset )
-          {
-          addedNewAsset = true;
-
-          mProceedOverlayButton.setEnabled( false );
-          }
-
-
-        // Add the selected image to our asset lists, mark it as checked
-        mAssetsAndQuantityArrayList.add( assetsAndQuantity );
-        mAssetIsCheckedArrayList.add( true );
-
-        // Let the adaptor know we've added another asset.
-        mImagePackAdaptor.addAsset( assetsAndQuantity );
-
-
-        // Request the image and crop it
-
-        AssetImageCropper cropper = new AssetImageCropper( assetsAndQuantity, mProduct.getImageAspectRatio() );
-
-        AssetHelper.requestImage( mKiteActivity, assetsAndQuantity.getUneditedAsset(), cropper, 0, cropper );
-        }
-      }
-
-
-    if ( addedNewAsset )
-      {
-      setTitle();
-
-      mInitialUneditedAssetsCount = mUneditedAssetsRemaining;
-
-      showProgress( mUneditedAssetsRemaining, mInitialUneditedAssetsCount );
-      }
     }
 
 
@@ -812,19 +695,6 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     }
 
 
-  /*****************************************************
-   *
-   * Updates the assets and quantity.
-   *
-   *****************************************************/
-  public void onAssetUpdated( int assetIndex, AssetsAndQuantity assetsAndQuantity )
-    {
-    // We don't need to request any cropped image because it is the edited asset
-    // that has been updated. So just updated the recycler view.
-    if ( mImagePackAdaptor != null ) mImagePackAdaptor.notifyDataSetChanged();
-    }
-
-
   ////////// Inner Class(es) //////////
 
   /*****************************************************
@@ -836,111 +706,6 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     {
     public void isOnNext();
     }
-
-
-  /*****************************************************
-   *
-   * An image transformer that crops the supplied image
-   * to a square, creates an asset from it, and then stores
-   * it as an edited asset.
-   *
-   * We also use it as the image consumer, because the available
-   * method gets called on the UI thread.
-   *
-   *****************************************************/
-  private class AssetImageCropper implements IImageTransformer, IImageConsumer
-    {
-    private AssetsAndQuantity  mAssetsAndQuantity;
-    private float              mCroppedAspectRatio;
-
-
-    AssetImageCropper( AssetsAndQuantity assetsAndQuantity, float croppedAspectRatio )
-      {
-      mAssetsAndQuantity  = assetsAndQuantity;
-      mCroppedAspectRatio = croppedAspectRatio;
-      }
-
-
-    ////////// AssetHelper.IImageTransformer Method(s) //////////
-
-    /*****************************************************
-     *
-     * Called on a background thread to transform a bitmap.
-     * We use this to crop the bitmap, and create a file-backed
-     * asset from it.
-     *
-     *****************************************************/
-    @Override
-    public Bitmap getTransformedBitmap( Bitmap bitmap )
-      {
-      // Crop the bitmap to the required shape
-      Bitmap croppedBitmap = ImageAgent.crop( bitmap, mCroppedAspectRatio );
-
-
-      // Create a new file-backed asset from the cropped bitmap, and save it as the edited asset.
-
-      Asset editedAsset = AssetHelper.createAsCachedFile( mKiteActivity, croppedBitmap );
-
-      mAssetsAndQuantity.setEditedAsset( editedAsset, mProduct.getId() );
-
-
-      return ( croppedBitmap );
-      }
-
-
-    ////////// IImageConsumer Method(s) //////////
-
-    @Override
-    public void onImageDownloading( Object key )
-      {
-      // Ignore
-      }
-
-
-    /*****************************************************
-     *
-     * Called on the UI thread, with the cropped image.
-     *
-     *****************************************************/
-    @Override
-    public void onImageAvailable( Object key, Bitmap bitmap )
-      {
-      // Update the adaptor with the edited (cropped) image
-
-      if ( mImagePackAdaptor != null )
-        {
-        int position = mImagePackAdaptor.positionOf( mAssetsAndQuantity );
-
-        if ( position >= 0 ) mImagePackAdaptor.notifyItemChanged( position );
-        }
-
-
-      // If we now have all the cropped images - enable the proceed button.
-
-      mUneditedAssetsRemaining --;
-
-      showProgress( mUneditedAssetsRemaining, mInitialUneditedAssetsCount );
-
-      if ( mUneditedAssetsRemaining < 1 )
-        {
-        if ( mProceedOverlayButton != null ) mProceedOverlayButton.setEnabled( true );
-        }
-      }
-
-
-    /*****************************************************
-     *
-     * Called when an image could not be loaded.
-     *
-     *****************************************************/
-    @Override
-    public void onImageUnavailable( Object key, Exception exception )
-      {
-      // TODO
-      }
-
-    }
-
 
   }
 

@@ -55,6 +55,7 @@ import ly.kite.analytics.Analytics;
 import ly.kite.journey.creation.AProductCreationFragment;
 import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.catalogue.Product;
+import ly.kite.journey.creation.IUpdatedAssetListener;
 
 /*****************************************************
  *
@@ -63,7 +64,8 @@ import ly.kite.catalogue.Product;
  *
  *****************************************************/
 public class ReviewAndEditFragment extends AProductCreationFragment implements AssetAndQuantityAdaptor.IListener,
-                                                                               View.OnClickListener
+                                                                               View.OnClickListener,
+                                                                               IUpdatedAssetListener
   {
   ////////// Static Constant(s) //////////
 
@@ -277,39 +279,56 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
 
       if ( mKiteActivity instanceof ICallback )
         {
-            // firstly check if number of images user has selected meets expectations, if not
-            // prompt the user for confirmation to continue
-            int numberOfImages = 0;
+        // firstly check if number of images user has selected meets expectations, if not
+        // prompt the user for confirmation to continue
+        int numberOfImages = 0;
 
-            for ( AssetsAndQuantity assetsAndQuantity : mAssetsAndQuantityArrayList )
-              {
-              numberOfImages += assetsAndQuantity.getQuantity();
-              }
+        for ( AssetsAndQuantity assetsAndQuantity : mAssetsAndQuantityArrayList )
+          {
+          numberOfImages += assetsAndQuantity.getQuantity();
+          }
 
-            int quantityPerPack = mProduct.getQuantityPerSheet();
-            int numberOfPacks   = ( numberOfImages + ( quantityPerPack - 1 ) ) / quantityPerPack;
-            int expectedNumberOfImages = numberOfPacks * quantityPerPack;
-            if ( numberOfImages < expectedNumberOfImages )
-              {
-              mKiteActivity.displayModalDialog(
-                getString( R.string.alert_dialog_title_pack_not_full_format_string, numberOfImages, getResources().getQuantityString( R.plurals.photo_plurals, numberOfImages ) ),
-                getString( R.string.alert_dialog_message_pack_not_full_format_string, expectedNumberOfImages - numberOfImages ),
-                R.string.print_these,
-                new Runnable()
+        int quantityPerPack = mProduct.getQuantityPerSheet();
+        int numberOfPacks = ( numberOfImages + ( quantityPerPack - 1 ) ) / quantityPerPack;
+        int expectedNumberOfImages = numberOfPacks * quantityPerPack;
+        if ( numberOfImages < expectedNumberOfImages )
+          {
+          mKiteActivity.displayModalDialog(
+                  getString( R.string.alert_dialog_title_pack_not_full_format_string, numberOfImages, getResources().getQuantityString( R.plurals.photo_plurals, numberOfImages ) ),
+                  getString( R.string.alert_dialog_message_pack_not_full_format_string, expectedNumberOfImages - numberOfImages ),
+                  R.string.print_these,
+                  new Runnable()
                   {
                   @Override
                   public void run()
                     {
-                    ((ICallback) mKiteActivity).reOnConfirm();
+                    ( (ICallback) mKiteActivity ).reOnConfirm();
                     }
                   },
-                R.string.add_more, null );
-              }
-            else
-              {
-              ((ICallback) mKiteActivity).reOnConfirm();
-              }
+                  R.string.add_more, null );
+          }
+        else
+          {
+          ( (ICallback) mKiteActivity ).reOnConfirm();
+          }
         }
+      }
+    }
+
+
+  ////////// IUpdatedAssetListener Method(s) //////////
+
+  /*****************************************************
+   *
+   * Updates the assets and quantity.
+   *
+   *****************************************************/
+  @Override
+  public void onAssetUpdated( int assetIndex, AssetsAndQuantity assetsAndQuantity )
+    {
+    if ( mAssetAndQuantityAdaptor != null )
+      {
+      mAssetAndQuantityAdaptor.notifyDataSetInvalidated();
       }
     }
 
@@ -337,20 +356,6 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
     int numberOfPacks   = ( numberOfImages + ( quantityPerPack - 1 ) ) / quantityPerPack;
 
     mKiteActivity.setTitle( getString( R.string.review_and_edit_title_format_string, numberOfImages, ( numberOfPacks * quantityPerPack ) ) );
-    }
-
-
-  /*****************************************************
-   *
-   * Updates the assets and quantity.
-   *
-   *****************************************************/
-  public void onAssetUpdated( int assetIndex, AssetsAndQuantity assetsAndQuantity )
-    {
-    if ( mAssetAndQuantityAdaptor != null )
-      {
-      mAssetAndQuantityAdaptor.notifyDataSetInvalidated();
-      }
     }
 
 

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content">
+
+    <ly.kite.widget.CustomTypefaceTextView
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/photobook_instructions_text_padding"
+        android:gravity="center"
+        android:textSize="@dimen/photobook_instructions_text_size"
+        android:text="@string/photobook_instructions"/>
+
+</FrameLayout>

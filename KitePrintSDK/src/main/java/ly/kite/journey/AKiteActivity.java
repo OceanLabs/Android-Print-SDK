@@ -96,8 +96,8 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   ////////// Member Variable(s) //////////
 
   private   boolean           mActivityIsVisible;
-
   private   boolean           mCanAddFragment;
+
   private   AKiteFragment     mPendingFragment;
   private   String            mPendingFragmentTag;
 
@@ -302,12 +302,27 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
   /*****************************************************
    *
+   * Called when the activity no longer has focus.
+   *
+   *****************************************************/
+  @Override
+  protected void onPause()
+    {
+    super.onPause();
+
+    mCanAddFragment = false;
+    }
+
+
+  /*****************************************************
+   *
    * Called when the activity is no longer visible.
    *
    *****************************************************/
   @Override
   protected void onStop()
     {
+    mCanAddFragment    = false;
     mActivityIsVisible = false;
 
     super.onStop();
@@ -322,6 +337,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   @Override
   protected void onDestroy()
     {
+    mCanAddFragment    = false;
     mActivityIsVisible = false;
 
     ensureDialogGone();
