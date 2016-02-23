@@ -40,8 +40,6 @@ package ly.kite.journey.creation.photobook;
 ///// Import(s) /////
 
 import android.app.Activity;
-import android.util.Log;
-import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,13 +47,16 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import ly.kite.R;
 import ly.kite.catalogue.Asset;
 import ly.kite.catalogue.AssetHelper;
 import ly.kite.catalogue.Product;
 import ly.kite.journey.AssetsAndQuantity;
+import ly.kite.widget.CheckableImageContainerFrame;
 
 
 ///// Class Declaration /////
@@ -74,9 +75,9 @@ public class PhotobookAdaptor extends BaseAdapter
 
   static private final int     FRONT_COVER_ASSET_INDEX = 0;
 
-  static private final int     FRONT_COVER_POSITION    = 0;
-  static private final int     INSTRUCTIONS_POSITION   = 1;
-  static private final int     CONTENT_START_POSITION  = 2;
+  static public  final int     FRONT_COVER_POSITION    = 0;
+  static public  final int     INSTRUCTIONS_POSITION   = 1;
+  static public  final int     CONTENT_START_POSITION  = 2;
 
 
   ////////// Static Variable(s) //////////
@@ -91,9 +92,8 @@ public class PhotobookAdaptor extends BaseAdapter
 
   private LayoutInflater           mLayoutInflator;
 
-  private ViewGroup                mParentViewGroup;
-
-  private int                      mDraggedAssetIndex;
+  private boolean                  mInSelectionMode;
+  private HashSet<Asset>           mSelectedEditedAssetSet;
 
 
   ////////// Static Initialiser(s) //////////
@@ -112,6 +112,8 @@ public class PhotobookAdaptor extends BaseAdapter
     mListener              = listener;
 
     mLayoutInflator        = activity.getLayoutInflater();
+
+    mSelectedEditedAssetSet = new HashSet<>();
     }
 
 
@@ -143,8 +145,6 @@ public class PhotobookAdaptor extends BaseAdapter
   @Override
   public View getView( int position, View convertView, ViewGroup parent )
     {
-    mParentViewGroup = parent;
-
     View view;
 
     if ( position == FRONT_COVER_POSITION )
@@ -166,9 +166,27 @@ public class PhotobookAdaptor extends BaseAdapter
 
         Asset editedAsset = mAssetsAndQuantityList.get( 0 ).getEditedAsset();
 
-        if ( editedAsset  != null )
+        if ( mInSelectionMode )
           {
-          AssetHelper.requestImage( mActivity, editedAsset, frontCoverViewHolder.imageView );
+          if ( mSelectedEditedAssetSet.contains( editedAsset ) )
+            {
+            frontCoverViewHolder.checkableImageContainerFrame.setState( CheckableImageContainerFrame.State.CHECKED );
+            }
+          else
+            {
+            frontCoverViewHolder.checkableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_VISIBLE );
+            }
+          }
+        else
+          {
+          frontCoverViewHolder.checkableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE );
+          }
+
+        if ( editedAsset != null )
+          {
+          frontCoverViewHolder.checkableImageContainerFrame.clearForNewImage( editedAsset );
+
+          AssetHelper.requestImage( mActivity, editedAsset, frontCoverViewHolder.checkableImageContainerFrame );
           }
         }
       else
@@ -224,16 +242,35 @@ public class PhotobookAdaptor extends BaseAdapter
 
         Asset leftEditedAsset = leftAssetsAndQuantity.getEditedAsset();
 
+        if ( mInSelectionMode )
+          {
+          if ( mSelectedEditedAssetSet.contains( leftEditedAsset ) )
+            {
+            contentViewHolder.leftCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.CHECKED );
+            }
+          else
+            {
+            contentViewHolder.leftCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_VISIBLE );
+            }
+          }
+        else
+          {
+          contentViewHolder.leftCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE );
+          }
+
         if ( leftEditedAsset != null )
           {
-          AssetHelper.requestImage( mActivity, leftEditedAsset, contentViewHolder.leftImageView );
+          contentViewHolder.leftCheckableImageContainerFrame.clearForNewImage( leftEditedAsset );
+
+          AssetHelper.requestImage( mActivity, leftEditedAsset, contentViewHolder.leftCheckableImageContainerFrame );
           }
         }
       else
         {
         contentViewHolder.leftAssetIndex = -1;
         contentViewHolder.leftAddImageView.setVisibility( View.VISIBLE );
-        contentViewHolder.leftImageView.setImageBitmap( null );
+        contentViewHolder.leftCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE );
+        contentViewHolder.leftCheckableImageContainerFrame.clear();
         }
 
 
@@ -244,16 +281,35 @@ public class PhotobookAdaptor extends BaseAdapter
 
         Asset rightEditedAsset = rightAssetsAndQuantity.getEditedAsset();
 
+        if ( mInSelectionMode )
+          {
+          if ( mSelectedEditedAssetSet.contains( rightEditedAsset ) )
+            {
+            contentViewHolder.rightCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.CHECKED );
+            }
+          else
+            {
+            contentViewHolder.rightCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_VISIBLE );
+            }
+          }
+        else
+          {
+          contentViewHolder.rightCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE );
+          }
+
         if ( rightEditedAsset != null )
           {
-          AssetHelper.requestImage( mActivity, rightEditedAsset, contentViewHolder.rightImageView );
+          contentViewHolder.rightCheckableImageContainerFrame.clearForNewImage( rightEditedAsset );
+
+          AssetHelper.requestImage( mActivity, rightEditedAsset, contentViewHolder.rightCheckableImageContainerFrame );
           }
         }
       else
         {
         contentViewHolder.rightAssetIndex = -1;
         contentViewHolder.rightAddImageView.setVisibility( View.VISIBLE );
-        contentViewHolder.rightImageView.setImageBitmap( null );
+        contentViewHolder.rightCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE );
+        contentViewHolder.rightCheckableImageContainerFrame.clear();
         }
       }
 
@@ -291,7 +347,7 @@ public class PhotobookAdaptor extends BaseAdapter
     // supplied assets, and invalidate it so that it can be re-displayed.
 
 
-    // TODO: Come up with better (working!) way of doing this
+    // TODO: Change to recycler view to do this
 //    int childCount = mParentViewGroup.getChildCount();
 //
 //    for ( int childIndex = 0; childIndex < childCount; childIndex ++ )
@@ -323,45 +379,33 @@ public class PhotobookAdaptor extends BaseAdapter
 
   /*****************************************************
    *
-   * Starts a drag and drop operation.
+   * Sets the selection mode.
    *
    *****************************************************/
-  void onStartDrag( int draggedAssetIndex, ImageView imageView )
+  public void setSelectionMode( boolean inSelectionMode )
     {
-    mDraggedAssetIndex = draggedAssetIndex;
+    if ( inSelectionMode != mInSelectionMode )
+      {
+      mInSelectionMode = inSelectionMode;
 
-    imageView.startDrag( null, new View.DragShadowBuilder( imageView ), null, 0 );
+      if ( inSelectionMode )
+        {
+        mSelectedEditedAssetSet.clear();
+        }
+
+      notifyDataSetChanged();
+      }
     }
 
 
   /*****************************************************
    *
-   * Ends a drag and drop operation.
+   * Returns the selected edited assets.
    *
    *****************************************************/
-  void onEndDrag( int dropAssetIndex )
+  public Set<Asset> getSelectedEditedAssetSet()
     {
-    // Insert the dragged asset into the drop position, and shift the others
-    // out of the way.
-
-    if ( dropAssetIndex != mDraggedAssetIndex )
-      {
-      AssetsAndQuantity draggedAssetsAndQuantity = mAssetsAndQuantityList.remove( mDraggedAssetIndex );
-
-      mAssetsAndQuantityList.add( dropAssetIndex, draggedAssetsAndQuantity );
-      }
-    else
-      {
-      // TODO: If the drop image is the same as the drag image,
-      // TODO: do something different.
-
-      mDraggedAssetIndex = -1;
-
-      return;
-      }
-
-
-    notifyDataSetChanged();
+    return ( mSelectedEditedAssetSet );
     }
 
 
@@ -376,7 +420,7 @@ public class PhotobookAdaptor extends BaseAdapter
     {
     void onAddImage();
     void onClickImage( int assetIndex );
-    void onLongClickImage( int assetIndex );
+    void onLongClickImage( int assetIndex, View view );
     }
 
 
@@ -385,24 +429,24 @@ public class PhotobookAdaptor extends BaseAdapter
    * Front cover view holder.
    *
    *****************************************************/
-  private class FrontCoverViewHolder implements View.OnClickListener, View.OnLongClickListener, View.OnDragListener
+  private class FrontCoverViewHolder implements View.OnClickListener,
+                                                View.OnLongClickListener
     {
-    View               view;
-    ImageView          imageView;
-    ImageView          addImageView;
+    View                          view;
+    CheckableImageContainerFrame  checkableImageContainerFrame;
+    ImageView                     addImageView;
 
-    int                assetIndex;
+    int                           assetIndex;
 
 
     FrontCoverViewHolder( View view )
       {
-      this.view         = view;
-      this.imageView    = (ImageView)view.findViewById( R.id.image_view );
-      this.addImageView = (ImageView)view.findViewById( R.id.add_image_view );
+      this.view                         = view;
+      this.checkableImageContainerFrame = (CheckableImageContainerFrame)view.findViewById( R.id.checkable_image_container_frame );
+      this.addImageView                 = (ImageView)view.findViewById( R.id.add_image_view );
 
-      imageView.setOnClickListener( this );
-      imageView.setOnLongClickListener( this );
-      imageView.setOnDragListener( this );
+      this.checkableImageContainerFrame.setOnClickListener( this );
+      this.checkableImageContainerFrame.setOnLongClickListener( this );
       }
 
 
@@ -411,14 +455,34 @@ public class PhotobookAdaptor extends BaseAdapter
     @Override
     public void onClick( View view )
       {
-      if ( view == this.imageView && this.assetIndex >= 0 )
+      if ( view == this.checkableImageContainerFrame && this.assetIndex >= 0 )
         {
-        mListener.onClickImage( this.assetIndex );
+        if ( mInSelectionMode )
+          {
+          Asset editedAsset = mAssetsAndQuantityList.get( this.assetIndex ).getEditedAsset();
+
+          if ( ! mSelectedEditedAssetSet.contains( editedAsset ) )
+            {
+            mSelectedEditedAssetSet.add( editedAsset );
+
+            this.checkableImageContainerFrame.setChecked( true );
+            }
+          else
+            {
+            mSelectedEditedAssetSet.remove( editedAsset );
+
+            this.checkableImageContainerFrame.setChecked( false );
+            }
+          }
+        else
+          {
+          mListener.onClickImage( this.assetIndex );
+          }
 
         return;
         }
 
-      mListener.onAddImage();
+      if ( ! mInSelectionMode ) mListener.onAddImage();
       }
 
 
@@ -427,40 +491,11 @@ public class PhotobookAdaptor extends BaseAdapter
     @Override
     public boolean onLongClick( View view )
       {
-      if ( view == this.imageView && this.assetIndex >= 0 )
+      if ( ! mInSelectionMode )
         {
-        mListener.onLongClickImage( this.assetIndex );
-
-        onStartDrag( this.assetIndex, this.imageView );
-
-        return ( true );
-        }
-
-      return ( false );
-      }
-
-
-    ////////// View.OnDragListener Method(s) //////////
-
-    @Override
-    public boolean onDrag( View view, DragEvent event )
-      {
-      // The start drag event gets sent to all views, so we must use the long click
-      // to determine the start asset. We need to respond to start and drop events
-      // but ignore everything else (including location events - to ensure that the
-      // fragment gets them).
-
-      if ( view == this.imageView && this.assetIndex >= 0 )
-        {
-        int action = event.getAction();
-
-        if ( action == DragEvent.ACTION_DRAG_STARTED )
+        if ( view == this.checkableImageContainerFrame && this.assetIndex >= 0 )
           {
-          return ( true );
-          }
-        if ( action == DragEvent.ACTION_DROP )
-          {
-          onEndDrag( this.assetIndex );
+          mListener.onLongClickImage( this.assetIndex, this.checkableImageContainerFrame );
 
           return ( true );
           }
@@ -468,6 +503,7 @@ public class PhotobookAdaptor extends BaseAdapter
 
       return ( false );
       }
+
     }
 
 
@@ -476,44 +512,43 @@ public class PhotobookAdaptor extends BaseAdapter
    * Content view holder.
    *
    *****************************************************/
-  private class ContentViewHolder implements View.OnClickListener, View.OnLongClickListener, View.OnDragListener
+  private class ContentViewHolder implements View.OnClickListener,
+                                             View.OnLongClickListener
     {
-    View               view;
+    View                view;
 
-    ImageView          leftImageView;
-    ImageView          rightImageView;
+    CheckableImageContainerFrame  leftCheckableImageContainerFrame;
+    CheckableImageContainerFrame  rightCheckableImageContainerFrame;
 
-    ImageView          leftAddImageView;
-    ImageView          rightAddImageView;
+    ImageView                     leftAddImageView;
+    ImageView                     rightAddImageView;
 
-    TextView           leftTextView;
-    TextView           rightTextView;
+    TextView                      leftTextView;
+    TextView                      rightTextView;
 
-    int                leftAssetIndex;
-    int                rightAssetIndex;
+    int                           leftAssetIndex;
+    int                           rightAssetIndex;
 
 
     ContentViewHolder( View view )
       {
-      this.view              = view;
+      this.view = view;
 
-      this.leftImageView     = (ImageView)view.findViewById( R.id.left_image_view );
-      this.rightImageView    = (ImageView)view.findViewById( R.id.right_image_view );
+      this.leftCheckableImageContainerFrame = (CheckableImageContainerFrame)view.findViewById( R.id.left_checkable_image_container_frame );
+      this.rightCheckableImageContainerFrame = (CheckableImageContainerFrame)view.findViewById( R.id.right_checkable_image_container_frame );
 
-      this.leftAddImageView  = (ImageView)view.findViewById( R.id.left_add_image_view );
-      this.rightAddImageView = (ImageView)view.findViewById( R.id.right_add_image_view );
+      this.leftAddImageView        = (ImageView)view.findViewById( R.id.left_add_image_view );
+      this.rightAddImageView       = (ImageView)view.findViewById( R.id.right_add_image_view );
 
-      this.leftTextView      = (TextView)view.findViewById( R.id.left_text_view );
-      this.rightTextView     = (TextView)view.findViewById( R.id.right_text_view );
+      this.leftTextView            = (TextView)view.findViewById( R.id.left_text_view );
+      this.rightTextView           = (TextView)view.findViewById( R.id.right_text_view );
 
 
-      leftImageView.setOnClickListener( this );
-      leftImageView.setOnLongClickListener( this );
-      leftImageView.setOnDragListener( this );
+      leftCheckableImageContainerFrame.setOnClickListener( this );
+      leftCheckableImageContainerFrame.setOnLongClickListener( this );
 
-      rightImageView.setOnClickListener( this );
-      rightImageView.setOnLongClickListener( this );
-      rightImageView.setOnDragListener( this );
+      rightCheckableImageContainerFrame.setOnClickListener( this );
+      rightCheckableImageContainerFrame.setOnLongClickListener( this );
       }
 
 
@@ -522,26 +557,60 @@ public class PhotobookAdaptor extends BaseAdapter
     @Override
     public void onClick( View view )
       {
-      if ( view == this.leftImageView )
+      if ( view == this.leftCheckableImageContainerFrame && this.leftAssetIndex >= 0 )
         {
-        if ( this.leftAssetIndex >= 0 )
+        if ( mInSelectionMode )
+          {
+          Asset editedAsset = mAssetsAndQuantityList.get( this.leftAssetIndex ).getEditedAsset();
+
+          if ( ! mSelectedEditedAssetSet.contains( editedAsset ) )
+            {
+            mSelectedEditedAssetSet.add( editedAsset );
+
+            this.leftCheckableImageContainerFrame.setChecked( true );
+            }
+          else
+            {
+            mSelectedEditedAssetSet.remove( editedAsset );
+
+            this.leftCheckableImageContainerFrame.setChecked( false );
+            }
+          }
+        else
           {
           mListener.onClickImage( this.leftAssetIndex );
-
-          return;
           }
+
+        return;
         }
-      else if ( view == this.rightImageView )
+      else if ( view == this.rightCheckableImageContainerFrame && this.rightAssetIndex >= 0 )
         {
-        if ( this.rightAssetIndex >= 0 )
+        if ( mInSelectionMode )
+          {
+          Asset editedAsset = mAssetsAndQuantityList.get( this.rightAssetIndex ).getEditedAsset();
+
+          if ( ! mSelectedEditedAssetSet.contains( editedAsset ) )
+            {
+            mSelectedEditedAssetSet.add( editedAsset );
+
+            this.rightCheckableImageContainerFrame.setChecked( true );
+            }
+          else
+            {
+            mSelectedEditedAssetSet.remove( editedAsset );
+
+            this.rightCheckableImageContainerFrame.setChecked( false );
+            }
+          }
+        else
           {
           mListener.onClickImage( this.rightAssetIndex );
-
-          return;
           }
+
+        return;
         }
 
-      mListener.onAddImage();
+      if ( ! mInSelectionMode ) mListener.onAddImage();
       }
 
 
@@ -550,71 +619,27 @@ public class PhotobookAdaptor extends BaseAdapter
     @Override
     public boolean onLongClick( View view )
       {
-      if ( view == this.leftImageView )
+      if ( ! mInSelectionMode )
         {
-        if ( this.leftAssetIndex >= 0 )
+        if ( view == this.leftCheckableImageContainerFrame )
           {
-          mListener.onLongClickImage( this.leftAssetIndex );
+          if ( this.leftAssetIndex >= 0 )
+            {
+            mListener.onLongClickImage( this.leftAssetIndex, this.leftCheckableImageContainerFrame );
 
-          onStartDrag( this.leftAssetIndex, this.leftImageView );
+            return ( true );
+            }
+          }
+        else if ( view == this.rightCheckableImageContainerFrame )
+          {
+          if ( this.rightAssetIndex >= 0 )
+            {
+            mListener.onLongClickImage( this.rightAssetIndex, this.rightCheckableImageContainerFrame );
 
-          return ( true );
+            return ( true );
+            }
           }
         }
-      else if ( view == this.rightImageView )
-        {
-        if ( this.rightAssetIndex >= 0 )
-          {
-          mListener.onLongClickImage( this.rightAssetIndex );
-
-          onStartDrag( this.rightAssetIndex, this.rightImageView );
-
-          return ( true );
-          }
-        }
-
-      return ( false );
-      }
-
-
-    ////////// View.OnDragListener Method(s) //////////
-
-    @Override
-    public boolean onDrag( View view, DragEvent event )
-      {
-      int assetIndex = -1;
-
-      if ( view == this.leftImageView )
-        {
-        assetIndex = this.leftAssetIndex;
-        }
-      else if ( view == this.rightImageView )
-        {
-        assetIndex = this.rightAssetIndex;
-        }
-
-
-      // The start drag event gets sent to all views, so we must use the long click
-      // to determine the start asset. We need to respond to start and drop events
-      // but ignore everything else (including location events - to ensure that the
-      // fragment gets them).
-
-      if ( assetIndex >= 0 )
-        {
-        int action = event.getAction();
-
-        if ( action == DragEvent.ACTION_DRAG_STARTED )
-          {
-          return ( true );
-          }
-        else if ( action == DragEvent.ACTION_DROP )
-          {
-          onEndDrag( assetIndex );
-
-          return ( true );
-          }
-        }
-
 
       return ( false );
       }

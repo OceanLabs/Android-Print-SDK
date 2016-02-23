@@ -33,8 +33,8 @@
                     android:layout_width="0dp"
                     android:layout_weight="0.5"
                     android:layout_height="fill_parent">
-                    <ImageView
-                        android:id="@+id/left_image_view"
+                    <ly.kite.widget.CheckableImageContainerFrame
+                        android:id="@+id/left_checkable_image_container_frame"
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
                         android:padding="@dimen/photobook_content_padding"
@@ -51,8 +51,8 @@
                     android:layout_width="0dp"
                     android:layout_weight="0.5"
                     android:layout_height="fill_parent">
-                    <ImageView
-                        android:id="@+id/right_image_view"
+                    <ly.kite.widget.CheckableImageContainerFrame
+                        android:id="@+id/right_checkable_image_container_frame"
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
                         android:padding="@dimen/photobook_content_padding"

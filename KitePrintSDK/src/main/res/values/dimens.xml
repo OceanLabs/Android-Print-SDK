@@ -53,6 +53,9 @@
 
     <dimen name="proceed_overlay_frame_height">80dp</dimen>
 
+    <dimen name="proceed_bar_frame_height">60dp</dimen>
+    <dimen name="proceed_bar_padding">10dp</dimen>
+
     <dimen name="product_overview_paging_dots_spacing_bottom">10dp</dimen>
     <dimen name="product_overview_overlaid_start_button_spacing_bottom">16dp</dimen>
     <dimen name="product_overview_control_bar_height">50dp</dimen>
@@ -102,6 +105,7 @@
     <dimen name="photobook_content_height">145dp</dimen>
     <dimen name="photobook_content_padding">20dp</dimen>
 
+    <dimen name="photobook_drag_distance">5dp</dimen>
 
     <item name="review_and_crop_image_aspect_ratio" type="dimen" format="float">1.0</item>
     <dimen name="review_and_crop_quantity_text_size">18sp</dimen>

@@ -20,4 +20,6 @@
         android:dividerHeight="0dp"
         android:divider="@android:color/transparent"/>
 
+    <include layout="@layout/include_photobook_proceed_bar"/>
+
 </LinearLayout>

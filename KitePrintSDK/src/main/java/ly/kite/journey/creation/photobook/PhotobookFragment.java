@@ -39,26 +39,22 @@ package ly.kite.journey.creation.photobook;
 
 ///// Import(s) /////
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
-import android.util.Log;
+import android.os.SystemClock;
+import android.view.ActionMode;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 
-import java.util.List;
+import java.util.Set;
 
-import ly.kite.KiteSDK;
 import ly.kite.journey.AImageSource;
 import ly.kite.journey.creation.AProductCreationFragment;
 import ly.kite.catalogue.Asset;
@@ -81,16 +77,23 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
                                                                            View.OnClickListener,
                                                                            AImageSource.IAssetConsumer,
                                                                            IUpdatedAssetListener,
-                                                                           View.OnDragListener
+                                                                           View.OnDragListener,
+                                                                           ActionMode.Callback
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  public  static final String      TAG                                             = "PhotobookFragment";
+  static public  final String  TAG                                             = "PhotobookFragment";
 
-  private static final long        PROCEED_BUTTON_BUTTON_ANIMATION_DURATION_MILLIS = 300L;
+  static private final long    PROCEED_BUTTON_BUTTON_ANIMATION_DURATION_MILLIS = 300L;
 
-  private static final int         PROGRESS_COMPLETE                               = 100;  // 100%
+  static private final int     PROGRESS_COMPLETE                               = 100;  // 100%
+
+  // Size of auto-scroll zone for drag-and-drop, as a proportion of the list view size.
+  static private final float   AUTO_SCROLL_ZONE_SIZE_AS_PROPORTION             = 0.3f;
+  static private final float   AUTO_SCROLL_MAX_SPEED_IN_PROPORTION_PER_SECOND  = 0.5f;
+  static private final long    AUTO_SCROLL_INTERVAL_MILLIS                     = 10;
+  static private final int     AUTO_SCROLL_INTERVAL_MILLIS_AS_INT              = (int)AUTO_SCROLL_INTERVAL_MILLIS;
 
 
   ////////// Static Variable(s) //////////
@@ -107,6 +110,17 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
   private Menu                         mMenu;
 
   private Parcelable                   mListViewState;
+
+  private int                          mDraggedAssetIndex;
+  private int                          mDragStartX;
+  private int                          mDragStartY;
+  private int                          mDragLastX;
+  private int                          mDragLastY;
+
+  private Handler                      mHandler;
+  private ScrollRunnable               mScrollRunnable;
+
+  private ActionMode                   mActionMode;
 
 
   ////////// Static Initialiser(s) //////////
@@ -167,8 +181,15 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     mPhotoBookListView = (ListView)view.findViewById( R.id.list_view );
 
 
-    // Set up the listener(s)
-    if ( mProceedOverlayButton != null ) mProceedOverlayButton.setOnClickListener( this );
+    // Set up the proceed button
+
+    if ( mProceedOverlayButton != null )
+      {
+      mProceedOverlayButton.setText( R.string.Next );
+
+      mProceedOverlayButton.setOnClickListener( this );
+      }
+
 
     // We listen for drag events so that we can auto scroll up or down when dragging
     mPhotoBookListView.setOnDragListener( this );
@@ -302,51 +323,31 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
   @Override
   public void onClick( View view )
     {
-//    if ( view == mClearPhotosButton )
-//      {
-//      ///// Clear photos /////
-//
-//      // We need to go through all the assets and remove any that are unchecked - from
-//      // both lists, and the "is checked" value.
-//
-//      for ( int assetIndex = 0; assetIndex < mAssetsAndQuantityArrayList.size(); assetIndex ++ )
-//        {
-//        if ( ! mAssetIsCheckedArrayList.get( assetIndex ) )
-//          {
-//          mAssetsAndQuantityArrayList.remove( assetIndex );
-//          mAssetIsCheckedArrayList.remove( assetIndex );
-//
-//          // If we delete an asset, then the next asset now falls into its place
-//          assetIndex --;
-//          }
-//        }
-//
-//      mUncheckedImagesCount = 0;
-//
-//
-//      // Update the screen
-//
-//      setTitle();
-//
-//      animateClearPhotosButtonOut();
-//      animateProceedOverlayButtonIn();
-//
-//      setUpListView();
-//      }
-//    else if ( view == mProceedOverlayButton )
-//      {
-//      ///// Review and Crop /////
-//
-//      if ( mAssetsAndQuantityArrayList.isEmpty() )
-//        {
-//        mKiteActivity.displayModalDialog(R.string.alert_dialog_title_oops, R.string.alert_dialog_message_no_images_selected, R.string.OK, null, 0, null);
-//        }
-//      else if ( mKiteActivity instanceof ICallback )
-//        {
-//        ( (ICallback)mKiteActivity ).isOnNext();
-//        }
-//      }
-//
+
+    if ( view == mProceedOverlayButton )
+      {
+      ///// Checkout /////
+
+      if ( mAssetsAndQuantityArrayList.isEmpty() )
+        {
+        mKiteActivity.displayModalDialog(R.string.alert_dialog_title_oops, R.string.alert_dialog_message_no_images_selected, R.string.OK, null, 0, null);
+        }
+      else if ( mKiteActivity instanceof ICallback )
+        {
+        int expectedImageCount = 1 + mProduct.getQuantityPerSheet();
+        int actualImageCount   = mAssetsAndQuantityArrayList.size();
+
+        if ( actualImageCount < expectedImageCount )
+          {
+          displayNotFullDialog( expectedImageCount, actualImageCount, new CallbackNextRunnable() );
+          }
+        else
+          {
+          ( (ICallback)mKiteActivity ).pbOnNext();
+          }
+        }
+      }
+
     }
 
 
@@ -387,8 +388,15 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
    *
    *****************************************************/
   @Override
-  public void onLongClickImage( int assetIndex )
+  public void onLongClickImage( int draggedAssetIndex, View view )
     {
+    if ( draggedAssetIndex < 0 ) return;
+
+    mDraggedAssetIndex = draggedAssetIndex;
+
+    clearDragStart();
+
+    mPhotoBookListView.startDrag( null, new View.DragShadowBuilder( view ), null, 0 );
     }
 
 
@@ -418,8 +426,6 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
   @Override
   public boolean onDrag( View view, DragEvent event )
     {
-    // We only respond to start and location events
-
     int action = event.getAction();
 
     if ( action == DragEvent.ACTION_DRAG_STARTED )
@@ -432,12 +438,146 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
       float x = event.getX();
       float y = event.getY();
 
-      Log.d( TAG, "x = " + x + ", y = " + y );
+      saveDragLocation( x, y );
+
+
+      // Determine which zone the location is in
+
+      int listViewHeight = mPhotoBookListView.getHeight();
+
+      float yTopStart    = listViewHeight * AUTO_SCROLL_ZONE_SIZE_AS_PROPORTION;
+      float yBottomStart = listViewHeight - yTopStart;
+
+      if ( y < yTopStart )
+        {
+        ///// Top zone /////
+
+        // Calculate the speed and run auto-scroll
+
+        float speedAsProportionPerSecond = ( ( y - yTopStart ) / yTopStart ) * AUTO_SCROLL_MAX_SPEED_IN_PROPORTION_PER_SECOND;
+
+        setAutoScroll( speedAsProportionPerSecond );
+        }
+      else if ( y <= yBottomStart )
+        {
+        ///// Middle zone
+
+        stopAutoScroll();
+        }
+      else
+        {
+        ///// Bottom zone /////
+
+        // Calculate the speed and run auto-scroll
+
+        float speedAsProportionPerSecond = ( ( y - yBottomStart ) / ( listViewHeight - yBottomStart ) ) * AUTO_SCROLL_MAX_SPEED_IN_PROPORTION_PER_SECOND;
+
+        setAutoScroll( speedAsProportionPerSecond );
+        }
+
+      return ( true );
+      }
+    else if ( action == DragEvent.ACTION_DROP )
+      {
+      // Get the location
+      float x = event.getX();
+      float y = event.getY();
+
+      saveDragLocation( x, y );
+
+
+      onEndDrag();
 
       return ( true );
       }
 
+
     return ( false );
+    }
+
+
+  ////////// ActionMode.Callback Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when action mode is first entered.
+   *
+   *****************************************************/
+  @Override
+  public boolean onCreateActionMode( ActionMode mode, Menu menu )
+    {
+    // Inflate the action mode menu
+
+    MenuInflater inflator = mode.getMenuInflater();
+
+    inflator.inflate( R.menu.photobook_action_mode, menu );
+
+    return ( true );
+    }
+
+
+  /*****************************************************
+   *
+   * Called each time the action mode is shown.
+   *
+   *****************************************************/
+  @Override
+  public boolean onPrepareActionMode( ActionMode mode, Menu menu )
+    {
+    return false; // Return false if nothing is done
+    }
+
+
+  /*****************************************************
+   *
+   * Called when a contextual item is chosen.
+   *
+   *****************************************************/
+  @Override
+  public boolean onActionItemClicked( ActionMode mode, MenuItem item )
+    {
+    int itemId = item.getItemId();
+
+
+    // Check for the discard action
+
+    if ( itemId == R.id.discard_menu_item )
+      {
+      // Get the selected assets
+      Set<Asset> selectedEditedAssetSet = mPhotoBookAdaptor.getSelectedEditedAssetSet();
+
+      // Delete the selected assets
+      for ( Asset selectedEditedAsset : selectedEditedAssetSet )
+        {
+        removeImageForEditedAsset( selectedEditedAsset );
+        }
+
+      // Don't update the data. It gets updated when the action mode is destroyed, and we
+      // don't want it updating twice in a row.
+
+      // Exit action mode
+      mode.finish();
+
+      return ( true );
+      }
+
+
+    return ( false );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the user exits action mode.
+   *
+   *****************************************************/
+  @Override
+  public void onDestroyActionMode( ActionMode mode )
+    {
+    mActionMode = null;
+
+    // End the selection mode (and thus update the data)
+    mPhotoBookAdaptor.setSelectionMode( false );
     }
 
 
@@ -477,6 +617,195 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     }
 
 
+  /*****************************************************
+   *
+   * Clears the drag start position.
+   *
+   *****************************************************/
+  private void clearDragStart()
+    {
+    mDragStartX = -1;
+    mDragStartY = -1;
+    }
+
+
+  /*****************************************************
+   *
+   * Saves a drag location.
+   *
+   *****************************************************/
+  private void saveDragLocation( float x, float y )
+    {
+    // Always track the last drag location
+    mDragLastX = (int)x;
+    mDragLastY = (int)y;
+
+    // See if we need to save the drag start location
+    if ( mDragStartY < 0 || mDragStartY < 0 )
+      {
+      mDragStartX = mDragLastX;
+      mDragStartY = mDragLastY;
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Ensures that auto-scroll is running at the supplied
+   * speed.
+   *
+   *****************************************************/
+  private void setAutoScroll( float speedAsProportionPerSecond )
+    {
+    // Make sure we have a handler
+    if ( mHandler == null ) mHandler = new Handler();
+
+
+    // Make sure we have a scroll runnable. The presence of a scroll handler
+    // also indicates whether auto-scrolling is actually running. So if we
+    // need to create a scroll runnable, we also need to post it.
+
+    if ( mScrollRunnable == null )
+      {
+      mScrollRunnable = new ScrollRunnable();
+
+      postScrollRunnable();
+      }
+
+
+    // Set the speed
+    mScrollRunnable.setSpeed( speedAsProportionPerSecond );
+    }
+
+
+  /*****************************************************
+   *
+   * Ensures that auto-scroll is not running.
+   *
+   *****************************************************/
+  private void stopAutoScroll()
+    {
+    if ( mScrollRunnable != null )
+      {
+      if ( mHandler != null ) mHandler.removeCallbacks( mScrollRunnable );
+
+      mScrollRunnable = null;
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Posts the scroll runnable.
+   *
+   *****************************************************/
+  private void postScrollRunnable()
+    {
+    mHandler.postDelayed( mScrollRunnable, 10 );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when dragging stops.
+   *
+   *****************************************************/
+  private void onEndDrag()
+    {
+    stopAutoScroll();
+
+
+    // Determine which asset the drag ended on
+
+    int position = mPhotoBookListView.pointToPosition( mDragLastX, mDragLastY );
+
+    int dropAssetIndex = -1;
+
+    if ( position == PhotobookAdaptor.FRONT_COVER_POSITION )
+      {
+      dropAssetIndex = 0;
+      }
+    else if ( position >= PhotobookAdaptor.CONTENT_START_POSITION )
+      {
+      dropAssetIndex = 1 +
+                       ( ( position - PhotobookAdaptor.CONTENT_START_POSITION ) * 2 ) +
+                       ( mDragLastX > ( mPhotoBookListView.getWidth() / 2 ) ? 1 : 0 );
+      }
+
+
+    if ( dropAssetIndex >= 0 )
+      {
+      // If the drop ends on an empty image, assume it was dragged to the end
+
+      if ( dropAssetIndex >= mAssetsAndQuantityArrayList.size() )
+        {
+        dropAssetIndex = mAssetsAndQuantityArrayList.size() - 1;
+        }
+
+
+      // Insert the dragged asset into the drop position, and shift the others
+      // out of the way.
+
+      if ( dropAssetIndex != mDraggedAssetIndex )
+        {
+        AssetsAndQuantity draggedAssetsAndQuantity = mAssetsAndQuantityArrayList.remove( mDraggedAssetIndex );
+
+        mAssetsAndQuantityArrayList.add( dropAssetIndex, draggedAssetsAndQuantity );
+        }
+      else
+        {
+        // If the drag distance was small then we need to start the selection mode for
+        // deleting images.
+
+        float dragDistancePixels = getResources().getDimension( R.dimen.photobook_drag_distance );
+
+        float draggedDistanceX = mDragLastX - mDragStartX;
+        float draggedDistanceY = mDragLastY - mDragStartY;
+
+        float draggedDistancePixels = (float)Math.sqrt( ( draggedDistanceX * draggedDistanceX ) + ( draggedDistanceY * draggedDistanceY ) );
+
+        if ( draggedDistancePixels < dragDistancePixels )
+          {
+          // Start delete mode
+
+          mActionMode = mKiteActivity.startActionMode( this );
+
+          mPhotoBookAdaptor.setSelectionMode( true );
+          }
+
+        return;
+        }
+
+
+      mPhotoBookAdaptor.notifyDataSetChanged();
+      }
+
+
+    clearDragStart();
+    }
+
+
+  /*****************************************************
+   *
+   * Removes an image based on its edited asset.
+   *
+   *****************************************************/
+  private void removeImageForEditedAsset( Asset editedAsset )
+    {
+    for ( int candidateIndex = 0; candidateIndex < mAssetsAndQuantityArrayList.size(); candidateIndex ++ )
+      {
+      Asset candidateEditedAsset = mAssetsAndQuantityArrayList.get( candidateIndex ).getEditedAsset();
+
+      if ( candidateEditedAsset == editedAsset )
+        {
+        mAssetsAndQuantityArrayList.remove( candidateIndex );
+
+        return;
+        }
+      }
+    }
+
+
   ////////// Inner Class(es) //////////
 
   /*****************************************************
@@ -490,5 +819,68 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     public void pbOnNext();
     }
 
-  }
 
+  /*****************************************************
+   *
+   * A runnable for scrolling the list view.
+   *
+   *****************************************************/
+  private class ScrollRunnable implements Runnable
+    {
+    private float  mSpeedAsProportionPerSecond;
+    private long   mLastScrollRealtimeMillis;
+
+
+    void setSpeed( float speedAsProportionPerSecond )
+      {
+      mSpeedAsProportionPerSecond = speedAsProportionPerSecond;
+      }
+
+
+    @Override
+    public void run()
+      {
+      // Get the current elapsed time
+      long currentRealtimeMillis = SystemClock.elapsedRealtime();
+
+
+      // Check that the time looks OK
+
+      if ( mLastScrollRealtimeMillis > 0 && currentRealtimeMillis > mLastScrollRealtimeMillis )
+        {
+        // Calculate the scroll amount
+
+        long elapsedTimeMillis = currentRealtimeMillis - mLastScrollRealtimeMillis;
+
+        int scrollPixels = (int)( ( mPhotoBookListView.getHeight() * ( (float)elapsedTimeMillis / 1000f ) ) * mSpeedAsProportionPerSecond );
+
+        mPhotoBookListView.smoothScrollBy( scrollPixels, AUTO_SCROLL_INTERVAL_MILLIS_AS_INT );
+        }
+
+
+      // Save the current time and re-post
+
+      mLastScrollRealtimeMillis = currentRealtimeMillis;
+
+      postScrollRunnable();
+      }
+
+    }
+
+
+  /*****************************************************
+   *
+   * Calls back to the activity.
+   *
+   *****************************************************/
+  private class CallbackNextRunnable implements Runnable
+    {
+    @Override
+    public void run()
+      {
+      ( (ICallback)mKiteActivity ).pbOnNext();
+      }
+    }
+
+
+  }

@@ -293,19 +293,7 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
         int expectedNumberOfImages = numberOfPacks * quantityPerPack;
         if ( numberOfImages < expectedNumberOfImages )
           {
-          mKiteActivity.displayModalDialog(
-                  getString( R.string.alert_dialog_title_pack_not_full_format_string, numberOfImages, getResources().getQuantityString( R.plurals.photo_plurals, numberOfImages ) ),
-                  getString( R.string.alert_dialog_message_pack_not_full_format_string, expectedNumberOfImages - numberOfImages ),
-                  R.string.print_these,
-                  new Runnable()
-                  {
-                  @Override
-                  public void run()
-                    {
-                    ( (ICallback) mKiteActivity ).reOnConfirm();
-                    }
-                  },
-                  R.string.add_more, null );
+          displayNotFullDialog( expectedNumberOfImages, numberOfImages, new CallbackConfirmRunnable() );
           }
         else
           {
@@ -370,6 +358,21 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
     {
     public void reOnEdit( int assetIndex );
     public void reOnConfirm();
+    }
+
+
+  /*****************************************************
+   *
+   * Calls back to the activity.
+   *
+   *****************************************************/
+  private class CallbackConfirmRunnable implements Runnable
+    {
+    @Override
+    public void run()
+      {
+      ( (ICallback)mKiteActivity ).reOnConfirm();
+      }
     }
 
 

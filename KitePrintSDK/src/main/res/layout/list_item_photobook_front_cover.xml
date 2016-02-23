@@ -13,8 +13,8 @@
             android:layout_height="fill_parent"
             android:scaleType="centerCrop"
             android:src="@drawable/photobook_frontcover"/>
-        <ImageView
-            android:id="@+id/image_view"
+        <ly.kite.widget.CheckableImageContainerFrame
+            android:id="@+id/checkable_image_container_frame"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:padding="@dimen/photobook_front_cover_padding"

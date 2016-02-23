@@ -75,6 +75,16 @@ public class ImageViewConsumer implements IImageConsumer
 
   ////////// Static Method(s) //////////
 
+  /*****************************************************
+   *
+   * Clears the key for an image view.
+   *
+   *****************************************************/
+  static public void clearKey( ImageView imageView )
+    {
+    imageView.setTag( R.id.image_view_consumer_key, null );
+    }
+
 
   ////////// Constructor(s) //////////
 
@@ -116,7 +126,8 @@ public class ImageViewConsumer implements IImageConsumer
 
     if ( imageViewKey != null && imageViewKey.equals( key ) )
       {
-      mImageView.setTag( R.id.image_view_consumer_key, null );
+      clearKey( mImageView );
+
       mImageView.setImageBitmap( bitmap );
       }
     }
