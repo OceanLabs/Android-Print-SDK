@@ -87,6 +87,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   public    static final int     ACTIVITY_REQUEST_CODE_CREATE                 = 11;
   public    static final int     ACTIVITY_REQUEST_CODE_SELECT_DEVICE_IMAGE    = 12;
   public    static final int     ACTIVITY_REQUEST_CODE_SELECT_INSTAGRAM_IMAGE = 13;
+  public    static final int     ACTIVITY_REQUEST_CODE_EDIT_IMAGE             = 14;
 
 
 

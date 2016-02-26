@@ -110,6 +110,7 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
   private Product                       mProduct;
   private HashMap<String,String>        mOptionMap;
 
+  private ICustomImageEditorAgent       mCustomImageEditorAgent;
   private int                           mLastEditedAssetIndex;
 
 
@@ -309,6 +310,28 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
   // TODO: calling activity.
 
 
+  /*****************************************************
+   *
+   * Called when an activity result is received.
+   *
+   *****************************************************/
+  @Override
+  protected void onActivityResult( int requestCode, int resultCode, Intent resultIntent )
+    {
+    super.onActivityResult( requestCode, resultCode, resultIntent );
+
+
+    // Check for a custom image editor result
+
+    if ( requestCode == ACTIVITY_REQUEST_CODE_EDIT_IMAGE && resultCode == RESULT_OK )
+      {
+      Asset editedAsset = mCustomImageEditorAgent.getEditedAsset( resultIntent );
+
+      onAssetEdited( editedAsset );
+      }
+    }
+
+
   ////////// IAssetsAndQuantityHolder Method(s) //////////
 
   /*****************************************************
@@ -497,40 +520,10 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
   @Override
   public void eiOnConfirm( Asset editedAsset )
     {
-    // Replace the edited asset with the new one
-    
-    AssetsAndQuantity assetsAndQuantity = mAssetsAndQuantityArrayList.get( mLastEditedAssetIndex );
-
-    assetsAndQuantity.setEditedAsset( editedAsset, mProduct.getId() );
-
-
     // Remove the edit image fragment from the back stack
     popFragment();
 
-
-    // Once an image has been edited, we need to notify any fragments that use it. A fragment
-    // identifies itself as wanting to be notified by implementing the IUpdatedAssetListener
-    // interface.
-
-    int entryCount = mFragmentManager.getBackStackEntryCount();
-
-    for ( int entryIndex = 0; entryIndex < entryCount; entryIndex ++ )
-      {
-      FragmentManager.BackStackEntry entry = mFragmentManager.getBackStackEntryAt( entryIndex );
-
-      if ( entry != null )
-        {
-        int fragmentId = entry.getId();
-
-        Fragment fragment = mFragmentManager.findFragmentById( fragmentId );
-
-        if ( fragment != null && fragment instanceof IUpdatedAssetListener )
-          {
-          ( (IUpdatedAssetListener) fragment ).onAssetUpdated( mLastEditedAssetIndex, assetsAndQuantity );
-          }
-        }
-      }
-
+    onAssetEdited( editedAsset );
     }
 
 
@@ -582,17 +575,95 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
    *****************************************************/
   private void editAsset( int assetIndex )
     {
-    // Start the edit fragment
+    mLastEditedAssetIndex = assetIndex;
 
-    EditImageFragment editImageFragment = EditImageFragment.newInstance( mAssetsAndQuantityArrayList.get( assetIndex ).getUneditedAsset(), mProduct );
+
+    // Get the asset we want to edit
+
+    AssetsAndQuantity assetsAndQuantity = mAssetsAndQuantityArrayList.get( assetIndex );
+
+    Asset uneditedAsset = assetsAndQuantity.getUneditedAsset();
+
+
+    // Start the edit fragment. By default we use the edit image fragment, but this can be
+    // overridden within an app to use a custom editor. If we get any errors, revert to the
+    // default editor.
+
+    String customImageEditorAgentClassName = getString( R.string.custom_image_editor_agent_class_name );
+
+    if ( customImageEditorAgentClassName != null && ( ! customImageEditorAgentClassName.trim().equals( "" ) ) )
+      {
+      try
+        {
+        Class<?> clazz = Class.forName( customImageEditorAgentClassName );
+
+        mCustomImageEditorAgent = (ICustomImageEditorAgent)clazz.newInstance();
+
+        mCustomImageEditorAgent.onStartEditor( this, uneditedAsset, AKiteActivity.ACTIVITY_REQUEST_CODE_EDIT_IMAGE );
+
+        return;
+        }
+      catch ( ClassNotFoundException cnfe )
+        {
+        Log.e( LOG_TAG, "Could not find custom image editor agent: " + customImageEditorAgentClassName + ". Reverting to default editor.", cnfe );
+        }
+      catch ( ClassCastException cce )
+        {
+        Log.e( LOG_TAG, "Could not cast custom image editor agent: " + customImageEditorAgentClassName + " - did you implement the ICustomImageEditorAgent interface? Reverting to default editor.", cce );
+        }
+      catch ( Exception exception )
+        {
+        Log.e( LOG_TAG, "Could not start custom image editor agent: " + customImageEditorAgentClassName + ". Reverting to default editor.", exception );
+        }
+      }
+
+
+    EditImageFragment editImageFragment = EditImageFragment.newInstance( uneditedAsset, mProduct );
 
     addFragment( editImageFragment, EditImageFragment.TAG );
+    }
 
-    mLastEditedAssetIndex = assetIndex;
+
+  /*****************************************************
+   *
+   * Called when an asset is edited.
+   *
+   *****************************************************/
+  public void onAssetEdited( Asset editedAsset )
+    {
+    // Replace the edited asset with the new one
+
+    AssetsAndQuantity assetsAndQuantity = mAssetsAndQuantityArrayList.get( mLastEditedAssetIndex );
+
+    assetsAndQuantity.setEditedAsset( editedAsset, mProduct.getId() );
+
+
+    // Once an image has been edited, we need to notify any fragments that use it. A fragment
+    // identifies itself as wanting to be notified by implementing the IUpdatedAssetListener
+    // interface.
+
+    int entryCount = mFragmentManager.getBackStackEntryCount();
+
+    for ( int entryIndex = 0; entryIndex < entryCount; entryIndex ++ )
+      {
+      FragmentManager.BackStackEntry entry = mFragmentManager.getBackStackEntryAt( entryIndex );
+
+      if ( entry != null )
+        {
+        String fragmentName = entry.getName();
+
+        Fragment fragment= mFragmentManager.findFragmentByTag( fragmentName );
+
+        if ( fragment != null && fragment instanceof IUpdatedAssetListener )
+          {
+          ( (IUpdatedAssetListener) fragment ).onAssetUpdated( mLastEditedAssetIndex, assetsAndQuantity );
+          }
+        }
+      }
+
     }
 
 
   ////////// Inner Class(es) //////////
 
   }
-

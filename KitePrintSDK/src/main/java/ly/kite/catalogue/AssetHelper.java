@@ -56,6 +56,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.UUID;
@@ -82,11 +84,12 @@ public class AssetHelper
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                   = "AssetHelper";
+  private static final String  LOG_TAG                       = "AssetHelper";
 
-  public  static final String  IMAGE_CLASS_STRING_ASSET  = "asset";
+  public  static final String  IMAGE_CLASS_STRING_ASSET      = "asset";
 
-  private static final int     READ_BUFFER_SIZE_IN_BYTES = 8192;  // 8 KB
+  private static final int     READ_BUFFER_SIZE_IN_BYTES     = 8192;  // 8 KB
+  private static final int     TRANSFER_BUFFER_SIZE_IN_BYTES = 8192;  // 8 KB
 
 
   ////////// Static Variable(s) //////////
@@ -143,7 +146,18 @@ public class AssetHelper
 
     imageDirectory.mkdirs();
 
-    return ( imageDirectoryAndFilePath.second + mimeType.primaryFileSuffix() );
+    return ( imageDirectoryAndFilePath.second + ( mimeType != null ? mimeType.primaryFileSuffix() : "" ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Creates a placeholder asset on the filesystem.
+   *
+   *****************************************************/
+  static public Asset createAsCachedFile( Context context, Asset.MIMEType mimeType )
+    {
+    return ( new Asset( prepareForCachedFile( context, mimeType ) ) );
     }
 
 
@@ -156,6 +170,84 @@ public class AssetHelper
   static public Asset createAsCachedFile( Context context, byte[] imageBytes, Asset.MIMEType mimeType )
     {
     return ( createAsCachedFile( imageBytes, prepareForCachedFile( context, mimeType ) ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Transfers data from an input stream to an output stream.
+   *
+   *****************************************************/
+  static public void transferBytes( InputStream inputStream, OutputStream outputStream ) throws IOException
+    {
+    byte[] transferBuffer = new byte[ TRANSFER_BUFFER_SIZE_IN_BYTES ];
+
+    int byteCount;
+
+    while ( ( byteCount = inputStream.read( transferBuffer ) ) >= 0 )
+      {
+      outputStream.write( transferBuffer, 0, byteCount );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Creates a new asset from a bitmap, but writes it out
+   * to a file. The file path is automatically generated.
+   *
+   *****************************************************/
+  static public Asset createAsCachedFile( Context context, int bitmapResourceId, Asset.MIMEType mimeType )
+    {
+    String filePath = prepareForCachedFile( context, mimeType );
+
+
+    // Encode the bitmap directly to the filesystem, to avoid using more memory than necessary.
+
+    InputStream      is  = null;
+    FileOutputStream fos = null;
+
+    try
+      {
+      is  = context.getResources().openRawResource( bitmapResourceId );
+      fos = new FileOutputStream( filePath );
+
+      transferBytes( is, fos );
+
+      return ( new Asset( filePath ) );
+      }
+    catch ( Exception e )
+      {
+      Log.e( LOG_TAG, "Unable to copy resource to file", e );
+
+      return ( null );
+      }
+    finally
+      {
+      if ( is != null )
+        {
+        try
+          {
+          is.close();
+          }
+        catch ( IOException ioe )
+          {
+          // Do nothing
+          }
+        }
+      if ( fos != null )
+        {
+        try
+          {
+          fos.close();
+          }
+        catch ( IOException ioe )
+          {
+          // Do nothing
+          }
+        }
+
+      }
     }
 
 
@@ -648,7 +740,7 @@ public class AssetHelper
 
             bis = new BufferedInputStream( mContext.getResources().openRawResource( mAsset.getBitmapResourceId() ) );
 
-            return getBytes( bis );
+            return ( getBytes( bis ) );
 
 
           case BITMAP:
@@ -715,136 +807,6 @@ public class AssetHelper
         }
       }
     }
-
-
-//  /*****************************************************
-//   *
-//   * Supplies a bitmap from a URI.
-//   *
-//   *****************************************************/
-//  private static class GetBitmapTask extends AsyncTask<Void,Void,Object>
-//    {
-//    private Context            mContext;
-//    private Asset              mAsset;
-//    private IImageTransformer  mImageTransformer;
-//    private int                mScaledImageWidth;
-//    private IImageConsumer     mImageConsumer;
-//
-//
-//    GetBitmapTask( Context context, Asset asset, IImageTransformer imageTransformer, int scaledImageWidth, IImageConsumer imageConsumer )
-//      {
-//      mContext          = context;
-//      mAsset            = asset;
-//      mImageTransformer = imageTransformer;
-//      mScaledImageWidth = scaledImageWidth;
-//      mImageConsumer    = imageConsumer;
-//      }
-//
-//
-//    GetBitmapTask( Context context, Asset asset, IImageConsumer imageConsumer )
-//      {
-//      this( context, asset, null, 0, imageConsumer );
-//      }
-//
-//
-//    @Override
-//    public Object doInBackground( Void... voids )
-//      {
-//      BufferedInputStream bis = null;
-//
-//      try
-//        {
-//        Type type = mAsset.getType();
-//
-//        Bitmap transformedBitmap;
-//
-//        switch ( type )
-//          {
-//          case IMAGE_URI:
-//
-//            Uri uri = mAsset.getImageURI();
-//
-//            bis = new BufferedInputStream( mContext.getContentResolver().openInputStream( uri ) );
-//
-//            transformedBitmap = transformBitmap( BitmapFactory.decodeStream( bis ), mImageTransformer );
-//
-//            return ( ImageDownscaler.scaleBitmap( transformedBitmap, mScaledImageWidth ) );
-//
-//
-//          case IMAGE_BYTES:
-//
-//            byte[] imageBytes = mAsset.getImageBytes();
-//
-//            transformedBitmap = transformBitmap( BitmapFactory.decodeByteArray( imageBytes, 0, imageBytes.length ), mImageTransformer );
-//
-//            return ( ImageDownscaler.scaleBitmap( transformedBitmap, mScaledImageWidth ) );
-//
-//
-//          case IMAGE_FILE:
-//
-//            String filePath = mAsset.getImageFilePath();
-//
-//            bis = new BufferedInputStream( new FileInputStream( filePath ) );
-//
-//            transformedBitmap = transformBitmap( BitmapFactory.decodeStream( bis ), mImageTransformer );
-//
-//            return ( ImageDownscaler.scaleBitmap( transformedBitmap, mScaledImageWidth ) );
-//
-//
-//          case BITMAP_RESOURCE_ID:
-//
-//            int resourceId = mAsset.getBitmapResourceId();
-//
-//            transformedBitmap = transformBitmap( BitmapFactory.decodeResource( mContext.getResources(), resourceId ), mImageTransformer );
-//
-//            return ( ImageDownscaler.scaleBitmap( transformedBitmap, mScaledImageWidth ) );
-//
-//
-//          case BITMAP:
-//
-//            transformedBitmap = transformBitmap( mAsset.getBitmap(), mImageTransformer );
-//
-//            return ( ImageDownscaler.scaleBitmap( transformedBitmap, mScaledImageWidth ) );
-//          }
-//
-//
-//        throw ( new IllegalStateException( "Invalid asset type: " + type ) );
-//        }
-//      catch ( Exception exception )
-//        {
-//        Log.e( LOG_TAG, "Unable to decode bitmap", exception );
-//
-//        return ( exception );
-//        }
-//      finally
-//        {
-//        if ( bis != null )
-//          {
-//          try
-//            {
-//            bis.close();
-//            }
-//          catch ( Exception exception )
-//            {
-//            Log.e( LOG_TAG, "Unable to close input stream", exception );
-//            }
-//          }
-//        }
-//      }
-//
-//
-//    @Override
-//    public void onPostExecute( Object resultObject )
-//      {
-//      if ( resultObject != null &&
-//           resultObject instanceof Bitmap &&
-//           mImageConsumer != null )
-//        {
-//        mImageConsumer.onImageAvailable( mAsset, (Bitmap)resultObject );
-//        }
-//      }
-//
-//    }
 
 
   /*****************************************************
