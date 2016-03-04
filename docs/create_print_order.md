@@ -17,7 +17,7 @@ Overview
 Sample Code
 -----------
 
-1. Initialize the SDK and provide your API Keys (these can be found in the [Credentials](https://www.kite.ly/accounts/credentials/) section of the development dashboard). You'll typically initialize the SDK once at application startup. You will also need to supply a context.
+1. Initialize the SDK and provide your API Keys (these can be found in the [Credentials](https://www.kite.ly/settings/credentials/) section of the development dashboard). You'll typically initialize the SDK once at application startup. You will also need to supply a context.
 
     ```java
     KitePrintSDK.initialize("REPLACE_WITH_YOUR_API_KEY", KitePrintSDK.Environment.TEST, MyActivity.this);
