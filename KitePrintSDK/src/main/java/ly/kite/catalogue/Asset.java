@@ -39,7 +39,9 @@ package ly.kite.catalogue;
 
 ///// Import(s) /////
 
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Parcel;
@@ -143,7 +145,14 @@ public class Asset implements Parcelable
     {
     // Check that we support the scheme
 
-    if ( ! uri.getScheme().equalsIgnoreCase( "content" ) /*&& !uri.getScheme().equalsIgnoreCase("http") && !uri.getScheme().equalsIgnoreCase("https")*/ )
+    String scheme = uri.getScheme();
+
+    if ( scheme == null )
+      {
+      throw new IllegalArgumentException( "The URI scheme is null" );
+      }
+
+    if ( ! scheme.equalsIgnoreCase( "content" ) )
       {
       throw new IllegalArgumentException( "Only URIs with content schemes are currently supported, your scheme " + uri.getScheme() + " is not" );
       }
@@ -577,7 +586,7 @@ public class Asset implements Parcelable
   @Override
   public int hashCode()
     {
-    switch ( this.mType )
+    switch ( mType )
       {
       case IMAGE_URI:
         return ( mImageURI.hashCode() );
@@ -599,6 +608,42 @@ public class Asset implements Parcelable
       }
 
     throw ( new IllegalStateException( "Invalid asset type: " + mType ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a URI representing this asset.
+   *
+   *****************************************************/
+  public Uri toURI( Context context )
+    {
+    switch ( mType )
+      {
+      case IMAGE_URI:
+        return ( mImageURI );
+
+      case BITMAP_RESOURCE_ID:
+
+        Resources resources = context.getResources();
+
+        return ( Uri.parse( ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
+                            resources.getResourcePackageName( mBitmapResourceId ) + "/" +
+                            resources.getResourceTypeName( mBitmapResourceId ) + "/" +
+                            resources.getResourceEntryName( mBitmapResourceId ) ) );
+
+      case REMOTE_URL:
+        return ( Uri.parse( mRemoteURL.toString() ) );
+
+      case IMAGE_FILE:
+        return ( Uri.parse( ContentResolver.SCHEME_FILE + "://" + mImageFilePath ) );
+
+      default:
+        // Fall through
+      }
+
+
+    throw ( new IllegalStateException( "Unable to create URI for asset type: " + mType ) );
     }
 
 

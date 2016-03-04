@@ -13,6 +13,7 @@
         android:layout_gravity="top|right"
         android:layout_width="@dimen/image_check_size"
         android:layout_height="@dimen/image_check_size"
-        android:src="@drawable/image_check"/>
+        android:src="@drawable/image_check_on"
+        android:visibility="invisible"/>
 
 </merge>

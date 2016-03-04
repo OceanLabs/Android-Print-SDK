@@ -56,7 +56,8 @@
             android:background="#ffe34b"
             android:onClick="onRetryPrintClicked"
             android:text="@string/Retry"
-            android:textColor="#515151"/>
+            android:textColor="#515151"
+            android:textSize="@dimen/control_label_text_size"/>
 
     </LinearLayout>
 

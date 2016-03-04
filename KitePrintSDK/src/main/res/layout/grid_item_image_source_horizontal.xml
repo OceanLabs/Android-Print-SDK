@@ -4,7 +4,7 @@
     android:id="@+id/background_view"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:padding="10dp">
+    android:padding="@dimen/image_source_border_size">
 
     <LinearLayout
         android:layout_gravity="center"
@@ -19,10 +19,11 @@
 
         <ly.kite.widget.CustomTypefaceTextView
             android:id="@+id/label_text_view"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="@dimen/image_source_text_spacing"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/white"/>
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/control_label_text_size"/>
 
     </LinearLayout>
 

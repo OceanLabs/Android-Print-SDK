@@ -16,7 +16,7 @@
             android:layout_width="0dp"
             android:layout_weight="0.3"
             android:layout_height="fill_parent"
-            android:background="@color/success_banner_left_filler"/>
+            style="@style/FailureBannerLeftFiller"/>
         <ly.kite.widget.VerticallyScalingImageView
             android:layout_width="0dp"
             android:layout_weight="0.4"
@@ -27,7 +27,7 @@
             android:layout_width="0dp"
             android:layout_weight="0.3"
             android:layout_height="fill_parent"
-            android:background="@color/success_banner_right_filler"/>
+            style="@style/FailureBannerRightFiller"/>
     </LinearLayout>
 
 
@@ -93,7 +93,8 @@
                     android:background="#ffe34b"
                     android:onClick="onRetryPrintClicked"
                     android:text="@string/Retry"
-                    android:textColor="#515151"/>
+                    android:textColor="#515151"
+                    android:textSize="@dimen/control_label_text_size"/>
 
             </FrameLayout>
 

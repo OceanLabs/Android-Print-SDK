@@ -53,7 +53,7 @@ import java.util.List;
  * This class represents a product option.
  *
  *****************************************************/
-public class ProductOption
+public class ProductOption implements Parcelable
   {
   ////////// Static Constant(s) //////////
 
@@ -62,6 +62,20 @@ public class ProductOption
 
 
   ////////// Static Variable(s) //////////
+
+  public static final Parcelable.Creator<ProductOption> CREATOR =
+          new Parcelable.Creator<ProductOption>()
+          {
+          public ProductOption createFromParcel( Parcel sourceParcel )
+            {
+            return (new ProductOption( sourceParcel ) );
+            }
+
+          public ProductOption[] newArray( int size )
+            {
+            return (new ProductOption[ size ]);
+            }
+          };
 
 
   ////////// Member Variable(s) //////////
@@ -86,6 +100,47 @@ public class ProductOption
     mName      = name;
 
     mValueList = new ArrayList<>( 2 );
+    }
+
+
+  // Constructor used by parcelable interface
+  private ProductOption( Parcel sourceParcel )
+    {
+    mCode = sourceParcel.readString();
+    mName = sourceParcel.readString();
+
+    mValueList = new ArrayList<>( 2 );
+
+    sourceParcel.readList( mValueList, Value.class.getClassLoader() );
+    }
+
+
+  ////////// Parcelable Method(s) //////////
+
+  /*****************************************************
+   *
+   * Describes the contents of this parcelable.
+   *
+   *****************************************************/
+  @Override
+  public int describeContents()
+    {
+    return ( 0 );
+    }
+
+
+  /*****************************************************
+   *
+   * Write the contents of this product to a parcel.
+   *
+   *****************************************************/
+  @Override
+  public void writeToParcel( Parcel targetParcel, int flags )
+    {
+    targetParcel.writeString( mCode );
+    targetParcel.writeString( mName );
+
+    targetParcel.writeList( mValueList );
     }
 
 

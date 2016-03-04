@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * CheckableImageView.java
+ * CheckableImageContainerFrame.java
  *
  *
  * Modified MIT License
@@ -59,12 +59,12 @@ import ly.kite.R;
  * This class overlays a check mark on an image view.
  *
  *****************************************************/
-public class CheckableImageView extends AAREImageContainerFrame
+public class CheckableImageContainerFrame extends AAREImageContainerFrame
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                         = "CheckableImageView";
+  private static final String  LOG_TAG                         = "CheckableImageContainerFrame";
 
   private static final long    CHECK_ANIMATION_DURATION_MILLIS = 200L;
 
@@ -74,7 +74,9 @@ public class CheckableImageView extends AAREImageContainerFrame
 
   ////////// Member Variable(s) //////////
 
-  private boolean    mIsChecked;
+  private State      mState;
+  private boolean    mUncheckedStateIsVisible;
+
   private ImageView  mCheckImageView;
 
 
@@ -86,23 +88,23 @@ public class CheckableImageView extends AAREImageContainerFrame
 
   ////////// Constructor(s) //////////
 
-  public CheckableImageView( Context context )
+  public CheckableImageContainerFrame( Context context )
     {
     super( context );
     }
 
-  public CheckableImageView( Context context, AttributeSet attrs )
+  public CheckableImageContainerFrame( Context context, AttributeSet attrs )
     {
     super( context, attrs );
     }
 
-  public CheckableImageView( Context context, AttributeSet attrs, int defStyleAttr )
+  public CheckableImageContainerFrame( Context context, AttributeSet attrs, int defStyleAttr )
     {
     super( context, attrs, defStyleAttr );
     }
 
   @TargetApi( Build.VERSION_CODES.LOLLIPOP )
-  public CheckableImageView( Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes )
+  public CheckableImageContainerFrame( Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes )
     {
     super( context, attrs, defStyleAttr, defStyleRes );
     }
@@ -120,9 +122,11 @@ public class CheckableImageView extends AAREImageContainerFrame
     {
     LayoutInflater layoutInflator = LayoutInflater.from( context );
 
-    View view = layoutInflator.inflate( R.layout.checkable_image_view, this, true );
+    View view = layoutInflator.inflate( R.layout.checkable_image_container_frame, this, true );
 
     mCheckImageView = (ImageView)view.findViewById( R.id.check_image_view );
+
+    initialise( context );
 
     return ( view );
     }
@@ -132,17 +136,90 @@ public class CheckableImageView extends AAREImageContainerFrame
 
   /*****************************************************
    *
-   * Sets the checked state.
+   * Initialises the view.
    *
    *****************************************************/
-  public void setChecked( boolean isChecked )
+  private void initialise( Context context )
     {
-    mIsChecked = isChecked;
+    setState( State.UNCHECKED_INVISIBLE );
+    }
 
-    int visibility = ( isChecked ? View.VISIBLE : View.GONE );
 
+  /*****************************************************
+   *
+   * Sets the state.
+   *
+   *****************************************************/
+  public State setState( State state )
+    {
+    mState = state;
+
+    switch ( state )
+      {
+      case UNCHECKED_INVISIBLE:
+        mUncheckedStateIsVisible = false;
+        mCheckImageView.setVisibility( View.INVISIBLE );
+        break;
+
+      case UNCHECKED_VISIBLE:
+        mUncheckedStateIsVisible = true;
+        mCheckImageView.setImageResource( R.drawable.image_check_off );
+        mCheckImageView.setVisibility( View.VISIBLE );
+        break;
+
+      case CHECKED:
+        mCheckImageView.setImageResource( R.drawable.image_check_on );
+        mCheckImageView.setVisibility( View.VISIBLE );
+        break;
+      }
+
+    invalidate();
+
+    return ( state );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the checked state.
+   *
+   * @return The new state.
+   *
+   *****************************************************/
+  public State setChecked( boolean isChecked )
+    {
     mCheckImageView.setAnimation( null );
-    mCheckImageView.setVisibility( visibility );
+
+    return ( setState( testChecked( isChecked ) ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Tests the effect of setting the checked state. Does not
+   * actually change the state.
+   *
+   * @return The new state
+   *
+   *****************************************************/
+  public State testChecked( boolean isChecked )
+    {
+    if ( isChecked ) return ( State.CHECKED );
+
+    if ( mUncheckedStateIsVisible ) return ( State.UNCHECKED_VISIBLE );
+
+    return ( State.UNCHECKED_INVISIBLE );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns true if the image is checked, false otherwise.
+   *
+   *****************************************************/
+  public boolean isChecked()
+    {
+    return ( mState == State.CHECKED );
     }
 
 
@@ -153,27 +230,32 @@ public class CheckableImageView extends AAREImageContainerFrame
    *****************************************************/
   public void transitionChecked( boolean isChecked )
     {
-    boolean wasChecked = mIsChecked;
+    State previousState = mState;
+    State newState      = setChecked( isChecked );
 
-    setChecked( isChecked );
+
+    // We only animate for the following transitions:
+    //   - UNCHECKED_INVISIBLE -> CHECKED
+    //   - CHECKED -> UNCHECKED_INVISIBLE
 
     Animation animation       = null;
     int       finalVisibility = 0;
 
-    if ( ! wasChecked && isChecked )
+    if ( previousState == State.UNCHECKED_INVISIBLE && newState == State.CHECKED )
       {
-      ///// Animate in /////
+      ///// Animate invisible -> checked /////
 
       animation = new AlphaAnimation( 0f, 1f );
 
       finalVisibility = View.VISIBLE;
       }
-    else if ( wasChecked && ! isChecked )
+    else if ( previousState == State.CHECKED && newState == State.UNCHECKED_INVISIBLE )
       {
-      ///// Animate out /////
+      ///// Animate checked -> invisible /////
 
       animation = new AlphaAnimation( 1f, 0f );
-      //animation.setFillAfter( true );
+
+      mCheckImageView.setVisibility( View.VISIBLE );
 
       finalVisibility = View.GONE;
       }
@@ -186,11 +268,22 @@ public class CheckableImageView extends AAREImageContainerFrame
 
       mCheckImageView.startAnimation( animation );
       }
-
     }
 
 
   ////////// Inner Class(es) //////////
+
+  /*****************************************************
+   *
+   * Describes the state of the check.
+   *
+   *****************************************************/
+  public enum State
+    {
+    UNCHECKED_INVISIBLE,
+    UNCHECKED_VISIBLE,
+    CHECKED
+    }
 
   }
 

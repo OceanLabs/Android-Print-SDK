@@ -55,7 +55,7 @@ import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.journey.UserJourneyType;
 import ly.kite.catalogue.Asset;
 import ly.kite.catalogue.Product;
-import ly.kite.widget.CheckableImageView;
+import ly.kite.widget.CheckableImageContainerFrame;
 
 import ly.kite.R;
 
@@ -356,6 +356,7 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
     return ( -1 );
     }
 
+
   /*****************************************************
    *
    * Adds an asset. This is used both by our constructor,
@@ -554,7 +555,7 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
   class ViewHolder extends RecyclerView.ViewHolder
     {
     TextView           titleTextView;
-    CheckableImageView checkableImageView;
+    CheckableImageContainerFrame checkableImageView;
 
 
     public ViewHolder( View itemView )
@@ -562,7 +563,7 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
       super( itemView );
 
       titleTextView      = (TextView)itemView.findViewById( R.id.title_text_view );
-      checkableImageView = (CheckableImageView)itemView.findViewById( R.id.checkable_image_view );
+      checkableImageView = (CheckableImageContainerFrame)itemView.findViewById( R.id.checkable_image_view );
       }
     }
 

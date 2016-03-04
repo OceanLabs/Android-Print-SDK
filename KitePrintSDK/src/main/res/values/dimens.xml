@@ -14,6 +14,9 @@
 
     <dimen name="control_label_text_size">16sp</dimen>
     <dimen name="label_text_size">16sp</dimen>
+    <dimen name="explanation_text_size">15sp</dimen>
+    <dimen name="prompt_text_size">20sp</dimen>
+    <dimen name="empty_text_size">15sp</dimen>
 
     <dimen name="form_field_label_text_size">15sp</dimen>
     <dimen name="form_field_entry_text_size">16sp</dimen>
@@ -50,6 +53,9 @@
 
     <dimen name="proceed_overlay_frame_height">80dp</dimen>
 
+    <dimen name="proceed_bar_frame_height">60dp</dimen>
+    <dimen name="proceed_bar_padding">10dp</dimen>
+
     <dimen name="product_overview_paging_dots_spacing_bottom">10dp</dimen>
     <dimen name="product_overview_overlaid_start_button_spacing_bottom">16dp</dimen>
     <dimen name="product_overview_control_bar_height">50dp</dimen>
@@ -70,22 +76,50 @@
     <dimen name="cta_offset_button_width">140dp</dimen>
     <dimen name="cta_button_height">50dp</dimen>
 
+    <dimen name="image_source_border_size">10dp</dimen>
+    <dimen name="image_source_text_spacing">5dp</dimen>
     <dimen name="image_source_vertical_spacing">5dp</dimen>
-
-    <dimen name="prompt_text_size">20sp</dimen>
 
     <item name="image_selection_image_aspect_ratio" type="dimen" format="float">1.0</item>
     <dimen name="image_selection_thumbnail_size">360px</dimen>
 
     <dimen name="image_check_size">28dp</dimen>
 
+    <dimen name="image_default_resize_width">100px</dimen>
+
+
+    <dimen name="page_number_text_inset">10dp</dimen>
+    <dimen name="page_number_text_size">14sp</dimen>
+
+    <dimen name="photobook_add_image_size">15dp</dimen>
+
+    <dimen name="photobook_front_cover_width">150dp</dimen>
+    <dimen name="photobook_front_cover_height">150dp</dimen>
+    <dimen name="photobook_front_cover_padding">20dp</dimen>
+
+    <dimen name="photobook_instructions_text_size">18sp</dimen>
+    <dimen name="photobook_instructions_text_padding">10dp</dimen>
+
+    <dimen name="photobook_content_spacing">10dp</dimen>
+    <dimen name="photobook_content_width">290dp</dimen>
+    <dimen name="photobook_content_height">145dp</dimen>
+    <dimen name="photobook_content_padding">20dp</dimen>
+
+    <dimen name="photobook_drag_distance">5dp</dimen>
+
     <item name="review_and_crop_image_aspect_ratio" type="dimen" format="float">1.0</item>
     <dimen name="review_and_crop_quantity_text_size">18sp</dimen>
     <dimen name="review_and_crop_plus_minus_text_size">28sp</dimen>
     <dimen name="review_and_crop_rectangle_border">20dp</dimen>
 
-    <dimen name="payment_item_text_size">16sp</dimen>
-
     <dimen name="progress_banner_landscape_height">40dp</dimen>
+
+    <dimen name="delivery_address_button_text_size">15sp</dimen>
+
+    <dimen name="address_book_title_text_size">15sp</dimen>
+    <dimen name="address_book_detail_text_size">15sp</dimen>
+
+    <dimen name="payment_item_text_size">16sp</dimen>
+    <dimen name="price_field_width">100dp</dimen>
 
 </resources>

@@ -56,7 +56,7 @@ public enum UserJourneyType
   FRAME,
   GREETINGCARD,
   PHONE_CASE    ( true ),
-  PHOTOBOOK,
+  PHOTOBOOK     ( R.drawable.filled_white_rectangle ),
   POSTCARD,
   POSTER,
   RECTANGLE     ( R.drawable.filled_white_rectangle );

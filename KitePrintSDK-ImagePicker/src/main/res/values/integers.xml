@@ -1,0 +1,5 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <integer name="ip_grid_columns">3</integer>
+
+</resources>

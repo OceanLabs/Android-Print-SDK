@@ -38,7 +38,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/activity_vertical_margin"
                     android:onClick="onChooseDeliveryAddressButtonClicked"
-                    android:text="@string/shipping_delivery_address_button_text"/>
+                    android:text="@string/shipping_delivery_address_button_text"
+                    android:textSize="@dimen/delivery_address_button_text_size"/>
 
                 <ly.kite.widget.CustomTypefaceEditText
                     android:id="@+id/email_edit_text"
@@ -54,7 +55,8 @@
                     android:layout_marginTop="@dimen/activity_vertical_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/shipping_email_reason"/>
+                    android:text="@string/shipping_email_reason"
+                    android:textSize="@dimen/explanation_text_size"/>
 
                 <ly.kite.widget.CustomTypefaceEditText
                     android:id="@+id/phone_edit_text"

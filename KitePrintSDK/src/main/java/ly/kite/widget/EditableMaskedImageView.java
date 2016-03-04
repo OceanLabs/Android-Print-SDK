@@ -59,6 +59,8 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
+import java.util.ArrayList;
+
 import ly.kite.KiteSDK;
 import ly.kite.animation.ASimpleFloatPropertyAnimator;
 import ly.kite.catalogue.Bleed;
@@ -112,6 +114,15 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
   private Rect                  mMaskToBlendTargetRect;
   private RectF                 mImageToBlendTargetRectF;
 
+  // Each under image can potentially be a different size, so we need a unique source rect
+  // for each one ...
+  private Bitmap[]              mUnderImageArray;
+  private Rect[]                mUnderImageSourceRectArray;
+
+  // ... likewise for over images.
+  private Bitmap[]              mOverImageArray;
+  private Rect[]                mOverImageSourceRectArray;
+
   private Rect                  mBlendToViewSourceRect;
   private RectF                 mBlendToViewTargetRectF;
 
@@ -120,7 +131,7 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
   private float                 mImageMaxScaleFactor;
 
   private Paint                 mImageToBlendPaint;
-  private Paint                 mBlendToViewPaint;
+  private Paint                 mDefaultPaint;
 
   private Bitmap                mBlendBitmap;
   private Canvas                mBlendCanvas;
@@ -211,9 +222,6 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
       {
       // We don't need to clear the canvas since we are always drawing the mask in the same place
 
-      // Draw white where the mask will be (which may be smaller than the blend area if there is a bleed).
-      //mBlendCanvas.drawRect( mMaskToBlendTargetRect, mBlendBackgroundPaint );
-
       // Draw the mask, but apply a colour filter so that it is always white, but using the
       // mask's alpha.
       mMaskDrawable.setColorFilter( OPAQUE_WHITE, PorterDuff.Mode.SRC_ATOP );
@@ -226,8 +234,42 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
         mBlendCanvas.drawBitmap( mImageBitmap, mImageToBlendSourceRect, mImageToBlendTargetRectF, mImageToBlendPaint );
         }
 
+
+      // Draw any under images to the view canvas
+
+      if ( mUnderImageArray != null )
+        {
+        for ( int underImageIndex = 0; underImageIndex < mUnderImageArray.length; underImageIndex ++ )
+          {
+          Bitmap underImage = mUnderImageArray[ underImageIndex ];
+
+          if ( underImage != null )
+            {
+            canvas.drawBitmap( underImage, mUnderImageSourceRectArray[ underImageIndex ], mBlendToViewTargetRectF, mDefaultPaint );
+            }
+          }
+        }
+
+
       // Draw the blended image to the actual view canvas
-      canvas.drawBitmap( mBlendBitmap, mBlendToViewSourceRect, mBlendToViewTargetRectF, mBlendToViewPaint );
+      canvas.drawBitmap( mBlendBitmap, mBlendToViewSourceRect, mBlendToViewTargetRectF, mDefaultPaint );
+
+
+      // Draw any over images to the view canvas
+
+      if ( mOverImageArray != null )
+        {
+        for ( int overImageIndex = 0; overImageIndex < mOverImageArray.length; overImageIndex ++ )
+          {
+          Bitmap overImage = mOverImageArray[ overImageIndex ];
+
+          if ( overImage != null )
+            {
+            canvas.drawBitmap( overImage, mOverImageSourceRectArray[ overImageIndex ], mBlendToViewTargetRectF, mDefaultPaint );
+            }
+          }
+        }
+
       }
     }
 
@@ -411,7 +453,7 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
     mImageToBlendPaint.setAntiAlias( true );
     mImageToBlendPaint.setFilterBitmap( true );
 
-    mBlendToViewPaint = new Paint();
+    mDefaultPaint = new Paint();
 
     // Monitor both panning and zooming
     mGestureDetector      = new GestureDetector( context, this );
@@ -476,6 +518,11 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
     {
     mMaskDrawable = drawable;
 
+
+    int maskIntrinsicWidth  = mMaskDrawable.getIntrinsicWidth();
+    int maskIntrinsicHeight = mMaskDrawable.getIntrinsicHeight();
+
+
     // If an aspect ratio was supplied - invent a suitable width and height.
     if ( aspectRatio >= KiteSDK.FLOAT_ZERO_THRESHOLD )
       {
@@ -484,8 +531,8 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
       }
     else
       {
-      mMaskWidth  = mMaskDrawable.getIntrinsicWidth();
-      mMaskHeight = mMaskDrawable.getIntrinsicHeight();
+      mMaskWidth  = maskIntrinsicWidth;
+      mMaskHeight = maskIntrinsicHeight;
       }
 
     if ( bleed != null ) mMaskBleed  = bleed;
@@ -540,6 +587,106 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
   public Drawable getMaskDrawable()
     {
     return ( mMaskDrawable );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets an under image.
+   *
+   *****************************************************/
+  public void setUnderImage( int index, Bitmap underImage )
+    {
+    int minArraySize = index + 1;
+
+    // Create under arrays, if we haven't already done so
+    if ( mUnderImageArray == null || mUnderImageSourceRectArray == null )
+      {
+      mUnderImageArray           = new Bitmap[ minArraySize ];
+      mUnderImageSourceRectArray = new Rect[ minArraySize ];
+      }
+
+
+    // Make sure the arrays are big enough
+
+    int currentArraySize = mUnderImageArray.length;
+
+    if ( currentArraySize < minArraySize )
+      {
+      Bitmap[] newUnderImageArray           = new Bitmap[ minArraySize ];
+      Rect[]   newUnderImageSourceRectArray = new Rect[ minArraySize ];
+
+      System.arraycopy( mUnderImageArray,           0, newUnderImageArray,           0, currentArraySize );
+      System.arraycopy( mUnderImageSourceRectArray, 0, newUnderImageSourceRectArray, 0, currentArraySize );
+
+      mUnderImageArray           = newUnderImageArray;
+      mUnderImageSourceRectArray = newUnderImageSourceRectArray;
+      }
+
+
+    // Put the image at the correct position and create a source rect
+    mUnderImageArray          [ index ] = underImage;
+    mUnderImageSourceRectArray[ index ] = new Rect( 0, 0, underImage.getWidth(), underImage.getHeight() );
+
+
+    invalidate();
+    }
+
+
+  /*****************************************************
+   *
+   * Sets an over image.
+   *
+   *****************************************************/
+  public void setOverImage( int index, Bitmap overImage )
+    {
+    int minArraySize = index + 1;
+
+    // Create over arrays, if we haven't already done so
+    if ( mOverImageArray == null || mOverImageSourceRectArray == null )
+      {
+      mOverImageArray           = new Bitmap[ minArraySize ];
+      mOverImageSourceRectArray = new Rect[ minArraySize ];
+      }
+
+
+    // Make sure the arrays are big enough
+
+    int currentArraySize = mOverImageArray.length;
+
+    if ( currentArraySize < minArraySize )
+      {
+      Bitmap[] newOverImageArray           = new Bitmap[ minArraySize ];
+      Rect[]   newOverImageSourceRectArray = new Rect[ minArraySize ];
+
+      System.arraycopy( mOverImageArray,           0, newOverImageArray,           0, currentArraySize );
+      System.arraycopy( mOverImageSourceRectArray, 0, newOverImageSourceRectArray, 0, currentArraySize );
+
+      mOverImageArray           = newOverImageArray;
+      mOverImageSourceRectArray = newOverImageSourceRectArray;
+      }
+
+
+    // Put the image at the correct position and create a source rect
+    mOverImageArray          [ index ] = overImage;
+    mOverImageSourceRectArray[ index ] = new Rect( 0, 0, overImage.getWidth(), overImage.getHeight() );
+
+
+    invalidate();
+    }
+
+
+  /*****************************************************
+   *
+   * Clears the under and over images.
+   *
+   *****************************************************/
+  public void clearUnderOverImages()
+    {
+    mUnderImageArray = null;
+    mOverImageArray  = null;
+
+    invalidate();
     }
 
 

@@ -17,7 +17,7 @@
             android:layout_width="0dp"
             android:layout_weight="0.3"
             android:layout_height="fill_parent"
-            android:background="@color/success_banner_left_filler"/>
+            style="@style/SuccessBannerLeftFiller"/>
         <ly.kite.widget.VerticallyScalingImageView
             android:id="@+id/image_view_order_receipt_header"
             android:layout_width="0dp"
@@ -29,7 +29,7 @@
             android:layout_width="0dp"
             android:layout_weight="0.3"
             android:layout_height="fill_parent"
-            android:background="@color/success_banner_right_filler"/>
+            style="@style/SuccessBannerRightFiller"/>
     </LinearLayout>
 
 
@@ -110,7 +110,8 @@
                     android:background="#ffe34b"
                     android:onClick="onContinueShoppingClicked"
                     android:text="@string/Continue_Shopping"
-                    android:textColor="#515151"/>
+                    android:textColor="#515151"
+                    android:textSize="@dimen/control_label_text_size"/>
 
             </LinearLayout>
 

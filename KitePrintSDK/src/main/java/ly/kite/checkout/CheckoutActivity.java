@@ -213,16 +213,6 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
       mPrintOrder = (PrintOrder)getIntent().getParcelableExtra( EXTRA_PRINT_ORDER );
       }
 
-
-//    if ( apiKey == null )
-//      {
-//      apiKey = KiteSDK.getInstance( this ).getAPIKey();
-//      if ( apiKey == null )
-//        {
-//        throw new IllegalArgumentException( "You must specify an API key string extra in the intent used to start the CheckoutActivity or with KitePrintSDK.initialize" );
-//        }
-//      }
-
     if ( mPrintOrder == null )
       {
       throw new IllegalArgumentException( "You must specify a PrintOrder object extra in the intent used to start the CheckoutActivity" );
@@ -338,7 +328,7 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
    *****************************************************/
   private void onUpdateShippingAddress( Address shippingAddress, boolean requestPrices )
     {
-    mAddressPickerButton.setText( shippingAddress.toString() );
+    mAddressPickerButton.setText( shippingAddress.toButtonText() );
 
     // Re-request the pricing if the shipping address changes, just in case the shipping
     // price changes.

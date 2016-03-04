@@ -1,0 +1,25 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true"
+    android:background="@color/product_creation_background">
+
+    <include layout="@layout/include_small_progress_bar"/>
+
+    <ListView
+        android:id="@+id/list_view"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.0"
+        android:paddingLeft="@dimen/screen_horizontal_margin"
+        android:paddingTop="@dimen/screen_vertical_margin"
+        android:paddingRight="@dimen/screen_horizontal_margin"
+        android:paddingBottom="@dimen/screen_vertical_margin"
+        android:dividerHeight="0dp"
+        android:divider="@android:color/transparent"/>
+
+    <include layout="@layout/include_photobook_proceed_bar"/>
+
+</LinearLayout>

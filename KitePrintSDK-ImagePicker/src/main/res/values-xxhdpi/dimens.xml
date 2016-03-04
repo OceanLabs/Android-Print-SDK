@@ -1,0 +1,6 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <dimen name="ip_image_default_resize_width">300px</dimen>
+    <dimen name="ip_image_default_resize_height">300px</dimen>
+
+</resources>

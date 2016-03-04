@@ -61,7 +61,9 @@ public class Catalogue
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "Catalogue";
+  private static final String  LOG_TAG                = "Catalogue";
+
+  static private final boolean DISPLAY_PRODUCT_GROUPS = false;
 
 
   ////////// Static Variable(s) //////////
@@ -135,8 +137,11 @@ public class Catalogue
       {
       productGroup = new ProductGroup( groupLabel, product.getDisplayLabelColour(), groupImageURL );
 
-      Log.i( LOG_TAG, "-- New Product Group --" );
-      Log.i( LOG_TAG, productGroup.toLogString() );
+      if ( DISPLAY_PRODUCT_GROUPS )
+        {
+        Log.i( LOG_TAG, "-- New Product Group --" );
+        Log.i( LOG_TAG, productGroup.toLogString() );
+        }
 
       mGroupList.add( productGroup );
       mNameGroupTable.put( groupLabel, productGroup );
