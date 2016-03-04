@@ -39,17 +39,21 @@ To incorporate push messaging in your app, you can either copy the dependencies 
 
 On your build machine, change into the directory in which you wish to place the Kite SDK repository.
 
--- cd <path-to-your-root-directory>
+```
+cd <path-to-your-root-directory>
+```
 
 
 Clone the Kite SDK into this directory.
 
--- git clone https://github.com/OceanLabs/Android-Print-SDK.git
+```
+git clone https://github.com/OceanLabs/Android-Print-SDK.git
+```
 
 
 Open your app project in **Android Studio**.
 
-Ensure that your --project-- `settings.gradle` file contains the relevant lines:
+Ensure that your *project* `settings.gradle` file contains the relevant lines:
 
 '''
 include <your-app-modules-listed-here>, ':KitePrintSDK', ':KitePrintSDK-GCM'
@@ -65,7 +69,7 @@ project(':KitePrintSDK').projectDir = new File('../Android-Print-SDK/KitePrintSD
 project(':KitePrintSDK-GCM').projectDir = new File('../Android-Print-SDK/KitePrintSDK-GCM')
 
 
-Ensure that your --app module-- `build.gradle` file contains the relevant dependencies:
+Ensure that your *app module* `build.gradle` file contains the relevant dependencies:
 
 ```
 dependencies {
@@ -80,13 +84,13 @@ dependencies {
 Ensure that your app `AndroidManifest.xml` contains the following permissions:
 
 ```
-    <permission android:name="com.sticky9.permission.C2D_MESSAGE" android:protectionLevel="signature" />
+    <permission android:name="<your-app-package>.permission.C2D_MESSAGE" android:protectionLevel="signature" />
 
-    <uses-permission android:name="com.sticky9.permission.C2D_MESSAGE"/>
+    <uses-permission android:name="<your-app-package>.permission.C2D_MESSAGE"/>
 
 ```
 
-Also ensure that the `AndroidManifest.xml` contains the following declarations. Notice that the service declaration is for a listener service. The name should be adjusted to match the package and class name that you use. A template class is provided in the --SampleApp-- module included with the Kite SDK.
+Also ensure that the `AndroidManifest.xml` contains the following declarations. Notice that the service declaration is for a listener service. The name should be adjusted to match the package and class name that you use. A template class is provided in the **SampleApp** module included with the Kite SDK.
 
 ```
     <application
