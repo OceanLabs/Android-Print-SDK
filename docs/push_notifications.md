@@ -40,7 +40,7 @@ To incorporate push messaging in your app, you can either copy the dependencies 
 On your build machine, change into the directory in which you wish to place the Kite SDK repository.
 
 ```
-cd <path-to-your-root-directory>
+cd <path-to-your-directory>
 ```
 
 
@@ -55,18 +55,19 @@ Open your app project in **Android Studio**.
 
 Ensure that your *project* `settings.gradle` file contains the relevant lines:
 
-'''
+```
 include <your-app-modules-listed-here>, ':KitePrintSDK', ':KitePrintSDK-GCM'
 project(':KitePrintSDK').projectDir = new File('<relative-path-to-the-KitePrintSDK-module>')
 project(':KitePrintSDK-GCM').projectDir = new File('<relative-path-to-the-KitePrintSDK-GCM-module>')
-'''
+```
 
 For example:
 
-'''
+```
 include ':MyAppModule', ':KitePrintSDK', ':KitePrintSDK-GCM'
 project(':KitePrintSDK').projectDir = new File('../Android-Print-SDK/KitePrintSDK')
 project(':KitePrintSDK-GCM').projectDir = new File('../Android-Print-SDK/KitePrintSDK-GCM')
+```
 
 
 Ensure that your *app module* `build.gradle` file contains the relevant dependencies:
