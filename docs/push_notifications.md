@@ -131,7 +131,9 @@ Add your **Google Sender Id** as a string resource. Remember from earlier that t
     </resources>
 ```
 
-Implement a listener service. As mentioned previously, a template is provided in the SampleApp module, but your implementation may look something like this:
+## Create a push notification action
+
+Once a push notification has arrived, you must decide what to do with it. Often an app will create an Android notification to display the message to the user. Alternatively, you may choose to parse the message and perform an app action. However you decide to handle the notification, you must implement a listener service. As mentioned previously, a template is provided in the SampleApp module, but your implementation may look something like this:
 
 ```
 ...
