@@ -14,12 +14,10 @@
         android:layout_height="wrap_content"
         android:layout_weight="1.0"
         android:paddingLeft="@dimen/screen_horizontal_margin"
-        android:paddingTop="@dimen/screen_vertical_margin"
         android:paddingRight="@dimen/screen_horizontal_margin"
-        android:paddingBottom="@dimen/screen_vertical_margin"
         android:dividerHeight="0dp"
         android:divider="@android:color/transparent"/>
 
-    <include layout="@layout/include_photobook_proceed_bar"/>
+    <include layout="@layout/include_photobook_cta_bar"/>
 
 </LinearLayout>

@@ -47,6 +47,7 @@ import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -95,7 +96,8 @@ import ly.kite.catalogue.SingleCurrencyAmount;
  *****************************************************/
 public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
                                                               TextView.OnEditorActionListener,
-                                                              OrderSubmitter.IProgressListener
+                                                              OrderSubmitter.IProgressListener,
+                                                              View.OnClickListener
   {
   ////////// Static Constant(s) //////////
 
@@ -126,20 +128,19 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
   private PrintOrder           mOrder;
   private String               mAPIKey;
   private KiteSDK.Environment  mKiteSDKEnvironment;
-  //private PayPalCard.Environment mPayPalEnvironment;
 
-  private ListView mOrderSummaryListView;
-  private EditText mPromoEditText;
-  private Button mPromoButton;
-  private Button mCreditCardButton;
-  private Button mPayPalButton;
-  private ProgressBar mProgressBar;
+  private ListView                 mOrderSummaryListView;
+  private EditText                 mPromoEditText;
+  private Button                   mPromoButton;
+  private Button                   mPayPalButton;
+  private Button                   mCreditCardButton;
+  private ProgressBar              mProgressBar;
 
-  private OrderPricing mOrderPricing;
+  private OrderPricing             mOrderPricing;
 
-  private boolean mPromoActionClearsCode;
-  private String mLastSubmittedPromoCode;
-  private boolean mLastPriceRetrievalSucceeded;
+  private boolean                  mPromoActionClearsCode;
+  private String                   mLastSubmittedPromoCode;
+  private boolean                  mLastPriceRetrievalSucceeded;
 
   private OrderSubmissionFragment  mOrderSubmissionFragment;
   private ProgressDialog           mOrderSubmissionProgressDialog;
@@ -251,17 +252,24 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
 
     setContentView( R.layout.screen_payment );
 
-    mOrderSummaryListView = (ListView) findViewById( R.id.order_summary_list_view );
-    mPromoEditText        = (EditText) findViewById( R.id.promo_edit_text );
-    mPromoButton          = (Button) findViewById( R.id.promo_button );
-    mCreditCardButton     = (Button) findViewById( R.id.credit_card_button );
-    mPayPalButton         = (Button) findViewById( R.id.paypal_button );
-    mProgressBar          = (ProgressBar) findViewById( R.id.progress_bar );
+    mOrderSummaryListView = (ListView)findViewById( R.id.order_summary_list_view );
+    mPromoEditText        = (EditText)findViewById( R.id.promo_edit_text );
+    mPromoButton          = (Button)findViewById( R.id.promo_button );
+    mProgressBar          = (ProgressBar)findViewById( R.id.progress_bar );
 
-    mPromoEditText.addTextChangedListener( new PromoCodeTextWatcher() );
-    mPromoEditText.setOnEditorActionListener( this );
+
+    mPayPalButton = (Button)findViewById( R.id.cta_bar_left_button );
+
+    if ( mPayPalButton == null ) mPayPalButton = (Button)findViewById( R.id.paypal_button );
+
+
+    mCreditCardButton = (Button)findViewById( R.id.cta_bar_right_button );
+
+    if ( mCreditCardButton == null ) mCreditCardButton = (Button)findViewById( R.id.credit_card_button );
+
 
     hideKeyboard();
+
 
     if ( mKiteSDKEnvironment.getPayPalEnvironment().equals( PayPalConfiguration.ENVIRONMENT_SANDBOX ) )
       {
@@ -271,6 +279,15 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
       {
       setTitle( R.string.title_payment );
       }
+
+
+    Resources resources = getResources();
+
+    mPayPalButton.setText( R.string.payment_paypal_button_text );
+    mPayPalButton.setTextColor( resources.getColor( R.color.payment_paypal_button_text ) );
+
+    mCreditCardButton.setText( R.string.payment_credit_card_button_text );
+    mCreditCardButton.setTextColor( resources.getColor( R.color.payment_credit_card_button_text ) );
 
 
     // See if there is a retained order submission fragment already running
@@ -288,6 +305,13 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
       {
       Analytics.getInstance( this ).trackPaymentScreenViewed( mOrder );
       }
+
+
+    mPromoEditText.addTextChangedListener( new PromoCodeTextWatcher() );
+    mPromoEditText.setOnEditorActionListener( this );
+
+    mPayPalButton.setOnClickListener( this );
+    mCreditCardButton.setOnClickListener( this );
     }
 
 
@@ -673,6 +697,27 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
     Analytics.getInstance( PaymentActivity.this ).trackOrderSubmission( order );
 
     OrderReceiptActivity.startForResult( PaymentActivity.this, order, REQUEST_CODE_RECEIPT );
+    }
+
+
+  ////////// View.OnClickListener Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when a button is clicked.
+   *
+   *****************************************************/
+  @Override
+  public void onClick( View view )
+    {
+    if ( view == mPayPalButton )
+      {
+      onPayPalButtonClicked( view );
+      }
+    else if ( view == mCreditCardButton )
+      {
+      onCreditCardButtonClicked( view );
+      }
     }
 
 

@@ -1,0 +1,43 @@
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_gravity="bottom"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/cta_bar_frame_height"
+        android:layout_weight="0.0"
+        android:background="@android:color/white"
+        android:padding="@dimen/cta_bar_padding"
+        android:orientation="horizontal">
+
+        <ly.kite.widget.CustomTypefaceButton
+            android:id="@+id/cta_bar_left_button"
+            android:layout_gravity="left|center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_weight="0.5"
+            android:layout_height="fill_parent"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            android:textSize="@dimen/control_label_text_size"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_weight="0.0"
+            android:layout_height="fill_parent"
+            android:src="@drawable/cta_bar_divider"
+            android:scaleType="centerInside"
+            android:adjustViewBounds="true"/>
+
+        <ly.kite.widget.CustomTypefaceButton
+            android:id="@+id/cta_bar_right_button"
+            android:layout_gravity="right|center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_weight="0.5"
+            android:layout_height="fill_parent"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            android:textSize="@dimen/control_label_text_size"/>
+
+    </LinearLayout>
+
+</merge>

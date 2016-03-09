@@ -36,6 +36,8 @@
     <color name="cta_button_background">#ff8cbcbf</color>
     <color name="cta_button_text">@android:color/white</color>
 
+    <color name="cta_bar_background">@android:color/white</color>
+
     <color name="paging_dot_unselected">#7fffffff</color>
     <color name="paging_dot_selected">#ffffffff</color>
 
@@ -43,6 +45,7 @@
 
     <color name="product_creation_next_button_background">#ff8cbcbf</color>
     <color name="product_creation_background">#ffeeeeee</color>
+    <color name="edit_image_background">#ff646464</color>
 
     <color name="image_source_background_device">#ff48cfad</color>
     <color name="image_source_background_instagram">#fff6bb42</color>
@@ -57,6 +60,8 @@
 
     <color name="payment_promo_code_text_default">@android:color/black</color>
     <color name="payment_promo_code_text_error">#ffff0000</color>
+    <color name="payment_paypal_button_text">#ff3a97b9</color>
+    <color name="payment_credit_card_button_text">#ff86b612</color>
 
     <color name="progress_banner_left_filler">@android:color/transparent</color>
     <color name="progress_banner_right_filler">@android:color/transparent</color>

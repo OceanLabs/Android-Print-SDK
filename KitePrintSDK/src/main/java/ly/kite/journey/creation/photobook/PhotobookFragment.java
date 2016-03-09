@@ -51,6 +51,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 
 import java.util.Set;
@@ -181,19 +182,12 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     mPhotoBookListView = (ListView)view.findViewById( R.id.list_view );
 
 
-    // Set up the proceed button
-
-    if ( mProceedOverlayButton != null )
-      {
-      mProceedOverlayButton.setText( R.string.Next );
-
-      mProceedOverlayButton.setOnClickListener( this );
-      }
-
+    // Set up the forwards button
+    setForwardsButtonText( R.string.Next );
+    setForwardsButtonOnClickListener( this );
 
     // We listen for drag events so that we can auto scroll up or down when dragging
     mPhotoBookListView.setOnDragListener( this );
-
 
     return ( view );
     }
@@ -230,11 +224,12 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
 
   /*****************************************************
    *
-   * Called when an item in the options menu is selected.
+   * Called to find out the maximum number of images we
+   * want to select.
    *
    *****************************************************/
   @Override
-  public boolean onOptionsItemSelected( MenuItem item )
+  protected int getMaxAddImageCount()
     {
     // Limit the number of images selectable, if the image source supports it.
 
@@ -243,7 +238,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     if ( maxImages < 0 ) maxImages = 0;
 
 
-    return ( super.onOptionsItemSelected( item, maxImages ) );
+    return ( maxImages );
     }
 
 
@@ -323,8 +318,9 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
   @Override
   public void onClick( View view )
     {
+    Button proceedButton = getForwardsButton();
 
-    if ( view == mProceedOverlayButton )
+    if ( view == proceedButton )
       {
       ///// Checkout /////
 

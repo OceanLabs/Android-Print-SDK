@@ -39,6 +39,7 @@ package ly.kite.journey.creation.phonecase;
 
 ///// Import(s) /////
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -75,22 +76,18 @@ import ly.kite.widget.EditableImageContainerFrame;
  * case design using an image.
  *
  *****************************************************/
-public class PhoneCaseFragment extends AEditImageFragment implements AImageSource.IAssetConsumer
+public class PhoneCaseFragment extends AEditImageFragment
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
   static private final String      LOG_TAG                                   = "PhoneCaseFragment";
 
-  static private final String      BUNDLE_KEY_IMAGE_ASSET                    = "imageAsset";
-
 
   ////////// Static Variable(s) //////////
 
 
   ////////// Member Variable(s) //////////
-
-  private Asset  mImageAsset;
 
 
   ////////// Static Initialiser(s) //////////
@@ -105,18 +102,22 @@ public class PhoneCaseFragment extends AEditImageFragment implements AImageSourc
    *****************************************************/
   public static PhoneCaseFragment newInstance( Product product )
     {
-    PhoneCaseFragment fragment = new PhoneCaseFragment();
-
-    Bundle arguments = new Bundle();
-    arguments.putParcelable( BUNDLE_KEY_PRODUCT, product );
-
-    fragment.setArguments( arguments );
-
-    return ( fragment );
+    return ( new PhoneCaseFragment( product ) );
     }
 
 
   ////////// Constructor(s) //////////
+
+  public PhoneCaseFragment()
+    {
+    }
+
+
+  @SuppressLint("ValidFragment")
+  private PhoneCaseFragment( Product product )
+    {
+    super( product );
+    }
 
 
   ////////// AEditImageFragment Method(s) //////////
@@ -130,14 +131,6 @@ public class PhoneCaseFragment extends AEditImageFragment implements AImageSourc
   public void onCreate( Bundle savedInstanceState )
     {
     super.onCreate( savedInstanceState );
-
-
-    // See if we can find a saved asset
-
-    if ( savedInstanceState != null )
-      {
-      mImageAsset = savedInstanceState.getParcelable( BUNDLE_KEY_IMAGE_ASSET );
-      }
 
 
     setHasOptionsMenu( true );
@@ -166,16 +159,10 @@ public class PhoneCaseFragment extends AEditImageFragment implements AImageSourc
     {
     View view = super.onCreateView( layoutInflator, container, savedInstanceState );
 
-    if ( mCancelButton != null )
-      {
-      mCancelButton.setVisibility( View.GONE );
-      }
+    setBackwardsButtonVisibility( View.GONE );
 
-    if ( mConfirmButton != null )
-      {
-      mConfirmButton.setVisibility( View.VISIBLE );
-      mConfirmButton.setText( R.string.phone_case_proceed_button_text );
-      }
+    setForwardsButtonVisibility( View.VISIBLE );
+    setForwardsButtonText( R.string.phone_case_proceed_button_text );
 
     return ( view );
     }
@@ -205,16 +192,7 @@ public class PhoneCaseFragment extends AEditImageFragment implements AImageSourc
 
     if ( mEditableImageContainerFrame != null )
       {
-
-      // Try to restore any previous cropping
-
-      if ( savedInstanceState != null )
-        {
-        mEditableImageContainerFrame.restoreState( savedInstanceState );
-        }
-
-
-      // Define the loadable images
+      // Set up the images
 
       mEditableImageContainerFrame
               .setImage( mImageAsset )
@@ -222,35 +200,6 @@ public class PhoneCaseFragment extends AEditImageFragment implements AImageSourc
               .setUnderImages( mProduct.getUnderImageURLList() )
               .setOverImages( mProduct.getOverImageURLList() );
       }
-
-    }
-
-
-  /*****************************************************
-   *
-   * Called when an item in the options menu is selected.
-   *
-   *****************************************************/
-  @Override
-  public boolean onOptionsItemSelected( MenuItem item )
-    {
-    return ( super.onOptionsItemSelected( item, AImageSource.SINGLE_IMAGE ) );
-    }
-
-
-  /*****************************************************
-   *
-   * Called with the result of an activity.
-   *
-   *****************************************************/
-  @Override
-  public void onActivityResult( int requestCode, int resultCode, Intent returnedIntent )
-    {
-    super.onActivityResult( requestCode, resultCode, returnedIntent );
-
-
-    // Get assets for any images returned
-    KiteSDK.getInstance( mKiteActivity ).getAssetsFromPickerResult( mKiteActivity, requestCode, resultCode, returnedIntent, this );
     }
 
 
@@ -268,78 +217,7 @@ public class PhoneCaseFragment extends AEditImageFragment implements AImageSourc
     }
 
 
-  /*****************************************************
-   *
-   * Called to save the instance state.
-   *
-   *****************************************************/
-  @Override
-  public void onSaveInstanceState( Bundle outState )
-    {
-    // A different asset may have been selected by the user, which is why we save the most
-    // recent version.
-
-    if ( mImageAsset != null )
-      {
-      outState.putParcelable( BUNDLE_KEY_IMAGE_ASSET, mImageAsset );
-      }
-
-
-    // Try and save the cropping
-
-    if ( mEditableImageContainerFrame != null )
-      {
-      mEditableImageContainerFrame.saveState( outState );
-      }
-
-    }
-
-
-  ////////// AImageSource.IAssetConsumer Method(s) //////////
-
-  /*****************************************************
-   *
-   * Called with new picked assets.
-   *
-   *****************************************************/
-  @Override
-  public void isacOnAssets( List<Asset> assetList )
-    {
-    if ( assetList != null && assetList.size() > 0 )
-      {
-      // Add the assets to the shared list
-      for ( Asset asset : assetList )
-        {
-        mAssetsAndQuantityArrayList.add( 0, new AssetsAndQuantity( asset ) );
-        }
-
-
-      // Save the first asset and use it
-
-      mImageAsset = mAssetsAndQuantityArrayList.get( 0 ).getUneditedAsset();
-
-      useAssetForImage( mImageAsset, true );
-      }
-    }
-
-
   ////////// Method(s) //////////
-
-  /*****************************************************
-   *
-   * Uses the supplied asset for the photo.
-   *
-   *****************************************************/
-  private void useAssetForImage( Asset asset, boolean imageIsNew )
-    {
-    if ( mEditableImageContainerFrame != null )
-      {
-      if ( imageIsNew ) mEditableImageContainerFrame.clearState();
-
-      mEditableImageContainerFrame.setAndLoadImage( asset );
-      }
-    }
-
 
   /*****************************************************
    *

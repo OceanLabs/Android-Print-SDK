@@ -9,7 +9,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="horizontal"
-        android:background="@color/product_creation_background">
+        android:background="@color/edit_image_background">
 
         <ly.kite.widget.EditableImageContainerFrame
             android:id="@+id/editable_image_container_frame"
@@ -24,16 +24,27 @@
             android:layout_height="fill_parent"
             android:padding="@dimen/cta_button_margin">
 
-            <ly.kite.widget.CustomTypefaceButton
-                android:id="@+id/cancel_button"
-                style="@style/KiteSDKCTAButton.Offset"
-                android:layout_gravity="bottom|left"
-                android:visibility="gone"/>
-
-            <ly.kite.widget.CustomTypefaceButton
-                android:id="@+id/confirm_button"
-                style="@style/KiteSDKCTAButton.Offset"
-                android:layout_gravity="bottom|right"/>
+            <LinearLayout
+                android:layout_gravity="bottom"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <ly.kite.widget.CustomTypefaceButton
+                    android:id="@+id/cancel_button"
+                    android:layout_width="@dimen/cta_offset_button_width"
+                    android:layout_height="@dimen/cta_button_height"
+                    android:background="@android:color/white"
+                    android:gravity="center"
+                    android:textSize="@dimen/control_label_text_size"/>
+                <ly.kite.widget.CustomTypefaceButton
+                    android:id="@+id/confirm_button"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="@dimen/cta_offset_button_width"
+                    android:layout_height="@dimen/cta_button_height"
+                    android:background="@android:color/white"
+                    android:gravity="center"
+                    android:textSize="@dimen/control_label_text_size"/>
+            </LinearLayout>
 
         </FrameLayout>
 

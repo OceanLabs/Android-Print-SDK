@@ -225,9 +225,9 @@
     <string name="payment_promo_hint">Promotional code</string>
     <string name="payment_promo_button_text_apply">Apply</string>
     <string name="payment_promo_button_text_clear">Clear</string>
-    <string name="payment_credit_card_button_text">Pay with Credit Card</string>
+    <string name="payment_credit_card_button_text">Credit Card</string>
     <string name="payment_credit_card_button_text_free">Checkout for Free!</string>
-    <string name="payment_paypal_button_text">Pay with PayPal</string>
+    <string name="payment_paypal_button_text">PayPal</string>
 
 
     <string name="send_email_chooser_title">Send Email</string>

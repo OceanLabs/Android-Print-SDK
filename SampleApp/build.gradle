@@ -5,6 +5,7 @@ buildscript {
 
         // Uncomment to include Crashlytics (Fabric) crash reporting
         //maven { url 'https://maven.fabric.io/public' }
+
     }
     dependencies {
 
@@ -15,10 +16,10 @@ buildscript {
     }
 }
 
-repositories {
-    mavenCentral()
-    maven { url 'https://maven.fabric.io/public' }
-}
+//repositories {
+//    mavenCentral()
+//    maven { url 'https://maven.fabric.io/public' }
+//}
 
 apply plugin: 'com.android.application'
 
@@ -35,6 +36,7 @@ android {
         versionCode 201
         versionName '2.1'
     }
+
     sourceSets {
         main {
             java {
@@ -47,13 +49,20 @@ android {
             }
         }
     }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
     productFlavors {
+    }
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
     }
 }
 
@@ -62,7 +71,7 @@ dependencies {
     compile project(':KitePrintSDK')
 
     // Uncomment these if you want leak detection (and it works for you)
-    // debugCompile 'com.squareup.leakcanary:leakcanary-android:1.3.1'
+    //debugCompile 'com.squareup.leakcanary:leakcanary-android:1.3.1'
     //releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.3.1'
 
     // Uncomment to include push messaging
@@ -75,4 +84,5 @@ dependencies {
     //compile('com.crashlytics.sdk.android:crashlytics:2.4.0@aar') {
     //    transitive = true;
     //}
+
 }

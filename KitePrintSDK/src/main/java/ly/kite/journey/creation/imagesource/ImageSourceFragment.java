@@ -144,21 +144,6 @@ public class ImageSourceFragment extends AProductCreationFragment implements Ada
 
   /*****************************************************
    *
-   * Called with the result of an activity.
-   *
-   *****************************************************/
-  @Override
-  public void onActivityResult( int requestCode, int resultCode, Intent returnedIntent )
-    {
-    super.onActivityResult( requestCode, resultCode, returnedIntent );
-
-    // Get assets for any images returned
-    KiteSDK.getInstance( mKiteActivity ).getAssetsFromPickerResult( mKiteActivity, requestCode, resultCode, returnedIntent, this );
-    }
-
-
-  /*****************************************************
-   *
    * Called when the fragment is top-most.
    *
    *****************************************************/

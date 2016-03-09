@@ -41,6 +41,7 @@ package ly.kite.journey.creation;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -96,7 +97,11 @@ abstract public class AProductCreationFragment extends    AKiteFragment
   protected ArrayList<AssetsAndQuantity>  mAssetsAndQuantityArrayList;
 
   private   ProgressBar                   mProgressBar;
-  protected Button                        mProceedOverlayButton;
+  private   Button                        mProceedOverlayButton;
+  private   Button                        mCancelButton;
+  private   Button                        mConfirmButton;
+  private   Button                        mCTABarLeftButton;
+  private   Button                        mCTABarRightButton;
 
   protected int                           mInitialAssetsToCropCount;
   protected int                           mRemainingAssetsToCropCount;
@@ -206,10 +211,38 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
   /*****************************************************
    *
+   * Called when an options item is selected.
+   *
+   *****************************************************/
+  @Override
+  final public boolean onOptionsItemSelected( MenuItem item )
+    {
+    // Check for add image
+
+    if ( onCheckAddImageOptionItem( item, getMaxAddImageCount() ) )
+      {
+      return ( true );
+      }
+
+
+    // Check for custom item
+
+    if ( onCheckCustomOptionItem( item ) )
+      {
+      return ( true );
+      }
+
+
+    return ( super.onOptionsItemSelected( item ) );
+    }
+
+
+  /*****************************************************
+   *
    * Called when an item in the options menu is selected.
    *
    *****************************************************/
-  protected boolean onOptionsItemSelected( MenuItem item, int maxImageCount )
+  final protected boolean onCheckAddImageOptionItem( MenuItem item, int maxImageCount )
     {
     int itemId = item.getItemId();
 
@@ -226,7 +259,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
       }
 
 
-    return ( super.onOptionsItemSelected( item ) );
+    return ( false );
     }
 
 
@@ -255,20 +288,8 @@ abstract public class AProductCreationFragment extends    AKiteFragment
     {
     super.onTop();
 
-
     // We don't enable the proceed button until all the assets have been cropped
-
-    if ( mProceedOverlayButton != null )
-      {
-      if ( mRemainingAssetsToCropCount < 1 )
-        {
-        mProceedOverlayButton.setEnabled( true );
-        }
-      else
-        {
-        mProceedOverlayButton.setEnabled( false );
-        }
-      }
+    setForwardsButtonEnabled( mRemainingAssetsToCropCount < 1 );
     }
 
 
@@ -301,6 +322,159 @@ abstract public class AProductCreationFragment extends    AKiteFragment
     // Get references to any views
     mProgressBar          = (ProgressBar)view.findViewById( R.id.progress_bar );
     mProceedOverlayButton = (Button)view.findViewById( R.id.proceed_overlay_button );
+    mCancelButton         = (Button)view.findViewById( R.id.cancel_button );
+    mConfirmButton        = (Button)view.findViewById( R.id.confirm_button );
+    mCTABarLeftButton     = (Button)view.findViewById( R.id.cta_bar_left_button );
+    mCTABarRightButton    = (Button)view.findViewById( R.id.cta_bar_right_button );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a backwards button.
+   *
+   *****************************************************/
+  protected Button getBackwardsButton()
+    {
+    if ( mCTABarLeftButton != null ) return ( mCTABarLeftButton );
+    if ( mCancelButton     != null ) return ( mCancelButton );
+
+    return ( null );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the visibility of any backwards button.
+   *
+   *****************************************************/
+  protected void setBackwardsButtonVisibility( int visibility )
+    {
+    Button backwardsButton = getBackwardsButton();
+
+    if ( backwardsButton != null ) backwardsButton.setVisibility( visibility );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the text of any backwards button.
+   *
+   *****************************************************/
+  protected void setBackwardsButtonText( int textResourceId )
+    {
+    Button backwardsButton = getBackwardsButton();
+
+    if ( backwardsButton != null ) backwardsButton.setText( textResourceId );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the enabled state of any backwards button.
+   *
+   *****************************************************/
+  protected void setBackwardsButtonEnabled( boolean enabled )
+    {
+    Button backwardsButton = getBackwardsButton();
+
+    if ( backwardsButton != null ) backwardsButton.setEnabled( enabled );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the listener for any backwards button.
+   *
+   *****************************************************/
+  protected void setBackwardsButtonOnClickListener( View.OnClickListener listener )
+    {
+    Button backwardsButton = getBackwardsButton();
+
+    if ( backwardsButton != null ) backwardsButton.setOnClickListener( listener );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a forwards button.
+   *
+   *****************************************************/
+  protected Button getForwardsButton()
+    {
+    if ( mCTABarRightButton    != null ) return ( mCTABarRightButton );
+    if ( mProceedOverlayButton != null ) return ( mProceedOverlayButton );
+    if ( mConfirmButton        != null ) return ( mConfirmButton );
+
+    return ( null );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the visibility of any forwards button.
+   *
+   *****************************************************/
+  protected void setForwardsButtonVisibility( int visibility )
+    {
+    Button forwardsButton = getForwardsButton();
+
+    if ( forwardsButton != null ) forwardsButton.setVisibility( visibility );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the text of any forwards button.
+   *
+   *****************************************************/
+  protected void setForwardsButtonText( int textResourceId )
+    {
+    Button forwardsButton = getForwardsButton();
+
+    if ( forwardsButton != null ) forwardsButton.setText( textResourceId );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the style of any forwards button.
+   *
+   *****************************************************/
+  protected void setForwardsButtonBold( boolean bold )
+    {
+    Button forwardsButton = getForwardsButton();
+
+    if ( forwardsButton != null )
+      {
+      forwardsButton.setTypeface( forwardsButton.getTypeface(), bold ? Typeface.BOLD : Typeface.NORMAL );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the enabled state of any forwards button.
+   *
+   *****************************************************/
+  protected void setForwardsButtonEnabled( boolean enabled )
+    {
+    Button forwardsButton = getForwardsButton();
+
+    if ( forwardsButton != null ) forwardsButton.setEnabled( enabled );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the listener for any forwards button.
+   *
+   *****************************************************/
+  protected void setForwardsButtonOnClickListener( View.OnClickListener listener )
+    {
+    Button forwardsButton = getForwardsButton();
+
+    if ( forwardsButton != null ) forwardsButton.setOnClickListener( listener );
     }
 
 
@@ -352,10 +526,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
 
     // Set the enabled state of the proceed button according to whether there are assets to crop
-    if ( mProceedOverlayButton != null )
-      {
-      mProceedOverlayButton.setEnabled( mInitialAssetsToCropCount > 0 );
-      }
+    setForwardsButtonEnabled( mInitialAssetsToCropCount > 0 );
 
     return ( mInitialAssetsToCropCount > 0 );
     }
@@ -422,11 +593,35 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
   /*****************************************************
    *
+   * Called when an item in the options menu is selected,
+   * which has not already been handled.
+   *
+   *****************************************************/
+  protected boolean onCheckCustomOptionItem( MenuItem item )
+    {
+    return ( false );
+    }
+
+
+  /*****************************************************
+   *
    * Called when a new asset is added.
    *
    *****************************************************/
   protected void onAssetAdded( AssetsAndQuantity assetsAndQuantity )
     {
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the maximum number of images required when
+   * adding images.
+   *
+   *****************************************************/
+  protected int getMaxAddImageCount()
+    {
+    return ( AImageSource.UNLIMITED_IMAGES );
     }
 
 
@@ -569,7 +764,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
       if ( mRemainingAssetsToCropCount < 1 )
         {
-        if ( mProceedOverlayButton != null ) mProceedOverlayButton.setEnabled( true );
+        setForwardsButtonEnabled( true );
 
         onAllImagesCropped();
         }

@@ -3,17 +3,34 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/rotate_menu_item"
-        android:title="@string/Rotate"
-        android:icon="@drawable/ic_rotate_anticlockwise"
+        android:id="@+id/add_photo_menu_item"
+        android:icon="@drawable/ic_add_photo"
         android:showAsAction="always"
+        tools:ignore="AppCompatResource,MenuTitle">
+
+        <menu
+            android:id="@+id/add_photo_menu">
+
+            <!-- This is empty for now - the items will be added according to
+                 what's available.
+              -->
+
+        </menu>
+
+    </item>
+
+    <item
+        android:id="@+id/flip_horizontally_menu_item"
+        android:title="@string/Flip"
+        android:icon="@drawable/ic_flip_horizontally"
+        android:showAsAction="ifRoom"
         tools:ignore="AppCompatResource"/>
 
     <item
-        android:id="@+id/flip_menu_item"
-        android:title="@string/Flip"
-        android:icon="@drawable/ic_flip_vertically"
-        android:showAsAction="always"
+        android:id="@+id/rotate_anticlockwise_menu_item"
+        android:title="@string/Rotate"
+        android:icon="@drawable/ic_rotate_anticlockwise"
+        android:showAsAction="ifRoom"
         tools:ignore="AppCompatResource"/>
 
 </menu>

@@ -59,8 +59,6 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
-import java.util.ArrayList;
-
 import ly.kite.KiteSDK;
 import ly.kite.animation.ASimpleFloatPropertyAnimator;
 import ly.kite.catalogue.Bleed;
@@ -88,6 +86,8 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
   private static final long   FLY_BACK_ANIMATION_DURATION_MILLIS    = 150L;
 
   private static final int    OPAQUE_WHITE                          = 0xffffffff;
+  private static final int    TRANSLUCENT_ALPHA                     = 50;
+  private static final int    DEFAULT_BORDER_HIGHLIGHT_COLOUR       = 0xf0ffffff;
 
   private static final String BUNDLE_KEY_IMAGE_CENTER_X             = "imageCenterX";
   private static final String BUNDLE_KEY_IMAGE_CENTER_Y             = "imageCenterY";
@@ -101,7 +101,6 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
 
   private int                   mViewWidth;
   private int                   mViewHeight;
-  private float                 mViewAspectRatio;
 
   private Drawable              mMaskDrawable;
   private int                   mMaskWidth;
@@ -109,7 +108,7 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
   private Bleed                 mMaskBleed;
 
   private Bitmap                mImageBitmap;
-  private Rect                  mImageToBlendSourceRect;
+  private Rect                  mFullImageSourceRect;
 
   private Rect                  mMaskToBlendTargetRect;
   private RectF                 mImageToBlendTargetRectF;
@@ -123,7 +122,31 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
   private Bitmap[]              mOverImageArray;
   private Rect[]                mOverImageSourceRectArray;
 
-  private Rect                  mBlendToViewSourceRect;
+  private int                   mTranslucentBorderSizeInPixels;
+  private Paint                 mTranslucentPaint;
+  private RectF                 mImageToViewTargetRectF;
+
+  private BorderHighlight       mBorderHighlight;
+  private int                   mBorderHighlightSizeInPixels;
+  private Paint                 mBorderHighlightPaint;
+
+  private Bitmap                mTopLeftOverlayImage;
+  private Rect                  mTopLeftSourceRect;
+  private RectF                 mTopLeftTargetRectF;
+
+  private Bitmap                mTopRightOverlayImage;
+  private Rect                  mTopRightSourceRect;
+  private RectF                 mTopRightTargetRectF;
+
+  private Bitmap                mBottomLeftOverlayImage;
+  private Rect                  mBottomLeftSourceRect;
+  private RectF                 mBottomLeftTargetRectF;
+
+  private Bitmap                mBottomRightOverlayImage;
+  private Rect                  mBottomRightSourceRect;
+  private RectF                 mBottomRightTargetRectF;
+
+  private Rect                  mFullBlendSourceRect;
   private RectF                 mBlendToViewTargetRectF;
 
   private float                 mImageMinScaleFactor;
@@ -194,10 +217,8 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
     {
     super.onSizeChanged( width, height, oldWidth, oldHeight );
 
-    mViewWidth       = width;
-    mViewHeight      = height;
-
-    mViewAspectRatio = (float)width / (float)height;
+    mViewWidth  = width;
+    mViewHeight = height;
 
     calculateSizes();
     }
@@ -220,6 +241,23 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
 
     if ( mMaskToBlendTargetRect != null )
       {
+      // If there is a translucent border, we need to draw the whole image to the canvas at a reduced
+      // alpha first. Later, when we draw the mask-blended image, it should align with the translucent
+      // version.
+
+      if ( mTranslucentBorderSizeInPixels  > 0    &&
+           mBlendToViewTargetRectF        != null &&
+           mImageToBlendTargetRectF       != null )
+        {
+        mImageToViewTargetRectF.left   = mBlendToViewTargetRectF.left + mImageToBlendTargetRectF.left;
+        mImageToViewTargetRectF.top    = mBlendToViewTargetRectF.top  + mImageToBlendTargetRectF.top;
+        mImageToViewTargetRectF.right  = mBlendToViewTargetRectF.left + mImageToBlendTargetRectF.right;
+        mImageToViewTargetRectF.bottom = mBlendToViewTargetRectF.top  + mImageToBlendTargetRectF.bottom;
+
+        canvas.drawBitmap( mImageBitmap, mFullImageSourceRect, mImageToViewTargetRectF, mTranslucentPaint );
+        }
+
+
       // We don't need to clear the canvas since we are always drawing the mask in the same place
 
       // Draw the mask, but apply a colour filter so that it is always white, but using the
@@ -231,7 +269,7 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
       // Blend the image with the white mask
       if ( mImageToBlendTargetRectF != null )
         {
-        mBlendCanvas.drawBitmap( mImageBitmap, mImageToBlendSourceRect, mImageToBlendTargetRectF, mImageToBlendPaint );
+        mBlendCanvas.drawBitmap( mImageBitmap, mFullImageSourceRect, mImageToBlendTargetRectF, mImageToBlendPaint );
         }
 
 
@@ -252,7 +290,7 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
 
 
       // Draw the blended image to the actual view canvas
-      canvas.drawBitmap( mBlendBitmap, mBlendToViewSourceRect, mBlendToViewTargetRectF, mDefaultPaint );
+      canvas.drawBitmap( mBlendBitmap, mFullBlendSourceRect, mBlendToViewTargetRectF, mDefaultPaint );
 
 
       // Draw any over images to the view canvas
@@ -270,6 +308,29 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
           }
         }
 
+
+      // Draw any border highlight
+
+      if ( mBorderHighlight != null )
+        {
+        switch ( mBorderHighlight )
+          {
+          case RECTANGLE:
+            canvas.drawRect( mBlendToViewTargetRectF, mBorderHighlightPaint );
+            break;
+
+          case OVAL:
+            canvas.drawOval( mBlendToViewTargetRectF, mBorderHighlightPaint );
+            break;
+          }
+        }
+
+
+      // Draw any corner images
+      if ( mTopLeftTargetRectF     != null ) canvas.drawBitmap( mTopLeftOverlayImage,     mTopLeftSourceRect,     mTopLeftTargetRectF,     mDefaultPaint );
+      if ( mTopRightTargetRectF    != null ) canvas.drawBitmap( mTopRightOverlayImage,    mTopRightSourceRect,    mTopRightTargetRectF,    mDefaultPaint );
+      if ( mBottomLeftTargetRectF  != null ) canvas.drawBitmap( mBottomLeftOverlayImage,  mBottomLeftSourceRect,  mBottomLeftTargetRectF,  mDefaultPaint );
+      if ( mBottomRightTargetRectF != null ) canvas.drawBitmap( mBottomRightOverlayImage, mBottomRightSourceRect, mBottomRightTargetRectF, mDefaultPaint );
       }
     }
 
@@ -298,9 +359,9 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
         {
         new HorizontalImageAnimator( mImageToBlendTargetRectF.left, 0, mImageToBlendTargetRectF.width() ).start();
         }
-      else if ( mImageToBlendTargetRectF.right < mBlendToViewSourceRect.right )
+      else if ( mImageToBlendTargetRectF.right < mFullBlendSourceRect.right )
         {
-        new HorizontalImageAnimator( mImageToBlendTargetRectF.left, mImageToBlendTargetRectF.left + ( mBlendToViewSourceRect.right - mImageToBlendTargetRectF.right ), mImageToBlendTargetRectF.width() ).start();
+        new HorizontalImageAnimator( mImageToBlendTargetRectF.left, mImageToBlendTargetRectF.left + ( mFullBlendSourceRect.right - mImageToBlendTargetRectF.right ), mImageToBlendTargetRectF.width() ).start();
         }
 
 
@@ -311,9 +372,9 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
         {
         new VerticalImageAnimator( mImageToBlendTargetRectF.top, 0, mImageToBlendTargetRectF.height() ).start();
         }
-      else if ( mImageToBlendTargetRectF.bottom < mBlendToViewSourceRect.bottom )
+      else if ( mImageToBlendTargetRectF.bottom < mFullBlendSourceRect.bottom )
         {
-        new VerticalImageAnimator( mImageToBlendTargetRectF.top, mImageToBlendTargetRectF.top + ( mBlendToViewSourceRect.bottom - mImageToBlendTargetRectF.bottom ), mImageToBlendTargetRectF.height() ).start();
+        new VerticalImageAnimator( mImageToBlendTargetRectF.top, mImageToBlendTargetRectF.top + ( mFullBlendSourceRect.bottom - mImageToBlendTargetRectF.bottom ), mImageToBlendTargetRectF.height() ).start();
         }
 
       }
@@ -454,6 +515,10 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
     mImageToBlendPaint.setFilterBitmap( true );
 
     mDefaultPaint = new Paint();
+
+    mTranslucentPaint = new Paint();
+    mTranslucentPaint.setAlpha( TRANSLUCENT_ALPHA );
+    mImageToViewTargetRectF = new RectF();
 
     // Monitor both panning and zooming
     mGestureDetector      = new GestureDetector( context, this );
@@ -692,6 +757,161 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
 
   /*****************************************************
    *
+   * Sets a translucent border minimum size in pixels.
+   *
+   *****************************************************/
+  public void setTranslucentBorderPixels( int sizeInPixels )
+    {
+    if ( sizeInPixels < 0 ) sizeInPixels = 0;
+
+    mTranslucentBorderSizeInPixels = sizeInPixels;
+
+    calculateSizes();
+
+    invalidate();
+    }
+
+
+  /*****************************************************
+   *
+   * Sets a border highlight.
+   *
+   *****************************************************/
+  public void setBorderHighlight( BorderHighlight highlight, int colour, int sizeInPixels )
+    {
+    mBorderHighlight             = highlight;
+    mBorderHighlightSizeInPixels = sizeInPixels;
+
+    if ( highlight != null )
+      {
+      mBorderHighlightPaint = new Paint();
+      mBorderHighlightPaint.setColor( colour );
+      mBorderHighlightPaint.setAntiAlias( true );
+      mBorderHighlightPaint.setStyle( Paint.Style.STROKE );
+      mBorderHighlightPaint.setStrokeWidth( sizeInPixels );
+      }
+    else
+      {
+      mBorderHighlightPaint        = null;
+      mBorderHighlightSizeInPixels = 0;
+      }
+
+
+    prepareCornerRectangles();
+
+    invalidate();
+    }
+
+  /*****************************************************
+   *
+   * Sets a border highlight.
+   *
+   *****************************************************/
+  public void setBorderHighlight( BorderHighlight highlight, int size )
+    {
+    setBorderHighlight( highlight, DEFAULT_BORDER_HIGHLIGHT_COLOUR, size );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets corner overlay images.
+   *
+   *****************************************************/
+  public void setCornerOverlays( Bitmap topLeftImage, Bitmap topRightImage, Bitmap bottomLeftImage, Bitmap bottomRightImage )
+    {
+    mTopLeftOverlayImage     = topLeftImage;
+    mTopRightOverlayImage    = topRightImage;
+    mBottomLeftOverlayImage  = bottomLeftImage;
+    mBottomRightOverlayImage = bottomRightImage;
+
+    prepareCornerRectangles();
+
+    invalidate();
+    }
+
+
+  /*****************************************************
+   *
+   * Sets up the source / target rectangles for the corner
+   * overlays.
+   *
+   *****************************************************/
+  private void prepareCornerRectangles()
+    {
+    mTopLeftSourceRect      = null;
+    mTopLeftTargetRectF     = null;
+    mTopRightSourceRect     = null;
+    mTopRightTargetRectF    = null;
+    mBottomLeftSourceRect   = null;
+    mBottomLeftTargetRectF  = null;
+    mBottomRightSourceRect  = null;
+    mBottomRightTargetRectF = null;
+
+
+    // We can't create the target rectangles until we know the blend to view target rectangle
+    if ( mBlendToViewTargetRectF == null ) return;
+
+
+    if ( mTopLeftOverlayImage != null )
+      {
+      int imageWidth  = mTopLeftOverlayImage.getWidth();
+      int imageHeight = mTopLeftOverlayImage.getHeight();
+
+      mTopLeftSourceRect  = new Rect( 0, 0, imageWidth, imageHeight );
+      mTopLeftTargetRectF = new RectF(
+              mBlendToViewTargetRectF.left + mBorderHighlightSizeInPixels,
+              mBlendToViewTargetRectF.top  + mBorderHighlightSizeInPixels,
+              mBlendToViewTargetRectF.left + mBorderHighlightSizeInPixels + imageWidth,
+              mBlendToViewTargetRectF.top  + mBorderHighlightSizeInPixels + imageHeight );
+      }
+
+
+    if ( mTopRightOverlayImage != null )
+      {
+      int imageWidth  = mTopRightOverlayImage.getWidth();
+      int imageHeight = mTopRightOverlayImage.getHeight();
+
+      mTopRightSourceRect  = new Rect( 0, 0, imageWidth, imageHeight );
+      mTopRightTargetRectF = new RectF(
+              mBlendToViewTargetRectF.right - mBorderHighlightSizeInPixels - imageWidth,
+              mBlendToViewTargetRectF.top   + mBorderHighlightSizeInPixels,
+              mBlendToViewTargetRectF.right - mBorderHighlightSizeInPixels,
+              mBlendToViewTargetRectF.top   + mBorderHighlightSizeInPixels + imageHeight );
+      }
+
+
+    if ( mBottomLeftOverlayImage != null )
+      {
+      int imageWidth  = mBottomLeftOverlayImage.getWidth();
+      int imageHeight = mBottomLeftOverlayImage.getHeight();
+
+      mBottomLeftSourceRect  = new Rect( 0, 0, imageWidth, imageHeight );
+      mBottomLeftTargetRectF = new RectF(
+              mBlendToViewTargetRectF.left   + mBorderHighlightSizeInPixels,
+              mBlendToViewTargetRectF.bottom - mBorderHighlightSizeInPixels - imageHeight,
+              mBlendToViewTargetRectF.left   + mBorderHighlightSizeInPixels + imageWidth,
+              mBlendToViewTargetRectF.bottom - mBorderHighlightSizeInPixels );
+      }
+
+
+    if ( mBottomRightOverlayImage != null )
+      {
+      int imageWidth  = mBottomRightOverlayImage.getWidth();
+      int imageHeight = mBottomRightOverlayImage.getHeight();
+
+      mBottomRightSourceRect  = new Rect( 0, 0, imageWidth, imageHeight );
+      mBottomRightTargetRectF = new RectF(
+              mBlendToViewTargetRectF.right  - mBorderHighlightSizeInPixels - imageWidth,
+              mBlendToViewTargetRectF.bottom - mBorderHighlightSizeInPixels - imageHeight,
+              mBlendToViewTargetRectF.right  - mBorderHighlightSizeInPixels,
+              mBlendToViewTargetRectF.bottom - mBorderHighlightSizeInPixels );
+      }
+    }
+
+
+  /*****************************************************
+   *
    * Sets the image scale factor.
    *
    * Note that we bound the scale factor. This means that
@@ -722,7 +942,8 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
 
     if ( mMaskDrawable    == null ||
          mMaskBleed       == null ||
-         mViewAspectRatio  < KiteSDK.FLOAT_ZERO_THRESHOLD ) return;
+         mViewWidth        < 1    ||
+         mViewHeight       < 1    ) return;
 
 
     float halfViewWidth  = mViewWidth  * 0.5f;
@@ -730,31 +951,38 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
 
 
     // We need to scale the mask so that the mask plus bleed ( = blend canvas size) fits
-    // entirely within the view.
+    // entirely within the view, with some room for any translucent border.
     // The mask will therefore be the same size as, or smaller (if there is a bleed) than, the
     // blend canvas.
 
-    int unscaledMaskWidth           = mMaskWidth;
-    int unscaledMaskHeight          = mMaskHeight;
+    float unscaledMaskWidth           = mMaskWidth;
+    float unscaledMaskHeight          = mMaskHeight;
 
-    int unscaledMaskPlusBleedWidth  = mMaskBleed.leftPixels + unscaledMaskWidth  + mMaskBleed.rightPixels;
-    int unscaledMaskPlusBleedHeight = mMaskBleed.topPixels  + unscaledMaskHeight + mMaskBleed.bottomPixels;
+    float unscaledMaskPlusBleedWidth  = mMaskBleed.leftPixels + unscaledMaskWidth  + mMaskBleed.rightPixels;
+    float unscaledMaskPlusBleedHeight = mMaskBleed.topPixels  + unscaledMaskHeight + mMaskBleed.bottomPixels;
 
 
-    // The mask and bleed needs to fit entirely within the view, like the centerInside scale type.
+    // The mask and bleed needs to fit entirely within the view (minus any translucent
+    // border), like the centerInside scale type.
 
-    float maskPlusBleedAspectRatio = (float)unscaledMaskPlusBleedWidth / (float)unscaledMaskPlusBleedHeight;
-    float blendAspectRatio         = maskPlusBleedAspectRatio;
+    float maskPlusBleedAspectRatio   = unscaledMaskPlusBleedWidth / unscaledMaskPlusBleedHeight;
+    float blendAspectRatio           = maskPlusBleedAspectRatio;
+
+    float viewDisplayableWidth       = mViewWidth - mTranslucentBorderSizeInPixels - mTranslucentBorderSizeInPixels;
+    float viewDisplayableHeight      = mViewHeight - mTranslucentBorderSizeInPixels - mTranslucentBorderSizeInPixels;
+
+    float viewDisplayableAspectRatio = viewDisplayableWidth / viewDisplayableHeight;
+
 
     float maskScaleFactor;
 
-    if ( maskPlusBleedAspectRatio <= mViewAspectRatio )
+    if ( maskPlusBleedAspectRatio <= viewDisplayableAspectRatio )
       {
-      maskScaleFactor = (float)mViewHeight / (float)unscaledMaskPlusBleedHeight;
+      maskScaleFactor = viewDisplayableHeight / unscaledMaskPlusBleedHeight;
       }
     else
       {
-      maskScaleFactor = (float)mViewWidth / (float)unscaledMaskPlusBleedWidth;
+      maskScaleFactor = viewDisplayableWidth / unscaledMaskPlusBleedWidth;
       }
 
 
@@ -780,8 +1008,13 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
             Math.round( halfBlendWidth + halfScaledMaskWidth ),
             Math.round( halfBlendHeight + halfScaledMaskHeight ) );
 
-    mBlendToViewSourceRect  = new Rect( 0, 0, (int)blendWidth, (int)blendHeight );
+    mFullBlendSourceRect    = new Rect( 0, 0, (int)blendWidth, (int)blendHeight );
+
     mBlendToViewTargetRectF = new RectF( halfViewWidth - halfBlendWidth, halfViewHeight - halfBlendHeight, halfViewWidth + halfBlendWidth, halfViewHeight + halfBlendHeight );
+
+
+    // We can prepare any corener rectangles once we have the blend to view target rectangle
+    prepareCornerRectangles();
 
 
     // Create the bitmap-backed canvas for blending the mask and image
@@ -798,7 +1031,8 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
       }
 
 
-    // The image needs to fill the mask, like the centerCropped scale type
+    // We need to calculate the minimum / maximum allowed image sizes, and the default
+    // initial image size.
 
     int unscaledImageWidth  = mImageBitmap.getWidth();
     int unscaledImageHeight = mImageBitmap.getHeight();
@@ -806,13 +1040,17 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
 
     float imageAspectRatio = (float)unscaledImageWidth / (float)unscaledImageHeight;
 
+    float imageDefaultScaleFactor;
+
     if ( imageAspectRatio <= blendAspectRatio )
       {
-      mImageMinScaleFactor = blendWidth / (float)unscaledImageWidth;
+      mImageMinScaleFactor    = blendWidth / unscaledImageWidth;
+      imageDefaultScaleFactor = (float)( blendWidth + mTranslucentBorderSizeInPixels + mTranslucentBorderSizeInPixels ) / unscaledImageWidth;
       }
     else
       {
-      mImageMinScaleFactor = blendHeight / (float)unscaledImageHeight;
+      mImageMinScaleFactor    = blendHeight / unscaledImageHeight;
+      imageDefaultScaleFactor = (float)( blendHeight + mTranslucentBorderSizeInPixels + mTranslucentBorderSizeInPixels ) / unscaledImageHeight;
       }
 
     mImageMaxScaleFactor = mImageMinScaleFactor * MAX_IMAGE_ZOOM;
@@ -831,7 +1069,7 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
       }
     else
       {
-      mImageScaleFactor = mImageMinScaleFactor;
+      mImageScaleFactor = imageDefaultScaleFactor;
       }
 
 
@@ -841,7 +1079,7 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
     float scaledImageHeight     = unscaledImageHeight * mImageScaleFactor;
     float halfScaledImageHeight = scaledImageHeight * 0.5f;
 
-    mImageToBlendSourceRect = new Rect( 0, 0, unscaledImageWidth, unscaledImageHeight );
+    mFullImageSourceRect = new Rect( 0, 0, unscaledImageWidth, unscaledImageHeight );
 
 
     // See if we want to restore an image position. We only use the x and y just in case
@@ -945,6 +1183,22 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
 
   /*****************************************************
    *
+   * Requests a horizontal flip.
+   *
+   *****************************************************/
+  public void requestHorizontalFlip()
+    {
+    if ( mImageBitmap != null )
+      {
+      ImageAgent.horizontallyFlipBitmap( mImageBitmap );
+
+      invalidate();
+      }
+    }
+
+
+  /*****************************************************
+   *
    * Requests an anticlockwise rotation.
    *
    *****************************************************/
@@ -971,7 +1225,7 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
     // bleed on the unscaled image.
 
     // Make sure we have the dimensions we need
-    if ( mImageToBlendTargetRectF == null || mBlendToViewSourceRect == null ) return ( null );
+    if ( mImageToBlendTargetRectF == null || mFullBlendSourceRect == null ) return ( null );
 
 
     // Start by determining the bounds of the mask plus bleed within
@@ -981,8 +1235,8 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
 
     float scaledLeft   = - mImageToBlendTargetRectF.left;
     float scaledTop    = - mImageToBlendTargetRectF.top;
-    float scaledRight  = scaledLeft + mBlendToViewSourceRect.right;
-    float scaledBottom = scaledTop  + mBlendToViewSourceRect.bottom;
+    float scaledRight  = scaledLeft + mFullBlendSourceRect.right;
+    float scaledBottom = scaledTop  + mFullBlendSourceRect.bottom;
 
 
     // Scale the values up to the actual image size
@@ -1019,6 +1273,18 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
 
 
   ////////// Inner Class(es) //////////
+
+  /*****************************************************
+   *
+   * A type of border highlight.
+   *
+   *****************************************************/
+  public enum BorderHighlight
+    {
+    RECTANGLE,
+    OVAL
+    }
+
 
   /*****************************************************
    *
