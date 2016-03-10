@@ -627,16 +627,6 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
   /*****************************************************
    *
-   * Called when at least one new asset has been added.
-   *
-   *****************************************************/
-  protected void onNewAssets()
-    {
-    }
-
-
-  /*****************************************************
-   *
    * Adds new unedited assets to the users collection.
    * Duplicates will be discarded.
    *
@@ -664,7 +654,17 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
 
     // Get cropped versions of all new assets, and call back to the child class if there were some new ones.
-    if ( requestCroppedAssets() ) onNewAssets();
+    if ( requestCroppedAssets() ) onNewAssetsBeingCropped();
+    }
+
+
+  /*****************************************************
+   *
+   * Called when at least one new asset has been added.
+   *
+   *****************************************************/
+  protected void onNewAssetsBeingCropped()
+    {
     }
 
 

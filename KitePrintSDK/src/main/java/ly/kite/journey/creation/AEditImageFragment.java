@@ -423,7 +423,10 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
 
   /*****************************************************
    *
-   * Called with new picked assets.
+   * Called with new picked assets. For editing single
+   * images, we don't need to create cropped versions of
+   * the images up front, so simply add the image to the
+   * list.
    *
    *****************************************************/
   @Override

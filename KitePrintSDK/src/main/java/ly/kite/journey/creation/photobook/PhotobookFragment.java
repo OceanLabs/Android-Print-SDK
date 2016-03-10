@@ -39,6 +39,8 @@ package ly.kite.journey.creation.photobook;
 
 ///// Import(s) /////
 
+import java.util.Set;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
@@ -54,16 +56,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 
-import java.util.Set;
-
 import ly.kite.journey.AImageSource;
 import ly.kite.journey.creation.AProductCreationFragment;
+import ly.kite.journey.creation.IUpdatedAssetListener;
 import ly.kite.catalogue.Asset;
 import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.catalogue.Product;
-
 import ly.kite.R;
-import ly.kite.journey.creation.IUpdatedAssetListener;
 
 
 ///// Class Declaration /////

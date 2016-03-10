@@ -41,7 +41,9 @@ package ly.kite.journey.creation.phonecase;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -192,13 +194,18 @@ public class PhoneCaseFragment extends AEditImageFragment
 
     if ( mEditableImageContainerFrame != null )
       {
-      // Set up the images
+      Resources resources = getResources();
+
+      TypedValue anchorPointValue = new TypedValue();
+
+      resources.getValue( R.dimen.edit_phone_case_anchor_point, anchorPointValue, true );
 
       mEditableImageContainerFrame
               .setImage( mImageAsset )
               .setMask( mProduct.getMaskURL(), mProduct.getMaskBleed() )
               .setUnderImages( mProduct.getUnderImageURLList() )
-              .setOverImages( mProduct.getOverImageURLList() );
+              .setOverImages( mProduct.getOverImageURLList() )
+              .setAnchorPoint( anchorPointValue.getFloat() );
       }
     }
 

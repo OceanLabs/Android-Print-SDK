@@ -395,7 +395,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
    *
    *****************************************************/
   @Override
-  protected void onNewAssets()
+  protected void onNewAssetsBeingCropped()
     {
     setTitle();
     }

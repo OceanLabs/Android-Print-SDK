@@ -79,19 +79,22 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String LOG_TAG                               = "EditableMaskedImageView";
+  static private final String LOG_TAG                               = "EditableMaskedImageView";
 
-  private static final float  MAX_IMAGE_ZOOM                        = 3.0f;
+  static private final float  MAX_IMAGE_ZOOM                        = 3.0f;
 
-  private static final long   FLY_BACK_ANIMATION_DURATION_MILLIS    = 150L;
+  static private final long   FLY_BACK_ANIMATION_DURATION_MILLIS    = 150L;
 
-  private static final int    OPAQUE_WHITE                          = 0xffffffff;
-  private static final int    TRANSLUCENT_ALPHA                     = 50;
-  private static final int    DEFAULT_BORDER_HIGHLIGHT_COLOUR       = 0xf0ffffff;
+  static private final int    OPAQUE_WHITE                          = 0xffffffff;
+  static private final int    TRANSLUCENT_ALPHA                     = 50;
+  static private final int    DEFAULT_BORDER_HIGHLIGHT_COLOUR       = 0xf0ffffff;
 
-  private static final String BUNDLE_KEY_IMAGE_CENTER_X             = "imageCenterX";
-  private static final String BUNDLE_KEY_IMAGE_CENTER_Y             = "imageCenterY";
-  private static final String BUNDLE_KEY_IMAGE_SCALE_MULTIPLIER     = "imageScaleMultiplier";
+  static private final float  MIN_ANCHOR_POINT                      = 0.0f;
+  static private final float  MAX_ANCHOR_POINT                      = 0.9f;
+
+  static private final String BUNDLE_KEY_IMAGE_CENTER_X             = "imageCenterX";
+  static private final String BUNDLE_KEY_IMAGE_CENTER_Y             = "imageCenterY";
+  static private final String BUNDLE_KEY_IMAGE_SCALE_MULTIPLIER     = "imageScaleMultiplier";
 
 
   ////////// Static Variable(s) //////////
@@ -145,6 +148,8 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
   private Bitmap                mBottomRightOverlayImage;
   private Rect                  mBottomRightSourceRect;
   private RectF                 mBottomRightTargetRectF;
+
+  private float                 mAnchorPoint;
 
   private Rect                  mFullBlendSourceRect;
   private RectF                 mBlendToViewTargetRectF;
@@ -347,36 +352,12 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
     boolean detector1ConsumedEvent = mGestureDetector.onTouchEvent( event );
     boolean detector2ConsumedEvent = mScaleGestureDetector.onTouchEvent( event );
 
-    // If we got an up event, then we need to make sure that the mask is still filled by
-    // the image.
+    // If we got an up event, then we need to make sure that the image is still anchored
+    // within the mask.
     if ( event.getActionMasked() == MotionEvent.ACTION_UP &&
          mImageToBlendTargetRectF != null )
       {
-      // If we need to shift the image horizontally - start an animation to
-      // shift the image left or right.
-
-      if ( mImageToBlendTargetRectF.left > 0f )
-        {
-        new HorizontalImageAnimator( mImageToBlendTargetRectF.left, 0, mImageToBlendTargetRectF.width() ).start();
-        }
-      else if ( mImageToBlendTargetRectF.right < mFullBlendSourceRect.right )
-        {
-        new HorizontalImageAnimator( mImageToBlendTargetRectF.left, mImageToBlendTargetRectF.left + ( mFullBlendSourceRect.right - mImageToBlendTargetRectF.right ), mImageToBlendTargetRectF.width() ).start();
-        }
-
-
-      // If we need to shift the image horizontally - start an animation to
-      // shift the image up or down.
-
-      if ( mImageToBlendTargetRectF.top > 0f )
-        {
-        new VerticalImageAnimator( mImageToBlendTargetRectF.top, 0, mImageToBlendTargetRectF.height() ).start();
-        }
-      else if ( mImageToBlendTargetRectF.bottom < mFullBlendSourceRect.bottom )
-        {
-        new VerticalImageAnimator( mImageToBlendTargetRectF.top, mImageToBlendTargetRectF.top + ( mFullBlendSourceRect.bottom - mImageToBlendTargetRectF.bottom ), mImageToBlendTargetRectF.height() ).start();
-        }
-
+      checkAnchoring();
       }
 
     // If neither of the detectors consumed the event - pass it up to the parent class
@@ -833,6 +814,21 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
 
   /*****************************************************
    *
+   * Sets the anchor point.
+   *
+   *****************************************************/
+  public void setAnchorPoint( float anchorPoint )
+    {
+    if      ( anchorPoint < MIN_ANCHOR_POINT ) mAnchorPoint = MIN_ANCHOR_POINT;
+    else if ( anchorPoint > MAX_ANCHOR_POINT ) mAnchorPoint = MAX_ANCHOR_POINT;
+    else                                       mAnchorPoint = anchorPoint;
+
+    checkAnchoring();
+    }
+
+
+  /*****************************************************
+   *
    * Sets up the source / target rectangles for the corner
    * overlays.
    *
@@ -1162,6 +1158,50 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
     mRestoredImageProportionalCenterX = 0f;
     mRestoredImageProportionalCenterY = 0f;
     mRestoredImageScaleMultiplier     = 0f;
+    }
+
+
+  /*****************************************************
+   *
+   * Checks if the image is anchored, and animates it back
+   * to a safe position if not.
+   *
+   *****************************************************/
+  private void checkAnchoring()
+    {
+    if ( mImageToBlendTargetRectF == null ) return;
+
+
+    // If we need to shift the image horizontally - start an animation to
+    // shift the image left or right.
+
+    float leftBound  = mFullBlendSourceRect.width() * mAnchorPoint;
+    float rightBound = mFullBlendSourceRect.width() - leftBound;
+
+    if ( mImageToBlendTargetRectF.left > leftBound )
+      {
+      new HorizontalImageAnimator( mImageToBlendTargetRectF.left, leftBound, mImageToBlendTargetRectF.width() ).start();
+      }
+    else if ( mImageToBlendTargetRectF.right < rightBound )
+      {
+      new HorizontalImageAnimator( mImageToBlendTargetRectF.left, mImageToBlendTargetRectF.left + ( rightBound - mImageToBlendTargetRectF.right ), mImageToBlendTargetRectF.width() ).start();
+      }
+
+
+    // If we need to shift the image horizontally - start an animation to
+    // shift the image up or down.
+
+    float topBound    = mFullBlendSourceRect.height() * mAnchorPoint;
+    float bottomBound = mFullBlendSourceRect.height() - topBound;
+
+    if ( mImageToBlendTargetRectF.top > topBound )
+      {
+      new VerticalImageAnimator( mImageToBlendTargetRectF.top, topBound, mImageToBlendTargetRectF.height() ).start();
+      }
+    else if ( mImageToBlendTargetRectF.bottom < bottomBound )
+      {
+      new VerticalImageAnimator( mImageToBlendTargetRectF.top, mImageToBlendTargetRectF.top + ( bottomBound - mImageToBlendTargetRectF.bottom ), mImageToBlendTargetRectF.height() ).start();
+      }
     }
 
 

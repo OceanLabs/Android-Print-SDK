@@ -417,6 +417,19 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
 
   /*****************************************************
    *
+   * Sets the anchor point for the edge of images.
+   *
+   *****************************************************/
+  public EditableImageContainerFrame setAnchorPoint( float anchorPoint )
+    {
+    mEditableMaskedImageView.setAnchorPoint( anchorPoint );
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
    * Requests that the image be loaded asynchronously.
    *
    *****************************************************/
