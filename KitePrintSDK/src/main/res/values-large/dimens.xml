@@ -54,12 +54,42 @@
     <dimen name="cta_offset_button_width">175dp</dimen>
     <dimen name="cta_button_height">62dp</dimen>
 
+    <dimen name="cta_bar_frame_height">75dp</dimen>
+    <dimen name="cta_bar_padding">12dp</dimen>
+    <dimen name="cta_bar_button_text_size">19sp</dimen>
+
     <dimen name="proceed_bar_frame_height">75dp</dimen>
     <dimen name="proceed_bar_padding">12dp</dimen>
 
     <dimen name="image_source_vertical_spacing">6dp</dimen>
 
     <dimen name="progress_banner_landscape_height">50dp</dimen>
+
+
+    <dimen name="photobook_add_image_size">18dp</dimen>
+
+    <dimen name="photobook_front_cover_width">188dp</dimen>
+    <dimen name="photobook_front_cover_height">188dp</dimen>
+
+    <dimen name="photobook_front_cover_padding_left">25dp</dimen>
+    <dimen name="photobook_front_cover_padding_top">23dp</dimen>
+    <dimen name="photobook_front_cover_padding_right">25dp</dimen>
+    <dimen name="photobook_front_cover_padding_bottom">28dp</dimen>
+
+    <dimen name="photobook_instructions_text_size">23sp</dimen>
+    <dimen name="photobook_instructions_text_padding">13dp</dimen>
+
+    <dimen name="photobook_content_spacing">13dp</dimen>
+    <dimen name="photobook_content_width">363dp</dimen>
+    <dimen name="photobook_content_height">181dp</dimen>
+
+    <dimen name="photobook_content_padding_top">23dp</dimen>
+    <dimen name="photobook_content_padding_bottom">28dp</dimen>
+    <dimen name="photobook_content_padding_outside">30dp</dimen>
+    <dimen name="photobook_content_padding_inside">20dp</dimen>
+
+    <dimen name="photobook_drag_distance">6dp</dimen>
+
 
     <dimen name="delivery_address_button_text_size">18sp</dimen>
 

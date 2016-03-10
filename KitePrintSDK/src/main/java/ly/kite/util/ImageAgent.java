@@ -248,6 +248,34 @@ public class ImageAgent
 
   /*****************************************************
    *
+   * Horizontally flips the supplied bitmap. It is
+   * flipped in place, so the bitmap must be mutable.
+   *
+   *****************************************************/
+  static public void horizontallyFlipBitmap( Bitmap bitmap )
+    {
+    if ( bitmap == null ) return;
+
+    int imageWidth     = bitmap.getWidth();
+    int imageHeight    = bitmap.getHeight();
+    int imageHalfWidth = imageWidth >>> 1;
+
+    int[] leftColumn   = new int[ imageHeight ];
+    int[] rightColumn  = new int[ imageHeight ];
+
+    for ( int x = 0; x < imageHalfWidth; x ++ )
+      {
+      bitmap.getPixels( leftColumn,  0, 1, x,                  0, 1, imageHeight );
+      bitmap.getPixels( rightColumn, 0, 1, imageWidth - x - 1, 0, 1, imageHeight );
+
+      bitmap.setPixels( rightColumn, 0, 1, x,                  0, 1, imageHeight );
+      bitmap.setPixels( leftColumn,  0, 1, imageWidth - x - 1, 0, 1, imageHeight );
+      }
+    }
+
+
+  /*****************************************************
+   *
    * Rotates the supplied bitmap anticlockwise.
    *
    *****************************************************/

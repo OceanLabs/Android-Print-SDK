@@ -3,6 +3,7 @@
 
     <style name="Theme.KiteSDK" parent="android:Theme.DeviceDefault.Light">
         <item name="android:homeAsUpIndicator">@drawable/ic_arrow_back</item>
+        <item name="android:actionModeCloseDrawable">@drawable/ic_action_remove</item>
     </style>
 
 

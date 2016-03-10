@@ -4,13 +4,22 @@
     <FrameLayout
         android:layout_gravity="bottom"
         android:layout_width="fill_parent"
-        android:layout_height="@dimen/proceed_bar_frame_height"
+        android:layout_height="@dimen/cta_bar_frame_height"
         android:layout_weight="0.0"
         android:background="@android:color/white"
-        android:padding="@dimen/proceed_bar_padding">
+        android:padding="@dimen/cta_bar_padding">
 
         <ly.kite.widget.CustomTypefaceButton
-            android:id="@+id/proceed_overlay_button"
+            android:id="@+id/cta_bar_left_button"
+            android:layout_gravity="left|center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:textSize="@dimen/control_label_text_size"
+            android:visibility="gone"/>
+
+        <ly.kite.widget.CustomTypefaceButton
+            android:id="@+id/cta_bar_right_button"
             android:layout_gravity="right|center_vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

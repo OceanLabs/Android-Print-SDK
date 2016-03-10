@@ -39,7 +39,6 @@ package ly.kite.journey.creation.imageselection;
 
 ///// Import(s) /////
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -55,13 +54,11 @@ import android.widget.Button;
 import android.widget.GridView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import ly.kite.KiteSDK;
 import ly.kite.journey.AImageSource;
 import ly.kite.journey.creation.AProductCreationFragment;
 import ly.kite.journey.ImageSourceAdaptor;
-import ly.kite.catalogue.Asset;
 import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.catalogue.Product;
 
@@ -191,9 +188,11 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
 
     // Set up the listener(s)
+
     mImageSourceGridView.setOnItemClickListener( this );
     mClearPhotosButton.setOnClickListener( this );
-    mProceedOverlayButton.setOnClickListener( this );
+
+    setForwardsButtonOnClickListener( this );
 
 
     return ( view );
@@ -245,17 +244,17 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
       setClearPhotosButtonText();
 
-      mProceedOverlayButton.setVisibility( View.GONE );
+      setForwardsButtonVisibility( View.GONE );
       }
     else
       {
       mClearPhotosButton.setVisibility( View.GONE );
 
-      mProceedOverlayButton.setVisibility( View.VISIBLE );
+      setForwardsButtonVisibility( View.VISIBLE );
       }
 
 
-    mProceedOverlayButton.setText( R.string.image_selection_proceed_button_text );
+    setForwardsButtonText( R.string.image_selection_proceed_button_text );
     }
 
 
@@ -396,7 +395,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
    *
    *****************************************************/
   @Override
-  protected void onNewAssets()
+  protected void onNewAssetsBeingCropped()
     {
     setTitle();
     }
@@ -464,7 +463,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
       setUpRecyclerView();
       }
-    else if ( view == mProceedOverlayButton )
+    else if ( view == getForwardsButton() )
       {
       ///// Review and Crop /////
 
@@ -666,13 +665,15 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
    *****************************************************/
   private void animateProceedOverlayButtonIn()
     {
-    mProceedOverlayButton.setVisibility( View.VISIBLE );
+    Button proceedButton = getForwardsButton();
+
+    proceedButton.setVisibility( View.VISIBLE );
 
     Animation animation = new AlphaAnimation( 0f, 1f );
 
     animation.setDuration( PROCEED_BUTTON_BUTTON_ANIMATION_DURATION_MILLIS );
 
-    mProceedOverlayButton.startAnimation( animation );
+    proceedButton.startAnimation( animation );
     }
 
 
@@ -683,15 +684,17 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
    *****************************************************/
   private void animateProceedOverlayButtonOut()
     {
-    mProceedOverlayButton.setVisibility( View.VISIBLE );
+    Button proceedButton = getForwardsButton();
+
+    proceedButton.setVisibility( View.VISIBLE );
 
     Animation animation = new AlphaAnimation( 1f, 0f );
 
     animation.setDuration( PROCEED_BUTTON_BUTTON_ANIMATION_DURATION_MILLIS );
     animation.setFillAfter( true );
-    animation.setAnimationListener( new VisibilitySettingAnimationListener( mProceedOverlayButton, View.GONE ) );
+    animation.setAnimationListener( new VisibilitySettingAnimationListener( proceedButton, View.GONE ) );
 
-    mProceedOverlayButton.startAnimation( animation );
+    proceedButton.startAnimation( animation );
     }
 
 

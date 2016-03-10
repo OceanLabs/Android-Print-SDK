@@ -39,26 +39,23 @@ package ly.kite.journey.creation.reviewandedit;
 
 ///// Import(s) /////
 
+import android.annotation.SuppressLint;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 
-import ly.kite.KiteSDK;
 import ly.kite.R;
-import ly.kite.journey.AImageSource;
+import ly.kite.journey.UserJourneyType;
 import ly.kite.journey.creation.AEditImageFragment;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.catalogue.Asset;
-import ly.kite.catalogue.AssetHelper;
 import ly.kite.catalogue.Product;
-import ly.kite.util.ImageAgent;
-import ly.kite.widget.EditableImageContainerFrame;
+import ly.kite.widget.EditableMaskedImageView;
 
 
 ///// Class Declaration /////
@@ -85,8 +82,6 @@ public class EditImageFragment extends AEditImageFragment
 
   ////////// Member Variable(s) //////////
 
-  private Asset  mAsset;
-
 
   ////////// Static Initialiser(s) //////////
 
@@ -98,24 +93,27 @@ public class EditImageFragment extends AEditImageFragment
    * Creates a new instance of this fragment.
    *
    *****************************************************/
-  public static EditImageFragment newInstance( Asset uneditedAsset, Product product )
+  public static EditImageFragment newInstance( Product product, Asset imageAsset )
     {
-    EditImageFragment fragment = new EditImageFragment();
-
-    Bundle arguments = new Bundle();
-    arguments.putParcelable( BUNDLE_KEY_UNEDITED_ASSET, uneditedAsset );
-    arguments.putParcelable( BUNDLE_KEY_PRODUCT, product );
-
-    fragment.setArguments( arguments );
-
-    return ( fragment );
+    return ( new EditImageFragment( product, imageAsset ) );
     }
 
 
   ////////// Constructor(s) //////////
 
+  public EditImageFragment()
+    {
+    }
 
-  ////////// AEditImageFragment Method(s) //////////
+
+  @SuppressLint("ValidFragment")
+  private EditImageFragment( Product product, Asset imageAsset )
+    {
+    super( product, imageAsset );
+    }
+
+
+    ////////// AEditImageFragment Method(s) //////////
 
   /*****************************************************
    *
@@ -126,35 +124,6 @@ public class EditImageFragment extends AEditImageFragment
   public void onCreate( Bundle savedInstanceState )
     {
     super.onCreate( savedInstanceState );
-
-
-    // We have already obtained the product in the parent fragment
-
-
-    // Get the asset and mask
-
-    Bundle arguments = getArguments();
-
-    if ( arguments != null )
-      {
-      mAsset = arguments.getParcelable( BUNDLE_KEY_UNEDITED_ASSET );
-
-      if ( mAsset == null )
-        {
-        Log.e( LOG_TAG, "No asset found" );
-
-        mKiteActivity.displayModalDialog(
-                R.string.alert_dialog_title_no_asset,
-                R.string.alert_dialog_message_no_asset,
-                AKiteActivity.NO_BUTTON,
-                null,
-                R.string.Cancel,
-                mKiteActivity.new FinishRunnable()
-        );
-
-        return;
-        }
-      }
 
 
     setHasOptionsMenu( true );
@@ -171,13 +140,12 @@ public class EditImageFragment extends AEditImageFragment
     {
     View view = super.onCreateView( layoutInflator, container, savedInstanceState );
 
+    setBackwardsButtonVisibility( View.VISIBLE );
+    setBackwardsButtonText( R.string.Cancel );
 
-    mCancelButton.setVisibility( View.VISIBLE );
-    mCancelButton.setText( R.string.Cancel );
-
-    mConfirmButton.setVisibility( View.VISIBLE );
-    mConfirmButton.setText( R.string.OK );
-
+    setForwardsButtonVisibility( View.VISIBLE );
+    setForwardsButtonText( R.string.Done );
+    setForwardsButtonBold( true );
 
     return ( view );
     }
@@ -196,11 +164,23 @@ public class EditImageFragment extends AEditImageFragment
 
     if ( mEditableImageContainerFrame != null )
       {
-      // Define the loadable images
+      // Set up the editable image
+
+      Resources resources = getResources();
+
+      UserJourneyType                         userJourneyType = mProduct.getUserJourneyType();
+      EditableMaskedImageView.BorderHighlight borderHighlight = userJourneyType.editBorderHighlight();
 
       mEditableImageContainerFrame
-              .setImage( mAsset )
-              .setMask( mProduct.getUserJourneyType().maskResourceId(), mProduct.getImageAspectRatio() );
+              .setImage( mImageAsset )
+              .setMask( mProduct.getUserJourneyType().editMaskResourceId(), mProduct.getImageAspectRatio() )
+              .setTranslucentBorderPixels( resources.getDimensionPixelSize( R.dimen.edit_image_translucent_border_size ) )
+              .setBorderHighlight( borderHighlight, resources.getDimensionPixelSize( R.dimen.edit_image_border_highlight_size ) );
+
+      if ( borderHighlight == EditableMaskedImageView.BorderHighlight.RECTANGLE )
+        {
+        mEditableImageContainerFrame.setCornerOverlays( R.drawable.corner_top_left, R.drawable.corner_top_right, R.drawable.corner_bottom_left, R.drawable.corner_bottom_right );
+        }
       }
     }
 
@@ -213,7 +193,7 @@ public class EditImageFragment extends AEditImageFragment
   @Override
   public void onCreateOptionsMenu( Menu menu, MenuInflater menuInflator )
     {
-    menuInflator.inflate( R.menu.edit_image, menu );
+    onCreateOptionsMenu( menu, menuInflator, R.menu.edit_image );
     }
 
 

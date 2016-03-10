@@ -1,11 +1,11 @@
 /*****************************************************
  *
- * UserJourneyType.java
+ * DelimitedStringBuilder.java
  *
  *
  * Modified MIT License
  *
- * Copyright (c) 2010-2015 Kite Tech Ltd. https://www.kite.ly
+ * Copyright (c) 2010-2016 Kite Tech Ltd. https://www.kite.ly
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,40 +34,36 @@
 
 ///// Package Declaration /////
 
-package ly.kite.journey;
+package ly.kite.util;
 
 
 ///// Import(s) /////
-
-import ly.kite.R;
-import ly.kite.widget.EditableMaskedImageView;
 
 
 ///// Class Declaration /////
 
 /*****************************************************
  *
- * This enum defines a type of user journey through the
- * shopping process.
+ * This class is used to build a delimited string.
  *
  *****************************************************/
-public enum UserJourneyType
+public class DelimitedStringBuilder
   {
-  CIRCLE        ( R.drawable.filled_white_circle, EditableMaskedImageView.BorderHighlight.OVAL ),
-  FRAME,
-  GREETINGCARD  ( EditableMaskedImageView.BorderHighlight.RECTANGLE ),
-  PHONE_CASE    ( true ),
-  PHOTOBOOK     ( R.drawable.filled_white_rectangle, EditableMaskedImageView.BorderHighlight.RECTANGLE ),
-  POSTCARD,
-  POSTER,
-  RECTANGLE     ( R.drawable.filled_white_rectangle, EditableMaskedImageView.BorderHighlight.RECTANGLE );
+  ////////// Static Constant(s) //////////
+
+  @SuppressWarnings( "unused" )
+  static private final String  LOG_TAG = "DelimitedStringBuilder";
+
+
+  ////////// Static Variable(s) //////////
 
 
   ////////// Member Variable(s) //////////
 
-  private boolean                                  mUsesSingleImage;
-  private int                                      mEditMaskResourceId;
-  private EditableMaskedImageView.BorderHighlight  mEditBorderHighlight;
+  private String         mDelimiter;
+
+  private StringBuilder  mStringBuilder;
+  private boolean        mPrependDelimiter;
 
 
   ////////// Static Initialiser(s) //////////
@@ -78,31 +74,16 @@ public enum UserJourneyType
 
   ////////// Constructor(s) //////////
 
-  private UserJourneyType( boolean usesSingleImage, int editMaskResourceId, EditableMaskedImageView.BorderHighlight editBorderHighlight )
+  public DelimitedStringBuilder( String delimiter )
     {
-    mUsesSingleImage     = usesSingleImage;
-    mEditMaskResourceId  = editMaskResourceId;
-    mEditBorderHighlight = editBorderHighlight;
-    }
+    if ( delimiter == null || delimiter.length() < 1 )
+      {
+      throw ( new IllegalArgumentException( "Non empty delimited must be supplied" ) );
+      }
 
-  private UserJourneyType( boolean usesSingleImage )
-    {
-    this( usesSingleImage, 0, null );
-    }
-
-  private UserJourneyType( int editMaskResourceId, EditableMaskedImageView.BorderHighlight editBorderHighlight )
-    {
-    this( false, editMaskResourceId, editBorderHighlight );
-    }
-
-  private UserJourneyType( EditableMaskedImageView.BorderHighlight editBorderHighlight )
-    {
-    this( false, 0, editBorderHighlight );
-    }
-
-  private UserJourneyType()
-    {
-    this( false, 0, null );
+    mDelimiter        = delimiter;
+    mStringBuilder    = new StringBuilder();
+    mPrependDelimiter = false;
     }
 
 
@@ -110,35 +91,29 @@ public enum UserJourneyType
 
   /*****************************************************
    *
-   * Returns true if the user journey type uses a single
-   * image for creating items, false otherwise.
+   * Appends a string.
    *
    *****************************************************/
-  public boolean usesSingleImage()
+  public DelimitedStringBuilder append( String string )
     {
-    return ( mUsesSingleImage );
+    if ( mPrependDelimiter ) mStringBuilder.append( mDelimiter );
+    else                     mPrependDelimiter = true;
+
+    mStringBuilder.append( string );
+
+    return ( this );
     }
 
 
   /*****************************************************
    *
-   * Returns the resource id of the mask used for editing.
+   * Returns the built string.
    *
    *****************************************************/
-  public int editMaskResourceId()
+  @Override
+  public String toString()
     {
-    return ( mEditMaskResourceId );
-    }
-
-
-  /*****************************************************
-   *
-   * Returns the border highlight for editing.
-   *
-   *****************************************************/
-  public EditableMaskedImageView.BorderHighlight editBorderHighlight()
-    {
-    return ( mEditBorderHighlight );
+    return ( mStringBuilder.toString() );
     }
 
 

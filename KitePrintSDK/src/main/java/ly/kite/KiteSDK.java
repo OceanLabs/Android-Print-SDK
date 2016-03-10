@@ -43,7 +43,6 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import android.app.Activity;
@@ -52,6 +51,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 
@@ -64,6 +64,7 @@ import ly.kite.journey.DeviceImageSource;
 import ly.kite.journey.InstagramImageSource;
 import ly.kite.journey.selection.ProductSelectionActivity;
 import ly.kite.catalogue.AssetHelper;
+import ly.kite.util.DelimitedStringBuilder;
 import ly.kite.util.ImageAgent;
 
 
@@ -81,7 +82,7 @@ public class KiteSDK
 
   static private final String LOG_TAG                                             = "KiteSDK";
 
-  public  static final String SDK_VERSION                                         = "4.1.5";
+  public  static final String SDK_VERSION                                         = "4.2.1";
 
   static private final String SHARED_PREFERENCES_NAME                             = "kite_shared_prefs";
 
@@ -112,6 +113,7 @@ public class KiteSDK
   static public  final String PAYPAL_SANDBOX_CLIENT_ID                            = "AcEcBRDxqcCKiikjm05FyD4Sfi4pkNP98AYN67sr3_yZdBe23xEk0qhdhZLM";
   static public  final String PAYPAL_SANDBOX_PASSWORD                             = "";
 
+  static public  final String CLASS_NAMES_SEPARATOR                               = ",";
 
   static public final String INTENT_PREFIX                                        = "ly.kite";
 
@@ -120,7 +122,6 @@ public class KiteSDK
   static public final float  FLOAT_ZERO_THRESHOLD                                 = 0.0001f;
 
   static public final int    ACTIVITY_REQUEST_CODE_FIRST                          = 10;
-
 
 
   ////////// Static Variable(s) //////////
@@ -263,7 +264,10 @@ public class KiteSDK
 
     setEnvironment( apiKey, environment );
 
-    setImageSourcesByClassName( sharedPreferences.getStringSet( SHARED_PREFERENCES_KEY_IMAGE_SOURCES, null ) );
+
+    String imageSourceClassNames = sharedPreferences.getString( SHARED_PREFERENCES_KEY_IMAGE_SOURCES, null );
+
+    restoreImageSourcesByClassNames( imageSourceClassNames );
     }
 
 
@@ -498,21 +502,25 @@ public class KiteSDK
    * Sets image sources.
    *
    *****************************************************/
-  public KiteSDK setImageSourcesByClassName( Set<String> classNameSet )
+  private void restoreImageSourcesByClassNames( String classNamesString )
     {
     List<AImageSource> imageSourceList = new ArrayList<>();
 
-    if ( classNameSet != null )
+
+    if ( classNamesString != null )
       {
+      String[] classNameArray = classNamesString.split( CLASS_NAMES_SEPARATOR );
+
+
       // Try to dynamically load each of the image sources
 
-      for ( String className : classNameSet )
+      for ( String className : classNameArray )
         {
         try
           {
           Class<?>       imageSourceClass            = Class.forName( className );
-          Constructor<?> imageSourceClassConstructor = imageSourceClass.getConstructor();
-          AImageSource   imageSource                 = (AImageSource)imageSourceClassConstructor.newInstance();
+          //Constructor<?> imageSourceClassConstructor = imageSourceClass.getConstructor();
+          AImageSource   imageSource                 = (AImageSource)imageSourceClass.newInstance();
 
           imageSourceList.add( imageSource );
           }
@@ -524,14 +532,14 @@ public class KiteSDK
       }
 
 
-    // Convert the list to an array
+    // Convert the image source list to an array
 
-    AImageSource[] imageSources = new AImageSource[ imageSourceList.size() ];
+    AImageSource[] imageSourceArray = new AImageSource[ imageSourceList.size() ];
 
-    imageSourceList.toArray( imageSources );
+    imageSourceList.toArray( imageSourceArray );
 
 
-    return ( setImageSources( imageSources ) );
+    setImageSources( false, imageSourceArray );
     }
 
 
@@ -542,15 +550,27 @@ public class KiteSDK
    *****************************************************/
   public KiteSDK setImageSources( AImageSource... imageSources )
     {
+    return ( setImageSources( true, imageSources ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets image sources.
+   *
+   *****************************************************/
+  private KiteSDK setImageSources( boolean saveSources, AImageSource... imageSources)
+    {
     mImageSources = imageSources;
 
-
-    HashSet<String> classNameSet = new HashSet<>();
+    DelimitedStringBuilder classNamesStringBuilder = new DelimitedStringBuilder( CLASS_NAMES_SEPARATOR );
 
     if ( imageSources != null )
       {
       // Iterate through every image source. For each one, set its activity
-      // request code, and add its class name to a set.
+      // request code, and get its class name.
+
+      String[] classNamesArray = new String[ imageSources.length ];
 
       int requestCode = ACTIVITY_REQUEST_CODE_FIRST;
 
@@ -558,17 +578,20 @@ public class KiteSDK
         {
         imageSource.setActivityRequestCode( requestCode ++ );
 
-        classNameSet.add( imageSource.getClass().getName() );
+        classNamesStringBuilder.append( imageSource.getClass().getName() );
         }
       }
 
 
-    // Save the class names. This may be an empty set.
+    // Save the class names. This may be an empty list.
 
-    mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE )
-            .edit()
-            .putStringSet( SHARED_PREFERENCES_KEY_IMAGE_SOURCES, classNameSet )
-      .apply();
+    if ( saveSources )
+      {
+      mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE )
+        .edit()
+          .putString( SHARED_PREFERENCES_KEY_IMAGE_SOURCES, classNamesStringBuilder.toString() )
+        .apply();
+      }
 
 
     return ( this );
@@ -734,6 +757,8 @@ public class KiteSDK
           if ( imageSource.getActivityRequestCode() == requestCode )
             {
             imageSource.getAssetsFromPickerResult( activity, data, assetConsumer );
+
+            return;
             }
           }
         }

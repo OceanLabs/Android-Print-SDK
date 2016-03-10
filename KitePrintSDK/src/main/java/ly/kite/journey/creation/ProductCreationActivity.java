@@ -618,7 +618,7 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
       }
 
 
-    EditImageFragment editImageFragment = EditImageFragment.newInstance( uneditedAsset, mProduct );
+    EditImageFragment editImageFragment = EditImageFragment.newInstance( mProduct, uneditedAsset );
 
     addFragment( editImageFragment, EditImageFragment.TAG );
     }

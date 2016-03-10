@@ -38,6 +38,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.2.1'
     compile 'com.android.support:recyclerview-v7:22.2.1'
     compile 'ly.kite:instagram-photo-picker:1.1.0'
+    compile 'com.squareup.picasso:picasso:+'
     compile 'ly.kite:photo-picker:1.1.4'
 }
 

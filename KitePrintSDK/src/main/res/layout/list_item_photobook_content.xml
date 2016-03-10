@@ -37,7 +37,10 @@
                         android:id="@+id/left_checkable_image_container_frame"
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
-                        android:padding="@dimen/photobook_content_padding"
+                        android:paddingTop="@dimen/photobook_content_padding_top"
+                        android:paddingBottom="@dimen/photobook_content_padding_bottom"
+                        android:paddingLeft="@dimen/photobook_content_padding_outside"
+                        android:paddingRight="@dimen/photobook_content_padding_inside"
                         android:scaleType="centerCrop"/>
                     <ImageView
                         android:id="@+id/left_add_image_view"
@@ -55,7 +58,10 @@
                         android:id="@+id/right_checkable_image_container_frame"
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
-                        android:padding="@dimen/photobook_content_padding"
+                        android:paddingTop="@dimen/photobook_content_padding_top"
+                        android:paddingBottom="@dimen/photobook_content_padding_bottom"
+                        android:paddingLeft="@dimen/photobook_content_padding_inside"
+                        android:paddingRight="@dimen/photobook_content_padding_outside"
                         android:scaleType="centerCrop"/>
                     <ImageView
                         android:id="@+id/right_add_image_view"

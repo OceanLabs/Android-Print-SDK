@@ -10,13 +10,4 @@
     <string name="main_print_remote_button_text">Print Photos at Remote URLs</string>
     <string name="main_print_postcard_button_text">Print Postcard</string>
 
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
-    <string name="action_settings">Settings</string>
-    <string name="title_activity_checkout">Shipping Details</string>
-    <string name="title_activity_order_receipt">Order Receipt</string>
-    <string name="title_activity_payment">Payment</string>
-    <string name="hello_world">Hello world!</string>
-
 </resources>

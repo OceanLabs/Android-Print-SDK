@@ -9,7 +9,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical"
-        android:background="@color/product_creation_background"
+        android:background="@color/edit_image_background"
         android:layerType="hardware">
 
         <ly.kite.widget.EditableImageContainerFrame
@@ -20,24 +20,7 @@
             android:layout_weight="1.0"
             android:layerType="hardware"/>
 
-        <FrameLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.0"
-            android:padding="@dimen/cta_button_margin">
-
-            <ly.kite.widget.CustomTypefaceButton
-                android:id="@+id/cancel_button"
-                style="@style/KiteSDKCTAButton.Offset"
-                android:layout_gravity="bottom|left"
-                android:visibility="gone"/>
-
-            <ly.kite.widget.CustomTypefaceButton
-                android:id="@+id/confirm_button"
-                style="@style/KiteSDKCTAButton.Offset"
-                android:layout_gravity="bottom|right"/>
-
-        </FrameLayout>
+        <include layout="@layout/include_edit_image_cta_bar"/>
 
     </LinearLayout>
 

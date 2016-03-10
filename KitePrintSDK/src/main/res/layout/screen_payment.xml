@@ -64,32 +64,9 @@
                     android:textColor="@color/apply_button"/>
             </LinearLayout>
 
-
-            <ly.kite.widget.CustomTypefaceButton
-                android:id="@+id/credit_card_button"
-                android:layout_marginTop="30dp"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.0"
-                android:background="#8eae4d"
-                android:onClick="onCreditCardButtonClicked"
-                android:text="@string/payment_credit_card_button_text"
-                android:textColor="@android:color/white"
-                android:textSize="@dimen/control_label_text_size"/>
-
-            <ly.kite.widget.CustomTypefaceButton
-                android:id="@+id/paypal_button"
-                android:layout_marginTop="10dp"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.0"
-                android:background="#286db3"
-                android:onClick="onPayPalButtonClicked"
-                android:text="@string/payment_paypal_button_text"
-                android:textColor="@android:color/white"
-                android:textSize="@dimen/control_label_text_size"/>
-
         </LinearLayout>
+
+        <include layout="@layout/include_cta_bar_divided"/>
 
     </LinearLayout>
 

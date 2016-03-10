@@ -41,7 +41,9 @@ package ly.kite.widget;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
@@ -298,11 +300,13 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
    * Sets the mask as a drawable resource.
    *
    *****************************************************/
-  public void setMask( int resourceId, float aspectRatio )
+  public EditableImageContainerFrame setMask( int resourceId, float aspectRatio )
     {
     if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "setMask( resourceId = " + resourceId + ", aspectRatio = " + aspectRatio + " )" );
 
     mEditableMaskedImageView.setMask( resourceId, aspectRatio );
+
+    return ( this );
     }
 
 
@@ -335,6 +339,90 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
     mOverImageURLList = overImageURLList;
 
     if ( overImageURLList != null ) mExpectedOverImageKeys = new Object[ overImageURLList.size() ];
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets a translucent border minimum size in pixels.
+   *
+   *****************************************************/
+  public EditableImageContainerFrame setTranslucentBorderPixels( int sizeInPixels )
+    {
+    mEditableMaskedImageView.setTranslucentBorderPixels( sizeInPixels );
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets a border highlight.
+   *
+   *****************************************************/
+  public EditableImageContainerFrame setBorderHighlight( EditableMaskedImageView.BorderHighlight highlight, int colour, int size )
+    {
+    mEditableMaskedImageView.setBorderHighlight( highlight, colour, size );
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets a border highlight.
+   *
+   *****************************************************/
+  public EditableImageContainerFrame setBorderHighlight( EditableMaskedImageView.BorderHighlight highlight, int size )
+    {
+    mEditableMaskedImageView.setBorderHighlight( highlight, size );
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets corner images.
+   *
+   *****************************************************/
+  public EditableImageContainerFrame setCornerOverlays( Bitmap topLeftImage, Bitmap topRightImage, Bitmap bottomLeftImage, Bitmap bottomRightImage )
+    {
+    mEditableMaskedImageView.setCornerOverlays( topLeftImage, topRightImage, bottomLeftImage, bottomRightImage );
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets corner images.
+   *
+   *****************************************************/
+  public EditableImageContainerFrame setCornerOverlays( int topLeftImageResourceId, int topRightImageResourceId, int bottomLeftImageResourceId, int bottomRightImageResourceId )
+    {
+    Resources resources = getContext().getResources();
+
+    mEditableMaskedImageView.setCornerOverlays(
+            BitmapFactory.decodeResource( resources, topLeftImageResourceId ),
+            BitmapFactory.decodeResource( resources, topRightImageResourceId ),
+            BitmapFactory.decodeResource( resources, bottomLeftImageResourceId ),
+            BitmapFactory.decodeResource( resources, bottomRightImageResourceId ) );
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the anchor point for the edge of images.
+   *
+   *****************************************************/
+  public EditableImageContainerFrame setAnchorPoint( float anchorPoint )
+    {
+    mEditableMaskedImageView.setAnchorPoint( anchorPoint );
 
     return ( this );
     }
@@ -593,6 +681,20 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
     if ( mEditableMaskedImageView != null )
       {
       mEditableMaskedImageView.requestVerticalFlip();
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Requests a horizontal flip.
+   *
+   *****************************************************/
+  public void requestHorizontalFlip()
+    {
+    if ( mEditableMaskedImageView != null )
+      {
+      mEditableMaskedImageView.requestHorizontalFlip();
       }
     }
 

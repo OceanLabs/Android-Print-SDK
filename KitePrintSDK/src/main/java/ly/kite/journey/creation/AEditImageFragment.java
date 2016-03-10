@@ -48,11 +48,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import java.util.List;
+
 import ly.kite.R;
+import ly.kite.journey.AImageSource;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.catalogue.Asset;
 import ly.kite.catalogue.AssetHelper;
 import ly.kite.catalogue.Product;
+import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.widget.EditableImageContainerFrame;
 import ly.kite.widget.PromptTextFrame;
 
@@ -65,16 +69,19 @@ import ly.kite.widget.PromptTextFrame;
  * edit an image to fit within a mask.
  *
  *****************************************************/
-abstract public class AEditImageFragment extends AProductCreationFragment implements View.OnClickListener, EditableImageContainerFrame.ICallback
+abstract public class AEditImageFragment extends AProductCreationFragment implements View.OnClickListener,
+                                                                                     EditableImageContainerFrame.ICallback,
+                                                                                     AImageSource.IAssetConsumer
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String      LOG_TAG                             = "AEditImageFragment";
+  static private final String      LOG_TAG                             = "AEditImageFragment";
 
-  public  static final String      BUNDLE_KEY_PRODUCT                  = "product";
+  static public  final String      BUNDLE_KEY_PRODUCT                  = "product";
+  static private final String      BUNDLE_KEY_IMAGE_ASSET              = "imageAsset";
 
-  private static final long        PROMPT_ANIMATION_START_DELAY_MILLIS = 500L;
+  static private final long        PROMPT_ANIMATION_START_DELAY_MILLIS = 500L;
 
 
   ////////// Static Variable(s) //////////
@@ -84,9 +91,9 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
 
   protected Product                      mProduct;
 
+  protected Asset                        mImageAsset;
+
   protected EditableImageContainerFrame  mEditableImageContainerFrame;
-  protected Button                       mCancelButton;
-  protected Button                       mConfirmButton;
   private   PromptTextFrame              mPromptTextFrame;
 
   protected boolean                      mShowPromptText;
@@ -99,6 +106,43 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
 
 
   ////////// Constructor(s) //////////
+
+  /*****************************************************
+   *
+   * Creates a new instance of this fragment.
+   *
+   *****************************************************/
+  protected AEditImageFragment()
+    {
+    }
+
+
+  /*****************************************************
+   *
+   * Creates a new instance of this fragment.
+   *
+   *****************************************************/
+  protected AEditImageFragment( Product product , Asset imageAsset )
+    {
+    Bundle arguments = new Bundle();
+
+    arguments.putParcelable( BUNDLE_KEY_PRODUCT, product );
+
+    if ( imageAsset != null ) arguments.putParcelable( BUNDLE_KEY_IMAGE_ASSET, imageAsset );
+
+    setArguments( arguments );
+    }
+
+
+  /*****************************************************
+   *
+   * Creates a new instance of this fragment.
+   *
+   *****************************************************/
+  protected AEditImageFragment( Product product )
+    {
+    this( product, null );
+    }
 
 
   ////////// AKiteFragment Method(s) //////////
@@ -114,7 +158,7 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
     super.onCreate( savedInstanceState );
 
 
-    // Get the assets and product
+    // Check for arguments
 
     Bundle arguments = getArguments();
 
@@ -135,6 +179,8 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
       }
 
 
+    // The product must always be supplied in the arguments
+
     mProduct = arguments.getParcelable( BUNDLE_KEY_PRODUCT );
 
     if ( mProduct == null )
@@ -153,6 +199,20 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
       return;
       }
 
+
+    // A new image may have been picked since the screen was entered, so check for a saved
+    // image first, then fallback to any supplied as an argument.
+
+    if ( savedInstanceState != null )
+      {
+      mImageAsset = savedInstanceState.getParcelable( BUNDLE_KEY_IMAGE_ASSET );
+      }
+
+    if ( mImageAsset == null )
+      {
+      mImageAsset = arguments.getParcelable( BUNDLE_KEY_IMAGE_ASSET );
+      }
+
     }
 
 
@@ -166,19 +226,19 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
     {
     View view = layoutInflator.inflate( R.layout.screen_edit_image, container, false );
 
+    super.onViewCreated( view );
+
     mEditableImageContainerFrame = (EditableImageContainerFrame)view.findViewById( R.id.editable_image_container_frame );
-    mCancelButton                = (Button)view.findViewById( R.id.cancel_button );
-    mConfirmButton               = (Button)view.findViewById( R.id.confirm_button );
     mPromptTextFrame             = (PromptTextFrame)view.findViewById( R.id.prompt_text_frame );
 
 
     // If there is a container frame - set the callback.
     if ( mEditableImageContainerFrame != null ) mEditableImageContainerFrame.setCallback( this );
 
-    if ( mCancelButton != null ) mCancelButton.setOnClickListener( this );
+    setBackwardsButtonOnClickListener( this );
 
     // The confirm button is not enabled until both image and mask are loaded
-    if ( mConfirmButton != null ) mConfirmButton.setEnabled( false );
+    setForwardsButtonEnabled( false );
 
 
     return ( view );
@@ -203,35 +263,31 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
       {
       mShowPromptText = true;
       }
+
+
+    // Try to restore any previous cropping
+
+    if ( mEditableImageContainerFrame != null )
+      {
+      if ( savedInstanceState != null )
+        {
+        mEditableImageContainerFrame.restoreState( savedInstanceState );
+        }
+      }
+
     }
 
 
   /*****************************************************
    *
-   * Called when an item in the options menu is selected.
+   * Returns the maximum number of images required when
+   * adding images.
    *
    *****************************************************/
   @Override
-  public boolean onOptionsItemSelected( MenuItem item )
+  protected int getMaxAddImageCount()
     {
-    int itemId = item.getItemId();
-
-
-    if ( itemId == R.id.rotate_menu_item )
-      {
-      ///// Rotate /////
-
-      if ( mEditableImageContainerFrame != null ) mEditableImageContainerFrame.requestAnticlockwiseRotation();
-      }
-    else if ( itemId == R.id.flip_menu_item )
-      {
-      ///// Flip /////
-
-      if ( mEditableImageContainerFrame != null ) mEditableImageContainerFrame.requestVerticalFlip();
-      }
-
-
-    return ( super.onOptionsItemSelected( item ) );
+    return ( AImageSource.SINGLE_IMAGE );
     }
 
 
@@ -263,6 +319,35 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
     }
 
 
+  /*****************************************************
+   *
+   * Called to save the instance state.
+   *
+   *****************************************************/
+  @Override
+  public void onSaveInstanceState( Bundle outState )
+    {
+    super.onSaveInstanceState( outState );
+
+
+    // A different asset may have been selected by the user, which is why we save the most
+    // recent version.
+
+    if ( mImageAsset != null )
+      {
+      outState.putParcelable( BUNDLE_KEY_IMAGE_ASSET, mImageAsset );
+      }
+
+
+    // Try and save the cropping
+
+    if ( mEditableImageContainerFrame != null )
+      {
+      mEditableImageContainerFrame.saveState( outState );
+      }
+    }
+
+
   ////////// View.OnClickListener Method(s) //////////
 
   /*****************************************************
@@ -273,13 +358,13 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
   @Override
   public void onClick( View view )
     {
-    if ( view == mCancelButton )
+    if ( view == getBackwardsButton() )
       {
       ///// Cancel /////
 
       onCancel();
       }
-    else if ( view == mConfirmButton )
+    else if ( view == getForwardsButton() )
       {
       ///// Confirm /////
 
@@ -311,14 +396,8 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
 
 
     // Enable any confirm button
-
-    if ( mConfirmButton != null )
-      {
-      mConfirmButton.setEnabled( true );
-
-      mConfirmButton.setOnClickListener( this );
-      }
-
+    setForwardsButtonEnabled( true );
+    setForwardsButtonOnClickListener( this );
     }
 
 
@@ -340,7 +419,88 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
     }
 
 
+  ////////// AImageSource.IAssetConsumer Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called with new picked assets. For editing single
+   * images, we don't need to create cropped versions of
+   * the images up front, so simply add the image to the
+   * list.
+   *
+   *****************************************************/
+  @Override
+  public void isacOnAssets( List<Asset> assetList )
+    {
+    if ( assetList != null && assetList.size() > 0 )
+      {
+      // Add the assets to the shared list
+      for ( Asset asset : assetList )
+        {
+        mAssetsAndQuantityArrayList.add( 0, new AssetsAndQuantity( asset ) );
+        }
+
+
+      // Save the first asset and use it
+
+      mImageAsset = mAssetsAndQuantityArrayList.get( 0 ).getUneditedAsset();
+
+      useAssetForImage( mImageAsset, true );
+      }
+    }
+
+
   ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Uses the supplied asset for the photo.
+   *
+   *****************************************************/
+  private void useAssetForImage( Asset asset, boolean imageIsNew )
+    {
+    if ( mEditableImageContainerFrame != null )
+      {
+      if ( imageIsNew ) mEditableImageContainerFrame.clearState();
+
+      mEditableImageContainerFrame.setAndLoadImage( asset );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Called when an item in the options menu is selected,
+   * which has not already been handled.
+   *
+   *****************************************************/
+  @Override
+  protected boolean onCheckCustomOptionItem( MenuItem item )
+    {
+    int itemId = item.getItemId();
+
+
+    if ( itemId == R.id.rotate_anticlockwise_menu_item )
+      {
+      ///// Rotate /////
+
+      if ( mEditableImageContainerFrame != null ) mEditableImageContainerFrame.requestAnticlockwiseRotation();
+
+      return ( true );
+      }
+    else if ( itemId == R.id.flip_horizontally_menu_item )
+      {
+      ///// Flip /////
+
+      if ( mEditableImageContainerFrame != null ) mEditableImageContainerFrame.requestHorizontalFlip();
+
+      return ( true );
+      }
+
+
+    return ( false );
+    }
+
 
   /*****************************************************
    *
