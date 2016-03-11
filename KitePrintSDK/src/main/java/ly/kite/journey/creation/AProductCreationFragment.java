@@ -670,7 +670,8 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
   /*****************************************************
    *
-   * Displays .
+   * Displays a dialog informaing the user that they have
+   * not filled a pack.
    *
    *****************************************************/
   protected void displayNotFullDialog( int expectedImageCount, int actualImageCount, Runnable proceedRunnable )
@@ -682,6 +683,18 @@ abstract public class AProductCreationFragment extends    AKiteFragment
       proceedRunnable,
       R.string.add_more, null );
     }
+
+
+  /*****************************************************
+   *
+   * Finds an edited asset in the list.
+   *
+   *****************************************************/
+  protected int findEditedAsset( Asset soughtEditedAsset )
+    {
+    return ( AssetsAndQuantity.findEditedAsset( mAssetsAndQuantityArrayList, soughtEditedAsset ) );
+    }
+
 
 
   ////////// Inner Class(es) //////////
