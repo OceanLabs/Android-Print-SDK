@@ -56,7 +56,7 @@ The SDK calls this method to establish whether the image source is available. Yo
 
 ### `public void onPick( Fragment fragment, int maxImageCount )`
 
-The SDK calls this method when the user has selected your image source, and you should launch your custom image picker. the `maxImageCount` provides an indication of they maximum number of images that are required. For example, a phone case only uses a single image, so you may wish to restrict the user to selecting just one. You are not required to respect this value, since unrequired images will simply be ignored.
+The SDK calls this method when the user has selected your image source, and you should launch your custom image picker. the `maxImageCount` provides an indication of they maximum number of images that are required. For example, a phone case only uses a single image, so you may wish to restrict the user to selecting just one. You are not required to respect this value, and extra images will simply be ignored.
 
 
 ### `public void getAssetsFromPickerResult( Activity activity, Intent data, IAssetConsumer assetConsumer )`
@@ -87,7 +87,7 @@ When you first initialise the SDK, you can set various configuration parameters.
       .startShopping( this, assets );
 ```
 
-By default, the **DeviceImageSource** and **InstagramImageSource**s are enabled. You may, however, manually set the available image sources, including your custom images source:
+By default, both the **DeviceImageSource** and **InstagramImageSource** are enabled. You may, however, manually set the available image sources, including your custom image source:
 
 ```
 .setImageSources( new DeviceImageSource(), new InstagramImageSource(), new FacebookImageSource(), new MyImageSource() )
