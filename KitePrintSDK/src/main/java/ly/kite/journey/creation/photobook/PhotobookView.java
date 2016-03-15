@@ -130,7 +130,7 @@ public class PhotobookView extends RecyclerView
 
     if ( childView != null )
       {
-      return ( indexOfChild( childView ) );
+      return ( getChildAdapterPosition( childView ) );
       }
 
     return ( -1 );

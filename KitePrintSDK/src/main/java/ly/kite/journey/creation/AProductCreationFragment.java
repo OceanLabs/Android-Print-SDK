@@ -198,11 +198,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
       if ( addPhotoSubMenu != null )
         {
-        for ( AImageSource imageSource : KiteSDK.getInstance( mKiteActivity ).getAvailableImageSources() )
-          {
-          imageSource.addMenuItem( addPhotoSubMenu );
-          }
-
+        addImageSourceMenuItems( addPhotoSubMenu );
         }
       }
 
@@ -326,6 +322,20 @@ abstract public class AProductCreationFragment extends    AKiteFragment
     mConfirmButton        = (Button)view.findViewById( R.id.confirm_button );
     mCTABarLeftButton     = (Button)view.findViewById( R.id.cta_bar_left_button );
     mCTABarRightButton    = (Button)view.findViewById( R.id.cta_bar_right_button );
+    }
+
+
+  /*****************************************************
+   *
+   * Adds menu items for all image sources.
+   *
+   *****************************************************/
+  protected void addImageSourceMenuItems( Menu menu )
+    {
+    for ( AImageSource imageSource : KiteSDK.getInstance( mKiteActivity ).getAvailableImageSources() )
+      {
+      imageSource.addAsMenuItem( menu );
+      }
     }
 
 
@@ -654,7 +664,12 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
 
     // Get cropped versions of all new assets, and call back to the child class if there were some new ones.
-    if ( requestCroppedAssets() ) onNewAssetsBeingCropped();
+    if ( requestCroppedAssets() )
+      {
+      onNewAssetsBeingCropped();
+
+      setForwardsButtonEnabled( false );
+      }
     }
 
 
