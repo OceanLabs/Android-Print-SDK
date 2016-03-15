@@ -10,7 +10,7 @@ Additionally, however, developers may create their own custom image pickers, whi
 In order to create a custom image picker, you will need to perform the following steps:
 
 1. Create an image source for the custom picker.
-2. Include the new image source when configuration the Kite SDK.
+2. Include the new image source when configuring the Kite SDK.
 
 
 ## Create an image source for the custom picker
@@ -42,7 +42,7 @@ An example of how your constructor might look is as follows;
 ```
 
 
-```public boolean isAvailable( Context context )```
+### `public boolean isAvailable( Context context )`
 
 The SDK calls this method to establish whether the image source is available. You might use it to check whether you have the necessary credentials before making the image source available. Alternatively the image source might always be available, in which case you can simply return `true`.
 
@@ -54,17 +54,12 @@ The SDK calls this method to establish whether the image source is available. Yo
 ```
 
 
-```
-public void onPick( Fragment fragment, int maxImageCount )
-```
+### `public void onPick( Fragment fragment, int maxImageCount )`
 
 The SDK calls this method when the user has selected your image source, and you should launch your custom image picker. the `maxImageCount` provides an indication of they maximum number of images that are required. For example, a phone case only uses a single image, so you may wish to restrict the user to selecting just one. You are not required to respect this value, since unrequired images will simply be ignored.
 
 
-
-```
-public void getAssetsFromPickerResult( Activity activity, Intent data, IAssetConsumer assetConsumer )
-```
+### `public void getAssetsFromPickerResult( Activity activity, Intent data, IAssetConsumer assetConsumer )`
 
 This method is called once the your image picker has completed, images have been selected, and your picker activity returns a result. Your implementation must supply the details of the chosen images as extras within the result Intent, and return them. Your code may look similar to the following:
 
@@ -81,7 +76,7 @@ finish();
 When the `getAssetsFromPickerResult` method is called, it is supplied the intent that you returned with the `setResult` method. You should then create Assets for the chosen images, and return them to the `IAssetConsumer`. Note that the `getAssetsFromPickerResult` method may return the assets immediately (from within the method itself) or asynchronously according to your particular implementation.
 
 
-## Include the new image source when configuration the Kite SDK.
+## Include the new image source when configuring the Kite SDK.
 
 When you first initialise the SDK, you can set various configuration parameters. Your code may look something like this:
 
