@@ -127,7 +127,10 @@ public class AssetsAndQuantity implements Parcelable
 
     for ( AssetsAndQuantity candidateAssetsAndQuantity : assetsAndQuantityList )
       {
-      if ( candidateAssetsAndQuantity.getEditedAsset().equals( soughtEditedAsset ) ) return ( candidateAssetIndex );
+      if ( candidateAssetsAndQuantity != null )
+        {
+        if ( candidateAssetsAndQuantity.getEditedAsset().equals( soughtEditedAsset ) ) return ( candidateAssetIndex );
+        }
 
       candidateAssetIndex ++;
       }

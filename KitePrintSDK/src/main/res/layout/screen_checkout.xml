@@ -83,6 +83,6 @@
 
     <include layout="@layout/include_powered_by"/>
 
-    <include layout="@layout/include_proceed_overlay"/>
+    <include layout="@layout/include_cta_bar"/>
 
 </LinearLayout>

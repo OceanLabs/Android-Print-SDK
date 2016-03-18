@@ -11,6 +11,8 @@
     <dimen name="prompt_text_size">25sp</dimen>
     <dimen name="empty_text_size">18sp</dimen>
 
+    <dimen name="checkable_image_highlight_border_size">6dp</dimen>
+
     <dimen name="paging_dot_size">10dp</dimen>
 
     <dimen name="label_margin_bottom">25dp</dimen>
@@ -68,25 +70,25 @@
 
     <dimen name="photobook_add_image_size">18dp</dimen>
 
-    <dimen name="photobook_front_cover_width">188dp</dimen>
-    <dimen name="photobook_front_cover_height">188dp</dimen>
+    <dimen name="photobook_front_cover_width">200dp</dimen>
+    <dimen name="photobook_front_cover_height">200dp</dimen>
 
-    <dimen name="photobook_front_cover_padding_left">25dp</dimen>
-    <dimen name="photobook_front_cover_padding_top">23dp</dimen>
-    <dimen name="photobook_front_cover_padding_right">25dp</dimen>
-    <dimen name="photobook_front_cover_padding_bottom">28dp</dimen>
+    <dimen name="photobook_front_cover_padding_left">27dp</dimen>
+    <dimen name="photobook_front_cover_padding_top">24dp</dimen>
+    <dimen name="photobook_front_cover_padding_right">27dp</dimen>
+    <dimen name="photobook_front_cover_padding_bottom">29dp</dimen>
 
     <dimen name="photobook_instructions_text_size">23sp</dimen>
     <dimen name="photobook_instructions_text_padding">13dp</dimen>
 
-    <dimen name="photobook_content_spacing">13dp</dimen>
-    <dimen name="photobook_content_width">363dp</dimen>
-    <dimen name="photobook_content_height">181dp</dimen>
+    <dimen name="photobook_content_spacing">15dp</dimen>
+    <dimen name="photobook_content_width">400dp</dimen>
+    <dimen name="photobook_content_height">200dp</dimen>
 
-    <dimen name="photobook_content_padding_top">23dp</dimen>
-    <dimen name="photobook_content_padding_bottom">28dp</dimen>
-    <dimen name="photobook_content_padding_outside">30dp</dimen>
-    <dimen name="photobook_content_padding_inside">20dp</dimen>
+    <dimen name="photobook_content_padding_top">25dp</dimen>
+    <dimen name="photobook_content_padding_bottom">30dp</dimen>
+    <dimen name="photobook_content_padding_outside">33dp</dimen>
+    <dimen name="photobook_content_padding_inside">22dp</dimen>
 
     <dimen name="photobook_drag_distance">6dp</dimen>
 

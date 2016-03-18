@@ -500,20 +500,24 @@ abstract public class AProductCreationFragment extends    AKiteFragment
   protected boolean requestCroppedAssets()
     {
     // First build a list of assets that need to be cropped, so we know how many there are
-    // before we actually start requesting them.
+    // before we actually start requesting them. Note that the asset array list may be
+    // sparsely populated for certain products (such as photobooks, which can have blank
+    // pages).
+
+    String productId = mProduct.getId();
 
     List<AssetsAndQuantity> assetsAndQuantityToCropList = new ArrayList<>( mAssetsAndQuantityArrayList.size() );
 
     for ( AssetsAndQuantity assetsAndQuantity : mAssetsAndQuantityArrayList )
       {
-      String productId = mProduct.getId();
-
-
-      // If we don't already have an edited asset - create one now
-
-      if ( ( productId == null ) || ( ! productId.equals( assetsAndQuantity.getEditedForProductId() ) ) )
+      if ( assetsAndQuantity != null )
         {
-        assetsAndQuantityToCropList.add( assetsAndQuantity );
+        // If we don't already have an edited asset - create one now
+
+        if ( ( productId == null ) || ( !productId.equals( assetsAndQuantity.getEditedForProductId() ) ) )
+          {
+          assetsAndQuantityToCropList.add( assetsAndQuantity );
+          }
         }
       }
 
@@ -615,7 +619,8 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
   /*****************************************************
    *
-   * Called when a new asset is added.
+   * Called when a new asset is added. Will be called multiple
+   * times if a number of assets are added together.
    *
    *****************************************************/
   protected void onAssetAdded( AssetsAndQuantity assetsAndQuantity )
@@ -637,13 +642,13 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
   /*****************************************************
    *
-   * Adds new unedited assets to the users collection.
+   * Adds new unedited assets to the end of the current list.
    * Duplicates will be discarded.
    *
    *****************************************************/
-  protected void onAddAssets( List<Asset> assets )
+  protected void onAddAssets( List<Asset> newAssetList )
     {
-    for ( Asset asset : assets )
+    for ( Asset asset : newAssetList )
       {
       // We don't allow duplicate images, so first check that the asset isn't already in
       // our list. Note that we don't check the scenario where the image is the same but
@@ -663,7 +668,49 @@ abstract public class AProductCreationFragment extends    AKiteFragment
       }
 
 
-    // Get cropped versions of all new assets, and call back to the child class if there were some new ones.
+    onNewAssetsPossiblyAdded();
+    }
+
+
+  /*****************************************************
+   *
+   * Adds new unedited assets into the current list, filling
+   * in any empty slots from the supplied position.
+   *
+   *****************************************************/
+  protected void onAddAssets( List<Asset> newAssetList, int insertionPointIndex )
+    {
+    for ( Asset asset : newAssetList )
+      {
+      if ( insertionPointIndex >= mAssetsAndQuantityArrayList.size() ) break;
+
+      AssetsAndQuantity assetsAndQuantity = new AssetsAndQuantity( asset );
+
+      mAssetsAndQuantityArrayList.set( insertionPointIndex, assetsAndQuantity );
+
+      onAssetAdded( assetsAndQuantity );
+
+
+      // Find the next free slot
+      while ( insertionPointIndex < mAssetsAndQuantityArrayList.size() &&
+              mAssetsAndQuantityArrayList.get( ++ insertionPointIndex ) != null );
+      }
+
+
+    onNewAssetsPossiblyAdded();
+    }
+
+
+  /*****************************************************
+   *
+   * Called after new assets have been added. Note that the
+   * number of assets added may be 0.
+   *
+   *****************************************************/
+  protected void onNewAssetsPossiblyAdded()
+    {
+    // Get cropped versions of any new assets, and call back to the child class if
+    // there were some new ones.
     if ( requestCroppedAssets() )
       {
       onNewAssetsBeingCropped();
