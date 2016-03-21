@@ -136,6 +136,19 @@ Add your **Google Sender Id** as a string resource. Remember from earlier that t
     </resources>
 ```
 
+### Call the GCM registration service from your app
+
+The ```GCMRegistrationService``` class in the *Kite-GCM* module takes care of obtaining a Google Cloud Messaging token, and registering it with the Kite servers.
+
+Where appropriate in your app, start the registration service as follows:
+
+```
+GCMRegistrationService.start( this );
+```
+
+You do not need to keep track of whether you have already called this, or whether registration succeeded, as the service automatically takes care of this for you.
+
+
 ## Create a push notification action
 
 Once a push notification has arrived, you must decide what to do with it. Often an app will create an Android notification to display the message to the user. Alternatively, you may choose to parse the message and perform an app action. However you decide to handle the notification, you must implement a listener service. As mentioned previously, a template is provided in the SampleApp module, but your implementation may look something like this:
