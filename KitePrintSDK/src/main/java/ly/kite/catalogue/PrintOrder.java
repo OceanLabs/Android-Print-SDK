@@ -28,10 +28,12 @@ public class PrintOrder implements Parcelable /* , Serializable */
 
     static private final String LOG_TAG = "PrintOrder";
 
-    private static final int NOT_PERSISTED = -1;
-    private static final int JOB_TYPE_POSTCARD = 0;
+    private static final int NOT_PERSISTED          = -1;
+
+    private static final int JOB_TYPE_POSTCARD      = 0;
     private static final int JOB_TYPE_GREETING_CARD = 1;
-    private static final int JOB_TYPE_PRINTS = 2;
+    private static final int JOB_TYPE_PHOTOBOOK     = 2;
+    private static final int JOB_TYPE_PRINTS        = 3;
 
     static private final String JSON_NAME_LOCALE = "locale";
 
@@ -259,7 +261,7 @@ public class PrintOrder implements Parcelable /* , Serializable */
         ArrayList<Asset> assets = new ArrayList<Asset>();
         for (PrintJob job : jobs) {
             for (Asset asset : job.getAssetsForUploading()) {
-                if (!assets.contains(asset)) {
+                if ( asset != null && !assets.contains(asset)) {
                     assets.add(asset);
                 }
             }
@@ -415,18 +417,30 @@ public class PrintOrder implements Parcelable /* , Serializable */
         p.writeString( userDataString );
 
         p.writeInt( jobs.size() );
-        for (PrintJob job : jobs) {
-            if (job instanceof PostcardPrintJob) {
-                p.writeInt(JOB_TYPE_POSTCARD);
-                job.writeToParcel(p, flags);
-            } else if (job instanceof GreetingCardPrintJob) {
-                p.writeInt(JOB_TYPE_GREETING_CARD);
-                job.writeToParcel(p, flags);
-            } else {
-                p.writeInt(JOB_TYPE_PRINTS);
-                job.writeToParcel(p, flags);
+
+        for ( PrintJob job : jobs )
+          {
+          if ( job instanceof PostcardPrintJob )
+            {
+            p.writeInt( JOB_TYPE_POSTCARD );
+            job.writeToParcel( p, flags );
             }
-        }
+          else if ( job instanceof GreetingCardPrintJob )
+            {
+            p.writeInt( JOB_TYPE_GREETING_CARD );
+            job.writeToParcel( p, flags );
+            }
+          else if ( job instanceof PhotobookJob )
+            {
+            p.writeInt( JOB_TYPE_PHOTOBOOK );
+            job.writeToParcel( p, flags );
+            }
+          else
+            {
+            p.writeInt( JOB_TYPE_PRINTS );
+            job.writeToParcel( p, flags );
+            }
+          }
 
         p.writeValue(userSubmittedForPrinting);
         p.writeValue(assetUploadComplete);
@@ -454,25 +468,33 @@ public class PrintOrder implements Parcelable /* , Serializable */
         }
 
         int numJobs = p.readInt();
-        for (int i = 0; i < numJobs; ++i) {
-            int jobType = p.readInt();
-            switch (jobType) {
-                case JOB_TYPE_POSTCARD: {
-                    PostcardPrintJob job = PostcardPrintJob.CREATOR.createFromParcel(p);
-                    this.jobs.add(job);
-                    break;
-                }
-                case JOB_TYPE_GREETING_CARD: {
-                    GreetingCardPrintJob job = GreetingCardPrintJob.CREATOR.createFromParcel(p);
-                    this.jobs.add(job);
-                    break;
-                }
-                default: {
-                    PrintsPrintJob job = PrintsPrintJob.CREATOR.createFromParcel(p);
-                    this.jobs.add(job);
-                }
+
+        for ( int i = 0; i < numJobs; ++i )
+          {
+          int jobType = p.readInt();
+
+          PrintJob job;
+
+          switch ( jobType )
+            {
+            case JOB_TYPE_POSTCARD:
+              job = PostcardPrintJob.CREATOR.createFromParcel( p );
+              break;
+
+            case JOB_TYPE_GREETING_CARD:
+              job = GreetingCardPrintJob.CREATOR.createFromParcel( p );
+              break;
+
+            case JOB_TYPE_PHOTOBOOK:
+              job = PhotobookJob.CREATOR.createFromParcel( p );
+              break;
+
+            default:
+              job = PrintsPrintJob.CREATOR.createFromParcel( p );
             }
-        }
+
+          this.jobs.add( job );
+          }
 
         this.userSubmittedForPrinting = (Boolean) p.readValue(Boolean.class.getClassLoader());
         this.assetUploadComplete = (Boolean) p.readValue(Boolean.class.getClassLoader());
@@ -552,26 +574,30 @@ public class PrintOrder implements Parcelable /* , Serializable */
         }
 
       @Override
-      public void onUploadComplete( AssetUploadRequest req, List<Asset> assets )
+      public void onUploadComplete( AssetUploadRequest req, List<Asset> uploadedAssets )
         {
-        if ( assets.size() != assetsToUpload.size() )
-          {
-          throw new IllegalStateException( String.format( "Oops there should be a 1:1 relationship between uploaded assets and submitted, currently its: %d:%d", assetsToUpload.size(), assets.size() ) );
-          }
+        // We don't want to check that the number of upload assets matches the size
+        // of the asset list, because some of them might be blank.
 
-        for ( Asset asset : assets )
+
+        // Check that all the assets scheduled to be uploaded, were
+
+        for ( Asset uploadedAsset : uploadedAssets )
           {
-          if ( !assetsToUpload.contains( asset ) )
+          if ( ! assetsToUpload.contains( uploadedAsset ) )
             {
-            throw new AssertionError( "oops" );
+            throw new AssertionError( "Oops - found an asset not in the upload list" );
             }
           }
 
-        // make sure all job assets have asset ids & preview urls. We need to do this because we optimize the asset upload to avoid uploading
-        // assets that are considered to have duplicate contents
+
+        // Make sure all job assets have asset ids & preview urls. We need to do this because
+        // we optimize the asset upload to avoid uploading assets that are considered to have
+        // duplicate contents.
+
         for ( PrintJob job : jobs )
           {
-          for ( Asset uploadedAsset : assets )
+          for ( Asset uploadedAsset : uploadedAssets )
             {
             for ( Asset jobAsset : job.getAssetsForUploading() )
               {
@@ -583,17 +609,20 @@ public class PrintOrder implements Parcelable /* , Serializable */
             }
           }
 
-        // sanity check all assets are uploaded
+
+        // Sanity check all assets are uploaded
+
         for ( PrintJob job : jobs )
           {
-          for ( Asset a : job.getAssetsForUploading() )
+          for ( Asset assetToUpload : job.getAssetsForUploading() )
             {
-            if ( !a.hasBeenUploaded() )
+            if ( assetToUpload != null && ! assetToUpload.hasBeenUploaded() )
               {
               throw new AssertionError( "oops all assets should have been uploaded" );
               }
             }
           }
+
 
         assetUploadComplete = true;
         assetsToUpload = null;

@@ -888,33 +888,6 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     }
 
 
-//  /*****************************************************
-//   *
-//   * Removes an image based on its edited asset.
-//   *
-//   *****************************************************/
-//  private void removeImageForEditedAsset( Asset editedAsset )
-//    {
-//    for ( int candidateAssetIndex = 0; candidateAssetIndex < mAssetsAndQuantityArrayList.size(); candidateAssetIndex ++ )
-//      {
-//      AssetsAndQuantity candidateAssetsAndQuantity = mAssetsAndQuantityArrayList.get( candidateAssetIndex );
-//
-//      if ( candidateAssetsAndQuantity != null )
-//        {
-//        Asset candidateEditedAsset = candidateAssetsAndQuantity.getEditedAsset();
-//
-//        if ( candidateEditedAsset == editedAsset )
-//          {
-//          // We leave a blank page where the deleted asset was
-//          mAssetsAndQuantityArrayList.set( candidateAssetIndex, null );
-//
-//          return;
-//          }
-//        }
-//      }
-//    }
-
-
   ////////// Inner Class(es) //////////
 
   /*****************************************************
