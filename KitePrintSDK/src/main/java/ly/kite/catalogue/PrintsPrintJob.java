@@ -72,28 +72,49 @@ class PrintsPrintJob extends PrintJob {
         return mAssetList;
     }
 
-    @Override
-    JSONObject getJSONRepresentation() {
-        JSONArray assets = new JSONArray();
-        for (Asset a : this.mAssetList ) {
-            assets.put("" + a.getId());
-        }
 
-        JSONObject json = new JSONObject();
-        try {
-            json.put("template_id", getProductId());
+  @Override
+  JSONObject getJSONRepresentation()
+    {
+    JSONObject jsonObject = new JSONObject();
 
-          addProductOptions( json );
+    try
+      {
+      jsonObject.put( "template_id", getProductId() );
 
-          json.put( "assets", assets );
-          json.put("frame_contents", new JSONObject());
+      addProductOptions( jsonObject );
 
-        } catch (JSONException ex) {
-            throw new RuntimeException(ex); // this should NEVER happen :)
-        }
+      putAssetsJSON( mAssetList, jsonObject );
 
-        return json;
+      jsonObject.put( "frame_contents", new JSONObject() );
+      }
+    catch ( JSONException ex )
+      {
+      throw ( new RuntimeException( ex ) ); // this should NEVER happen :)
+      }
+
+    return ( jsonObject );
     }
+
+
+  /*****************************************************
+   *
+   * Adds the assets to the supplied JSON object. The default
+   * implementation just adds the assets as an array.
+   *
+   *****************************************************/
+  protected void putAssetsJSON( List<Asset> assetList, JSONObject jsonObject ) throws JSONException
+    {
+    JSONArray assetsJSONArray = new JSONArray();
+
+    for ( Asset asset : assetList )
+      {
+      assetsJSONArray.put( "" + asset.getId() );
+      }
+
+    jsonObject.put( "assets", assetsJSONArray );
+    }
+
 
     @Override
     public int describeContents() {
@@ -107,7 +128,7 @@ class PrintsPrintJob extends PrintJob {
 
     }
 
-    private PrintsPrintJob(Parcel parcel) {
+    protected PrintsPrintJob(Parcel parcel) {
         super( parcel );
         this.mAssetList = new ArrayList<Asset>();
         parcel.readTypedList( mAssetList, Asset.CREATOR);

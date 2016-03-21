@@ -151,7 +151,7 @@ abstract public class AImageSource
    * the same as the request code.
    *
    *****************************************************/
-  public void addMenuItem( Menu menu )
+  public void addAsMenuItem( Menu menu )
     {
     menu.add( 0, mMenuItemId, mActivityRequestCode, mMenuItemTitleResourceId );
     }

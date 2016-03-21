@@ -40,16 +40,18 @@ package ly.kite.journey.creation.photobook;
 ///// Import(s) /////
 
 import android.app.Activity;
+import android.content.res.Resources;
+import android.support.v7.widget.RecyclerView;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.Iterator;
 
 import ly.kite.R;
 import ly.kite.catalogue.Asset;
@@ -66,12 +68,12 @@ import ly.kite.widget.CheckableImageContainerFrame;
  * This is the adaptor for the photobook list view.
  *
  *****************************************************/
-public class PhotobookAdaptor extends BaseAdapter
+public class PhotobookAdaptor extends RecyclerView.Adapter
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String  LOG_TAG = "PhotobookAdaptor";
+  static private final String  LOG_TAG                 = "PhotobookAdaptor";
 
   static private final int     FRONT_COVER_ASSET_INDEX = 0;
 
@@ -79,21 +81,30 @@ public class PhotobookAdaptor extends BaseAdapter
   static public  final int     INSTRUCTIONS_POSITION   = 1;
   static public  final int     CONTENT_START_POSITION  = 2;
 
+  static public  final int     FRONT_COVER_VIEW_TYPE   = 0;
+  static public  final int     INSTRUCTIONS_VIEW_TYPE  = 1;
+  static public  final int     CONTENT_VIEW_TYPE       = 2;
+
 
   ////////// Static Variable(s) //////////
 
 
   ////////// Member Variable(s) //////////
 
-  private Activity                 mActivity;
-  private Product                  mProduct;
-  private List<AssetsAndQuantity>  mAssetsAndQuantityList;
-  private IListener                mListener;
+  private Activity                                   mActivity;
+  private Product                                    mProduct;
+  private ArrayList<AssetsAndQuantity>               mAssetsAndQuantityArrayList;
+  private IListener                                  mListener;
 
-  private LayoutInflater           mLayoutInflator;
+  private LayoutInflater                             mLayoutInflator;
 
-  private boolean                  mInSelectionMode;
-  private HashSet<Asset>           mSelectedEditedAssetSet;
+  private HashSet<CheckableImageContainerFrame>      mVisibleCheckableImageSet;
+  private SparseArray<CheckableImageContainerFrame>  mVisibleCheckableImageArray;
+
+  private boolean                                    mInSelectionMode;
+  private HashSet<Integer>                           mSelectedAssetIndexHashSet;
+
+  private int                                        mCurrentlyHighlightedAssetIndex;
 
 
   ////////// Static Initialiser(s) //////////
@@ -104,222 +115,284 @@ public class PhotobookAdaptor extends BaseAdapter
 
   ////////// Constructor(s) //////////
 
-  PhotobookAdaptor( Activity activity, Product product, List<AssetsAndQuantity> assetsAndQuantityList, IListener listener )
+  PhotobookAdaptor( Activity activity, Product product, ArrayList<AssetsAndQuantity> assetsAndQuantityArrayList, IListener listener )
     {
-    mActivity              = activity;
-    mProduct               = product;
-    mAssetsAndQuantityList = assetsAndQuantityList;
-    mListener              = listener;
+    mActivity                   = activity;
+    mProduct                    = product;
+    mAssetsAndQuantityArrayList = assetsAndQuantityArrayList;
+    mListener                   = listener;
 
-    mLayoutInflator        = activity.getLayoutInflater();
+    mLayoutInflator             = activity.getLayoutInflater();
 
-    mSelectedEditedAssetSet = new HashSet<>();
+    mVisibleCheckableImageSet   = new HashSet<>();
+    mVisibleCheckableImageArray = new SparseArray<>();
+
+    mSelectedAssetIndexHashSet  = new HashSet<>();
     }
 
 
-  ////////// BaseAdapter Method(s) //////////
+  ////////// RecyclerView.Adapter Method(s) //////////
 
+  /*****************************************************
+   *
+   * Returns the number of items.
+   *
+   *****************************************************/
   @Override
-  public int getCount()
+  public int getItemCount()
     {
     // The number of rows is the sum of the following:
     //   - Front cover
     //   - Instructions
-    //   - Images per page / 2
+    //   - Images per page / 2, rounded up
 
-    return ( 2 + ( mProduct.getQuantityPerSheet() / 2 ) );
+    return ( 2 + ( ( mProduct.getQuantityPerSheet() + 1 ) / 2 ) );
     }
 
+
+  /*****************************************************
+   *
+   * Returns the view type for the position.
+   *
+   *****************************************************/
   @Override
-  public Object getItem( int position )
+  public int getItemViewType( int position )
     {
-    return ( null );
+    if      ( position == FRONT_COVER_POSITION  ) return ( FRONT_COVER_VIEW_TYPE  );
+    else if ( position == INSTRUCTIONS_POSITION ) return ( INSTRUCTIONS_VIEW_TYPE );
+
+    return ( CONTENT_VIEW_TYPE );
     }
 
-  @Override
-  public long getItemId( int position )
-    {
-    return ( 0 );
-    }
 
+  /*****************************************************
+   *
+   * Creates a view holder for the supplied view type.
+   *
+   *****************************************************/
   @Override
-  public View getView( int position, View convertView, ViewGroup parent )
+  public RecyclerView.ViewHolder onCreateViewHolder( ViewGroup parent, int viewType )
     {
-    View view;
-
-    if ( position == FRONT_COVER_POSITION )
+    if ( viewType == FRONT_COVER_VIEW_TYPE )
       {
-      view = mLayoutInflator.inflate( R.layout.list_item_photobook_front_cover, parent, false );
-
-      FrontCoverViewHolder frontCoverViewHolder = new FrontCoverViewHolder( view );
-
-      view.setTag( frontCoverViewHolder );
-
-
-      // We only display the add image icon if there is no assets and quantity for that position,
-      // not just if there is no edited asset yet.
-
-      if ( mAssetsAndQuantityList.size() > FRONT_COVER_POSITION )
-        {
-        frontCoverViewHolder.assetIndex = FRONT_COVER_ASSET_INDEX;
-        frontCoverViewHolder.addImageView.setVisibility( View.INVISIBLE );
-
-        Asset editedAsset = mAssetsAndQuantityList.get( 0 ).getEditedAsset();
-
-        if ( mInSelectionMode )
-          {
-          if ( mSelectedEditedAssetSet.contains( editedAsset ) )
-            {
-            frontCoverViewHolder.checkableImageContainerFrame.setState( CheckableImageContainerFrame.State.CHECKED );
-            }
-          else
-            {
-            frontCoverViewHolder.checkableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_VISIBLE );
-            }
-          }
-        else
-          {
-          frontCoverViewHolder.checkableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE );
-          }
-
-        if ( editedAsset != null )
-          {
-          frontCoverViewHolder.checkableImageContainerFrame.clearForNewImage( editedAsset );
-
-          AssetHelper.requestImage( mActivity, editedAsset, frontCoverViewHolder.checkableImageContainerFrame );
-          }
-        }
-      else
-        {
-        frontCoverViewHolder.assetIndex = -1;
-        frontCoverViewHolder.addImageView.setVisibility( View.VISIBLE );
-        }
+      return ( new FrontCoverViewHolder( mLayoutInflator.inflate( R.layout.list_item_photobook_front_cover, parent, false ) ) );
       }
-    else if ( position == INSTRUCTIONS_POSITION )
+    else if ( viewType == INSTRUCTIONS_VIEW_TYPE )
       {
-      view = mLayoutInflator.inflate( R.layout.list_item_photobook_instructions, parent, false );
+      return ( new InstructionsViewHolder( mLayoutInflator.inflate( R.layout.list_item_photobook_instructions, parent, false ) ) );
+      }
+
+    return ( new ContentViewHolder( mLayoutInflator.inflate( R.layout.list_item_photobook_content, parent, false ) ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Populates a view.
+   *
+   *****************************************************/
+  @Override
+  public void onBindViewHolder( RecyclerView.ViewHolder viewHolder, int position )
+    {
+    if ( viewHolder instanceof FrontCoverViewHolder )
+      {
+      bindFrontCover( (FrontCoverViewHolder) viewHolder );
+      }
+    else if ( viewHolder instanceof InstructionsViewHolder )
+      {
+      // Do nothing - the inflated view already has the correct text
       }
     else
       {
-      Object tag;
-      ContentViewHolder contentViewHolder;
-
-      if ( convertView != null &&
-              ( tag = convertView.getTag() ) != null &&
-              ( tag instanceof ContentViewHolder ) )
-        {
-        view              = convertView;
-        contentViewHolder = (ContentViewHolder)tag;
-        }
-      else
-        {
-        view              = mLayoutInflator.inflate( R.layout.list_item_photobook_content, parent, false );
-        contentViewHolder = new ContentViewHolder( view );
-
-        view.setTag( contentViewHolder );
-        }
-
-
-      // Calculate the assets and quantity indexes for the list view position
-
-      int leftIndex  = ( ( position - CONTENT_START_POSITION ) * 2 ) + 1;
-      int rightIndex = leftIndex + 1;
-
-      AssetsAndQuantity leftAssetsAndQuantity  = getAssetsAndQuantityAt( leftIndex );
-      AssetsAndQuantity rightAssetsAndQuantity = getAssetsAndQuantityAt( rightIndex );
-
-      contentViewHolder.leftTextView.setText( String.format( "%02d", leftIndex ) );
-      contentViewHolder.rightTextView.setText( String.format( "%02d", rightIndex ) );
-
-//      viewHolder.leftAssetsAndQuantity  = leftAssetsAndQuantity;
-//      viewHolder.rightAssetsAndQuantity = rightAssetsAndQuantity;
-
-
-      if ( leftAssetsAndQuantity != null )
-        {
-        contentViewHolder.leftAssetIndex = leftIndex;
-        contentViewHolder.leftAddImageView.setVisibility( View.INVISIBLE );
-
-        Asset leftEditedAsset = leftAssetsAndQuantity.getEditedAsset();
-
-        if ( mInSelectionMode )
-          {
-          if ( mSelectedEditedAssetSet.contains( leftEditedAsset ) )
-            {
-            contentViewHolder.leftCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.CHECKED );
-            }
-          else
-            {
-            contentViewHolder.leftCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_VISIBLE );
-            }
-          }
-        else
-          {
-          contentViewHolder.leftCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE );
-          }
-
-        if ( leftEditedAsset != null )
-          {
-          contentViewHolder.leftCheckableImageContainerFrame.clearForNewImage( leftEditedAsset );
-
-          AssetHelper.requestImage( mActivity, leftEditedAsset, contentViewHolder.leftCheckableImageContainerFrame );
-          }
-        }
-      else
-        {
-        contentViewHolder.leftAssetIndex = -1;
-        contentViewHolder.leftAddImageView.setVisibility( View.VISIBLE );
-        contentViewHolder.leftCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE );
-        contentViewHolder.leftCheckableImageContainerFrame.clear();
-        }
-
-
-      if ( rightAssetsAndQuantity != null )
-        {
-        contentViewHolder.rightAssetIndex = rightIndex;
-        contentViewHolder.rightAddImageView.setVisibility( View.INVISIBLE );
-
-        Asset rightEditedAsset = rightAssetsAndQuantity.getEditedAsset();
-
-        if ( mInSelectionMode )
-          {
-          if ( mSelectedEditedAssetSet.contains( rightEditedAsset ) )
-            {
-            contentViewHolder.rightCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.CHECKED );
-            }
-          else
-            {
-            contentViewHolder.rightCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_VISIBLE );
-            }
-          }
-        else
-          {
-          contentViewHolder.rightCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE );
-          }
-
-        if ( rightEditedAsset != null )
-          {
-          contentViewHolder.rightCheckableImageContainerFrame.clearForNewImage( rightEditedAsset );
-
-          AssetHelper.requestImage( mActivity, rightEditedAsset, contentViewHolder.rightCheckableImageContainerFrame );
-          }
-        }
-      else
-        {
-        contentViewHolder.rightAssetIndex = -1;
-        contentViewHolder.rightAddImageView.setVisibility( View.VISIBLE );
-        contentViewHolder.rightCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE );
-        contentViewHolder.rightCheckableImageContainerFrame.clear();
-        }
+      bindContent( (ContentViewHolder)viewHolder, position );
       }
-
-
-    return ( view );
     }
 
 
-
   ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Binds the front cover view holder.
+   *
+   *****************************************************/
+  private void bindFrontCover( FrontCoverViewHolder viewHolder )
+    {
+    // If the holder is already bound - remove its reference
+    if ( viewHolder.assetIndex >= 0 )
+      {
+      mVisibleCheckableImageSet.remove( viewHolder.checkableImageContainerFrame );
+      mVisibleCheckableImageArray.remove( viewHolder.assetIndex );
+      }
+
+
+    viewHolder.assetIndex = FRONT_COVER_ASSET_INDEX;
+
+    mVisibleCheckableImageSet.add( viewHolder.checkableImageContainerFrame );
+    mVisibleCheckableImageArray.put( viewHolder.assetIndex, viewHolder.checkableImageContainerFrame );
+
+
+    // We only display the add image icon if there is no assets and quantity for that position,
+    // not just if there is no edited asset yet.
+
+    AssetsAndQuantity assetsAndQuantity = mAssetsAndQuantityArrayList.get( FRONT_COVER_ASSET_INDEX );
+
+    if ( assetsAndQuantity != null  )
+      {
+      viewHolder.addImageView.setVisibility( View.INVISIBLE );
+
+      Asset editedAsset = assetsAndQuantity.getEditedAsset();
+
+      if ( mInSelectionMode )
+        {
+        if ( mSelectedAssetIndexHashSet.contains( FRONT_COVER_ASSET_INDEX ) )
+          {
+          viewHolder.checkableImageContainerFrame.setState( CheckableImageContainerFrame.State.CHECKED );
+          }
+        else
+          {
+          viewHolder.checkableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_VISIBLE );
+          }
+        }
+      else
+        {
+        viewHolder.checkableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE );
+        }
+
+      if ( editedAsset != null )
+        {
+        viewHolder.checkableImageContainerFrame.clearForNewImage( editedAsset );
+
+        AssetHelper.requestImage( mActivity, editedAsset, viewHolder.checkableImageContainerFrame );
+        }
+
+      }
+    else
+      {
+      viewHolder.addImageView.setVisibility( View.VISIBLE );
+      viewHolder.checkableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE );
+      viewHolder.checkableImageContainerFrame.clear();
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Binds the content view holder.
+   *
+   *****************************************************/
+  private void bindContent( ContentViewHolder viewHolder, int position )
+    {
+    if ( viewHolder.leftAssetIndex >= 0 )
+      {
+      mVisibleCheckableImageSet.remove( viewHolder.leftCheckableImageContainerFrame );
+      mVisibleCheckableImageArray.remove( viewHolder.leftAssetIndex );
+      }
+
+    if ( viewHolder.rightAssetIndex >= 0 )
+      {
+      mVisibleCheckableImageSet.remove( viewHolder.rightCheckableImageContainerFrame );
+      mVisibleCheckableImageArray.remove( viewHolder.rightAssetIndex );
+      }
+
+
+    // Calculate the indexes for the list view position
+    int leftIndex  = ( ( position - CONTENT_START_POSITION ) * 2 ) + 1;
+    int rightIndex = leftIndex + 1;
+
+
+    viewHolder.leftAssetIndex = leftIndex;
+
+    mVisibleCheckableImageSet.add( viewHolder.leftCheckableImageContainerFrame );
+    mVisibleCheckableImageArray.put( viewHolder.leftAssetIndex, viewHolder.leftCheckableImageContainerFrame );
+
+    viewHolder.leftTextView.setText( String.format( "%02d", leftIndex ) );
+
+    AssetsAndQuantity leftAssetsAndQuantity = getAssetsAndQuantityAt( leftIndex );
+
+    if ( leftAssetsAndQuantity != null )
+      {
+      viewHolder.leftAddImageView.setVisibility( View.INVISIBLE );
+
+      Asset leftEditedAsset = leftAssetsAndQuantity.getEditedAsset();
+
+      if ( mInSelectionMode )
+        {
+        if ( mSelectedAssetIndexHashSet.contains( viewHolder.leftAssetIndex ) )
+          {
+          viewHolder.leftCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.CHECKED );
+          }
+        else
+          {
+          viewHolder.leftCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_VISIBLE );
+          }
+        }
+      else
+        {
+        viewHolder.leftCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE );
+        }
+
+      if ( leftEditedAsset != null )
+        {
+        viewHolder.leftCheckableImageContainerFrame.clearForNewImage( leftEditedAsset );
+
+        AssetHelper.requestImage( mActivity, leftEditedAsset, viewHolder.leftCheckableImageContainerFrame );
+        }
+      }
+    else
+      {
+      viewHolder.leftAddImageView.setVisibility( View.VISIBLE );
+      viewHolder.leftCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE );
+      viewHolder.leftCheckableImageContainerFrame.clear();
+      }
+
+
+    viewHolder.rightAssetIndex = rightIndex;
+
+    mVisibleCheckableImageSet.add( viewHolder.rightCheckableImageContainerFrame );
+    mVisibleCheckableImageArray.put( viewHolder.rightAssetIndex, viewHolder.rightCheckableImageContainerFrame );
+
+    viewHolder.rightTextView.setText( String.format( "%02d", rightIndex ) );
+
+    AssetsAndQuantity rightAssetsAndQuantity = getAssetsAndQuantityAt( rightIndex );
+
+    if ( rightAssetsAndQuantity != null )
+      {
+      viewHolder.rightAddImageView.setVisibility( View.INVISIBLE );
+
+      Asset rightEditedAsset = rightAssetsAndQuantity.getEditedAsset();
+
+      if ( mInSelectionMode )
+        {
+        if ( mSelectedAssetIndexHashSet.contains( viewHolder.rightAssetIndex ) )
+          {
+          viewHolder.rightCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.CHECKED );
+          }
+        else
+          {
+          viewHolder.rightCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_VISIBLE );
+          }
+        }
+      else
+        {
+        viewHolder.rightCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE );
+        }
+
+      if ( rightEditedAsset != null )
+        {
+        viewHolder.rightCheckableImageContainerFrame.clearForNewImage( rightEditedAsset );
+
+        AssetHelper.requestImage( mActivity, rightEditedAsset, viewHolder.rightCheckableImageContainerFrame );
+        }
+      }
+    else
+      {
+      viewHolder.rightAddImageView.setVisibility( View.VISIBLE );
+      viewHolder.rightCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE );
+      viewHolder.rightCheckableImageContainerFrame.clear();
+      }
+    }
+
 
   /*****************************************************
    *
@@ -329,51 +402,9 @@ public class PhotobookAdaptor extends BaseAdapter
    *****************************************************/
   private AssetsAndQuantity getAssetsAndQuantityAt( int index )
     {
-    if ( index < 0 || index >= mAssetsAndQuantityList.size() ) return ( null );
+    if ( index < 0 || index >= mAssetsAndQuantityArrayList.size() ) return ( null );
 
-    return ( mAssetsAndQuantityList.get( index ) );
-    }
-
-
-  /*****************************************************
-   *
-   * Notifies us that the data has changed for the supplied
-   * assets.
-   *
-   *****************************************************/
-  void notifyDataSetChanged( AssetsAndQuantity assetsAndQuantity )
-    {
-    // We need to determine which view is displaying the images for the
-    // supplied assets, and invalidate it so that it can be re-displayed.
-
-
-    // TODO: Change to recycler view to do this
-//    int childCount = mParentViewGroup.getChildCount();
-//
-//    for ( int childIndex = 0; childIndex < childCount; childIndex ++ )
-//      {
-//      View childView = mParentViewGroup.getChildAt( childIndex );
-//
-//      Object tag;
-//
-//      if ( ( tag = childView.getTag() ) != null &&
-//           ( tag instanceof ViewHolder ) )
-//        {
-//        ViewHolder viewHolder = (ViewHolder)tag;
-//
-//        if ( viewHolder.leftAssetsAndQuantity == assetsAndQuantity ||
-//             viewHolder.rightAssetsAndQuantity == assetsAndQuantity )
-//          {
-//          childView.invalidate();
-//
-//          return;
-//          }
-//        }
-//      }
-
-
-    // If we failed to find a corresponding child view, then update everything just to be safe
-    notifyDataSetChanged();
+    return ( mAssetsAndQuantityArrayList.get( index ) );
     }
 
 
@@ -388,13 +419,77 @@ public class PhotobookAdaptor extends BaseAdapter
       {
       mInSelectionMode = inSelectionMode;
 
+
+      CheckableImageContainerFrame.State newState;
+
       if ( inSelectionMode )
         {
-        mSelectedEditedAssetSet.clear();
+        mSelectedAssetIndexHashSet.clear();
+
+        newState = CheckableImageContainerFrame.State.UNCHECKED_VISIBLE;
+        }
+      else
+        {
+        newState = CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE;
         }
 
-      notifyDataSetChanged();
+
+      // Check all the visible check image containers to show their check circle
+
+      Iterator<CheckableImageContainerFrame> visibleCheckableImageIterator = mVisibleCheckableImageSet.iterator();
+
+      while ( visibleCheckableImageIterator.hasNext() )
+        {
+        CheckableImageContainerFrame checkableImage = visibleCheckableImageIterator.next();
+
+        checkableImage.setState( newState );
+        }
       }
+    }
+
+
+  /*****************************************************
+   *
+   * Selects an asset.
+   *
+   *****************************************************/
+  public void selectAsset( int assetIndex )
+    {
+    AssetsAndQuantity assetsAndQuantity = mAssetsAndQuantityArrayList.get( assetIndex );
+
+    if ( assetsAndQuantity != null )
+      {
+      Asset editedAsset = assetsAndQuantity.getEditedAsset();
+
+      if ( editedAsset != null )
+        {
+        mSelectedAssetIndexHashSet.add( assetIndex );
+
+
+        // If the image for this asset is visible, set its state
+
+        CheckableImageContainerFrame visibleCheckableImage = mVisibleCheckableImageArray.get( assetIndex );
+
+        if ( visibleCheckableImage != null )
+          {
+          visibleCheckableImage.setState( CheckableImageContainerFrame.State.CHECKED );
+          }
+
+
+        onSelectedAssetsChanged();
+        }
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the set of selected assets has changed.
+   *
+   *****************************************************/
+  private void onSelectedAssetsChanged()
+    {
+    mListener.onSelectedAssetsChanged( mSelectedAssetIndexHashSet.size() );
     }
 
 
@@ -403,9 +498,57 @@ public class PhotobookAdaptor extends BaseAdapter
    * Returns the selected edited assets.
    *
    *****************************************************/
-  public Set<Asset> getSelectedEditedAssetSet()
+  public HashSet<Integer> getSelectedAssets()
     {
-    return ( mSelectedEditedAssetSet );
+    return ( mSelectedAssetIndexHashSet );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the currently highlighted asset image.
+   *
+   *****************************************************/
+  public void setHighlightedAsset( int assetIndex )
+    {
+    if ( assetIndex != mCurrentlyHighlightedAssetIndex )
+      {
+      clearHighlightedAsset();
+
+      CheckableImageContainerFrame newHighlightedCheckableImage = mVisibleCheckableImageArray.get( assetIndex );
+
+      if ( newHighlightedCheckableImage != null )
+        {
+        Resources resources = mActivity.getResources();
+
+        newHighlightedCheckableImage.setHighlightBorderSizePixels( resources.getDimensionPixelSize( R.dimen.checkable_image_highlight_border_size ) );
+        newHighlightedCheckableImage.setHighlightBorderColour( resources.getColor( R.color.photobook_target_image_highlight ) );
+        newHighlightedCheckableImage.setHighlightBorderShowing( true );
+
+        mCurrentlyHighlightedAssetIndex = assetIndex;
+        }
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Clears the currently highlighted asset image.
+   *
+   *****************************************************/
+  public void clearHighlightedAsset()
+    {
+    if ( mCurrentlyHighlightedAssetIndex >= 0 )
+      {
+      CheckableImageContainerFrame currentlyHighlightedCheckableImage = mVisibleCheckableImageArray.get( mCurrentlyHighlightedAssetIndex, null );
+
+      if ( currentlyHighlightedCheckableImage != null )
+        {
+        currentlyHighlightedCheckableImage.setHighlightBorderShowing( false );
+        }
+
+      mCurrentlyHighlightedAssetIndex = -1;
+      }
     }
 
 
@@ -418,9 +561,9 @@ public class PhotobookAdaptor extends BaseAdapter
    *****************************************************/
   interface IListener
     {
-    void onAddImage();
-    void onClickImage( int assetIndex );
+    void onClickImage( int assetIndex, View view );
     void onLongClickImage( int assetIndex, View view );
+    void onSelectedAssetsChanged( int selectedAssetCount );
     }
 
 
@@ -429,19 +572,21 @@ public class PhotobookAdaptor extends BaseAdapter
    * Front cover view holder.
    *
    *****************************************************/
-  private class FrontCoverViewHolder implements View.OnClickListener,
-                                                View.OnLongClickListener
+  private class FrontCoverViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
+                                                                                View.OnLongClickListener
     {
-    View                          view;
+    int                           assetIndex;
+
     CheckableImageContainerFrame  checkableImageContainerFrame;
     ImageView                     addImageView;
-
-    int                           assetIndex;
 
 
     FrontCoverViewHolder( View view )
       {
-      this.view                         = view;
+      super( view );
+
+      this.assetIndex                   = -1;
+
       this.checkableImageContainerFrame = (CheckableImageContainerFrame)view.findViewById( R.id.checkable_image_container_frame );
       this.addImageView                 = (ImageView)view.findViewById( R.id.add_image_view );
 
@@ -455,34 +600,37 @@ public class PhotobookAdaptor extends BaseAdapter
     @Override
     public void onClick( View view )
       {
-      if ( view == this.checkableImageContainerFrame && this.assetIndex >= 0 )
+      if ( view == this.checkableImageContainerFrame )
         {
         if ( mInSelectionMode )
           {
-          Asset editedAsset = mAssetsAndQuantityList.get( this.assetIndex ).getEditedAsset();
+          AssetsAndQuantity assetsAndQuantity = getAssetsAndQuantityAt( this.assetIndex );
 
-          if ( ! mSelectedEditedAssetSet.contains( editedAsset ) )
+          if ( assetsAndQuantity != null )
             {
-            mSelectedEditedAssetSet.add( editedAsset );
+            Asset editedAsset = assetsAndQuantity.getEditedAsset();
 
-            this.checkableImageContainerFrame.setChecked( true );
-            }
-          else
-            {
-            mSelectedEditedAssetSet.remove( editedAsset );
+            if ( ! mSelectedAssetIndexHashSet.contains( this.assetIndex ) )
+              {
+              mSelectedAssetIndexHashSet.add( this.assetIndex );
 
-            this.checkableImageContainerFrame.setChecked( false );
+              this.checkableImageContainerFrame.setChecked( true );
+              }
+            else
+              {
+              mSelectedAssetIndexHashSet.remove( this.assetIndex );
+
+              this.checkableImageContainerFrame.setChecked( false );
+              }
+
+            onSelectedAssetsChanged();
             }
           }
         else
           {
-          mListener.onClickImage( this.assetIndex );
+          mListener.onClickImage( this.assetIndex, view );
           }
-
-        return;
         }
-
-      if ( ! mInSelectionMode ) mListener.onAddImage();
       }
 
 
@@ -493,7 +641,7 @@ public class PhotobookAdaptor extends BaseAdapter
       {
       if ( ! mInSelectionMode )
         {
-        if ( view == this.checkableImageContainerFrame && this.assetIndex >= 0 )
+        if ( view == this.checkableImageContainerFrame && getAssetsAndQuantityAt( FRONT_COVER_ASSET_INDEX ) != null )
           {
           mListener.onLongClickImage( this.assetIndex, this.checkableImageContainerFrame );
 
@@ -509,13 +657,28 @@ public class PhotobookAdaptor extends BaseAdapter
 
   /*****************************************************
    *
+   * Instructions view holder.
+   *
+   *****************************************************/
+  private class InstructionsViewHolder extends RecyclerView.ViewHolder
+    {
+    InstructionsViewHolder( View view )
+      {
+      super( view );
+      }
+    }
+
+
+  /*****************************************************
+   *
    * Content view holder.
    *
    *****************************************************/
-  private class ContentViewHolder implements View.OnClickListener,
-                                             View.OnLongClickListener
+  private class ContentViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
+                                                                             View.OnLongClickListener
     {
-    View                view;
+    int                           leftAssetIndex;
+    int                           rightAssetIndex;
 
     CheckableImageContainerFrame  leftCheckableImageContainerFrame;
     CheckableImageContainerFrame  rightCheckableImageContainerFrame;
@@ -526,22 +689,22 @@ public class PhotobookAdaptor extends BaseAdapter
     TextView                      leftTextView;
     TextView                      rightTextView;
 
-    int                           leftAssetIndex;
-    int                           rightAssetIndex;
-
 
     ContentViewHolder( View view )
       {
-      this.view = view;
+      super( view );
 
-      this.leftCheckableImageContainerFrame = (CheckableImageContainerFrame)view.findViewById( R.id.left_checkable_image_container_frame );
+      this.leftAssetIndex                    = -1;
+      this.rightAssetIndex                   = -1;
+
+      this.leftCheckableImageContainerFrame  = (CheckableImageContainerFrame)view.findViewById( R.id.left_checkable_image_container_frame );
       this.rightCheckableImageContainerFrame = (CheckableImageContainerFrame)view.findViewById( R.id.right_checkable_image_container_frame );
 
-      this.leftAddImageView        = (ImageView)view.findViewById( R.id.left_add_image_view );
-      this.rightAddImageView       = (ImageView)view.findViewById( R.id.right_add_image_view );
+      this.leftAddImageView                  = (ImageView)view.findViewById( R.id.left_add_image_view );
+      this.rightAddImageView                 = (ImageView)view.findViewById( R.id.right_add_image_view );
 
-      this.leftTextView            = (TextView)view.findViewById( R.id.left_text_view );
-      this.rightTextView           = (TextView)view.findViewById( R.id.right_text_view );
+      this.leftTextView                      = (TextView)view.findViewById( R.id.left_text_view );
+      this.rightTextView                     = (TextView)view.findViewById( R.id.right_text_view );
 
 
       leftCheckableImageContainerFrame.setOnClickListener( this );
@@ -557,60 +720,75 @@ public class PhotobookAdaptor extends BaseAdapter
     @Override
     public void onClick( View view )
       {
-      if ( view == this.leftCheckableImageContainerFrame && this.leftAssetIndex >= 0 )
+      if ( view == this.leftCheckableImageContainerFrame )
         {
         if ( mInSelectionMode )
           {
-          Asset editedAsset = mAssetsAndQuantityList.get( this.leftAssetIndex ).getEditedAsset();
+          AssetsAndQuantity leftAssetsAndQuantity = getAssetsAndQuantityAt( this.leftAssetIndex );
 
-          if ( ! mSelectedEditedAssetSet.contains( editedAsset ) )
+          if ( leftAssetsAndQuantity != null )
             {
-            mSelectedEditedAssetSet.add( editedAsset );
+            Asset editedAsset = leftAssetsAndQuantity.getEditedAsset();
 
-            this.leftCheckableImageContainerFrame.setChecked( true );
-            }
-          else
-            {
-            mSelectedEditedAssetSet.remove( editedAsset );
+            if ( ! mSelectedAssetIndexHashSet.contains( this.leftAssetIndex ) )
+              {
+              mSelectedAssetIndexHashSet.add( this.leftAssetIndex );
 
-            this.leftCheckableImageContainerFrame.setChecked( false );
+              this.leftCheckableImageContainerFrame.setChecked( true );
+              }
+            else
+              {
+              mSelectedAssetIndexHashSet.remove( this.leftAssetIndex );
+
+              this.leftCheckableImageContainerFrame.setChecked( false );
+              }
+
+            onSelectedAssetsChanged();
             }
           }
         else
           {
-          mListener.onClickImage( this.leftAssetIndex );
-          }
-
-        return;
-        }
-      else if ( view == this.rightCheckableImageContainerFrame && this.rightAssetIndex >= 0 )
-        {
-        if ( mInSelectionMode )
-          {
-          Asset editedAsset = mAssetsAndQuantityList.get( this.rightAssetIndex ).getEditedAsset();
-
-          if ( ! mSelectedEditedAssetSet.contains( editedAsset ) )
-            {
-            mSelectedEditedAssetSet.add( editedAsset );
-
-            this.rightCheckableImageContainerFrame.setChecked( true );
-            }
-          else
-            {
-            mSelectedEditedAssetSet.remove( editedAsset );
-
-            this.rightCheckableImageContainerFrame.setChecked( false );
-            }
-          }
-        else
-          {
-          mListener.onClickImage( this.rightAssetIndex );
+          mListener.onClickImage( this.leftAssetIndex, view );
           }
 
         return;
         }
 
-      if ( ! mInSelectionMode ) mListener.onAddImage();
+
+      if ( view == this.rightCheckableImageContainerFrame )
+        {
+        if ( mInSelectionMode )
+          {
+          AssetsAndQuantity rightAssetsAndQuantity = getAssetsAndQuantityAt( this.rightAssetIndex );
+
+          if ( rightAssetsAndQuantity != null )
+            {
+            Asset editedAsset = rightAssetsAndQuantity.getEditedAsset();
+
+            if ( ! mSelectedAssetIndexHashSet.contains( this.rightAssetIndex ) )
+              {
+              mSelectedAssetIndexHashSet.add( this.rightAssetIndex );
+
+              this.rightCheckableImageContainerFrame.setChecked( true );
+              }
+            else
+              {
+              mSelectedAssetIndexHashSet.remove( this.rightAssetIndex );
+
+              this.rightCheckableImageContainerFrame.setChecked( false );
+              }
+
+            onSelectedAssetsChanged();
+            }
+          }
+        else
+          {
+          mListener.onClickImage( this.rightAssetIndex, view );
+          }
+
+        return;
+        }
+
       }
 
 
@@ -623,7 +801,7 @@ public class PhotobookAdaptor extends BaseAdapter
         {
         if ( view == this.leftCheckableImageContainerFrame )
           {
-          if ( this.leftAssetIndex >= 0 )
+          if ( getAssetsAndQuantityAt( this.leftAssetIndex ) != null )
             {
             mListener.onLongClickImage( this.leftAssetIndex, this.leftCheckableImageContainerFrame );
 
@@ -632,7 +810,7 @@ public class PhotobookAdaptor extends BaseAdapter
           }
         else if ( view == this.rightCheckableImageContainerFrame )
           {
-          if ( this.rightAssetIndex >= 0 )
+          if ( getAssetsAndQuantityAt( this.rightAssetIndex ) != null )
             {
             mListener.onLongClickImage( this.rightAssetIndex, this.rightCheckableImageContainerFrame );
 

@@ -122,7 +122,7 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
   private Button               mAddressPickerButton;
   private EditText             mEmailEditText;
   private EditText             mPhoneEditText;
-  private Button               mProceedButton;
+  private Button               mForwardsButton;
 
 
   ////////// Static Initialiser(s) //////////
@@ -175,7 +175,16 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
     mAddressPickerButton = (Button)findViewById( R.id.address_picker_button );
     mEmailEditText       = (EditText)findViewById( R.id.email_edit_text );
     mPhoneEditText       = (EditText)findViewById( R.id.phone_edit_text );
-    mProceedButton       = (Button)findViewById( R.id.proceed_overlay_button );
+
+
+    // Find the forwards button
+
+    mForwardsButton = (Button)findViewById( R.id.cta_bar_right_button );
+
+    if ( mForwardsButton == null )
+      {
+      mForwardsButton = (Button)findViewById( R.id.proceed_overlay_button );
+      }
 
 
     // Restore email address and phone number from history
@@ -236,7 +245,7 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
       }
 
 
-    mProceedButton.setText( R.string.shipping_proceed_button_text );
+    mForwardsButton.setText( R.string.shipping_proceed_button_text );
 
 
     // hide keyboard initially
@@ -255,7 +264,7 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
       }
 
 
-    mProceedButton.setOnClickListener( this );
+    mForwardsButton.setOnClickListener( this );
     }
 
 
@@ -312,7 +321,7 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
   @Override
   public void onClick( View view )
     {
-    if ( view == mProceedButton )
+    if ( view == mForwardsButton )
       {
       onProceedButtonClicked();
       }

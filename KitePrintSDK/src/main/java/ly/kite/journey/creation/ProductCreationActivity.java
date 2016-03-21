@@ -427,21 +427,31 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
   @Override
   public void pbOnNext()
     {
-    // Create a new list containing just edited assets
+    // Create a new list containing just edited assets. Remember to
+    // strip out blank pages, and to remove the front cover.
 
     ArrayList<Asset> assetArrayList = new ArrayList<>();
 
     for ( AssetsAndQuantity assetsAndQuantity : mAssetsAndQuantityArrayList )
       {
-      assetArrayList.add( assetsAndQuantity.getEditedAsset() );
+      if ( assetsAndQuantity != null )
+        {
+        assetArrayList.add( assetsAndQuantity.getEditedAsset() );
+        }
+      else
+        {
+        assetArrayList.add( null );
+        }
       }
+
+    Asset frontCoverAsset = assetArrayList.remove( 0 );
 
 
     // Create the print order
 
     PrintOrder printOrder = new PrintOrder();
 
-    printOrder.addPrintJob( PrintJob.createPrintJob( mProduct, assetArrayList ) );
+    printOrder.addPrintJob( PrintJob.createPhotobookJob( mProduct, frontCoverAsset, assetArrayList ) );
 
 
     // Start the check-out activity

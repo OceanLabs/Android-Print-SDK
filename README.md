@@ -103,6 +103,14 @@ Logging in to our [Developer Dashboard](https://www.kite.ly/) allow's you to dyn
 * Source files are thoroughly documented; refer to them as needed for extra details about any given class or parameter
 * The [Kite Print API & SDK Developer Docs](https://www.kite.ly/docs/1.1/), which cover error codes and optional server-side integration instructions
 
+
+### Push Notifications
+
+Push notifications are a powerful marketing tool that if used effectively can increase both user engagement and customer life time value by driving more sales within your application.
+
+A guide to configuring push notifications in your app can be found [here](https://github.com/OceanLabs/Android-Print-SDK/blob/master/docs/push_notifications.md).
+
+
 ## License
 
 Kite Android Print SDK is available under a modified MIT license. See the LICENSE file for more info.

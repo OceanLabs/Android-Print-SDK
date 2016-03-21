@@ -3,6 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/edit_menu_item"
+        android:icon="@drawable/ic_action_edit"
+        android:showAsAction="always"
+        tools:ignore="AppCompatResource,MenuTitle"/>
+
+    <item
         android:id="@+id/discard_menu_item"
         android:icon="@drawable/ic_action_discard"
         android:showAsAction="always"

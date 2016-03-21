@@ -24,12 +24,14 @@ public abstract class PrintJob implements Parcelable {
     transient private Product       mProduct;  // Stop the product being serialised
     private final HashMap<String,String> mOptionMap;
 
+
     public abstract BigDecimal getCost(String currencyCode);
     public abstract Set<String> getCurrenciesSupported();
 
-    public abstract int getQuantity();
+    abstract public int getQuantity();
     abstract List<Asset> getAssetsForUploading();
     abstract JSONObject getJSONRepresentation();
+
 
     protected PrintJob( Product product, HashMap<String,String> optionMap )
       {
@@ -71,6 +73,11 @@ public abstract class PrintJob implements Parcelable {
   public static PrintJob createPrintJob( Product product, List<Asset> assets )
     {
     return new PrintsPrintJob( product, null, assets );
+    }
+
+  static public PhotobookJob createPhotobookJob( Product product, Asset frontCoverAsset, List<Asset> contentAssetList )
+    {
+    return ( new PhotobookJob( product, null, frontCoverAsset, contentAssetList ) );
     }
 
 

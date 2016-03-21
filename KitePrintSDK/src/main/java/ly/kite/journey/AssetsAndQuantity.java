@@ -98,17 +98,55 @@ public class AssetsAndQuantity implements Parcelable
 
   /*****************************************************
    *
+   * Finds the index of an unedited asset.
+   *
+   *****************************************************/
+  static public int findUneditedAsset( List<AssetsAndQuantity> assetsAndQuantityList, Asset soughtUneditedAsset )
+    {
+    int candidateAssetIndex = 0;
+
+    for ( AssetsAndQuantity candidateAssetsAndQuantity : assetsAndQuantityList )
+      {
+      if ( candidateAssetsAndQuantity.getUneditedAsset().equals( soughtUneditedAsset ) ) return ( candidateAssetIndex );
+
+      candidateAssetIndex ++;
+      }
+
+    return ( -1 );
+    }
+
+
+  /*****************************************************
+   *
+   * Finds the index of an edited asset.
+   *
+   *****************************************************/
+  static public int findEditedAsset( List<AssetsAndQuantity> assetsAndQuantityList, Asset soughtEditedAsset )
+    {
+    int candidateAssetIndex = 0;
+
+    for ( AssetsAndQuantity candidateAssetsAndQuantity : assetsAndQuantityList )
+      {
+      if ( candidateAssetsAndQuantity != null )
+        {
+        if ( candidateAssetsAndQuantity.getEditedAsset().equals( soughtEditedAsset ) ) return ( candidateAssetIndex );
+        }
+
+      candidateAssetIndex ++;
+      }
+
+    return ( -1 );
+    }
+
+
+  /*****************************************************
+   *
    * Returns true if the asset is in the list.
    *
    *****************************************************/
   static public boolean uneditedAssetIsInList( List<AssetsAndQuantity> assetsAndQuantityList, Asset soughtUneditedAsset )
     {
-    for ( AssetsAndQuantity candidateAssetsAndQuantity : assetsAndQuantityList )
-      {
-      if ( candidateAssetsAndQuantity.getUneditedAsset().equals( soughtUneditedAsset ) ) return ( true );
-      }
-
-    return ( false );
+    return ( findUneditedAsset( assetsAndQuantityList, soughtUneditedAsset ) >= 0 );
     }
 
 

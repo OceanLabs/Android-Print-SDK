@@ -1,11 +1,11 @@
 /*****************************************************
  *
- * FacebookImageSource.java
+ * PhotobookView.java
  *
  *
  * Modified MIT License
  *
- * Copyright (c) 2010-2015 Kite Tech Ltd. https://www.kite.ly
+ * Copyright (c) 2010-2016 Kite Tech Ltd. https://www.kite.ly
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,41 +34,31 @@
 
 ///// Package Declaration /////
 
-package ly.kite.sample;
+package ly.kite.journey.creation.photobook;
 
 
 ///// Import(s) /////
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.content.Context;
-import android.content.Intent;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import ly.kite.KiteSDK;
-import ly.kite.R;
-import ly.kite.catalogue.Asset;
-import ly.kite.facebookphotopicker.FacebookPhotoPicker;
-import ly.kite.journey.AImageSource;
-import ly.kite.photopicker.common.Photo;
-
 
 ///// Class Declaration /////
 
+import android.content.Context;
+import android.os.Parcelable;
+import android.support.v7.widget.RecyclerView;
+import android.util.AttributeSet;
+import android.view.View;
+
 /*****************************************************
  *
- * This class represents a local device image source.
+ * This class is a view that displays a photobook.
  *
  *****************************************************/
-public class FacebookImageSource extends AImageSource
+public class PhotobookView extends RecyclerView
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String  LOG_TAG = "FacebookImageSource";
+  static private final String  LOG_TAG = "PhotobookView";
 
 
   ////////// Static Variable(s) //////////
@@ -85,70 +75,75 @@ public class FacebookImageSource extends AImageSource
 
   ////////// Constructor(s) //////////
 
-  public FacebookImageSource()
+  public PhotobookView( Context context )
     {
-    super( R.color.image_source_background_facebook,
-            R.drawable.ic_add_facebook_white,
-            R.string.image_source_facebook,
-            R.id.add_photo_from_facebook,
-            R.string.select_photo_from_facebook );
+    super( context );
+    }
+
+  public PhotobookView( Context context, AttributeSet attrs )
+    {
+    super( context, attrs );
+    }
+
+  public PhotobookView( Context context, AttributeSet attrs, int defStyle )
+    {
+    super( context, attrs, defStyle );
     }
 
 
-  ////////// AImageSource Method(s) //////////
+  ////////// RecyclerView Method(s) //////////
 
   /*****************************************************
    *
-   * Returns true if the Facebook image source is available.
-   * We always assume this is true.
-   *
-   *****************************************************/
-  public boolean isAvailable( Context context )
-    {
-    return ( true );
-    }
-
-
-  /*****************************************************
-   *
-   * Called when the image source is picked to select
-   * images.
-   *
-   *****************************************************/
-  public void onPick( Fragment fragment, int maxImageCount )
-    {
-    // TODO: Max image count is ignored currently
-    FacebookPhotoPicker.startPhotoPickerForResult( fragment, getActivityRequestCode() );
-    }
-
-
-  /*****************************************************
-   *
-   * Adds any picked images to the supplied list.
+   * Saves the instance state.
    *
    *****************************************************/
   @Override
-  public void getAssetsFromPickerResult( Activity activity, Intent data, IAssetConsumer assetConsumer )
+  public Parcelable onSaveInstanceState()
     {
-    Photo facebookPhotos[] = FacebookPhotoPicker.getResultPhotos( data );
+    return ( super.onSaveInstanceState() );
+    }
 
-    if ( facebookPhotos != null )
+
+  /*****************************************************
+   *
+   * Restores the instance state.
+   *
+   *****************************************************/
+  @Override
+  public void onRestoreInstanceState( Parcelable state )
+    {
+    super.onRestoreInstanceState( state );
+    }
+
+
+  ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Returns a position corresponding to the supplied point.
+   *
+   *****************************************************/
+  public int positionFromPoint( int x, int y )
+    {
+    View childView = findChildViewUnder( x, y );
+
+    if ( childView != null )
       {
-      // Create an asset list, populate it, and call back to the consumer immediately.
-
-      List<Asset> assetList = new ArrayList<>( facebookPhotos.length );
-
-      for ( Photo facebookPhoto : facebookPhotos )
-        {
-        assetList.add( new Asset( facebookPhoto.getFullURL() ) );
-        }
-
-      assetConsumer.isacOnAssets( assetList );
+      return ( getChildAdapterPosition( childView ) );
       }
+
+    return ( -1 );
     }
 
 
   ////////// Inner Class(es) //////////
+
+  /*****************************************************
+   *
+   * ...
+   *
+   *****************************************************/
 
   }
 

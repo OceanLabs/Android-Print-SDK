@@ -41,6 +41,8 @@ package ly.kite.widget;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -64,9 +66,12 @@ public class CheckableImageContainerFrame extends AAREImageContainerFrame
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                         = "CheckableImageContainerFrame";
+  static private final String  LOG_TAG                                 = "CheckableImageContainerFrame";
 
-  private static final long    CHECK_ANIMATION_DURATION_MILLIS = 200L;
+  static private final long    CHECK_ANIMATION_DURATION_MILLIS         = 200L;
+
+  static private final int     DEFAULT_HIGHLIGHT_BORDER_SIZE_IN_PIXLES = 2;
+  static private final int     DEFAULT_HIGHLIGHT_BORDER_COLOUR         = 0xff0000ff;
 
 
   ////////// Static Variable(s) //////////
@@ -78,6 +83,11 @@ public class CheckableImageContainerFrame extends AAREImageContainerFrame
   private boolean    mUncheckedStateIsVisible;
 
   private ImageView  mCheckImageView;
+
+  private Paint      mHighlightBorderPaint;
+  private int        mHighlightBorderSizeInPixels;
+  private int        mHighlightBorderColour;
+  private boolean    mHighlightBorderShowing;
 
 
   ////////// Static Initialiser(s) //////////
@@ -132,6 +142,24 @@ public class CheckableImageContainerFrame extends AAREImageContainerFrame
     }
 
 
+  /*****************************************************
+   *
+   * Draws the view.
+   *
+   *****************************************************/
+  @Override
+  public void onDraw( Canvas canvas )
+    {
+    super.onDraw( canvas );
+
+    // If we need to show the highlight border, include the
+    // padding when we draw it.
+    if ( mHighlightBorderShowing )
+      {
+      canvas.drawRect( getPaddingLeft(), getPaddingTop(), getWidth() - getPaddingRight(), getHeight() - getPaddingBottom(), mHighlightBorderPaint );
+      }
+    }
+
   ////////// Method(s) //////////
 
   /*****************************************************
@@ -142,6 +170,17 @@ public class CheckableImageContainerFrame extends AAREImageContainerFrame
   private void initialise( Context context )
     {
     setState( State.UNCHECKED_INVISIBLE );
+
+
+    mHighlightBorderPaint = new Paint();
+    mHighlightBorderPaint.setStyle( Paint.Style.STROKE );
+
+    setHighlightBorderSizePixels( DEFAULT_HIGHLIGHT_BORDER_SIZE_IN_PIXLES );
+    setHighlightBorderColour( DEFAULT_HIGHLIGHT_BORDER_COLOUR );
+
+
+    // We might need to draw a highlight
+    setWillNotDraw( false );
     }
 
 
@@ -269,6 +308,50 @@ public class CheckableImageContainerFrame extends AAREImageContainerFrame
       mCheckImageView.startAnimation( animation );
       }
     }
+
+
+  /*****************************************************
+   *
+   * Sets the highlight border colour.
+   *
+   *****************************************************/
+  public void setHighlightBorderColour( int colour )
+    {
+    mHighlightBorderColour = colour;
+
+    mHighlightBorderPaint.setColor( colour );
+
+    invalidate();
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the highlight border size.
+   *
+   *****************************************************/
+  public void setHighlightBorderSizePixels( int sizeInPixels )
+    {
+    mHighlightBorderSizeInPixels = sizeInPixels;
+
+    mHighlightBorderPaint.setStrokeWidth( sizeInPixels );
+
+    invalidate();
+    }
+
+
+  /*****************************************************
+   *
+   * Sets whether the highlight border is displayed.
+   *
+   *****************************************************/
+  public void setHighlightBorderShowing( boolean showing )
+    {
+    mHighlightBorderShowing = showing;
+
+    invalidate();
+    }
+
 
 
   ////////// Inner Class(es) //////////
