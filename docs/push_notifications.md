@@ -85,7 +85,7 @@ Be sure to replace `<your-app-package>` with your application package. Also ensu
 
 Add your **Google Sender Id** as a string resource. Remember from earlier that this is the 12-digit project number from the Google API Console.
 
-```
+```xml
     <resources>
 
         ...
@@ -103,7 +103,7 @@ The `GCMRegistrationService` class in the *Kite-GCM* module takes care of obtain
 
 Where appropriate in your app (we recommend doing it right at application startup in your main activity), start the registration service as follows:
 
-```
+```java
 GCMRegistrationService.start( this );
 ```
 
