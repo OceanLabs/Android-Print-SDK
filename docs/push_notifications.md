@@ -33,67 +33,28 @@ Once you have obtained an API key, you should log in to the [Notification](https
 
 ## Add Kite SDK and GCM modules to your app
 
-The components required to implement push messaging are contained within the **KitePrintSDK-GCM** module in the **Android-Print-SDK** repository.
+We publish builds of our SDK and the optional GCM support module to the Maven central repository as .aar files. These files contains all of the classes, resources, and configurations that you'll need to use the library with push notifications. To install the library inside Android Studio, you can simply declare it as dependecy in your build.gradle file:
 
-To incorporate push messaging in your app, you can either copy the dependencies and components in the KitePrintSDK-GCM module into your app directly, or build your app using the Kite SDK source. These instructions inform you how to build from the source.
-
-On your build machine, change into the directory in which you wish to place the Kite SDK repository.
-
-```
-cd <path-to-your-directory>
-```
-
-
-Clone the Kite SDK into this directory.
-
-```
-git clone https://github.com/OceanLabs/Android-Print-SDK.git
-```
-
-
-Open your app project in **Android Studio**.
-
-Ensure that your *project* `settings.gradle` file contains the relevant lines:
-
-```
-include <your-app-modules-listed-here>, ':KitePrintSDK', ':KitePrintSDK-GCM'
-project(':KitePrintSDK').projectDir = new File('<relative-path-to-the-KitePrintSDK-module>')
-project(':KitePrintSDK-GCM').projectDir = new File('<relative-path-to-the-KitePrintSDK-GCM-module>')
-```
-
-For example:
-
-```
-include ':MyAppModule', ':KitePrintSDK', ':KitePrintSDK-GCM'
-project(':KitePrintSDK').projectDir = new File('../Android-Print-SDK/KitePrintSDK')
-project(':KitePrintSDK-GCM').projectDir = new File('../Android-Print-SDK/KitePrintSDK-GCM')
-```
-
-
-Ensure that your *app module* `build.gradle` file contains the relevant dependencies:
-
-```
+```java 
 dependencies {
-    ...
-    compile project(':KitePrintSDK')
-    compile project(':KitePrintSDK-GCM')
-    ...
+    compile 'ly.kite:kite-print-sdk:4+'
+    compile 'ly.kite:kite-print-sdk-gcm:4+'
 }
 ```
 
 
 Ensure that your app `AndroidManifest.xml` contains the following permissions:
 
-```
+```xml
     <permission android:name="<your-app-package>.permission.C2D_MESSAGE" android:protectionLevel="signature" />
 
     <uses-permission android:name="<your-app-package>.permission.C2D_MESSAGE"/>
 
 ```
 
-Also ensure that the `AndroidManifest.xml` contains the following declarations. Notice that the service declaration is for a listener service. The name should be adjusted to match the package and class name that you use. A template class is provided in the **SampleApp** module included with the Kite SDK.
+Be sure to replace `<your-app-package>` with your application package. Also ensure that the `AndroidManifest.xml` contains the following declarations. Notice that the service declaration is for a listener service. The name should be adjusted to match the package and class name that you use. A template class `GCMListenerService` is provided for reference at the end of this document and in the **SampleApp** module included with the Kite SDK.
 
-```
+```xml
     <application
         ...>
 
@@ -138,9 +99,9 @@ Add your **Google Sender Id** as a string resource. Remember from earlier that t
 
 ### Call the GCM registration service from your app
 
-The ```GCMRegistrationService``` class in the *Kite-GCM* module takes care of obtaining a Google Cloud Messaging token, and registering it with the Kite servers.
+The `GCMRegistrationService` class in the *Kite-GCM* module takes care of obtaining a Google Cloud Messaging token, and registering it with the Kite servers.
 
-Where appropriate in your app, start the registration service as follows:
+Where appropriate in your app (we recommend doing it right at application startup in your main activity), start the registration service as follows:
 
 ```
 GCMRegistrationService.start( this );
@@ -153,7 +114,7 @@ You do not need to keep track of whether you have already called this, or whethe
 
 Once a push notification has arrived, you must decide what to do with it. Often an app will create an Android notification to display the message to the user. Alternatively, you may choose to parse the message and perform an app action. However you decide to handle the notification, you must implement a listener service. As mentioned previously, a template is provided in the SampleApp module, but your implementation may look something like this:
 
-```
+```java
 ...
 
 import android.app.Notification;
