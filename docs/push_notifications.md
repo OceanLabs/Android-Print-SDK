@@ -22,9 +22,9 @@ If you have not already created a project, click on **Create Project** to create
 
 When you have created a project, the console's dashboard will be displayed. Make a note of the **project number** near the top of the page - this 12-digit number will be your **Google Sender Id**, which you will need to include in your app as a string resource later.
 
-From the Google Developer's Console dashboard, choose the **APIs** section under **APIs & auth** from the left-hand navigation menu.
+From the Google Developer's Console dashboard, choose **Enable and manage APIs** from the **API** section.
 
-In the list of APIs, look for **Google Cloud Messaging for Android**, and enable it by clicking the switch at the top of the page. Click **Credentials** under **APIs & auth**. Under the **Public API access** section, click on the **Create new Key** button. A dialog will appear that asks you which type of key you wish to generate; you should select the **Android key**.
+In the list of APIs, look for **Google Cloud Messaging**, and enable it by clicking the switch at the top of the page. Click **Credentials** section in the sidebar. Select **API key** from the **Create credentials** dropdown button and choose to create a **Server key**.
 
 Once you have obtained an API key, you should log in to the [Notification](https://www.kite.ly/settings/notifications) section of the Kite Dashboard and enter the key into the Android GCM API Key field.
 
@@ -82,6 +82,8 @@ Be sure to replace `<your-app-package>` with your application package. Also ensu
 
     </application>
 ```
+
+Again be sure to replace `<your-app-package>` with your application package in the above.
 
 Add your **Google Sender Id** as a string resource. Remember from earlier that this is the 12-digit project number from the Google API Console.
 
