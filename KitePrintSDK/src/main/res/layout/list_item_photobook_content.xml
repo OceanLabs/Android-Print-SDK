@@ -32,15 +32,15 @@
                 <FrameLayout
                     android:layout_width="0dp"
                     android:layout_weight="0.5"
-                    android:layout_height="fill_parent">
+                    android:layout_height="fill_parent"
+                    android:paddingTop="@dimen/photobook_content_padding_top"
+                    android:paddingBottom="@dimen/photobook_content_padding_bottom"
+                    android:paddingLeft="@dimen/photobook_content_padding_outside"
+                    android:paddingRight="@dimen/photobook_content_padding_inside">
                     <ly.kite.widget.CheckableImageContainerFrame
                         android:id="@+id/left_checkable_image_container_frame"
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
-                        android:paddingTop="@dimen/photobook_content_padding_top"
-                        android:paddingBottom="@dimen/photobook_content_padding_bottom"
-                        android:paddingLeft="@dimen/photobook_content_padding_outside"
-                        android:paddingRight="@dimen/photobook_content_padding_inside"
                         android:scaleType="centerCrop"/>
                     <ImageView
                         android:id="@+id/left_add_image_view"
@@ -53,15 +53,15 @@
                 <FrameLayout
                     android:layout_width="0dp"
                     android:layout_weight="0.5"
-                    android:layout_height="fill_parent">
+                    android:layout_height="fill_parent"
+                    android:paddingTop="@dimen/photobook_content_padding_top"
+                    android:paddingBottom="@dimen/photobook_content_padding_bottom"
+                    android:paddingLeft="@dimen/photobook_content_padding_inside"
+                    android:paddingRight="@dimen/photobook_content_padding_outside">
                     <ly.kite.widget.CheckableImageContainerFrame
                         android:id="@+id/right_checkable_image_container_frame"
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
-                        android:paddingTop="@dimen/photobook_content_padding_top"
-                        android:paddingBottom="@dimen/photobook_content_padding_bottom"
-                        android:paddingLeft="@dimen/photobook_content_padding_inside"
-                        android:paddingRight="@dimen/photobook_content_padding_outside"
                         android:scaleType="centerCrop"/>
                     <ImageView
                         android:id="@+id/right_add_image_view"

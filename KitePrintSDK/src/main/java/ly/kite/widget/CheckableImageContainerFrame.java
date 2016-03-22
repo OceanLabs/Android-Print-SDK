@@ -202,12 +202,12 @@ public class CheckableImageContainerFrame extends AAREImageContainerFrame
 
       case UNCHECKED_VISIBLE:
         mUncheckedStateIsVisible = true;
-        mCheckImageView.setImageResource( R.drawable.image_check_off );
+        mCheckImageView.setImageResource( R.drawable.ic_check_off );
         mCheckImageView.setVisibility( View.VISIBLE );
         break;
 
       case CHECKED:
-        mCheckImageView.setImageResource( R.drawable.image_check_on );
+        mCheckImageView.setImageResource( R.drawable.ic_check_on );
         mCheckImageView.setVisibility( View.VISIBLE );
         break;
       }

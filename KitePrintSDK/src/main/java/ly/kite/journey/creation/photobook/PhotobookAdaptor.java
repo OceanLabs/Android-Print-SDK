@@ -46,6 +46,8 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -552,6 +554,21 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
     }
 
 
+  /*****************************************************
+   *
+   * Called when add image is clicked whilst in selection
+   * mode. The action is rejected by animating the icon.
+   *
+   *****************************************************/
+  void rejectAddImage( ImageView imageView )
+    {
+    // Get the animation set and start it
+    Animation animation = AnimationUtils.loadAnimation( mActivity, R.anim.reject_add_image );
+
+    imageView.startAnimation( animation );
+    }
+
+
   ////////// Inner Class(es) //////////
 
   /*****************************************************
@@ -624,6 +641,10 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
               }
 
             onSelectedAssetsChanged();
+            }
+          else
+            {
+            rejectAddImage( this.addImageView );
             }
           }
         else
@@ -745,6 +766,10 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
 
             onSelectedAssetsChanged();
             }
+          else
+            {
+            rejectAddImage( this.leftAddImageView );
+            }
           }
         else
           {
@@ -779,6 +804,10 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
               }
 
             onSelectedAssetsChanged();
+            }
+          else
+            {
+            rejectAddImage( this.rightAddImageView );
             }
           }
         else

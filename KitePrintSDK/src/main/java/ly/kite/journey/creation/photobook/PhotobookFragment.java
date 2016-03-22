@@ -336,7 +336,18 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
       else if ( mKiteActivity instanceof ICallback )
         {
         int expectedImageCount = 1 + mProduct.getQuantityPerSheet();
-        int actualImageCount   = mAssetsAndQuantityArrayList.size();
+
+
+        // Pages can be blank, so to calculate the actual number of images we need to go through
+        // them all.
+
+        int actualImageCount = 0;
+
+        for ( AssetsAndQuantity assetsAndQuantity : mAssetsAndQuantityArrayList )
+          {
+          if ( assetsAndQuantity != null ) actualImageCount ++;
+          }
+
 
         if ( actualImageCount < expectedImageCount )
           {
