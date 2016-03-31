@@ -8,7 +8,7 @@ import org.json.JSONObject;
 
 import ly.kite.KiteSDKException;
 import ly.kite.KiteSDK;
-import ly.kite.catalogue.PrintOrder;
+import ly.kite.ordering.PrintOrder;
 import ly.kite.util.HTTPJSONRequest;
 
 /**

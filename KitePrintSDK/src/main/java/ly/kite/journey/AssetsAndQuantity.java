@@ -44,7 +44,7 @@ import android.os.Parcelable;
 
 import java.util.List;
 
-import ly.kite.catalogue.Asset;
+import ly.kite.util.Asset;
 
 
 ///// Class Declaration /////

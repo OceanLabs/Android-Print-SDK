@@ -39,7 +39,7 @@ package ly.kite.analytics;
 ///// Import(s) /////
 
 import android.content.Context;
-import ly.kite.catalogue.PrintOrder;
+import ly.kite.ordering.PrintOrder;
 import ly.kite.catalogue.Product;
 
 /*****************************************************

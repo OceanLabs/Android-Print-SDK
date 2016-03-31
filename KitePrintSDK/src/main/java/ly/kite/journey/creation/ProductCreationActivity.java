@@ -64,9 +64,9 @@ import ly.kite.journey.creation.phonecase.PhoneCaseFragment;
 import ly.kite.journey.creation.photobook.PhotobookFragment;
 import ly.kite.journey.creation.reviewandedit.EditImageFragment;
 import ly.kite.journey.creation.reviewandedit.ReviewAndEditFragment;
-import ly.kite.catalogue.Asset;
-import ly.kite.catalogue.PrintJob;
-import ly.kite.catalogue.PrintOrder;
+import ly.kite.util.Asset;
+import ly.kite.ordering.PrintJob;
+import ly.kite.ordering.PrintOrder;
 import ly.kite.catalogue.Product;
 
 

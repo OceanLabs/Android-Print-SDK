@@ -46,15 +46,14 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import java.util.List;
 
 import ly.kite.R;
 import ly.kite.journey.AImageSource;
 import ly.kite.journey.AKiteActivity;
-import ly.kite.catalogue.Asset;
-import ly.kite.catalogue.AssetHelper;
+import ly.kite.util.Asset;
+import ly.kite.util.AssetHelper;
 import ly.kite.catalogue.Product;
 import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.widget.EditableImageContainerFrame;

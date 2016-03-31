@@ -138,7 +138,7 @@ Add your **Google Sender Id** as a string resource. Remember from earlier that t
 
 ### Call the GCM registration service from your app
 
-The ```GCMRegistrationService``` class in the *Kite-GCM* module takes care of obtaining a Google Cloud Messaging token, and registering it with the Kite servers.
+The ```GCMRegistrationService``` class in the **Kite-GCM** module takes care of obtaining a Google Cloud Messaging token, and registering it with the Kite servers.
 
 Where appropriate in your app, start the registration service as follows:
 

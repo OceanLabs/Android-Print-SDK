@@ -1,4 +1,4 @@
-package ly.kite.catalogue;
+package ly.kite.ordering;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Set;
 
 import ly.kite.address.Address;
+import ly.kite.catalogue.Product;
+import ly.kite.util.Asset;
 
 /**
  * Created by deonbotha on 09/02/2014.
@@ -21,7 +23,7 @@ public abstract class PrintJob implements Parcelable {
 
   private static final String JSON_NAME_OPTIONS = "options";
 
-    transient private Product       mProduct;  // Stop the product being serialised
+    transient private Product mProduct;  // Stop the product being serialised
     private final HashMap<String,String> mOptionMap;
 
 

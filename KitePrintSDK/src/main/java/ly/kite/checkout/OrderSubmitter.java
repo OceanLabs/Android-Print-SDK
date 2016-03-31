@@ -39,14 +39,13 @@ package ly.kite.checkout;
 
 ///// Import(s) /////
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.os.SystemClock;
 
 import ly.kite.api.OrderState;
 import ly.kite.api.OrderStatusRequest;
-import ly.kite.catalogue.PrintOrder;
+import ly.kite.ordering.PrintOrder;
 
 
 ///// Class Declaration /////

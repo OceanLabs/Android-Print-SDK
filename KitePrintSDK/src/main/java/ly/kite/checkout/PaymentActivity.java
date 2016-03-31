@@ -78,7 +78,7 @@ import ly.kite.pricing.OrderPricing;
 import ly.kite.pricing.PricingAgent;
 import ly.kite.KiteSDK;
 import ly.kite.catalogue.MultipleCurrencyAmount;
-import ly.kite.catalogue.PrintOrder;
+import ly.kite.ordering.PrintOrder;
 import ly.kite.R;
 import ly.kite.payment.PayPalCard;
 import ly.kite.payment.PayPalCardChargeListener;

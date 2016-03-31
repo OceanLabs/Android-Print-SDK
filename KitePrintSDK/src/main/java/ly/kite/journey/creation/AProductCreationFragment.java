@@ -57,8 +57,8 @@ import java.util.List;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
-import ly.kite.catalogue.Asset;
-import ly.kite.catalogue.AssetHelper;
+import ly.kite.util.Asset;
+import ly.kite.util.AssetHelper;
 import ly.kite.journey.AImageSource;
 import ly.kite.journey.AKiteFragment;
 import ly.kite.journey.AssetsAndQuantity;
@@ -535,7 +535,12 @@ abstract public class AProductCreationFragment extends    AKiteFragment
       {
       AssetImageCropper cropper = new AssetImageCropper( assetsAndQuantity, mProduct.getImageAspectRatio() );
 
-      AssetHelper.requestImage( mKiteActivity, assetsAndQuantity.getUneditedAsset(), cropper, 0, cropper );
+      Asset asset = assetsAndQuantity.getUneditedAsset();
+
+      ImageAgent.with( mKiteActivity )
+              .load( asset )
+              .transformBeforeResize( cropper )
+              .into( cropper, asset );
       }
 
 
@@ -555,7 +560,12 @@ abstract public class AProductCreationFragment extends    AKiteFragment
     {
     AssetImageCropper cropper = new AssetImageCropper( assetsAndQuantity, mProduct.getImageAspectRatio() );
 
-    AssetHelper.requestImage( mKiteActivity, assetsAndQuantity.getUneditedAsset(), cropper, 0, cropper );
+    Asset asset = assetsAndQuantity.getUneditedAsset();
+
+    ImageAgent.with( mKiteActivity )
+            .load( asset )
+            .transformBeforeResize( cropper )
+            .into( cropper, asset );
     }
 
 

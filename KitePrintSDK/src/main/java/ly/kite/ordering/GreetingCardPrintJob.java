@@ -1,4 +1,4 @@
-package ly.kite.catalogue;
+package ly.kite.ordering;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -8,11 +8,11 @@ import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import ly.kite.address.Address;
+import ly.kite.catalogue.Product;
+import ly.kite.util.Asset;
 
 /**
  * Created by dbotha on 23/12/2015.

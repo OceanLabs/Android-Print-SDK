@@ -44,13 +44,11 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import ly.kite.KiteSDK;
 import ly.kite.R;
-import ly.kite.catalogue.Asset;
+import ly.kite.util.Asset;
 import ly.kite.facebookphotopicker.FacebookPhotoPicker;
 import ly.kite.journey.AImageSource;
 import ly.kite.photopicker.common.Photo;

@@ -49,7 +49,7 @@ import java.util.List;
 
 import ly.kite.R;
 import ly.kite.KiteSDK;
-import ly.kite.catalogue.Asset;
+import ly.kite.util.Asset;
 import ly.kite.instagramphotopicker.InstagramPhoto;
 import ly.kite.instagramphotopicker.InstagramPhotoPicker;
 

@@ -51,7 +51,7 @@ import ly.kite.address.Address;
 import ly.kite.address.Country;
 import ly.kite.util.ACache;
 import ly.kite.util.HTTPJSONRequest;
-import ly.kite.catalogue.PrintOrder;
+import ly.kite.ordering.PrintOrder;
 
 
 ///// Class Declaration /////

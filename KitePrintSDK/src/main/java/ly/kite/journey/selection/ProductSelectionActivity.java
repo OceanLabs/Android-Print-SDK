@@ -66,7 +66,7 @@ import ly.kite.journey.AKiteActivity;
 import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.journey.creation.ProductCreationActivity;
 import ly.kite.journey.creation.reviewandedit.ReviewAndEditFragment;
-import ly.kite.catalogue.Asset;
+import ly.kite.util.Asset;
 import ly.kite.catalogue.Product;
 import ly.kite.catalogue.ProductGroup;
 import ly.kite.widget.HeaderFooterGridView;

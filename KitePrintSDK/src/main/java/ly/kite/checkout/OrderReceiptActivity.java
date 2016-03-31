@@ -16,7 +16,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import ly.kite.catalogue.PrintOrder;
+import ly.kite.ordering.PrintOrder;
 import ly.kite.R;
 
 public class OrderReceiptActivity extends Activity

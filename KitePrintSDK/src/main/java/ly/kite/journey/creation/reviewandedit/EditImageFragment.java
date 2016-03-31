@@ -42,7 +42,6 @@ package ly.kite.journey.creation.reviewandedit;
 import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -52,8 +51,7 @@ import android.view.ViewGroup;
 import ly.kite.R;
 import ly.kite.journey.UserJourneyType;
 import ly.kite.journey.creation.AEditImageFragment;
-import ly.kite.journey.AKiteActivity;
-import ly.kite.catalogue.Asset;
+import ly.kite.util.Asset;
 import ly.kite.catalogue.Product;
 import ly.kite.widget.EditableMaskedImageView;
 

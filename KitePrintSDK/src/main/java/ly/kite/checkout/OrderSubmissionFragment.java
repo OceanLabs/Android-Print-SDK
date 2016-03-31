@@ -45,7 +45,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import ly.kite.api.OrderState;
-import ly.kite.catalogue.PrintOrder;
+import ly.kite.ordering.PrintOrder;
 
 
 ///// Class Declaration /////

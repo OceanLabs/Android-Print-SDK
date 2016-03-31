@@ -53,7 +53,7 @@ import java.util.List;
 
 import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.journey.UserJourneyType;
-import ly.kite.catalogue.Asset;
+import ly.kite.util.Asset;
 import ly.kite.catalogue.Product;
 import ly.kite.widget.CheckableImageContainerFrame;
 

@@ -60,8 +60,8 @@ import ly.kite.address.Address;
 import ly.kite.address.Country;
 import ly.kite.pricing.OrderPricing;
 import ly.kite.catalogue.MultipleCurrencyAmount;
-import ly.kite.catalogue.PrintJob;
-import ly.kite.catalogue.PrintOrder;
+import ly.kite.ordering.PrintJob;
+import ly.kite.ordering.PrintOrder;
 import ly.kite.catalogue.Product;
 import ly.kite.catalogue.SingleCurrencyAmount;
 

@@ -45,7 +45,7 @@ package ly.kite.journey.creation;
 import android.app.Activity;
 import android.content.Intent;
 
-import ly.kite.catalogue.Asset;
+import ly.kite.util.Asset;
 
 /*****************************************************
  *

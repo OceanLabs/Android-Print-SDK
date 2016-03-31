@@ -47,7 +47,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.Menu;
 
-import ly.kite.catalogue.Asset;
+import ly.kite.util.Asset;
 
 
 ///// Class Declaration /////

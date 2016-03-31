@@ -36,19 +36,17 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.Gravity;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ListView;
 
 import ly.kite.R;
 import ly.kite.journey.selection.ChooseProductGroupFragment;
 import ly.kite.journey.selection.ProductSelectionActivity;
-import ly.kite.catalogue.AssetHelper;
+import ly.kite.util.AssetHelper;
 
 
 ///// Class Declaration /////

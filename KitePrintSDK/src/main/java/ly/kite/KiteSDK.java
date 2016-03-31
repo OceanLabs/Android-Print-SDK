@@ -39,9 +39,7 @@ package ly.kite;
 
 ///// Import(s) /////
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,19 +49,18 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 
 import ly.kite.checkout.PaymentActivity;
-import ly.kite.catalogue.Asset;
+import ly.kite.util.Asset;
 import ly.kite.journey.AImageSource;
 import ly.kite.journey.DeviceImageSource;
 import ly.kite.journey.InstagramImageSource;
 import ly.kite.journey.selection.ProductSelectionActivity;
-import ly.kite.catalogue.AssetHelper;
+import ly.kite.util.AssetHelper;
 import ly.kite.util.DelimitedStringBuilder;
 import ly.kite.util.ImageAgent;
 
@@ -82,7 +79,7 @@ public class KiteSDK
 
   static private final String LOG_TAG                                             = "KiteSDK";
 
-  public  static final String SDK_VERSION                                         = "4.2.1";
+  public  static final String SDK_VERSION                                         = "5.0.0";
 
   static private final String SHARED_PREFERENCES_NAME                             = "kite_shared_prefs";
 

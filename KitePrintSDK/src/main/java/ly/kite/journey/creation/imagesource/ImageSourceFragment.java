@@ -39,7 +39,6 @@ package ly.kite.journey.creation.imagesource;
 
 ///// Import(s) /////
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,7 +55,7 @@ import ly.kite.journey.AImageSource;
 import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.journey.ImageSourceAdaptor;
 import ly.kite.journey.creation.AProductCreationFragment;
-import ly.kite.catalogue.Asset;
+import ly.kite.util.Asset;
 import ly.kite.catalogue.Product;
 
 

@@ -1,8 +1,7 @@
-package ly.kite.catalogue;
+package ly.kite.ordering;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Pair;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,6 +13,8 @@ import java.util.List;
 import java.util.Set;
 
 import ly.kite.address.Address;
+import ly.kite.catalogue.Product;
+import ly.kite.util.Asset;
 
 /**
  * Created by alibros on 16/01/15.

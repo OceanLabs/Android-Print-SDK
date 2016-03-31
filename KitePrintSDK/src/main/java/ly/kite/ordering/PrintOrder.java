@@ -1,4 +1,4 @@
-package ly.kite.catalogue;
+package ly.kite.ordering;
 
 import android.content.Context;
 import android.os.Parcel;
@@ -18,7 +18,9 @@ import java.util.Set;
 import ly.kite.address.Address;
 import ly.kite.api.AssetUploadRequest;
 import ly.kite.api.SubmitPrintOrderRequest;
+import ly.kite.catalogue.SingleCurrencyAmount;
 import ly.kite.pricing.OrderPricing;
+import ly.kite.util.Asset;
 
 /**
  * Created by deonbotha on 09/02/2014.

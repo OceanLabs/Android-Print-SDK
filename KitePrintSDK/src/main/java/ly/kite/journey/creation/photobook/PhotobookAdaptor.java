@@ -56,10 +56,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import ly.kite.R;
-import ly.kite.catalogue.Asset;
-import ly.kite.catalogue.AssetHelper;
+import ly.kite.util.Asset;
+import ly.kite.util.AssetHelper;
 import ly.kite.catalogue.Product;
 import ly.kite.journey.AssetsAndQuantity;
+import ly.kite.util.ImageAgent;
 import ly.kite.widget.CheckableImageContainerFrame;
 
 
@@ -265,7 +266,13 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
         {
         viewHolder.checkableImageContainerFrame.clearForNewImage( editedAsset );
 
-        AssetHelper.requestImage( mActivity, editedAsset, viewHolder.checkableImageContainerFrame );
+        //AssetHelper.requestImage( mActivity, editedAsset, viewHolder.checkableImageContainerFrame );
+        ImageAgent.with( mActivity )
+                .load( editedAsset )
+                .resizeForDimen( viewHolder.checkableImageContainerFrame, R.dimen.image_default_resize_width )
+                .onlyScaleDown()
+                .reduceColourSpace()
+                .into( viewHolder.checkableImageContainerFrame, editedAsset );
         }
 
       }
@@ -338,7 +345,13 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
         {
         viewHolder.leftCheckableImageContainerFrame.clearForNewImage( leftEditedAsset );
 
-        AssetHelper.requestImage( mActivity, leftEditedAsset, viewHolder.leftCheckableImageContainerFrame );
+        //AssetHelper.requestImage( mActivity, leftEditedAsset, viewHolder.leftCheckableImageContainerFrame );
+        ImageAgent.with( mActivity )
+                .load( leftEditedAsset )
+                .resizeForDimen( viewHolder.leftCheckableImageContainerFrame, R.dimen.image_default_resize_width )
+                .onlyScaleDown()
+                .reduceColourSpace()
+                .into( viewHolder.leftCheckableImageContainerFrame, leftEditedAsset );
         }
       }
     else
@@ -384,7 +397,12 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
         {
         viewHolder.rightCheckableImageContainerFrame.clearForNewImage( rightEditedAsset );
 
-        AssetHelper.requestImage( mActivity, rightEditedAsset, viewHolder.rightCheckableImageContainerFrame );
+        ImageAgent.with( mActivity )
+                .load( rightEditedAsset )
+                .resizeForDimen( viewHolder.rightCheckableImageContainerFrame, R.dimen.image_default_resize_width )
+                .onlyScaleDown()
+                .reduceColourSpace()
+                .into( viewHolder.rightCheckableImageContainerFrame, rightEditedAsset );
         }
       }
     else
