@@ -53,7 +53,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
-import android.media.Image;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -77,6 +76,8 @@ public class ImageRequest
   static private final String  LOG_TAG              = "ImageRequest";
 
   static private final boolean DEBUGGING_IS_ENABLED = false;
+
+  static private final int     MAX_SUB_SAMPLE_SIZE  = Integer.MAX_VALUE;
 
 
   ////////// Static Variable(s) //////////
@@ -105,6 +106,33 @@ public class ImageRequest
 
 
   ////////// Static Method(s) //////////
+
+  /*****************************************************
+   *
+   * Returns a scale size to bring a bitmap width down to
+   * a resize width.
+   *
+   *****************************************************/
+  static int sampleSizeForResize( int originalWidth, int resizeWidth )
+    {
+    int sampleSize = 1;
+
+    if ( resizeWidth >= 0 )
+      {
+      int width     = originalWidth;
+      int nextWidth = width >>> 1;  // / 2
+
+      while ( nextWidth > 0 && nextWidth >= resizeWidth )
+        {
+        width        = nextWidth;
+        sampleSize <<= 1;            //  * 2
+        nextWidth    = width >>> 1;  //  / 2
+        }
+      }
+
+    return ( sampleSize );
+    }
+
 
   /*****************************************************
    *
@@ -374,22 +402,9 @@ public class ImageRequest
 
 
       // If resizing has been requested, sub-sample the bitmap to just larger
-      // that the resize dimensions.
+      // than the resize dimensions.
 
-      int sampleSize = 1;
-
-      if ( mResizeWidth > 0 )
-        {
-        int width     = originalWidth;
-        int nextWidth = width >>> 1;  // / 2
-
-        while ( nextWidth > mResizeWidth )
-          {
-          width        = nextWidth;
-          sampleSize <<= 1;            //  * 2
-          nextWidth    = width >>> 1;  //  / 2
-          }
-        }
+      int sampleSize = sampleSizeForResize( originalWidth, mResizeWidth );
 
 
       // Image loading *must* work. So even if colour space reduction or resizing hasn't
@@ -408,7 +423,7 @@ public class ImageRequest
         }
       catch ( OutOfMemoryError oome )
         {
-        bitmap = null;
+        // Fall through
         }
 
 
@@ -432,17 +447,17 @@ public class ImageRequest
           }
         catch ( OutOfMemoryError oome )
           {
-          bitmap = null;
+          // Fall through
           }
         }
 
 
-      // We ran out of memory again. Try dropping the sample size until we
+      // We ran out of memory again. Try dropping the image size until we
       // succeed.
 
-      while ( sampleSize < originalWidth )
+      while ( sampleSize >= 1 && sampleSize < MAX_SUB_SAMPLE_SIZE )
         {
-        sampleSize <<= 1;
+        sampleSize <<= 1;  // * 2
 
         try
           {
@@ -457,7 +472,7 @@ public class ImageRequest
           }
         catch ( OutOfMemoryError oome )
           {
-          bitmap = null;
+          // Fall through
           }
         }
 
@@ -479,7 +494,7 @@ public class ImageRequest
    *****************************************************/
   private Bitmap getBitmap( Bitmap.Config bitmapConfig, int sampleSize ) throws Exception
     {
-    // Load the image
+    // Load the image, sub-sampling if specified
 
     BitmapFactory.Options bitmapFactoryOptions = getFullBitmapOptions( bitmapConfig, sampleSize );
 

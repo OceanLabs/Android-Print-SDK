@@ -62,6 +62,14 @@
             android:theme="@style/Theme.KiteSDK.AddressSearch"/>
 
 
+        <!-- Kite SDK services -->
+
+        <service
+            android:name=".image.ImageProcessingService"
+            android:exported="false"
+            android:process=":imageProcess"/>
+
+
         <!-- PayPal -->
 
         <service

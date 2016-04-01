@@ -544,10 +544,12 @@ abstract public class AProductCreationFragment extends    AKiteFragment
       }
 
 
-    // Set the enabled state of the proceed button according to whether there are assets to crop
-    setForwardsButtonEnabled( mInitialAssetsToCropCount > 0 );
+    boolean assetsToCrop = mInitialAssetsToCropCount > 0;
 
-    return ( mInitialAssetsToCropCount > 0 );
+    // Set the enabled state of the proceed button according to whether there are assets to crop
+    setForwardsButtonEnabled( assetsToCrop );
+
+    return ( assetsToCrop );
     }
 
 
