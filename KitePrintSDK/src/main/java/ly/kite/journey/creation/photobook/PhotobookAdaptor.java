@@ -57,10 +57,9 @@ import java.util.Iterator;
 
 import ly.kite.R;
 import ly.kite.util.Asset;
-import ly.kite.util.AssetHelper;
 import ly.kite.catalogue.Product;
 import ly.kite.journey.AssetsAndQuantity;
-import ly.kite.util.ImageAgent;
+import ly.kite.image.ImageAgent;
 import ly.kite.widget.CheckableImageContainerFrame;
 
 

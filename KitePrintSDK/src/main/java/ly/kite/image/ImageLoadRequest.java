@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * ImageRequest.java
+ * ImageLoadRequest.java
  *
  *
  * Modified MIT License
@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.util;
+package ly.kite.image;
 
 
 ///// Import(s) /////
@@ -60,6 +60,10 @@ import android.util.Pair;
 import android.view.View;
 import android.widget.ImageView;
 
+import ly.kite.util.Asset;
+import ly.kite.util.AssetHelper;
+import ly.kite.util.FileDownloader;
+
 
 ///// Class Declaration /////
 
@@ -68,14 +72,16 @@ import android.widget.ImageView;
  * This class is a request for an image to be loaded.
  *
  *****************************************************/
-public class ImageRequest
+public class ImageLoadRequest
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String  LOG_TAG              = "ImageRequest";
+  static private final String  LOG_TAG              = "ImageLoadRequest";
 
   static private final boolean DEBUGGING_IS_ENABLED = false;
+
+  static private final boolean FORCE_FILE_DOWNLOAD  = false;
 
   static private final int     MAX_SUB_SAMPLE_SIZE  = Integer.MAX_VALUE;
 
@@ -86,7 +92,6 @@ public class ImageRequest
   ////////// Member Variable(s) //////////
 
   private Context            mApplicationContext;
-  private boolean            mForceFileDownload;
 
   private ASource            mSource;
   private ATarget            mTarget;
@@ -287,34 +292,15 @@ public class ImageRequest
 
   ////////// Constructor(s) //////////
 
-  ImageRequest( Context context, boolean forceFileDownload )
+  ImageLoadRequest( Context context )
     {
     mApplicationContext = context.getApplicationContext();
-    mForceFileDownload  = forceFileDownload;
 
     mBitmapConfig       = Bitmap.Config.ARGB_8888;
     }
 
 
-  ImageRequest( Context context )
-    {
-    this( context, false );
-    }
-
-
   ////////// Method(s) //////////
-
-  /*****************************************************
-   *
-   * Returns true if files should always be downloaded, false
-   * otherwise.
-   *
-   *****************************************************/
-  boolean forceFileDownload()
-    {
-    return ( mForceFileDownload );
-    }
-
 
   /*****************************************************
    *
@@ -360,7 +346,7 @@ public class ImageRequest
    * Executes the request.
    *
    *****************************************************/
-  void execute()
+  public void execute()
     {
     // Ensure that both source and target have been set
 
@@ -556,7 +542,7 @@ public class ImageRequest
     Bitmap load()
       {
       // The default implementation puts this request on the processing queue
-      ImageRequestProcessor.getInstance( mApplicationContext ).process( ImageRequest.this );
+      ImageRequestProcessor.getInstance( mApplicationContext ).process( ImageLoadRequest.this );
 
       return ( null );
       }
@@ -717,7 +703,7 @@ public class ImageRequest
       {
       // Check if the URL is mapped to a resource
 
-      if ( ! mForceFileDownload )
+      if ( ! FORCE_FILE_DOWNLOAD )
         {
         Integer imageSourceResourceIdAsInteger = ImageAgent.getInstance( mApplicationContext ).getMappedResource( mSourceURL );
 
@@ -727,7 +713,7 @@ public class ImageRequest
 
           BitmapResourceSource newSource = new BitmapResourceSource( imageSourceResourceIdAsInteger );
 
-          ImageRequest.this.mSource = newSource;
+          mSource = newSource;
 
           return ( newSource.load() );
           }
@@ -749,20 +735,20 @@ public class ImageRequest
       File imageDirectory = new File( imageDirectoryPath );
       File imageFile      = new File( imageFilePath );
 
-      if ( ( ! mForceFileDownload ) && imageFile.exists() )
+      if ( ( ! FORCE_FILE_DOWNLOAD ) && imageFile.exists() )
         {
         // Replace this source with a file source
 
         FileSource newSource = new FileSource( imageFile );
 
-        ImageRequest.this.mSource = newSource;
+        mSource = newSource;
 
         return ( newSource.load() );
         }
       else
         {
         // Notify the target that the image will need to be downloaded
-        ImageRequest.this.mTarget.onImageDownloading();
+        mTarget.onImageDownloading();
 
         // Make a request to download the image, and use us as the callback.
         FileDownloader.getInstance( mApplicationContext ).requestFileDownload( mSourceURL, imageDirectory, imageFile, this );
@@ -793,7 +779,7 @@ public class ImageRequest
 
       FileSource newSource = new FileSource( targetFile );
 
-      ImageRequest.this.mSource = newSource;
+      mSource = newSource;
 
 
       // Call the load for the new (file) source. File sources shouldn't
@@ -804,7 +790,7 @@ public class ImageRequest
 
       if ( bitmap != null )
         {
-        ImageRequest.this.mTarget.onImageAvailable( bitmap );
+        mTarget.onImageAvailable( bitmap );
         }
       }
 
@@ -812,7 +798,7 @@ public class ImageRequest
     @Override
     public void onDownloadFailure( URL sourceURL, Exception exception )
       {
-      ImageRequest.this.mTarget.onImageUnavailable( exception );
+      mTarget.onImageUnavailable( exception );
       }
 
     }
@@ -966,27 +952,36 @@ public class ImageRequest
 
   /*****************************************************
    *
+   * A request executor.
+   *
+   *****************************************************/
+  interface IExecutor
+    {
+    public void execute();
+    }
+
+
+  /*****************************************************
+   *
    * A request builder.
    *
    *****************************************************/
-  static public class Builder
+  public class Builder
     {
-    private Context            mContext;
-    private ImageRequest       mImageRequest;
+    private IExecutor  mExecutor;
 
 
     ////////// Constructor(s) //////////
 
-    Builder( Context context, boolean forceFileDownload )
+    Builder( IExecutor executor )
       {
-      mContext      = context;
-      mImageRequest = new ImageRequest( context, forceFileDownload );
+      mExecutor = executor;
       }
 
 
-    Builder( Context context )
+    Builder()
       {
-      this( context, false );
+      this( null );
       }
 
 
@@ -999,7 +994,7 @@ public class ImageRequest
      *****************************************************/
     public Builder load( byte[] bitmapBytes )
       {
-      mImageRequest.setSource( mImageRequest.new BitmapBytesSource( bitmapBytes ) );
+      setSource( new BitmapBytesSource( bitmapBytes ) );
 
       return ( this );
       }
@@ -1012,7 +1007,7 @@ public class ImageRequest
      *****************************************************/
     public Builder load( Bitmap bitmap )
       {
-      mImageRequest.setSource( mImageRequest.new BitmapSource( bitmap ) );
+      setSource( new BitmapSource( bitmap ) );
 
       return ( this );
       }
@@ -1025,7 +1020,7 @@ public class ImageRequest
      *****************************************************/
     public Builder load( File file )
       {
-      mImageRequest.setSource( mImageRequest.new FileSource( file ) );
+      setSource( new FileSource( file ) );
 
       return ( this );
       }
@@ -1043,14 +1038,14 @@ public class ImageRequest
 
       Integer mappedBitmapResourceIdAsInteger;
 
-      if ( ! mImageRequest.forceFileDownload() &&
-           ( mappedBitmapResourceIdAsInteger = ImageAgent.getInstance( mContext ).getMappedResource( url ) ) != null )
+      if ( ! FORCE_FILE_DOWNLOAD &&
+           ( mappedBitmapResourceIdAsInteger = ImageAgent.getInstance( mApplicationContext ).getMappedResource( url ) ) != null )
         {
-        mImageRequest.setSource( mImageRequest.new BitmapResourceSource( mappedBitmapResourceIdAsInteger ) );
+        setSource( new BitmapResourceSource( mappedBitmapResourceIdAsInteger ) );
         }
       else
         {
-        mImageRequest.setSource( mImageRequest.new URLSource( url, imageCategory ) );
+        setSource( new URLSource( url, imageCategory ) );
         }
 
 
@@ -1081,14 +1076,14 @@ public class ImageRequest
 
       Integer mappedBitmapResourceIdAsInteger;
 
-      if ( ! mImageRequest.forceFileDownload() &&
-           ( mappedBitmapResourceIdAsInteger = ImageAgent.getInstance( mContext ).getMappedResource( uri ) ) != null )
+      if ( ! FORCE_FILE_DOWNLOAD &&
+           ( mappedBitmapResourceIdAsInteger = ImageAgent.getInstance( mApplicationContext ).getMappedResource( uri ) ) != null )
         {
-        mImageRequest.setSource( mImageRequest.new BitmapResourceSource( mappedBitmapResourceIdAsInteger ) );
+        setSource( new BitmapResourceSource( mappedBitmapResourceIdAsInteger ) );
         }
       else
         {
-        mImageRequest.setSource( mImageRequest.new URISource( uri ) );
+        setSource( new URISource( uri ) );
         }
 
 
@@ -1103,7 +1098,7 @@ public class ImageRequest
      *****************************************************/
     public Builder load( int bitmapResourceId )
       {
-      mImageRequest.setSource( mImageRequest.new BitmapResourceSource( bitmapResourceId ) );
+      setSource( new BitmapResourceSource( bitmapResourceId ) );
 
       return ( this );
       }
@@ -1130,7 +1125,7 @@ public class ImageRequest
      *****************************************************/
     public Builder transformBeforeResize( IImageTransformer transformer )
       {
-      mImageRequest.mPreResizeTransformer = transformer;
+      mPreResizeTransformer = transformer;
 
       return ( this );
       }
@@ -1143,7 +1138,7 @@ public class ImageRequest
      *****************************************************/
     public Builder resize( int width )
       {
-      mImageRequest.mResizeWidth = width;
+      mResizeWidth = width;
 
       return ( this );
       }
@@ -1157,7 +1152,7 @@ public class ImageRequest
      *****************************************************/
     public Builder resizeDimen( int widthResourceId )
       {
-      Resources resources = mContext.getResources();
+      Resources resources = mApplicationContext.getResources();
 
       return ( resize( resources.getDimensionPixelSize( widthResourceId ) ) );
       }
@@ -1190,7 +1185,7 @@ public class ImageRequest
      *****************************************************/
     public Builder resizeForDimen( View view, int defaultWidthResourceId )
       {
-      Resources resources = mContext.getResources();
+      Resources resources = mApplicationContext.getResources();
 
       return ( resizeFor( view, resources.getDimensionPixelSize( defaultWidthResourceId ) ) );
       }
@@ -1203,7 +1198,7 @@ public class ImageRequest
      *****************************************************/
     public Builder onlyScaleDown()
       {
-      mImageRequest.mOnlyScaleDown = true;
+      mOnlyScaleDown = true;
 
       return ( this );
       }
@@ -1217,7 +1212,7 @@ public class ImageRequest
      *****************************************************/
     public Builder reduceColourSpace()
       {
-      mImageRequest.mBitmapConfig = Bitmap.Config.RGB_565;
+      mBitmapConfig = Bitmap.Config.RGB_565;
 
       return ( this );
       }
@@ -1228,11 +1223,11 @@ public class ImageRequest
      * Sets the target of the image.
      *
      *****************************************************/
-    public void into( IImageConsumer imageConsumer, Object key )
+    public ImageLoadRequest into( IImageConsumer imageConsumer, Object key )
       {
-      mImageRequest.setTarget( mImageRequest.new ImageConsumerTarget( imageConsumer, key ) );
+      setTarget( new ImageConsumerTarget( imageConsumer, key ) );
 
-      createAndExecute();
+      return ( create() );
       }
 
 
@@ -1241,22 +1236,25 @@ public class ImageRequest
      * Sets the target of the image.
      *
      *****************************************************/
-    public void into( ImageView imageView )
+    public ImageLoadRequest into( ImageView imageView )
       {
-      mImageRequest.setTarget( mImageRequest.new ImageViewTarget( imageView ) );
+      setTarget( new ImageViewTarget( imageView ) );
 
-      createAndExecute();
+      return ( create() );
       }
 
 
     /*****************************************************
      *
-     * Creates the request and initiates it.
+     * Creates the request and optionally executes it.
      *
      *****************************************************/
-    private void createAndExecute()
+    private ImageLoadRequest create()
       {
-      mImageRequest.execute();
+      if ( mExecutor != null ) mExecutor.execute();
+      else                     execute();
+
+      return ( ImageLoadRequest.this );
       }
 
     }

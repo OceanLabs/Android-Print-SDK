@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.util;
+package ly.kite.image;
 
 
 ///// Import(s) /////
@@ -50,6 +50,8 @@ import java.net.URL;
 import java.util.HashMap;
 
 import ly.kite.KiteSDK;
+import ly.kite.util.Asset;
+import ly.kite.util.FileDownloader;
 
 
 ///// Class Declaration /////
@@ -76,8 +78,6 @@ public class ImageAgent
   @SuppressWarnings( "unused" )
   static private final String  LOG_TAG                   = "ImageAgent";
 
-  static private final boolean FORCE_FILE_DOWNLOAD       = false;
-
 
   ////////// Static Variable(s) //////////
 
@@ -91,7 +91,7 @@ public class ImageAgent
 
   private HashMap<String,Integer>  mURLResourceIdTable;
 
-  private FileDownloader           mFileDownloader;
+  private FileDownloader mFileDownloader;
   private ImageRequestProcessor    mImageRequestProcessor;
 
 
@@ -486,9 +486,9 @@ public class ImageAgent
    * Returns a new image request builder.
    *
    *****************************************************/
-  private ImageRequest.Builder getImageRequestBuilder()
+  private ImageLoadRequest.Builder getImageRequestBuilder()
     {
-    return ( new ImageRequest.Builder( mApplicationContext, FORCE_FILE_DOWNLOAD ) );
+    return ( new ImageLoadRequest( mApplicationContext ).new Builder() );
     }
 
 
@@ -497,9 +497,9 @@ public class ImageAgent
    * Creates an image request builder for bitmap data.
    *
    *****************************************************/
-  public ImageRequest.Builder load( byte[] bitmapBytes )
+  public ImageLoadRequest.Builder load( byte[] bitmapBytes )
     {
-    ImageRequest.Builder builder = getImageRequestBuilder();
+    ImageLoadRequest.Builder builder = getImageRequestBuilder();
 
     builder.load( bitmapBytes );
 
@@ -512,9 +512,9 @@ public class ImageAgent
    * Creates an image request builder for a bitmap.
    *
    *****************************************************/
-  public ImageRequest.Builder load( Bitmap bitmap )
+  public ImageLoadRequest.Builder load( Bitmap bitmap )
     {
-    ImageRequest.Builder builder = getImageRequestBuilder();
+    ImageLoadRequest.Builder builder = getImageRequestBuilder();
 
     builder.load( bitmap );
 
@@ -527,9 +527,9 @@ public class ImageAgent
    * Creates an image request builder for a file.
    *
    *****************************************************/
-  public ImageRequest.Builder load( File file )
+  public ImageLoadRequest.Builder load( File file )
     {
-    ImageRequest.Builder builder = getImageRequestBuilder();
+    ImageLoadRequest.Builder builder = getImageRequestBuilder();
 
     builder.load( file );
 
@@ -542,9 +542,9 @@ public class ImageAgent
    * Creates an image request builder for a URL.
    *
    *****************************************************/
-  public ImageRequest.Builder load( URL url, String imageCategory )
+  public ImageLoadRequest.Builder load( URL url, String imageCategory )
     {
-    ImageRequest.Builder builder = getImageRequestBuilder();
+    ImageLoadRequest.Builder builder = getImageRequestBuilder();
 
     builder.load( url, imageCategory );
 
@@ -557,9 +557,9 @@ public class ImageAgent
    * Creates an image request builder for a URL.
    *
    *****************************************************/
-  public ImageRequest.Builder loadURL( String urlString, String imageCategory ) throws MalformedURLException
+  public ImageLoadRequest.Builder loadURL( String urlString, String imageCategory ) throws MalformedURLException
     {
-    ImageRequest.Builder builder = getImageRequestBuilder();
+    ImageLoadRequest.Builder builder = getImageRequestBuilder();
 
     builder.loadURL( urlString, imageCategory );
 
@@ -572,9 +572,9 @@ public class ImageAgent
    * Creates an image request builder for a URL.
    *
    *****************************************************/
-  public ImageRequest.Builder load( Uri uri )
+  public ImageLoadRequest.Builder load( Uri uri )
     {
-    ImageRequest.Builder builder = getImageRequestBuilder();
+    ImageLoadRequest.Builder builder = getImageRequestBuilder();
 
     builder.load( uri );
 
@@ -587,9 +587,9 @@ public class ImageAgent
    * Creates an image request builder for a bitmap resource.
    *
    *****************************************************/
-  public ImageRequest.Builder load( int bitmapResourceId )
+  public ImageLoadRequest.Builder load( int bitmapResourceId )
     {
-    ImageRequest.Builder builder = getImageRequestBuilder();
+    ImageLoadRequest.Builder builder = getImageRequestBuilder();
 
     builder.load( bitmapResourceId );
 
@@ -602,9 +602,9 @@ public class ImageAgent
    * Sets the source of the image as an asset.
    *
    *****************************************************/
-  public ImageRequest.Builder load( Asset asset )
+  public ImageLoadRequest.Builder load( Asset asset )
     {
-    ImageRequest.Builder builder = getImageRequestBuilder();
+    ImageLoadRequest.Builder builder = getImageRequestBuilder();
 
     builder.load( asset );
 

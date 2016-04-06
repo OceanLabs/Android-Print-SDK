@@ -44,7 +44,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
@@ -59,11 +58,10 @@ import java.util.ArrayList;
 
 import ly.kite.R;
 import ly.kite.util.Asset;
-import ly.kite.util.AssetHelper;
 import ly.kite.catalogue.Bleed;
 import ly.kite.journey.AKiteActivity;
-import ly.kite.util.IImageConsumer;
-import ly.kite.util.ImageAgent;
+import ly.kite.image.IImageConsumer;
+import ly.kite.image.ImageAgent;
 
 
 ///// Class Declaration /////

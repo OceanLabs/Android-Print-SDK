@@ -49,7 +49,7 @@ import java.net.URL;
 import java.util.List;
 
 import ly.kite.R;
-import ly.kite.util.ImageAgent;
+import ly.kite.image.ImageAgent;
 import ly.kite.widget.LabelledImageView;
 
 

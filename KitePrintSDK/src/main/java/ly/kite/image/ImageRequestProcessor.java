@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.util;
+package ly.kite.image;
 
 
 ///// Import(s) /////
@@ -69,7 +69,7 @@ public class ImageRequestProcessor
 
   private Context                   mApplicationContext;
 
-  private LinkedList<ImageRequest>  mRequestQueue;
+  private LinkedList<ImageLoadRequest>  mRequestQueue;
 
   private LoaderTask                mLoaderTask;
 
@@ -127,7 +127,7 @@ public class ImageRequestProcessor
    * Must be called on the UI thread.
    *
    *****************************************************/
-  void process( ImageRequest request )
+  void process( ImageLoadRequest request )
     {
     synchronized ( mRequestQueue )
       {
@@ -154,7 +154,7 @@ public class ImageRequestProcessor
    * The loader task.
    *
    *****************************************************/
-  private class LoaderTask extends AsyncTask<Void,ImageRequest,Void>
+  private class LoaderTask extends AsyncTask<Void,ImageLoadRequest,Void>
     {
 
     /*****************************************************
@@ -169,7 +169,7 @@ public class ImageRequestProcessor
 
       while ( true )
         {
-        ImageRequest request = null;
+        ImageLoadRequest request = null;
 
         synchronized ( mRequestQueue )
           {
@@ -201,11 +201,11 @@ public class ImageRequestProcessor
      *
      *****************************************************/
     @Override
-    protected void onProgressUpdate( ImageRequest... requests )
+    protected void onProgressUpdate( ImageLoadRequest... requests )
       {
       if ( requests != null )
         {
-        for ( ImageRequest request : requests )
+        for ( ImageLoadRequest request : requests )
           {
           request.onProcessingComplete();
           }

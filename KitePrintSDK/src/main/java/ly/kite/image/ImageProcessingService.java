@@ -40,12 +40,21 @@ package ly.kite.image;
 ///// Import(s) /////
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
+import android.os.RemoteException;
 import android.support.annotation.Nullable;
+import android.util.Log;
+
+import ly.kite.util.Asset;
+import ly.kite.util.AssetHelper;
 
 
 ///// Class Declaration /////
@@ -67,9 +76,21 @@ public class ImageProcessingService extends Service
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String  LOG_TAG      = "ImageProcessingService";
+  static private final String  LOG_TAG                   = "ImageProcessingService";
 
-  static private final int     CROP_MESSAGE = 23;
+  static private final boolean DEBUGGING_ENABLED         = true;
+
+
+  static public  final int     WHAT_CROP_TO_ASPECT_RATIO = 23;
+
+  static public  final int     WHAT_IMAGE_AVAILABLE      = 46;
+  static public  final int     WHAT_IMAGE_UNAVAILABLE    = 47;
+
+  static public  final String  BUNDLE_KEY_SOURCE_ASSET   = "sourceAsset";
+  static public  final String  BUNDLE_KEY_TARGET_ASSET   = "targetAsset";
+  static public  final String  BUNDLE_KEY_ASPECT_RATIO   = "aspectRatio";
+
+  static public  final float   DEFAULT_ASPECT_RATIO      = 1.0f;
 
 
   ////////// Static Variable(s) //////////
@@ -78,13 +99,25 @@ public class ImageProcessingService extends Service
   ////////// Member Variable(s) //////////
 
   private RequestHandler  mRequestHandler;
-  private Messenger       mMessenger;
+  private Messenger       mRequestMessenger;
 
 
   ////////// Static Initialiser(s) //////////
 
 
   ////////// Static Method(s) //////////
+
+  /*****************************************************
+   *
+   * Binds to this service.
+   *
+   *****************************************************/
+  static public void bind( Context context, ServiceConnection serviceConnection )
+    {
+    Intent intent = new Intent( context, ImageProcessingService.class );
+
+    context.bindService( intent, serviceConnection, Context.BIND_AUTO_CREATE );
+    }
 
 
   ////////// Constructor(s) //////////
@@ -103,7 +136,7 @@ public class ImageProcessingService extends Service
     super.onCreate();
 
     mRequestHandler = new RequestHandler();
-    mMessenger      = new Messenger( mRequestHandler );
+    mRequestMessenger = new Messenger( mRequestHandler );
     }
 
 
@@ -116,7 +149,7 @@ public class ImageProcessingService extends Service
   @Override
   public IBinder onBind( Intent intent )
     {
-    return ( mMessenger.getBinder() );
+    return ( mRequestMessenger.getBinder() );
     }
 
 
@@ -124,7 +157,7 @@ public class ImageProcessingService extends Service
 
   /*****************************************************
    *
-   * A handler for incoming messages.
+   * The handler for request messages.
    *
    *****************************************************/
   private class RequestHandler extends Handler
@@ -132,13 +165,144 @@ public class ImageProcessingService extends Service
     @Override
     public void handleMessage( Message message )
       {
+      // Get common values from the message
+
+      Messenger responseMessenger = message.replyTo;
+
+      Bundle messageData = message.getData();
+
+      messageData.setClassLoader( Asset.class.getClassLoader() );
+      Asset sourceAsset = messageData.getParcelable( BUNDLE_KEY_SOURCE_ASSET );
+      Asset targetAsset = messageData.getParcelable( BUNDLE_KEY_TARGET_ASSET );
+
+
+      IImageTransformer transformer;
+
       switch ( message.what )
         {
-        case CROP_MESSAGE:
+        case WHAT_CROP_TO_ASPECT_RATIO:
+
+          ///// Crop to aspect ratio /////
+
+          float aspectRatio = messageData.getFloat( BUNDLE_KEY_ASPECT_RATIO, DEFAULT_ASPECT_RATIO );
+
+          if ( DEBUGGING_ENABLED ) Log.i( LOG_TAG, "Received CROP_TO_ASPECT_RATIO message: responseMessenger = " + responseMessenger + ", sourceAsset = " + sourceAsset + ", targetAsset = " + targetAsset );
+
+          transformer = new CropToAspectRatioTransformer( aspectRatio );
+
           break;
 
         default:
+
           super.handleMessage( message );
+
+          return;
+        }
+
+
+      TransformedImageConsumer consumer = new TransformedImageConsumer( targetAsset, responseMessenger );
+
+      ImageAgent.with( ImageProcessingService.this )
+              .load( sourceAsset )
+              .transformBeforeResize( transformer )
+              .into( consumer, null );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * A crop to aspect ratio transformer.
+   *
+   *****************************************************/
+  private class CropToAspectRatioTransformer implements IImageTransformer
+    {
+    private float  mAspectRatio;
+
+
+    CropToAspectRatioTransformer( float aspectRatio )
+      {
+      mAspectRatio = aspectRatio;
+      }
+
+
+    /*****************************************************
+     *
+     * Called on a background thread to transform a bitmap.
+     * We use this to crop the bitmap, and create a file-backed
+     * asset from it.
+     *
+     *****************************************************/
+    @Override
+    public Bitmap getTransformedBitmap( Bitmap bitmap )
+      {
+      // Crop the bitmap to the required shape
+      Bitmap croppedBitmap = ImageAgent.crop( bitmap, mAspectRatio );
+
+      return ( croppedBitmap );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * The image consumer that receives the transformed image,
+   * saves it to the target asset, and sends a message back
+   * to the client.
+   *
+   *****************************************************/
+  private class TransformedImageConsumer implements IImageConsumer
+    {
+    private Asset      mTargetAsset;
+    private Messenger  mResponseMessenger;
+
+
+    TransformedImageConsumer( Asset targetAsset, Messenger responseMessenger )
+      {
+      mTargetAsset       = targetAsset;
+      mResponseMessenger = responseMessenger;
+      }
+
+
+    @Override
+    public void onImageDownloading( Object key )
+      {
+      // Ignore
+      }
+
+    @Override
+    public void onImageAvailable( Object key, Bitmap bitmap )
+      {
+      if ( DEBUGGING_ENABLED ) Log.i( LOG_TAG, "onImageAvailable( key = " + key + ", bitmap = " + bitmap + " )" );
+
+      // Save the the transformed image to the target
+      AssetHelper.replaceAsset( bitmap, mTargetAsset );
+
+      sendResponseMessage( WHAT_IMAGE_AVAILABLE );
+      }
+
+    @Override
+    public void onImageUnavailable( Object key, Exception exception )
+      {
+      sendResponseMessage( WHAT_IMAGE_UNAVAILABLE );
+      }
+
+
+    private void sendResponseMessage( int what )
+      {
+      Message responseMessage = Message.obtain();
+
+      responseMessage.what = what;
+
+      try
+        {
+        if ( DEBUGGING_ENABLED ) Log.i( LOG_TAG, "Sending response message: what = " + what );
+
+        mResponseMessenger.send( responseMessage );
+        }
+      catch ( RemoteException re )
+        {
+        Log.e( LOG_TAG, "Unable to send response message", re );
         }
       }
     }

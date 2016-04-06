@@ -74,8 +74,15 @@ class PostcardPrintJob extends PrintJob
   List<Asset> getAssetsForUploading()
     {
     ArrayList<Asset> assets = new ArrayList<Asset>();
+
     assets.add( mFrontImageAsset );
-    return assets;
+
+    if ( mBackImageAsset != null )
+      {
+      assets.add( mBackImageAsset );
+      }
+
+    return ( assets );
     }
 
   private static String getStringOrEmptyString( String val )
@@ -146,6 +153,7 @@ class PostcardPrintJob extends PrintJob
     {
     super.writeToParcel( parcel, flags );
     parcel.writeParcelable( mFrontImageAsset, flags );
+    parcel.writeParcelable( mBackImageAsset, flags );
     parcel.writeString( mMessage );
     parcel.writeParcelable( mAddress, flags );
     }
@@ -154,9 +162,11 @@ class PostcardPrintJob extends PrintJob
     {
     //super( ProductCache.getDirtyInstance().getProductById( parcel.readString() ) );
     super( parcel );
+
     mFrontImageAsset = parcel.readParcelable( Asset.class.getClassLoader() );
-    mMessage = parcel.readString();
-    mAddress = (Address) parcel.readParcelable( Address.class.getClassLoader() );
+    mBackImageAsset  = parcel.readParcelable( Asset.class.getClassLoader() );
+    mMessage         = parcel.readString();
+    mAddress         = (Address)parcel.readParcelable( Address.class.getClassLoader() );
     }
 
   public static final Parcelable.Creator<PostcardPrintJob> CREATOR

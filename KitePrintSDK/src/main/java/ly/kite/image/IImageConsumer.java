@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * IImageTransformer.java
+ * IImageConsumer.java
  *
  *
  * Modified MIT License
@@ -34,29 +34,49 @@
 
 ///// Package Declaration /////
 
-package ly.kite.util;
+package ly.kite.image;
 
 
 ///// Import(s) /////
 
+import android.graphics.Bitmap;
+
 
 ///// Class Declaration /////
 
-import android.graphics.Bitmap;
-
 /*****************************************************
  *
- * This interface defines an image transformer.
+ * This interface defines an image consumer. This
+ * is used by classes that use local / remote images,
+ * and is used to return the image to the consumer.
  *
  *****************************************************/
-public interface IImageTransformer
+public interface IImageConsumer
   {
+  ////////// Method(s) //////////
+
   /*****************************************************
    *
-   * Returns a transformed bitmap from the supplied
-   * original. This method will usually be called from
-   * a background thread, *not* the UI thread.
+   * Called for remote images when they are not available
+   * locally, and will thus be downloaded.
    *
    *****************************************************/
-  public Bitmap getTransformedBitmap( Bitmap originalBitmap );
+  public void onImageDownloading( Object key );
+
+
+  /*****************************************************
+   *
+   * Called when an image is available.
+   *
+   *****************************************************/
+  public void onImageAvailable( Object key, Bitmap bitmap );
+
+
+  /*****************************************************
+   *
+   * Called when an image could not be loaded. An exception
+   * may or may not be additionally returned.
+   *
+   *****************************************************/
+  public void onImageUnavailable( Object key, Exception exception );
   }

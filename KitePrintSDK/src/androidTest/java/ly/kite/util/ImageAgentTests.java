@@ -44,7 +44,7 @@ import android.graphics.Bitmap;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
-import java.util.ArrayList;
+import ly.kite.image.ImageAgent;
 
 
 ///// Class Declaration /////

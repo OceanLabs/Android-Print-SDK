@@ -47,7 +47,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.util.Pair;
 import android.webkit.MimeTypeMap;
-import android.widget.ImageView;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -62,7 +61,9 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.UUID;
 
-import ly.kite.R;
+import ly.kite.image.IImageConsumer;
+import ly.kite.image.ImageAgent;
+import ly.kite.image.ImageLoadRequest;
 import ly.kite.util.Asset.Type;
 import ly.kite.util.Asset.MIMEType;
 
@@ -253,11 +254,39 @@ public class AssetHelper
    * to a file. The file path is automatically generated.
    *
    *****************************************************/
+  static public void replaceAsset( Bitmap bitmap, Asset targetAsset )
+    {
+    if ( targetAsset.getType() != Type.IMAGE_FILE )
+      {
+      throw ( new IllegalArgumentException( "Can only replace a file asset" ) );
+      }
+
+    saveToFile( bitmap, targetAsset.getImageFilePath() );
+    }
+
+
+  /*****************************************************
+   *
+   * Creates a new asset from a bitmap, but writes it out
+   * to a file. The file path is automatically generated.
+   *
+   *****************************************************/
   static public Asset createAsCachedFile( Context context, Bitmap bitmap )
     {
     String filePath = prepareForCachedFile( context, MIMEType.JPEG );
 
+    return ( saveToFile( bitmap, filePath ) );
+    }
 
+
+  /*****************************************************
+   *
+   * Creates a new asset from a bitmap, but writes it out
+   * to a file. The file path is automatically generated.
+   *
+   *****************************************************/
+  static private Asset saveToFile( Bitmap bitmap, String filePath )
+    {
     // Encode the bitmap directly to the filesystem, to avoid using more memory than necessary.
 
     FileOutputStream     fos = null;
@@ -534,7 +563,7 @@ public class AssetHelper
    * Sets the image source for a request.
    *
    *****************************************************/
-  static public void setSource( Asset asset, ImageRequest.Builder imageRequestBuilder )
+  static public void setSource( Asset asset, ImageLoadRequest.Builder imageRequestBuilder )
     {
     switch ( asset.getType() )
       {

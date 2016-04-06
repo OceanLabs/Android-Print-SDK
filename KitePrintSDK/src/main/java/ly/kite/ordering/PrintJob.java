@@ -136,6 +136,7 @@ public abstract class PrintJob implements Parcelable {
   public void writeToParcel( Parcel parcel, int flags )
     {
     mProduct.writeToParcel( parcel, flags );
+
     parcel.writeMap( mOptionMap );
     }
 

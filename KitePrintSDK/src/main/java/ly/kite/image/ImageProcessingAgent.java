@@ -42,6 +42,8 @@ package ly.kite.image;
 
 ///// Class Declaration /////
 
+import android.content.Context;
+
 /*****************************************************
  *
  * This class is an agent between a client, and the image
@@ -66,6 +68,16 @@ public class ImageProcessingAgent
 
 
   ////////// Static Method(s) //////////
+
+  /*****************************************************
+   *
+   * Starts an image processing request.
+   *
+   *****************************************************/
+  static public ImageProcessingRequest.Builder with( Context context )
+    {
+    return ( new ImageProcessingRequest( context ).new Builder() );
+    }
 
 
   ////////// Constructor(s) //////////

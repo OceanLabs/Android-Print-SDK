@@ -62,7 +62,7 @@ import ly.kite.journey.InstagramImageSource;
 import ly.kite.journey.selection.ProductSelectionActivity;
 import ly.kite.util.AssetHelper;
 import ly.kite.util.DelimitedStringBuilder;
-import ly.kite.util.ImageAgent;
+import ly.kite.image.ImageAgent;
 
 
 ///// Class Declaration /////

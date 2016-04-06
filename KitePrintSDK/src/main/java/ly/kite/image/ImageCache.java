@@ -34,12 +34,11 @@
 
 ///// Package Declaration /////
 
-package ly.kite.util;
+package ly.kite.image;
 
 
 ///// Import(s) /////
 
-import android.content.BroadcastReceiver;
 import android.graphics.Bitmap;
 
 import java.util.HashMap;
