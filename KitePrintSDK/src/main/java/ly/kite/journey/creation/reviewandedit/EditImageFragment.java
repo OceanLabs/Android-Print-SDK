@@ -209,6 +209,20 @@ public class EditImageFragment extends AEditImageFragment
     }
 
 
+  /*****************************************************
+   *
+   * Called when an edited asset is returned.
+   *
+   *****************************************************/
+  protected void onEditedAsset( Asset editedAsset )
+    {
+    if ( editedAsset != null && mKiteActivity instanceof ICallback )
+      {
+      ((ICallback) mKiteActivity).eiOnConfirm( editedAsset );
+      }
+    }
+
+
   ////////// Method(s) //////////
 
   /*****************************************************
@@ -232,15 +246,7 @@ public class EditImageFragment extends AEditImageFragment
    *****************************************************/
   protected void onConfirm()
     {
-    Asset croppedImageAsset = getEditedImageAsset();
-
-    if ( croppedImageAsset == null ) return;
-
-
-    if ( mKiteActivity instanceof ICallback )
-      {
-      ((ICallback) mKiteActivity).eiOnConfirm( croppedImageAsset );
-      }
+    requestEditedAsset();
     }
 
 

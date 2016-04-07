@@ -57,17 +57,13 @@ import java.util.List;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
-import ly.kite.image.ImageProcessingAgent;
 import ly.kite.image.ImageProcessingRequest;
 import ly.kite.util.Asset;
-import ly.kite.util.AssetHelper;
 import ly.kite.journey.AImageSource;
 import ly.kite.journey.AKiteFragment;
 import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.journey.IAssetsAndQuantityHolder;
 import ly.kite.catalogue.Product;
-import ly.kite.image.IImageConsumer;
-import ly.kite.image.IImageTransformer;
 import ly.kite.image.ImageAgent;
 
 
@@ -555,7 +551,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
    *****************************************************/
   protected void requestCroppedAsset( AssetsAndQuantity assetsAndQuantity )
     {
-    ImageProcessingAgent.with( mKiteActivity )
+    ImageAgent.with( mKiteActivity )
             .transform( assetsAndQuantity.getUneditedAsset() )
             .byCroppingToAspectRatio( mProduct.getImageAspectRatio() )
             .intoNewAsset()

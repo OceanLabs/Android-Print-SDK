@@ -40,6 +40,7 @@ package ly.kite.journey.creation;
 ///// Import(s) /////
 
 import android.graphics.Bitmap;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -50,6 +51,8 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import ly.kite.R;
+import ly.kite.image.ImageAgent;
+import ly.kite.image.ImageProcessingRequest;
 import ly.kite.journey.AImageSource;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.util.Asset;
@@ -96,6 +99,8 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
   private   PromptTextFrame              mPromptTextFrame;
 
   protected boolean                      mShowPromptText;
+
+  protected Asset                        mLastEditedAsset;
 
 
   ////////// Static Initialiser(s) //////////
@@ -483,7 +488,26 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
       {
       ///// Rotate /////
 
-      if ( mEditableImageContainerFrame != null ) mEditableImageContainerFrame.requestAnticlockwiseRotation();
+      if ( mEditableImageContainerFrame != null )
+        {
+        ImageProcessingRequest.Builder builder;
+
+        if ( mLastEditedAsset != null )
+          {
+          builder = ImageAgent.with( mKiteActivity )
+                  .transform( mLastEditedAsset );
+          }
+        else
+          {
+          builder = ImageAgent.with( mKiteActivity )
+                  .transform( mImageAsset )
+                  .intoNewAsset();
+          }
+
+        builder
+                .byRotatingAnticlockwise()
+                .thenNotify( new ProcessedImageLoader() );
+        }
 
       return ( true );
       }
@@ -491,7 +515,26 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
       {
       ///// Flip /////
 
-      if ( mEditableImageContainerFrame != null ) mEditableImageContainerFrame.requestHorizontalFlip();
+      if ( mEditableImageContainerFrame != null )
+        {
+        ImageProcessingRequest.Builder builder;
+
+        if ( mLastEditedAsset != null )
+          {
+          builder = ImageAgent.with( mKiteActivity )
+                  .transform( mLastEditedAsset );
+          }
+        else
+          {
+          builder = ImageAgent.with( mKiteActivity )
+                  .transform( mImageAsset )
+                  .intoNewAsset();
+          }
+
+        builder
+                .byFlippingHorizontally()
+                .thenNotify( new ProcessedImageLoader() );
+        }
 
       return ( true );
       }
@@ -525,49 +568,53 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
    * asset from it.
    *
    *****************************************************/
-  protected Asset getEditedImageAsset()
+  protected void requestEditedAsset()
     {
-    if ( mEditableImageContainerFrame == null ) return ( null );
+    if ( mEditableImageContainerFrame == null ) return;
 
 
-    Bitmap editedImageBitmap = mEditableImageContainerFrame.getEditableImageView().getImageCroppedToMask();
+    RectF imageCropBounds = mEditableImageContainerFrame.getEditableImageView().getImageCropBounds();
 
 
     // Sometimes users can hit the next button before we've actually got all the images, so check
     // for this.
 
-    if ( editedImageBitmap == null )
+    if ( imageCropBounds == null )
       {
       Log.w( LOG_TAG, "Cropped image not yet available" );
 
-      return ( null );
+      return;
       }
 
 
-    // Create the cropped image asset as a file. We always create file-backed assets within
-    // the SDK so we don't hit problems with transaction sizes when passing assets through
-    // intents.
+    // Process the image using the crop bounds
 
-    Asset editedImageAsset = AssetHelper.createAsCachedFile( mKiteActivity, editedImageBitmap );
+    ImageProcessingRequest.Builder builder;
 
-    if ( editedImageAsset == null )
+    if ( mLastEditedAsset != null )
       {
-      Log.e( LOG_TAG, "Could not create edited image asset" );
-
-      mKiteActivity.displayModalDialog(
-              R.string.alert_dialog_title_create_order,
-              R.string.alert_dialog_message_no_cropped_image_asset,
-              AKiteActivity.NO_BUTTON,
-              null,
-              R.string.Cancel,
-              null );
-
-      return ( null );
+      builder = ImageAgent.with( mKiteActivity )
+              .transform( mLastEditedAsset );
+      }
+    else
+      {
+      builder = ImageAgent.with( mKiteActivity )
+              .transform( mImageAsset )
+              .intoNewAsset();
       }
 
-
-    return ( editedImageAsset );
+    builder
+            .byCroppingTo( imageCropBounds )
+            .thenNotify( new CompletedImageHandler() );
     }
+
+
+  /*****************************************************
+   *
+   * Called when an edited asset is returned.
+   *
+   *****************************************************/
+  abstract protected void onEditedAsset( Asset editedAsset );
 
 
   ////////// Inner Class(es) //////////
@@ -583,6 +630,52 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
     public void run()
       {
       mEditableImageContainerFrame.loadAllImages();
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Image processing callback that sets the image and
+   * loads it.
+   *
+   *****************************************************/
+  private class ProcessedImageLoader implements ImageProcessingRequest.ICallback
+    {
+    @Override
+    public void ipcOnImageAvailable( Asset processedAsset )
+      {
+      mLastEditedAsset = processedAsset;
+
+      if ( mEditableImageContainerFrame != null ) mEditableImageContainerFrame.setAndLoadImage( processedAsset );
+      }
+
+    @Override
+    public void ipcOnImageUnavailable()
+      {
+      // Ignore
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Image processing callback that sets the image and
+   * loads it.
+   *
+   *****************************************************/
+  private class CompletedImageHandler implements ImageProcessingRequest.ICallback
+    {
+    @Override
+    public void ipcOnImageAvailable( Asset processedAsset )
+      {
+      onEditedAsset( processedAsset );
+      }
+
+    @Override
+    public void ipcOnImageUnavailable()
+      {
+      // Ignore
       }
     }
 

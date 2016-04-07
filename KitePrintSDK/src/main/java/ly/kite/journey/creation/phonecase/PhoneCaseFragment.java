@@ -209,6 +209,20 @@ public class PhoneCaseFragment extends AEditImageFragment
     }
 
 
+  /*****************************************************
+   *
+   * Called when an edited asset is returned.
+   *
+   *****************************************************/
+  protected void onEditedAsset( Asset editedAsset )
+    {
+    if ( editedAsset != null && mKiteActivity instanceof ICallback )
+      {
+      ( (ICallback)mKiteActivity ).pcOnCreated( editedAsset );
+      }
+    }
+
+
   ////////// Method(s) //////////
 
   /*****************************************************
@@ -219,16 +233,7 @@ public class PhoneCaseFragment extends AEditImageFragment
   @Override
   protected void onConfirm()
     {
-    Asset editedImageAsset = getEditedImageAsset();
-
-    if ( editedImageAsset == null ) return;
-
-
-    // Call back to the activity
-    if ( mKiteActivity instanceof ICallback )
-      {
-      ( (ICallback)mKiteActivity ).pcOnCreated( editedImageAsset );
-      }
+    requestEditedAsset();
     }
 
 

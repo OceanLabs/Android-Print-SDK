@@ -438,8 +438,10 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
 
     ImageAgent.with( getContext() )
             .load( mImageAsset )
+            .reduceColourSpace()
+            .resizeForIfSized( mEditableMaskedImageView )
+            .onlyScaleDown()
             .into( this, mImageAsset );
-    //AssetHelper.requestImage( getContext(), mImageAsset, this );
     }
 
 
@@ -497,6 +499,9 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
 
       ImageAgent.with( getContext() )
               .load( mMaskURL, AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM )
+              .reduceColourSpace()
+              .resizeForIfSized( mEditableMaskedImageView )
+              .onlyScaleDown()
               .into( this, mMaskURL );
       }
 
@@ -513,6 +518,9 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
 
           ImageAgent.with( getContext() )
                   .load( underImageURL, AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM )
+                  .reduceColourSpace()
+                  .resizeForIfSized( mEditableMaskedImageView )
+                  .onlyScaleDown()
                   .into( this, underImageURL );
           }
         }
@@ -531,6 +539,9 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
 
           ImageAgent.with( getContext() )
                   .load( overImageURL, AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM )
+                  .reduceColourSpace()
+                  .resizeForIfSized( mEditableMaskedImageView )
+                  .onlyScaleDown()
                   .into( this, overImageURL );
           }
         }
@@ -676,48 +687,6 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
   public void clearState()
     {
     if ( mEditableMaskedImageView != null ) mEditableMaskedImageView.clearState();
-    }
-
-
-  /*****************************************************
-   *
-   * Requests a vertical flip.
-   *
-   *****************************************************/
-  public void requestVerticalFlip()
-    {
-    if ( mEditableMaskedImageView != null )
-      {
-      mEditableMaskedImageView.requestVerticalFlip();
-      }
-    }
-
-
-  /*****************************************************
-   *
-   * Requests a horizontal flip.
-   *
-   *****************************************************/
-  public void requestHorizontalFlip()
-    {
-    if ( mEditableMaskedImageView != null )
-      {
-      mEditableMaskedImageView.requestHorizontalFlip();
-      }
-    }
-
-
-  /*****************************************************
-   *
-   * Requests an anticlockwise rotation.
-   *
-   *****************************************************/
-  public void requestAnticlockwiseRotation()
-    {
-    if ( mEditableMaskedImageView != null )
-      {
-      mEditableMaskedImageView.requestAnticlockwiseRotation();
-      }
     }
 
 

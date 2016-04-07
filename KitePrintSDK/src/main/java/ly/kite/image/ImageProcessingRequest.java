@@ -45,6 +45,7 @@ package ly.kite.image;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.ServiceConnection;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -86,8 +87,9 @@ public class ImageProcessingRequest implements ServiceConnection
   private boolean                   mServiceConnected;
   private Messenger                 mRequestMessenger;
 
-  private Handler                   mResponseHandler;
   private Messenger                 mResponseMessenger;
+
+  private ImageLoadRequest          mImageLoadRequest;
 
 
   ////////// Static Initialiser(s) //////////
@@ -119,7 +121,7 @@ public class ImageProcessingRequest implements ServiceConnection
 
     // Create the request and response messengers
     mRequestMessenger  = new Messenger( serviceIBinder );
-    mResponseMessenger = new Messenger( mResponseHandler = new ResponseHandler() );
+    mResponseMessenger = new Messenger( new ResponseHandler() );
 
 
     // Set common values in the request message
@@ -165,7 +167,7 @@ public class ImageProcessingRequest implements ServiceConnection
    *****************************************************/
   private void execute()
     {
-    // Make sure we have all the information we need
+    // Make sure we have all the bits we need
 
     if ( mSourceAsset    == null ) throw ( new IllegalStateException( "No source asset specified" ) );
 
@@ -209,12 +211,19 @@ public class ImageProcessingRequest implements ServiceConnection
      * Called when the load request builder is finished.
      *
      *****************************************************/
-    public void execute()
+    public void execute( ImageLoadRequest imageLoadRequest )
       {
+      mImageLoadRequest = imageLoadRequest;
+
       create();
       }
 
 
+    /*****************************************************
+     *
+     * Specifies the asset to be processed.
+     *
+     *****************************************************/
     public Builder transform( Asset sourceAsset )
       {
       mSourceAsset = sourceAsset;
@@ -225,6 +234,12 @@ public class ImageProcessingRequest implements ServiceConnection
       }
 
 
+    /*****************************************************
+     *
+     * Specifies the transformation as a crop to an aspect
+     * ratio.
+     *
+     *****************************************************/
     public Builder byCroppingToAspectRatio( float aspectRatio )
       {
       // Create the data for the message
@@ -246,6 +261,76 @@ public class ImageProcessingRequest implements ServiceConnection
       }
 
 
+    /*****************************************************
+     *
+     * Specifies the transformation as a horizontal flip.
+     *
+     *****************************************************/
+    public Builder byFlippingHorizontally()
+      {
+      // Create the message
+
+      mRequestMessage = Message.obtain();
+
+      mRequestMessage.what = ImageProcessingService.WHAT_FLIP_HORIZONTALLY;
+
+
+      return ( this );
+      }
+
+
+    /*****************************************************
+     *
+     * Specifies the transformation as an anticlockwise rotation.
+     *
+     *****************************************************/
+    public Builder byRotatingAnticlockwise()
+      {
+      // Create the message
+
+      mRequestMessage = Message.obtain();
+
+      mRequestMessage.what = ImageProcessingService.WHAT_ROTATE_ANTICLOCKWISE;
+
+
+      return ( this );
+      }
+
+
+    /*****************************************************
+     *
+     * Specifies the transformation as a crop to the bounds
+     * supplied. The bounds may lie outside the image, in which
+     * case a filler colour is used.
+     *
+     *****************************************************/
+    public Builder byCroppingTo( RectF cropBounds )
+      {
+      // Create the data for the message
+
+      Bundle messageData = new Bundle();
+
+      messageData.putParcelable( ImageProcessingService.BUNDLE_KEY_CROP_BOUNDS, cropBounds );
+
+
+      // Create the message
+
+      mRequestMessage = Message.obtain();
+
+      mRequestMessage.what = ImageProcessingService.WHAT_CROP_TO_BOUNDS;
+      mRequestMessage.setData( messageData );
+
+
+      return ( this );
+      }
+
+
+    /*****************************************************
+     *
+     * Specifies that a new asset should be created from
+     * the transformed image.
+     *
+     *****************************************************/
     public Builder intoNewAsset()
       {
       mCreateNewAsset = true;
@@ -260,7 +345,7 @@ public class ImageProcessingRequest implements ServiceConnection
     /*****************************************************
      *
      * Specifies that once the processing has been performed,
-     * who to notify.
+     * who to notify, and creates / executes the request.
      *
      *****************************************************/
     public void thenNotify( ICallback callback )
@@ -316,7 +401,11 @@ public class ImageProcessingRequest implements ServiceConnection
         {
         case ImageProcessingService.WHAT_IMAGE_AVAILABLE:
 
+          // Notify any callback
           if ( mCallback != null ) mCallback.ipcOnImageAvailable( mTargetAsset );
+
+          // If we have a subsequent load request - execute it now
+          if ( mImageLoadRequest != null ) mImageLoadRequest.execute();
 
           break;
 
@@ -329,6 +418,11 @@ public class ImageProcessingRequest implements ServiceConnection
         default:
           super.handleMessage( msg );
         }
+
+
+      // We only get one message back from the service, so once we've received
+      // something - disconnect.
+      if ( mServiceConnected ) mApplicationContext.unbindService( ImageProcessingRequest.this );
       }
 
     }

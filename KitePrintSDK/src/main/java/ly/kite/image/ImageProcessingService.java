@@ -44,6 +44,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -82,13 +83,17 @@ public class ImageProcessingService extends Service
 
 
   static public  final int     WHAT_CROP_TO_ASPECT_RATIO = 23;
+  static public  final int     WHAT_FLIP_HORIZONTALLY    = 27;
+  static public  final int     WHAT_ROTATE_ANTICLOCKWISE = 29;
+  static public  final int     WHAT_CROP_TO_BOUNDS       = 32;
 
   static public  final int     WHAT_IMAGE_AVAILABLE      = 46;
-  static public  final int     WHAT_IMAGE_UNAVAILABLE    = 47;
+  static public  final int     WHAT_IMAGE_UNAVAILABLE    = 48;
 
   static public  final String  BUNDLE_KEY_SOURCE_ASSET   = "sourceAsset";
   static public  final String  BUNDLE_KEY_TARGET_ASSET   = "targetAsset";
   static public  final String  BUNDLE_KEY_ASPECT_RATIO   = "aspectRatio";
+  static public  final String  BUNDLE_KEY_CROP_BOUNDS    = "cropBounds";
 
   static public  final float   DEFAULT_ASPECT_RATIO      = 1.0f;
 
@@ -135,7 +140,7 @@ public class ImageProcessingService extends Service
     {
     super.onCreate();
 
-    mRequestHandler = new RequestHandler();
+    mRequestHandler   = new RequestHandler();
     mRequestMessenger = new Messenger( mRequestHandler );
     }
 
@@ -192,6 +197,39 @@ public class ImageProcessingService extends Service
 
           break;
 
+        case WHAT_FLIP_HORIZONTALLY:
+
+          ///// Flip horizontally /////
+
+          if ( DEBUGGING_ENABLED ) Log.i( LOG_TAG, "Received FLIP_HORIZONTALLY message: responseMessenger = " + responseMessenger + ", sourceAsset = " + sourceAsset + ", targetAsset = " + targetAsset );
+
+          transformer = new FlipHorizontallyTransformer();
+
+          break;
+
+        case WHAT_ROTATE_ANTICLOCKWISE:
+
+          ///// Rotate anticlockwise /////
+
+          if ( DEBUGGING_ENABLED ) Log.i( LOG_TAG, "Received ROTATE_ANTICLOCKWISE message: responseMessenger = " + responseMessenger + ", sourceAsset = " + sourceAsset + ", targetAsset = " + targetAsset );
+
+          transformer = new RotateAnticlockwiseTransformer();
+
+          break;
+
+        case WHAT_CROP_TO_BOUNDS:
+
+          ///// Crop to aspect ratio /////
+
+          messageData.setClassLoader( RectF.class.getClassLoader() );
+          RectF cropBounds = messageData.getParcelable( BUNDLE_KEY_CROP_BOUNDS );
+
+          if ( DEBUGGING_ENABLED ) Log.i( LOG_TAG, "Received CROP_TO_BOUNDS message: responseMessenger = " + responseMessenger + ", sourceAsset = " + sourceAsset + ", targetAsset = " + targetAsset );
+
+          transformer = new CropToBoundsTransformer( cropBounds );
+
+          break;
+
         default:
 
           super.handleMessage( message );
@@ -236,10 +274,84 @@ public class ImageProcessingService extends Service
     @Override
     public Bitmap getTransformedBitmap( Bitmap bitmap )
       {
-      // Crop the bitmap to the required shape
-      Bitmap croppedBitmap = ImageAgent.crop( bitmap, mAspectRatio );
+      return ( ImageAgent.crop( bitmap, mAspectRatio ) );
+      }
+    }
 
-      return ( croppedBitmap );
+
+  /*****************************************************
+   *
+   * A flip horizontally transformer.
+   *
+   *****************************************************/
+  private class FlipHorizontallyTransformer implements IImageTransformer
+    {
+    /*****************************************************
+     *
+     * Called on a background thread to transform a bitmap.
+     * We use this to crop the bitmap, and create a file-backed
+     * asset from it.
+     *
+     *****************************************************/
+    @Override
+    public Bitmap getTransformedBitmap( Bitmap bitmap )
+      {
+      ImageAgent.horizontallyFlipBitmap( bitmap );
+
+      return ( bitmap );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * A rotate anticlockwise transformer.
+   *
+   *****************************************************/
+  private class RotateAnticlockwiseTransformer implements IImageTransformer
+    {
+    /*****************************************************
+     *
+     * Called on a background thread to transform a bitmap.
+     * We use this to crop the bitmap, and create a file-backed
+     * asset from it.
+     *
+     *****************************************************/
+    @Override
+    public Bitmap getTransformedBitmap( Bitmap bitmap )
+      {
+      return ( ImageAgent.rotateAnticlockwiseBitmap( bitmap ) );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * A crop to bounds transformer.
+   *
+   *****************************************************/
+  private class CropToBoundsTransformer implements IImageTransformer
+    {
+    private RectF  mCropBounds;
+
+
+    CropToBoundsTransformer( RectF cropBounds )
+      {
+      mCropBounds = cropBounds;
+      }
+
+
+    /*****************************************************
+     *
+     * Called on a background thread to transform a bitmap.
+     * We use this to crop the bitmap, and create a file-backed
+     * asset from it.
+     *
+     *****************************************************/
+    @Override
+    public Bitmap getTransformedBitmap( Bitmap bitmap )
+      {
+      return ( ImageAgent.crop( bitmap, mCropBounds ) );
       }
     }
 

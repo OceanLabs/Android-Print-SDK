@@ -41,6 +41,9 @@ package ly.kite.image;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.net.Uri;
 import android.util.Pair;
 
@@ -77,6 +80,8 @@ public class ImageAgent
 
   @SuppressWarnings( "unused" )
   static private final String  LOG_TAG                   = "ImageAgent";
+
+  static private final int     CROPPED_IMAGE_FILLER_COLOUR = 0xffffffff;
 
 
   ////////// Static Variable(s) //////////
@@ -207,6 +212,53 @@ public class ImageAgent
 
   /*****************************************************
    *
+   * Returns a cropped bitmap image.
+   *
+   *****************************************************/
+  static public Bitmap crop( Bitmap originalBitmap, RectF cropBounds )
+    {
+    // Get the bitmap dimensions
+    int originalWidth  = originalBitmap.getWidth();
+    int originalHeight = originalBitmap.getHeight();
+
+    // Get the actual bounds
+    int left   = (int)( cropBounds.left   * originalWidth );
+    int top    = (int)( cropBounds.top    * originalHeight );
+    int right  = (int)( cropBounds.right  * originalWidth );
+    int bottom = (int)( cropBounds.bottom * originalHeight );
+
+    // If the bounds are completely within the image, we can simply create a new bitmap from the sub area
+    if ( left >= 0 && top >= 0 && right < originalWidth && bottom < originalHeight )
+      {
+      return ( Bitmap.createBitmap( originalBitmap, left, top, right - left, bottom - top ) );
+      }
+
+
+    // The bounds are outside the image, so we want to create a white canvas, draw the bitmap into it,
+    // and then return it.
+
+    int croppedWidth  = right - left;
+    int croppedHeight = bottom - top;
+
+    Bitmap croppedBitmap = Bitmap.createBitmap( croppedWidth, croppedHeight, originalBitmap.getConfig() );
+
+    Canvas croppedBitmapCanvas = new Canvas( croppedBitmap );
+
+    croppedBitmapCanvas.drawColor( CROPPED_IMAGE_FILLER_COLOUR );
+
+
+    Rect sourceRect = new Rect( 0, 0, originalWidth, originalHeight );
+    Rect targetRect = new Rect( - left, - top, originalWidth - left, originalHeight - top );
+
+    croppedBitmapCanvas.drawBitmap( originalBitmap, sourceRect, targetRect, null );
+
+
+    return ( croppedBitmap );
+    }
+
+
+  /*****************************************************
+   *
    * Returns a downscaled bitmap.
    *
    * If no scaling is required, because the scaled width is
@@ -232,10 +284,8 @@ public class ImageAgent
    *
    * Returns a scaled bitmap.
    *
-   * If no scaling is required, because the scaled width is
-   * < 1, or the source bitmap is smaller than the scaled
-   * width, then the original bitmap is returned without
-   * alteration.
+   * If no scaling is required then the original bitmap
+   * is returned without alteration.
    *
    *****************************************************/
   static public Bitmap scaleBitmap( Bitmap sourceBitmap, int scaledWidth )
@@ -248,6 +298,45 @@ public class ImageAgent
     int scaledHeight = (int)( (float)sourceBitmap.getHeight() * (float)scaledWidth / (float)sourceBitmap.getWidth() );
 
     return ( sourceBitmap.createScaledBitmap( sourceBitmap, scaledWidth, scaledHeight, true ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a scaled bitmap. If no scaling is performed
+   * then the original bitmap is returned.
+   *
+   * @param sourceBitmap The bitmap to be scaled.
+   * @param scaledWidth  The width that the bitmap should
+   *                     fit inside.
+   * @param scaledHeight The height that the bitmap should
+   *                     fit inside.
+   * @param onlyScaleDown It set to true, the bitmap is only
+   *                      scaled down.
+   *
+   *****************************************************/
+  static public Bitmap scaleBitmap( Bitmap sourceBitmap, int scaledWidth, int scaledHeight, boolean onlyScaleDown )
+    {
+    // Check the dimensions
+
+    int originalWidth  = sourceBitmap.getWidth();
+    int originalHeight = sourceBitmap.getHeight();
+
+    if ( scaledWidth < 1 || scaledHeight < 1 || originalWidth < 1 || originalHeight < 1 ) return ( sourceBitmap );
+
+
+    // Use the smaller of the two scalings
+    float scaleFactor = Math.min( (float)scaledWidth / (float)originalWidth, (float)scaledHeight / (float)originalHeight );
+
+    // Only scale up if allowed
+    if ( scaleFactor > 1.0f && onlyScaleDown ) return ( sourceBitmap );
+
+    // Calculate the new width and height
+    int newWidth  = (int)( originalWidth  * scaleFactor );
+    int newHeight = (int)( originalHeight * scaleFactor );
+
+    // Resize the bitmap
+    return ( sourceBitmap.createScaledBitmap( sourceBitmap, newWidth, newHeight, true ) );
     }
 
 
@@ -607,6 +696,21 @@ public class ImageAgent
     ImageLoadRequest.Builder builder = getImageRequestBuilder();
 
     builder.load( asset );
+
+    return ( builder );
+    }
+
+
+  /*****************************************************
+   *
+   * Starts an image processing request.
+   *
+   *****************************************************/
+  public ImageProcessingRequest.Builder transform( Asset asset )
+    {
+    ImageProcessingRequest.Builder builder = new ImageProcessingRequest( mApplicationContext ).new Builder();
+
+    builder.transform( asset );
 
     return ( builder );
     }

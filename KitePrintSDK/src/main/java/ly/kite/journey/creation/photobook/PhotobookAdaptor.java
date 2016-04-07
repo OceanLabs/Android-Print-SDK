@@ -268,7 +268,7 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
         //AssetHelper.requestImage( mActivity, editedAsset, viewHolder.checkableImageContainerFrame );
         ImageAgent.with( mActivity )
                 .load( editedAsset )
-                .resizeForDimen( viewHolder.checkableImageContainerFrame, R.dimen.image_default_resize_width )
+                .resizeForDimen( viewHolder.checkableImageContainerFrame, R.dimen.image_default_resize_size, R.dimen.image_default_resize_size )
                 .onlyScaleDown()
                 .reduceColourSpace()
                 .into( viewHolder.checkableImageContainerFrame, editedAsset );
@@ -347,7 +347,7 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
         //AssetHelper.requestImage( mActivity, leftEditedAsset, viewHolder.leftCheckableImageContainerFrame );
         ImageAgent.with( mActivity )
                 .load( leftEditedAsset )
-                .resizeForDimen( viewHolder.leftCheckableImageContainerFrame, R.dimen.image_default_resize_width )
+                .resizeForDimen( viewHolder.leftCheckableImageContainerFrame, R.dimen.image_default_resize_size, R.dimen.image_default_resize_size )
                 .onlyScaleDown()
                 .reduceColourSpace()
                 .into( viewHolder.leftCheckableImageContainerFrame, leftEditedAsset );
@@ -398,7 +398,7 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
 
         ImageAgent.with( mActivity )
                 .load( rightEditedAsset )
-                .resizeForDimen( viewHolder.rightCheckableImageContainerFrame, R.dimen.image_default_resize_width )
+                .resizeForDimen( viewHolder.rightCheckableImageContainerFrame, R.dimen.image_default_resize_size, R.dimen.image_default_resize_size )
                 .onlyScaleDown()
                 .reduceColourSpace()
                 .into( viewHolder.rightCheckableImageContainerFrame, rightEditedAsset );

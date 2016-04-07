@@ -99,6 +99,7 @@ public class ImageLoadRequest
   private IImageTransformer  mPreResizeTransformer;
 
   private int                mResizeWidth;
+  private int                mResizeHeight;
 
   private boolean            mOnlyScaleDown;
   private Bitmap.Config      mBitmapConfig;
@@ -117,21 +118,29 @@ public class ImageLoadRequest
    * Returns a scale size to bring a bitmap width down to
    * a resize width.
    *
+   * Uses a centre inside algorithm to calculate the
+   * scaling, i.e. both scaled dimensions should lie
+   * within their respective resize dimensions.
+   *
    *****************************************************/
-  static int sampleSizeForResize( int originalWidth, int resizeWidth )
+  static int sampleSizeForResize( int originalWidth, int originalHeight, int resizeWidth, int resizeHeight )
     {
     int sampleSize = 1;
 
-    if ( resizeWidth >= 0 )
+    if ( resizeWidth >= 0 && resizeHeight >= 0 )
       {
-      int width     = originalWidth;
-      int nextWidth = width >>> 1;  // / 2
+      int width      = originalWidth;
+      int height     = originalHeight;
+      int nextWidth  = width  >>> 1;  // / 2
+      int nextHeight = height >>> 1;  // / 2
 
-      while ( nextWidth > 0 && nextWidth >= resizeWidth )
+      while ( nextWidth > 0 && nextHeight > 0 && ( nextWidth >= resizeWidth || nextHeight >= resizeHeight ) )
         {
         width        = nextWidth;
-        sampleSize <<= 1;            //  * 2
-        nextWidth    = width >>> 1;  //  / 2
+        height       = nextHeight;
+        sampleSize <<= 1;             //  * 2
+        nextWidth    = width  >>> 1;  //  / 2
+        nextHeight   = height >>> 1;  //  / 2
         }
       }
 
@@ -390,7 +399,7 @@ public class ImageLoadRequest
       // If resizing has been requested, sub-sample the bitmap to just larger
       // than the resize dimensions.
 
-      int sampleSize = sampleSizeForResize( originalWidth, mResizeWidth );
+      int sampleSize = sampleSizeForResize( originalWidth, originalHeight, mResizeWidth, mResizeHeight );
 
 
       // Image loading *must* work. So even if colour space reduction or resizing hasn't
@@ -487,7 +496,7 @@ public class ImageLoadRequest
     Bitmap bitmap = mSource.load( mApplicationContext, bitmapFactoryOptions );
 
 
-    // Do any pre-resize transformation
+    // Apply any pre-resize transformation
 
     if ( mPreResizeTransformer != null )
       {
@@ -495,16 +504,11 @@ public class ImageLoadRequest
       }
 
 
-    // Do any scaling
+    // Perform any scaling
 
-    if ( mResizeWidth > 0 )
+    if ( mResizeWidth > 0 && mResizeHeight > 0 )
       {
-      int bitmapWidth = bitmap.getWidth();
-
-      if ( mResizeWidth < bitmapWidth || ( mResizeWidth > bitmapWidth && ! mOnlyScaleDown ) )
-        {
-        bitmap = ImageAgent.scaleBitmap( bitmap, mResizeWidth );
-        }
+      bitmap = ImageAgent.scaleBitmap( bitmap, mResizeWidth, mResizeHeight, mOnlyScaleDown );
       }
 
 
@@ -957,7 +961,7 @@ public class ImageLoadRequest
    *****************************************************/
   interface IExecutor
     {
-    public void execute();
+    public void execute( ImageLoadRequest imageLoadRequest );
     }
 
 
@@ -1133,12 +1137,13 @@ public class ImageLoadRequest
 
     /*****************************************************
      *
-     * Sets the resize width. The aspect ratio is maintained.
+     * Sets the resize size. The aspect ratio is maintained.
      *
      *****************************************************/
-    public Builder resize( int width )
+    public Builder resize( int width, int height )
       {
-      mResizeWidth = width;
+      mResizeWidth  = width;
+      mResizeHeight = height;
 
       return ( this );
       }
@@ -1150,30 +1155,60 @@ public class ImageLoadRequest
      * The aspect ratio is maintained.
      *
      *****************************************************/
-    public Builder resizeDimen( int widthResourceId )
+    public Builder resizeDimen( int widthResourceId, int heightResourceId )
       {
       Resources resources = mApplicationContext.getResources();
 
-      return ( resize( resources.getDimensionPixelSize( widthResourceId ) ) );
+      return ( resize( resources.getDimensionPixelSize( widthResourceId ), resources.getDimensionPixelSize( heightResourceId ) ) );
       }
 
 
     /*****************************************************
      *
-     * Sets the resize width from the image view.
+     * Sets the resize width from the view if it has a size.
+     * Otherwise scales to the default width.
+     *
      * The aspect ratio is maintained.
      *
      *****************************************************/
-    public Builder resizeFor( View view, int defaultWidth )
+    public Builder resizeFor( View view, int defaultWidth, int defaultHeight )
       {
       // Try and get a width for the image view. If it's too small (usually because
       // it hasn't been set yet) - use the default values.
 
-      int width = view.getWidth();
+      int width  = view.getWidth();
+      int height = view.getHeight();
 
-      if ( width < 1 ) width = defaultWidth;
+      if ( width  < 1 ) width  = defaultWidth;
+      if ( height < 1 ) height = defaultHeight;
 
-      return ( resize( width ) );
+      return ( resize( width, height ) );
+      }
+
+
+    /*****************************************************
+     *
+     * Sets the resize width from the view if it has a size.
+     * Otherwise doesn't scale.
+     *
+     * The aspect ratio is maintained.
+     *
+     *****************************************************/
+    public Builder resizeForIfSized( View view )
+      {
+      if ( view == null ) return ( this );
+
+
+      // Try and get a width for the image view. If it's too small (usually because
+      // it hasn't been set yet) - don't resize at all.
+
+      int width  = view.getWidth();
+      int height = view.getHeight();
+
+      if ( width < 1 || height < 1 ) return ( this );
+
+
+      return ( resize( width, height ) );
       }
 
 
@@ -1183,11 +1218,11 @@ public class ImageLoadRequest
      * The aspect ratio is maintained.
      *
      *****************************************************/
-    public Builder resizeForDimen( View view, int defaultWidthResourceId )
+    public Builder resizeForDimen( View view, int defaultWidthResourceId, int defaultHeightResourceId )
       {
       Resources resources = mApplicationContext.getResources();
 
-      return ( resizeFor( view, resources.getDimensionPixelSize( defaultWidthResourceId ) ) );
+      return ( resizeFor( view, resources.getDimensionPixelSize( defaultWidthResourceId ), resources.getDimensionPixelSize( defaultHeightResourceId ) ) );
       }
 
 
@@ -1251,7 +1286,7 @@ public class ImageLoadRequest
      *****************************************************/
     private ImageLoadRequest create()
       {
-      if ( mExecutor != null ) mExecutor.execute();
+      if ( mExecutor != null ) mExecutor.execute( ImageLoadRequest.this );
       else                     execute();
 
       return ( ImageLoadRequest.this );

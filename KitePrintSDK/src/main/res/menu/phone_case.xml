@@ -23,14 +23,14 @@
         android:id="@+id/flip_horizontally_menu_item"
         android:title="@string/Flip"
         android:icon="@drawable/ic_flip_horizontally"
-        android:showAsAction="ifRoom"
+        android:showAsAction="always"
         tools:ignore="AppCompatResource"/>
 
     <item
         android:id="@+id/rotate_anticlockwise_menu_item"
         android:title="@string/Rotate"
         android:icon="@drawable/ic_rotate_anticlockwise"
-        android:showAsAction="ifRoom"
+        android:showAsAction="always"
         tools:ignore="AppCompatResource"/>
 
 </menu>

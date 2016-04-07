@@ -468,7 +468,7 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
         ImageAgent.with( getContext() )
                 .load( (Asset)mRequestImageSource )
                 .reduceColourSpace()
-                .resize( mWidth )
+                .resize( mWidth, mHeight )
                 .onlyScaleDown()
                 .into( this, (Asset) mRequestImageSource );
         }
@@ -479,7 +479,7 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
         ImageAgent.with( getContext() )
                 .load( (URL)mRequestImageSource, mRequestImageClass )
                 .reduceColourSpace()
-                .resize( mWidth )
+                .resize( mWidth, mHeight )
                 .onlyScaleDown()
                 .into( this, (URL)mRequestImageSource );
         }
