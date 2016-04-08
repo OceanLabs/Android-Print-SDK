@@ -25,7 +25,7 @@ import ly.kite.util.Asset;
 /**
  * Created by deonbotha on 09/02/2014.
  */
-public class PrintOrder implements Parcelable /* , Serializable */
+public class Order implements Parcelable /* , Serializable */
     {
 
     static private final String LOG_TAG = "PrintOrder";
@@ -44,7 +44,7 @@ public class PrintOrder implements Parcelable /* , Serializable */
     private String proofOfPayment;
     private String voucherCode;
     private JSONObject userData;
-    private ArrayList<PrintJob> jobs = new ArrayList<PrintJob>();
+    private ArrayList<Job> jobs = new ArrayList<Job>();
 
     private boolean userSubmittedForPrinting;
     //private long totalBytesWritten, totalBytesExpectedToWrite;
@@ -70,7 +70,7 @@ public class PrintOrder implements Parcelable /* , Serializable */
 
     //private MultipleCurrencyAmount mTotalCost;
 
-    public PrintOrder() {}
+    public Order() {}
 
     public void setShippingAddress(Address shippingAddress) {
         this.shippingAddress = shippingAddress;
@@ -80,7 +80,7 @@ public class PrintOrder implements Parcelable /* , Serializable */
         return shippingAddress;
     }
 
-    public ArrayList<PrintJob> getJobs() {
+    public ArrayList<Job> getJobs() {
         return jobs;
     }
 
@@ -152,7 +152,7 @@ public class PrintOrder implements Parcelable /* , Serializable */
 
             JSONArray jobs = new JSONArray();
             json.put("jobs", jobs);
-            for (PrintJob job : this.jobs) {
+            for (Job job : this.jobs) {
                 jobs.put(job.getJSONRepresentation());
             }
 
@@ -204,7 +204,7 @@ public class PrintOrder implements Parcelable /* , Serializable */
 
     public Set<String> getCurrenciesSupported() {
         Set<String> supported = null;
-        for (PrintJob job : jobs) {
+        for (Job job : jobs) {
             Set<String> supported2 = job.getCurrenciesSupported();
             if (supported == null) {
                 supported = supported2;
@@ -228,7 +228,7 @@ public class PrintOrder implements Parcelable /* , Serializable */
       {
       String separatorString = "";
 
-      for ( PrintJob job : jobs )
+      for ( Job job : jobs )
         {
         stringBuilder
                 .append( separatorString )
@@ -261,7 +261,7 @@ public class PrintOrder implements Parcelable /* , Serializable */
 
     List<Asset> getAssetsToUpload() {
         ArrayList<Asset> assets = new ArrayList<Asset>();
-        for (PrintJob job : jobs) {
+        for (Job job : jobs) {
             for (Asset asset : job.getAssetsForUploading()) {
                 if ( asset != null && !assets.contains(asset)) {
                     assets.add(asset);
@@ -302,8 +302,8 @@ public class PrintOrder implements Parcelable /* , Serializable */
         return this.receipt;
     }
 
-    public void addPrintJob(PrintJob job) {
-        if (!(job instanceof PrintsPrintJob || job instanceof PostcardPrintJob || job instanceof GreetingCardPrintJob )) {
+    public void addJob( Job job) {
+        if (!(job instanceof PrintJob || job instanceof PostcardJob || job instanceof GreetingCardJob )) {
             throw new IllegalArgumentException("Currently only support PrintsPrintJobs & PostcardPrintJob, if any further jobs " +
                     "classes are added support for them must be added to the Parcelable interface in particular readTypedList must work ;)");
         }
@@ -311,7 +311,7 @@ public class PrintOrder implements Parcelable /* , Serializable */
         jobs.add(job);
     }
 
-    public void removePrintJob(PrintJob job) {
+    public void removeJob( Job job) {
         jobs.remove(job);
     }
 
@@ -374,7 +374,7 @@ public class PrintOrder implements Parcelable /* , Serializable */
 
             printOrderReq = null;
 
-            submissionListener.onSubmissionComplete( PrintOrder.this, orderId );
+            submissionListener.onSubmissionComplete( Order.this, orderId );
             }
 
         @Override
@@ -385,7 +385,7 @@ public class PrintOrder implements Parcelable /* , Serializable */
 
             printOrderReq = null;
 
-            submissionListener.onError( PrintOrder.this, error );
+            submissionListener.onError( Order.this, error );
             }
         } );
     }
@@ -420,14 +420,14 @@ public class PrintOrder implements Parcelable /* , Serializable */
 
         p.writeInt( jobs.size() );
 
-        for ( PrintJob job : jobs )
+        for ( Job job : jobs )
           {
-          if ( job instanceof PostcardPrintJob )
+          if ( job instanceof PostcardJob )
             {
             p.writeInt( JOB_TYPE_POSTCARD );
             job.writeToParcel( p, flags );
             }
-          else if ( job instanceof GreetingCardPrintJob )
+          else if ( job instanceof GreetingCardJob )
             {
             p.writeInt( JOB_TYPE_GREETING_CARD );
             job.writeToParcel( p, flags );
@@ -456,7 +456,7 @@ public class PrintOrder implements Parcelable /* , Serializable */
         p.writeString( statusNotificationPhone );
     }
 
-    private PrintOrder(Parcel p) {
+    private Order( Parcel p) {
         this.shippingAddress = (Address) p.readValue(Address.class.getClassLoader());
         this.proofOfPayment = p.readString();
         this.voucherCode = p.readString();
@@ -475,16 +475,16 @@ public class PrintOrder implements Parcelable /* , Serializable */
           {
           int jobType = p.readInt();
 
-          PrintJob job;
+          Job job;
 
           switch ( jobType )
             {
             case JOB_TYPE_POSTCARD:
-              job = PostcardPrintJob.CREATOR.createFromParcel( p );
+              job = PostcardJob.CREATOR.createFromParcel( p );
               break;
 
             case JOB_TYPE_GREETING_CARD:
-              job = GreetingCardPrintJob.CREATOR.createFromParcel( p );
+              job = GreetingCardJob.CREATOR.createFromParcel( p );
               break;
 
             case JOB_TYPE_PHOTOBOOK:
@@ -492,7 +492,7 @@ public class PrintOrder implements Parcelable /* , Serializable */
               break;
 
             default:
-              job = PrintsPrintJob.CREATOR.createFromParcel( p );
+              job = PrintJob.CREATOR.createFromParcel( p );
             }
 
           this.jobs.add( job );
@@ -510,14 +510,14 @@ public class PrintOrder implements Parcelable /* , Serializable */
         this.statusNotificationPhone = p.readString();
     }
 
-    public static final Parcelable.Creator<PrintOrder> CREATOR
-            = new Parcelable.Creator<PrintOrder>() {
-        public PrintOrder createFromParcel(Parcel in) {
-            return new PrintOrder(in);
+    public static final Parcelable.Creator<Order> CREATOR
+            = new Parcelable.Creator<Order>() {
+        public Order createFromParcel( Parcel in) {
+            return new Order(in);
         }
 
-        public PrintOrder[] newArray(int size) {
-            return new PrintOrder[size];
+        public Order[] newArray( int size) {
+            return new Order[size];
         }
     };
 
@@ -571,7 +571,7 @@ public class PrintOrder implements Parcelable /* , Serializable */
 
         if ( userSubmittedForPrinting )
           {
-          submissionListener.onProgress( PrintOrder.this, primaryProgressPercent, secondaryProgressPercent );
+          submissionListener.onProgress( Order.this, primaryProgressPercent, secondaryProgressPercent );
           }
         }
 
@@ -597,7 +597,7 @@ public class PrintOrder implements Parcelable /* , Serializable */
         // we optimize the asset upload to avoid uploading assets that are considered to have
         // duplicate contents.
 
-        for ( PrintJob job : jobs )
+        for ( Job job : jobs )
           {
           for ( Asset uploadedAsset : uploadedAssets )
             {
@@ -614,7 +614,7 @@ public class PrintOrder implements Parcelable /* , Serializable */
 
         // Sanity check all assets are uploaded
 
-        for ( PrintJob job : jobs )
+        for ( Job job : jobs )
           {
           for ( Asset assetToUpload : job.getAssetsForUploading() )
             {
@@ -644,7 +644,7 @@ public class PrintOrder implements Parcelable /* , Serializable */
           {
           lastPrintSubmissionError = error;
           userSubmittedForPrinting = false; // allow the user to resubmit for printing
-          submissionListener.onError( PrintOrder.this, error );
+          submissionListener.onError( Order.this, error );
           }
         }
       }
@@ -652,11 +652,11 @@ public class PrintOrder implements Parcelable /* , Serializable */
 
     public interface ISubmissionProgressListener
         {
-        void onProgress( PrintOrder printOrder, int primaryProgressPercent, int secondaryProgressPercent );
+        void onProgress( Order printOrder, int primaryProgressPercent, int secondaryProgressPercent );
 
-        void onSubmissionComplete( PrintOrder printOrder, String orderId );
+        void onSubmissionComplete( Order printOrder, String orderId );
 
-        void onError( PrintOrder printOrder, Exception error );
+        void onError( Order printOrder, Exception error );
         }
 
     }

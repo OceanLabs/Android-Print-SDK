@@ -16,17 +16,17 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import ly.kite.ordering.PrintOrder;
+import ly.kite.ordering.Order;
 import ly.kite.R;
 
 public class OrderReceiptActivity extends Activity
   {
   public static final String EXTRA_PRINT_ORDER = "ly.kite.EXTRA_PRINT_ORDER";
 
-  private PrintOrder mPrintOrder;
+  private Order mPrintOrder;
 
 
-  static public void startForResult( Activity activity, PrintOrder printOrder, int requestCode )
+  static public void startForResult( Activity activity, Order printOrder, int requestCode )
     {
     Intent intent = new Intent( activity, OrderReceiptActivity.class );
 
@@ -43,7 +43,7 @@ public class OrderReceiptActivity extends Activity
 
     requestWindowFeature( Window.FEATURE_ACTION_BAR );
 
-    PrintOrder printOrder = (PrintOrder) getIntent().getParcelableExtra( EXTRA_PRINT_ORDER );
+    Order printOrder = (Order) getIntent().getParcelableExtra( EXTRA_PRINT_ORDER );
 
     processPrintOrder( printOrder );
     }
@@ -73,7 +73,7 @@ public class OrderReceiptActivity extends Activity
     }
 
 
-  private void processPrintOrder( PrintOrder printOrder )
+  private void processPrintOrder( Order printOrder )
     {
     // Make sure we got a print order
     if ( printOrder == null )
@@ -163,10 +163,10 @@ public class OrderReceiptActivity extends Activity
     dialog.setMax( 100 );
     dialog.show();
 
-    mPrintOrder.submitForPrinting( this, new PrintOrder.ISubmissionProgressListener()
+    mPrintOrder.submitForPrinting( this, new Order.ISubmissionProgressListener()
     {
     @Override
-    public void onProgress( PrintOrder printOrder, int primaryProgressPercent, int secondaryProgressPercent )
+    public void onProgress( Order printOrder, int primaryProgressPercent, int secondaryProgressPercent )
       {
       if ( Looper.myLooper() != Looper.getMainLooper() )
         throw new AssertionError( "Should be calling back on the main thread" );
@@ -176,7 +176,7 @@ public class OrderReceiptActivity extends Activity
       }
 
     @Override
-    public void onSubmissionComplete( PrintOrder printOrder, String orderIdReceipt )
+    public void onSubmissionComplete( Order printOrder, String orderIdReceipt )
       {
       if ( Looper.myLooper() != Looper.getMainLooper() )
         throw new AssertionError( "Should be calling back on the main thread" );
@@ -187,7 +187,7 @@ public class OrderReceiptActivity extends Activity
       }
 
     @Override
-    public void onError( PrintOrder printOrder, Exception error )
+    public void onError( Order printOrder, Exception error )
       {
       if ( Looper.myLooper() != Looper.getMainLooper() )
         throw new AssertionError( "Should be calling back on the main thread" );

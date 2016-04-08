@@ -17,14 +17,15 @@ import ly.kite.util.Asset;
 /**
  * Created by dbotha on 23/12/2015.
  */
-public class GreetingCardPrintJob extends PrintJob {
+public class GreetingCardJob extends Job
+    {
 
     private Asset mFrontImageAsset;
     private Asset mBackImageAsset;
     private Asset mInsideLeftImageAsset;
     private Asset mInsideRightImageAsset;
 
-    public GreetingCardPrintJob( Product product, Asset frontImageAsset, Asset backImageAsset, Asset insideLeftImageAsset, Asset insideRightImageAsset) {
+    public GreetingCardJob( Product product, Asset frontImageAsset, Asset backImageAsset, Asset insideLeftImageAsset, Asset insideRightImageAsset) {
         super( product );
 
         mFrontImageAsset       = frontImageAsset;
@@ -93,7 +94,7 @@ public class GreetingCardPrintJob extends PrintJob {
         parcel.writeParcelable( mInsideRightImageAsset, flags);
     }
 
-    private GreetingCardPrintJob(Parcel parcel) {
+    private GreetingCardJob( Parcel parcel) {
         super( parcel );
         mFrontImageAsset = parcel.readParcelable(Asset.class.getClassLoader());
         mBackImageAsset = parcel.readParcelable(Asset.class.getClassLoader());
@@ -101,14 +102,14 @@ public class GreetingCardPrintJob extends PrintJob {
         mInsideRightImageAsset = parcel.readParcelable(Asset.class.getClassLoader());
     }
 
-    public static final Parcelable.Creator<GreetingCardPrintJob> CREATOR
-            = new Parcelable.Creator<GreetingCardPrintJob>() {
-        public GreetingCardPrintJob createFromParcel(Parcel in) {
-            return new GreetingCardPrintJob(in);
+    public static final Parcelable.Creator<GreetingCardJob> CREATOR
+            = new Parcelable.Creator<GreetingCardJob>() {
+        public GreetingCardJob createFromParcel( Parcel in) {
+            return new GreetingCardJob(in);
         }
 
-        public GreetingCardPrintJob[] newArray(int size) {
-            return new GreetingCardPrintJob[size];
+        public GreetingCardJob[] newArray( int size) {
+            return new GreetingCardJob[size];
         }
     };
 }

@@ -8,7 +8,7 @@ import org.json.JSONObject;
 
 import ly.kite.KiteSDKException;
 import ly.kite.KiteSDK;
-import ly.kite.ordering.PrintOrder;
+import ly.kite.ordering.Order;
 import ly.kite.util.HTTPJSONRequest;
 
 /**
@@ -21,10 +21,10 @@ public class SubmitPrintOrderRequest
   static private final boolean DISPLAY_PRINT_ORDER_JSON = false;
 
 
-    private final PrintOrder printOrder;
+    private final Order printOrder;
     private HTTPJSONRequest req;
 
-    public SubmitPrintOrderRequest(PrintOrder printOrder) {
+    public SubmitPrintOrderRequest(Order printOrder) {
         this.printOrder = printOrder;
     }
 

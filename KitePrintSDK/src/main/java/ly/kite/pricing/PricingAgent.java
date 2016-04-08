@@ -51,7 +51,7 @@ import ly.kite.address.Address;
 import ly.kite.address.Country;
 import ly.kite.util.ACache;
 import ly.kite.util.HTTPJSONRequest;
-import ly.kite.ordering.PrintOrder;
+import ly.kite.ordering.Order;
 
 
 ///// Class Declaration /////
@@ -117,7 +117,7 @@ public class PricingAgent extends ACache<String,OrderPricing,IPricingConsumer>
    * store it in the order until we know it's valid.
    *
    *****************************************************/
-  public OrderPricing requestPricing( Context context, PrintOrder order, String promoCode, IPricingConsumer consumer )
+  public OrderPricing requestPricing( Context context, Order order, String promoCode, IPricingConsumer consumer )
     {
     // Construct the request URL first, because we also use it as the caching key.
 

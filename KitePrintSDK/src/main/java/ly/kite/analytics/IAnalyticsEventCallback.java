@@ -39,7 +39,7 @@ package ly.kite.analytics;
 
 ///// Import(s) /////
 
-import ly.kite.ordering.PrintOrder;
+import ly.kite.ordering.Order;
 import ly.kite.catalogue.Product;
 
 ///// Class Declaration /////
@@ -103,7 +103,7 @@ public interface IAnalyticsEventCallback
    * Called when the user enters the shipping screen.
    *
    *****************************************************/
-  void onShippingScreenViewed( PrintOrder printOrder, String variant, boolean showPhoneEntryField );
+  void onShippingScreenViewed( Order printOrder, String variant, boolean showPhoneEntryField );
 
 
   /*****************************************************
@@ -111,7 +111,7 @@ public interface IAnalyticsEventCallback
    * Called when the user enters the payment screen.
    *
    *****************************************************/
-  void onPaymentScreenViewed( PrintOrder printOrder );
+  void onPaymentScreenViewed( Order printOrder );
 
 
   /*****************************************************
@@ -119,7 +119,7 @@ public interface IAnalyticsEventCallback
    * Called when the user completes payment
    *
    *****************************************************/
-  void onPaymentCompleted( PrintOrder printOrder, String paymentMethod );
+  void onPaymentCompleted( Order printOrder, String paymentMethod );
 
 
   /*****************************************************
@@ -127,7 +127,7 @@ public interface IAnalyticsEventCallback
    * Called when the order is submitted to Kite
    *
    *****************************************************/
-  void onOrderSubmission( PrintOrder printOrder );
+  void onOrderSubmission( Order printOrder );
 
   }
 

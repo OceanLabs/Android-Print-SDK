@@ -68,8 +68,8 @@ import ly.kite.catalogue.ICatalogueConsumer;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.pricing.IPricingConsumer;
 import ly.kite.pricing.PricingAgent;
-import ly.kite.ordering.PrintJob;
-import ly.kite.ordering.PrintOrder;
+import ly.kite.ordering.Job;
+import ly.kite.ordering.Order;
 import ly.kite.R;
 import ly.kite.address.Address;
 import ly.kite.address.AddressBookActivity;
@@ -117,7 +117,7 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
 
   ////////// Member Variable(s) //////////
 
-  private PrintOrder           mPrintOrder;
+  private Order mPrintOrder;
 
   private Button               mAddressPickerButton;
   private EditText             mEmailEditText;
@@ -135,7 +135,7 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
    * Starts the activity for result.
    *
    *****************************************************/
-  static public void startForResult( Activity activity, PrintOrder order, int requestCode )
+  static public void startForResult( Activity activity, Order order, int requestCode )
     {
     Intent intent = new Intent( activity, CheckoutActivity.class );
 
@@ -146,7 +146,7 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
 
 
   @Deprecated
-  static public void start( Activity activity, PrintOrder order, int requestCode )
+  static public void start( Activity activity, Order order, int requestCode )
     {
     startForResult( activity, order, requestCode );
     }
@@ -219,7 +219,7 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
 
     if ( mPrintOrder == null )
       {
-      mPrintOrder = (PrintOrder)getIntent().getParcelableExtra( EXTRA_PRINT_ORDER );
+      mPrintOrder = (Order)getIntent().getParcelableExtra( EXTRA_PRINT_ORDER );
       }
 
     if ( mPrintOrder == null )
@@ -472,7 +472,7 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
       Catalogue catalogue = CatalogueLoader.getInstance( this ).getCachedCatalogue( MAXIMUM_PRODUCT_AGE_MILLIS );
 
       // Go through every print job and check that we can get a product from the product id
-      for ( PrintJob job : mPrintOrder.getJobs() )
+      for ( Job job : mPrintOrder.getJobs() )
         {
         catalogue.confirmProductIdExistsOrThrow( job.getProduct().getId() );
         }

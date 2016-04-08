@@ -45,7 +45,7 @@ import android.os.SystemClock;
 
 import ly.kite.api.OrderState;
 import ly.kite.api.OrderStatusRequest;
-import ly.kite.ordering.PrintOrder;
+import ly.kite.ordering.Order;
 
 
 ///// Class Declaration /////
@@ -56,7 +56,7 @@ import ly.kite.ordering.PrintOrder;
  * progress, reporting back to a listener.
  *
  *****************************************************/
-public class OrderSubmitter implements PrintOrder.ISubmissionProgressListener, OrderStatusRequest.IResultListener
+public class OrderSubmitter implements Order.ISubmissionProgressListener, OrderStatusRequest.IResultListener
   {
   ////////// Static Constant(s) //////////
 
@@ -73,7 +73,7 @@ public class OrderSubmitter implements PrintOrder.ISubmissionProgressListener, O
   ////////// Member Variable(s) //////////
 
   private Context            mContext;
-  private PrintOrder         mOrder;
+  private Order mOrder;
   private IProgressListener  mProgressListener;
 
   private Handler            mHandler;
@@ -90,7 +90,7 @@ public class OrderSubmitter implements PrintOrder.ISubmissionProgressListener, O
 
   ////////// Constructor(s) //////////
 
-  public OrderSubmitter( Context context, PrintOrder order, IProgressListener progressListener )
+  public OrderSubmitter( Context context, Order order, IProgressListener progressListener )
     {
     mContext          = context;
     mOrder            = order;
@@ -108,7 +108,7 @@ public class OrderSubmitter implements PrintOrder.ISubmissionProgressListener, O
    *
    *****************************************************/
   @Override
-  public void onProgress( PrintOrder order, int primaryProgressPercent, int secondaryProgressPercent )
+  public void onProgress( Order order, int primaryProgressPercent, int secondaryProgressPercent )
     {
     mProgressListener.onOrderUpdate( mOrder, OrderState.UPLOADING, primaryProgressPercent, secondaryProgressPercent );
     }
@@ -124,7 +124,7 @@ public class OrderSubmitter implements PrintOrder.ISubmissionProgressListener, O
    *
    *****************************************************/
   @Override
-  public void onSubmissionComplete( PrintOrder order, String orderId )
+  public void onSubmissionComplete( Order order, String orderId )
     {
     mProgressListener.onOrderUpdate( mOrder, OrderState.POSTED, 0, 0 );
 
@@ -139,7 +139,7 @@ public class OrderSubmitter implements PrintOrder.ISubmissionProgressListener, O
    *
    *****************************************************/
   @Override
-  public void onError( PrintOrder order, Exception exception )
+  public void onError( Order order, Exception exception )
     {
     mProgressListener.onOrderError( order, exception );
     }
@@ -262,11 +262,11 @@ public class OrderSubmitter implements PrintOrder.ISubmissionProgressListener, O
    *****************************************************/
   public interface IProgressListener
     {
-    public void onOrderUpdate( PrintOrder order, OrderState state, int primaryProgressPercent, int secondaryProgressPercent );
-    public void onOrderComplete( PrintOrder order, OrderState state );
-    public void onOrderTimeout( PrintOrder order );
-    public void onOrderError( PrintOrder order, Exception exception );
-    public void onOrderDuplicate( PrintOrder order, String originalOrderId );
+    public void onOrderUpdate( Order order, OrderState state, int primaryProgressPercent, int secondaryProgressPercent );
+    public void onOrderComplete( Order order, OrderState state );
+    public void onOrderTimeout( Order order );
+    public void onOrderError( Order order, Exception exception );
+    public void onOrderDuplicate( Order order, String originalOrderId );
     }
 
 

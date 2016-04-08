@@ -3,141 +3,150 @@ package ly.kite.ordering;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import ly.kite.address.Address;
 import ly.kite.catalogue.Product;
 import ly.kite.util.Asset;
 
 /**
  * Created by deonbotha on 09/02/2014.
  */
-public abstract class PrintJob implements Parcelable {
+class PrintJob extends Job
+  {
 
-  private static final String JSON_NAME_OPTIONS = "options";
-
-    transient private Product mProduct;  // Stop the product being serialised
-    private final HashMap<String,String> mOptionMap;
-
-
-    public abstract BigDecimal getCost(String currencyCode);
-    public abstract Set<String> getCurrenciesSupported();
-
-    abstract public int getQuantity();
-    abstract List<Asset> getAssetsForUploading();
-    abstract JSONObject getJSONRepresentation();
+    private static final long serialVersionUID = 1L;
+    private List<Asset> mAssetList;
 
 
-    protected PrintJob( Product product, HashMap<String,String> optionMap )
-      {
-      mProduct   = product;
-
-      mOptionMap = ( optionMap != null ? optionMap : new HashMap<String, String>( 0 ) );
-      }
-
-    protected PrintJob( Product product )
-      {
-      this( product, null );
-      }
-
-
-  protected PrintJob( Parcel sourceParcel )
+  public PrintJob( Product product, HashMap<String,String> optionMap, List<Asset> assetList )
     {
-    mProduct   = Product.CREATOR.createFromParcel( sourceParcel );
-    mOptionMap = sourceParcel.readHashMap( HashMap.class.getClassLoader() );
+    super( product, optionMap );
+
+    mAssetList = assetList;
+    }
+
+  public PrintJob( Product product, List<Asset> assetList )
+    {
+    this( product, null, assetList );
     }
 
 
-  public static PrintJob createPrintJob( Product product, HashMap<String,String> optionMap, Asset asset )
-    {
-    List<Asset> singleAssetList = new ArrayList<Asset>( 1 );
-    singleAssetList.add( asset );
+    @Override
+    public BigDecimal getCost(String currencyCode) {
+        Product product = getProduct();
+        BigDecimal sheetCost = product.getCost(currencyCode);
+        int expectedQuantity = product.getQuantityPerSheet();
 
-    return ( createPrintJob( product, optionMap, singleAssetList ) );
+        int numOrders = (int) Math.floor((getQuantity() + expectedQuantity - 1) / expectedQuantity);
+        return sheetCost.multiply(new BigDecimal(numOrders));
     }
 
-  public static PrintJob createPrintJob( Product product, Asset asset )
-    {
-    return ( createPrintJob( product, null, asset ) );
+    @Override
+    public Set<String> getCurrenciesSupported() {
+        try
+            {
+            Product product = getProduct();
+
+            return product.getCurrenciesSupported();
+            }
+        catch ( IllegalArgumentException iae )
+            {
+            // Fall through
+            }
+
+    return Collections.EMPTY_SET;
     }
 
-    public static PrintJob createPrintJob(Product product, HashMap<String,String> optionMap, List<Asset> assets) {
-        return new PrintsPrintJob( product, optionMap, assets );
+    @Override
+    public int getQuantity() {
+        return mAssetList.size();
     }
 
-  public static PrintJob createPrintJob( Product product, List<Asset> assets )
-    {
-    return new PrintsPrintJob( product, null, assets );
-    }
-
-  static public PhotobookJob createPhotobookJob( Product product, Asset frontCoverAsset, List<Asset> contentAssetList )
-    {
-    return ( new PhotobookJob( product, null, frontCoverAsset, contentAssetList ) );
-    }
-
-
-  public static PrintJob createPostcardPrintJob( Product product, HashMap<String, String> optionMap, Asset frontImageAsset, String message, Address address )
-    {
-    return new PostcardPrintJob( product, optionMap, frontImageAsset, null, message, address );
-    }
-
-  public static PrintJob createPostcardPrintJob( Product product, Asset frontImageAsset, String message, Address address )
-    {
-    return new PostcardPrintJob( product, frontImageAsset, message, address );
-    }
-
-  public static PrintJob createPostcardPrintJob( Product product, Asset frontImageAsset, Asset backImageAsset )
-    {
-    return new PostcardPrintJob( product, frontImageAsset, backImageAsset );
-    }
-
-  public static PrintJob createPostcardPrintJob( Product product, Asset frontImageAsset, Asset backImageAsset, String message, Address address )
-    {
-    return new PostcardPrintJob( product, frontImageAsset, backImageAsset, message, address );
-    }
-
-
-  public Product getProduct()
-    {
-    return ( mProduct );
-    }
-
-
-  public String getProductId()
-    {
-    return ( mProduct.getId() );
-    }
-
-
-  // Adds the product option choices to the JSON
-  protected void addProductOptions( JSONObject jobJSONObject ) throws JSONException
-    {
-    if ( mOptionMap == null ) return;
-
-    JSONObject optionsJSONObject = new JSONObject();
-
-    for ( String optionCode : mOptionMap.keySet() )
-      {
-      optionsJSONObject.put( optionCode, mOptionMap.get( optionCode ) );
-      }
-
-    jobJSONObject.put( JSON_NAME_OPTIONS, optionsJSONObject );
+    @Override
+    List<Asset> getAssetsForUploading() {
+        return mAssetList;
     }
 
 
   @Override
-  public void writeToParcel( Parcel parcel, int flags )
+  JSONObject getJSONRepresentation()
     {
-    mProduct.writeToParcel( parcel, flags );
+    JSONObject jsonObject = new JSONObject();
 
-    parcel.writeMap( mOptionMap );
+    try
+      {
+      jsonObject.put( "template_id", getProductId() );
+
+      addProductOptions( jsonObject );
+
+      putAssetsJSON( mAssetList, jsonObject );
+
+      jsonObject.put( "frame_contents", new JSONObject() );
+      }
+    catch ( JSONException ex )
+      {
+      throw ( new RuntimeException( ex ) ); // this should NEVER happen :)
+      }
+
+    return ( jsonObject );
     }
+
+
+  /*****************************************************
+   *
+   * Adds the assets to the supplied JSON object. The default
+   * implementation just adds the assets as an array.
+   *
+   *****************************************************/
+  protected void putAssetsJSON( List<Asset> assetList, JSONObject jsonObject ) throws JSONException
+    {
+    JSONArray assetsJSONArray = new JSONArray();
+
+    for ( Asset asset : assetList )
+      {
+      assetsJSONArray.put( "" + asset.getId() );
+      }
+
+    jsonObject.put( "assets", assetsJSONArray );
+    }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int flags) {
+        super.writeToParcel( parcel, flags );
+        parcel.writeTypedList( mAssetList );
+
+    }
+
+    protected PrintJob( Parcel parcel) {
+        super( parcel );
+        this.mAssetList = new ArrayList<Asset>();
+        parcel.readTypedList( mAssetList, Asset.CREATOR);
+    }
+
+    public static final Parcelable.Creator<PrintJob> CREATOR
+            = new Parcelable.Creator<PrintJob>() {
+        public PrintJob createFromParcel( Parcel in) {
+            return new PrintJob(in);
+        }
+
+        public PrintJob[] newArray( int size) {
+            return new PrintJob[size];
+        }
+    };
 
 }

@@ -65,8 +65,8 @@ import ly.kite.journey.creation.photobook.PhotobookFragment;
 import ly.kite.journey.creation.reviewandedit.EditImageFragment;
 import ly.kite.journey.creation.reviewandedit.ReviewAndEditFragment;
 import ly.kite.util.Asset;
-import ly.kite.ordering.PrintJob;
-import ly.kite.ordering.PrintOrder;
+import ly.kite.ordering.Job;
+import ly.kite.ordering.Order;
 import ly.kite.catalogue.Product;
 
 
@@ -377,12 +377,13 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
     {
     // Create the print order
 
-    PrintOrder printOrder = new PrintOrder();
+    Order printOrder = new Order();
 
-    printOrder.addPrintJob( PrintJob.createPrintJob( mProduct, mOptionMap, imageAsset ) );
+    printOrder.addJob( Job.createPrintJob( mProduct, mOptionMap, imageAsset ) );
+
 
     // Start the check-out activity
-    CheckoutActivity.start( this, printOrder, ACTIVITY_REQUEST_CODE_CHECKOUT );
+    CheckoutActivity.startForResult( this, printOrder, ACTIVITY_REQUEST_CODE_CHECKOUT );
     }
 
 
@@ -427,8 +428,8 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
   @Override
   public void pbOnNext()
     {
-    // Create a new list containing just edited assets. Remember to
-    // strip out blank pages, and to remove the front cover.
+    // Create a new list containing edited assets. Retain any null values,
+    // as these represent blank pages.
 
     ArrayList<Asset> assetArrayList = new ArrayList<>();
 
@@ -444,14 +445,16 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
         }
       }
 
+
+    // Remove the first asset for the front cover
     Asset frontCoverAsset = assetArrayList.remove( 0 );
 
 
     // Create the print order
 
-    PrintOrder printOrder = new PrintOrder();
+    Order printOrder = new Order();
 
-    printOrder.addPrintJob( PrintJob.createPhotobookJob( mProduct, frontCoverAsset, assetArrayList ) );
+    printOrder.addJob( Job.createPhotobookJob( mProduct, frontCoverAsset, assetArrayList ) );
 
 
     // Start the check-out activity
@@ -495,15 +498,15 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
       }
 
 
-    // Create the print order
+    // Create the order and add the jobs
 
-    PrintOrder printOrder = new PrintOrder();
+    Order order = new Order();
 
-    printOrder.addPrintJob( PrintJob.createPrintJob( mProduct, assetArrayList ) );
+    mProduct.getUserJourneyType().addJobsToOrder( mProduct, assetArrayList, order );
 
 
     // Start the check-out activity
-    CheckoutActivity.startForResult( this, printOrder, ACTIVITY_REQUEST_CODE_CHECKOUT );
+    CheckoutActivity.startForResult( this, order, ACTIVITY_REQUEST_CODE_CHECKOUT );
     }
 
 

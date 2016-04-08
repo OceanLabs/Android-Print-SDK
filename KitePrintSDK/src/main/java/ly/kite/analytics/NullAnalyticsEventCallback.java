@@ -39,7 +39,7 @@ package ly.kite.analytics;
 ///// Import(s) /////
 
 import android.content.Context;
-import ly.kite.ordering.PrintOrder;
+import ly.kite.ordering.Order;
 import ly.kite.catalogue.Product;
 
 /*****************************************************
@@ -78,14 +78,14 @@ public class NullAnalyticsEventCallback implements IAnalyticsEventCallback
   public void onProductOrderReviewScreenViewed(Product product) {}
 
   @Override
-  public void onShippingScreenViewed(PrintOrder printOrder, String variant, boolean showPhoneEntryField) {}
+  public void onShippingScreenViewed( Order printOrder, String variant, boolean showPhoneEntryField) {}
 
   @Override
-  public void onPaymentScreenViewed(PrintOrder printOrder) {}
+  public void onPaymentScreenViewed(Order printOrder) {}
 
   @Override
-  public void onPaymentCompleted(PrintOrder printOrder, String paymentMethod) {}
+  public void onPaymentCompleted( Order printOrder, String paymentMethod) {}
 
   @Override
-  public void onOrderSubmission(PrintOrder printOrder) {}
+  public void onOrderSubmission(Order printOrder) {}
   }
