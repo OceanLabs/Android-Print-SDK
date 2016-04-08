@@ -9,7 +9,7 @@ buildscript {
     }
     dependencies {
 
-        classpath 'com.android.tools.build:gradle:1.2.3'
+        classpath 'com.android.tools.build:gradle:2.0.0'
 
         // Uncomment to include Crashlytics (Fabric) crash reporting
         //classpath 'io.fabric.tools:gradle:1.+'

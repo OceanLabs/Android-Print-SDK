@@ -155,7 +155,12 @@ public class ImageAgentTests extends TestCase
         bitmap.setPixel( x, y, colour );
     }
 
-  public void testCropBounds1()
+
+  //
+  // Test ARGB 8888 bitmaps
+  //
+
+  public void testCropBoundsARGB1()
     {
     Bitmap originalBitmap = Bitmap.createBitmap( 4, 4, Bitmap.Config.ARGB_8888 );
 
@@ -190,7 +195,7 @@ public class ImageAgentTests extends TestCase
     Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 3, 3 ) );
     }
 
-  public void testCropBounds2()
+  public void testCropBoundsARGB2()
     {
     Bitmap originalBitmap = Bitmap.createBitmap( 4, 4, Bitmap.Config.ARGB_8888 );
 
@@ -211,7 +216,7 @@ public class ImageAgentTests extends TestCase
     Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 1, 1 ) );
     }
 
-  public void testCropBounds3()
+  public void testCropBoundsARGB3()
     {
     Bitmap originalBitmap = Bitmap.createBitmap( 4, 4, Bitmap.Config.ARGB_8888 );
 
@@ -238,7 +243,7 @@ public class ImageAgentTests extends TestCase
     Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 2, 2 ) );
     }
 
-  public void testCropBounds4()
+  public void testCropBoundsARGB4()
     {
     Bitmap originalBitmap = Bitmap.createBitmap( 4, 4, Bitmap.Config.ARGB_8888 );
 
@@ -273,7 +278,7 @@ public class ImageAgentTests extends TestCase
     Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 3, 3 ) );
     }
 
-  public void testCropBounds5()
+  public void testCropBoundsARGB5()
     {
     Bitmap originalBitmap = Bitmap.createBitmap( 4, 4, Bitmap.Config.ARGB_8888 );
 
@@ -308,7 +313,7 @@ public class ImageAgentTests extends TestCase
     Assert.assertEquals( 0xffffffff, croppedBitmap.getPixel( 3, 3 ) );
     }
 
-  public void testCropBounds6()
+  public void testCropBoundsARGB6()
     {
     Bitmap originalBitmap = Bitmap.createBitmap( 4, 4, Bitmap.Config.ARGB_8888 );
 
@@ -343,7 +348,7 @@ public class ImageAgentTests extends TestCase
     Assert.assertEquals( 0xffffffff, croppedBitmap.getPixel( 3, 3 ) );
     }
 
-  public void testCropBounds7()
+  public void testCropBoundsARGB7()
     {
     Bitmap originalBitmap = Bitmap.createBitmap( 4, 4, Bitmap.Config.ARGB_8888 );
 
@@ -364,6 +369,219 @@ public class ImageAgentTests extends TestCase
     Assert.assertEquals( 0xffffffff, croppedBitmap.getPixel( 1, 1 ) );
     }
 
+
+  //
+  // Test RGB 565 bitmaps
+  //
+
+  public void testCropBoundsRGB1()
+    {
+    Bitmap originalBitmap = Bitmap.createBitmap( 4, 4, Bitmap.Config.RGB_565 );
+
+    setAllPixels( originalBitmap, 0xff000000 );
+
+
+    Bitmap croppedBitmap = ImageAgent.crop( originalBitmap, new RectF( 0.0f, 0.0f, 1.0f, 1.0f ) );
+
+
+    Assert.assertEquals( 4, croppedBitmap.getWidth() );
+    Assert.assertEquals( 4, croppedBitmap.getHeight() );
+
+
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 0, 0 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 1, 0 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 2, 0 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 3, 0 ) );
+
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 0, 1 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 1, 1 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 2, 1 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 3, 1 ) );
+
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 0, 2 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 1, 2 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 2, 2 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 3, 2 ) );
+
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 0, 3 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 1, 3 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 2, 3 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 3, 3 ) );
+    }
+
+  public void testCropBoundsRGB2()
+    {
+    Bitmap originalBitmap = Bitmap.createBitmap( 4, 4, Bitmap.Config.RGB_565 );
+
+    setAllPixels( originalBitmap, 0xff000000 );
+
+
+    Bitmap croppedBitmap = ImageAgent.crop( originalBitmap, new RectF( 0.25f, 0.25f, 0.75f, 0.75f ) );
+
+
+    Assert.assertEquals( 2, croppedBitmap.getWidth() );
+    Assert.assertEquals( 2, croppedBitmap.getHeight() );
+
+
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 0, 0 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 1, 0 ) );
+
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 0, 1 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 1, 1 ) );
+    }
+
+  public void testCropBoundsRGB3()
+    {
+    Bitmap originalBitmap = Bitmap.createBitmap( 4, 4, Bitmap.Config.RGB_565 );
+
+    setAllPixels( originalBitmap, 0xff000000 );
+
+
+    Bitmap croppedBitmap = ImageAgent.crop( originalBitmap, new RectF( 0.0f, 0.0f, 0.75f, 0.75f ) );
+
+
+    Assert.assertEquals( 3, croppedBitmap.getWidth() );
+    Assert.assertEquals( 3, croppedBitmap.getHeight() );
+
+
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 0, 0 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 1, 0 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 2, 0 ) );
+
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 0, 1 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 1, 1 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 2, 1 ) );
+
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 0, 2 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 1, 2 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 2, 2 ) );
+    }
+
+  public void testCropBoundsRGB4()
+    {
+    Bitmap originalBitmap = Bitmap.createBitmap( 4, 4, Bitmap.Config.RGB_565 );
+
+    setAllPixels( originalBitmap, 0xff000000 );
+
+
+    Bitmap croppedBitmap = ImageAgent.crop( originalBitmap, new RectF( -0.25f, -0.25f, 0.75f, 0.75f ) );
+
+
+    Assert.assertEquals( 4, croppedBitmap.getWidth() );
+    Assert.assertEquals( 4, croppedBitmap.getHeight() );
+
+
+    Assert.assertEquals( 0xffffffff, croppedBitmap.getPixel( 0, 0 ) );
+    Assert.assertEquals( 0xffffffff, croppedBitmap.getPixel( 1, 0 ) );
+    Assert.assertEquals( 0xffffffff, croppedBitmap.getPixel( 2, 0 ) );
+    Assert.assertEquals( 0xffffffff, croppedBitmap.getPixel( 3, 0 ) );
+
+    Assert.assertEquals( 0xffffffff, croppedBitmap.getPixel( 0, 1 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 1, 1 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 2, 1 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 3, 1 ) );
+
+    Assert.assertEquals( 0xffffffff, croppedBitmap.getPixel( 0, 2 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 1, 2 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 2, 2 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 3, 2 ) );
+
+    Assert.assertEquals( 0xffffffff, croppedBitmap.getPixel( 0, 3 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 1, 3 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 2, 3 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 3, 3 ) );
+    }
+
+  public void testCropBoundsRGB5()
+    {
+    Bitmap originalBitmap = Bitmap.createBitmap( 4, 4, Bitmap.Config.RGB_565 );
+
+    setAllPixels( originalBitmap, 0xff000000 );
+
+
+    Bitmap croppedBitmap = ImageAgent.crop( originalBitmap, new RectF( 0.25f, -0.25f, 1.25f, 0.75f ) );
+
+
+    Assert.assertEquals( 4, croppedBitmap.getWidth() );
+    Assert.assertEquals( 4, croppedBitmap.getHeight() );
+
+
+    Assert.assertEquals( 0xffffffff, croppedBitmap.getPixel( 0, 0 ) );
+    Assert.assertEquals( 0xffffffff, croppedBitmap.getPixel( 1, 0 ) );
+    Assert.assertEquals( 0xffffffff, croppedBitmap.getPixel( 2, 0 ) );
+    Assert.assertEquals( 0xffffffff, croppedBitmap.getPixel( 3, 0 ) );
+
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 0, 1 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 1, 1 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 2, 1 ) );
+    Assert.assertEquals( 0xffffffff, croppedBitmap.getPixel( 3, 1 ) );
+
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 0, 2 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 1, 2 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 2, 2 ) );
+    Assert.assertEquals( 0xffffffff, croppedBitmap.getPixel( 3, 2 ) );
+
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 0, 3 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 1, 3 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 2, 3 ) );
+    Assert.assertEquals( 0xffffffff, croppedBitmap.getPixel( 3, 3 ) );
+    }
+
+  public void testCropBoundsRGB6()
+    {
+    Bitmap originalBitmap = Bitmap.createBitmap( 4, 4, Bitmap.Config.RGB_565 );
+
+    setAllPixels( originalBitmap, 0xff000000 );
+
+
+    Bitmap croppedBitmap = ImageAgent.crop( originalBitmap, new RectF( 0.25f, 0.25f, 1.25f, 1.25f ) );
+
+
+    Assert.assertEquals( 4, croppedBitmap.getWidth() );
+    Assert.assertEquals( 4, croppedBitmap.getHeight() );
+
+
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 0, 0 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 1, 0 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 2, 0 ) );
+    Assert.assertEquals( 0xffffffff, croppedBitmap.getPixel( 3, 0 ) );
+
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 0, 1 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 1, 1 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 2, 1 ) );
+    Assert.assertEquals( 0xffffffff, croppedBitmap.getPixel( 3, 1 ) );
+
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 0, 2 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 1, 2 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 2, 2 ) );
+    Assert.assertEquals( 0xffffffff, croppedBitmap.getPixel( 3, 2 ) );
+
+    Assert.assertEquals( 0xffffffff, croppedBitmap.getPixel( 0, 3 ) );
+    Assert.assertEquals( 0xffffffff, croppedBitmap.getPixel( 1, 3 ) );
+    Assert.assertEquals( 0xffffffff, croppedBitmap.getPixel( 2, 3 ) );
+    Assert.assertEquals( 0xffffffff, croppedBitmap.getPixel( 3, 3 ) );
+    }
+
+  public void testCropBoundsRGB7()
+    {
+    Bitmap originalBitmap = Bitmap.createBitmap( 4, 4, Bitmap.Config.RGB_565 );
+
+    setAllPixels( originalBitmap, 0xff000000 );
+
+
+    Bitmap croppedBitmap = ImageAgent.crop( originalBitmap, new RectF( 0.0f, 0.75f, 0.5f, 1.25f ) );
+
+
+    Assert.assertEquals( 2, croppedBitmap.getWidth() );
+    Assert.assertEquals( 2, croppedBitmap.getHeight() );
+
+
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 0, 0 ) );
+    Assert.assertEquals( 0xff000000, croppedBitmap.getPixel( 1, 0 ) );
+
+    Assert.assertEquals( 0xffffffff, croppedBitmap.getPixel( 0, 1 ) );
+    Assert.assertEquals( 0xffffffff, croppedBitmap.getPixel( 1, 1 ) );
+    }
 
 
   /*****************************************************
