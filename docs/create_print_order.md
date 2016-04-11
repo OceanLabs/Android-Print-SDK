@@ -38,7 +38,7 @@ Sample Code
 3. Retrieve an up-to-date catalogue of available products.
 
     ```java
-    CatalogueLoader.getInstance( this ).requestCatalogue( new ICatalogueConsumer()
+    kiteSDK.getCatalogueLoader().requestCatalogue( new ICatalogueConsumer()
       {
       @Override
       public void onCatalogueSuccess( Catalogue catalogue )
