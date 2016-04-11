@@ -59,12 +59,14 @@ import ly.kite.address.Address;
 import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.CatalogueLoader;
 import ly.kite.catalogue.ICatalogueConsumer;
-import ly.kite.catalogue.PrintJob;
-import ly.kite.catalogue.PrintOrder;
+import ly.kite.catalogue.ProductType;
+import ly.kite.ordering.PrintJob;
+import ly.kite.ordering.Job;
+import ly.kite.ordering.Order;
 import ly.kite.checkout.CheckoutActivity;
 import ly.kite.photopicker.Photo;
 import ly.kite.photopicker.PhotoPicker;
-import ly.kite.catalogue.Asset;
+import ly.kite.util.Asset;
 import ly.kite.KiteSDK;
 
 
@@ -211,7 +213,7 @@ public class MainActivity extends Activity
    *****************************************************/
   public void onPrintRemoteButtonClicked( View view )
     {
-    // Create some assets from remote URLs
+    // Create some assets from a combination of a local resource and remote URLs
 
     ArrayList<Asset> assetArrayList = new ArrayList<Asset>();
 
@@ -301,8 +303,8 @@ public class MainActivity extends Activity
     kiteSDK
 
       // Uncomment this if you want all image sources, and you have defined all the credentials. The
-      // default is for the device image source , and the Instagram image source (assuming you have
-      // also defined the instagram credentials.
+      // default is for the device image source, and the Instagram image source (assuming you have
+      // also defined the instagram credentials).
       //.setImageSources( new DeviceImageSource(), new InstagramImageSource(), new FacebookImageSource() )
 
       // Uncomment this if you have defined Instagram credentials
@@ -325,8 +327,7 @@ public class MainActivity extends Activity
 
     if ( kiteSDK == null ) return;
 
-
-    CatalogueLoader.getInstance( this ).requestCatalogue( new ICatalogueConsumer()
+    kiteSDK.getCatalogueLoader().requestCatalogue( new ICatalogueConsumer()
       {
       @Override
       public void onCatalogueSuccess( Catalogue catalogue )
@@ -336,27 +337,33 @@ public class MainActivity extends Activity
           // Create Postcard Job & Add to Order
 
           Asset frontImage = new Asset( new URL( "http://psps.s3.amazonaws.com/sdk_static/1.jpg" ) );
+          Asset backImage  = new Asset( new URL( "http://psps.s3.amazonaws.com/sdk_static/2.jpg" ) );
 
-          PrintJob postcard = PrintJob.createPostcardPrintJob(
+          Job postcard = Job.createPostcardJob(
                   catalogue.getProductById( "postcard" ),
                   frontImage,
+                  backImage,
                   "Message to go on the back of the postcard",
                   Address.getKiteTeamAddress() );
 
-          PrintOrder order = new PrintOrder();
+          Order order = new Order();
 
-          order.addPrintJob( postcard );
+          order.addJob( postcard );
 
           // Skip directly to checkout
           CheckoutActivity.startForResult( MainActivity.this, order, REQUEST_CODE_CHECKOUT );
           }
         catch ( MalformedURLException ex )
-          { /* ignore */ }
+          {
+          // Ignore
+          }
         }
 
       @Override
       public void onCatalogueError( Exception exception )
-        { /* handle gracefully */ }
+        {
+        // Handle gracefully
+        }
       } );
     }
 

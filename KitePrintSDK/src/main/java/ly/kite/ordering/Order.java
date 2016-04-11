@@ -17,7 +17,7 @@ import java.util.Set;
 
 import ly.kite.address.Address;
 import ly.kite.api.AssetUploadRequest;
-import ly.kite.api.SubmitPrintOrderRequest;
+import ly.kite.api.SubmitOrderRequest;
 import ly.kite.catalogue.SingleCurrencyAmount;
 import ly.kite.pricing.OrderPricing;
 import ly.kite.util.Asset;
@@ -51,7 +51,7 @@ public class Order implements Parcelable /* , Serializable */
     private AssetUploadRequest assetUploadReq;
     private List<Asset> assetsToUpload;
     private boolean assetUploadComplete;
-    private SubmitPrintOrderRequest printOrderReq;
+    private SubmitOrderRequest printOrderReq;
     private Date lastPrintSubmissionDate;
     private String receipt;
     private ISubmissionProgressListener submissionListener;
@@ -364,11 +364,11 @@ public class Order implements Parcelable /* , Serializable */
         if (!assetUploadComplete || isAssetUploadInProgress()) throw new IllegalStateException("Oops asset upload should be complete by now");
 
         // Step 2: Submit print order to the server. Print Job JSON can now reference real asset ids.
-        printOrderReq = new SubmitPrintOrderRequest(this);
-        printOrderReq.submitForPrinting( context, new SubmitPrintOrderRequest.IProgressListener()
+        printOrderReq = new SubmitOrderRequest(this);
+        printOrderReq.submitForPrinting( context, new SubmitOrderRequest.IProgressListener()
         {
         @Override
-        public void onSubmissionComplete( SubmitPrintOrderRequest req, String orderId )
+        public void onSubmissionComplete( SubmitOrderRequest req, String orderId )
             {
             setReceipt( orderId );
 
@@ -378,7 +378,7 @@ public class Order implements Parcelable /* , Serializable */
             }
 
         @Override
-        public void onError( SubmitPrintOrderRequest req, Exception error )
+        public void onError( SubmitOrderRequest req, Exception error )
             {
             userSubmittedForPrinting = false;
             lastPrintSubmissionError = error;
@@ -652,11 +652,11 @@ public class Order implements Parcelable /* , Serializable */
 
     public interface ISubmissionProgressListener
         {
-        void onProgress( Order printOrder, int primaryProgressPercent, int secondaryProgressPercent );
+        void onProgress( Order order, int primaryProgressPercent, int secondaryProgressPercent );
 
-        void onSubmissionComplete( Order printOrder, String orderId );
+        void onSubmissionComplete( Order order, String orderId );
 
-        void onError( Order printOrder, Exception error );
+        void onError( Order order, Exception error );
         }
 
     }

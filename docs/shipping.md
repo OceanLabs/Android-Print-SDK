@@ -54,10 +54,10 @@ Sample Code
             }
         });
         ```
-2. Set the `PrintOrder` shipping address to the one you created in Step 1
+2. Set the `Order` shipping address to the one you created in Step 1
 
     ```java
-    PrintOrder order = ...;
+    Order order = ...;
     order.setShippingAddress(addr);
     ```
 

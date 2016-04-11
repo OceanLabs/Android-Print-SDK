@@ -14,9 +14,9 @@ import ly.kite.util.HTTPJSONRequest;
 /**
  * Created by deonbotha on 09/02/2014.
  */
-public class SubmitPrintOrderRequest
+public class SubmitOrderRequest
   {
-  static private final String  LOG_TAG                  = "SubmitPrintOrderRequest";
+  static private final String  LOG_TAG                  = "SubmitOrderRequest";
 
   static private final boolean DISPLAY_PRINT_ORDER_JSON = false;
 
@@ -24,7 +24,7 @@ public class SubmitPrintOrderRequest
     private final Order printOrder;
     private HTTPJSONRequest req;
 
-    public SubmitPrintOrderRequest(Order printOrder) {
+    public SubmitOrderRequest( Order printOrder) {
         this.printOrder = printOrder;
     }
 
@@ -46,7 +46,7 @@ public class SubmitPrintOrderRequest
                 try {
                     if (httpStatusCode >= 200 && httpStatusCode <= 299) {
                         String orderId = json.getString("print_order_id");
-                        listener.onSubmissionComplete(SubmitPrintOrderRequest.this, orderId);
+                        listener.onSubmissionComplete(SubmitOrderRequest.this, orderId);
                     } else {
                         JSONObject error = json.getJSONObject("error");
                         String message = error.getString("message");
@@ -55,19 +55,19 @@ public class SubmitPrintOrderRequest
                             // this error code indicates an original success response for the request. It's handy to report a success in this
                             // case as it may be that the client never received the original success response.
                             String orderId = json.getString("print_order_id");
-                            listener.onSubmissionComplete(SubmitPrintOrderRequest.this, orderId);
+                            listener.onSubmissionComplete(SubmitOrderRequest.this, orderId);
                         } else {
-                            listener.onError(SubmitPrintOrderRequest.this, new KiteSDKException(message));
+                            listener.onError(SubmitOrderRequest.this, new KiteSDKException(message));
                         }
                     }
                 } catch (JSONException ex) {
-                    listener.onError(SubmitPrintOrderRequest.this, ex);
+                    listener.onError(SubmitOrderRequest.this, ex);
                 }
             }
 
             @Override
             public void onError(Exception exception ) {
-                listener.onError(SubmitPrintOrderRequest.this, exception );
+                listener.onError(SubmitOrderRequest.this, exception );
             }
         });
     }
@@ -82,9 +82,9 @@ public class SubmitPrintOrderRequest
 
   public interface IProgressListener
     {
-    public void onSubmissionComplete( SubmitPrintOrderRequest req, String orderId );
+    public void onSubmissionComplete( SubmitOrderRequest req, String orderId );
 
-    public void onError( SubmitPrintOrderRequest req, Exception error );
+    public void onError( SubmitOrderRequest req, Exception error );
     }
 
   }

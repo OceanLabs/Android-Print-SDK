@@ -54,6 +54,7 @@ import android.util.Log;
 
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 
+import ly.kite.catalogue.CatalogueLoader;
 import ly.kite.checkout.PaymentActivity;
 import ly.kite.util.Asset;
 import ly.kite.journey.AImageSource;
@@ -642,12 +643,23 @@ public class KiteSDK
 
   /*****************************************************
    *
-   * Returns an instance of the image loader.
+   * Returns an instance of the image agent.
    *
    *****************************************************/
-  public ImageAgent getImageAgent( Context context )
+  public ImageAgent getImageAgent()
     {
-    return ( ImageAgent.getInstance( context ) );
+    return ( ImageAgent.getInstance( mApplicationContext ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns an instance of the catalogue loader.
+   *
+   *****************************************************/
+  public CatalogueLoader getCatalogueLoader()
+    {
+    return ( CatalogueLoader.getInstance( mApplicationContext ) );
     }
 
 

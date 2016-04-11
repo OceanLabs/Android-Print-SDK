@@ -20,7 +20,7 @@ import ly.kite.util.Asset;
 /**
  * Created by deonbotha on 09/02/2014.
  */
-class PrintJob extends Job
+public class PrintJob extends Job
   {
 
     private static final long serialVersionUID = 1L;
