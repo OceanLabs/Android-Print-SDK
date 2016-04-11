@@ -57,16 +57,14 @@ import java.util.List;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
-import ly.kite.catalogue.Asset;
-import ly.kite.catalogue.AssetHelper;
+import ly.kite.image.ImageProcessingRequest;
+import ly.kite.util.Asset;
 import ly.kite.journey.AImageSource;
 import ly.kite.journey.AKiteFragment;
 import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.journey.IAssetsAndQuantityHolder;
 import ly.kite.catalogue.Product;
-import ly.kite.util.IImageConsumer;
-import ly.kite.util.IImageTransformer;
-import ly.kite.util.ImageAgent;
+import ly.kite.image.ImageAgent;
 
 
 ///// Class Declaration /////
@@ -533,16 +531,16 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
     for ( AssetsAndQuantity assetsAndQuantity : assetsAndQuantityToCropList )
       {
-      AssetImageCropper cropper = new AssetImageCropper( assetsAndQuantity, mProduct.getImageAspectRatio() );
-
-      AssetHelper.requestImage( mKiteActivity, assetsAndQuantity.getUneditedAsset(), cropper, 0, cropper );
+      requestCroppedAsset( assetsAndQuantity );
       }
 
 
-    // Set the enabled state of the proceed button according to whether there are assets to crop
-    setForwardsButtonEnabled( mInitialAssetsToCropCount > 0 );
+    boolean assetsToCrop = mInitialAssetsToCropCount > 0;
 
-    return ( mInitialAssetsToCropCount > 0 );
+    // Set the enabled state of the proceed button according to whether there are assets to crop
+    setForwardsButtonEnabled( assetsToCrop );
+
+    return ( assetsToCrop );
     }
 
 
@@ -553,9 +551,11 @@ abstract public class AProductCreationFragment extends    AKiteFragment
    *****************************************************/
   protected void requestCroppedAsset( AssetsAndQuantity assetsAndQuantity )
     {
-    AssetImageCropper cropper = new AssetImageCropper( assetsAndQuantity, mProduct.getImageAspectRatio() );
-
-    AssetHelper.requestImage( mKiteActivity, assetsAndQuantity.getUneditedAsset(), cropper, 0, cropper );
+    ImageAgent.with( mKiteActivity )
+            .transform( assetsAndQuantity.getUneditedAsset() )
+            .byCroppingToAspectRatio( mProduct.getImageAspectRatio() )
+            .intoNewAsset()
+            .thenNotify( new ImageCropCallback( assetsAndQuantity ) );
     }
 
 
@@ -763,62 +763,21 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
   /*****************************************************
    *
-   * An image transformer that crops the supplied image
-   * to a square, creates an asset from it, and then stores
-   * it as an edited asset.
-   *
-   * We also use it as the image consumer, because the available
-   * method gets called on the UI thread.
+   * The callback for the image cropping.
    *
    *****************************************************/
-  private class AssetImageCropper implements IImageTransformer, IImageConsumer
+  private class ImageCropCallback implements ImageProcessingRequest.ICallback
     {
     private AssetsAndQuantity  mAssetsAndQuantity;
-    private float              mCroppedAspectRatio;
 
 
-    AssetImageCropper( AssetsAndQuantity assetsAndQuantity, float croppedAspectRatio )
+    ImageCropCallback( AssetsAndQuantity assetsAndQuantity )
       {
       mAssetsAndQuantity  = assetsAndQuantity;
-      mCroppedAspectRatio = croppedAspectRatio;
       }
 
 
-    ////////// AssetHelper.IImageTransformer Method(s) //////////
-
-    /*****************************************************
-     *
-     * Called on a background thread to transform a bitmap.
-     * We use this to crop the bitmap, and create a file-backed
-     * asset from it.
-     *
-     *****************************************************/
-    @Override
-    public Bitmap getTransformedBitmap( Bitmap bitmap )
-      {
-      // Crop the bitmap to the required shape
-      Bitmap croppedBitmap = ImageAgent.crop( bitmap, mCroppedAspectRatio );
-
-
-      // Create a new file-backed asset from the cropped bitmap, and save it as the edited asset.
-
-      Asset editedAsset = AssetHelper.createAsCachedFile( mKiteActivity, croppedBitmap );
-
-      mAssetsAndQuantity.setEditedAsset( editedAsset, mProduct.getId() );
-
-
-      return ( croppedBitmap );
-      }
-
-
-    ////////// IImageConsumer Method(s) //////////
-
-    @Override
-    public void onImageDownloading( Object key )
-      {
-      // Ignore
-      }
-
+    ////////// ImageProcessingRequest.ICallback Method(s) //////////
 
     /*****************************************************
      *
@@ -826,8 +785,12 @@ abstract public class AProductCreationFragment extends    AKiteFragment
      *
      *****************************************************/
     @Override
-    public void onImageAvailable( Object key, Bitmap bitmap )
+    public void ipcOnImageAvailable( Asset asset )
       {
+      // Store the processed asset
+      mAssetsAndQuantity.setEditedAsset( asset, mProduct.getId() );
+
+
       onImageCropped( mAssetsAndQuantity );
 
 
@@ -852,7 +815,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
      *
      *****************************************************/
     @Override
-    public void onImageUnavailable( Object key, Exception exception )
+    public void ipcOnImageUnavailable()
       {
       // TODO
       }

@@ -34,21 +34,27 @@
 
 ///// Package Declaration /////
 
-package ly.kite.util;
+package ly.kite.image;
 
 
 ///// Import(s) /////
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.net.Uri;
 import android.util.Pair;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 
 import ly.kite.KiteSDK;
+import ly.kite.util.Asset;
+import ly.kite.util.FileDownloader;
 
 
 ///// Class Declaration /////
@@ -73,27 +79,25 @@ public class ImageAgent
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                   = "ImageAgent";
+  static private final String  LOG_TAG                   = "ImageAgent";
 
-  private static final boolean FORCE_FILE_DOWNLOAD       = false;
-
-  private static final int     LOAD_BUFFER_SIZE_IN_BYTES = 8192;  // 8 KB
+  static private final int     CROPPED_IMAGE_FILLER_COLOUR = 0xffffffff;
 
 
   ////////// Static Variable(s) //////////
 
-  private static ImageAgent sImageManager;
+  static private ImageAgent sImageManager;
 
 
   ////////// Member Variable(s) //////////
 
-  private Context                  mContext;
+  private Context                  mApplicationContext;
   private File                     mCacheDirectory;
 
   private HashMap<String,Integer>  mURLResourceIdTable;
 
-  private ImageLoader              mImageLoader;
-  private FileDownloader           mFileDownloader;
+  private FileDownloader mFileDownloader;
+  private ImageRequestProcessor    mImageRequestProcessor;
 
 
   ////////// Static Initialiser(s) //////////
@@ -114,6 +118,17 @@ public class ImageAgent
       }
 
     return ( sImageManager );
+    }
+
+
+  /*****************************************************
+   *
+   * Creates a new image request builder.
+   *
+   *****************************************************/
+  static public ImageAgent with( Context context )
+    {
+    return ( getInstance( context ) );
     }
 
 
@@ -197,6 +212,53 @@ public class ImageAgent
 
   /*****************************************************
    *
+   * Returns a cropped bitmap image.
+   *
+   *****************************************************/
+  static public Bitmap crop( Bitmap originalBitmap, RectF cropBounds )
+    {
+    // Get the bitmap dimensions
+    int originalWidth  = originalBitmap.getWidth();
+    int originalHeight = originalBitmap.getHeight();
+
+    // Get the actual bounds
+    int left   = (int)( cropBounds.left   * originalWidth );
+    int top    = (int)( cropBounds.top    * originalHeight );
+    int right  = (int)( cropBounds.right  * originalWidth );
+    int bottom = (int)( cropBounds.bottom * originalHeight );
+
+    // If the bounds are completely within the image, we can simply create a new bitmap from the sub area
+    if ( left >= 0 && top >= 0 && right < originalWidth && bottom < originalHeight )
+      {
+      return ( Bitmap.createBitmap( originalBitmap, left, top, right - left, bottom - top ) );
+      }
+
+
+    // The bounds are outside the image, so we want to create a white canvas, draw the bitmap into it,
+    // and then return it.
+
+    int croppedWidth  = right - left;
+    int croppedHeight = bottom - top;
+
+    Bitmap croppedBitmap = Bitmap.createBitmap( croppedWidth, croppedHeight, originalBitmap.getConfig() );
+
+    Canvas croppedBitmapCanvas = new Canvas( croppedBitmap );
+
+    croppedBitmapCanvas.drawColor( CROPPED_IMAGE_FILLER_COLOUR );
+
+
+    Rect sourceRect = new Rect( 0, 0, originalWidth, originalHeight );
+    Rect targetRect = new Rect( - left, - top, originalWidth - left, originalHeight - top );
+
+    croppedBitmapCanvas.drawBitmap( originalBitmap, sourceRect, targetRect, null );
+
+
+    return ( croppedBitmap );
+    }
+
+
+  /*****************************************************
+   *
    * Returns a downscaled bitmap.
    *
    * If no scaling is required, because the scaled width is
@@ -215,6 +277,66 @@ public class ImageAgent
     int scaledHeight = (int)( (float)sourceBitmap.getHeight() * (float)scaledWidth / (float)sourceBitmap.getWidth() );
 
     return ( sourceBitmap.createScaledBitmap( sourceBitmap, scaledWidth, scaledHeight, true ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a scaled bitmap.
+   *
+   * If no scaling is required then the original bitmap
+   * is returned without alteration.
+   *
+   *****************************************************/
+  static public Bitmap scaleBitmap( Bitmap sourceBitmap, int scaledWidth )
+    {
+    if ( scaledWidth < 1 || sourceBitmap.getWidth() < 1 ) return ( sourceBitmap );
+
+
+    // Calculate the height so as to maintain the aspect ratio
+
+    int scaledHeight = (int)( (float)sourceBitmap.getHeight() * (float)scaledWidth / (float)sourceBitmap.getWidth() );
+
+    return ( sourceBitmap.createScaledBitmap( sourceBitmap, scaledWidth, scaledHeight, true ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a scaled bitmap. If no scaling is performed
+   * then the original bitmap is returned.
+   *
+   * @param sourceBitmap The bitmap to be scaled.
+   * @param scaledWidth  The width that the bitmap should
+   *                     fit inside.
+   * @param scaledHeight The height that the bitmap should
+   *                     fit inside.
+   * @param onlyScaleDown It set to true, the bitmap is only
+   *                      scaled down.
+   *
+   *****************************************************/
+  static public Bitmap scaleBitmap( Bitmap sourceBitmap, int scaledWidth, int scaledHeight, boolean onlyScaleDown )
+    {
+    // Check the dimensions
+
+    int originalWidth  = sourceBitmap.getWidth();
+    int originalHeight = sourceBitmap.getHeight();
+
+    if ( scaledWidth < 1 || scaledHeight < 1 || originalWidth < 1 || originalHeight < 1 ) return ( sourceBitmap );
+
+
+    // Use the smaller of the two scalings
+    float scaleFactor = Math.min( (float)scaledWidth / (float)originalWidth, (float)scaledHeight / (float)originalHeight );
+
+    // Only scale up if allowed
+    if ( scaleFactor > 1.0f && onlyScaleDown ) return ( sourceBitmap );
+
+    // Calculate the new width and height
+    int newWidth  = (int)( originalWidth  * scaleFactor );
+    int newHeight = (int)( originalHeight * scaleFactor );
+
+    // Resize the bitmap
+    return ( sourceBitmap.createScaledBitmap( sourceBitmap, newWidth, newHeight, true ) );
     }
 
 
@@ -268,7 +390,7 @@ public class ImageAgent
       bitmap.getPixels( leftColumn,  0, 1, x,                  0, 1, imageHeight );
       bitmap.getPixels( rightColumn, 0, 1, imageWidth - x - 1, 0, 1, imageHeight );
 
-      bitmap.setPixels( rightColumn, 0, 1, x,                  0, 1, imageHeight );
+      bitmap.setPixels( rightColumn, 0, 1, x, 0, 1, imageHeight );
       bitmap.setPixels( leftColumn,  0, 1, imageWidth - x - 1, 0, 1, imageHeight );
       }
     }
@@ -339,12 +461,14 @@ public class ImageAgent
 
   private ImageAgent( Context context )
     {
-    mContext            = context;
-    mCacheDirectory     = context.getCacheDir();
-    mURLResourceIdTable = new HashMap<>();
+    Context applicationContext = context.getApplicationContext();
 
-    mImageLoader    = ImageLoader.getInstance( context );
-    mFileDownloader = FileDownloader.getInstance( context );
+    mApplicationContext    = applicationContext;
+    mCacheDirectory        = applicationContext.getCacheDir();
+    mURLResourceIdTable    = new HashMap<>();
+
+    mFileDownloader        = FileDownloader.getInstance( applicationContext );
+    mImageRequestProcessor = ImageRequestProcessor.getInstance( applicationContext );
     }
 
 
@@ -383,6 +507,30 @@ public class ImageAgent
 
   /*****************************************************
    *
+   * Returns a mapped resource for the supplied URL, or
+   * null if there is no mapping.
+   *
+   *****************************************************/
+  public Integer getMappedResource( URL url )
+    {
+    return ( mURLResourceIdTable.get( url.toString() ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a mapped resource for the supplied URI, or
+   * null if there is no mapping.
+   *
+   *****************************************************/
+  public Integer getMappedResource( Uri uri )
+    {
+    return ( mURLResourceIdTable.get( uri.toString() ) );
+    }
+
+
+  /*****************************************************
+   *
    * Clears any outstanding load / download requests.
    *
    * Must be called on the UI thread.
@@ -390,8 +538,8 @@ public class ImageAgent
    *****************************************************/
   public void clearPendingRequests()
     {
-    mImageLoader.clearPendingRequests();
     mFileDownloader.clearPendingRequests();
+    mImageRequestProcessor.clearPendingRequests();
     }
 
 
@@ -411,11 +559,11 @@ public class ImageAgent
    * Returns an image directory path and file path.
    *
    *****************************************************/
-  public Pair<String,String> getImageDirectoryAndFilePath( String imageClassString, String imageIdentifier )
+  public Pair<String,String> getImageDirectoryAndFilePath( String imageCategory, String imageIdentifier )
     {
     // Construct the directory and file paths. The file path is: "<cache-directory>/<image-class-string>/<image-url-string>"
     // The image class string and image URL string are first converted into 'safe' strings.
-    String imageDirectoryPath = getImageDirectoryPath( imageClassString );
+    String imageDirectoryPath = getImageDirectoryPath( imageCategory );
     String imageFilePath      = imageDirectoryPath + File.separator + toSafeString( imageIdentifier );
 
     return ( new Pair<String,String>( imageDirectoryPath, imageFilePath ) );
@@ -424,150 +572,147 @@ public class ImageAgent
 
   /*****************************************************
    *
-   * Requests an image from a file.
-   *
-   * Must be called on the UI thread.
+   * Returns a new image request builder.
    *
    *****************************************************/
-  public void requestImage( Object key, File imageFile, IImageTransformer imageTransformer, int scaledImageWidth, IImageConsumer imageConsumer )
+  private ImageLoadRequest.Builder getImageRequestBuilder()
     {
-    mImageLoader.requestImageLoad( key, imageFile, imageTransformer, scaledImageWidth, imageConsumer );
+    return ( new ImageLoadRequest( mApplicationContext ).new Builder() );
     }
 
 
   /*****************************************************
    *
-   * Requests an image from a resource.
-   *
-   * Must be called on the UI thread.
+   * Creates an image request builder for bitmap data.
    *
    *****************************************************/
-  public void requestImage( Object key, int resourceId, IImageTransformer imageTransformer, int scaledImageWidth, IImageConsumer imageConsumer )
+  public ImageLoadRequest.Builder load( byte[] bitmapBytes )
     {
-    mImageLoader.requestImageLoad( key, resourceId, imageTransformer, scaledImageWidth, imageConsumer );
+    ImageLoadRequest.Builder builder = getImageRequestBuilder();
+
+    builder.load( bitmapBytes );
+
+    return ( builder );
     }
 
 
   /*****************************************************
    *
-   * Requests an image from a URI.
-   *
-   * Must be called on the UI thread.
+   * Creates an image request builder for a bitmap.
    *
    *****************************************************/
-  public void requestImage( Object key, Uri imageUri, IImageTransformer imageTransformer, int scaledImageWidth, IImageConsumer imageConsumer )
+  public ImageLoadRequest.Builder load( Bitmap bitmap )
     {
-    mImageLoader.requestImageLoad( key, imageUri, imageTransformer, scaledImageWidth, imageConsumer );
+    ImageLoadRequest.Builder builder = getImageRequestBuilder();
+
+    builder.load( bitmap );
+
+    return ( builder );
     }
 
 
   /*****************************************************
    *
-   * Requests an image from a URL.
-   *
-   * Must be called on the UI thread.
+   * Creates an image request builder for a file.
    *
    *****************************************************/
-  public void requestImage( String imageClassString, Object key, URL imageURL, IImageTransformer imageTransformer, int scaledImageWidth, IImageConsumer imageConsumer )
+  public ImageLoadRequest.Builder load( File file )
     {
-    // First check if we have been provided with a mapping to a resource id. If so - make
-    // a resource request instead.
+    ImageLoadRequest.Builder builder = getImageRequestBuilder();
 
-    if ( ! FORCE_FILE_DOWNLOAD )
-      {
-      Integer resourceIdAsInteger = mURLResourceIdTable.get( imageURL.toString() );
+    builder.load( file );
 
-      if ( resourceIdAsInteger != null )
-        {
-        requestImage( key, resourceIdAsInteger, imageTransformer, scaledImageWidth, imageConsumer );
-
-        return;
-        }
-      }
-
-
-    // Generate the directory and file that the image would be downloaded to
-
-    Pair<String, String> directoryAndFilePath = getImageDirectoryAndFilePath( imageClassString, imageURL.toString() );
-
-    String imageDirectoryPath = directoryAndFilePath.first;
-    String imageFilePath      = directoryAndFilePath.second;
-
-
-    // See if we already have the image in cache
-
-    File imageDirectory = new File( imageDirectoryPath );
-    File imageFile      = new File( imageFilePath );
-
-    if ( ( ! FORCE_FILE_DOWNLOAD ) && imageFile.exists() )
-      {
-      // Make a request to load the image
-
-      mImageLoader.requestImageLoad( key, imageFile, imageTransformer, scaledImageWidth, imageConsumer );
-      }
-    else
-      {
-      // Notify the consumer that the image will need to be downloaded
-      imageConsumer.onImageDownloading( key );
-
-
-      // Make a request to download the image, but use an intermediate callback which then makes
-      // a request to load the image following the download.
-
-      DownloadCallback downloadCallback = new DownloadCallback( key, imageTransformer, scaledImageWidth, imageConsumer );
-
-      mFileDownloader.requestFileDownload( imageURL, imageDirectory, imageFile, downloadCallback );
-      }
+    return ( builder );
     }
 
 
   /*****************************************************
    *
-   * Requests an image from a remote URL. Must be called
-   * on the UI thread.
+   * Creates an image request builder for a URL.
    *
    *****************************************************/
-  public void requestImage( String imageClassString, Object key, URL imageURL, IImageConsumer imageConsumer )
+  public ImageLoadRequest.Builder load( URL url, String imageCategory )
     {
-    requestImage( imageClassString, key, imageURL, null, 0, imageConsumer );
+    ImageLoadRequest.Builder builder = getImageRequestBuilder();
+
+    builder.load( url, imageCategory );
+
+    return ( builder );
     }
 
 
   /*****************************************************
    *
-   * Requests an image from a remote URL. Must be called
-   * on the UI thread.
+   * Creates an image request builder for a URL.
    *
    *****************************************************/
-  public void requestImage( String imageClassString, URL imageURL, IImageConsumer imageConsumer )
+  public ImageLoadRequest.Builder loadURL( String urlString, String imageCategory ) throws MalformedURLException
     {
-    requestImage( imageClassString, imageURL, imageURL, null, 0, imageConsumer );
+    ImageLoadRequest.Builder builder = getImageRequestBuilder();
+
+    builder.loadURL( urlString, imageCategory );
+
+    return ( builder );
     }
 
 
   /*****************************************************
    *
-   * Requests an image from an existing bitmap.
-   *
-   * Must be called on the UI thread.
+   * Creates an image request builder for a URL.
    *
    *****************************************************/
-  public void requestImage( Object key, Bitmap bitmap, IImageTransformer imageTransformer, int scaledImageWidth, IImageConsumer imageConsumer )
+  public ImageLoadRequest.Builder load( Uri uri )
     {
-    mImageLoader.requestImageLoad( key, bitmap, imageTransformer, scaledImageWidth, imageConsumer );
+    ImageLoadRequest.Builder builder = getImageRequestBuilder();
+
+    builder.load( uri );
+
+    return ( builder );
     }
 
 
   /*****************************************************
    *
-   * Requests an image from image data.
-   *
-   * Must be called on the UI thread.
+   * Creates an image request builder for a bitmap resource.
    *
    *****************************************************/
-  public void requestImage( Object key, byte[] imageBytes, IImageTransformer imageTransformer, int scaledImageWidth, IImageConsumer imageConsumer )
+  public ImageLoadRequest.Builder load( int bitmapResourceId )
     {
-    mImageLoader.requestImageLoad( key, imageBytes, imageTransformer, scaledImageWidth, imageConsumer );
+    ImageLoadRequest.Builder builder = getImageRequestBuilder();
+
+    builder.load( bitmapResourceId );
+
+    return ( builder );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the source of the image as an asset.
+   *
+   *****************************************************/
+  public ImageLoadRequest.Builder load( Asset asset )
+    {
+    ImageLoadRequest.Builder builder = getImageRequestBuilder();
+
+    builder.load( asset );
+
+    return ( builder );
+    }
+
+
+  /*****************************************************
+   *
+   * Starts an image processing request.
+   *
+   *****************************************************/
+  public ImageProcessingRequest.Builder transform( Asset asset )
+    {
+    ImageProcessingRequest.Builder builder = new ImageProcessingRequest( mApplicationContext ).new Builder();
+
+    builder.transform( asset );
+
+    return ( builder );
     }
 
 
@@ -575,39 +720,8 @@ public class ImageAgent
 
   /*****************************************************
    *
-   * A download callback that makes a load request.
+   * ...
    *
    *****************************************************/
-  private class DownloadCallback implements FileDownloader.ICallback
-    {
-    private Object             mKey;
-    private IImageTransformer  mImageTransformer;
-    private int                mScaledImageWidth;
-    private IImageConsumer     mImageConsumer;
-
-
-    DownloadCallback( Object key, IImageTransformer imageTransformer, int scaledImageWidth, IImageConsumer imageConsumer )
-      {
-      mKey              = key;
-      mImageTransformer = imageTransformer;
-      mScaledImageWidth = scaledImageWidth;
-      mImageConsumer    = imageConsumer;
-      }
-
-
-    @Override
-    public void onDownloadSuccess( URL sourceURL, File targetDirectory, File targetFile )
-      {
-      // Once the image has downloaded - immediately request that it be loaded
-      mImageLoader.requestImageLoad( mKey, targetFile, mImageTransformer, mScaledImageWidth, mImageConsumer );
-      }
-
-    @Override
-    public void onDownloadFailure( URL sourceURL, Exception exception )
-      {
-      mImageConsumer.onImageUnavailable( mKey, exception );
-      }
-
-    }
 
   }

@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.util;
+package ly.kite.image;
 
 
 ///// Import(s) /////
@@ -44,7 +44,8 @@ import android.graphics.Bitmap;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
-import java.util.ArrayList;
+import ly.kite.image.IImageConsumer;
+import ly.kite.image.ImageCache;
 
 
 ///// Class Declaration /////

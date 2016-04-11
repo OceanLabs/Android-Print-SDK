@@ -78,7 +78,7 @@ import ly.kite.pricing.OrderPricing;
 import ly.kite.pricing.PricingAgent;
 import ly.kite.KiteSDK;
 import ly.kite.catalogue.MultipleCurrencyAmount;
-import ly.kite.catalogue.PrintOrder;
+import ly.kite.ordering.Order;
 import ly.kite.R;
 import ly.kite.payment.PayPalCard;
 import ly.kite.payment.PayPalCardChargeListener;
@@ -125,7 +125,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
 
   ////////// Member Variable(s) //////////
 
-  private PrintOrder           mOrder;
+  private Order mOrder;
   private String               mAPIKey;
   private KiteSDK.Environment  mKiteSDKEnvironment;
 
@@ -156,7 +156,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
    * Convenience method for starting this activity.
    *
    *****************************************************/
-  static public void startForResult( Activity activity, PrintOrder printOrder, int requestCode )
+  static public void startForResult( Activity activity, Order printOrder, int requestCode )
     {
     Intent intent = new Intent( activity, PaymentActivity.class );
 
@@ -535,7 +535,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
    *
    *****************************************************/
   @Override
-  public void onOrderUpdate( PrintOrder order, OrderState state, int primaryProgressPercent, int secondaryProgressPercent )
+  public void onOrderUpdate( Order order, OrderState state, int primaryProgressPercent, int secondaryProgressPercent )
     {
     // Get or create the progress dialog
     ProgressDialog progressDialog = getProgressDialog();
@@ -589,7 +589,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
    *
    *****************************************************/
   @Override
-  public void onOrderComplete( PrintOrder order, OrderState state )
+  public void onOrderComplete( Order order, OrderState state )
     {
     // Determine what the order state is, and set the progress dialog accordingly
 
@@ -635,7 +635,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
    * Called when there is an error submitting the order.
    *
    *****************************************************/
-  public void onOrderError( PrintOrder order, Exception exception )
+  public void onOrderError( Order order, Exception exception )
     {
     cleanUpAfterOrderSubmission();
 
@@ -655,7 +655,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
 
 
   @Override
-  public void onOrderDuplicate( PrintOrder order, String originalOrderId )
+  public void onOrderDuplicate( Order order, String originalOrderId )
     {
     // We do need to replace any order id with the original one
     order.setReceipt( originalOrderId );
@@ -669,7 +669,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
 
 
   @Override
-  public void onOrderTimeout( PrintOrder order )
+  public void onOrderTimeout( Order order )
     {
     cleanUpAfterOrderSubmission();
 
@@ -690,7 +690,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
    * Proceeds to the receipt screen.
    *
    *****************************************************/
-  private void onOrderSuccess( PrintOrder order )
+  private void onOrderSuccess( Order order )
     {
     cleanUpAfterOrderSubmission();
 

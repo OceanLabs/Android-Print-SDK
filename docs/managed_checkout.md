@@ -16,22 +16,20 @@ Prerequisites
 
 Overview
 --------
-1. Create and start a `CheckoutActivity` passing it the `PrintOrder` object you created in the Prerequisite Step 1
+1. Create and start a `CheckoutActivity` passing it the `Order` object you created in the Prerequisite Step 1
 2. Handle the `CheckoutActivity` result
 
 Sample Code
 -----------
 
-1. Create and start a `CheckoutActivity` passing it the `PrintOrder` object you created in the Prerequisite Step 1
+1. Create and start a `CheckoutActivity` passing it the `Order` object you created in the Prerequisite Step 1
 
     ```java
     // SomeActivity.java
     private static final int REQUEST_CODE_CHECKOUT = 1;
 
-    public void submitPrintOrder(PrintOrder printOrder) {
-        Intent intent = new Intent(this, CheckoutActivity.class);
-        intent.putExtra(CheckoutActivity.EXTRA_PRINT_ORDER, (Parcelable) printOrder);
-        startActivityForResult(intent, REQUEST_CODE_CHECKOUT);
+    public void submitPrintOrder( Order order ) {
+        CheckoutActivity.startForResult( activity, order, REQUEST_CODE_CHECKOUT )
     }
     ```
 2. Handle the `CheckoutActivity` result

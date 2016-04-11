@@ -18,8 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ly.kite.KiteSDK;
-import ly.kite.catalogue.Asset;
-import ly.kite.catalogue.AssetHelper;
+import ly.kite.util.Asset;
+import ly.kite.util.AssetHelper;
 import ly.kite.util.HTTPJSONRequest;
 
 /**

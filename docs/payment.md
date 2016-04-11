@@ -30,15 +30,15 @@ Sample Code
     
 	    You'll need to *use our PayPal Client Id & Receiver Email* in your transactions or the proof of payment you receive from PayPal will be rejected by our servers when you submit the print order. Depending on whether your using the Live or Sandbox printing environment our PayPal Client Id & Receiver Email values are different. 
 	
-	    The Test/Sandbox print environment (`KitePrintSDK.Environment.TEST`) validates print order proof of payments against the Sandbox PayPal environment. The Live print environment (`KitePrintSDK.Environment.LIVE`) validates print order proof of payments against the Live PayPal Environment.
+	    The Test/Sandbox print environment (`KiteSDK.DefaultEnvironment.TEST`) validates print order proof of payments against the Sandbox PayPal environment. The Live print environment (`KiteSDK.DefaultEnvironment.LIVE`) validates print order proof of payments against the Live PayPal Environment.
 	    
-	    The `KitePrintSDK.Environment` enum has handy methods (`getPayPalClientId()`, `getPayPalReceiverEmail()`) for getting the correct PayPal Client Id & Receiver Email for the environment you're using. You can also get hold of the current environment you initialized using `KitePrintSDK.getEnvironment()`.
+	    The `KiteSDK.DefaultEnvironment` enum has handy methods (`getPayPalClientId()`, `getPayPalReceiverEmail()`) for getting the correct PayPal Client Id & Receiver Email for the environment you're using. You can also get hold of the current environment you initialised using `KiteSDK.getEnvironment()`.
 	
         ```java
-        KitePrintSDK.initialize("REPLACE_WITH_YOUR_API_KEY", KitePrintSDK.Environment.TEST);
+        KiteSDK.initialise( getContext(), "REPLACE_WITH_YOUR_API_KEY", KiteSDK.DefaultEnvironment.TEST );
 
-        String paypalClientId = KitePrintSDK.getEnvironment().getPayPalClientId();
-        String paypalReceiverEmail = KitePrintSDK.getEnvironment().getPayPalReceiverEmail();
+        String paypalClientId = KiteSDK.getEnvironment().getPayPalClientId();
+        String paypalReceiverEmail = KiteSDK.getEnvironment().getPayPalReceiverEmail();
         ```
 
     - Alternatively capture the users card details with your own UI and use `PayPalCard` to process the payment
@@ -50,7 +50,7 @@ Sample Code
         card.setExpireYear(2012);
         card.setCvv2("123");
         
-        card.chargeCard(PayPalCard.Environment.SANDBOX, printOrder.getCost(), PayPalCard.Currency.GBP, "A print order!", new PayPalCardChargeListener() {
+        card.chargeCard(PayPalCard.Environment.SANDBOX, order.getCost(), PayPalCard.Currency.GBP, "A print order!", new PayPalCardChargeListener() {
             @Override
             public void onChargeSuccess(PayPalCard card, String proofOfPayment) {
                 // set the PrintOrder proofOfPayment to the one provided and submit the order
@@ -62,28 +62,28 @@ Sample Code
             }
         });
         ```
-2. Attach the proof of payment to the `PrintOrder` to be verified server side
+2. Attach the proof of payment to the `Order` to be verified server side
 
     ```java
-    PrintOrder order = ...;
-    order.setProofOfPayment(proofOfPayment);
+    Order order = ...;
+    order.setProofOfPayment( proofOfPayment );
     ```
-3. Submit the `PrintOrder` to our server for printing and posting. 
+3. Submit the `Order` to our server for printing and posting. 
 
      ```java
-    printOrder.submitForPrinting(/*Context: */ this, new PrintOrderSubmissionListener() {
+    order.submitForPrinting(/*Context: */ this, new Order.ISubmissionProgressListener() {
             @Override
-            public void onProgress(PrintOrder printOrder, int totalAssetsUploaded, int totalAssetsToUpload, long totalAssetBytesWritten, long totalAssetBytesExpectedToWrite, long totalBytesWritten, long totalBytesExpectedToWrite) {
+            public void onProgress( Order order, int primaryProgressPercent, int secondaryProgressPercent ) {
                 // Show upload progress spinner, etc.
             }
 
             @Override
-            public void onSubmissionComplete(PrintOrder printOrder, String orderIdReceipt) {
-                // Print order was successfully submitted to the system, display success to the user
+            public void onSubmissionComplete( Order order, String orderId ) {
+                // Order was successfully submitted to the system, display success to the user
             }
 
             @Override
-            public void onError(PrintOrder printOrder, Exception error) {
+            public void onError( Order order, Exception error ) {
                 // Handle error gracefully
             }
         });

@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * ImageLoaderTests.java
+ * IImageConsumer.java
  *
  *
  * Modified MIT License
@@ -34,64 +34,49 @@
 
 ///// Package Declaration /////
 
-package ly.kite.util;
+package ly.kite.image;
 
 
 ///// Import(s) /////
 
 import android.graphics.Bitmap;
-import android.media.ExifInterface;
-
-import junit.framework.Assert;
-import junit.framework.TestCase;
-
-import java.util.ArrayList;
 
 
 ///// Class Declaration /////
 
 /*****************************************************
  *
- * This class tests the image loader class.
+ * This interface defines an image consumer. This
+ * is used by classes that use local / remote images,
+ * and is used to return the image to the consumer.
  *
  *****************************************************/
-public class ImageLoaderTests extends TestCase
+public interface IImageConsumer
   {
-  ////////// Static Constant(s) //////////
-
-  @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "ImageLoaderTests";
-
-
-  ////////// Static Variable(s) //////////
-
-
-  ////////// Member Variable(s) //////////
-
-
-  ////////// Static Initialiser(s) //////////
-
-
-  ////////// Static Method(s) //////////
-
-
-  ////////// Constructor(s) //////////
-
-
   ////////// Method(s) //////////
 
   /*****************************************************
    *
-   * ...
+   * Called for remote images when they are not available
+   * locally, and will thus be downloaded.
    *
    *****************************************************/
+  public void onImageDownloading( Object key );
 
-  public void testDegreesFromEXIFOrientation()
-    {
-    Assert.assertEquals(   0, ImageLoader.degreesFromEXIFOrientation( ExifInterface.ORIENTATION_NORMAL     ) );
-    Assert.assertEquals(  90, ImageLoader.degreesFromEXIFOrientation( ExifInterface.ORIENTATION_ROTATE_90  ) );
-    Assert.assertEquals( 180, ImageLoader.degreesFromEXIFOrientation( ExifInterface.ORIENTATION_ROTATE_180 ) );
-    Assert.assertEquals( 270, ImageLoader.degreesFromEXIFOrientation( ExifInterface.ORIENTATION_ROTATE_270 ) );
-    }
 
+  /*****************************************************
+   *
+   * Called when an image is available.
+   *
+   *****************************************************/
+  public void onImageAvailable( Object key, Bitmap bitmap );
+
+
+  /*****************************************************
+   *
+   * Called when an image could not be loaded. An exception
+   * may or may not be additionally returned.
+   *
+   *****************************************************/
+  public void onImageUnavailable( Object key, Exception exception );
   }

@@ -46,6 +46,8 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -54,10 +56,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import ly.kite.R;
-import ly.kite.catalogue.Asset;
-import ly.kite.catalogue.AssetHelper;
+import ly.kite.util.Asset;
 import ly.kite.catalogue.Product;
 import ly.kite.journey.AssetsAndQuantity;
+import ly.kite.image.ImageAgent;
 import ly.kite.widget.CheckableImageContainerFrame;
 
 
@@ -263,7 +265,13 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
         {
         viewHolder.checkableImageContainerFrame.clearForNewImage( editedAsset );
 
-        AssetHelper.requestImage( mActivity, editedAsset, viewHolder.checkableImageContainerFrame );
+        //AssetHelper.requestImage( mActivity, editedAsset, viewHolder.checkableImageContainerFrame );
+        ImageAgent.with( mActivity )
+                .load( editedAsset )
+                .resizeForDimen( viewHolder.checkableImageContainerFrame, R.dimen.image_default_resize_size, R.dimen.image_default_resize_size )
+                .onlyScaleDown()
+                .reduceColourSpace()
+                .into( viewHolder.checkableImageContainerFrame, editedAsset );
         }
 
       }
@@ -336,7 +344,13 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
         {
         viewHolder.leftCheckableImageContainerFrame.clearForNewImage( leftEditedAsset );
 
-        AssetHelper.requestImage( mActivity, leftEditedAsset, viewHolder.leftCheckableImageContainerFrame );
+        //AssetHelper.requestImage( mActivity, leftEditedAsset, viewHolder.leftCheckableImageContainerFrame );
+        ImageAgent.with( mActivity )
+                .load( leftEditedAsset )
+                .resizeForDimen( viewHolder.leftCheckableImageContainerFrame, R.dimen.image_default_resize_size, R.dimen.image_default_resize_size )
+                .onlyScaleDown()
+                .reduceColourSpace()
+                .into( viewHolder.leftCheckableImageContainerFrame, leftEditedAsset );
         }
       }
     else
@@ -382,7 +396,12 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
         {
         viewHolder.rightCheckableImageContainerFrame.clearForNewImage( rightEditedAsset );
 
-        AssetHelper.requestImage( mActivity, rightEditedAsset, viewHolder.rightCheckableImageContainerFrame );
+        ImageAgent.with( mActivity )
+                .load( rightEditedAsset )
+                .resizeForDimen( viewHolder.rightCheckableImageContainerFrame, R.dimen.image_default_resize_size, R.dimen.image_default_resize_size )
+                .onlyScaleDown()
+                .reduceColourSpace()
+                .into( viewHolder.rightCheckableImageContainerFrame, rightEditedAsset );
         }
       }
     else
@@ -552,6 +571,21 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
     }
 
 
+  /*****************************************************
+   *
+   * Called when add image is clicked whilst in selection
+   * mode. The action is rejected by animating the icon.
+   *
+   *****************************************************/
+  void rejectAddImage( ImageView imageView )
+    {
+    // Get the animation set and start it
+    Animation animation = AnimationUtils.loadAnimation( mActivity, R.anim.reject_add_image );
+
+    imageView.startAnimation( animation );
+    }
+
+
   ////////// Inner Class(es) //////////
 
   /*****************************************************
@@ -624,6 +658,10 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
               }
 
             onSelectedAssetsChanged();
+            }
+          else
+            {
+            rejectAddImage( this.addImageView );
             }
           }
         else
@@ -745,6 +783,10 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
 
             onSelectedAssetsChanged();
             }
+          else
+            {
+            rejectAddImage( this.leftAddImageView );
+            }
           }
         else
           {
@@ -779,6 +821,10 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
               }
 
             onSelectedAssetsChanged();
+            }
+          else
+            {
+            rejectAddImage( this.rightAddImageView );
             }
           }
         else

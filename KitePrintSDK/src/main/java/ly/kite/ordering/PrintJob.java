@@ -1,4 +1,4 @@
-package ly.kite.catalogue;
+package ly.kite.ordering;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -14,23 +14,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import ly.kite.catalogue.Product;
+import ly.kite.util.Asset;
+
 /**
  * Created by deonbotha on 09/02/2014.
  */
-class PrintsPrintJob extends PrintJob {
+public class PrintJob extends Job
+  {
 
     private static final long serialVersionUID = 1L;
     private List<Asset> mAssetList;
 
 
-  public PrintsPrintJob( Product product, HashMap<String,String> optionMap, List<Asset> assetList )
+  public PrintJob( Product product, HashMap<String,String> optionMap, List<Asset> assetList )
     {
     super( product, optionMap );
 
     mAssetList = assetList;
     }
 
-  public PrintsPrintJob( Product product, List<Asset> assetList )
+  public PrintJob( Product product, List<Asset> assetList )
     {
     this( product, null, assetList );
     }
@@ -128,20 +132,20 @@ class PrintsPrintJob extends PrintJob {
 
     }
 
-    protected PrintsPrintJob(Parcel parcel) {
+    protected PrintJob( Parcel parcel) {
         super( parcel );
         this.mAssetList = new ArrayList<Asset>();
         parcel.readTypedList( mAssetList, Asset.CREATOR);
     }
 
-    public static final Parcelable.Creator<PrintsPrintJob> CREATOR
-            = new Parcelable.Creator<PrintsPrintJob>() {
-        public PrintsPrintJob createFromParcel(Parcel in) {
-            return new PrintsPrintJob(in);
+    public static final Parcelable.Creator<PrintJob> CREATOR
+            = new Parcelable.Creator<PrintJob>() {
+        public PrintJob createFromParcel( Parcel in) {
+            return new PrintJob(in);
         }
 
-        public PrintsPrintJob[] newArray(int size) {
-            return new PrintsPrintJob[size];
+        public PrintJob[] newArray( int size) {
+            return new PrintJob[size];
         }
     };
 

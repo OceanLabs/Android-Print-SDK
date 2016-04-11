@@ -39,7 +39,14 @@ package ly.kite.journey;
 
 ///// Import(s) /////
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ly.kite.R;
+import ly.kite.catalogue.Product;
+import ly.kite.ordering.Job;
+import ly.kite.ordering.Order;
+import ly.kite.util.Asset;
 import ly.kite.widget.EditableMaskedImageView;
 
 
@@ -53,9 +60,20 @@ import ly.kite.widget.EditableMaskedImageView;
  *****************************************************/
 public enum UserJourneyType
   {
-  CIRCLE        ( R.drawable.filled_white_circle, EditableMaskedImageView.BorderHighlight.OVAL ),
+  CIRCLE        ( R.drawable.filled_white_circle,    EditableMaskedImageView.BorderHighlight.OVAL ),
   FRAME,
-  GREETINGCARD  ( EditableMaskedImageView.BorderHighlight.RECTANGLE ),
+  GREETINGCARD  ( R.drawable.filled_white_rectangle, EditableMaskedImageView.BorderHighlight.RECTANGLE )
+            {
+            // Greeting cards have their own job
+            @Override
+            public void addJobsToOrder( Product product, List<Asset> assetList, Order order )
+              {
+              for ( Asset asset : assetList )
+                {
+                order.addJob( Job.createGreetingCardJob( product, asset ) );
+                }
+              }
+            },
   PHONE_CASE    ( true ),
   PHOTOBOOK     ( R.drawable.filled_white_rectangle, EditableMaskedImageView.BorderHighlight.RECTANGLE ),
   POSTCARD,
@@ -139,6 +157,20 @@ public enum UserJourneyType
   public EditableMaskedImageView.BorderHighlight editBorderHighlight()
     {
     return ( mEditBorderHighlight );
+    }
+
+
+  /*****************************************************
+   *
+   * Creates a job from the supplied assets.
+   *
+   * The default implementation creates a generic print
+   * job.
+   *
+   *****************************************************/
+  public void addJobsToOrder( Product product, List<Asset> assetList, Order order )
+    {
+    order.addJob( Job.createPrintJob( product, assetList ) );
     }
 
 

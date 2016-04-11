@@ -60,7 +60,6 @@ import ly.kite.catalogue.ICatalogueConsumer;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.journey.AKiteFragment;
 import ly.kite.catalogue.IGroupOrProduct;
-import ly.kite.util.ImageAgent;
 import ly.kite.widget.HeaderFooterGridView;
 import ly.kite.widget.LabelledImageView;
 

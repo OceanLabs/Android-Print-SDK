@@ -43,14 +43,12 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import ly.kite.R;
-import ly.kite.catalogue.Asset;
+import ly.kite.util.Asset;
 import ly.kite.photopicker.Photo;
 import ly.kite.photopicker.PhotoPicker;
 

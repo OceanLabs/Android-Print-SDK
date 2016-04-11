@@ -60,8 +60,8 @@ import ly.kite.address.Address;
 import ly.kite.address.Country;
 import ly.kite.pricing.OrderPricing;
 import ly.kite.catalogue.MultipleCurrencyAmount;
-import ly.kite.catalogue.PrintJob;
-import ly.kite.catalogue.PrintOrder;
+import ly.kite.ordering.Job;
+import ly.kite.ordering.Order;
 import ly.kite.catalogue.Product;
 import ly.kite.catalogue.SingleCurrencyAmount;
 
@@ -211,13 +211,13 @@ public class Analytics
    * Adds the properties of a print order to a JSON object.
    *
    *****************************************************/
-  private static void addToJSON( PrintOrder printOrder, JSONObject jsonObject )
+  private static void addToJSON( Order printOrder, JSONObject jsonObject )
     {
     try
       {
       ///// Product names /////
 
-      List<PrintJob> printJobList = printOrder.getJobs();
+      List<Job> printJobList = printOrder.getJobs();
 
       JSONArray productNameJSONArray = new JSONArray();
 
@@ -225,7 +225,7 @@ public class Analytics
 
       if ( printJobList != null )
         {
-        for ( PrintJob printJob : printJobList )
+        for ( Job printJob : printJobList )
           {
           jobCount ++;
 
@@ -584,7 +584,7 @@ public class Analytics
    * Called when the user enters the shipping screen.
    *
    *****************************************************/
-  public void trackShippingScreenViewed( PrintOrder printOrder, String variant, boolean showPhoneEntryField )
+  public void trackShippingScreenViewed( Order printOrder, String variant, boolean showPhoneEntryField )
     {
     JSONObject propertiesJSONObject = getPropertiesJSONObject();
 
@@ -610,7 +610,7 @@ public class Analytics
    * Called when the user enters the payment screen.
    *
    *****************************************************/
-  public void trackPaymentScreenViewed( PrintOrder printOrder )
+  public void trackPaymentScreenViewed( Order printOrder )
     {
     JSONObject propertiesJSONObject = getPropertiesJSONObject();
 
@@ -626,7 +626,7 @@ public class Analytics
    * Called when the payment is completed.
    *
    *****************************************************/
-  public void trackPaymentCompleted( PrintOrder printOrder, String paymentMethod )
+  public void trackPaymentCompleted( Order printOrder, String paymentMethod )
     {
     JSONObject propertiesJSONObject = getPropertiesJSONObject();
 
@@ -651,7 +651,7 @@ public class Analytics
    * Called when the order is submitted.
    *
    *****************************************************/
-  public void trackOrderSubmission( PrintOrder printOrder )
+  public void trackOrderSubmission( Order printOrder )
     {
     JSONObject propertiesJSONObject = getPropertiesJSONObject();
 

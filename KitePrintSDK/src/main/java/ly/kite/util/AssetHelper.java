@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.catalogue;
+package ly.kite.util;
 
 
 ///// Import(s) /////
@@ -47,7 +47,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.util.Pair;
 import android.webkit.MimeTypeMap;
-import android.widget.ImageView;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -62,13 +61,11 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.UUID;
 
-import ly.kite.R;
-import ly.kite.util.IImageConsumer;
-import ly.kite.util.IImageTransformer;
-import ly.kite.util.ImageAgent;
-import ly.kite.catalogue.Asset.Type;
-import ly.kite.catalogue.Asset.MIMEType;
-import ly.kite.util.ImageViewConsumer;
+import ly.kite.image.IImageConsumer;
+import ly.kite.image.ImageAgent;
+import ly.kite.image.ImageLoadRequest;
+import ly.kite.util.Asset.Type;
+import ly.kite.util.Asset.MIMEType;
 
 
 ///// Class Declaration /////
@@ -137,7 +134,7 @@ public class AssetHelper
    * that the directory exists.
    *
    *****************************************************/
-  static public String prepareForCachedFile( Context context, Asset.MIMEType mimeType )
+  static public String prepareForCachedFile( Context context, MIMEType mimeType )
     {
     // Generate a random file name within the cache
     Pair<String,String> imageDirectoryAndFilePath = ImageAgent.getInstance( context ).getImageDirectoryAndFilePath( IMAGE_CLASS_STRING_ASSET, UUID.randomUUID().toString() );
@@ -257,11 +254,39 @@ public class AssetHelper
    * to a file. The file path is automatically generated.
    *
    *****************************************************/
+  static public void replaceAsset( Bitmap bitmap, Asset targetAsset )
+    {
+    if ( targetAsset.getType() != Type.IMAGE_FILE )
+      {
+      throw ( new IllegalArgumentException( "Can only replace a file asset" ) );
+      }
+
+    saveToFile( bitmap, targetAsset.getImageFilePath() );
+    }
+
+
+  /*****************************************************
+   *
+   * Creates a new asset from a bitmap, but writes it out
+   * to a file. The file path is automatically generated.
+   *
+   *****************************************************/
   static public Asset createAsCachedFile( Context context, Bitmap bitmap )
     {
     String filePath = prepareForCachedFile( context, MIMEType.JPEG );
 
+    return ( saveToFile( bitmap, filePath ) );
+    }
 
+
+  /*****************************************************
+   *
+   * Creates a new asset from a bitmap, but writes it out
+   * to a file. The file path is automatically generated.
+   *
+   *****************************************************/
+  static private Asset saveToFile( Bitmap bitmap, String filePath )
+    {
     // Encode the bitmap directly to the filesystem, to avoid using more memory than necessary.
 
     FileOutputStream     fos = null;
@@ -497,7 +522,10 @@ public class AssetHelper
 
         BitmapToBytesConvertorTask convertorTask = new BitmapToBytesConvertorTask( asset, imageBytesConsumer );
 
-        ImageAgent.getInstance( context ).requestImage( IMAGE_CLASS_STRING_ASSET, asset, asset.getRemoteURL(), convertorTask );
+        ImageAgent.with( context )
+                .load( asset )
+                .into( convertorTask, asset );
+        //ImageAgent.getInstance( context ).requestImage( IMAGE_CLASS_STRING_ASSET, , asset.getRemoteURL(), convertorTask );
 
         return;
       }
@@ -532,112 +560,57 @@ public class AssetHelper
 
   /*****************************************************
    *
-   * Requests an image bitmap from an asset.
-   *
-   * The image may be optionally scaled and/or transformed.
-   *
-   * Must be called on the UI thread.
+   * Sets the image source for a request.
    *
    *****************************************************/
-  static public void requestImage( Context context, Asset asset, IImageTransformer imageTransformer, int scaledImageWidth, IImageConsumer imageConsumer )
+  static public void setSource( Asset asset, ImageLoadRequest.Builder imageRequestBuilder )
     {
     switch ( asset.getType() )
       {
       case IMAGE_FILE:
 
-        File imageFile = new File( asset.getImageFilePath() );
-
-        ImageAgent.getInstance( context ).requestImage( asset, imageFile, imageTransformer, scaledImageWidth, imageConsumer );
+        imageRequestBuilder.load( new File( asset.getImageFilePath() ) );
 
         return;
 
 
       case BITMAP_RESOURCE_ID:
 
-        ImageAgent.getInstance( context ).requestImage( asset, asset.getBitmapResourceId(), imageTransformer, scaledImageWidth, imageConsumer );
+        imageRequestBuilder.load( asset.getBitmapResourceId() );
 
         return;
 
 
       case IMAGE_URI:
 
-        ImageAgent.getInstance( context ).requestImage( asset, asset.getImageURI(), imageTransformer, scaledImageWidth, imageConsumer );
+        imageRequestBuilder.load( asset.getImageURI() );
 
         return;
 
 
       case REMOTE_URL:
 
-        ImageAgent.getInstance( context ).requestImage( IMAGE_CLASS_STRING_ASSET, asset, asset.getRemoteURL(), imageTransformer, scaledImageWidth, imageConsumer );
+        imageRequestBuilder.load( asset.getRemoteURL(), IMAGE_CLASS_STRING_ASSET );
 
         return;
 
 
       case BITMAP:
 
-        ImageAgent.getInstance( context ).requestImage( asset, asset.getBitmap(), imageTransformer, scaledImageWidth, imageConsumer );
+        imageRequestBuilder.load( asset.getBitmap() );
 
         return;
 
 
       case IMAGE_BYTES:
 
-        ImageAgent.getInstance( context ).requestImage( asset, asset.getImageBytes(), imageTransformer, scaledImageWidth, imageConsumer );
+        imageRequestBuilder.load( asset.getImageBytes() );
 
         return;
       }
 
 
-    throw ( new UnsupportedOperationException( "Cannot get image from unknown asset type: " + asset.getType() ) );
-    }
-
-
-  /*****************************************************
-   *
-   * Requests an image bitmap from an asset.
-   *
-   * Must be called on the UI thread.
-   *
-   *****************************************************/
-  static public void requestImage( Context context, Asset asset, IImageConsumer imageConsumer )
-    {
-    requestImage( context, asset, null, 0, imageConsumer );
-    }
-
-
-  /*****************************************************
-   *
-   * Requests an image bitmap from an asset.
-   *
-   * Must be called on the UI thread.
-   *
-   *****************************************************/
-  static public void requestImage( Context context, Asset asset, ImageView imageView )
-    {
-    // Try and determine the size of the image view
-
-    int width = imageView.getMeasuredWidth();
-
-    if ( width < 1 )
-      {
-      width = context.getResources().getDimensionPixelSize( R.dimen.image_default_resize_width );
-      }
-
-    requestImage( context, asset, null, width, new ImageViewConsumer( asset, imageView ) );
-    }
-
-
-  /*****************************************************
-   *
-   * Returns a transformed bitmap, or the source bitmap if
-   * no transformation is required.
-   *
-   *****************************************************/
-  static public Bitmap transformBitmap( Bitmap sourceBitmap, IImageTransformer imageTransformer )
-    {
-    if ( imageTransformer == null ) return ( sourceBitmap );
-
-    return ( imageTransformer.getTransformedBitmap( sourceBitmap ) );
+    throw ( new UnsupportedOperationException( "Cannot set source for unknown asset type: " + asset.getType() ) );
     }
 
 

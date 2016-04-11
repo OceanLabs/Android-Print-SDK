@@ -50,7 +50,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import ly.kite.R;
-import ly.kite.catalogue.Asset;
+import ly.kite.util.Asset;
 import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.catalogue.BorderF;
 import ly.kite.catalogue.Product;

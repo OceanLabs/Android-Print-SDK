@@ -48,7 +48,6 @@ import android.os.Handler;
 import android.os.Parcelable;
 import android.os.SystemClock;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.SparseArray;
 import android.view.ActionMode;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
@@ -63,7 +62,7 @@ import android.widget.PopupMenu;
 import ly.kite.journey.AImageSource;
 import ly.kite.journey.creation.AProductCreationFragment;
 import ly.kite.journey.creation.IUpdatedAssetListener;
-import ly.kite.catalogue.Asset;
+import ly.kite.util.Asset;
 import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.catalogue.Product;
 import ly.kite.R;
@@ -336,7 +335,18 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
       else if ( mKiteActivity instanceof ICallback )
         {
         int expectedImageCount = 1 + mProduct.getQuantityPerSheet();
-        int actualImageCount   = mAssetsAndQuantityArrayList.size();
+
+
+        // Pages can be blank, so to calculate the actual number of images we need to go through
+        // them all.
+
+        int actualImageCount = 0;
+
+        for ( AssetsAndQuantity assetsAndQuantity : mAssetsAndQuantityArrayList )
+          {
+          if ( assetsAndQuantity != null ) actualImageCount ++;
+          }
+
 
         if ( actualImageCount < expectedImageCount )
           {
@@ -833,29 +843,14 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
 
       if ( dropAssetIndex != mDraggedAssetIndex )
         {
-        // Remove the dragged asset from its previous position
+        // Simply swap the two positions
 
         AssetsAndQuantity draggedAssetsAndQuantity = mAssetsAndQuantityArrayList.get( mDraggedAssetIndex );
+        AssetsAndQuantity dropAssetsAndQuantity    = mAssetsAndQuantityArrayList.get( dropAssetIndex );
 
-        mAssetsAndQuantityArrayList.set( mDraggedAssetIndex, null );
+        mAssetsAndQuantityArrayList.set( dropAssetIndex,     draggedAssetsAndQuantity );
+        mAssetsAndQuantityArrayList.set( mDraggedAssetIndex, dropAssetsAndQuantity );
 
-
-        // If the drop ends on a blank page - simply move it there. If the page is occupied,
-        // we need to shift everything out of the way (either upwards or downwards depending
-        // on where the asset came from).
-
-        AssetsAndQuantity dropAssetsAndQuantity = mAssetsAndQuantityArrayList.get( dropAssetIndex );
-
-        if ( dropAssetsAndQuantity != null )
-          {
-          mAssetsAndQuantityArrayList.remove( mDraggedAssetIndex );
-
-          mAssetsAndQuantityArrayList.add( dropAssetIndex, draggedAssetsAndQuantity );
-          }
-        else
-          {
-          mAssetsAndQuantityArrayList.set( dropAssetIndex, draggedAssetsAndQuantity );
-          }
 
         mPhotobookAdaptor.notifyDataSetChanged();
         }

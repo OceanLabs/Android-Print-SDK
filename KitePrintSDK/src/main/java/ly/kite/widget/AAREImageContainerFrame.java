@@ -46,7 +46,6 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -56,12 +55,11 @@ import android.widget.ProgressBar;
 
 import java.net.URL;
 
-import ly.kite.KiteSDK;
 import ly.kite.R;
-import ly.kite.catalogue.Asset;
-import ly.kite.catalogue.AssetHelper;
-import ly.kite.util.IImageConsumer;
-import ly.kite.util.ImageAgent;
+import ly.kite.util.Asset;
+import ly.kite.util.AssetHelper;
+import ly.kite.image.IImageConsumer;
+import ly.kite.image.ImageAgent;
 
 
 ///// Class Declaration /////
@@ -467,13 +465,23 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
         {
         setExpectedKey( mRequestImageSource );
 
-        AssetHelper.requestImage( getContext(), (Asset)mRequestImageSource, null, mWidth, this );
+        ImageAgent.with( getContext() )
+                .load( (Asset)mRequestImageSource )
+                .reduceColourSpace()
+                .resize( mWidth, mHeight )
+                .onlyScaleDown()
+                .into( this, (Asset) mRequestImageSource );
         }
       else if ( mRequestImageSource instanceof URL )
         {
         setExpectedKey( mRequestImageSource );
 
-        ImageAgent.getInstance( getContext() ).requestImage( mRequestImageClass, mRequestImageSource, (URL)mRequestImageSource, null, mWidth, this );
+        ImageAgent.with( getContext() )
+                .load( (URL)mRequestImageSource, mRequestImageClass )
+                .reduceColourSpace()
+                .resize( mWidth, mHeight )
+                .onlyScaleDown()
+                .into( this, (URL)mRequestImageSource );
         }
       }
     }

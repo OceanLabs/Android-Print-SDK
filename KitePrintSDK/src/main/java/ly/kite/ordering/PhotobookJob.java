@@ -34,32 +34,33 @@
 
 ///// Package Declaration /////
 
-package ly.kite.catalogue;
+package ly.kite.ordering;
 
 
 ///// Import(s) /////
 
-
-///// Class Declaration /////
-
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import ly.kite.catalogue.Product;
+import ly.kite.util.Asset;
+
+
+///// Class Declaration /////
 
 /*****************************************************
  *
  * This class represents a photobook print job.
  *
  *****************************************************/
-public class PhotobookJob extends PrintsPrintJob
+public class PhotobookJob extends PrintJob
   {
   ////////// Static Constant(s) //////////
 
@@ -93,15 +94,6 @@ public class PhotobookJob extends PrintsPrintJob
 
   ////////// Static Method(s) //////////
 
-//  /*****************************************************
-//   *
-//   * Creates a new photobook job.
-//   *
-//   *****************************************************/
-//  static public PhotobookJob create( Product product, HashMap<String,String> optionMap, Asset frontCoverAsset, List<Asset> assetList )
-//    {
-//    }
-//
 
   ////////// Constructor(s) //////////
 

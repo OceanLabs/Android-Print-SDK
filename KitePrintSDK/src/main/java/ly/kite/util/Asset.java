@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.catalogue;
+package ly.kite.util;
 
 
 ///// Import(s) /////

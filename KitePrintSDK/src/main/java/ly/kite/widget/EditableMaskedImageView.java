@@ -62,7 +62,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import ly.kite.KiteSDK;
 import ly.kite.animation.ASimpleFloatPropertyAnimator;
 import ly.kite.catalogue.Bleed;
-import ly.kite.util.ImageAgent;
+import ly.kite.image.ImageAgent;
 
 
 ///// Class Declaration /////
@@ -1207,59 +1207,11 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
 
   /*****************************************************
    *
-   * Requests a vertical flip.
+   * Returns a rectangle containing the crop bounds as a
+   * proportion of the image.
    *
    *****************************************************/
-  public void requestVerticalFlip()
-    {
-    if ( mImageBitmap != null )
-      {
-      ImageAgent.verticallyFlipBitmap( mImageBitmap );
-
-      invalidate();
-      }
-    }
-
-
-  /*****************************************************
-   *
-   * Requests a horizontal flip.
-   *
-   *****************************************************/
-  public void requestHorizontalFlip()
-    {
-    if ( mImageBitmap != null )
-      {
-      ImageAgent.horizontallyFlipBitmap( mImageBitmap );
-
-      invalidate();
-      }
-    }
-
-
-  /*****************************************************
-   *
-   * Requests an anticlockwise rotation.
-   *
-   *****************************************************/
-  public void requestAnticlockwiseRotation()
-    {
-    if ( mImageBitmap != null )
-      {
-      Bitmap rotatedBitmap = ImageAgent.rotateAnticlockwiseBitmap( mImageBitmap );
-
-      setImageBitmap( rotatedBitmap );
-      }
-    }
-
-
-  /*****************************************************
-   *
-   * Returns a copy of the image, which has been cropped
-   * to the mask.
-   *
-   *****************************************************/
-  public Bitmap getImageCroppedToMask()
+  public RectF getImageCropBounds()
     {
     // We need to calculate the bounds of the scaled mask plus
     // bleed on the unscaled image.
@@ -1280,35 +1232,24 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
 
 
     // Scale the values up to the actual image size
-    float unscaledLeft   = scaledLeft / mImageScaleFactor;
-    float unscaledTop    = scaledTop / mImageScaleFactor;
-    float unscaledRight  = scaledRight / mImageScaleFactor;
+    float unscaledLeft   = scaledLeft   / mImageScaleFactor;
+    float unscaledTop    = scaledTop    / mImageScaleFactor;
+    float unscaledRight  = scaledRight  / mImageScaleFactor;
     float unscaledBottom = scaledBottom / mImageScaleFactor;
 
 
-    // Convert the values to integer dimensions, and make sure the
-    // values are within bounds. Occasionally the values can go outside
-    // due to floating point rounding errors.
+    // Calculate the bounds as proportions of the actual image size
 
-    int x      = (int)unscaledLeft;
-    int y      = (int)unscaledTop;
-    int width  = (int)( unscaledRight  - unscaledLeft );
-    int height = (int)( unscaledBottom - unscaledTop  );
+    float bitmapWidth  = (float)mImageBitmap.getWidth();
+    float bitmapHeight = (float)mImageBitmap.getHeight();
 
-    if ( x < 0 ) x = 0;
-    if ( y < 0 ) y = 0;
-
-    if ( x + width  > mImageBitmap.getWidth()  ) width  = mImageBitmap.getWidth()  - x;
-    if ( y + height > mImageBitmap.getHeight() ) height = mImageBitmap.getHeight() - y;
-
-    if ( width  < 1 ) width  = 1;
-    if ( height < 1 ) height = 1;
+    float leftAsProportion   = unscaledLeft   / bitmapWidth;
+    float topAsProportion    = unscaledTop    / bitmapHeight;
+    float rightAsProportion  = unscaledRight  / bitmapWidth;
+    float bottomAsProportion = unscaledBottom / bitmapHeight;
 
 
-    // Create a new bitmap containing just the cropped part
-    Bitmap croppedImageBitmap = Bitmap.createBitmap( mImageBitmap, x, y, width, height );
-
-    return ( croppedImageBitmap );
+    return ( new RectF( leftAsProportion, topAsProportion, rightAsProportion, bottomAsProportion ) );
     }
 
 

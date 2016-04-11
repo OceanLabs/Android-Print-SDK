@@ -1,8 +1,7 @@
-package ly.kite.catalogue;
+package ly.kite.ordering;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Pair;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,11 +13,13 @@ import java.util.List;
 import java.util.Set;
 
 import ly.kite.address.Address;
+import ly.kite.catalogue.Product;
+import ly.kite.util.Asset;
 
 /**
  * Created by alibros on 16/01/15.
  */
-class PostcardPrintJob extends PrintJob
+class PostcardJob extends Job
   {
   private Asset   mFrontImageAsset;
   private Asset   mBackImageAsset;
@@ -26,7 +27,7 @@ class PostcardPrintJob extends PrintJob
   private Address mAddress;
 
 
-  public PostcardPrintJob( Product product, HashMap<String, String> optionMap, Asset frontImageAsset, Asset backImageAsset, String message, Address address )
+  public PostcardJob( Product product, HashMap<String, String> optionMap, Asset frontImageAsset, Asset backImageAsset, String message, Address address )
     {
     super( product, optionMap );
 
@@ -36,17 +37,17 @@ class PostcardPrintJob extends PrintJob
     mAddress         = address;
     }
 
-  public PostcardPrintJob( Product product, Asset frontImageAsset, String message, Address address )
+  public PostcardJob( Product product, Asset frontImageAsset, String message, Address address )
     {
     this( product, null, frontImageAsset, null, message, address );
     }
 
-  public PostcardPrintJob( Product product, Asset frontImageAsset, Asset backImageAsset )
+  public PostcardJob( Product product, Asset frontImageAsset, Asset backImageAsset )
     {
     this( product, null, frontImageAsset, backImageAsset, null, null );
     }
 
-  public PostcardPrintJob( Product product, Asset frontImageAsset, Asset backImageAsset, String message, Address address )
+  public PostcardJob( Product product, Asset frontImageAsset, Asset backImageAsset, String message, Address address )
     {
     this( product, null, frontImageAsset, backImageAsset, message, address );
     }
@@ -73,8 +74,15 @@ class PostcardPrintJob extends PrintJob
   List<Asset> getAssetsForUploading()
     {
     ArrayList<Asset> assets = new ArrayList<Asset>();
+
     assets.add( mFrontImageAsset );
-    return assets;
+
+    if ( mBackImageAsset != null )
+      {
+      assets.add( mBackImageAsset );
+      }
+
+    return ( assets );
     }
 
   private static String getStringOrEmptyString( String val )
@@ -145,30 +153,33 @@ class PostcardPrintJob extends PrintJob
     {
     super.writeToParcel( parcel, flags );
     parcel.writeParcelable( mFrontImageAsset, flags );
+    parcel.writeParcelable( mBackImageAsset, flags );
     parcel.writeString( mMessage );
     parcel.writeParcelable( mAddress, flags );
     }
 
-  private PostcardPrintJob( Parcel parcel )
+  private PostcardJob( Parcel parcel )
     {
     //super( ProductCache.getDirtyInstance().getProductById( parcel.readString() ) );
     super( parcel );
+
     mFrontImageAsset = parcel.readParcelable( Asset.class.getClassLoader() );
-    mMessage = parcel.readString();
-    mAddress = (Address) parcel.readParcelable( Address.class.getClassLoader() );
+    mBackImageAsset  = parcel.readParcelable( Asset.class.getClassLoader() );
+    mMessage         = parcel.readString();
+    mAddress         = (Address)parcel.readParcelable( Address.class.getClassLoader() );
     }
 
-  public static final Parcelable.Creator<PostcardPrintJob> CREATOR
-          = new Parcelable.Creator<PostcardPrintJob>()
+  public static final Parcelable.Creator<PostcardJob> CREATOR
+          = new Parcelable.Creator<PostcardJob>()
   {
-  public PostcardPrintJob createFromParcel( Parcel in )
+  public PostcardJob createFromParcel( Parcel in )
     {
-    return new PostcardPrintJob( in );
+    return new PostcardJob( in );
     }
 
-  public PostcardPrintJob[] newArray( int size )
+  public PostcardJob[] newArray( int size )
     {
-    return new PostcardPrintJob[ size ];
+    return new PostcardJob[ size ];
     }
   };
 

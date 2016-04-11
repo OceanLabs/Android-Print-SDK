@@ -166,7 +166,7 @@ public class GCMRegistrationService extends IntentService implements HTTPJSONReq
       // If an exception happens while fetching the new token or updating our registration data
       // on a third-party server, this ensures that we'll attempt the update at a later time.
 
-      savedRegistrationRequired( true );
+      saveRegistrationRequired( true );
       }
 
     // We don't need to perform any notification because this is a background process and we
@@ -186,7 +186,7 @@ public class GCMRegistrationService extends IntentService implements HTTPJSONReq
     {
     Log.i( TAG, "Registered GCM token OK" );
 
-    savedRegistrationRequired( false );
+    saveRegistrationRequired( false );
 
     mHTTPJSONRequest = null;
     }
@@ -202,7 +202,7 @@ public class GCMRegistrationService extends IntentService implements HTTPJSONReq
     {
     Log.e( TAG, "Failed to register GCM token", exception );
 
-    savedRegistrationRequired( true );
+    saveRegistrationRequired( true );
 
     mHTTPJSONRequest = null;
     }
@@ -260,14 +260,15 @@ public class GCMRegistrationService extends IntentService implements HTTPJSONReq
 
   /*****************************************************
    *
-   * Sends registration information to the Kite server.
+   * Saves a flag indicating whether registration is required
+   * in the future.
    *
    *****************************************************/
-  private void savedRegistrationRequired( boolean registrationRequired )
+  private void saveRegistrationRequired( boolean registrationRequired )
     {
     getSharedPreferences()
-            .edit()
-            .putBoolean( SHARED_PREFERENCES_KEY_GCM_REGISTRATION_REQUIRED, registrationRequired )
+      .edit()
+        .putBoolean( SHARED_PREFERENCES_KEY_GCM_REGISTRATION_REQUIRED, registrationRequired )
       .apply();
     }
 

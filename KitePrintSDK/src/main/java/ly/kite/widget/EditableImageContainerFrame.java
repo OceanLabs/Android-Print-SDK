@@ -57,12 +57,11 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import ly.kite.R;
-import ly.kite.catalogue.Asset;
-import ly.kite.catalogue.AssetHelper;
+import ly.kite.util.Asset;
 import ly.kite.catalogue.Bleed;
 import ly.kite.journey.AKiteActivity;
-import ly.kite.util.IImageConsumer;
-import ly.kite.util.ImageAgent;
+import ly.kite.image.IImageConsumer;
+import ly.kite.image.ImageAgent;
 
 
 ///// Class Declaration /////
@@ -437,7 +436,12 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
     {
     mExpectedImageKey = mImageAsset;
 
-    AssetHelper.requestImage( getContext(), mImageAsset, this );
+    ImageAgent.with( getContext() )
+            .load( mImageAsset )
+            .reduceColourSpace()
+            .resizeForIfSized( mEditableMaskedImageView )
+            .onlyScaleDown()
+            .into( this, mImageAsset );
     }
 
 
@@ -493,7 +497,12 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
       {
       mExpectedMaskKey = mMaskURL;
 
-      ImageAgent.getInstance( getContext() ).requestImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, mMaskURL, this );
+      ImageAgent.with( getContext() )
+              .load( mMaskURL, AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM )
+              .reduceColourSpace()
+              .resizeForIfSized( mEditableMaskedImageView )
+              .onlyScaleDown()
+              .into( this, mMaskURL );
       }
 
 
@@ -507,7 +516,12 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
           {
           mExpectedUnderImageKeys[ underImageIndex ] = underImageURL;
 
-          ImageAgent.getInstance( getContext() ).requestImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, underImageURL, this );
+          ImageAgent.with( getContext() )
+                  .load( underImageURL, AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM )
+                  .reduceColourSpace()
+                  .resizeForIfSized( mEditableMaskedImageView )
+                  .onlyScaleDown()
+                  .into( this, underImageURL );
           }
         }
       }
@@ -523,7 +537,12 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
           {
           mExpectedOverImageKeys[ overImageIndex ] = overImageURL;
 
-          ImageAgent.getInstance( getContext() ).requestImage( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, overImageURL, this );
+          ImageAgent.with( getContext() )
+                  .load( overImageURL, AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM )
+                  .reduceColourSpace()
+                  .resizeForIfSized( mEditableMaskedImageView )
+                  .onlyScaleDown()
+                  .into( this, overImageURL );
           }
         }
       }
@@ -668,48 +687,6 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
   public void clearState()
     {
     if ( mEditableMaskedImageView != null ) mEditableMaskedImageView.clearState();
-    }
-
-
-  /*****************************************************
-   *
-   * Requests a vertical flip.
-   *
-   *****************************************************/
-  public void requestVerticalFlip()
-    {
-    if ( mEditableMaskedImageView != null )
-      {
-      mEditableMaskedImageView.requestVerticalFlip();
-      }
-    }
-
-
-  /*****************************************************
-   *
-   * Requests a horizontal flip.
-   *
-   *****************************************************/
-  public void requestHorizontalFlip()
-    {
-    if ( mEditableMaskedImageView != null )
-      {
-      mEditableMaskedImageView.requestHorizontalFlip();
-      }
-    }
-
-
-  /*****************************************************
-   *
-   * Requests an anticlockwise rotation.
-   *
-   *****************************************************/
-  public void requestAnticlockwiseRotation()
-    {
-    if ( mEditableMaskedImageView != null )
-      {
-      mEditableMaskedImageView.requestAnticlockwiseRotation();
-      }
     }
 
 

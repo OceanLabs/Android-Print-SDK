@@ -45,7 +45,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import ly.kite.api.OrderState;
-import ly.kite.catalogue.PrintOrder;
+import ly.kite.ordering.Order;
 
 
 ///// Class Declaration /////
@@ -132,7 +132,7 @@ public class OrderSubmissionFragment extends Fragment implements OrderSubmitter.
   ////////// OrderSubmitter.IProgressListener Method(s) //////////
 
   @Override
-  public void onOrderUpdate( final PrintOrder order, final OrderState state, final int primaryProgressPercent, final int secondaryProgressPercent )
+  public void onOrderUpdate( final Order order, final OrderState state, final int primaryProgressPercent, final int secondaryProgressPercent )
     {
     mLastEventRunnable = new Runnable()
       {
@@ -151,7 +151,7 @@ public class OrderSubmissionFragment extends Fragment implements OrderSubmitter.
     }
 
   @Override
-  public void onOrderComplete( final PrintOrder order, final OrderState state )
+  public void onOrderComplete( final Order order, final OrderState state )
     {
     mLastEventRunnable = new Runnable()
       {
@@ -170,7 +170,7 @@ public class OrderSubmissionFragment extends Fragment implements OrderSubmitter.
     }
 
   @Override
-  public void onOrderTimeout( final PrintOrder order )
+  public void onOrderTimeout( final Order order )
     {
     mLastEventRunnable = new Runnable()
       {
@@ -189,7 +189,7 @@ public class OrderSubmissionFragment extends Fragment implements OrderSubmitter.
     }
 
   @Override
-  public void onOrderError( final PrintOrder order, final Exception exception )
+  public void onOrderError( final Order order, final Exception exception )
     {
     mLastEventRunnable = new Runnable()
       {
@@ -208,7 +208,7 @@ public class OrderSubmissionFragment extends Fragment implements OrderSubmitter.
     }
 
   @Override
-  public void onOrderDuplicate( final PrintOrder order, final String originalOrderId )
+  public void onOrderDuplicate( final Order order, final String originalOrderId )
     {
     mLastEventRunnable = new Runnable()
       {
@@ -234,7 +234,7 @@ public class OrderSubmissionFragment extends Fragment implements OrderSubmitter.
    * Submits an order for processing.
    *
    *****************************************************/
-  public void submit( Context context, PrintOrder order )
+  public void submit( Context context, Order order )
     {
     mOrderSubmitter = new OrderSubmitter( context, order, this );
 

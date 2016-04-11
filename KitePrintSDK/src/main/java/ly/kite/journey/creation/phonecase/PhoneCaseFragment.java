@@ -40,34 +40,19 @@ package ly.kite.journey.creation.phonecase;
 ///// Import(s) /////
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
-import ly.kite.KiteSDK;
 import ly.kite.R;
-import ly.kite.journey.AImageSource;
 import ly.kite.journey.creation.AEditImageFragment;
-import ly.kite.journey.AKiteActivity;
-import ly.kite.journey.AssetsAndQuantity;
-import ly.kite.catalogue.Asset;
-import ly.kite.catalogue.AssetHelper;
-import ly.kite.catalogue.Bleed;
+import ly.kite.util.Asset;
 import ly.kite.catalogue.Product;
-import ly.kite.util.ImageAgent;
-import ly.kite.widget.EditableImageContainerFrame;
 
 
 ///// Class Declaration /////
@@ -224,6 +209,20 @@ public class PhoneCaseFragment extends AEditImageFragment
     }
 
 
+  /*****************************************************
+   *
+   * Called when an edited asset is returned.
+   *
+   *****************************************************/
+  protected void onEditedAsset( Asset editedAsset )
+    {
+    if ( editedAsset != null && mKiteActivity instanceof ICallback )
+      {
+      ( (ICallback)mKiteActivity ).pcOnCreated( editedAsset );
+      }
+    }
+
+
   ////////// Method(s) //////////
 
   /*****************************************************
@@ -234,16 +233,7 @@ public class PhoneCaseFragment extends AEditImageFragment
   @Override
   protected void onConfirm()
     {
-    Asset editedImageAsset = getEditedImageAsset();
-
-    if ( editedImageAsset == null ) return;
-
-
-    // Call back to the activity
-    if ( mKiteActivity instanceof ICallback )
-      {
-      ( (ICallback)mKiteActivity ).pcOnCreated( editedImageAsset );
-      }
+    requestEditedAsset();
     }
 
 
