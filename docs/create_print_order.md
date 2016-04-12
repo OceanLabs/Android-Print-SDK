@@ -55,18 +55,18 @@ Sample Code
 
     ```
 
-4. Create `PrintJob`'s for every type of product you want to print in this order. A print order can have multiple print jobs attached.
+4. Create `Job`'s for every type of product you want to print in this order. An order may have multiple jobs attached.
 
     ```java
-    PrintJob magnets      = Job.createPrintJob( catalogue.getProductById( "magnets" ),   assets );
-    PrintJob polaroids    = Job.createPrintJob( catalogue.getProductById( "polaroids" ), assets );
-    PrintJob squarePrints = Job.createPrintJob( catalogue.getProductById( "squares" ),   assets );
+    Job magnets      = Job.createPrintJob( catalogue.getProductById( "magnets" ),   assets );
+    Job polaroids    = Job.createPrintJob( catalogue.getProductById( "polaroids" ), assets );
+    Job squarePrints = Job.createPrintJob( catalogue.getProductById( "squares" ),   assets );
 
     ```
     
      *Note: The above shows only a small sample of the products available for printing with the SDK. Also, the product ids may vary according to those available for your API key.*
 
-5. Create an `PrintOrder` and attach the print job(s) you created in the previous step
+5. Create an `Order` and attach the job(s) you created in the previous step.
 
     ```java
     Order order = new Order();
