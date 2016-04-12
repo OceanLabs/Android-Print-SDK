@@ -12,7 +12,7 @@ Overview
 2. Create `Asset` representations of all the images you want to print
 3. Retrieve an up-to-date catalogue of available products.
 4. Create `Job`'s for the desired products you want to print and attach the assets created in Step 2
-5. Create an `Order` and attach your job(s) created in Step 3
+5. Create an `Order` and attach your job(s) created in Step 4
 
 
 Sample Code
