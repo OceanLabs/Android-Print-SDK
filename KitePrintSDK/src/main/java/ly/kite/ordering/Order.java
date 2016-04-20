@@ -302,13 +302,15 @@ public class Order implements Parcelable /* , Serializable */
         return this.receipt;
     }
 
-    public void addJob( Job job) {
-        if (!(job instanceof PrintJob || job instanceof PostcardJob || job instanceof GreetingCardJob )) {
+    public Order addJob( Job job) {
+        if (!(job instanceof AssetListJob || job instanceof PostcardJob || job instanceof GreetingCardJob )) {
             throw new IllegalArgumentException("Currently only support PrintsPrintJobs & PostcardPrintJob, if any further jobs " +
                     "classes are added support for them must be added to the Parcelable interface in particular readTypedList must work ;)");
         }
 
         jobs.add(job);
+
+    return ( this );
     }
 
     public void removeJob( Job job) {
@@ -492,7 +494,7 @@ public class Order implements Parcelable /* , Serializable */
               break;
 
             default:
-              job = PrintJob.CREATOR.createFromParcel( p );
+              job = AssetListJob.CREATOR.createFromParcel( p );
             }
 
           this.jobs.add( job );

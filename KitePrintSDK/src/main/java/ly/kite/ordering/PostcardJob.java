@@ -15,11 +15,20 @@ import java.util.Set;
 import ly.kite.address.Address;
 import ly.kite.catalogue.Product;
 import ly.kite.util.Asset;
+import ly.kite.util.StringUtils;
 
 /**
  * Created by alibros on 16/01/15.
  */
-class PostcardJob extends Job
+
+///// Class Declaration /////
+
+/*****************************************************
+ *
+ * This class represents a postcard job.
+ *
+ *****************************************************/
+public class PostcardJob extends Job
   {
   private Asset   mFrontImageAsset;
   private Asset   mBackImageAsset;
@@ -182,5 +191,47 @@ class PostcardJob extends Job
     return new PostcardJob[ size ];
     }
   };
+
+
+  public Asset getFrontImageAsset()
+    {
+    return ( mFrontImageAsset );
+    }
+
+  public Asset getBackImageAsset()
+    {
+    return ( mBackImageAsset );
+    }
+
+  public String getMessage()
+    {
+    return ( mMessage );
+    }
+
+  public Address getAddress()
+    {
+    return ( mAddress );
+    }
+
+
+  @Override
+  public boolean equals( Object otherObject )
+    {
+    if ( otherObject == null || ( !( otherObject instanceof PostcardJob ) ) ) return ( false );
+
+    PostcardJob otherPostcardJob = (PostcardJob)otherObject;
+
+    String      otherMessage     = otherPostcardJob.mMessage;
+    Address     otherAddress     = otherPostcardJob.mAddress;
+
+    if ( ! Asset.areBothNullOrEqual( mFrontImageAsset, otherPostcardJob.mFrontImageAsset ) ) return ( false );
+    if ( ! Asset.areBothNullOrEqual( mBackImageAsset,  otherPostcardJob.mBackImageAsset  ) ) return ( false );
+
+    if ( ! StringUtils.areBothNullOrEqual( mMessage, otherMessage ) ) return ( false );
+
+    if ( ! Address.areBothNullOrEqual( mAddress, otherAddress ) ) return ( false );
+
+    return ( super.equals( otherObject ) );
+    }
 
   }

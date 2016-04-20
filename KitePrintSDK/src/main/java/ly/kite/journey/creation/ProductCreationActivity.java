@@ -53,6 +53,7 @@ import android.util.Log;
 import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.analytics.Analytics;
+import ly.kite.basket.BasketAgent;
 import ly.kite.checkout.CheckoutActivity;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.journey.AssetsAndQuantity;
@@ -375,15 +376,14 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
   @Override
   public void pcOnCreated( Asset imageAsset )
     {
-    // Create the print order
+    // Create the phone case order
 
-    Order printOrder = new Order();
+    Order order = new Order();
 
-    printOrder.addJob( Job.createPrintJob( mProduct, mOptionMap, imageAsset ) );
+    order.addJob( Job.createPrintJob( mProduct, mOptionMap, imageAsset ) );
 
 
-    // Start the check-out activity
-    CheckoutActivity.startForResult( this, printOrder, ACTIVITY_REQUEST_CODE_CHECKOUT );
+    onNewOrder( order );
     }
 
 
@@ -450,15 +450,14 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
     Asset frontCoverAsset = assetArrayList.remove( 0 );
 
 
-    // Create the print order
+    // Create the photobook order
 
-    Order printOrder = new Order();
+    Order order = new Order();
 
-    printOrder.addJob( Job.createPhotobookJob( mProduct, frontCoverAsset, assetArrayList ) );
+    order.addJob( Job.createPhotobookJob( mProduct, frontCoverAsset, assetArrayList ) );
 
 
-    // Start the check-out activity
-    CheckoutActivity.startForResult( this, printOrder, ACTIVITY_REQUEST_CODE_CHECKOUT );
+    onNewOrder( order );
     }
 
 
@@ -498,15 +497,14 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
       }
 
 
-    // Create the order and add the jobs
+    // Create the order
 
     Order order = new Order();
 
     mProduct.getUserJourneyType().addJobsToOrder( mProduct, assetArrayList, order );
 
 
-    // Start the check-out activity
-    CheckoutActivity.startForResult( this, order, ACTIVITY_REQUEST_CODE_CHECKOUT );
+    onNewOrder( order );
     }
 
 
@@ -674,6 +672,25 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
         }
       }
 
+    }
+
+
+  /*****************************************************
+   *
+   * Proceeds to the next stage when an order has been
+   * created.
+   *
+   *****************************************************/
+  private void onNewOrder( Order order )
+    {
+//BasketAgent.getInstance( this )
+//        .clearBasket()
+//        .addToBasket( order );
+
+
+    // Currently we go straight to the check-out activity with the
+    // order.
+    CheckoutActivity.startForResult( this, order, ACTIVITY_REQUEST_CODE_CHECKOUT );
     }
 
 

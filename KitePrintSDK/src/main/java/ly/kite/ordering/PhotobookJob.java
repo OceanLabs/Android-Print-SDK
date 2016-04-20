@@ -57,10 +57,10 @@ import ly.kite.util.Asset;
 
 /*****************************************************
  *
- * This class represents a photobook print job.
+ * This class represents a photobook job.
  *
  *****************************************************/
-public class PhotobookJob extends PrintJob
+public class PhotobookJob extends AssetListJob
   {
   ////////// Static Constant(s) //////////
 
@@ -203,6 +203,38 @@ public class PhotobookJob extends PrintJob
       }
 
     return ( pageJSONObject );
+    }
+
+
+  ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Returns the front cover asset.
+   *
+   *****************************************************/
+  public Asset getFrontCoverAsset()
+    {
+    return ( mFrontCoverAsset );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns true if the other object is the same as this
+   * photobook job.
+   *
+   *****************************************************/
+  @Override
+  public boolean equals( Object otherObject )
+    {
+    if ( otherObject == null || ( !( otherObject instanceof PhotobookJob ) ) ) return ( false );
+
+    PhotobookJob otherPhotobookJob = (PhotobookJob)otherObject;
+
+    if ( ! Asset.areBothNullOrEqual( mFrontCoverAsset, otherPhotobookJob.mFrontCoverAsset ) ) return ( false );
+
+    return ( super.equals( otherObject ) );
     }
 
 

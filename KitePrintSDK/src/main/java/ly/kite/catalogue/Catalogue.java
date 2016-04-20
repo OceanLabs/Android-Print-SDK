@@ -61,9 +61,12 @@ public class Catalogue
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                = "Catalogue";
+  static private final String    LOG_TAG                = "Catalogue";
 
-  static private final boolean DISPLAY_PRODUCT_GROUPS = false;
+  // Dummy catalogue - used for testing
+  static public  final Catalogue DUMMY_CATALOGUE        = new Catalogue().addProduct( "Dummy Group", null, Product.DUMMY_PRODUCT );
+
+  static private final boolean   DISPLAY_PRODUCT_GROUPS = false;
 
 
   ////////// Static Variable(s) //////////
@@ -127,7 +130,7 @@ public class Catalogue
    * Adds a product to the catalogue.
    *
    *****************************************************/
-  void addProduct( String groupLabel, URL groupImageURL, Product product )
+  Catalogue addProduct( String groupLabel, URL groupImageURL, Product product )
     {
     // See if we already have the product group. If not - create it now.
 
@@ -152,6 +155,8 @@ public class Catalogue
 
     mIdProductTable.put( product.getId(), product );
     mProductIdGroupTable.put( product.getId(), productGroup );
+
+    return ( this );
     }
 
 

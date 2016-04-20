@@ -134,6 +134,47 @@ public class Asset implements Parcelable
     }
 
 
+  /*****************************************************
+   *
+   * Returns true if both the assets are null, or equal.
+   *
+   *****************************************************/
+  static public boolean areBothNullOrEqual( Asset asset1, Asset asset2 )
+    {
+    if ( asset1 == null && asset2 == null ) return ( true );
+    if ( asset1 == null || asset2 == null ) return ( false );
+
+    return ( asset1.equals( asset2 ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns true if both the asset lists are null, or equal.
+   *
+   *****************************************************/
+  static public boolean areBothNullOrEqual( List<Asset> assetList1, List<Asset> assetList2 )
+    {
+    if ( assetList1 == null && assetList2 == null ) return ( true );
+    if ( assetList1 == null || assetList2 == null ) return ( false );
+
+    if ( assetList1.size() != assetList2.size() ) return ( false );
+
+
+    int assetIndex = 0;
+
+    for ( Asset asset1 : assetList1 )
+      {
+      if ( ! Asset.areBothNullOrEqual( asset1, assetList2.get( assetIndex ) ) ) return ( false );
+
+      assetIndex ++;
+      }
+
+
+    return ( true );
+    }
+
+
   ////////// Constructor(s) //////////
 
   /*****************************************************

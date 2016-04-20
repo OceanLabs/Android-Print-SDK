@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import ly.kite.util.StringUtils;
+
 /**
  * Created by deonbotha on 29/01/2014.
  */
@@ -57,6 +59,21 @@ public class Address implements Parcelable, Serializable
     addr.searchRequiredForFullDetails = true;
     return addr;
     }
+
+
+  /*****************************************************
+   *
+   * Returns true if both the addresses are null, or equal.
+   *
+   *****************************************************/
+  static public boolean areBothNullOrEqual( Address address1, Address address2 )
+    {
+    if ( address1 == null && address2 == null ) return ( true );
+    if ( address1 == null || address2 == null ) return ( false );
+
+    return ( address1.equals( address2 ) );
+    }
+
 
   public Address()
     {
@@ -496,4 +513,22 @@ public class Address implements Parcelable, Serializable
         { /* ignore */ }
       }
     }
+
+
+  @Override
+  public boolean equals( Object otherObject )
+    {
+    if ( otherObject == null || ( !( otherObject instanceof Address ) ) ) return ( false );
+
+    Address otherAddress = (Address)otherObject;
+
+    return ( StringUtils.areBothNullOrEqual( this.recipientName, otherAddress.recipientName ) &&
+             StringUtils.areBothNullOrEqual( this.line1, otherAddress.line1 ) &&
+             StringUtils.areBothNullOrEqual( this.line2, otherAddress.line2 ) &&
+             StringUtils.areBothNullOrEqual( this.city, otherAddress.city ) &&
+             StringUtils.areBothNullOrEqual( this.stateOrCounty, otherAddress.stateOrCounty ) &&
+             StringUtils.areBothNullOrEqual( this.zipOrPostalCode, otherAddress.zipOrPostalCode ) &&
+             Country.areBothNullOrEqual( this.country, otherAddress.country ) );
+    }
+
   }

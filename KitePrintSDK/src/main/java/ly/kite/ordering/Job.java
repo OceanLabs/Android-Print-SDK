@@ -61,7 +61,7 @@ public abstract class Job implements Parcelable
 
   static public Job createPrintJob( Product product, HashMap<String, String> optionMap, List<Asset> assets )
     {
-    return ( new PrintJob( product, optionMap, assets ) );
+    return ( new AssetListJob( product, optionMap, assets ) );
     }
 
   static public Job createPrintJob( Product product, List<Asset> assets )
@@ -190,12 +190,59 @@ public abstract class Job implements Parcelable
     }
 
 
+  /*****************************************************
+   *
+   * Returns the chosen options for the product.
+   *
+   *****************************************************/
+  public HashMap<String,String> getProductOptions()
+    {
+    return ( mOptionMap );
+    }
+
+
   @Override
   public void writeToParcel( Parcel parcel, int flags )
     {
     mProduct.writeToParcel( parcel, flags );
 
     parcel.writeMap( mOptionMap );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns true if this job equals the supplied job.
+   *
+   *****************************************************/
+  @Override
+  public boolean equals( Object otherJobObject )
+    {
+    if ( otherJobObject == null || ( ! ( otherJobObject instanceof Job ) ) ) return ( false );
+
+    Job                    otherJob       = (Job)otherJobObject;
+    Product                otherProduct   = otherJob.getProduct();
+    HashMap<String,String> otherOptionMap = otherJob.getProductOptions();
+
+    if ( ! mProduct.getId().equals( otherProduct.getId() ) ) return ( false );
+
+    if ( ( mOptionMap == null && otherOptionMap != null ) ||
+         ( mOptionMap != null && ( otherOptionMap == null ||
+                                   mOptionMap.size() != otherOptionMap.size() ) ) )
+      {
+      return ( false );
+      }
+
+    for ( String name : mOptionMap.keySet() )
+      {
+      String value      = mOptionMap.get( name );
+      String otherValue = otherOptionMap.get( name );
+
+      if ( ( value == null && otherValue != null ) ||
+           ( value != null && ! value.equals( otherValue ) ) ) return ( false );
+      }
+
+    return ( true );
     }
 
   }

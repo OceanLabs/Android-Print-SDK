@@ -393,6 +393,18 @@ public enum Country
     }
 
 
+  /*****************************************************
+   *
+   * Returns true if the both countries are both null,
+   * or equal.
+   *
+   *****************************************************/
+  static public boolean areBothNullOrEqual( Country country1, Country country2 )
+    {
+    return ( country1 == country2 );
+    }
+
+
   ////////// Constructor(s) //////////
 
   private Country( String displayName, String iso2Code, String iso3Code, String iso3CurrencyCode, boolean isInEurope )

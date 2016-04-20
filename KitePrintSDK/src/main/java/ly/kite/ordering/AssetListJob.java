@@ -20,21 +20,30 @@ import ly.kite.util.Asset;
 /**
  * Created by deonbotha on 09/02/2014.
  */
-public class PrintJob extends Job
+
+/*****************************************************
+ *
+ * This class represents any type of job that uses a
+ * list of assets. This can include multiple units of
+ * a single-image product (such as phone cases) or
+ * products that require multiple images (prints,
+ * photobooks etc.)
+ *
+ *****************************************************/
+public class AssetListJob extends Job
   {
 
-    private static final long serialVersionUID = 1L;
     private List<Asset> mAssetList;
 
 
-  public PrintJob( Product product, HashMap<String,String> optionMap, List<Asset> assetList )
+  public AssetListJob( Product product, HashMap<String,String> optionMap, List<Asset> assetList )
     {
     super( product, optionMap );
 
     mAssetList = assetList;
     }
 
-  public PrintJob( Product product, List<Asset> assetList )
+  public AssetListJob( Product product, List<Asset> assetList )
     {
     this( product, null, assetList );
     }
@@ -74,6 +83,12 @@ public class PrintJob extends Job
     @Override
     List<Asset> getAssetsForUploading() {
         return mAssetList;
+    }
+
+
+  public List<Asset> getAssets()
+    {
+    return ( mAssetList );
     }
 
 
@@ -132,21 +147,35 @@ public class PrintJob extends Job
 
     }
 
-    protected PrintJob( Parcel parcel) {
+    protected AssetListJob( Parcel parcel) {
         super( parcel );
         this.mAssetList = new ArrayList<Asset>();
         parcel.readTypedList( mAssetList, Asset.CREATOR);
     }
 
-    public static final Parcelable.Creator<PrintJob> CREATOR
-            = new Parcelable.Creator<PrintJob>() {
-        public PrintJob createFromParcel( Parcel in) {
-            return new PrintJob(in);
+    public static final Parcelable.Creator<AssetListJob> CREATOR
+            = new Parcelable.Creator<AssetListJob>() {
+        public AssetListJob createFromParcel( Parcel in) {
+            return new AssetListJob(in);
         }
 
-        public PrintJob[] newArray( int size) {
-            return new PrintJob[size];
+        public AssetListJob[] newArray( int size) {
+            return new AssetListJob[size];
         }
     };
 
-}
+
+  @Override
+  public boolean equals( Object otherObject )
+    {
+    if ( otherObject == null || ( ! ( otherObject instanceof AssetListJob ) ) ) return ( false );
+
+    AssetListJob otherAssetListJob = (AssetListJob)otherObject;
+    List<Asset>  otherAssetList    = otherAssetListJob.getAssets();
+
+    if ( ! Asset.areBothNullOrEqual( mAssetList, otherAssetList ) ) return ( false );
+
+    return ( super.equals( otherObject ) );
+    }
+
+  }

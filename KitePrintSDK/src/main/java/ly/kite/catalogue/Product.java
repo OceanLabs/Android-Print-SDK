@@ -70,19 +70,22 @@ public class Product implements Parcelable, IGroupOrProduct
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings("unused")
-  private static final String       LOG_TAG                           = "Product";
+  static private final String       LOG_TAG                           = "Product";
 
-  private static final UnitOfLength FALLBACK_UNIT_1                   = UnitOfLength.CENTIMETERS;
-  private static final UnitOfLength FALLBACK_UNIT_2                   = UnitOfLength.INCHES;
+  // Dummy product - used for testing
+  static public  final Product      DUMMY_PRODUCT                     = new Product( "product_id", "product_code", "Product Name", "Product type", 0xffff0000, UserJourneyType.RECTANGLE, 1 );
 
-  private static final String       DESTINATION_CODE_EUROPE           = "europe";
-  private static final String       DESTINATION_CODE_REST_OF_WORLD    = "rest_of_world";
+  static public  final float        MINIMUM_SENSIBLE_SIZE_CENTIMETERS = 0.5f;
+  static public  final float        MINIMUM_SENSIBLE_SIZE_INCHES      = 0.2f;
+  static public  final float        MINIMUM_SENSIBLE_SIZE_PIXELS      = 10f;
 
-  public  static final float        MINIMUM_SENSIBLE_SIZE_CENTIMETERS = 0.5f;
-  public  static final float        MINIMUM_SENSIBLE_SIZE_INCHES      = 0.2f;
-  public  static final float        MINIMUM_SENSIBLE_SIZE_PIXELS      = 10f;
+  static public  final float        DEFAULT_IMAGE_ASPECT_RATIO        = SingleUnitSize.DEFAULT_ASPECT_RATIO;
 
-  public  static final float        DEFAULT_IMAGE_ASPECT_RATIO        = SingleUnitSize.DEFAULT_ASPECT_RATIO;
+  static private final UnitOfLength FALLBACK_UNIT_1                   = UnitOfLength.CENTIMETERS;
+  static private final UnitOfLength FALLBACK_UNIT_2                   = UnitOfLength.INCHES;
+
+  static private final String       DESTINATION_CODE_EUROPE           = "europe";
+  static private final String       DESTINATION_CODE_REST_OF_WORLD    = "rest_of_world";
 
 
   ////////// Static Variable(s) //////////
