@@ -252,7 +252,7 @@ abstract public class AHomeActivity extends ProductSelectionActivity
 
       // If we have successfully completed a check-out, then also clear out any cached
       // assets. (This won't clear any product images).
-      AssetHelper.clearCachedImages( this );
+      AssetHelper.clearSessionAssets( this );
       }
     else
       {

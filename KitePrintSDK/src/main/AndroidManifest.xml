@@ -28,6 +28,11 @@
             android:hardwareAccelerated="true"/>
 
         <activity
+            android:name=".journey.basket.BasketActivity"
+            android:theme="@style/Theme.KiteSDK.Basket"
+            android:launchMode="singleTop"/>
+
+        <activity
             android:name=".checkout.CheckoutActivity"
             android:label="@string/title_activity_checkout"
             android:theme="@style/Theme.KiteSDK.Checkout"/>

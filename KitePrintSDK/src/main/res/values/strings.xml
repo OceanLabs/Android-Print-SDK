@@ -23,6 +23,7 @@
     <string name="title_create_phone_case">Create Phone Case</string>
     <string name="title_image_source">Choose Photos</string>
     <string name="title_photobook">Photobook</string>
+    <string name="title_basket">Basket</string>
     <string name="title_payment_sandbox">Payment (Sandbox)</string>
     <string name="title_payment">Payment</string>
     <string name="title_payment_source_sandbox">Payment Source (Sandbox)</string>
@@ -192,6 +193,9 @@
     <string name="review_and_edit_proceed_button_text">Confirm</string>
 
     <string name="edit_image_title">Edit image</string>
+
+    <string name="basket_left_button_text">Continue Shopping</string>
+    <string name="basket_right_button_text">Checkout</string>
 
     <string name="address_hint_text_recipient">Name</string>
     <string name="address_hint_text_line_1">Line 1</string>

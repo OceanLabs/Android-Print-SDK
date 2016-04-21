@@ -58,6 +58,7 @@ import ly.kite.checkout.CheckoutActivity;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.journey.IAssetsAndQuantityHolder;
+import ly.kite.journey.basket.BasketActivity;
 import ly.kite.journey.creation.imagesource.ImageSourceFragment;
 import ly.kite.journey.UserJourneyType;
 import ly.kite.journey.creation.imageselection.ImageSelectionFragment;
@@ -324,12 +325,25 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
 
     // Check for a custom image editor result
 
-    if ( requestCode == ACTIVITY_REQUEST_CODE_EDIT_IMAGE && resultCode == RESULT_OK )
+    if ( requestCode == ACTIVITY_REQUEST_CODE_EDIT_IMAGE &&
+         resultCode  == RESULT_OK )
       {
       Asset editedAsset = mCustomImageEditorAgent.getEditedAsset( resultIntent );
 
       onAssetEdited( editedAsset );
       }
+
+
+    // Check for continue shopping result
+
+    if ( requestCode == ACTIVITY_REQUEST_CODE_BASKET &&
+         resultCode  == ACTIVITY_RESULT_CODE_CONTINUE_SHOPPING )
+      {
+      setResult( resultCode );
+
+      finish();
+      }
+
     }
 
 
@@ -683,14 +697,17 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
    *****************************************************/
   private void onNewOrder( Order order )
     {
-//BasketAgent.getInstance( this )
-//        .clearBasket()
-//        .addToBasket( order );
+    // Add the order to the basket
+    BasketAgent.getInstance( this )
+            .clearBasket()
+            .addToBasket( order );
 
 
-    // Currently we go straight to the check-out activity with the
-    // order.
-    CheckoutActivity.startForResult( this, order, ACTIVITY_REQUEST_CODE_CHECKOUT );
+    // Go to the basket screen
+    BasketActivity.startForResult( this, ACTIVITY_REQUEST_CODE_BASKET );
+
+    // Go straight to the check-out activity with the order.
+    //CheckoutActivity.startForResult( this, order, ACTIVITY_REQUEST_CODE_CHECKOUT );
     }
 
 

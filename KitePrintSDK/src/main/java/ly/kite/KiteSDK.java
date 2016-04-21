@@ -80,7 +80,11 @@ public class KiteSDK
 
   static private final String LOG_TAG                                             = "KiteSDK";
 
-  public  static final String SDK_VERSION                                         = "5.0.0";
+  static public  final String SDK_VERSION                                         = "5.0.0";
+
+  static public  final String IMAGE_CATEGORY_PRODUCT_ITEM                         = "product_item";
+  static public  final String IMAGE_CATEGORY_SESSION_ASSET                        = "session_asset";
+  static public  final String IMAGE_CATEGORY_BASKET_ASSET                         = "basket_asset";
 
   static private final String SHARED_PREFERENCES_NAME                             = "kite_shared_prefs";
 
@@ -287,7 +291,7 @@ public class KiteSDK
     setImageSources( new DeviceImageSource(), new InstagramImageSource() );
 
     // Clear any temporary assets
-    AssetHelper.clearCachedImages( context );
+    AssetHelper.clearSessionAssets( context );
     }
 
 
@@ -684,7 +688,7 @@ public class KiteSDK
   public void startShoppingByProductId( Context context, ArrayList<Asset> assetArrayList, String... productIds )
     {
     // Clear any temporary assets
-    AssetHelper.clearCachedImages( context );
+    AssetHelper.clearSessionAssets( context );
 
     // Make sure all the assets are parcelable (this may create some new cached
     // assets). Note that from here on in the SDK is responsible for ensuring

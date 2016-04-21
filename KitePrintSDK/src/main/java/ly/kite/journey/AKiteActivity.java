@@ -55,6 +55,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
@@ -70,25 +71,27 @@ import ly.kite.journey.creation.imagesource.ImageSourceFragment;
  * in the Kite SDK. It provides some common functionality.
  *
  *****************************************************/
-public abstract class AKiteActivity extends Activity implements FragmentManager.OnBackStackChangedListener
+public abstract class AKiteActivity extends Activity implements FragmentManager.OnBackStackChangedListener,
+                                                                View.OnClickListener
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private   static final String  LOG_TAG                                      = "AKiteActivity";
+  static private final String  LOG_TAG                                      = "AKiteActivity";
 
-  public    static final String  INTENT_EXTRA_NAME_ASSETS_AND_QUANTITY__LIST  = KiteSDK.INTENT_PREFIX + ".assetsAndQuantityList";
+  static public  final String  INTENT_EXTRA_NAME_ASSETS_AND_QUANTITY__LIST  = KiteSDK.INTENT_PREFIX + ".assetsAndQuantityList";
 
-  public    static final int     NO_BUTTON                                    = 0;
+  static public  final int     NO_BUTTON                                    = 0;
 
-  public    static final String  IMAGE_CLASS_STRING_PRODUCT_ITEM              = "product_item";
+  static public  final int     ACTIVITY_REQUEST_CODE_BASKET                 = 10;
+  static public  final int     ACTIVITY_REQUEST_CODE_CHECKOUT               = 20;
+  static public  final int     ACTIVITY_REQUEST_CODE_CREATE                 = 30;
+  static public  final int     ACTIVITY_REQUEST_CODE_SELECT_DEVICE_IMAGE    = 40;
+  static public  final int     ACTIVITY_REQUEST_CODE_SELECT_INSTAGRAM_IMAGE = 50;
+  static public  final int     ACTIVITY_REQUEST_CODE_EDIT_IMAGE             = 60;
 
-  public    static final int     ACTIVITY_REQUEST_CODE_CHECKOUT               = 10;
-  public    static final int     ACTIVITY_REQUEST_CODE_CREATE                 = 11;
-  public    static final int     ACTIVITY_REQUEST_CODE_SELECT_DEVICE_IMAGE    = 12;
-  public    static final int     ACTIVITY_REQUEST_CODE_SELECT_INSTAGRAM_IMAGE = 13;
-  public    static final int     ACTIVITY_REQUEST_CODE_EDIT_IMAGE             = 14;
-
+  static public  final int     ACTIVITY_RESULT_CODE_CONTINUE_SHOPPING       = 15;
+  static public  final int     ACTIVITY_RESULT_CODE_CHECKED_OUT             = 25;
 
 
   ////////// Static Variable(s) //////////
@@ -107,6 +110,9 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   protected FragmentManager   mFragmentManager;
 
   protected AKiteFragment     mTopFragment;
+
+  private   Button            mCTABarLeftButton;
+  private   Button            mCTABarRightButton;
 
 
   ////////// Static Initialiser(s) //////////
@@ -178,6 +184,14 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
         }
       }
 
+
+    // Get references to any call-to-action bar buttons
+    mCTABarLeftButton  = (Button)findViewById( R.id.cta_bar_left_button );
+    mCTABarRightButton = (Button)findViewById( R.id.cta_bar_right_button );
+
+    // Automatically add listeners
+    if ( mCTABarLeftButton  != null ) mCTABarLeftButton.setOnClickListener( this );
+    if ( mCTABarRightButton != null ) mCTABarRightButton.setOnClickListener( this );
     }
 
 
@@ -357,11 +371,13 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     {
     super.onActivityResult( requestCode, resultCode, data );
 
+
     // If we successfully completed check-out then return the result back to any
     // calling activity, and exit so the user goes back to the original app.
-    if ( requestCode == ACTIVITY_REQUEST_CODE_CHECKOUT && resultCode == RESULT_OK )
+
+    if ( resultCode == ACTIVITY_RESULT_CODE_CHECKED_OUT )
       {
-      setResult( RESULT_OK );
+      setResult( resultCode );
 
       finish();
       }
@@ -390,6 +406,20 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     determineTopFragment();
     }
 
+
+  ////////// View.OnClickListener Method(s) //////////
+
+  /*****************************************************
+   *
+   * Listens for clicks on a view.
+   *
+   *****************************************************/
+  @Override
+  public void onClick( View view )
+    {
+    if      ( view == mCTABarLeftButton  ) onLeftButtonClicked();
+    else if ( view == mCTABarRightButton ) onRightButtonClicked();
+    }
 
 
   ////////// Method(s) //////////
@@ -723,6 +753,112 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
     // Restore the back stack listener
     mFragmentManager.addOnBackStackChangedListener( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the left button.
+   *
+   *****************************************************/
+  protected Button getLeftButton()
+    {
+    return ( mCTABarLeftButton );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the right button.
+   *
+   *****************************************************/
+  protected Button getRightButton()
+    {
+    return ( mCTABarRightButton );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the text of any left button.
+   *
+   *****************************************************/
+  protected void setLeftButtonText( int textResourceId )
+    {
+    Button leftButton = getLeftButton();
+
+    if ( leftButton != null ) leftButton.setText( textResourceId );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the text of any right button.
+   *
+   *****************************************************/
+  protected void setRightButtonText( int textResourceId )
+    {
+    Button rightButton = getRightButton();
+
+    if ( rightButton != null ) rightButton.setText( textResourceId );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the colour of any left button.
+   *
+   *****************************************************/
+  private void setButtonColourRes( Button button, int colourResourceId )
+    {
+    if ( button != null )
+      {
+      Resources resources = getResources();
+
+      button.setTextColor( resources.getColor( colourResourceId ) );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the colour of any left button.
+   *
+   *****************************************************/
+  protected void setLeftButtonColourRes( int colourResourceId )
+    {
+    setButtonColourRes( getLeftButton(), colourResourceId );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the colour of any right button.
+   *
+   *****************************************************/
+  protected void setRightButtonColourRes( int colourResourceId )
+    {
+    setButtonColourRes( getRightButton(), colourResourceId );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the left CTA button is clicked.
+   *
+   *****************************************************/
+  protected void onLeftButtonClicked()
+    {
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the right CTA button is clicked.
+   *
+   *****************************************************/
+  protected void onRightButtonClicked()
+    {
     }
 
 

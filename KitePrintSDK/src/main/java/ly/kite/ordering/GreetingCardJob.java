@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -33,13 +34,23 @@ public class GreetingCardJob extends Job
   private Asset mInsideLeftImageAsset;
   private Asset mInsideRightImageAsset;
 
+  public GreetingCardJob( Product product, HashMap<String,String> optionsMap, Asset frontImageAsset, Asset backImageAsset, Asset insideLeftImageAsset, Asset insideRightImageAsset )
+    {
+    super( product, optionsMap );
+
+    mFrontImageAsset       = frontImageAsset;
+    mBackImageAsset        = backImageAsset;
+    mInsideLeftImageAsset  = insideLeftImageAsset;
+    mInsideRightImageAsset = insideRightImageAsset;
+    }
+
   public GreetingCardJob( Product product, Asset frontImageAsset, Asset backImageAsset, Asset insideLeftImageAsset, Asset insideRightImageAsset )
     {
     super( product );
 
-    mFrontImageAsset = frontImageAsset;
-    mBackImageAsset = backImageAsset;
-    mInsideLeftImageAsset = insideLeftImageAsset;
+    mFrontImageAsset       = frontImageAsset;
+    mBackImageAsset        = backImageAsset;
+    mInsideLeftImageAsset  = insideLeftImageAsset;
     mInsideRightImageAsset = insideRightImageAsset;
     }
 

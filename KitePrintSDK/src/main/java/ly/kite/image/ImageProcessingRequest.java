@@ -336,7 +336,7 @@ public class ImageProcessingRequest implements ServiceConnection
       mCreateNewAsset = true;
 
       // Create a placeholder for the target asset
-      mTargetAsset = AssetHelper.createAsCachedFile( mApplicationContext, Asset.MIMEType.JPEG );
+      mTargetAsset = AssetHelper.createAsSessionAsset( mApplicationContext, Asset.MIMEType.JPEG );
 
       return ( this );
       }

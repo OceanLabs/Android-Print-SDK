@@ -56,6 +56,7 @@ import android.widget.ProgressBar;
 import java.net.URL;
 import java.util.ArrayList;
 
+import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.util.Asset;
 import ly.kite.catalogue.Bleed;
@@ -498,7 +499,7 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
       mExpectedMaskKey = mMaskURL;
 
       ImageAgent.with( getContext() )
-              .load( mMaskURL, AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM )
+              .load( mMaskURL, KiteSDK.IMAGE_CATEGORY_PRODUCT_ITEM )
               .reduceColourSpace()
               .resizeForIfSized( mEditableMaskedImageView )
               .onlyScaleDown()
@@ -517,7 +518,7 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
           mExpectedUnderImageKeys[ underImageIndex ] = underImageURL;
 
           ImageAgent.with( getContext() )
-                  .load( underImageURL, AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM )
+                  .load( underImageURL, KiteSDK.IMAGE_CATEGORY_PRODUCT_ITEM )
                   .reduceColourSpace()
                   .resizeForIfSized( mEditableMaskedImageView )
                   .onlyScaleDown()
@@ -538,7 +539,7 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
           mExpectedOverImageKeys[ overImageIndex ] = overImageURL;
 
           ImageAgent.with( getContext() )
-                  .load( overImageURL, AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM )
+                  .load( overImageURL, KiteSDK.IMAGE_CATEGORY_PRODUCT_ITEM )
                   .reduceColourSpace()
                   .resizeForIfSized( mEditableMaskedImageView )
                   .onlyScaleDown()

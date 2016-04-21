@@ -17,6 +17,10 @@
         <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar.Opaque</item>
     </style>
 
+    <style name="Theme.KiteSDK.Basket">
+        <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar.Opaque</item>
+    </style>
+
     <style name="Theme.KiteSDK.Checkout">
         <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar.Opaque</item>
     </style>

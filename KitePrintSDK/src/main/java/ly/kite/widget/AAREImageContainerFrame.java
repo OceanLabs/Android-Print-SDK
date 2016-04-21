@@ -55,6 +55,7 @@ import android.widget.ProgressBar;
 
 import java.net.URL;
 
+import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.util.Asset;
 import ly.kite.util.AssetHelper;
@@ -445,7 +446,7 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
     {
     if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "requestScaledImageOnceSized( asset = " + asset + " )" );
 
-    requestScaledImageOnceSized( AssetHelper.IMAGE_CLASS_STRING_ASSET, asset );
+    requestScaledImageOnceSized( KiteSDK.IMAGE_CATEGORY_SESSION_ASSET, asset );
     }
 
 

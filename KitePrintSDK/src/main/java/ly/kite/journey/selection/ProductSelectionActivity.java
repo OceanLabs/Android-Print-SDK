@@ -39,6 +39,8 @@ package ly.kite.journey.selection;
 
 ///// Import(s) /////
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -112,14 +114,13 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
   private ChooseProductGroupFragment    mProductGroupFragment;
   private ChooseProductFragment         mProductFragment;
   private ProductOverviewFragment       mProductOverviewFragment;
-  private ReviewAndEditFragment         mReviewAndCropFragment;
 
   private CatalogueLoader               mCatalogueLoader;
   private Catalogue                     mCatalogue;
   private ICatalogueConsumer            mCatalogueConsumer;
   private boolean                       mAddFragmentOnCatalogue;
 
-  private HashMap<String,String> mProductOptionValueMap;
+  private HashMap<String,String>        mProductOptionValueMap;
 
 
   ////////// Static Initialiser(s) //////////
@@ -284,6 +285,15 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
 
       if ( assetsAndQuantityArrayList != null ) mAssetsAndQuantityArrayList = assetsAndQuantityArrayList;
       }
+
+
+    // If we get a continue shopping result - go back to the product group screen
+
+    if ( resultCode == ACTIVITY_RESULT_CODE_CONTINUE_SHOPPING )
+      {
+      mFragmentManager.popBackStackImmediate( ChooseProductGroupFragment.TAG, 0 );
+      }
+
     }
 
 
@@ -554,7 +564,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
     // we then hand over to the product creation activity to choose the journey
     // depending on the product.
 
-    ProductCreationActivity.startForResult( this, mAssetsAndQuantityArrayList, product, mProductOptionValueMap, ACTIVITY_REQUEST_CODE_CHECKOUT );
+    ProductCreationActivity.startForResult( this, mAssetsAndQuantityArrayList, product, mProductOptionValueMap, ACTIVITY_REQUEST_CODE_CREATE );
     }
 
 

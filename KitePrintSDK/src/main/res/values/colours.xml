@@ -60,6 +60,11 @@
 
     <color name="photobook_target_image_highlight">#ff66cccc</color>
 
+    <color name="basket_light">#ff9a9a9a</color>
+    <color name="basket_highlight">#ff88b113</color>
+    <color name="basket_left_button">@color/basket_light</color>
+    <color name="basket_right_button">@color/basket_highlight</color>
+
     <color name="payment_promo_code_text_default">@android:color/black</color>
     <color name="payment_promo_code_text_error">#ffff0000</color>
     <color name="payment_paypal_button_text">#ff3a97b9</color>

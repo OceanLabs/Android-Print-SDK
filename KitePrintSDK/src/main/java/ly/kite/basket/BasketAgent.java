@@ -44,8 +44,19 @@ package ly.kite.basket;
 
 import android.content.Context;
 
+import java.util.HashMap;
+import java.util.List;
+
 import ly.kite.catalogue.Catalogue;
+import ly.kite.catalogue.Product;
+import ly.kite.ordering.AssetListJob;
+import ly.kite.ordering.GreetingCardJob;
+import ly.kite.ordering.Job;
 import ly.kite.ordering.Order;
+import ly.kite.ordering.PhotobookJob;
+import ly.kite.ordering.PostcardJob;
+import ly.kite.util.Asset;
+import ly.kite.util.AssetHelper;
 
 /*****************************************************
  *
@@ -123,9 +134,79 @@ public class BasketAgent
    *****************************************************/
   public BasketAgent addToBasket( Order order )
     {
-    // TODO: Copy referenced assets to basket
+    // Go through all the jobs in the order
 
-    mDatabaseAgent.saveToBasket( order );
+    for ( Job job : order.getJobs() )
+      {
+      addToBasket( job );
+      }
+
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Saves a job to the basket.
+   *
+   *****************************************************/
+  public BasketAgent addToBasket( Job originalJob )
+    {
+    Product                product    = originalJob.getProduct();
+    HashMap<String,String> optionsMap = originalJob.getProductOptions();
+
+
+    // Move any referenced assets to the basket
+
+    Job newJob;
+
+    if ( originalJob instanceof GreetingCardJob )
+      {
+      GreetingCardJob greetingCardJob = (GreetingCardJob)originalJob;
+
+      Asset frontImageAsset       = AssetHelper.createAsBasketAsset( mApplicationContext, greetingCardJob.getFrontImageAsset() );
+      Asset backImageAsset        = AssetHelper.createAsBasketAsset( mApplicationContext, greetingCardJob.getBackImageAsset() );
+      Asset insideLeftImageAsset  = AssetHelper.createAsBasketAsset( mApplicationContext, greetingCardJob.getInsideLeftImageAsset() );
+      Asset insideRightImageAsset = AssetHelper.createAsBasketAsset( mApplicationContext, greetingCardJob.getInsideLeftImageAsset() );
+
+      newJob = Job.createGreetingCardJob( product, optionsMap, frontImageAsset, backImageAsset, insideLeftImageAsset, insideRightImageAsset );
+      }
+    else if ( originalJob instanceof PhotobookJob )
+      {
+      PhotobookJob photobookJob = (PhotobookJob)originalJob;
+
+      Asset frontCoverAsset = AssetHelper.createAsBasketAsset( mApplicationContext, photobookJob.getFrontCoverAsset() );
+
+      List<Asset> contentAssetList = AssetHelper.createAsBasketAssets( mApplicationContext, photobookJob.getAssets() );
+
+      newJob = Job.createPhotobookJob( product, optionsMap, frontCoverAsset, contentAssetList );
+      }
+    else if ( originalJob instanceof PostcardJob )
+      {
+      PostcardJob postcardJob = (PostcardJob)originalJob;
+
+      Asset frontImageAsset       = AssetHelper.createAsBasketAsset( mApplicationContext, postcardJob.getFrontImageAsset() );
+      Asset backImageAsset        = AssetHelper.createAsBasketAsset( mApplicationContext, postcardJob.getBackImageAsset() );
+
+      newJob = Job.createPostcardJob( product, optionsMap, frontImageAsset, backImageAsset, postcardJob.getMessage(), postcardJob.getAddress() );
+      }
+    else if ( originalJob instanceof AssetListJob )
+      {
+      AssetListJob assetListJob = (AssetListJob)originalJob;
+
+      List<Asset> assetList = AssetHelper.createAsBasketAssets( mApplicationContext, assetListJob.getAssets() );
+
+      newJob = Job.createPrintJob( product, optionsMap, assetList );
+      }
+    else
+      {
+      throw ( new IllegalArgumentException( "Cannot save unsupported job type to basket: " + originalJob ) );
+      }
+
+
+    mDatabaseAgent.saveToBasket( newJob );
+
 
     return ( this );
     }

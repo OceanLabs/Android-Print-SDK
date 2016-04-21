@@ -89,6 +89,11 @@ public abstract class Job implements Parcelable
    *
    *****************************************************/
 
+  static public PhotobookJob createPhotobookJob( Product product, HashMap<String,String> optionsMap, Asset frontCoverAsset, List<Asset> contentAssetList )
+    {
+    return ( new PhotobookJob( product, optionsMap, frontCoverAsset, contentAssetList ) );
+    }
+
   static public PhotobookJob createPhotobookJob( Product product, Asset frontCoverAsset, List<Asset> contentAssetList )
     {
     return ( new PhotobookJob( product, null, frontCoverAsset, contentAssetList ) );
@@ -100,6 +105,11 @@ public abstract class Job implements Parcelable
    * Creates a greeting card job.
    *
    *****************************************************/
+
+  static public GreetingCardJob createGreetingCardJob( Product product, HashMap<String, String> optionsMap, Asset frontImageAsset, Asset backImageAsset, Asset insideLeftImageAsset, Asset insideRightImageAsset )
+    {
+    return ( new GreetingCardJob( product, optionsMap, frontImageAsset, backImageAsset, insideLeftImageAsset, insideRightImageAsset ) );
+    }
 
   static public GreetingCardJob createGreetingCardJob( Product product, Asset frontImageAsset, Asset backImageAsset, Asset insideLeftImageAsset, Asset insideRightImageAsset )
     {
@@ -117,6 +127,11 @@ public abstract class Job implements Parcelable
    * Creates a postcard job.
    *
    *****************************************************/
+
+  public static Job createPostcardJob( Product product, HashMap<String, String> optionsMap, Asset frontImageAsset, Asset backImageAsset, String message, Address address )
+    {
+    return ( new PostcardJob( product, optionsMap, frontImageAsset, backImageAsset, message, address ) );
+    }
 
   public static Job createPostcardJob( Product product, HashMap<String, String> optionMap, Asset frontImageAsset, String message, Address address )
     {

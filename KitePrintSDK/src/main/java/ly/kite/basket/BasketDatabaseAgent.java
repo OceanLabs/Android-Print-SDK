@@ -321,7 +321,7 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
 
       for ( Job job : order.getJobs() )
         {
-        saveJob( job );
+        saveToBasket( job );
         }
       }
     }
@@ -332,7 +332,7 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
    * Saves a job to the basket.
    *
    *****************************************************/
-  public void saveJob( Job job )
+  public void saveToBasket( Job job )
     {
     // Work out what type of job this is
 
