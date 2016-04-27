@@ -81,7 +81,7 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
   static private final String LOG_TAG                          = "BasketDatabaseAgent";
 
   static private final String DATABASE_NAME                    = "basket.db";
-  static private final int    DATABASE_VERSION                 = 2;
+  static private final int    DATABASE_VERSION                 = 3;
 
   static private final String TABLE_ADDRESS                    = "Address";
   static private final String TABLE_ASSET                      = "Asset";
@@ -136,7 +136,8 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
                   " ( " +
                   "id              INTEGER  PRIMARY KEY," +
                   "type            TEXT     NOT NULL," +
-                  "product_id      TEXT     NOT NULL" +
+                  "product_id      TEXT     NOT NULL," +
+                  "order_quantity  INT      NOT NULL" +
                   " )";
 
 
@@ -262,13 +263,13 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
   public void onUpgrade( SQLiteDatabase database, int oldVersionNumber, int newVersionNumber )
     {
     database.execSQL( SQL_DROP_ADDRESS_TABLE );
-    database.execSQL( SQL_DROP_ASSET_TABLE );
-    database.execSQL( SQL_DROP_GREETING_CARD_JOB_TABLE );
-    database.execSQL( SQL_DROP_JOB_TABLE );
     database.execSQL( SQL_DROP_JOB_ASSET_TABLE );
-    database.execSQL( SQL_DROP_OPTION_TABLE );
+    database.execSQL( SQL_DROP_GREETING_CARD_JOB_TABLE );
     database.execSQL( SQL_DROP_PHOTOBOOK_JOB_TABLE );
     database.execSQL( SQL_DROP_POSTCARD_JOB_TABLE );
+    database.execSQL( SQL_DROP_ASSET_TABLE );
+    database.execSQL( SQL_DROP_OPTION_TABLE );
+    database.execSQL( SQL_DROP_JOB_TABLE );
 
     onCreate( database );
     }
@@ -487,8 +488,9 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
 
     ContentValues contentValues = new ContentValues();
 
-    contentValues.put( "type",       jobType );
-    contentValues.put( "product_id", job.getProduct().getId() );
+    contentValues.put( "type",           jobType );
+    contentValues.put( "product_id",     job.getProduct().getId() );
+    contentValues.put( "order_quantity", 1 );
 
 
     // Try to insert the new job
@@ -1011,9 +1013,10 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
       {
       // Get the base job details
 
-      long   jobId     = jobContentValues.getAsLong( "job_id" );
-      String jobType   = jobContentValues.getAsString( "job_type" );
-      String productId = jobContentValues.getAsString( "job_product_id" );
+      long   jobId         = jobContentValues.getAsLong( "job_id" );
+      String jobType       = jobContentValues.getAsString( "job_type" );
+      String productId     = jobContentValues.getAsString( "job_product_id" );
+      int    orderQuantity = jobContentValues.getAsInteger( "job_order_quantity" );
 
       if ( jobType == null )
         {
@@ -1033,7 +1036,7 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
 
 
       // Get any options for this job (which may be null)
-      HashMap<String,String> optionsHashMap = optionsSparseArray.get( (int)jobId );
+      HashMap<String,String> optionsMap = optionsSparseArray.get( (int)jobId );
 
 
       // Determine the job type
@@ -1049,7 +1052,7 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
         Asset insideLeftImageAsset  = getAsset( assetsSparseArray, jobContentValues.getAsLong( "gc_inside_left_asset_id" ) );
         Asset insideRightImageAsset = getAsset( assetsSparseArray, jobContentValues.getAsLong( "gc_inside_right_asset_id" ) );
 
-        job = Job.createGreetingCardJob( product, frontImageAsset, backImageAsset, insideLeftImageAsset, insideRightImageAsset );
+        job = new GreetingCardJob( jobId, product, orderQuantity, optionsMap, frontImageAsset, backImageAsset, insideLeftImageAsset, insideRightImageAsset );
         }
       else if ( jobType.equals( JOB_TYPE_PHOTOBOOK ) )
         {
@@ -1059,7 +1062,7 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
 
         List<Asset> assetList = getAssetList( jobAssetsSparseArray.get( (int)jobId ), assetsSparseArray );
 
-        job = Job.createPhotobookJob( product, frontCoverAsset, assetList );
+        job = new PhotobookJob( jobId, product, orderQuantity, optionsMap, frontCoverAsset, assetList );
         }
       else if ( jobType.equals( JOB_TYPE_POSTCARD ) )
         {
@@ -1070,7 +1073,7 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
         String  message         = jobContentValues.getAsString( "pc_message" );
         Address address         = getAddress( addressesSparseArray, jobContentValues.getAsLong( "pc_address_id" ) );
 
-        job = Job.createPostcardJob( product, frontImageAsset, backImageAsset, message, address );
+        job = new PostcardJob( jobId, product, orderQuantity, optionsMap, frontImageAsset, backImageAsset, message, address );
         }
       else if ( jobType.equals( JOB_TYPE_ASSET_LIST ) )
         {
@@ -1078,7 +1081,7 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
 
         List<Asset> assetList = getAssetList( jobAssetsSparseArray.get( (int)jobId ), assetsSparseArray );
 
-        job = Job.createPrintJob( product, optionsHashMap, assetList );
+        job = new AssetListJob( jobId, product, orderQuantity, optionsMap, assetList );
         }
       else
         {
@@ -1109,6 +1112,7 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
             .append( "SELECT Job.id                                       AS job_id," )
             .append(        "Job.type                                     AS job_type," )
             .append(        "Job.product_id                               AS job_product_id," )
+            .append(        "Job.order_quantity                           AS job_order_quantity," )
             .append(        "PhotobookJob.front_cover_asset_id            AS pb_front_asset_id," )
             .append(        "PostcardJob.front_image_asset_id             AS pc_front_asset_id," )
             .append(        "PostcardJob.back_image_asset_id              AS pc_back_asset_id," )
@@ -1151,9 +1155,10 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
 
         long jobId = cursor.getLong(   cursor.getColumnIndex( "job_id" ) );
 
-        contentValues.put( "job_id",         jobId );
-        contentValues.put( "job_type",       cursor.getString( cursor.getColumnIndex( "job_type" ) ) );
-        contentValues.put( "job_product_id", cursor.getString( cursor.getColumnIndex( "job_product_id" ) ) );
+        contentValues.put( "job_id",             jobId );
+        contentValues.put( "job_type",           cursor.getString( cursor.getColumnIndex( "job_type" ) ) );
+        contentValues.put( "job_product_id",     cursor.getString( cursor.getColumnIndex( "job_product_id" ) ) );
+        contentValues.put( "job_order_quantity", cursor.getInt   ( cursor.getColumnIndex( "job_order_quantity" ) ) );
 
         putLong(   cursor, "pb_front_asset_id",        contentValues );
 
@@ -1593,6 +1598,216 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
   private Address getAddress( SparseArray<Address> addressesSparseArray, Long addressIdLong )
     {
     return ( addressesSparseArray.get( addressIdLong.intValue() ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Counts the number of items in the basket.
+   *
+   *****************************************************/
+  public int selectItemCount()
+    {
+    // Construct the SQL statement:
+    StringBuilder sqlStringBuilder = new StringBuilder()
+            .append( "SELECT SUM( order_quantity ) AS item_count" )
+            .append( "  FROM Job" );
+
+
+    // Initialise the database and cursor
+    SQLiteDatabase database = null;
+    Cursor         cursor   = null;
+
+    try
+      {
+      // Open the database
+      database = getWritableDatabase();
+
+      // Execute the query, and get a cursor for the result set
+      cursor = database.rawQuery( sqlStringBuilder.toString(), null );
+
+
+      // Process every row; each row corresponds to a single address
+
+      if ( cursor.moveToFirst() )
+        {
+        return ( cursor.getInt( cursor.getColumnIndex( "item_count" ) ) );
+        }
+
+      return ( 0 );
+      }
+    catch ( Exception exception )
+      {
+      Log.e( LOG_TAG, "Unable to select all addresses", exception );
+
+      return ( 0 );
+      }
+    finally
+      {
+      // Make sure the cursor is closed
+      if ( cursor != null ) cursor.close();
+
+      // Make sure the database is closed
+      if ( database != null ) database.close();
+      }
+
+    }
+
+
+  /*****************************************************
+   *
+   * Updates the order quantity for a job, then returns
+   * the new quantity.
+   *
+   *****************************************************/
+  public int updateOrderQuantity( long jobId, int quantityDelta )
+    {
+    // Construct the update SQL statement:
+    StringBuilder updateSQLStringBuilder = new StringBuilder()
+            .append( "UPDATE Job" )
+            .append(   " SET order_quantity = order_quantity + " ).append( quantityDelta )
+            .append( " WHERE id = " ).append( jobId );
+
+    // Construct the select SQL statement:
+    StringBuilder selectSQLStringBuilder = new StringBuilder()
+            .append( "SELECT order_quantity" )
+            .append( "  FROM Job" )
+            .append( " WHERE id = " ).append( jobId );
+
+
+    // Initialise the database and cursor
+    SQLiteDatabase database = null;
+    Cursor         cursor   = null;
+
+    try
+      {
+      // Open the database
+      database = getWritableDatabase();
+
+      // Execute the update query
+      database.execSQL( updateSQLStringBuilder.toString() );
+
+      // Execute the select query, and get a cursor for the result set
+      cursor = database.rawQuery( selectSQLStringBuilder.toString(), null );
+
+
+      // Get the new order quantity
+
+      if ( cursor.moveToFirst() )
+        {
+        return ( cursor.getInt( cursor.getColumnIndex( "order_quantity" ) ) );
+        }
+
+      return ( 0 );
+      }
+    catch ( Exception exception )
+      {
+      Log.e( LOG_TAG, "Unable to select all addresses", exception );
+
+      return ( 0 );
+      }
+    finally
+      {
+      // Make sure the cursor is closed
+      if ( cursor != null ) cursor.close();
+
+      // Make sure the database is closed
+      if ( database != null ) database.close();
+      }
+
+    }
+
+
+  /*****************************************************
+   *
+   * Deletes a job.
+   *
+   *****************************************************/
+  public void deleteJob( long jobId )
+    {
+    // Construct the delete SQL statements.
+
+    String deleteAddressSQLString = "DELETE" +
+                                     " FROM Address" +
+                                    " WHERE id IN ( SELECT address_id" +
+                                                    " FROM PostcardJob" +
+                                                   " WHERE job_id = " + jobId + " )";
+
+    String deleteAssetSQLString   = "DELETE" +
+                                     " FROM Asset" +
+                                    " WHERE id IN ( SELECT asset_id" +
+                                                    " FROM JobAsset" +
+                                                   " WHERE job_id = " + jobId +
+                                                   " UNION ALL" +
+                                                  " SELECT front_cover_asset_id" +
+                                                    " FROM PhotobookJob" +
+                                                   " WHERE job_id = " + jobId +
+                                                   " UNION ALL" +
+                                                  " SELECT front_image_asset_id" +
+                                                    " FROM PostcardJob" +
+                                                   " WHERE job_id = " + jobId +
+                                                   " UNION ALL" +
+                                                  " SELECT back_image_asset_id" +
+                                                    " FROM PostcardJob" +
+                                                   " WHERE job_id = " + jobId +
+                                                   " UNION ALL" +
+                                                  " SELECT front_image_asset_id" +
+                                                    " FROM GreetingCardJob" +
+                                                   " WHERE job_id = " + jobId +
+                                                   " UNION ALL" +
+                                                  " SELECT back_image_asset_id" +
+                                                    " FROM GreetingCardJob" +
+                                                   " WHERE job_id = " + jobId +
+                                                   " UNION ALL" +
+                                                  " SELECT inside_left_image_asset_id" +
+                                                    " FROM GreetingCardJob" +
+                                                   " WHERE job_id = " + jobId +
+                                                   " UNION ALL" +
+                                                  " SELECT inside_right_image_asset_id" +
+                                                    " FROM GreetingCardJob" +
+                                                   " WHERE job_id = " + jobId +
+                                                " )";
+
+    String deleteJobAssetSQLString     = "DELETE FROM JobAsset WHERE job_id = " + jobId;
+
+    String deleteGreetingCardSQLString = "DELETE FROM GreetingCardJob WHERE job_id = " + jobId;
+
+    String deletePhotobookJobSQLString = "DELETE FROM PhotobookJob WHERE job_id = " + jobId;
+
+    String deletePostcardJobSQLString  = "DELETE FROM PostcardJob WHERE job_id = " + jobId;
+
+    String deleteOptionSQLString       = "DELETE FROM Option WHERE job_id = " + jobId;
+
+    String deleteJobSQLString          = "DELETE FROM Job WHERE id = " + jobId;
+
+
+    SQLiteDatabase database = null;
+
+    try
+      {
+      // Open the database
+      database = getWritableDatabase();
+
+      // Execute the delete statements
+      database.execSQL( deleteAddressSQLString );
+      database.execSQL( deleteAssetSQLString );
+      database.execSQL( deleteJobAssetSQLString );
+      database.execSQL( deleteGreetingCardSQLString );
+      database.execSQL( deletePhotobookJobSQLString );
+      database.execSQL( deletePostcardJobSQLString );
+      database.execSQL( deleteOptionSQLString );
+      database.execSQL( deleteJobSQLString );
+      }
+    catch ( Exception exception )
+      {
+      Log.e( LOG_TAG, "Unable to delete job", exception );
+      }
+    finally
+      {
+      // Make sure the database is closed
+      if ( database != null ) database.close();
+      }
+
     }
 
 

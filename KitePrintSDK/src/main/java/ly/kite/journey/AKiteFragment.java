@@ -41,8 +41,24 @@ package ly.kite.journey;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.TypedValue;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.AdapterView;
+
+import ly.kite.R;
+import ly.kite.basket.BasketAgent;
+import ly.kite.journey.basket.BasketActivity;
 
 
 ///// Class Declaration /////
@@ -69,6 +85,8 @@ abstract public class AKiteFragment extends Fragment
   ////////// Member Variable(s) //////////
 
   protected AKiteActivity   mKiteActivity;
+
+  private   MenuItem        mBasketMenuItem;
 
   private   AdapterView<?>  mManagedAdaptorView;
   private   int             mManagedAdaptorViewPosition;
@@ -116,6 +134,41 @@ abstract public class AKiteFragment extends Fragment
     super.onAttach( activity );
 
     mKiteActivity = (AKiteActivity)activity;
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the fragment is visible and actively running.
+   *
+   *****************************************************/
+  @Override
+  public void onResume()
+    {
+    super.onResume();
+
+    setUpBasketActionIcon();
+    }
+
+
+  /*****************************************************
+   *
+   * Called when an action bar item is selected.
+   *
+   *****************************************************/
+  @Override
+  public boolean onOptionsItemSelected( MenuItem menuItem )
+    {
+    int itemId = menuItem.getItemId();
+
+    if ( itemId == R.id.basket_menu_item )
+      {
+      BasketActivity.startForResult( mKiteActivity, AKiteActivity.ACTIVITY_REQUEST_CODE_GO_TO_BASKET );
+
+      return ( true );
+      }
+
+    return ( super.onOptionsItemSelected( menuItem ) );
     }
 
 
@@ -215,6 +268,7 @@ abstract public class AKiteFragment extends Fragment
    *****************************************************/
   public void onTop()
     {
+    setUpBasketActionIcon();
     }
 
 
@@ -226,6 +280,105 @@ abstract public class AKiteFragment extends Fragment
    *****************************************************/
   public void onNotTop()
     {
+    }
+
+
+//  /*****************************************************
+//   *
+//   * Called to create the menu.
+//   *
+//   *****************************************************/
+//  protected void onCreateOptionsMenu( Menu menu, MenuInflater menuInflator, int menuResourceId )
+//    {
+//    // Inflate the menu
+//    menuInflator.inflate( menuResourceId, menu );
+//
+//    // Get a reference to the basket action icon
+//    mBasketMenuItem = menu.findItem( R.id.basket_menu_item );
+//    }
+
+
+  /*****************************************************
+   *
+   * Called to prepare the menu.
+   *
+   *****************************************************/
+  @Override
+  public void onPrepareOptionsMenu( Menu menu )
+    {
+    mBasketMenuItem = menu.findItem( R.id.basket_menu_item );
+
+    setUpBasketActionIcon();
+    }
+
+
+  /*****************************************************
+   *
+   * Sets up the action bar basket icon.
+   *
+   *****************************************************/
+  protected void setUpBasketActionIcon()
+    {
+    if ( mBasketMenuItem != null )
+      {
+      mBasketMenuItem.setIcon( getBasketActionIcon() );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a basket action icon.
+   *
+   *****************************************************/
+  protected Drawable getBasketActionIcon()
+    {
+    // Get the number of items in the basket
+
+    int itemCount = BasketAgent.getInstance( getActivity() ).getItemCount();
+
+
+    Resources resources = getResources();
+
+    Bitmap basketBitmap = BitmapFactory.decodeResource( resources, ( itemCount > 0 ? R.drawable.ic_basket_items : R.drawable.ic_basket_empty ) );
+
+    if ( basketBitmap == null ) return ( null );
+
+    int width  = basketBitmap.getWidth();
+    int height = basketBitmap.getHeight();
+
+    Bitmap targetBitmap = Bitmap.createBitmap( width, height, Bitmap.Config.ARGB_8888 );
+
+    Canvas targetCanvas = new Canvas( targetBitmap );
+
+    Rect rect = new Rect( 0, 0, width, height );
+
+    // Draw the base bitmap
+    targetCanvas.drawBitmap( basketBitmap, rect, rect, null );
+
+
+    // Draw the quantity text
+
+    float quantityTextSize = resources.getDimension( R.dimen.basket_action_icon_quantity_text_size );
+
+    Paint paint = new Paint();
+    paint.setTextSize( quantityTextSize );
+    paint.setColor( resources.getColor( R.color.basket_action_icon_quantity_text ) );
+    paint.setTextAlign( Paint.Align.CENTER );
+
+
+    TypedValue insetValue = new TypedValue();
+
+    resources.getValue( R.dimen.basket_action_icon_quantity_text_horizontal_inset, insetValue, true );
+    float horizontalInsetProportion = insetValue.getFloat();
+
+    resources.getValue( R.dimen.basket_action_icon_quantity_text_vertical_inset, insetValue, true );
+    float verticalInsetProportion = insetValue.getFloat();
+
+    targetCanvas.drawText( String.valueOf( itemCount ), width - ( horizontalInsetProportion * width ), verticalInsetProportion * height, paint );
+
+
+    return ( new BitmapDrawable( resources, targetBitmap ) );
     }
 
 

@@ -43,6 +43,7 @@ package ly.kite.basket;
 ///// Class Declaration /////
 
 import android.content.Context;
+import android.os.AsyncTask;
 
 import java.util.HashMap;
 import java.util.List;
@@ -129,20 +130,18 @@ public class BasketAgent
 
   /*****************************************************
    *
-   * Saves an order to the basket.
+   * Saves an order to the basket. This is performed
+   * asynchronously because assets may need to be copied
+   * into a dedicated directory, so a listener should be
+   * provided. The listener is called once the order has
+   * been added to the basket.
    *
    *****************************************************/
-  public BasketAgent addToBasket( Order order )
+  public void addToBasket( Order order, IAddListener addListener )
     {
-    // Go through all the jobs in the order
+    // Create an add order task and start it
 
-    for ( Job job : order.getJobs() )
-      {
-      addToBasket( job );
-      }
-
-
-    return ( this );
+    new AddOrderTask( order, addListener ).execute();
     }
 
 
@@ -151,10 +150,11 @@ public class BasketAgent
    * Saves a job to the basket.
    *
    *****************************************************/
-  public BasketAgent addToBasket( Job originalJob )
+  private void addToBasket( Job originalJob )
     {
-    Product                product    = originalJob.getProduct();
-    HashMap<String,String> optionsMap = originalJob.getProductOptions();
+    Product                product       = originalJob.getProduct();
+    int                    orderQuantity = originalJob.getOrderQuantity();
+    HashMap<String,String> optionsMap    = originalJob.getProductOptions();
 
 
     // Move any referenced assets to the basket
@@ -170,7 +170,7 @@ public class BasketAgent
       Asset insideLeftImageAsset  = AssetHelper.createAsBasketAsset( mApplicationContext, greetingCardJob.getInsideLeftImageAsset() );
       Asset insideRightImageAsset = AssetHelper.createAsBasketAsset( mApplicationContext, greetingCardJob.getInsideLeftImageAsset() );
 
-      newJob = Job.createGreetingCardJob( product, optionsMap, frontImageAsset, backImageAsset, insideLeftImageAsset, insideRightImageAsset );
+      newJob = Job.createGreetingCardJob( product, orderQuantity, optionsMap, frontImageAsset, backImageAsset, insideLeftImageAsset, insideRightImageAsset );
       }
     else if ( originalJob instanceof PhotobookJob )
       {
@@ -180,7 +180,7 @@ public class BasketAgent
 
       List<Asset> contentAssetList = AssetHelper.createAsBasketAssets( mApplicationContext, photobookJob.getAssets() );
 
-      newJob = Job.createPhotobookJob( product, optionsMap, frontCoverAsset, contentAssetList );
+      newJob = Job.createPhotobookJob( product, orderQuantity, optionsMap, frontCoverAsset, contentAssetList );
       }
     else if ( originalJob instanceof PostcardJob )
       {
@@ -189,7 +189,7 @@ public class BasketAgent
       Asset frontImageAsset       = AssetHelper.createAsBasketAsset( mApplicationContext, postcardJob.getFrontImageAsset() );
       Asset backImageAsset        = AssetHelper.createAsBasketAsset( mApplicationContext, postcardJob.getBackImageAsset() );
 
-      newJob = Job.createPostcardJob( product, optionsMap, frontImageAsset, backImageAsset, postcardJob.getMessage(), postcardJob.getAddress() );
+      newJob = Job.createPostcardJob( product, orderQuantity, optionsMap, frontImageAsset, backImageAsset, postcardJob.getMessage(), postcardJob.getAddress() );
       }
     else if ( originalJob instanceof AssetListJob )
       {
@@ -197,7 +197,7 @@ public class BasketAgent
 
       List<Asset> assetList = AssetHelper.createAsBasketAssets( mApplicationContext, assetListJob.getAssets() );
 
-      newJob = Job.createPrintJob( product, optionsMap, assetList );
+      newJob = Job.createPrintJob( product, orderQuantity, optionsMap, assetList );
       }
     else
       {
@@ -206,9 +206,58 @@ public class BasketAgent
 
 
     mDatabaseAgent.saveToBasket( newJob );
+    }
 
 
-    return ( this );
+  /*****************************************************
+   *
+   * Returns the basket.
+   *
+   *****************************************************/
+  public Order getBasket( Catalogue catalogue )
+    {
+    return ( mDatabaseAgent.loadBasket( catalogue ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the item count.
+   *
+   *****************************************************/
+  public int getItemCount()
+    {
+    return ( mDatabaseAgent.selectItemCount() );
+    }
+
+
+  /*****************************************************
+   *
+   * Increments the order quantity.
+   *
+   *****************************************************/
+  public int incrementOrderQuantity( long jobId )
+    {
+    return ( mDatabaseAgent.updateOrderQuantity( jobId, +1 ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Decrements the order quantity.
+   *
+   *****************************************************/
+  public int decrementOrderQuantity( long jobId )
+    {
+    int orderQuantity = mDatabaseAgent.updateOrderQuantity( jobId, -1 );
+
+    // If the order quantity has gone to zero - delete the job
+    if ( orderQuantity < 1 )
+      {
+      mDatabaseAgent.deleteJob( jobId );
+      }
+
+    return ( orderQuantity );
     }
 
 
@@ -216,9 +265,55 @@ public class BasketAgent
 
   /*****************************************************
    *
-   * ...
+   * Interface for add-to-basket listeners.
    *
    *****************************************************/
+  public interface IAddListener
+    {
+    public void onAddComplete( Order order );
+    }
+
+
+  /*****************************************************
+   *
+   * Task for adding orders to the basket.
+   *
+   *****************************************************/
+  private class AddOrderTask extends AsyncTask<Void,Void,Void>
+    {
+    private Order         mOrder;
+    private IAddListener  mAddListener;
+
+
+    AddOrderTask( Order order, IAddListener addListener )
+      {
+      mOrder       = order;
+      mAddListener = addListener;
+      }
+
+
+    @Override
+    protected Void doInBackground( Void... params )
+      {
+      // Go through all the jobs in the order
+
+      for ( Job job : mOrder.getJobs() )
+        {
+        addToBasket( job );
+        }
+
+      return ( null );
+      }
+
+
+    @Override
+    protected void onPostExecute( Void result )
+      {
+      if ( mAddListener != null ) mAddListener.onAddComplete( mOrder );
+      }
+
+
+    }
 
   }
 

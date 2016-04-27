@@ -176,7 +176,6 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements I
     {
     super.onTop();
 
-
     getProducts();
     }
 
@@ -189,6 +188,8 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements I
   @Override
   public void onNotTop()
     {
+    super.onNotTop();
+
     if ( mGridView != null ) mGridView.setAdapter( null );
 
     mGridAdaptor = null;

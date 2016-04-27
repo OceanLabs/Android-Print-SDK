@@ -111,6 +111,7 @@ public class OrderPricingAdaptor extends BaseAdapter
 
     Locale defaultLocale = Locale.getDefault();
 
+
     ///// Line items
 
     List<OrderPricing.LineItem> lineItemList = pricing.getLineItems();
@@ -131,12 +132,11 @@ public class OrderPricingAdaptor extends BaseAdapter
 
     MultipleCurrencyAmount shippingCost = pricing.getTotalShippingCost();
     SingleCurrencyAmount   shippingCostInSingleCurrency;
-    BigDecimal             shippingCostAmount;
     String                 shippingCostString;
 
     if ( shippingCost != null &&
          ( shippingCostInSingleCurrency = shippingCost.getAmountWithFallback( defaultLocale )) != null &&
-         ( shippingCostAmount = shippingCostInSingleCurrency.getAmount() ).compareTo( BigDecimal.ZERO ) > 0 )
+         shippingCostInSingleCurrency.getAmount().compareTo( BigDecimal.ZERO ) > 0 )
       {
       shippingCostString = shippingCostInSingleCurrency.getDisplayAmountForLocale( defaultLocale );
       }
@@ -156,10 +156,8 @@ public class OrderPricingAdaptor extends BaseAdapter
       {
       SingleCurrencyAmount promoDiscountInSingleCurrency = promoDiscount.getAmountWithFallback( defaultLocale );
 
-      BigDecimal promoDiscountAmount;
-
       if ( promoDiscountInSingleCurrency != null &&
-           ( promoDiscountAmount = promoDiscountInSingleCurrency.getAmount() ).compareTo( BigDecimal.ZERO ) > 0 )
+           promoDiscountInSingleCurrency.getAmount().compareTo( BigDecimal.ZERO ) > 0 )
         {
         mItemList.add( new Item( mContext.getString( R.string.Promotional_Discount ), promoDiscountInSingleCurrency.getDisplayAmountForLocale( defaultLocale ), false ) );
         }
@@ -231,25 +229,23 @@ public class OrderPricingAdaptor extends BaseAdapter
     {
     // Either re-use the convert view, or create a new one.
 
-    Object          tagObject;
-    View            view;
-    ViewReferences  viewReferences;
+    Object      tag;
+    View        view;
+    ViewHolder  viewHolder;
 
     if ( convertView != null &&
-            ( tagObject = convertView.getTag() ) != null &&
-            ( tagObject instanceof ViewReferences ) )
+            ( tag = convertView.getTag() ) != null &&
+            ( tag instanceof ViewHolder ) )
       {
-      view           = convertView;
-      viewReferences = (ViewReferences)tagObject;
+      view       = convertView;
+      viewHolder = (ViewHolder)tag;
       }
     else
       {
-      view                               = mLayoutInflator.inflate( R.layout.list_item_order_pricing, parent, false );
-      viewReferences                     = new ViewReferences();
-      viewReferences.descriptionTextView = (TextView)view.findViewById( R.id.description_text_view );
-      viewReferences.amountTextView      = (TextView)view.findViewById( R.id.amount_text_view );
+      view                           = mLayoutInflator.inflate( R.layout.list_item_order_pricing, parent, false );
+      viewHolder                     = new ViewHolder( view );
 
-      view.setTag( viewReferences );
+      view.setTag( viewHolder );
       }
 
 
@@ -257,16 +253,7 @@ public class OrderPricingAdaptor extends BaseAdapter
 
     Item item = (Item)getItem( position );
 
-    viewReferences.descriptionTextView.setText( item.description );
-    viewReferences.amountTextView.setText( item.amount );
-
-
-    // Change the style appropriately
-
-    int style = ( item.isBold ? Typeface.BOLD : Typeface.NORMAL );
-
-    viewReferences.descriptionTextView.setTypeface( viewReferences.descriptionTextView.getTypeface(), style );
-    viewReferences.amountTextView     .setTypeface( viewReferences.amountTextView.getTypeface(),      style );
+    viewHolder.bind( item );
 
 
     return ( view );
@@ -300,10 +287,33 @@ public class OrderPricingAdaptor extends BaseAdapter
    * References to views within the layout.
    *
    *****************************************************/
-  private class ViewReferences
+  private class ViewHolder
     {
     TextView  descriptionTextView;
     TextView  amountTextView;
+
+
+    ViewHolder( View view )
+      {
+      this.descriptionTextView = (TextView)view.findViewById( R.id.description_text_view );
+      this.amountTextView      = (TextView)view.findViewById( R.id.amount_text_view );
+      }
+
+
+    void bind( Item item )
+      {
+      // Set the text
+      this.descriptionTextView.setText( item.description );
+      this.amountTextView.setText( item.amount );
+
+
+      // Change the style appropriately
+
+      int style = ( item.isBold ? Typeface.BOLD : Typeface.NORMAL );
+
+      this.descriptionTextView.setTypeface( Typeface.create( this.descriptionTextView.getTypeface(), style ) );
+      this.amountTextView     .setTypeface( Typeface.create( this.amountTextView.getTypeface(),      style ) );
+      }
     }
 
   }

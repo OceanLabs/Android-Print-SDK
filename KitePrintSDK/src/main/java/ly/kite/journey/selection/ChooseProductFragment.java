@@ -42,6 +42,9 @@ package ly.kite.journey.selection;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -133,6 +136,9 @@ public class ChooseProductFragment extends AGroupOrProductFragment
         Log.e( TAG, "No product group found in arguments" );
         }
       }
+
+
+    setHasOptionsMenu( true );
     }
 
 
@@ -169,6 +175,18 @@ public class ChooseProductFragment extends AGroupOrProductFragment
     super.onTop();
 
     if ( mProductGroup != null ) mKiteActivity.setTitle( mProductGroup.getDisplayLabel() );
+    }
+
+
+  /*****************************************************
+   *
+   * Called to create the menu.
+   *
+   *****************************************************/
+  @Override
+  public void onCreateOptionsMenu( Menu menu, MenuInflater menuInflator )
+    {
+    menuInflator.inflate( R.menu.choose_product, menu );
     }
 
 

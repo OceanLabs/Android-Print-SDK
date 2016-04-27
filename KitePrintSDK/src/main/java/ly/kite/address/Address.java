@@ -217,7 +217,17 @@ public class Address implements Parcelable, Serializable
     }
 
 
-  public String toButtonText()
+  public String toMultiLineText()
+    {
+    return ( toDisplayText( "\n" ) );
+    }
+
+  public String toSingleLineText()
+    {
+    return ( toDisplayText( ", " ) );
+    }
+
+  public String toDisplayText( String newlineString )
     {
     if ( displayName != null ) return ( displayName );
 
@@ -229,7 +239,7 @@ public class Address implements Parcelable, Serializable
       {
       stringBuilder.append( recipientName );
 
-      separator = "\n";
+      separator = newlineString;
       }
 
     if ( isPopulated( line1 ) )
@@ -274,7 +284,7 @@ public class Address implements Parcelable, Serializable
               .append( separator )
               .append( zipOrPostalCode );
 
-      separator = "\n";
+      separator = newlineString;
       }
 
 

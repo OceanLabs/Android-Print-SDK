@@ -36,20 +36,20 @@ public class AssetListJob extends Job
     private List<Asset> mAssetList;
 
 
-  public AssetListJob( Product product, HashMap<String,String> optionMap, List<Asset> assetList )
+  public AssetListJob( long jobId, Product product, int orderQuantity, HashMap<String,String> optionMap, List<Asset> assetList )
     {
-    super( product, optionMap );
+    super( jobId, product, orderQuantity, optionMap );
 
     mAssetList = assetList;
     }
 
-  public AssetListJob( Product product, List<Asset> assetList )
+  public AssetListJob( Product product, int orderQuantity, HashMap<String,String> optionsMap, List<Asset> assetList )
     {
-    this( product, null, assetList );
+    this( 0, product, orderQuantity, optionsMap, assetList );
     }
 
 
-    @Override
+  @Override
     public BigDecimal getCost(String currencyCode) {
         Product product = getProduct();
         BigDecimal sheetCost = product.getCost(currencyCode);

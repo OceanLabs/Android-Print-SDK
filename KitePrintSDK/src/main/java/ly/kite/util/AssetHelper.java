@@ -443,6 +443,10 @@ public class AssetHelper
    *****************************************************/
   static public Asset createAsBasketAsset( Context context, Asset sessionAsset )
     {
+    // It is perfectly valid to supply a null asset, in which case we also return
+    // one.
+    if ( sessionAsset == null ) return ( null );
+
     // Check that the session asset is file-backed
     if ( sessionAsset.getType() != Type.IMAGE_FILE )
       {

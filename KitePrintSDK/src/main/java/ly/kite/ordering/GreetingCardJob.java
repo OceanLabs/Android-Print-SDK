@@ -34,9 +34,10 @@ public class GreetingCardJob extends Job
   private Asset mInsideLeftImageAsset;
   private Asset mInsideRightImageAsset;
 
-  public GreetingCardJob( Product product, HashMap<String,String> optionsMap, Asset frontImageAsset, Asset backImageAsset, Asset insideLeftImageAsset, Asset insideRightImageAsset )
+
+  public GreetingCardJob( long jobId, Product product, int orderQuantity, HashMap<String,String> optionsMap, Asset frontImageAsset, Asset backImageAsset, Asset insideLeftImageAsset, Asset insideRightImageAsset )
     {
-    super( product, optionsMap );
+    super( jobId, product, orderQuantity, optionsMap );
 
     mFrontImageAsset       = frontImageAsset;
     mBackImageAsset        = backImageAsset;
@@ -44,15 +45,11 @@ public class GreetingCardJob extends Job
     mInsideRightImageAsset = insideRightImageAsset;
     }
 
-  public GreetingCardJob( Product product, Asset frontImageAsset, Asset backImageAsset, Asset insideLeftImageAsset, Asset insideRightImageAsset )
+  public GreetingCardJob( Product product, int orderQuantity, HashMap<String,String> optionsMap, Asset frontImageAsset, Asset backImageAsset, Asset insideLeftImageAsset, Asset insideRightImageAsset )
     {
-    super( product );
-
-    mFrontImageAsset       = frontImageAsset;
-    mBackImageAsset        = backImageAsset;
-    mInsideLeftImageAsset  = insideLeftImageAsset;
-    mInsideRightImageAsset = insideRightImageAsset;
+    this( 0, product, orderQuantity, optionsMap, frontImageAsset, backImageAsset, insideLeftImageAsset, insideRightImageAsset );
     }
+
 
   @Override
   public BigDecimal getCost( String currencyCode )

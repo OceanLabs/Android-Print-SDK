@@ -99,6 +99,18 @@ public class AddressBookActivity extends AKiteActivity
 
   ////////// Static Method(s) //////////
 
+  /*****************************************************
+   *
+   * Starts this activity.
+   *
+   *****************************************************/
+  static public void startForResult( Activity activity, int requestCode )
+    {
+    Intent intent = new Intent( activity, AddressBookActivity.class );
+
+    activity.startActivityForResult( intent, requestCode );
+    }
+
 
   ////////// Constructor(s) //////////
 

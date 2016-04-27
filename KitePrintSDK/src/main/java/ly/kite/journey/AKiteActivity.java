@@ -83,12 +83,14 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
   static public  final int     NO_BUTTON                                    = 0;
 
-  static public  final int     ACTIVITY_REQUEST_CODE_BASKET                 = 10;
+  static public  final int     ACTIVITY_REQUEST_CODE_ADD_TO_BASKET          = 10;
+  static public  final int     ACTIVITY_REQUEST_CODE_GO_TO_BASKET           = 11;
   static public  final int     ACTIVITY_REQUEST_CODE_CHECKOUT               = 20;
   static public  final int     ACTIVITY_REQUEST_CODE_CREATE                 = 30;
-  static public  final int     ACTIVITY_REQUEST_CODE_SELECT_DEVICE_IMAGE    = 40;
-  static public  final int     ACTIVITY_REQUEST_CODE_SELECT_INSTAGRAM_IMAGE = 50;
-  static public  final int     ACTIVITY_REQUEST_CODE_EDIT_IMAGE             = 60;
+  static public  final int     ACTIVITY_REQUEST_CODE_GET_ADDRESS            = 40;
+  static public  final int     ACTIVITY_REQUEST_CODE_SELECT_DEVICE_IMAGE    = 50;
+  static public  final int     ACTIVITY_REQUEST_CODE_SELECT_INSTAGRAM_IMAGE = 60;
+  static public  final int     ACTIVITY_REQUEST_CODE_EDIT_IMAGE             = 70;
 
   static public  final int     ACTIVITY_RESULT_CODE_CONTINUE_SHOPPING       = 15;
   static public  final int     ACTIVITY_RESULT_CODE_CHECKED_OUT             = 25;
@@ -369,9 +371,6 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   @Override
   protected void onActivityResult( int requestCode, int resultCode, Intent data )
     {
-    super.onActivityResult( requestCode, resultCode, data );
-
-
     // If we successfully completed check-out then return the result back to any
     // calling activity, and exit so the user goes back to the original app.
 
@@ -381,6 +380,9 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
       finish();
       }
+
+
+    super.onActivityResult( requestCode, resultCode, data );
     }
 
 
@@ -780,14 +782,23 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
   /*****************************************************
    *
+   * Sets the text of a button.
+   *
+   *****************************************************/
+  private void setButtonText( Button button, int textResourceId )
+    {
+    if ( button != null ) button.setText( textResourceId );
+    }
+
+
+  /*****************************************************
+   *
    * Sets the text of any left button.
    *
    *****************************************************/
   protected void setLeftButtonText( int textResourceId )
     {
-    Button leftButton = getLeftButton();
-
-    if ( leftButton != null ) leftButton.setText( textResourceId );
+    setButtonText( getLeftButton(), textResourceId );
     }
 
 
@@ -798,9 +809,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
    *****************************************************/
   protected void setRightButtonText( int textResourceId )
     {
-    Button rightButton = getRightButton();
-
-    if ( rightButton != null ) rightButton.setText( textResourceId );
+    setButtonText( getRightButton(), textResourceId );
     }
 
 
@@ -839,6 +848,39 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   protected void setRightButtonColourRes( int colourResourceId )
     {
     setButtonColourRes( getRightButton(), colourResourceId );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the enabled state of a button.
+   *
+   *****************************************************/
+  private void setButtonEnabled( Button button, boolean enabled )
+    {
+    if ( button != null ) button.setEnabled( enabled );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the enabled state of any left button.
+   *
+   *****************************************************/
+  protected void setLeftButtonEnabled( boolean enabled )
+    {
+    setButtonEnabled( getLeftButton(), enabled );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the enabled state of any right button.
+   *
+   *****************************************************/
+  protected void setRightButtonEnabled( boolean enabled )
+    {
+    setButtonEnabled( getRightButton(), enabled );
     }
 
 

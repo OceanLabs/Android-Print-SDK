@@ -45,6 +45,7 @@ import java.util.HashMap;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -86,7 +87,8 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
                                                                       ImageSelectionFragment.ICallback,
                                                                       PhotobookFragment.ICallback,
                                                                       ReviewAndEditFragment.ICallback,
-                                                                      EditImageFragment.ICallback
+                                                                      EditImageFragment.ICallback,
+                                                                      BasketAgent.IAddListener
   {
   ////////// Static Constant(s) //////////
 
@@ -114,6 +116,8 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
 
   private ICustomImageEditorAgent       mCustomImageEditorAgent;
   private int                           mLastEditedAssetIndex;
+
+  private ProgressDialog                mProgressDialog;
 
 
   ////////// Static Initialiser(s) //////////
@@ -336,7 +340,7 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
 
     // Check for continue shopping result
 
-    if ( requestCode == ACTIVITY_REQUEST_CODE_BASKET &&
+    if ( requestCode == ACTIVITY_REQUEST_CODE_ADD_TO_BASKET &&
          resultCode  == ACTIVITY_RESULT_CODE_CONTINUE_SHOPPING )
       {
       setResult( resultCode );
@@ -556,6 +560,29 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
 
   /*****************************************************
    *
+   * Called when an order has been added to the basket.
+   *
+   *****************************************************/
+  @Override
+  public void onAddComplete( Order order )
+    {
+    // Hide the progress dialog
+    if ( mProgressDialog != null )
+      {
+      mProgressDialog.dismiss();
+
+      mProgressDialog = null;
+      }
+
+    // Go to the basket screen
+    BasketActivity.startForResult( this, ACTIVITY_REQUEST_CODE_ADD_TO_BASKET );
+    }
+
+
+  ////////// Method(s) //////////
+
+  /*****************************************************
+   *
    * Starts the next stage in the appropriate user journey
    * for the supplied product.
    *
@@ -697,20 +724,19 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
    *****************************************************/
   private void onNewOrder( Order order )
     {
+    // Display a progress dialog
+
+    mProgressDialog = new ProgressDialog( this );
+    mProgressDialog.setTitle( R.string.progress_dialog_title_add_to_basket );
+    mProgressDialog.setIndeterminate( true );
+    mProgressDialog.show();
+
     // Add the order to the basket
-    BasketAgent.getInstance( this )
-            .clearBasket()
-            .addToBasket( order );
-
-
-    // Go to the basket screen
-    BasketActivity.startForResult( this, ACTIVITY_REQUEST_CODE_BASKET );
-
-    // Go straight to the check-out activity with the order.
-    //CheckoutActivity.startForResult( this, order, ACTIVITY_REQUEST_CODE_CHECKOUT );
+    BasketAgent.getInstance( this ).addToBasket( order, this );
     }
 
 
   ////////// Inner Class(es) //////////
+
 
   }

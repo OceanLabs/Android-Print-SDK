@@ -60,10 +60,20 @@
 
     <color name="photobook_target_image_highlight">#ff66cccc</color>
 
+    <color name="basket_action_icon_quantity_background">#ff45a18a</color>
+    <color name="basket_action_icon_quantity_text">@android:color/white</color>
+
     <color name="basket_light">#ff9a9a9a</color>
     <color name="basket_highlight">#ff88b113</color>
     <color name="basket_left_button">@color/basket_light</color>
     <color name="basket_right_button">@color/basket_highlight</color>
+    <color name="basket_item_button_colour">@color/basket_highlight</color>
+    <color name="basket_list_background">#ffececec</color>
+    <color name="basket_order_background">#fff4f4f4</color>
+    <color name="basket_item_price_text">#ff3b3b3b</color>
+    <color name="basket_list_shipping_separator">#ffd8d8d8</color>
+    <color name="basket_order_delivery_underline">#ff3d7a73</color>
+    <color name="basket_order_total_separator">#ffdbdbdb</color>
 
     <color name="payment_promo_code_text_default">@android:color/black</color>
     <color name="payment_promo_code_text_error">#ffff0000</color>

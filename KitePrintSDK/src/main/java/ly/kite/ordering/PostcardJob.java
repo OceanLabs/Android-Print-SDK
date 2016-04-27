@@ -36,9 +36,9 @@ public class PostcardJob extends Job
   private Address mAddress;
 
 
-  public PostcardJob( Product product, HashMap<String, String> optionMap, Asset frontImageAsset, Asset backImageAsset, String message, Address address )
+  public PostcardJob( long jobId, Product product, int orderQuantity, HashMap<String, String> optionsMap, Asset frontImageAsset, Asset backImageAsset, String message, Address address )
     {
-    super( product, optionMap );
+    super( jobId, product, orderQuantity, optionsMap );
 
     mFrontImageAsset = frontImageAsset;
     mBackImageAsset  = backImageAsset;
@@ -46,20 +46,11 @@ public class PostcardJob extends Job
     mAddress         = address;
     }
 
-  public PostcardJob( Product product, Asset frontImageAsset, String message, Address address )
+  public PostcardJob( Product product, int orderQuantity, HashMap<String, String> optionsMap, Asset frontImageAsset, Asset backImageAsset, String message, Address address )
     {
-    this( product, null, frontImageAsset, null, message, address );
+    this( 0, product, orderQuantity, optionsMap, frontImageAsset, backImageAsset, message, address );
     }
 
-  public PostcardJob( Product product, Asset frontImageAsset, Asset backImageAsset )
-    {
-    this( product, null, frontImageAsset, backImageAsset, null, null );
-    }
-
-  public PostcardJob( Product product, Asset frontImageAsset, Asset backImageAsset, String message, Address address )
-    {
-    this( product, null, frontImageAsset, backImageAsset, message, address );
-    }
 
   @Override
   public BigDecimal getCost( String currencyCode )

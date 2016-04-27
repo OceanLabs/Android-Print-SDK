@@ -337,7 +337,7 @@ public class CheckoutActivity extends AKiteActivity implements View.OnClickListe
    *****************************************************/
   private void onUpdateShippingAddress( Address shippingAddress, boolean requestPrices )
     {
-    mAddressPickerButton.setText( shippingAddress.toButtonText() );
+    mAddressPickerButton.setText( shippingAddress.toMultiLineText() );
 
     // Re-request the pricing if the shipping address changes, just in case the shipping
     // price changes.

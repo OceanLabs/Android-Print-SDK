@@ -97,11 +97,16 @@ public class PhotobookJob extends AssetListJob
 
   ////////// Constructor(s) //////////
 
-  protected PhotobookJob( Product product, HashMap<String,String> optionMap, Asset frontCoverAsset, List<Asset> contentAssetList )
+  public PhotobookJob( long jobId, Product product, int orderQuantity, HashMap<String,String> optionsMap, Asset frontCoverAsset, List<Asset> contentAssetList )
     {
-    super( product, optionMap, contentAssetList );
+    super( jobId, product, orderQuantity, optionsMap, contentAssetList );
 
     mFrontCoverAsset = frontCoverAsset;
+    }
+
+  public PhotobookJob( Product product, int orderQuantity, HashMap<String,String> optionsMap, Asset frontCoverAsset, List<Asset> contentAssetList )
+    {
+    this( 0, product, orderQuantity, optionsMap, frontCoverAsset, contentAssetList );
     }
 
   protected PhotobookJob( Parcel parcel )

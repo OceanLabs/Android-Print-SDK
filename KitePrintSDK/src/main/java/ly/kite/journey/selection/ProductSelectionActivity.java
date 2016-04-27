@@ -289,7 +289,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
 
     // If we get a continue shopping result - go back to the product group screen
 
-    if ( resultCode == ACTIVITY_RESULT_CODE_CONTINUE_SHOPPING )
+    if ( resultCode == ACTIVITY_REQUEST_CODE_CREATE && resultCode == ACTIVITY_RESULT_CODE_CONTINUE_SHOPPING )
       {
       mFragmentManager.popBackStackImmediate( ChooseProductGroupFragment.TAG, 0 );
       }
