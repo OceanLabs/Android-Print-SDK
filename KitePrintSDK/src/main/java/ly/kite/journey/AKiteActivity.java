@@ -49,6 +49,7 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -56,6 +57,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
@@ -88,6 +90,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   static public  final int     ACTIVITY_REQUEST_CODE_CHECKOUT               = 20;
   static public  final int     ACTIVITY_REQUEST_CODE_CREATE                 = 30;
   static public  final int     ACTIVITY_REQUEST_CODE_GET_ADDRESS            = 40;
+  static public  final int     ACTIVITY_REQUEST_CODE_GET_CONTACT_DETAILS    = 45;
   static public  final int     ACTIVITY_REQUEST_CODE_SELECT_DEVICE_IMAGE    = 50;
   static public  final int     ACTIVITY_REQUEST_CODE_SELECT_INSTAGRAM_IMAGE = 60;
   static public  final int     ACTIVITY_REQUEST_CODE_EDIT_IMAGE             = 70;
@@ -121,6 +124,27 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
 
   ////////// Static Method(s) //////////
+
+  /*****************************************************
+   *
+   * Returns the string contents of an edit text. If the edit
+   * text is empty (null or blank string) - returns null.
+   *
+   *****************************************************/
+  static protected String getPopulatedStringOrNull( EditText editText )
+    {
+    if ( editText == null ) return ( null );
+
+    Editable editable = editText.getText();
+
+    if ( editable == null ) return ( null );
+
+    String text = editable.toString();
+
+    if ( text == null || text.trim().equals( "" ) ) return ( null );
+
+    return ( text );
+    }
 
 
   ////////// Constructor(s) //////////
@@ -881,6 +905,39 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   protected void setRightButtonEnabled( boolean enabled )
     {
     setButtonEnabled( getRightButton(), enabled );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the visible state of a button.
+   *
+   *****************************************************/
+  private void setButtonVisible( Button button, boolean visible )
+    {
+    if ( button != null ) button.setVisibility( visible ? View.VISIBLE : View.INVISIBLE );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the visible state of any left button.
+   *
+   *****************************************************/
+  protected void setLeftButtonVisible( boolean visible )
+    {
+    setButtonVisible( getLeftButton(), visible );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the visible state of any right button.
+   *
+   *****************************************************/
+  protected void setRightButtonVisible( boolean visible )
+    {
+    setButtonVisible( getRightButton(), visible );
     }
 
 

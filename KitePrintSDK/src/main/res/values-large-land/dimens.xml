@@ -5,4 +5,7 @@
     <dimen name="image_source_border_size">20dp</dimen>
     <dimen name="image_source_text_spacing">10dp</dimen>
 
+    <dimen name="basket_item_height">88dp</dimen>
+    <dimen name="basket_item_image_width">75dp</dimen>
+
 </resources>

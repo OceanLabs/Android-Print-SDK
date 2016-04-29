@@ -55,7 +55,6 @@ import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.analytics.Analytics;
 import ly.kite.basket.BasketAgent;
-import ly.kite.checkout.CheckoutActivity;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.journey.IAssetsAndQuantityHolder;
@@ -329,23 +328,25 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
 
     // Check for a custom image editor result
 
-    if ( requestCode == ACTIVITY_REQUEST_CODE_EDIT_IMAGE &&
-         resultCode  == RESULT_OK )
+    if ( requestCode == ACTIVITY_REQUEST_CODE_EDIT_IMAGE && resultCode  == RESULT_OK )
       {
       Asset editedAsset = mCustomImageEditorAgent.getEditedAsset( resultIntent );
 
       onAssetEdited( editedAsset );
+
+      return;
       }
 
 
     // Check for continue shopping result
 
-    if ( requestCode == ACTIVITY_REQUEST_CODE_ADD_TO_BASKET &&
-         resultCode  == ACTIVITY_RESULT_CODE_CONTINUE_SHOPPING )
+    if ( resultCode  == ACTIVITY_RESULT_CODE_CONTINUE_SHOPPING )
       {
       setResult( resultCode );
 
       finish();
+
+      return;
       }
 
     }

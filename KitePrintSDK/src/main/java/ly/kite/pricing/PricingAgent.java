@@ -61,7 +61,7 @@ import ly.kite.ordering.Order;
  * This class is an agent for the price API endpoint.
  *
  *****************************************************/
-public class PricingAgent extends ACache<String,OrderPricing,IPricingConsumer>
+public class PricingAgent extends ACache<String,OrderPricing,PricingAgent.ConsumerHolder>
   {
   ////////// Static Constant(s) //////////
 
@@ -117,7 +117,7 @@ public class PricingAgent extends ACache<String,OrderPricing,IPricingConsumer>
    * store it in the order until we know it's valid.
    *
    *****************************************************/
-  public OrderPricing requestPricing( Context context, Order order, String promoCode, IPricingConsumer consumer )
+  public OrderPricing requestPricing( Context context, Order order, String promoCode, IPricingConsumer consumer, int requestId )
     {
     // Construct the request URL first, because we also use it as the caching key.
 
@@ -156,7 +156,7 @@ public class PricingAgent extends ACache<String,OrderPricing,IPricingConsumer>
     // add this consumer to the list of consumers waiting for the result. Otherwise start
     // a new request.
 
-    if ( ! registerForValue( requestURLString, consumer ) )
+    if ( ! registerForValue( requestURLString, new ConsumerHolder( consumer, requestId ) ) )
       {
       HTTPJSONRequest request = new HTTPJSONRequest( context, HTTPJSONRequest.HttpMethod.GET, requestURLString, null, null );
 
@@ -170,12 +170,25 @@ public class PricingAgent extends ACache<String,OrderPricing,IPricingConsumer>
 
   /*****************************************************
    *
+   * Retrieves the price information for an order. The promo
+   * code is passed in separately because we don't want to
+   * store it in the order until we know it's valid.
+   *
+   *****************************************************/
+  public OrderPricing requestPricing( Context context, Order order, String promoCode, IPricingConsumer consumer )
+    {
+    return ( requestPricing( context, order, promoCode, consumer, 0 ) );
+    }
+
+
+  /*****************************************************
+   *
    * Distributes a value to a callback.
    *
    *****************************************************/
-  protected void onValueAvailable( OrderPricing pricing, IPricingConsumer consumer )
+  protected void onValueAvailable( OrderPricing pricing, ConsumerHolder consumerHolder )
     {
-    consumer.paOnSuccess( pricing );
+    consumerHolder.consumer.paOnSuccess( consumerHolder.requestId, pricing );
     }
 
 
@@ -185,13 +198,38 @@ public class PricingAgent extends ACache<String,OrderPricing,IPricingConsumer>
    * never be null.
    *
    *****************************************************/
-  protected void onError( Exception exception, IPricingConsumer consumer )
+  protected void onError( Exception exception, ConsumerHolder consumerHolder )
     {
-    consumer.paOnError( exception );
+    consumerHolder.consumer.paOnError( consumerHolder.requestId, exception );
     }
 
 
   ////////// Inner Class(es) //////////
+
+  public interface IPricingConsumer
+    {
+    public void paOnSuccess( int requestId, OrderPricing pricing );
+    public void paOnError( int requestId, Exception exception );
+    }
+
+
+  /*****************************************************
+   *
+   * A holder for the consumer and request id.
+   *
+   *****************************************************/
+  class ConsumerHolder
+    {
+    IPricingConsumer  consumer;
+    int               requestId;
+
+    ConsumerHolder( IPricingConsumer consumer, int requestId )
+      {
+      this.consumer  = consumer;
+      this.requestId = requestId;
+      }
+    }
+
 
   /*****************************************************
    *
@@ -221,7 +259,7 @@ public class PricingAgent extends ACache<String,OrderPricing,IPricingConsumer>
         {
         OrderPricing pricing = new OrderPricing( jsonObject );
 
-        PricingAgent.this.onValueAvailable( mRequestURLString, pricing );
+        PricingAgent.this.saveAndDistributeValue( mRequestURLString, pricing );
         }
       catch ( Exception exception )
         {

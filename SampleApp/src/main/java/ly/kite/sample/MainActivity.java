@@ -57,13 +57,10 @@ import android.widget.Toast;
 
 import ly.kite.address.Address;
 import ly.kite.catalogue.Catalogue;
-import ly.kite.catalogue.CatalogueLoader;
 import ly.kite.catalogue.ICatalogueConsumer;
-import ly.kite.catalogue.ProductType;
-import ly.kite.ordering.PrintJob;
+import ly.kite.checkout.ShippingActivity;
 import ly.kite.ordering.Job;
 import ly.kite.ordering.Order;
-import ly.kite.checkout.CheckoutActivity;
 import ly.kite.photopicker.Photo;
 import ly.kite.photopicker.PhotoPicker;
 import ly.kite.util.Asset;
@@ -215,7 +212,7 @@ public class MainActivity extends Activity
     {
     // Create some assets from a combination of a local resource and remote URLs
 
-    ArrayList<Asset> assetArrayList = new ArrayList<Asset>();
+    ArrayList<Asset> assetArrayList = new ArrayList<>();
 
     assetArrayList.add( new Asset( R.drawable.instagram1 ) );
 
@@ -350,8 +347,9 @@ public class MainActivity extends Activity
 
           order.addJob( postcard );
 
-          // Skip directly to checkout
-          CheckoutActivity.startForResult( MainActivity.this, order, REQUEST_CODE_CHECKOUT );
+
+          // Start managed check-out
+          KiteSDK.getInstance( MainActivity.this ).startCheckout( MainActivity.this, order, REQUEST_CODE_CHECKOUT );
           }
         catch ( MalformedURLException ex )
           {

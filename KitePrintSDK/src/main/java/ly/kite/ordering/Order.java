@@ -134,27 +134,44 @@ public class Order implements Parcelable /* , Serializable */
         return userData;
     }
 
-    public JSONObject getJSONRepresentation() {
-        try {
-            JSONObject json = new JSONObject();
-            if (proofOfPayment != null)
+    public JSONObject getJSONRepresentation()
+      {
+      try
+        {
+        JSONObject json = new JSONObject();
+        if ( proofOfPayment != null )
+          {
+          json.put( "proof_of_payment", proofOfPayment );
+          }
+        else
+          {
+          json.put( "proof_of_payment", "" );
+          }
+
+        json.put( "receipt_email", statusNotificationEmail );
+        if ( promoCode != null )
+          {
+          json.put( "promo_code", promoCode );
+          }
+
+
+        // Add the jobs
+
+        JSONArray jobs = new JSONArray();
+
+        json.put( "jobs", jobs );
+
+        for ( Job job : this.jobs )
+          {
+          // Duplicate jobs orderQuantity times
+
+          int orderQuantity = job.getOrderQuantity();
+
+          for ( int index = 0; index < orderQuantity; index ++ )
             {
-                json.put("proof_of_payment", proofOfPayment);
+            jobs.put( job.getJSONRepresentation() );
             }
-            else{
-                json.put("proof_of_payment","");
-            }
-
-            json.put("receipt_email", statusNotificationEmail);
-            if (promoCode != null) {
-                json.put("promo_code", promoCode);
-            }
-
-            JSONArray jobs = new JSONArray();
-            json.put("jobs", jobs);
-            for (Job job : this.jobs) {
-                jobs.put(job.getJSONRepresentation());
-            }
+          }
 
 
         // Make sure we always have user data, and put the default locale into it
@@ -184,23 +201,26 @@ public class Order implements Parcelable /* , Serializable */
           }
 
 
-            if (shippingAddress != null) {
-                JSONObject sajson = new JSONObject();
-                sajson.put("recipient_name", shippingAddress.getRecipientName());
-                sajson.put("address_line_1", shippingAddress.getLine1());
-                sajson.put("address_line_2", shippingAddress.getLine2());
-                sajson.put("city", shippingAddress.getCity());
-                sajson.put("county_state", shippingAddress.getStateOrCounty());
-                sajson.put("postcode", shippingAddress.getZipOrPostalCode());
-                sajson.put("country_code", shippingAddress.getCountry().iso3Code());
-                json.put("shipping_address", sajson);
-            }
+        if ( shippingAddress != null )
+          {
+          JSONObject sajson = new JSONObject();
+          sajson.put( "recipient_name", shippingAddress.getRecipientName() );
+          sajson.put( "address_line_1", shippingAddress.getLine1() );
+          sajson.put( "address_line_2", shippingAddress.getLine2() );
+          sajson.put( "city", shippingAddress.getCity() );
+          sajson.put( "county_state", shippingAddress.getStateOrCounty() );
+          sajson.put( "postcode", shippingAddress.getZipOrPostalCode() );
+          sajson.put( "country_code", shippingAddress.getCountry().iso3Code() );
+          json.put( "shipping_address", sajson );
+          }
 
-            return json;
-        } catch (JSONException ex) {
-            throw new RuntimeException(ex);
+        return json;
         }
-    }
+      catch ( JSONException ex )
+        {
+        throw new RuntimeException( ex );
+        }
+      }
 
     public Set<String> getCurrenciesSupported() {
         Set<String> supported = null;
@@ -230,13 +250,20 @@ public class Order implements Parcelable /* , Serializable */
 
       for ( Job job : jobs )
         {
-        stringBuilder
-                .append( separatorString )
-                .append( job.getProductId() )
-                .append( ":")
-                .append( String.valueOf( job.getQuantity() ) );
+        // Each job is repeated orderQuantity times
 
-        separatorString = ",";
+        int orderQuantity = job.getOrderQuantity();
+
+        for ( int index = 0; index < orderQuantity; index ++ )
+          {
+          stringBuilder
+                  .append( separatorString )
+                  .append( job.getProductId() )
+                  .append( ":" )
+                  .append( String.valueOf( job.getQuantity() ) );
+
+          separatorString = ",";
+          }
         }
       }
 

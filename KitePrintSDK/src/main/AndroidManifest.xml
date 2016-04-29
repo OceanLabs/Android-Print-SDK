@@ -33,7 +33,7 @@
             android:launchMode="singleTop"/>
 
         <activity
-            android:name=".checkout.CheckoutActivity"
+            android:name=".checkout.ShippingActivity"
             android:label="@string/title_activity_checkout"
             android:theme="@style/Theme.KiteSDK.Checkout"/>
 

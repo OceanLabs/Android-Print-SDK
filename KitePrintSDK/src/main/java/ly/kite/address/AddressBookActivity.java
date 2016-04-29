@@ -75,12 +75,12 @@ public class AddressBookActivity extends AKiteActivity
   {
   ////////// Static Constant(s) //////////
 
-  @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                 = "AddressBookActivity";
+  @SuppressWarnings("unused")
+  private static final String LOG_TAG = "AddressBookActivity";
 
-  public  static final String EXTRA_ADDRESS            = "ly.kite.EXTRA_ADDRESS";
+  public static final String EXTRA_ADDRESS = "ly.kite.EXTRA_ADDRESS";
 
-  private static final int    REQUEST_CODE_ADD_ADDRESS = 0;
+  private static final int REQUEST_CODE_ADD_ADDRESS = 0;
 
 
   ////////// Static Variable(s) //////////
@@ -88,10 +88,10 @@ public class AddressBookActivity extends AKiteActivity
 
   ////////// Member Variable(s) //////////
 
-  private ListView                mAddressBookListView;
-  private TextView                mEmptyMessageTextView;
+  private ListView mAddressBookListView;
+  private TextView mEmptyMessageTextView;
 
-  private AddressBookListAdaptor  mAddressBookListAdaptor;
+  private AddressBookListAdaptor mAddressBookListAdaptor;
 
 
   ////////// Static Initialiser(s) //////////
@@ -109,6 +109,17 @@ public class AddressBookActivity extends AKiteActivity
     Intent intent = new Intent( activity, AddressBookActivity.class );
 
     activity.startActivityForResult( intent, requestCode );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns an address bundled as an extra within an intent.
+   *
+   *****************************************************/
+  static public Address getAddress( Intent data )
+    {
+    return ( data.getParcelableExtra( AddressBookActivity.EXTRA_ADDRESS ) );
     }
 
 

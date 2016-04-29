@@ -10,31 +10,6 @@
         android:orientation="vertical">
 
 
-        <!-- Progress banner -->
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="@dimen/progress_banner_landscape_height"
-            android:orientation="horizontal">
-            <View
-                android:layout_width="0dp"
-                android:layout_weight="0.25"
-                android:layout_height="fill_parent"
-                android:background="@color/progress_banner_left_filler"/>
-            <ImageView
-                android:id="@+id/checkout_progress_indicator"
-                android:layout_width="0dp"
-                android:layout_weight="0.50"
-                android:layout_height="fill_parent"
-                android:src="@drawable/checkout_progress_indicator2"/>
-            <View
-                android:layout_width="0dp"
-                android:layout_weight="0.25"
-                android:layout_height="fill_parent"
-                android:background="@color/progress_banner_right_filler"/>
-        </LinearLayout>
-
-
         <!-- Two-column content -->
 
         <LinearLayout
@@ -63,18 +38,6 @@
                     android:layout_weight="1.0"
                     android:divider="@android:color/transparent"
                     android:dividerHeight="0dp"/>
-
-                <ly.kite.widget.CustomTypefaceButton
-                    android:id="@+id/credit_card_button"
-                    android:layout_marginTop="30dp"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.0"
-                    android:background="#8eae4d"
-                    android:onClick="onCreditCardButtonClicked"
-                    android:text="@string/payment_credit_card_button_text"
-                    android:textColor="@android:color/white"
-                    android:textSize="@dimen/control_label_text_size"/>
 
             </LinearLayout>
 
@@ -121,25 +84,13 @@
                             android:textColor="@color/apply_button"/>
                     </LinearLayout>
 
-
-                    <ly.kite.widget.CustomTypefaceButton
-                        android:id="@+id/paypal_button"
-                        android:layout_marginTop="10dp"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.0"
-                        android:background="#286db3"
-                        android:onClick="onPayPalButtonClicked"
-                        android:text="@string/payment_paypal_button_text"
-                        android:textColor="@android:color/white"
-                        android:textSize="@dimen/control_label_text_size"/>
-
                 </LinearLayout>
 
             </FrameLayout>
 
         </LinearLayout>
 
+        <include layout="@layout/include_cta_bar_divided"/>
 
     </LinearLayout>
 

@@ -73,7 +73,6 @@ import io.card.payment.CreditCard;
 
 import ly.kite.analytics.Analytics;
 import ly.kite.api.OrderState;
-import ly.kite.pricing.IPricingConsumer;
 import ly.kite.pricing.OrderPricing;
 import ly.kite.pricing.PricingAgent;
 import ly.kite.KiteSDK;
@@ -94,7 +93,7 @@ import ly.kite.catalogue.SingleCurrencyAmount;
  * This activity displays the price / payment screen.
  *
  *****************************************************/
-public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
+public class PaymentActivity extends AKiteActivity implements PricingAgent.IPricingConsumer,
                                                               TextView.OnEditorActionListener,
                                                               OrderSubmitter.IProgressListener,
                                                               View.OnClickListener
@@ -258,12 +257,12 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
     mProgressBar          = (ProgressBar)findViewById( R.id.progress_bar );
 
 
-    mPayPalButton = (Button)findViewById( R.id.cta_bar_left_button );
+    mPayPalButton = getLeftButton();
 
     if ( mPayPalButton == null ) mPayPalButton = (Button)findViewById( R.id.paypal_button );
 
 
-    mCreditCardButton = (Button)findViewById( R.id.cta_bar_right_button );
+    mCreditCardButton = getRightButton();
 
     if ( mCreditCardButton == null ) mCreditCardButton = (Button)findViewById( R.id.credit_card_button );
 
@@ -431,7 +430,8 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
       }
     else if ( requestCode == REQUEST_CODE_RECEIPT )
       {
-      setResult( Activity.RESULT_OK );
+      setResult( RESULT_OK );
+
       finish();
       }
     }
@@ -464,7 +464,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
    *
    *****************************************************/
   @Override
-  public void paOnSuccess( OrderPricing pricing )
+  public void paOnSuccess( int requestId, OrderPricing pricing )
     {
     mOrderPricing                = pricing;
 
@@ -487,7 +487,7 @@ public class PaymentActivity extends AKiteActivity implements IPricingConsumer,
    *
    *****************************************************/
   @Override
-  public void paOnError( Exception exception )
+  public void paOnError( int requestId, Exception exception )
     {
     mLastPriceRetrievalSucceeded = false;
 

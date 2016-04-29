@@ -56,6 +56,8 @@ import com.paypal.android.sdk.payments.PayPalConfiguration;
 
 import ly.kite.catalogue.CatalogueLoader;
 import ly.kite.checkout.PaymentActivity;
+import ly.kite.journey.basket.BasketActivity;
+import ly.kite.ordering.Order;
 import ly.kite.util.Asset;
 import ly.kite.journey.AImageSource;
 import ly.kite.journey.DeviceImageSource;
@@ -697,6 +699,28 @@ public class KiteSDK
 
     // We use the activity context here, not the application context
     ProductSelectionActivity.start( context, assetArrayList, productIds );
+    }
+
+
+  /*****************************************************
+   *
+   * Launches managed checkout.
+   *
+   *****************************************************/
+  public void startCheckout( Context context, Order order )
+    {
+    BasketActivity.start( context, order );
+    }
+
+
+  /*****************************************************
+   *
+   * Launches managed checkout, and returns the result.
+   *
+   *****************************************************/
+  public void startCheckout( Activity activity, Order order, int requestCode )
+    {
+    BasketActivity.startForResult( activity, order, requestCode );
     }
 
 

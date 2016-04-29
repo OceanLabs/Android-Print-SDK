@@ -46,6 +46,13 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"/>
 
+        <ly.kite.widget.CustomTypefaceTextView
+            android:id="@+id/basket_empty_text_view"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/basket_empty"
+            android:visibility="gone"/>
         <ProgressBar
             android:id="@+id/progress_spinner"
             android:layout_gravity="center"
