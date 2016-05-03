@@ -153,7 +153,7 @@ public class ACacheTests extends TestCase
    * Consumer implementation.
    *
    *****************************************************/
-  private class Consumer implements ACache.IConsumer
+  private class Consumer
     {
     String     value;
     Exception  exception;
@@ -178,7 +178,7 @@ public class ACacheTests extends TestCase
   private class Cache extends ACache<String,String,Consumer>
     {
     @Override
-    protected void saveAndDistributeValue( String value, Consumer consumer )
+    protected void onValueAvailable( String value, Consumer consumer )
       {
       consumer.onValue( value );
       }

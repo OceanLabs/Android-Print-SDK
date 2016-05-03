@@ -271,12 +271,6 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
   @Override
   protected void onActivityResult( int requestCode, int resultCode, Intent data )
     {
-    super.onActivityResult( requestCode, resultCode, data );
-
-
-    // The parent method will check for the checkout result.
-
-
     // See if we got an updated assets + quantity list
 
     if ( data != null )
@@ -292,8 +286,13 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
     if ( resultCode == ACTIVITY_RESULT_CODE_CONTINUE_SHOPPING )
       {
       mFragmentManager.popBackStackImmediate( ChooseProductGroupFragment.TAG, 0 );
+
+      return;
       }
 
+
+    // The parent method will check for the checkout result.
+    super.onActivityResult( requestCode, resultCode, data );
     }
 
 

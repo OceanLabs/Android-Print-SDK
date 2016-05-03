@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources
-    xmlns:tools="http://schemas.android.com/tools">
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <string name="app_name">Kite SDK</string>
 
@@ -32,7 +31,7 @@
     <string name="drawer_open">Drawer open</string>
     <string name="drawer_closed">Drawer closed</string>
 
-    <string name="alert_dialog_title_pack_not_full_format_string">You\'ve selected %1$d %2$s</string>
+    <string name="alert_dialog_title_pack_not_full_format_string">You have selected %1$d %2$s</string>
     <string name="alert_dialog_message_pack_not_full_format_string" tools:ignore="PluralsCandidate">You can add %d more for the same price</string>
 
     <string name="alert_dialog_title_oops">Oops!</string>
@@ -94,7 +93,7 @@
     <string name="alert_dialog_message_connectivity">Please check your internet connectivity and then try again</string>
 
     <string name="alert_dialog_title_processing">@string/Processing_</string>
-    <string name="alert_dialog_message_processing">One moment &#8230;</string>
+    <string name="alert_dialog_message_processing">One moment…</string>
 
     <string name="alert_dialog_message_uploading_images">Uploading images</string>
 
@@ -137,7 +136,7 @@
     <string name="PAYMENT_ID">PAYMENT ID</string>
     <string name="PRICE">PRICE</string>
     <string name="print_these">Print these</string>
-    <string name="Processing_">Processing &#8230;</string>
+    <string name="Processing_">Processing…</string>
     <string name="Promotional_Discount">Promotional Discount</string>
     <string name="Rotate">Rotate</string>
     <string name="Quantity">Quantity</string>

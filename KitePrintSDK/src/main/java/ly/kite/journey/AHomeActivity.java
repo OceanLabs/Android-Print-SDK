@@ -242,22 +242,23 @@ abstract public class AHomeActivity extends ProductSelectionActivity
   @Override
   protected void onActivityResult( int requestCode, int resultCode, Intent data )
     {
-    // For the Sticky 9 app, we don't want to exit the activity once check-out is
+    // For the custom apps, we don't want to exit the activity once check-out is
     // complete - we want to go back to the landing page - the choose product group
     // fragment.
 
-    if ( requestCode == ACTIVITY_REQUEST_CODE_CHECKOUT && resultCode == RESULT_OK )
+    if ( resultCode == ACTIVITY_RESULT_CODE_CHECKED_OUT )
       {
       mFragmentManager.popBackStackImmediate( ChooseProductGroupFragment.TAG, 0 );
 
       // If we have successfully completed a check-out, then also clear out any cached
       // assets. (This won't clear any product images).
       AssetHelper.clearSessionAssets( this );
+
+      return;
       }
-    else
-      {
-      super.onActivityResult( requestCode, resultCode, data );
-      }
+
+
+    super.onActivityResult( requestCode, resultCode, data );
     }
 
 
