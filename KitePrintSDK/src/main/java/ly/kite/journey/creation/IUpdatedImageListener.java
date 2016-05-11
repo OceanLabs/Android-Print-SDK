@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * ICustomImageEditorAgent.java
+ * IUpdatedImageListener.java
  *
  *
  * Modified MIT License
@@ -39,51 +39,23 @@ package ly.kite.journey.creation;
 
 ///// Import(s) /////
 
-import android.app.Activity;
-import android.content.Intent;
-
-import ly.kite.util.Asset;
-import ly.kite.util.AssetFragment;
+import ly.kite.ordering.ImageSpec;
 
 
-///// Interface Declaration /////
+///// Class Declaration /////
 
 /*****************************************************
  *
- * This interface should be implemented by custom image
- * editor agents.
+ * This interface identifies a fragment that wishes to
+ * be notified when an asset is edited.
  *
  *****************************************************/
-public interface ICustomImageEditorAgent
+public interface IUpdatedImageListener
   {
-  ////////// Static Constant(s) //////////
-
-
-  ////////// Method(s) //////////
-
   /*****************************************************
    *
-   * Called to start the editor.
+   * Called when an asset is updated.
    *
    *****************************************************/
-  public void onStartEditor( Activity activity, Asset asset, int requestCode );
-
-
-  /*****************************************************
-   *
-   * Called to return the edited asset fragment.
-   *
-   *****************************************************/
-  public AssetFragment getAssetFragment( Intent resultIntent );
-
-
-  ////////// Inner Class(es) //////////
-
-  /*****************************************************
-   *
-   * ...
-   *
-   *****************************************************/
-
+  public void onImageUpdated( int imageIndex, ImageSpec imageSpec );
   }
-

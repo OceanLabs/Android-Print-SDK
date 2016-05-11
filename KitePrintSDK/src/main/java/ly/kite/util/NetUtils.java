@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * ICustomImageEditorAgent.java
+ * NetUtils.java
  *
  *
  * Modified MIT License
@@ -34,47 +34,65 @@
 
 ///// Package Declaration /////
 
-package ly.kite.journey.creation;
+package ly.kite.util;
 
 
 ///// Import(s) /////
 
-import android.app.Activity;
-import android.content.Intent;
 
-import ly.kite.util.Asset;
-import ly.kite.util.AssetFragment;
+///// Class Declaration /////
 
-
-///// Interface Declaration /////
+import java.net.URL;
 
 /*****************************************************
  *
- * This interface should be implemented by custom image
- * editor agents.
+ * This class provides network helper methods.
  *
  *****************************************************/
-public interface ICustomImageEditorAgent
+public class NetUtils
   {
   ////////// Static Constant(s) //////////
+
+  @SuppressWarnings( "unused" )
+  private static final String  LOG_TAG = "NetUtils";
+
+
+  ////////// Static Variable(s) //////////
+
+
+  ////////// Member Variable(s) //////////
+
+
+  ////////// Static Initialiser(s) //////////
+
+
+  ////////// Static Method(s) //////////
+
+  /*****************************************************
+   *
+   * Returns true if the two URLs are either both null,
+   * or equal.
+   *
+   *****************************************************/
+  static public boolean areBothNullOrEqual( URL url1, URL url2 )
+    {
+    if ( url1 == null && url2 == null ) return ( true );
+    if ( url1 == null || url2 == null ) return ( false );
+
+    return ( url1.equals( url2 ) );
+    }
+
+
+  ////////// Constructor(s) //////////
 
 
   ////////// Method(s) //////////
 
   /*****************************************************
    *
-   * Called to start the editor.
+   * ...
    *
    *****************************************************/
-  public void onStartEditor( Activity activity, Asset asset, int requestCode );
-
-
-  /*****************************************************
-   *
-   * Called to return the edited asset fragment.
-   *
-   *****************************************************/
-  public AssetFragment getAssetFragment( Intent resultIntent );
 
 
   ////////// Inner Class(es) //////////

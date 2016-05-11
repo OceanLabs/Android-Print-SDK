@@ -1211,7 +1211,7 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
    * proportion of the image.
    *
    *****************************************************/
-  public RectF getImageCropBounds()
+  public RectF getImageProportionalCropRectangle()
     {
     // We need to calculate the bounds of the scaled mask plus
     // bleed on the unscaled image.

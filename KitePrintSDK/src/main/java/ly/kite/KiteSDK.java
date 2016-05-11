@@ -54,6 +54,8 @@ import android.util.Log;
 
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 
+import ly.kite.address.Address;
+import ly.kite.address.Country;
 import ly.kite.catalogue.CatalogueLoader;
 import ly.kite.checkout.PaymentActivity;
 import ly.kite.journey.basket.BasketActivity;
@@ -108,6 +110,14 @@ public class KiteSDK
   static private final String SHARED_PREFERENCES_KEY_REQUEST_PHONE_NUMBER         = "request_phone_number";
 
   static private final String SHARED_PREFERENCES_CUSTOM_PARAMETER_KEY_PREFIX      = "custom_parameter_";
+
+  static private final String SHARED_PREFERENCES_CUSTOM_ADDRESS_RECIPIENT_PARAMETER_KEY_PREFIX          = SHARED_PREFERENCES_CUSTOM_PARAMETER_KEY_PREFIX + "recipient_";
+  static private final String SHARED_PREFERENCES_CUSTOM_ADDRESS_LINE1_PARAMETER_KEY_PREFIX              = SHARED_PREFERENCES_CUSTOM_PARAMETER_KEY_PREFIX + "line1_";
+  static private final String SHARED_PREFERENCES_CUSTOM_ADDRESS_LINE2_PARAMETER_KEY_PREFIX              = SHARED_PREFERENCES_CUSTOM_PARAMETER_KEY_PREFIX + "line2_";
+  static private final String SHARED_PREFERENCES_CUSTOM_ADDRESS_CITY_PARAMETER_KEY_PREFIX               = SHARED_PREFERENCES_CUSTOM_PARAMETER_KEY_PREFIX + "city_";
+  static private final String SHARED_PREFERENCES_CUSTOM_ADDRESS_STATE_OR_COUNTY_PARAMETER_KEY_PREFIX    = SHARED_PREFERENCES_CUSTOM_PARAMETER_KEY_PREFIX + "state_or_county_";
+  static private final String SHARED_PREFERENCES_CUSTOM_ADDRESS_ZIP_OR_POSTAL_CODE_PARAMETER_KEY_PREFIX = SHARED_PREFERENCES_CUSTOM_PARAMETER_KEY_PREFIX + "zip_or_postal_code_";
+  static private final String SHARED_PREFERENCES_CUSTOM_ADDRESS_COUNTRY_CODE_PARAMETER_KEY_PREFIX       = SHARED_PREFERENCES_CUSTOM_PARAMETER_KEY_PREFIX + "country_code_";
 
   static public  final String PAYPAL_LIVE_API_ENDPOINT                            = "api.paypal.com";
   static public  final String PAYPAL_LIVE_CLIENT_ID                               = "ASYVBBCHF_KwVUstugKy4qvpQaPlUeE_5beKRJHpIP2d3SA_jZrsaUDTmLQY";
@@ -287,7 +297,8 @@ public class KiteSDK
 
     setEnvironment( apiKey, environment );
 
-    clearInstagramCredentials();
+    clearAllParameters();
+    //clearInstagramCredentials();
 
     // Set default image sources
     setImageSources( new DeviceImageSource(), new InstagramImageSource() );
@@ -323,6 +334,22 @@ public class KiteSDK
       }
 
     return ( sKiteSDK );
+    }
+
+
+  /*****************************************************
+   *
+   * Clears the Instagram developer credentials.
+   *
+   *****************************************************/
+  public KiteSDK clearAllParameters()
+    {
+    mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE )
+      .edit()
+        .clear()
+      .apply();
+
+    return ( this );
     }
 
 
@@ -604,22 +631,37 @@ public class KiteSDK
 
   /*****************************************************
    *
-   * Sets a custom parameter.
+   * Validates a parameter name.
    *
    *****************************************************/
-  public KiteSDK setCustomString( String name, String value )
+  private void validateParameterNameOrThrow( String name )
     {
-    // Check that the parameter name doesn't start with the custom prefix
+    // Check that the name is populates
+    if ( name == null || name.trim().equals( "" ) )
+      {
+      throw ( new IllegalArgumentException( "Custom parameter names must be populated: " + name ) );
+      }
 
+    // Check that the parameter name doesn't start with the custom prefix
     if ( name.startsWith( SHARED_PREFERENCES_CUSTOM_PARAMETER_KEY_PREFIX ) )
       {
       throw ( new IllegalArgumentException( "Custom parameter names must not start with " + SHARED_PREFERENCES_CUSTOM_PARAMETER_KEY_PREFIX ) );
       }
+    }
 
+
+  /*****************************************************
+   *
+   * Sets a custom string parameter.
+   *
+   *****************************************************/
+  public KiteSDK setParameter( String name, String string )
+    {
+    validateParameterNameOrThrow( name );
 
     mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE )
       .edit()
-        .putString( SHARED_PREFERENCES_CUSTOM_PARAMETER_KEY_PREFIX + name, value )
+        .putString( SHARED_PREFERENCES_CUSTOM_PARAMETER_KEY_PREFIX + name, string )
       .apply();
 
     return ( this );
@@ -628,22 +670,65 @@ public class KiteSDK
 
   /*****************************************************
    *
-   * Returns the value of a custom parameter.
+   * Sets a custom address parameter.
    *
    *****************************************************/
-  public String getCustomString( String name, String defaultValue )
+  public KiteSDK setParameter( String name, Address address )
     {
-    // Check that the parameter name doesn't start with the custom prefix
+    validateParameterNameOrThrow( name );
 
-    if ( name.startsWith( SHARED_PREFERENCES_CUSTOM_PARAMETER_KEY_PREFIX ) )
-      {
-      throw ( new IllegalArgumentException( "Custom parameter names must not start with " + SHARED_PREFERENCES_CUSTOM_PARAMETER_KEY_PREFIX ) );
-      }
+    mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE )
+      .edit()
+        .putString( SHARED_PREFERENCES_CUSTOM_ADDRESS_RECIPIENT_PARAMETER_KEY_PREFIX          + name, address.getRecipientName() )
+        .putString( SHARED_PREFERENCES_CUSTOM_ADDRESS_LINE1_PARAMETER_KEY_PREFIX              + name, address.getLine1() )
+        .putString( SHARED_PREFERENCES_CUSTOM_ADDRESS_LINE2_PARAMETER_KEY_PREFIX              + name, address.getLine2() )
+        .putString( SHARED_PREFERENCES_CUSTOM_ADDRESS_CITY_PARAMETER_KEY_PREFIX               + name, address.getCity() )
+        .putString( SHARED_PREFERENCES_CUSTOM_ADDRESS_STATE_OR_COUNTY_PARAMETER_KEY_PREFIX    + name, address.getStateOrCounty() )
+        .putString( SHARED_PREFERENCES_CUSTOM_ADDRESS_ZIP_OR_POSTAL_CODE_PARAMETER_KEY_PREFIX + name, address.getZipOrPostalCode() )
+        .putString( SHARED_PREFERENCES_CUSTOM_ADDRESS_COUNTRY_CODE_PARAMETER_KEY_PREFIX       + name, address.getCountry().iso3Code() )
+      .apply();
 
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the value of a custom string parameter.
+   *
+   *****************************************************/
+  public String getStringParameter( String name, String defaultValue )
+    {
+    validateParameterNameOrThrow( name );
 
     return ( mApplicationContext
                .getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE )
                .getString( SHARED_PREFERENCES_CUSTOM_PARAMETER_KEY_PREFIX + name, defaultValue ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the value of a custom address parameter.
+   *
+   *****************************************************/
+  public Address getAddressParameter( String name )
+    {
+    validateParameterNameOrThrow( name );
+
+    SharedPreferences sharedPreferences = mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE );
+
+    String  recipient       = sharedPreferences.getString( SHARED_PREFERENCES_CUSTOM_ADDRESS_RECIPIENT_PARAMETER_KEY_PREFIX          + name, null );
+    String  line1           = sharedPreferences.getString( SHARED_PREFERENCES_CUSTOM_ADDRESS_LINE1_PARAMETER_KEY_PREFIX              + name, null );
+    String  line2           = sharedPreferences.getString( SHARED_PREFERENCES_CUSTOM_ADDRESS_LINE2_PARAMETER_KEY_PREFIX              + name, null );
+    String  city            = sharedPreferences.getString( SHARED_PREFERENCES_CUSTOM_ADDRESS_CITY_PARAMETER_KEY_PREFIX               + name, null );
+    String  stateOrCounty   = sharedPreferences.getString( SHARED_PREFERENCES_CUSTOM_ADDRESS_STATE_OR_COUNTY_PARAMETER_KEY_PREFIX    + name, null );
+    String  zipOrPostalCode = sharedPreferences.getString( SHARED_PREFERENCES_CUSTOM_ADDRESS_ZIP_OR_POSTAL_CODE_PARAMETER_KEY_PREFIX + name, null );
+    Country country         = Country.getInstance( sharedPreferences.getString( SHARED_PREFERENCES_CUSTOM_ADDRESS_COUNTRY_CODE_PARAMETER_KEY_PREFIX + name, null ) );
+
+    if ( recipient == null && line1 == null && line2 == null && city == null && stateOrCounty == null && zipOrPostalCode == null && country == null ) return ( null );
+
+    return ( new Address( recipient, line1, line2, city, stateOrCounty, zipOrPostalCode, country ) );
     }
 
 

@@ -15,7 +15,9 @@ import java.util.Set;
 import ly.kite.address.Address;
 import ly.kite.catalogue.Product;
 import ly.kite.util.Asset;
+import ly.kite.util.AssetFragment;
 import ly.kite.util.StringUtils;
+import ly.kite.util.UploadableImage;
 
 /**
  * Created by alibros on 16/01/15.
@@ -30,25 +32,25 @@ import ly.kite.util.StringUtils;
  *****************************************************/
 public class PostcardJob extends Job
   {
-  private Asset   mFrontImageAsset;
-  private Asset   mBackImageAsset;
-  private String  mMessage;
-  private Address mAddress;
+  private UploadableImage  mFrontUploadableImage;
+  private UploadableImage  mBackUploadableImage;
+  private String           mMessage;
+  private Address          mAddress;
 
 
-  public PostcardJob( long jobId, Product product, int orderQuantity, HashMap<String, String> optionsMap, Asset frontImageAsset, Asset backImageAsset, String message, Address address )
+  public PostcardJob( long jobId, Product product, int orderQuantity, HashMap<String, String> optionsMap, Object frontImage, Object backImage, String message, Address address )
     {
     super( jobId, product, orderQuantity, optionsMap );
 
-    mFrontImageAsset = frontImageAsset;
-    mBackImageAsset  = backImageAsset;
-    mMessage         = message;
-    mAddress         = address;
+    mFrontUploadableImage = singleUploadableImageFrom( frontImage );
+    mBackUploadableImage  = singleUploadableImageFrom( backImage );
+    mMessage              = message;
+    mAddress              = address;
     }
 
-  public PostcardJob( Product product, int orderQuantity, HashMap<String, String> optionsMap, Asset frontImageAsset, Asset backImageAsset, String message, Address address )
+  public PostcardJob( Product product, int orderQuantity, HashMap<String, String> optionsMap, Object frontImage, Object backImage, String message, Address address )
     {
-    this( 0, product, orderQuantity, optionsMap, frontImageAsset, backImageAsset, message, address );
+    this( 0, product, orderQuantity, optionsMap, frontImage, backImage, message, address );
     }
 
 
@@ -70,20 +72,22 @@ public class PostcardJob extends Job
     return 1;
     }
 
+
   @Override
-  List<Asset> getAssetsForUploading()
+  List<UploadableImage> getImagesForUploading()
     {
-    ArrayList<Asset> assets = new ArrayList<Asset>();
+    List<UploadableImage> uploadableImageList = new ArrayList<>();
 
-    assets.add( mFrontImageAsset );
+    uploadableImageList.add( mFrontUploadableImage );
 
-    if ( mBackImageAsset != null )
+    if ( mBackUploadableImage != null )
       {
-      assets.add( mBackImageAsset );
+      uploadableImageList.add( mBackUploadableImage );
       }
 
-    return ( assets );
+    return ( uploadableImageList );
     }
+
 
   private static String getStringOrEmptyString( String val )
     {
@@ -99,11 +103,11 @@ public class PostcardJob extends Job
 
     JSONObject assets = new JSONObject();
     json.put( "assets", assets );
-    assets.put( "front_image", mFrontImageAsset.getId() );
+    assets.put( "front_image", mFrontUploadableImage.getUploadedAssetId() );
 
-    if ( mBackImageAsset != null )
+    if ( mBackUploadableImage != null )
       {
-      assets.put( "back_image", mBackImageAsset.getId() );
+      assets.put( "back_image", mBackUploadableImage.getUploadedAssetId() );
       }
 
     if ( mMessage != null )
@@ -152,8 +156,8 @@ public class PostcardJob extends Job
   public void writeToParcel( Parcel parcel, int flags )
     {
     super.writeToParcel( parcel, flags );
-    parcel.writeParcelable( mFrontImageAsset, flags );
-    parcel.writeParcelable( mBackImageAsset, flags );
+    parcel.writeParcelable( mFrontUploadableImage, flags );
+    parcel.writeParcelable( mBackUploadableImage, flags );
     parcel.writeString( mMessage );
     parcel.writeParcelable( mAddress, flags );
     }
@@ -163,10 +167,10 @@ public class PostcardJob extends Job
     //super( ProductCache.getDirtyInstance().getProductById( parcel.readString() ) );
     super( parcel );
 
-    mFrontImageAsset = parcel.readParcelable( Asset.class.getClassLoader() );
-    mBackImageAsset  = parcel.readParcelable( Asset.class.getClassLoader() );
-    mMessage         = parcel.readString();
-    mAddress         = (Address)parcel.readParcelable( Address.class.getClassLoader() );
+    mFrontUploadableImage = parcel.readParcelable( AssetFragment.class.getClassLoader() );
+    mBackUploadableImage = parcel.readParcelable( AssetFragment.class.getClassLoader() );
+    mMessage                 = parcel.readString();
+    mAddress                 = (Address)parcel.readParcelable( Address.class.getClassLoader() );
     }
 
   public static final Parcelable.Creator<PostcardJob> CREATOR
@@ -183,16 +187,6 @@ public class PostcardJob extends Job
     }
   };
 
-
-  public Asset getFrontImageAsset()
-    {
-    return ( mFrontImageAsset );
-    }
-
-  public Asset getBackImageAsset()
-    {
-    return ( mBackImageAsset );
-    }
 
   public String getMessage()
     {
@@ -215,8 +209,8 @@ public class PostcardJob extends Job
     String      otherMessage     = otherPostcardJob.mMessage;
     Address     otherAddress     = otherPostcardJob.mAddress;
 
-    if ( ! Asset.areBothNullOrEqual( mFrontImageAsset, otherPostcardJob.mFrontImageAsset ) ) return ( false );
-    if ( ! Asset.areBothNullOrEqual( mBackImageAsset,  otherPostcardJob.mBackImageAsset  ) ) return ( false );
+    if ( ! UploadableImage.areBothNullOrEqual( mFrontUploadableImage, otherPostcardJob.mFrontUploadableImage ) ) return ( false );
+    if ( ! UploadableImage.areBothNullOrEqual( mBackUploadableImage,  otherPostcardJob.mBackUploadableImage ) ) return ( false );
 
     if ( ! StringUtils.areBothNullOrEqual( mMessage, otherMessage ) ) return ( false );
 

@@ -40,7 +40,7 @@ package ly.kite.journey.creation;
 ///// Import(s) /////
 
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
@@ -57,12 +57,12 @@ import java.util.List;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
-import ly.kite.image.ImageProcessingRequest;
+import ly.kite.image.IImageSizeConsumer;
+import ly.kite.ordering.ImageSpec;
 import ly.kite.util.Asset;
 import ly.kite.journey.AImageSource;
 import ly.kite.journey.AKiteFragment;
-import ly.kite.journey.AssetsAndQuantity;
-import ly.kite.journey.IAssetsAndQuantityHolder;
+import ly.kite.journey.IImageSpecStore;
 import ly.kite.catalogue.Product;
 import ly.kite.image.ImageAgent;
 
@@ -92,7 +92,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
   ////////// Member Variable(s) //////////
 
   protected Product                       mProduct;
-  protected ArrayList<AssetsAndQuantity>  mAssetsAndQuantityArrayList;
+  protected ArrayList<ImageSpec>          mImageSpecArrayList;
 
   private   ProgressBar                   mProgressBar;
   private   Button                        mProceedOverlayButton;
@@ -101,8 +101,8 @@ abstract public class AProductCreationFragment extends    AKiteFragment
   private   Button                        mCTABarLeftButton;
   private   Button                        mCTABarRightButton;
 
-  protected int                           mInitialAssetsToCropCount;
-  protected int                           mRemainingAssetsToCropCount;
+  protected int mInitialImagesToCropCount;
+  protected int mRemainingImagesToCropCount;
 
 
   ////////// Static Initialiser(s) //////////
@@ -162,12 +162,12 @@ abstract public class AProductCreationFragment extends    AKiteFragment
     // We can't get the shared assets and quantity list until after the
     // activity has been created.
 
-    if ( mKiteActivity != null && mKiteActivity instanceof IAssetsAndQuantityHolder )
+    if ( mKiteActivity != null && mKiteActivity instanceof IImageSpecStore )
       {
-      mAssetsAndQuantityArrayList = ( (IAssetsAndQuantityHolder)mKiteActivity ).getAssetsAndQuantityArrayList();
+      mImageSpecArrayList = ( (IImageSpecStore)mKiteActivity ).getImageSpecArrayList();
       }
 
-    if ( mAssetsAndQuantityArrayList == null )
+    if ( mImageSpecArrayList == null )
       {
       throw ( new IllegalStateException( "The assets and quantity list could not be obtained" ) );
       }
@@ -283,7 +283,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
     super.onTop();
 
     // We don't enable the proceed button until all the assets have been cropped
-    setForwardsButtonEnabled( mRemainingAssetsToCropCount < 1 );
+    setForwardsButtonEnabled( mRemainingImagesToCropCount < 1 );
     }
 
 
@@ -504,17 +504,17 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
     String productId = mProduct.getId();
 
-    List<AssetsAndQuantity> assetsAndQuantityToCropList = new ArrayList<>( mAssetsAndQuantityArrayList.size() );
+    List<ImageSpec> imageSpecToCropList = new ArrayList<>( mImageSpecArrayList.size() );
 
-    for ( AssetsAndQuantity assetsAndQuantity : mAssetsAndQuantityArrayList )
+    for ( ImageSpec imageSpec : mImageSpecArrayList )
       {
-      if ( assetsAndQuantity != null )
+      if ( imageSpec != null )
         {
-        // If we don't already have an edited asset - create one now
+        // If we don't already have a crop rectangle - create one now
 
-        if ( ( productId == null ) || ( !productId.equals( assetsAndQuantity.getEditedForProductId() ) ) )
+        if ( ( productId == null ) || ( ! productId.equals( imageSpec.getCroppedForProductId() ) ) )
           {
-          assetsAndQuantityToCropList.add( assetsAndQuantity );
+          imageSpecToCropList.add( imageSpec );
           }
         }
       }
@@ -522,20 +522,20 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
     // Get the counts
 
-    mRemainingAssetsToCropCount = mInitialAssetsToCropCount = assetsAndQuantityToCropList.size();
+    mRemainingImagesToCropCount = mInitialImagesToCropCount = imageSpecToCropList.size();
 
-    showProgress( mRemainingAssetsToCropCount, mInitialAssetsToCropCount );
+    showProgress( mRemainingImagesToCropCount, mInitialImagesToCropCount );
 
 
     // Now go back through and request all the images
 
-    for ( AssetsAndQuantity assetsAndQuantity : assetsAndQuantityToCropList )
+    for ( ImageSpec imageSpec : imageSpecToCropList )
       {
-      requestCroppedAsset( assetsAndQuantity );
+      requestCroppedImage( imageSpec );
       }
 
 
-    boolean assetsToCrop = mInitialAssetsToCropCount > 0;
+    boolean assetsToCrop = mInitialImagesToCropCount > 0;
 
     // Set the enabled state of the proceed button according to whether there are assets to crop
     setForwardsButtonEnabled( assetsToCrop );
@@ -549,13 +549,11 @@ abstract public class AProductCreationFragment extends    AKiteFragment
    * Requests a single square cropped image for an asset.
    *
    *****************************************************/
-  protected void requestCroppedAsset( AssetsAndQuantity assetsAndQuantity )
+  protected void requestCroppedImage( ImageSpec imageSpec )
     {
     ImageAgent.with( mKiteActivity )
-            .transform( assetsAndQuantity.getUneditedAsset() )
-            .byCroppingToAspectRatio( mProduct.getImageAspectRatio() )
-            .intoNewAsset()
-            .thenNotify( new ImageCropCallback( assetsAndQuantity ) );
+            .loadSizeOf( imageSpec.getAssetFragment().getAsset() )
+            .into( new ImageCropCallback( imageSpec ) );
     }
 
 
@@ -590,7 +588,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
    * Called when an image is cropped.
    *
    *****************************************************/
-  protected void onImageCropped( AssetsAndQuantity assetsAndQuantity )
+  protected void onImageCropped( ImageSpec imageSpec )
     {
     }
 
@@ -623,7 +621,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
    * times if a number of assets are added together.
    *
    *****************************************************/
-  protected void onAssetAdded( AssetsAndQuantity assetsAndQuantity )
+  protected void onAssetAdded( ImageSpec imageSpec )
     {
     }
 
@@ -655,15 +653,15 @@ abstract public class AProductCreationFragment extends    AKiteFragment
       // from a different source - a byte by byte comparison would take too long, and a
       // duplicate is unlikely anyway.
 
-      if ( ! AssetsAndQuantity.uneditedAssetIsInList( mAssetsAndQuantityArrayList, asset ) )
+      if ( ! ImageSpec.assetIsInList( mImageSpecArrayList, asset ) )
         {
-        // Start with the unedited asset, and a quantity of 1.
-        AssetsAndQuantity assetsAndQuantity = new AssetsAndQuantity( asset );
+        // Start with the original asset, and a quantity of 1.
+        ImageSpec imageSpec = new ImageSpec( asset );
 
         // Add the selected image to our asset lists, mark it as checked
-        mAssetsAndQuantityArrayList.add( assetsAndQuantity );
+        mImageSpecArrayList.add( imageSpec );
 
-        onAssetAdded( assetsAndQuantity );
+        onAssetAdded( imageSpec );
         }
       }
 
@@ -682,18 +680,18 @@ abstract public class AProductCreationFragment extends    AKiteFragment
     {
     for ( Asset asset : newAssetList )
       {
-      if ( insertionPointIndex >= mAssetsAndQuantityArrayList.size() ) break;
+      if ( insertionPointIndex >= mImageSpecArrayList.size() ) break;
 
-      AssetsAndQuantity assetsAndQuantity = new AssetsAndQuantity( asset );
+      ImageSpec imageSpec = new ImageSpec( asset );
 
-      mAssetsAndQuantityArrayList.set( insertionPointIndex, assetsAndQuantity );
+      mImageSpecArrayList.set( insertionPointIndex, imageSpec );
 
-      onAssetAdded( assetsAndQuantity );
+      onAssetAdded( imageSpec );
 
 
       // Find the next free slot
-      while ( insertionPointIndex < mAssetsAndQuantityArrayList.size() &&
-              mAssetsAndQuantityArrayList.get( ++ insertionPointIndex ) != null );
+      while ( insertionPointIndex < mImageSpecArrayList.size() &&
+              mImageSpecArrayList.get( ++ insertionPointIndex ) != null );
       }
 
 
@@ -747,15 +745,16 @@ abstract public class AProductCreationFragment extends    AKiteFragment
     }
 
 
-  /*****************************************************
-   *
-   * Finds an edited asset in the list.
-   *
-   *****************************************************/
-  protected int findEditedAsset( Asset soughtEditedAsset )
-    {
-    return ( AssetsAndQuantity.findEditedAsset( mAssetsAndQuantityArrayList, soughtEditedAsset ) );
-    }
+// TODO: Delete
+//  /*****************************************************
+//   *
+//   * Finds an edited asset in the list.
+//   *
+//   *****************************************************/
+//  protected int findEditedAsset( Asset soughtEditedAsset )
+//    {
+//    return ( AssetsAndQuantity.findEditedAsset( mImageSpecArrayList, soughtEditedAsset ) );
+//    }
 
 
 
@@ -766,41 +765,44 @@ abstract public class AProductCreationFragment extends    AKiteFragment
    * The callback for the image cropping.
    *
    *****************************************************/
-  private class ImageCropCallback implements ImageProcessingRequest.ICallback
+  private class ImageCropCallback implements IImageSizeConsumer
     {
-    private AssetsAndQuantity  mAssetsAndQuantity;
+    private ImageSpec  mImageSpec;
 
 
-    ImageCropCallback( AssetsAndQuantity assetsAndQuantity )
+    ImageCropCallback( ImageSpec imageSpec )
       {
-      mAssetsAndQuantity  = assetsAndQuantity;
+      mImageSpec = imageSpec;
       }
 
 
-    ////////// ImageProcessingRequest.ICallback Method(s) //////////
+    ////////// IImageSizeConsumer Method(s) //////////
 
     /*****************************************************
      *
-     * Called on the UI thread, with the cropped image.
+     * Called on the UI thread, with the image size.
      *
      *****************************************************/
     @Override
-    public void ipcOnImageAvailable( Asset asset )
+    public void onImageSizeAvailable( int width, int height )
       {
-      // Store the processed asset
-      mAssetsAndQuantity.setEditedAsset( asset, mProduct.getId() );
+      // Calculate and save the crop rectangle
+
+      RectF cropRectangle = ImageAgent.getProportionalCropRectangle( width, height, mProduct.getImageAspectRatio() );
+
+      mImageSpec.setProportionalCropRectangle( cropRectangle, mProduct.getId() );
 
 
-      onImageCropped( mAssetsAndQuantity );
+      onImageCropped( mImageSpec );
 
 
       // If we now have all the cropped images - enable the proceed button.
 
-      mRemainingAssetsToCropCount--;
+      mRemainingImagesToCropCount--;
 
-      showProgress( mRemainingAssetsToCropCount, mInitialAssetsToCropCount );
+      showProgress( mRemainingImagesToCropCount, mInitialImagesToCropCount );
 
-      if ( mRemainingAssetsToCropCount < 1 )
+      if ( mRemainingImagesToCropCount < 1 )
         {
         setForwardsButtonEnabled( true );
 
@@ -815,7 +817,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
      *
      *****************************************************/
     @Override
-    public void ipcOnImageUnavailable()
+    public void onImageSizeUnavailable( Exception exception )
       {
       // TODO
       }

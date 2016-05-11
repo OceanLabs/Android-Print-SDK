@@ -1,11 +1,11 @@
 /*****************************************************
  *
- * IEditedAssetSubscriber.java
+ * IImageSpecStore.java
  *
  *
  * Modified MIT License
  *
- * Copyright (c) 2010-2016 Kite Tech Ltd. https://www.kite.ly
+ * Copyright (c) 2010-2015 Kite Tech Ltd. https://www.kite.ly
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,28 +34,46 @@
 
 ///// Package Declaration /////
 
-package ly.kite.journey.creation;
+package ly.kite.journey;
 
 
 ///// Import(s) /////
 
-import ly.kite.journey.AssetsAndQuantity;
+import java.util.ArrayList;
+
+import ly.kite.ordering.ImageSpec;
 
 
 ///// Class Declaration /////
 
 /*****************************************************
  *
- * This interface identifies a fragment that wishes to
- * be notified when an asset is edited.
+ * This interface defines a holder for an assets and quantity
+ * list.
  *
  *****************************************************/
-public interface IUpdatedAssetListener
+public interface IImageSpecStore
   {
+  ////////// Static Constant(s) //////////
+
+
+  ////////// Method(s) //////////
+
   /*****************************************************
    *
-   * Called when an asset is updated.
+   * Returns the assets and quantity list.
    *
    *****************************************************/
-  public void onAssetUpdated( int assetIndex, AssetsAndQuantity assetsAndQuantity );
+  ArrayList<ImageSpec> getImageSpecArrayList();
+
+
+  ////////// Inner Class(es) //////////
+
+  /*****************************************************
+   *
+   * ...
+   *
+   *****************************************************/
+
   }
+

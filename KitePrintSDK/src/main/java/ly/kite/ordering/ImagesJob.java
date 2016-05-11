@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 import ly.kite.catalogue.Product;
-import ly.kite.util.Asset;
+import ly.kite.util.UploadableImage;
 
 /**
  * Created by deonbotha on 09/02/2014.
@@ -24,28 +24,39 @@ import ly.kite.util.Asset;
 /*****************************************************
  *
  * This class represents any type of job that uses a
- * list of assets. This can include multiple units of
+ * set of images. This can include multiple units of
  * a single-image product (such as phone cases) or
  * products that require multiple images (prints,
  * photobooks etc.)
  *
  *****************************************************/
-public class AssetListJob extends Job
+public class ImagesJob extends Job
   {
+  private List<UploadableImage> mUploadableImageList;
 
-    private List<Asset> mAssetList;
 
-
-  public AssetListJob( long jobId, Product product, int orderQuantity, HashMap<String,String> optionMap, List<Asset> assetList )
+  public ImagesJob( long jobId, Product product, int orderQuantity, HashMap<String,String> optionMap, List<?> objectList )
     {
     super( jobId, product, orderQuantity, optionMap );
 
-    mAssetList = assetList;
+
+    // The image list can be UploadableImages, ImageSpecs, AssetFragments, or Assets
+
+    mUploadableImageList = new ArrayList<>();
+
+    if ( objectList != null )
+      {
+      for ( Object object : objectList )
+        {
+        addUploadableImages( object, mUploadableImageList );
+        }
+      }
     }
 
-  public AssetListJob( Product product, int orderQuantity, HashMap<String,String> optionsMap, List<Asset> assetList )
+
+  public ImagesJob( Product product, int orderQuantity, HashMap<String,String> optionsMap, List<?> objectList )
     {
-    this( 0, product, orderQuantity, optionsMap, assetList );
+    this( 0, product, orderQuantity, optionsMap, objectList );
     }
 
 
@@ -77,19 +88,20 @@ public class AssetListJob extends Job
 
     @Override
     public int getQuantity() {
-        return mAssetList.size();
+        return ( mUploadableImageList.size() );
     }
 
     @Override
-    List<Asset> getAssetsForUploading() {
-        return mAssetList;
-    }
+    List<UploadableImage> getImagesForUploading()
+      {
+      return ( mUploadableImageList );
+      }
 
 
-  public List<Asset> getAssets()
-    {
-    return ( mAssetList );
-    }
+//  public List<Asset> getAssets()
+//    {
+//    return ( mAssetList );
+//    }
 
 
   @Override
@@ -103,7 +115,7 @@ public class AssetListJob extends Job
 
       addProductOptions( jsonObject );
 
-      putAssetsJSON( mAssetList, jsonObject );
+      putAssetsJSON( mUploadableImageList, jsonObject );
 
       jsonObject.put( "frame_contents", new JSONObject() );
       }
@@ -122,13 +134,13 @@ public class AssetListJob extends Job
    * implementation just adds the assets as an array.
    *
    *****************************************************/
-  protected void putAssetsJSON( List<Asset> assetList, JSONObject jsonObject ) throws JSONException
+  protected void putAssetsJSON( List<UploadableImage> uploadableImageList, JSONObject jsonObject ) throws JSONException
     {
     JSONArray assetsJSONArray = new JSONArray();
 
-    for ( Asset asset : assetList )
+    for ( UploadableImage uploadableImage : uploadableImageList )
       {
-      assetsJSONArray.put( "" + asset.getId() );
+      assetsJSONArray.put( "" + uploadableImage.getUploadedAssetId() );
       }
 
     jsonObject.put( "assets", assetsJSONArray );
@@ -143,24 +155,26 @@ public class AssetListJob extends Job
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
         super.writeToParcel( parcel, flags );
-        parcel.writeTypedList( mAssetList );
+        parcel.writeTypedList( mUploadableImageList );
 
     }
 
-    protected AssetListJob( Parcel parcel) {
-        super( parcel );
-        this.mAssetList = new ArrayList<Asset>();
-        parcel.readTypedList( mAssetList, Asset.CREATOR);
+  protected ImagesJob( Parcel parcel )
+    {
+    super( parcel );
+
+    mUploadableImageList = new ArrayList<>();
+    parcel.readTypedList( mUploadableImageList, UploadableImage.CREATOR );
     }
 
-    public static final Parcelable.Creator<AssetListJob> CREATOR
-            = new Parcelable.Creator<AssetListJob>() {
-        public AssetListJob createFromParcel( Parcel in) {
-            return new AssetListJob(in);
+    public static final Parcelable.Creator<ImagesJob> CREATOR
+            = new Parcelable.Creator<ImagesJob>() {
+        public ImagesJob createFromParcel( Parcel in) {
+            return new ImagesJob(in);
         }
 
-        public AssetListJob[] newArray( int size) {
-            return new AssetListJob[size];
+        public ImagesJob[] newArray( int size) {
+            return new ImagesJob[size];
         }
     };
 
@@ -168,12 +182,12 @@ public class AssetListJob extends Job
   @Override
   public boolean equals( Object otherObject )
     {
-    if ( otherObject == null || ( ! ( otherObject instanceof AssetListJob ) ) ) return ( false );
+    if ( otherObject == null || ( ! ( otherObject instanceof ImagesJob ) ) ) return ( false );
 
-    AssetListJob otherAssetListJob = (AssetListJob)otherObject;
-    List<Asset>  otherAssetList    = otherAssetListJob.getAssets();
+    ImagesJob otherAssetListJob = (ImagesJob)otherObject;
+    List<UploadableImage>  otherUploadableImageList    = otherAssetListJob.mUploadableImageList;
 
-    if ( ! Asset.areBothNullOrEqual( mAssetList, otherAssetList ) ) return ( false );
+    if ( ! UploadableImage.areBothNullOrEqual( mUploadableImageList, otherUploadableImageList ) ) return ( false );
 
     return ( super.equals( otherObject ) );
     }

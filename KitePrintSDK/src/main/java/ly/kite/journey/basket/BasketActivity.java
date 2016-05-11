@@ -56,11 +56,13 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ly.kite.KiteSDK;
 import ly.kite.address.Address;
 import ly.kite.basket.BasketAgent;
+import ly.kite.basket.BasketItem;
 import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.ICatalogueConsumer;
 import ly.kite.catalogue.Product;
@@ -69,6 +71,7 @@ import ly.kite.checkout.ShippingActivity;
 import ly.kite.image.ImageAgent;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.R;
+import ly.kite.journey.creation.ProductCreationActivity;
 import ly.kite.ordering.Job;
 import ly.kite.ordering.Order;
 import ly.kite.pricing.OrderPricing;
@@ -88,14 +91,18 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String  LOG_TAG              = "BasketActivity";
+  static private final String  LOG_TAG                         = "BasketActivity";
 
-  static private final String  KEY_MANAGED_ORDER    = "ly.kite.managedorder";
-  static private final String  KEY_SHIPPING_ADDRESS = "ly.kite.shippingaddress";
-  static private final String  KEY_CONTACT_EMAIL    = "ly.kite.contactemail";
-  static private final String  KEY_CONTACT_PHONE    = "ly.kite.contactphone";
+  static private final String  KEY_MANAGED_ORDER               = "ly.kite.managedorder";
+  static private final String  KEY_SHIPPING_ADDRESS            = "ly.kite.shippingaddress";
+  static private final String  KEY_CONTACT_EMAIL               = "ly.kite.contactemail";
+  static private final String  KEY_CONTACT_PHONE               = "ly.kite.contactphone";
 
-  static private final String  NO_PROMO_CODE_YET    = null;
+  static private final String  NO_PROMO_CODE_YET               = null;
+
+  static private final String  PARAMETER_NAME_SHIPPING_ADDRESS = "basket_shipping_address";
+  static private final String  PARAMETER_NAME_CONTACT_EMAIL    = "basket_contact_email";
+  static private final String  PARAMETER_NAME_CONTACT_PHONE    = "basket_contact_phone";
 
 
   ////////// Static Variable(s) //////////
@@ -103,27 +110,29 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
 
   ////////// Member Variable(s) //////////
 
-  private Order          mManagedOrder;
-  private Order          mPersistedBasket;
+  private boolean           mIsManagedCheckout;
 
-  private Order          mOrderOrBasket;
+  private Order             mManagedOrder;
+  private List<BasketItem>  mBasketItemList;
 
-  private Address        mShippingAddress;
-  private String         mContactEmail;
-  private String         mContactPhone;
+  private Order             mBasketOrder;
 
-  private ListView       mListView;
-  private TextView       mBasketEmptyTextView;
-  private ProgressBar    mProgressSpinner;
-  private TextView       mDeliveryAddressTextView;
-  private TextView       mTotalShippingPriceTextView;
-  private TextView       mTotalPriceTextView;
+  private Address           mShippingAddress;
+  private String            mContactEmail;
+  private String            mContactPhone;
 
-  private Catalogue      mCatalogue;
+  private ListView          mListView;
+  private TextView          mBasketEmptyTextView;
+  private ProgressBar       mProgressSpinner;
+  private TextView          mDeliveryAddressTextView;
+  private TextView          mTotalShippingPriceTextView;
+  private TextView          mTotalPriceTextView;
 
-  private BasketAdaptor  mBasketAdaptor;
+  private Catalogue         mCatalogue;
 
-  private int            mPricingRequestId;
+  private BasketAdaptor     mBasketAdaptor;
+
+  private int               mPricingRequestId;
 
 
   ////////// Static Initialiser(s) //////////
@@ -199,7 +208,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
 
     if ( savedInstanceState != null )
       {
-      mOrderOrBasket = mManagedOrder = savedInstanceState.getParcelable( KEY_MANAGED_ORDER );
+      mManagedOrder    = savedInstanceState.getParcelable( KEY_MANAGED_ORDER );
 
       mShippingAddress = savedInstanceState.getParcelable( KEY_SHIPPING_ADDRESS );
       mContactEmail    = savedInstanceState.getString( KEY_CONTACT_EMAIL );
@@ -212,11 +221,18 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
 
       if ( intent != null )
         {
-        mOrderOrBasket = mManagedOrder = intent.getParcelableExtra( KEY_MANAGED_ORDER );
+        mManagedOrder = intent.getParcelableExtra( KEY_MANAGED_ORDER );
         }
       }
 
-    if ( mShippingAddress == null && mOrderOrBasket != null ) mShippingAddress = mOrderOrBasket.getShippingAddress();
+    if ( mManagedOrder != null )
+      {
+      mIsManagedCheckout = true;
+
+      if ( mShippingAddress == null ) mShippingAddress = mManagedOrder.getShippingAddress();
+      if ( mContactEmail    == null ) mContactEmail    = mManagedOrder.getNotificationEmail();
+      if ( mContactPhone    == null ) mContactPhone    = mManagedOrder.getNotificationPhoneNumber();
+      }
 
 
     setContentView( R.layout.screen_basket );
@@ -239,12 +255,46 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
 
 
     mDeliveryAddressTextView.setOnClickListener( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the activity starts.
+   *
+   *****************************************************/
+  @Override
+  public void onStart()
+    {
+    super.onStart();
+
+
+    // If we still don't have some shipping details, see if we saved them from the same session
+
+    KiteSDK kiteSDK = KiteSDK.getInstance( this );
+
+    if ( mShippingAddress == null ) mShippingAddress = kiteSDK.getAddressParameter( PARAMETER_NAME_SHIPPING_ADDRESS );
+    if ( mContactEmail    == null ) mContactEmail    = kiteSDK.getStringParameter( PARAMETER_NAME_CONTACT_EMAIL, null );
+    if ( mContactPhone    == null ) mContactPhone    = kiteSDK.getStringParameter( PARAMETER_NAME_CONTACT_PHONE, null );
 
 
     // See what mode we're in
-    if ( mManagedOrder != null )
+
+    if ( mIsManagedCheckout )
       {
       ///// Managed check-out /////
+
+      // Create a list of basket items for the job
+
+      List<Job> jobList = mManagedOrder.getJobs();
+
+      mBasketItemList = new ArrayList<>( jobList.size() );
+
+      for ( Job job : jobList )
+        {
+        mBasketItemList.add( new BasketItem( 0L, job.getProduct(), job.getOrderQuantity(), null, null ) );
+        }
+
 
       setLeftButtonVisible( false );
 
@@ -300,7 +350,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
       mContactEmail    = ShippingActivity.getEmail( data );
       mContactPhone    = ShippingActivity.getPhone( data );
 
-      onShippingAddress( mShippingAddress );
+      onNewShippingDetails();
 
       return;
       }
@@ -311,7 +361,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
     else if ( requestCode == ACTIVITY_REQUEST_CODE_CHECKOUT && resultCode == RESULT_OK )
       {
       // If we checked out OK, then we'll want to clear the basket
-      BasketAgent.getInstance( this ).clearBasket();
+      BasketAgent.getInstance( this ).clear();
 
       setResult( ACTIVITY_RESULT_CODE_CHECKED_OUT );
 
@@ -363,9 +413,18 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
   @Override
   protected void onRightButtonClicked()
     {
+    // Set up the order shipping details
+
+    Order order = getOrder();
+
+    order.setShippingAddress( mShippingAddress );
+    order.setNotificationEmail( mContactEmail );
+    order.setNotificationPhoneNumber( mContactPhone );
+
+
     // Populate the order with the shipping / contact details
 
-    JSONObject userData = mOrderOrBasket.getUserData();
+    JSONObject userData = order.getUserData();
 
     if ( userData == null )
       {
@@ -382,13 +441,11 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
       // Ignore
       }
 
-    mOrderOrBasket.setUserData( userData );
-    mOrderOrBasket.setNotificationEmail( mContactEmail );
-    mOrderOrBasket.setNotificationPhoneNumber( mContactPhone );
+    order.setUserData( userData );
 
 
     // Go to payment screen
-    PaymentActivity.startForResult( this, mOrderOrBasket, ACTIVITY_REQUEST_CODE_CHECKOUT );
+    PaymentActivity.startForResult( this, order, ACTIVITY_REQUEST_CODE_CHECKOUT );
     }
 
 
@@ -442,8 +499,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
     {
     if ( view == mDeliveryAddressTextView )
       {
-      //AddressBookActivity.startForResult( this, ACTIVITY_REQUEST_CODE_GET_ADDRESS );
-      ShippingActivity.startForResult( this, mOrderOrBasket, ACTIVITY_REQUEST_CODE_GET_CONTACT_DETAILS );
+      ShippingActivity.startForResult( this, getOrder(), ACTIVITY_REQUEST_CODE_GET_CONTACT_DETAILS );
 
       return;
       }
@@ -493,7 +549,9 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
    *****************************************************/
   private void loadAndDisplayBasket()
     {
-    mOrderOrBasket = mPersistedBasket = BasketAgent.getInstance( this ).getBasket( mCatalogue );
+    mBasketOrder = null;
+
+    mBasketItemList = BasketAgent.getInstance( this ).getAllItems( mCatalogue );
 
     onGotBasket();
     }
@@ -508,16 +566,14 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
     {
     // Set up the adaptor
 
-    mBasketAdaptor = new BasketAdaptor( mOrderOrBasket );
+    mBasketAdaptor = new BasketAdaptor();
 
     mListView.setAdapter( mBasketAdaptor );
 
 
     // If there are no items in the basket - show the empty text
 
-    List<Job> jobList = mOrderOrBasket.getJobs();
-
-    if ( jobList != null && jobList.size()> 0 )
+    if ( mBasketItemList != null && mBasketItemList.size() > 0 )
       {
       mBasketEmptyTextView.setVisibility( View.GONE );
       }
@@ -531,20 +587,69 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
 
     if ( mShippingAddress != null )
       {
-      onShippingAddress( mShippingAddress );
+      onShippingAddress();
       }
     }
 
 
   /*****************************************************
    *
-   * Sets the shipping address.
+   * Returns the order. If we are in managed check-out, this
+   * will be the one we were supplied, otherwise we create a
+   * new one from the basket items.
    *
    *****************************************************/
-  private void onShippingAddress( Address shippingAddress )
+  private Order getOrder()
     {
-    mOrderOrBasket.setShippingAddress( mShippingAddress );
+    if ( mIsManagedCheckout ) return ( mManagedOrder );
 
+
+    if ( mBasketOrder == null )
+      {
+      // Create an order from the basket items
+
+      mBasketOrder = new Order();
+
+      for ( BasketItem item : mBasketItemList )
+        {
+        Product product       = item.getProduct();
+        int     orderQuantity = item.getOrderQuantity();
+
+        product.getUserJourneyType().addJobsToOrder( product, orderQuantity, item.getOptionsMap(), item.getImageSpecList(), mBasketOrder );
+        }
+      }
+
+
+    return ( mBasketOrder );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when we have a new shipping address.
+   *
+   *****************************************************/
+  private void onNewShippingDetails()
+    {
+    // Save the shipping details for this session
+
+    KiteSDK kiteSDK = KiteSDK.getInstance( this );
+
+    kiteSDK.setParameter( PARAMETER_NAME_SHIPPING_ADDRESS, mShippingAddress );
+    kiteSDK.setParameter( PARAMETER_NAME_CONTACT_EMAIL,    mContactEmail );
+    kiteSDK.setParameter( PARAMETER_NAME_CONTACT_PHONE,    mContactPhone );
+
+    onShippingAddress();
+    }
+
+
+  /*****************************************************
+   *
+   * Called when we have a shipping address.
+   *
+   *****************************************************/
+  private void onShippingAddress()
+    {
     mDeliveryAddressTextView.setText( mShippingAddress.toSingleLineText() );
 
     // The Checkout button is only enabled when we have an address
@@ -569,7 +674,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
     // Re-request the pricing if the shipping address changes, as the shipping price may
     // have changed.
 
-    OrderPricing pricing = PricingAgent.getInstance().requestPricing( this, mOrderOrBasket, NO_PROMO_CODE_YET, this, ++ mPricingRequestId );
+    OrderPricing pricing = PricingAgent.getInstance().requestPricing( this, getOrder(), NO_PROMO_CODE_YET, this, ++ mPricingRequestId );
 
     if ( pricing != null )
       {
@@ -615,28 +720,17 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
    *****************************************************/
   private class BasketAdaptor extends BaseAdapter
     {
-    private Order      mBasket;
-    private List<Job>  mJobList;
-
-
-    BasketAdaptor( Order basket )
-      {
-      mBasket  = basket;
-      mJobList = basket.getJobs();
-      }
-
-
     @Override
     public int getCount()
       {
-      return ( mJobList.size() );
+      return ( mBasketItemList.size() );
       }
 
 
     @Override
     public Object getItem( int position )
       {
-      return ( mJobList.get( position ) );
+      return ( mBasketItemList.get( position ) );
       }
 
 
@@ -685,17 +779,20 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
      *****************************************************/
     private class ViewHolder implements View.OnClickListener
       {
-      private int        mPosition;
-      private Job        mJob;
+      private int         mPosition;
+      private BasketItem  mBasketItem;
+      private Product     mProduct;
 
-      private ImageView  mProductImageView;
-      private TextView   mQuantityTextView;
+      private ImageView   mProductImageView;
+      private TextView    mQuantityTextView;
 
-      private Button     mDecrementButton;
-      private Button     mIncrementButton;
+      private Button      mDecrementButton;
+      private Button      mIncrementButton;
 
-      private TextView   mProductNameTextView;
-      private TextView   mPriceTextView;
+      private View        mEditTouchFrame;
+
+      private TextView    mProductNameTextView;
+      private TextView    mPriceTextView;
 
 
       ViewHolder( View view )
@@ -706,12 +803,15 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
         mDecrementButton     = (Button)view.findViewById( R.id.decrement_button );
         mIncrementButton     = (Button)view.findViewById( R.id.increment_button );
 
+        mEditTouchFrame      = view.findViewById( R.id.edit_touch_frame );
+
         mProductNameTextView = (TextView)view.findViewById( R.id.product_name_text_view );
 
         mPriceTextView       = (TextView)view.findViewById( R.id.price_text_view );
 
         mDecrementButton.setOnClickListener( this );
         mIncrementButton.setOnClickListener( this );
+        mEditTouchFrame.setOnClickListener( this );
         }
 
 
@@ -721,20 +821,36 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
         BasketAgent basketAgent = BasketAgent.getInstance( BasketActivity.this );
 
 
-        int orderQuantity = mJob.getOrderQuantity();
+        // Check for edit
+
+        if ( view == mEditTouchFrame )
+          {
+          ProductCreationActivity.startForResult( BasketActivity.this, mBasketItem.getId(), mBasketItem.getProduct(), mBasketItem.getOptionsMap(), mBasketItem.getImageSpecList(), mBasketItem.getOrderQuantity(), ACTIVITY_REQUEST_CODE_EDIT_BASKET_ITEM );
+
+          return;
+          }
+
+
+        // Check for quantity change
+
+        int orderQuantity = mBasketItem.getOrderQuantity();
 
         if ( view == mDecrementButton )
           {
           // Try to decrement the order quantity for this job
 
-          orderQuantity = basketAgent.decrementOrderQuantity( mJob.getId() );
+          orderQuantity = basketAgent.decrementOrderQuantity( mBasketItem.getId() );
           }
         else if ( view == mIncrementButton )
           {
           // Try to increment the order quantity for this job
 
-          orderQuantity = basketAgent.incrementOrderQuantity( mJob.getId() );
+          orderQuantity = basketAgent.incrementOrderQuantity( mBasketItem.getId() );
           }
+
+
+        // The order will have changed, so clear any cached one.
+        mBasketOrder = null;
 
 
         // If order quantity goes down to 0, remove the job and refresh the whole basket list.
@@ -743,9 +859,9 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
 
         if ( orderQuantity > 0 )
           {
-          mJob.setOrderQuantity( orderQuantity );
+          mBasketItem.setOrderQuantity( orderQuantity );
 
-          setQuantityText();
+          setQuantityDependentText();
 
           // If we have a shipping address - re-request the prices
           if ( mShippingAddress != null ) requestPrices();
@@ -763,31 +879,41 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
         mPosition = position;
 
 
-        // Get the appropriate job, and populate the view
+        // Get the appropriate basket item, and populate the view
 
-        mJob = (Job)getItem( position );
+        mBasketItem = (BasketItem)getItem( position );
+        mProduct    = mBasketItem.getProduct();
 
         ImageAgent.with( BasketActivity.this )
-                .load( mJob.getProduct().getDisplayImageURL(), KiteSDK.IMAGE_CATEGORY_PRODUCT_ITEM )
+                .load( mProduct.getDisplayImageURL(), KiteSDK.IMAGE_CATEGORY_PRODUCT_ITEM )
                 .reduceColourSpace()
                 .resizeForDimen( mProductImageView, R.dimen.basket_item_image_width, R.dimen.basket_item_height )
                 .onlyScaleDown()
                 .into( mProductImageView );
 
-        setQuantityText();
+        setQuantityDependentText();
 
 
-        Product product = mJob.getProduct();
+        mProductNameTextView.setText( mProduct.getName() );
 
-        mProductNameTextView.setText( product.getName() );
 
-        mPriceTextView.setText( product.getDisplayPrice() );
+        if ( mIsManagedCheckout )
+          {
+          mDecrementButton.setVisibility( View.INVISIBLE );
+          mIncrementButton.setVisibility( View.INVISIBLE );
+          }
+        else
+          {
+          mDecrementButton.setVisibility( View.VISIBLE );
+          mIncrementButton.setVisibility( View.VISIBLE );
+          }
         }
 
 
-      private void setQuantityText()
+      private void setQuantityDependentText()
         {
-        mQuantityTextView.setText( String.valueOf( mJob.getOrderQuantity() ) );
+        mQuantityTextView.setText( String.valueOf( mBasketItem.getOrderQuantity() ) );
+        mPriceTextView.setText( mProduct.getDisplayPriceMultipliedBy( mBasketItem.getOrderQuantity() ) );
         }
       }
 

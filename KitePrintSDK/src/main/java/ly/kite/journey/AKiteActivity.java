@@ -81,12 +81,13 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   @SuppressWarnings( "unused" )
   static private final String  LOG_TAG                                      = "AKiteActivity";
 
-  static public  final String  INTENT_EXTRA_NAME_ASSETS_AND_QUANTITY__LIST  = KiteSDK.INTENT_PREFIX + ".assetsAndQuantityList";
+  static public  final String INTENT_EXTRA_NAME_IMAGE_SPEC_LIST             = KiteSDK.INTENT_PREFIX + ".imageSpecList";
 
   static public  final int     NO_BUTTON                                    = 0;
 
   static public  final int     ACTIVITY_REQUEST_CODE_ADD_TO_BASKET          = 10;
   static public  final int     ACTIVITY_REQUEST_CODE_GO_TO_BASKET           = 11;
+  static public  final int     ACTIVITY_REQUEST_CODE_EDIT_BASKET_ITEM       = 12;
   static public  final int     ACTIVITY_REQUEST_CODE_CHECKOUT               = 20;
   static public  final int     ACTIVITY_REQUEST_CODE_CREATE                 = 30;
   static public  final int     ACTIVITY_REQUEST_CODE_GET_ADDRESS            = 40;

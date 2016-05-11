@@ -15,6 +15,8 @@ import java.util.Set;
 import ly.kite.address.Address;
 import ly.kite.catalogue.Product;
 import ly.kite.util.Asset;
+import ly.kite.util.AssetFragment;
+import ly.kite.util.UploadableImage;
 
 /**
  * Created by deonbotha on 09/02/2014.
@@ -38,7 +40,7 @@ public abstract class Job implements Parcelable
   private           long                     mId;  // The id from the basket database
   transient private Product                  mProduct;  // Stop the product being serialised
   private           int                      mOrderQuantity;
-  private final     HashMap<String, String>  mOptionMap;
+  private final     HashMap<String, String>  mOptionsMap;
 
 
   public abstract BigDecimal getCost( String currencyCode );
@@ -47,7 +49,7 @@ public abstract class Job implements Parcelable
 
   abstract public int getQuantity();
 
-  abstract List<Asset> getAssetsForUploading();
+  abstract List<UploadableImage> getImagesForUploading();
 
   abstract JSONObject getJSONRepresentation();
 
@@ -60,32 +62,33 @@ public abstract class Job implements Parcelable
    *
    *****************************************************/
 
-  static public Job createPrintJob( Product product, int orderQuantity, HashMap<String, String> optionMap, List<Asset> assets )
+  static public Job createPrintJob( Product product, int orderQuantity, HashMap<String, String> optionsMap, List<?> imageList )
     {
-    return ( new AssetListJob( product, orderQuantity, optionMap, assets ) );
+    return ( new ImagesJob( product, orderQuantity, optionsMap, imageList ) );
     }
 
-  static public Job createPrintJob( Product product, HashMap<String, String> optionMap, List<Asset> assets )
+  static public Job createPrintJob( Product product, HashMap<String, String> optionsMap, List<?> imageList )
     {
-    return ( createPrintJob( product, 1, optionMap, assets ) );
+    return ( createPrintJob( product, 1, optionsMap, imageList ) );
     }
 
-  static public Job createPrintJob( Product product, List<Asset> assets )
+  static public Job createPrintJob( Product product, List<?> imageList )
     {
-    return ( createPrintJob( product, 1, null, assets ) );
+    return ( createPrintJob( product, 1, null, imageList ) );
     }
 
-  static public Job createPrintJob( Product product, HashMap<String, String> optionMap, Asset asset )
+  static public Job createPrintJob( Product product, HashMap<String,String> optionsMap, Object image )
     {
-    List<Asset> singleAssetList = new ArrayList<Asset>( 1 );
-    singleAssetList.add( asset );
+    List<UploadableImage> singleImageSpecList = new ArrayList<>( 1 );
 
-    return ( createPrintJob( product, 1, optionMap, singleAssetList ) );
+    singleImageSpecList.add( singleUploadableImageFrom( image ) );
+
+    return ( createPrintJob( product, 1, optionsMap, singleImageSpecList ) );
     }
 
-  static public Job createPrintJob( Product product, Asset asset )
+  static public Job createPrintJob( Product product, Object image )
     {
-    return ( createPrintJob( product, null, asset ) );
+    return ( createPrintJob( product, null, image ) );
     }
 
 
@@ -95,19 +98,19 @@ public abstract class Job implements Parcelable
    *
    *****************************************************/
 
-  static public PhotobookJob createPhotobookJob( Product product, int orderQuantity, HashMap<String,String> optionsMap, Asset frontCoverAsset, List<Asset> contentAssetList )
+  static public PhotobookJob createPhotobookJob( Product product, int orderQuantity, HashMap<String,String> optionsMap, Object frontCoverImage, List<?> contentImageList )
     {
-    return ( new PhotobookJob( product, orderQuantity, optionsMap, frontCoverAsset, contentAssetList ) );
+    return ( new PhotobookJob( product, orderQuantity, optionsMap, frontCoverImage, contentImageList ) );
     }
 
-  static public PhotobookJob createPhotobookJob( Product product, HashMap<String,String> optionsMap, Asset frontCoverAsset, List<Asset> contentAssetList )
+  static public PhotobookJob createPhotobookJob( Product product, HashMap<String,String> optionsMap, Object frontCoverImage, List<?> contentImageList )
     {
-    return ( createPhotobookJob( product, 1, optionsMap, frontCoverAsset, contentAssetList ) );
+    return ( createPhotobookJob( product, 1, optionsMap, frontCoverImage, contentImageList ) );
     }
 
-  static public PhotobookJob createPhotobookJob( Product product, Asset frontCoverAsset, List<Asset> contentAssetList )
+  static public PhotobookJob createPhotobookJob( Product product, Object frontCoverImage, List<?> contentImageList )
     {
-    return ( createPhotobookJob( product, 1, null, frontCoverAsset, contentAssetList ) );
+    return ( createPhotobookJob( product, 1, null, frontCoverImage, contentImageList ) );
     }
 
 
@@ -117,19 +120,24 @@ public abstract class Job implements Parcelable
    *
    *****************************************************/
 
-  static public GreetingCardJob createGreetingCardJob( Product product, int orderQuantity, HashMap<String, String> optionsMap, Asset frontImageAsset, Asset backImageAsset, Asset insideLeftImageAsset, Asset insideRightImageAsset )
+  static public GreetingCardJob createGreetingCardJob( Product product, int orderQuantity, HashMap<String, String> optionsMap, Object frontImage, Object backImage, Object insideLeftImage, Object insideRightImage )
     {
-    return ( new GreetingCardJob( product, orderQuantity, optionsMap, frontImageAsset, backImageAsset, insideLeftImageAsset, insideRightImageAsset ) );
+    return ( new GreetingCardJob( product, orderQuantity, optionsMap, frontImage, backImage, insideLeftImage, insideRightImage ) );
     }
 
-  static public GreetingCardJob createGreetingCardJob( Product product, Asset frontImageAsset, Asset backImageAsset, Asset insideLeftImageAsset, Asset insideRightImageAsset )
+  static public GreetingCardJob createGreetingCardJob( Product product, int orderQuantity, HashMap<String, String> optionsMap, Object frontImage )
     {
-    return ( createGreetingCardJob( product, 1, null, frontImageAsset, backImageAsset, insideLeftImageAsset, insideRightImageAsset ) );
+    return ( new GreetingCardJob( product, orderQuantity, optionsMap, frontImage, null, null, null ) );
     }
 
-  static public GreetingCardJob createGreetingCardJob( Product product, Asset frontImageAsset )
+  static public GreetingCardJob createGreetingCardJob( Product product, Object frontImage, Object backImage, Object insideLeftImage, Object insideRightImage )
     {
-    return ( createGreetingCardJob( product, 1, null, frontImageAsset, null, null, null ) );
+    return ( createGreetingCardJob( product, 1, null, frontImage, backImage, insideLeftImage, insideRightImage ) );
+    }
+
+  static public GreetingCardJob createGreetingCardJob( Product product, Object frontImage )
+    {
+    return ( createGreetingCardJob( product, 1, null, frontImage, null, null, null ) );
     }
 
 
@@ -165,15 +173,88 @@ public abstract class Job implements Parcelable
     }
 
 
+  /*****************************************************
+   *
+   * Adds uploadable images to a list.
+   *
+   *****************************************************/
+  static protected void addUploadableImages( Object object, List<UploadableImage> uploadableImageList )
+    {
+    if ( object == null ) return;
+
+
+    // For ImageSpecs, we need to add as many images as the quantity
+
+    if ( object instanceof ImageSpec )
+      {
+      ImageSpec imageSpec = (ImageSpec)object;
+
+      AssetFragment assetFragment = imageSpec.getAssetFragment();
+      int           quantity      = imageSpec.getQuantity();
+
+      for ( int index = 0; index < quantity; index ++ )
+        {
+        uploadableImageList.add( new UploadableImage( assetFragment ) );
+        }
+      }
+
+
+    // Anything else is just one image
+
+    else
+      {
+      UploadableImage uploadableImage = singleUploadableImageFrom( object );
+
+      if ( uploadableImage != null ) uploadableImageList.add( uploadableImage );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Returns an UploadableImage from an unknown image object.
+   *
+   *****************************************************/
+  static protected UploadableImage singleUploadableImageFrom( Object object )
+    {
+    if ( object == null ) return ( null );
+
+    if ( object instanceof UploadableImage ) return ( (UploadableImage)object );
+    if ( object instanceof ImageSpec       ) return ( new UploadableImage( ( (ImageSpec)object ).getAssetFragment() ) );
+    if ( object instanceof AssetFragment   ) return ( new UploadableImage( (AssetFragment)object ) );
+    if ( object instanceof Asset           ) return ( new UploadableImage( (Asset)object ) );
+
+    throw ( new IllegalArgumentException( "Unable to convert " + object + " into UploadableImage" ) );
+    }
+
+
+//  /*****************************************************
+//   *
+//   * Returns an AssetFragment from an unknown image object.
+//   *
+//   *****************************************************/
+//  static protected AssetFragment assetFragmentFrom( Object image )
+//    {
+//    if ( image == null ) return ( null );
+//
+//    if ( image instanceof ImageSpec       ) return ( ( (ImageSpec)image ).getAssetFragment() );
+//    if ( image instanceof UploadableImage ) return ( ( (UploadableImage)image ).getAssetFragment() );
+//    if ( image instanceof AssetFragment   ) return ( (AssetFragment)image );
+//    if ( image instanceof Asset           ) return ( new AssetFragment( (Asset)image ) );
+//
+//    throw ( new IllegalArgumentException( "Unable to convert " + image + " into ImageSpec" ) );
+//    }
+
+
   ////////// Constructor(s) //////////
 
-  protected Job( long id, Product product, int orderQuantity, HashMap<String, String> optionMap )
+  protected Job( long id, Product product, int orderQuantity, HashMap<String, String> optionsMap )
     {
     mId            = id;
     mProduct       = product;
     mOrderQuantity = orderQuantity;
 
-    mOptionMap     = ( optionMap != null ? optionMap : new HashMap<String, String>( 0 ) );
+    mOptionsMap = ( optionsMap != null ? optionsMap : new HashMap<String, String>( 0 ) );
     }
 
   protected Job( Parcel sourceParcel )
@@ -181,7 +262,7 @@ public abstract class Job implements Parcelable
     mId            = sourceParcel.readLong();
     mProduct       = Product.CREATOR.createFromParcel( sourceParcel );
     mOrderQuantity = sourceParcel.readInt();
-    mOptionMap     = sourceParcel.readHashMap( HashMap.class.getClassLoader() );
+    mOptionsMap    = sourceParcel.readHashMap( HashMap.class.getClassLoader() );
     }
 
 
@@ -219,13 +300,13 @@ public abstract class Job implements Parcelable
   // Adds the product option choices to the JSON
   protected void addProductOptions( JSONObject jobJSONObject ) throws JSONException
     {
-    if ( mOptionMap == null ) return;
+    if ( mOptionsMap == null ) return;
 
     JSONObject optionsJSONObject = new JSONObject();
 
-    for ( String optionCode : mOptionMap.keySet() )
+    for ( String optionCode : mOptionsMap.keySet() )
       {
-      optionsJSONObject.put( optionCode, mOptionMap.get( optionCode ) );
+      optionsJSONObject.put( optionCode, mOptionsMap.get( optionCode ) );
       }
 
     jobJSONObject.put( JSON_NAME_OPTIONS, optionsJSONObject );
@@ -239,7 +320,7 @@ public abstract class Job implements Parcelable
    *****************************************************/
   public HashMap<String,String> getProductOptions()
     {
-    return ( mOptionMap );
+    return ( mOptionsMap );
     }
 
 
@@ -252,7 +333,7 @@ public abstract class Job implements Parcelable
 
     parcel.writeInt( mOrderQuantity );
 
-    parcel.writeMap( mOptionMap );
+    parcel.writeMap( mOptionsMap );
     }
 
 
@@ -272,16 +353,16 @@ public abstract class Job implements Parcelable
 
     if ( ! mProduct.getId().equals( otherProduct.getId() ) ) return ( false );
 
-    if ( ( mOptionMap == null && otherOptionMap != null ) ||
-         ( mOptionMap != null && ( otherOptionMap == null ||
-                                   mOptionMap.size() != otherOptionMap.size() ) ) )
+    if ( ( mOptionsMap == null && otherOptionMap != null ) ||
+         ( mOptionsMap != null && ( otherOptionMap == null ||
+                                   mOptionsMap.size() != otherOptionMap.size() ) ) )
       {
       return ( false );
       }
 
-    for ( String name : mOptionMap.keySet() )
+    for ( String name : mOptionsMap.keySet() )
       {
-      String value      = mOptionMap.get( name );
+      String value      = mOptionsMap.get( name );
       String otherValue = otherOptionMap.get( name );
 
       if ( ( value == null && otherValue != null ) ||

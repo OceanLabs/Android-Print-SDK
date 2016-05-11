@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * ICustomImageEditorAgent.java
+ * BasketItem.java
  *
  *
  * Modified MIT License
@@ -34,47 +34,130 @@
 
 ///// Package Declaration /////
 
-package ly.kite.journey.creation;
+package ly.kite.basket;
 
 
 ///// Import(s) /////
 
-import android.app.Activity;
-import android.content.Intent;
 
-import ly.kite.util.Asset;
-import ly.kite.util.AssetFragment;
+///// Class Declaration /////
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
-///// Interface Declaration /////
+import ly.kite.catalogue.Product;
+import ly.kite.ordering.ImageSpec;
 
 /*****************************************************
  *
- * This interface should be implemented by custom image
- * editor agents.
+ * This class holds a basket item.
  *
  *****************************************************/
-public interface ICustomImageEditorAgent
+public class BasketItem
   {
   ////////// Static Constant(s) //////////
+
+  @SuppressWarnings( "unused" )
+  static private final String  LOG_TAG = "BasketItem";
+
+
+  ////////// Static Variable(s) //////////
+
+
+  ////////// Member Variable(s) //////////
+
+  private long                    mId;
+  private Product                 mProduct;
+  private int                     mOrderQuantity;
+  private HashMap<String,String>  mOptionsMap;
+  private ArrayList<ImageSpec>    mImageSpecList;
+
+
+  ////////// Static Initialiser(s) //////////
+
+
+  ////////// Static Method(s) //////////
+
+
+  ////////// Constructor(s) //////////
+
+  public BasketItem( long id, Product product, int orderQuantity, HashMap<String,String> optionsMap, ArrayList<ImageSpec> imageSpecList )
+    {
+    mId            = id;
+    mProduct       = product;
+    mOrderQuantity = orderQuantity;
+    mOptionsMap    = optionsMap;
+    mImageSpecList = imageSpecList;
+    }
 
 
   ////////// Method(s) //////////
 
   /*****************************************************
    *
-   * Called to start the editor.
+   * Returns the item id.
    *
    *****************************************************/
-  public void onStartEditor( Activity activity, Asset asset, int requestCode );
+  public long getId()
+    {
+    return ( mId );
+    }
 
 
   /*****************************************************
    *
-   * Called to return the edited asset fragment.
+   * Returns the product.
    *
    *****************************************************/
-  public AssetFragment getAssetFragment( Intent resultIntent );
+  public Product getProduct()
+    {
+    return ( mProduct );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the order quantity.
+   *
+   *****************************************************/
+  public void setOrderQuantity( int orderQuantity )
+    {
+    mOrderQuantity = orderQuantity;
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the order quantity.
+   *
+   *****************************************************/
+  public int getOrderQuantity()
+    {
+    return ( mOrderQuantity );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the options map.
+   *
+   *****************************************************/
+  public HashMap<String,String> getOptionsMap()
+    {
+    return ( mOptionsMap );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the image spec list.
+   *
+   *****************************************************/
+  public ArrayList<ImageSpec> getImageSpecList()
+    {
+    return ( mImageSpecList );
+    }
 
 
   ////////// Inner Class(es) //////////

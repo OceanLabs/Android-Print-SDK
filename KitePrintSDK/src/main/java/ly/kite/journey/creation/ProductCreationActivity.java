@@ -41,6 +41,7 @@ package ly.kite.journey.creation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -56,8 +57,8 @@ import ly.kite.R;
 import ly.kite.analytics.Analytics;
 import ly.kite.basket.BasketAgent;
 import ly.kite.journey.AKiteActivity;
-import ly.kite.journey.AssetsAndQuantity;
-import ly.kite.journey.IAssetsAndQuantityHolder;
+import ly.kite.journey.IImageSpecStore;
+import ly.kite.ordering.ImageSpec;
 import ly.kite.journey.basket.BasketActivity;
 import ly.kite.journey.creation.imagesource.ImageSourceFragment;
 import ly.kite.journey.UserJourneyType;
@@ -66,10 +67,8 @@ import ly.kite.journey.creation.phonecase.PhoneCaseFragment;
 import ly.kite.journey.creation.photobook.PhotobookFragment;
 import ly.kite.journey.creation.reviewandedit.EditImageFragment;
 import ly.kite.journey.creation.reviewandedit.ReviewAndEditFragment;
-import ly.kite.util.Asset;
-import ly.kite.ordering.Job;
-import ly.kite.ordering.Order;
 import ly.kite.catalogue.Product;
+import ly.kite.util.AssetFragment;
 
 
 ///// Class Declaration /////
@@ -80,7 +79,7 @@ import ly.kite.catalogue.Product;
  * journey fragments specific to the UI class.
  *
  *****************************************************/
-public class ProductCreationActivity extends AKiteActivity implements IAssetsAndQuantityHolder,
+public class ProductCreationActivity extends AKiteActivity implements IImageSpecStore,
                                                                       ImageSourceFragment.ICallback,
                                                                       PhoneCaseFragment.ICallback,
                                                                       ImageSelectionFragment.ICallback,
@@ -92,14 +91,15 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                                    = "ProductCreationActivity";
+  static private final String  LOG_TAG                                    = "ProductCreationActivity";
 
-  public  static final String  INTENT_EXTRA_NAME_ASSETS_AND_QUANTITY_LIST = KiteSDK.INTENT_PREFIX + ".assetsAndQuantityList";
-  public  static final String  INTENT_EXTRA_NAME_PRODUCT                  = KiteSDK.INTENT_PREFIX + ".product";
-  public  static final String  INTENT_EXTRA_NAME_OPTION_MAP               = KiteSDK.INTENT_PREFIX + ".optionMap";
+  static public  final String  INTENT_EXTRA_NAME_BASKET_ITEM_ID           = KiteSDK.INTENT_PREFIX + ".basketItemId";
+  static public  final String  INTENT_EXTRA_NAME_ORDER_QUANTITY           = KiteSDK.INTENT_PREFIX + ".orderQuantity";
+  static public  final String  INTENT_EXTRA_NAME_PRODUCT                  = KiteSDK.INTENT_PREFIX + ".product";
+  static public  final String  INTENT_EXTRA_NAME_OPTIONS_MAP              = KiteSDK.INTENT_PREFIX + ".optionsMap";
 
-  private static final String  BUNDLE_KEY_ASSETS_AND_QUANTITY_LIST        = "assetsAndQuantityList";
-  private static final String  BUNDLE_KEY_LAST_EDITED_ASSET_INDEX         = "lastEditedAssetIndex";
+  static private final String  BUNDLE_KEY_IMAGE_SPEC_LIST                 = "imageSpecList";
+  static private final String  BUNDLE_KEY_LAST_EDITED_IMAGE_INDEX         = "lastEditedImageIndex";
 
 
   ////////// Static Variable(s) //////////
@@ -109,12 +109,17 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
 
   ////////// Member Variable(s) //////////
 
-  private ArrayList<AssetsAndQuantity>  mAssetsAndQuantityArrayList;
+  private boolean                       mInEditMode;
+
+  private long                          mBasketItemId;
+  private int                           mOrderQuantity;
+
   private Product                       mProduct;
   private HashMap<String,String>        mOptionMap;
+  private ArrayList<ImageSpec>          mImageSpecArrayList;
 
   private ICustomImageEditorAgent       mCustomImageEditorAgent;
-  private int                           mLastEditedAssetIndex;
+  private int                           mLastEditedImageIndex;
 
   private ProgressDialog                mProgressDialog;
 
@@ -155,16 +160,20 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
    *
    *****************************************************/
   static public void startForResult( Activity                      activity,
-                                     ArrayList<AssetsAndQuantity>  assetsAndQuantityArrayList,
+                                     long                          basketItemId,
                                      Product                       product,
-                                     HashMap<String,String>        optionMap,
+                                     HashMap<String,String>        optionsMap,
+                                     ArrayList<ImageSpec>          imageSpecArrayList,
+                                     int                           orderQuantity,
                                      int                           requestCode )
     {
     Intent intent = new Intent( activity, ProductCreationActivity.class );
 
-    intent.putParcelableArrayListExtra( INTENT_EXTRA_NAME_ASSETS_AND_QUANTITY_LIST, assetsAndQuantityArrayList );
+    intent.putExtra( INTENT_EXTRA_NAME_BASKET_ITEM_ID, basketItemId );
     intent.putExtra( INTENT_EXTRA_NAME_PRODUCT, product );
-    intent.putExtra( INTENT_EXTRA_NAME_OPTION_MAP, optionMap );
+    intent.putExtra( INTENT_EXTRA_NAME_OPTIONS_MAP, optionsMap );
+    intent.putParcelableArrayListExtra( INTENT_EXTRA_NAME_IMAGE_SPEC_LIST, imageSpecArrayList );
+    intent.putExtra( INTENT_EXTRA_NAME_ORDER_QUANTITY, orderQuantity );
 
     activity.startActivityForResult( intent, requestCode );
     }
@@ -176,11 +185,26 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
    *
    *****************************************************/
   static public void startForResult( Activity                      activity,
-                                     ArrayList<AssetsAndQuantity>  assetsAndQuantityArrayList,
                                      Product                       product,
+                                     HashMap<String,String>        optionsMap,
+                                     ArrayList<ImageSpec>          imageSpecArrayList,
                                      int                           requestCode )
     {
-    startForResult( activity, assetsAndQuantityArrayList, product, new HashMap<String, String>( 0 ), requestCode );
+    startForResult( activity, -1L, product, optionsMap, imageSpecArrayList, 1, requestCode );
+    }
+
+
+  /*****************************************************
+   *
+   * Starts this activity.
+   *
+   *****************************************************/
+  static public void startForResult( Activity                      activity,
+                                     Product                       product,
+                                     ArrayList<ImageSpec>          imageSpecArrayList,
+                                     int                           requestCode )
+    {
+    startForResult( activity, product, new HashMap<String, String>( 0 ), imageSpecArrayList, requestCode );
     }
 
 
@@ -211,8 +235,8 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
 
     if ( savedInstanceState != null )
       {
-      mAssetsAndQuantityArrayList = savedInstanceState.getParcelableArrayList( BUNDLE_KEY_ASSETS_AND_QUANTITY_LIST );
-      mLastEditedAssetIndex       = savedInstanceState.getInt( BUNDLE_KEY_LAST_EDITED_ASSET_INDEX );
+      mImageSpecArrayList   = savedInstanceState.getParcelableArrayList( BUNDLE_KEY_IMAGE_SPEC_LIST );
+      mLastEditedImageIndex = savedInstanceState.getInt( BUNDLE_KEY_LAST_EDITED_IMAGE_INDEX );
       }
 
 
@@ -237,15 +261,22 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
       }
 
 
-    // If we didn't get an assets and quantity list from a saved state - get the original from the intent. If
+    // If we didn't get an image spec list from a saved state - get the original from the intent. If
     // all else fails - create a new empty one.
 
-    if ( mAssetsAndQuantityArrayList == null )
+    if ( mImageSpecArrayList == null )
       {
-      mAssetsAndQuantityArrayList = intent.getParcelableArrayListExtra( INTENT_EXTRA_NAME_ASSETS_AND_QUANTITY_LIST );
+      mImageSpecArrayList = intent.getParcelableArrayListExtra( INTENT_EXTRA_NAME_IMAGE_SPEC_LIST );
       }
 
-    if ( mAssetsAndQuantityArrayList == null ) mAssetsAndQuantityArrayList = new ArrayList<>();
+    if ( mImageSpecArrayList == null ) mImageSpecArrayList = new ArrayList<>();
+
+
+    // See if we got a basket item id, and are thus editing a basket item
+
+    mBasketItemId = intent.getLongExtra( INTENT_EXTRA_NAME_BASKET_ITEM_ID, -1L );
+
+    if ( mBasketItemId >= 0 ) mInEditMode = true;
 
 
     mProduct = intent.getParcelableExtra( INTENT_EXTRA_NAME_PRODUCT );
@@ -267,9 +298,12 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
       }
 
 
-    mOptionMap = (HashMap<String,String>)intent.getSerializableExtra( INTENT_EXTRA_NAME_OPTION_MAP );
+    mOptionMap = (HashMap<String,String>)intent.getSerializableExtra( INTENT_EXTRA_NAME_OPTIONS_MAP );
 
     if ( mOptionMap == null ) mOptionMap = new HashMap<>( 0 );
+
+
+    mOrderQuantity = intent.getIntExtra( INTENT_EXTRA_NAME_ORDER_QUANTITY, 1 );
 
 
     // Set up the screen content
@@ -299,19 +333,19 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
 
 
     // Save the assets and quantity list
-    if ( mAssetsAndQuantityArrayList != null )
+    if ( mImageSpecArrayList != null )
       {
-      outState.putParcelableArrayList( BUNDLE_KEY_ASSETS_AND_QUANTITY_LIST, mAssetsAndQuantityArrayList );
+      outState.putParcelableArrayList( BUNDLE_KEY_IMAGE_SPEC_LIST, mImageSpecArrayList );
       }
 
     // Save the last edited index. Otherwise if we change the orientation when editing an image, the
     // updated image gets associated with the wrong asset when coming back.
-    outState.putInt( BUNDLE_KEY_LAST_EDITED_ASSET_INDEX, mLastEditedAssetIndex );
+    outState.putInt( BUNDLE_KEY_LAST_EDITED_IMAGE_INDEX, mLastEditedImageIndex );
     }
 
 
 
-  // TODO: We need to pass an updated assets + quantity list back to the
+  // TODO: We need to pass an updated image spec list back to the
   // TODO: calling activity.
 
 
@@ -330,9 +364,9 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
 
     if ( requestCode == ACTIVITY_REQUEST_CODE_EDIT_IMAGE && resultCode  == RESULT_OK )
       {
-      Asset editedAsset = mCustomImageEditorAgent.getEditedAsset( resultIntent );
+      AssetFragment assetFragment = mCustomImageEditorAgent.getAssetFragment( resultIntent );
 
-      onAssetEdited( editedAsset );
+      onImageEdited( assetFragment );
 
       return;
       }
@@ -352,16 +386,17 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
     }
 
 
-  ////////// IAssetsAndQuantityHolder Method(s) //////////
+  ////////// IImageSpecStore Method(s) //////////
 
   /*****************************************************
    *
    * Returns the assets and quantity list.
    *
    *****************************************************/
-  public ArrayList<AssetsAndQuantity> getAssetsAndQuantityArrayList()
+  @Override
+  public ArrayList<ImageSpec> getImageSpecArrayList()
     {
-    return ( mAssetsAndQuantityArrayList );
+    return ( mImageSpecArrayList );
     }
 
 
@@ -393,16 +428,9 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
    *
    *****************************************************/
   @Override
-  public void pcOnCreated( Asset imageAsset )
+  public void pcOnCreated( AssetFragment imageAssetFragment )
     {
-    // Create the phone case order
-
-    Order order = new Order();
-
-    order.addJob( Job.createPrintJob( mProduct, mOptionMap, imageAsset ) );
-
-
-    onNewOrder( order );
+    onNewBasketItem( imageAssetFragment );
     }
 
 
@@ -435,7 +463,7 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
   @Override
   public void pbOnEdit( int assetIndex )
     {
-    editAsset( assetIndex );
+    editImage( assetIndex );
     }
 
 
@@ -447,36 +475,7 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
   @Override
   public void pbOnNext()
     {
-    // Create a new list containing edited assets. Retain any null values,
-    // as these represent blank pages.
-
-    ArrayList<Asset> assetArrayList = new ArrayList<>();
-
-    for ( AssetsAndQuantity assetsAndQuantity : mAssetsAndQuantityArrayList )
-      {
-      if ( assetsAndQuantity != null )
-        {
-        assetArrayList.add( assetsAndQuantity.getEditedAsset() );
-        }
-      else
-        {
-        assetArrayList.add( null );
-        }
-      }
-
-
-    // Remove the first asset for the front cover
-    Asset frontCoverAsset = assetArrayList.remove( 0 );
-
-
-    // Create the photobook order
-
-    Order order = new Order();
-
-    order.addJob( Job.createPhotobookJob( mProduct, frontCoverAsset, assetArrayList ) );
-
-
-    onNewOrder( order );
+    onNewBasketItem( mImageSpecArrayList );
     }
 
 
@@ -488,9 +487,9 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
    *
    *****************************************************/
   @Override
-  public void reOnEdit( int assetIndex )
+  public void reOnEdit( int imageIndex )
     {
-    editAsset( assetIndex );
+    editImage( imageIndex );
     }
 
 
@@ -501,29 +500,7 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
    *****************************************************/
   public void reOnConfirm()
     {
-    // In order to create a print job, we need to create a list of assets. Assets are listed
-    // as many times as their quantity - so if an asset has a quantity of 3, we include it 3
-    // times.
-
-    ArrayList<Asset> assetArrayList = new ArrayList<>();
-
-    for ( AssetsAndQuantity assetsAndQuantity : mAssetsAndQuantityArrayList )
-      {
-      for ( int index = 0; index < assetsAndQuantity.getQuantity(); index ++ )
-        {
-        assetArrayList.add( assetsAndQuantity.getEditedAsset() );
-        }
-      }
-
-
-    // Create the order
-
-    Order order = new Order();
-
-    mProduct.getUserJourneyType().addJobsToOrder( mProduct, assetArrayList, order );
-
-
-    onNewOrder( order );
+    onNewBasketItem( mImageSpecArrayList );
     }
 
 
@@ -548,12 +525,12 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
    *
    *****************************************************/
   @Override
-  public void eiOnConfirm( Asset editedAsset )
+  public void eiOnConfirm( AssetFragment assetFragment )
     {
     // Remove the edit image fragment from the back stack
     popFragment();
 
-    onAssetEdited( editedAsset );
+    onImageEdited( assetFragment );
     }
 
 
@@ -561,11 +538,12 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
 
   /*****************************************************
    *
-   * Called when an order has been added to the basket.
+   * Asynchronous call-back when an order has been added
+   * to the basket.
    *
    *****************************************************/
   @Override
-  public void onAddComplete( Order order )
+  public void onItemAdded()
     {
     // Hide the progress dialog
     if ( mProgressDialog != null )
@@ -575,8 +553,18 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
       mProgressDialog = null;
       }
 
-    // Go to the basket screen
-    BasketActivity.startForResult( this, ACTIVITY_REQUEST_CODE_ADD_TO_BASKET );
+
+    // Go to the basket screen. If we are in edit mode, then we were called from the basket
+    // activity, so only need to finish to return.
+
+    if ( mInEditMode )
+      {
+      finish();
+      }
+    else
+      {
+      BasketActivity.startForResult( this, ACTIVITY_REQUEST_CODE_ADD_TO_BASKET );
+      }
     }
 
 
@@ -593,7 +581,7 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
     // For all user journeys, if there are no assets - we first display the image
     // source fragment.
 
-    if ( mAssetsAndQuantityArrayList.size() < 1 )
+    if ( mImageSpecArrayList.size() < 1 )
       {
       addFragment( ImageSourceFragment.newInstance( mProduct ), ImageSourceFragment.TAG );
 
@@ -623,19 +611,19 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
 
   /*****************************************************
    *
-   * Edits an asset.
+   * Edits an image.
    *
    *****************************************************/
-  private void editAsset( int assetIndex )
+  private void editImage( int imageIndex )
     {
-    mLastEditedAssetIndex = assetIndex;
+    mLastEditedImageIndex = imageIndex;
 
 
     // Get the asset we want to edit
 
-    AssetsAndQuantity assetsAndQuantity = mAssetsAndQuantityArrayList.get( assetIndex );
+    ImageSpec imageSpec = mImageSpecArrayList.get( imageIndex );
 
-    Asset uneditedAsset = assetsAndQuantity.getUneditedAsset();
+    //AssetFragment assetFragment = imageSpec.getAssetFragment();
 
 
     // Start the edit fragment. By default we use the edit image fragment, but this can be
@@ -652,7 +640,7 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
 
         mCustomImageEditorAgent = (ICustomImageEditorAgent)clazz.newInstance();
 
-        mCustomImageEditorAgent.onStartEditor( this, uneditedAsset, AKiteActivity.ACTIVITY_REQUEST_CODE_EDIT_IMAGE );
+        mCustomImageEditorAgent.onStartEditor( this, imageSpec.getAsset(), AKiteActivity.ACTIVITY_REQUEST_CODE_EDIT_IMAGE );
 
         return;
         }
@@ -671,7 +659,7 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
       }
 
 
-    EditImageFragment editImageFragment = EditImageFragment.newInstance( mProduct, uneditedAsset );
+    EditImageFragment editImageFragment = EditImageFragment.newInstance( mProduct, imageSpec.getAsset() );
 
     addFragment( editImageFragment, EditImageFragment.TAG );
     }
@@ -679,16 +667,16 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
 
   /*****************************************************
    *
-   * Called when an asset is edited.
+   * Called when an image is edited.
    *
    *****************************************************/
-  public void onAssetEdited( Asset editedAsset )
+  public void onImageEdited( AssetFragment assetFragment )
     {
     // Replace the edited asset with the new one
 
-    AssetsAndQuantity assetsAndQuantity = mAssetsAndQuantityArrayList.get( mLastEditedAssetIndex );
+    ImageSpec imageSpec = mImageSpecArrayList.get( mLastEditedImageIndex );
 
-    assetsAndQuantity.setEditedAsset( editedAsset, mProduct.getId() );
+    imageSpec.setImage( assetFragment, mProduct.getId() );
 
 
     // Once an image has been edited, we need to notify any fragments that use it. A fragment
@@ -707,9 +695,9 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
 
         Fragment fragment= mFragmentManager.findFragmentByTag( fragmentName );
 
-        if ( fragment != null && fragment instanceof IUpdatedAssetListener )
+        if ( fragment != null && fragment instanceof IUpdatedImageListener )
           {
-          ( (IUpdatedAssetListener) fragment ).onAssetUpdated( mLastEditedAssetIndex, assetsAndQuantity );
+          ( (IUpdatedImageListener) fragment ).onImageUpdated( mLastEditedImageIndex, imageSpec );
           }
         }
       }
@@ -719,21 +707,57 @@ public class ProductCreationActivity extends AKiteActivity implements IAssetsAnd
 
   /*****************************************************
    *
-   * Proceeds to the next stage when an order has been
-   * created.
+   * Ensures that the progress dialog is showing.
    *
    *****************************************************/
-  private void onNewOrder( Order order )
+  private void showProgressDialog( int titleResourceId )
     {
-    // Display a progress dialog
-
     mProgressDialog = new ProgressDialog( this );
-    mProgressDialog.setTitle( R.string.progress_dialog_title_add_to_basket );
+    mProgressDialog.setTitle( titleResourceId );
     mProgressDialog.setIndeterminate( true );
     mProgressDialog.show();
+    }
 
-    // Add the order to the basket
-    BasketAgent.getInstance( this ).addToBasket( order, this );
+
+  /*****************************************************
+   *
+   * Adds or replaces an item in the basket, then proceeds
+   * to the next stage.
+   *
+   *****************************************************/
+  private void onNewBasketItem( List<ImageSpec> imageSpecList )
+    {
+    BasketAgent basketAgent = BasketAgent.getInstance( this );
+
+    if ( mInEditMode )
+      {
+      showProgressDialog( R.string.progress_dialog_title_updating_basket );
+
+      basketAgent.replaceItem( mBasketItemId, mProduct, mOptionMap, imageSpecList, mOrderQuantity, this );
+      }
+    else
+      {
+      showProgressDialog( R.string.progress_dialog_title_add_to_basket );
+
+      basketAgent.addItem( mProduct, mOptionMap, imageSpecList, this );
+      }
+
+    }
+
+
+  /*****************************************************
+   *
+   * Adds or replaces an item in the basket, then proceeds
+   * to the next stage.
+   *
+   *****************************************************/
+  private void onNewBasketItem( AssetFragment assetFragment )
+    {
+    List<ImageSpec> imageSpecList = new ArrayList<>( 1 );
+
+    imageSpecList.add( new ImageSpec( assetFragment, 1 ) );
+
+    onNewBasketItem( imageSpecList );
     }
 
 

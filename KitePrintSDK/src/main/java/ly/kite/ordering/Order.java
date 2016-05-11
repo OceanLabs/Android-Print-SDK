@@ -19,8 +19,12 @@ import ly.kite.address.Address;
 import ly.kite.api.AssetUploadRequest;
 import ly.kite.api.SubmitOrderRequest;
 import ly.kite.catalogue.SingleCurrencyAmount;
+import ly.kite.image.ImageAgent;
+import ly.kite.image.ImageProcessingRequest;
 import ly.kite.pricing.OrderPricing;
 import ly.kite.util.Asset;
+import ly.kite.util.AssetFragment;
+import ly.kite.util.UploadableImage;
 
 /**
  * Created by deonbotha on 09/02/2014.
@@ -49,7 +53,9 @@ public class Order implements Parcelable /* , Serializable */
     private boolean userSubmittedForPrinting;
     //private long totalBytesWritten, totalBytesExpectedToWrite;
     private AssetUploadRequest assetUploadReq;
-    private List<Asset> assetsToUpload;
+    private int                   mImagesToCropCount;
+    private List<UploadableImage> mImagesToUpload;
+    //private List<AssetFragment>  assetFragmentsToUpload;
     private boolean assetUploadComplete;
     private SubmitOrderRequest printOrderReq;
     private Date lastPrintSubmissionDate;
@@ -286,20 +292,24 @@ public class Order implements Parcelable /* , Serializable */
       }
 
 
-    List<Asset> getAssetsToUpload() {
-        ArrayList<Asset> assets = new ArrayList<Asset>();
-        for (Job job : jobs) {
-            for (Asset asset : job.getAssetsForUploading()) {
-                if ( asset != null && !assets.contains(asset)) {
-                    assets.add(asset);
-                }
+    List<UploadableImage> getImagesToUpload()
+      {
+      List<UploadableImage> uploadableImageList = new ArrayList<>();
+      for ( Job job : jobs )
+        {
+        for ( UploadableImage uploadableImage : job.getImagesForUploading() )
+          {
+          if ( uploadableImage != null && !uploadableImageList.contains( uploadableImage ) )
+            {
+            uploadableImageList.add( uploadableImage );
             }
+          }
         }
-        return assets;
-    }
+      return uploadableImageList;
+      }
 
     public int getTotalAssetsToUpload() {
-        return getAssetsToUpload().size();
+        return getImagesToUpload().size();
     }
 
     public boolean isPrinted() {
@@ -330,7 +340,7 @@ public class Order implements Parcelable /* , Serializable */
     }
 
     public Order addJob( Job job) {
-        if (!(job instanceof AssetListJob || job instanceof PostcardJob || job instanceof GreetingCardJob )) {
+        if (!(job instanceof ImagesJob || job instanceof PostcardJob || job instanceof GreetingCardJob )) {
             throw new IllegalArgumentException("Currently only support PrintsPrintJobs & PostcardPrintJob, if any further jobs " +
                     "classes are added support for them must be added to the Parcelable interface in particular readTypedList must work ;)");
         }
@@ -347,7 +357,7 @@ public class Order implements Parcelable /* , Serializable */
     private boolean isAssetUploadInProgress() {
         // There may be a brief window where assetUploadReq == null whilst we asynchronously collect info about the assets
         // to upload. assetsToUpload will be non nil whilst this is happening.
-        return assetsToUpload != null || assetUploadReq != null;
+        return mImagesToUpload != null || assetUploadReq != null;
     }
 
     public void preemptAssetUpload(Context context) {
@@ -358,21 +368,66 @@ public class Order implements Parcelable /* , Serializable */
         startAssetUpload( context );
     }
 
-    private void startAssetUpload(final Context context) {
-        if (isAssetUploadInProgress() || assetUploadComplete) {
-            throw new IllegalStateException("Asset upload should not have previously been started");
+
+    private void startAssetUpload( final Context context )
+      {
+      if ( isAssetUploadInProgress() || assetUploadComplete )
+        {
+        throw new IllegalStateException( "Asset upload should not have previously been started" );
         }
 
-        assetsToUpload = getAssetsToUpload();
 
-        final boolean[] previousError = {false};
-        final int[] outstandingLengthCallbacks = {assetsToUpload.size()};
+      // Call back with progress (even though we haven't made any yet), so the user gets
+      // a dialog box. Otherwise there's a delay whilst any images are cropped, and it's
+      // not obvious that anything's happening.
 
-        assetUploadReq = new AssetUploadRequest( context );
-        assetUploadReq.uploadAssets( context, assetsToUpload, new MyAssetUploadRequestListener( context ) );
-    }
+      if ( submissionListener != null ) submissionListener.onProgress( this, 0, 0 );
 
-    public void submitForPrinting(Context context, ISubmissionProgressListener listener) {
+
+      // Crop any non-full-size images
+
+      mImagesToUpload = getImagesToUpload();
+
+      mImagesToCropCount = 0;
+
+      for ( UploadableImage uploadableImage : mImagesToUpload )
+        {
+        AssetFragment assetFragment = uploadableImage.getAssetFragment();
+        Asset         asset         = uploadableImage.getAsset();
+
+
+        // If this asset fragment is not full size then it needs to be cropped before
+        // it can be uploaded.
+
+        if ( ! assetFragment.isFullSize() )
+          {
+          mImagesToCropCount++;
+
+          ImageAgent.with( context )
+                  .transform( asset )
+                  .byCroppingTo( assetFragment.getProportionalRectangle() )
+                  .intoNewAsset()
+                  .thenNotify( new ImageCroppedCallback( context, uploadableImage ) );
+          }
+        }
+
+
+      // If there are no images to crop - start the upload immediately
+      if ( mImagesToCropCount < 1 ) startAssetUploadRequest( context );
+      }
+
+
+    private void startAssetUploadRequest( Context context )
+      {
+      final boolean[] previousError = { false };
+      final int[] outstandingLengthCallbacks = { mImagesToUpload.size() };
+
+      assetUploadReq = new AssetUploadRequest( context );
+      assetUploadReq.uploadAssets( context, mImagesToUpload, new MyAssetUploadRequestListener( context ) );
+      }
+
+
+      public void submitForPrinting(Context context, ISubmissionProgressListener listener) {
         if (userSubmittedForPrinting) throw new AssertionError("A PrintOrder can only be submitted once unless you cancel the previous submission");
         //if (proofOfPayment == null) throw new AssertionError("You must provide a proofOfPayment before you can submit a print order");
         if (printOrderReq != null) throw new AssertionError("A PrintOrder request should not already be in progress");
@@ -521,7 +576,7 @@ public class Order implements Parcelable /* , Serializable */
               break;
 
             default:
-              job = AssetListJob.CREATOR.createFromParcel( p );
+              job = ImagesJob.CREATOR.createFromParcel( p );
             }
 
           this.jobs.add( job );
@@ -605,7 +660,7 @@ public class Order implements Parcelable /* , Serializable */
         }
 
       @Override
-      public void onUploadComplete( AssetUploadRequest req, List<Asset> uploadedAssets )
+      public void onUploadComplete( AssetUploadRequest req, List<UploadableImage> uploadedImages )
         {
         // We don't want to check that the number of upload assets matches the size
         // of the asset list, because some of them might be blank.
@@ -613,9 +668,9 @@ public class Order implements Parcelable /* , Serializable */
 
         // Check that all the assets scheduled to be uploaded, were
 
-        for ( Asset uploadedAsset : uploadedAssets )
+        for ( UploadableImage uploadedAsset : uploadedImages )
           {
-          if ( ! assetsToUpload.contains( uploadedAsset ) )
+          if ( ! mImagesToUpload.contains( uploadedAsset ) )
             {
             throw new AssertionError( "Oops - found an asset not in the upload list" );
             }
@@ -628,13 +683,13 @@ public class Order implements Parcelable /* , Serializable */
 
         for ( Job job : jobs )
           {
-          for ( Asset uploadedAsset : uploadedAssets )
+          for ( UploadableImage uploadedImage : uploadedImages )
             {
-            for ( Asset jobAsset : job.getAssetsForUploading() )
+            for ( UploadableImage jobUploadableImage : job.getImagesForUploading() )
               {
-              if ( uploadedAsset != jobAsset && uploadedAsset.equals( jobAsset ) )
+              if ( uploadedImage != jobUploadableImage && uploadedImage.equals( jobUploadableImage ) )
                 {
-                jobAsset.markAsUploaded( uploadedAsset.getId(), uploadedAsset.getPreviewURL() );
+                jobUploadableImage.markAsUploaded( uploadedImage.getUploadedAssetId(), uploadedImage.getPreviewURL() );
                 }
               }
             }
@@ -645,18 +700,18 @@ public class Order implements Parcelable /* , Serializable */
 
         for ( Job job : jobs )
           {
-          for ( Asset assetToUpload : job.getAssetsForUploading() )
+          for ( UploadableImage uploadableImage : job.getImagesForUploading() )
             {
-            if ( assetToUpload != null && ! assetToUpload.hasBeenUploaded() )
+            if ( uploadableImage != null && ! uploadableImage.hasBeenUploaded() )
               {
-              throw new AssertionError( "oops all assets should have been uploaded" );
+              throw new AssertionError( "Oops ... all assets should have been uploaded" );
               }
             }
           }
 
 
         assetUploadComplete = true;
-        assetsToUpload = null;
+        mImagesToUpload = null;
         assetUploadReq = null;
         if ( userSubmittedForPrinting )
           {
@@ -668,7 +723,7 @@ public class Order implements Parcelable /* , Serializable */
       public void onError( AssetUploadRequest req, Exception error )
         {
         assetUploadReq = null;
-        assetsToUpload = null;
+        mImagesToUpload = null;
         if ( userSubmittedForPrinting )
           {
           lastPrintSubmissionError = error;
@@ -688,4 +743,48 @@ public class Order implements Parcelable /* , Serializable */
         void onError( Order order, Exception error );
         }
 
+
+    private class ImageCroppedCallback implements ImageProcessingRequest.ICallback
+      {
+      private Context          mContext;
+      private UploadableImage  mUploadableImage;
+
+
+      ImageCroppedCallback( Context context, UploadableImage uploadableImage )
+        {
+        mContext         = context;
+        mUploadableImage = uploadableImage;
+        }
+
+
+      @Override
+      public void ipcOnImageAvailable( Asset targetAsset )
+        {
+        // Replace the previous asset fragment with the entire area of the cropped asset
+        mUploadableImage.setImage( targetAsset );
+
+        mImagesToCropCount --;
+
+        // If all the images have been cropped - start the upload
+        if ( mImagesToCropCount < 1 )
+          {
+          startAssetUploadRequest( mContext );
+          }
+        }
+
+
+      @Override
+      public void ipcOnImageUnavailable()
+        {
+        assetUploadReq  = null;
+        mImagesToUpload = null;
+
+        if ( userSubmittedForPrinting )
+          {
+          lastPrintSubmissionError = null;
+          userSubmittedForPrinting = false; // allow the user to resubmit for printing
+          submissionListener.onError( Order.this, null );
+          }
+        }
+      }
     }

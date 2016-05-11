@@ -41,5 +41,3 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'ly.kite:photo-picker:1.1.4'
 }
-
-apply from: 'https://raw.github.com/shamanland/gradle-mvn-push/cc18d56549cdea03f744b6fff27911569394073e/gradle-mvn-push.gradle'

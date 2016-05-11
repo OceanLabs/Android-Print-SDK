@@ -47,6 +47,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.RectF;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -58,13 +59,9 @@ import ly.kite.address.Address;
 import ly.kite.address.Country;
 import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.Product;
-import ly.kite.ordering.AssetListJob;
-import ly.kite.ordering.GreetingCardJob;
-import ly.kite.ordering.Job;
-import ly.kite.ordering.Order;
-import ly.kite.ordering.PhotobookJob;
-import ly.kite.ordering.PostcardJob;
+import ly.kite.ordering.ImageSpec;
 import ly.kite.util.Asset;
+import ly.kite.util.AssetFragment;
 
 
 ///// Class Declaration /////
@@ -81,32 +78,21 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
   static private final String LOG_TAG                          = "BasketDatabaseAgent";
 
   static private final String DATABASE_NAME                    = "basket.db";
-  static private final int    DATABASE_VERSION                 = 3;
+  static private final int    DATABASE_VERSION                 = 4;
 
   static private final String TABLE_ADDRESS                    = "Address";
-  static private final String TABLE_ASSET                      = "Asset";
-  static private final String TABLE_GREETING_CARD_JOB          = "GreetingCardJob";
-  static private final String TABLE_JOB                        = "Job";
-  static private final String TABLE_JOB_ASSET                  = "JobAsset";
+  static private final String TABLE_IMAGE_SPEC                 = "ImageSpec";
+  static private final String TABLE_ITEM                       = "Item";
+  static private final String TABLE_ITEM_IMAGE_SPEC            = "ItemImageSpec";
   static private final String TABLE_OPTION                     = "Option";
-  static private final String TABLE_PHOTOBOOK_JOB              = "PhotobookJob";
-  static private final String TABLE_POSTCARD_JOB               = "PostcardJob";
 
-  static private final String COLUMN_ASSET_ID                  = "asset_id";
-
-  static private final String JOB_TYPE_ASSET_LIST              = "AL";
-  static private final String JOB_TYPE_PHOTOBOOK               = "PB";
-  static private final String JOB_TYPE_POSTCARD                = "PC";
-  static private final String JOB_TYPE_GREETING_CARD           = "GC";
+  static private final String COLUMN_IMAGE_SPEC_ID             = "image_spec_id";
 
   static private final String SQL_DROP_ADDRESS_TABLE           = "DROP TABLE " + TABLE_ADDRESS;
-  static private final String SQL_DROP_ASSET_TABLE             = "DROP TABLE " + TABLE_ASSET;
-  static private final String SQL_DROP_GREETING_CARD_JOB_TABLE = "DROP TABLE " + TABLE_GREETING_CARD_JOB;
-  static private final String SQL_DROP_JOB_TABLE               = "DROP TABLE " + TABLE_JOB;
-  static private final String SQL_DROP_JOB_ASSET_TABLE         = "DROP TABLE " + TABLE_JOB_ASSET;
+  static private final String SQL_DROP_IMAGE_SPEC_TABLE        = "DROP TABLE " + TABLE_IMAGE_SPEC;
+  static private final String SQL_DROP_ITEM_TABLE              = "DROP TABLE " + TABLE_ITEM;
+  static private final String SQL_DROP_ITEM_IMAGE_SPEC_TABLE   = "DROP TABLE " + TABLE_ITEM_IMAGE_SPEC;
   static private final String SQL_DROP_OPTION_TABLE            = "DROP TABLE " + TABLE_OPTION;
-  static private final String SQL_DROP_PHOTOBOOK_JOB_TABLE     = "DROP TABLE " + TABLE_PHOTOBOOK_JOB;
-  static private final String SQL_DROP_POSTCARD_JOB_TABLE      = "DROP TABLE " + TABLE_POSTCARD_JOB;
 
 
   static private final String SQL_CREATE_ADDRESS_TABLE =
@@ -123,19 +109,23 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
                   " )";
 
 
-  static private final String SQL_CREATE_ASSET_TABLE =
-          "CREATE TABLE " + TABLE_ASSET +
+  static private final String SQL_CREATE_IMAGE_SPEC_TABLE =
+          "CREATE TABLE " + TABLE_IMAGE_SPEC +
                   " ( " +
                   "id              INTEGER  PRIMARY KEY," +
-                  "image_file_path TEXT     NOT NULL" +
+                  "image_file_path TEXT     NOT NULL," +
+                  "left            REAL     NOT NULL," +
+                  "top             REAL     NOT NULL," +
+                  "right           REAL     NOT NULL," +
+                  "bottom          REAL     NOT NULL," +
+                  "quantity        INTEGER  NOT NULL" +
                   " )";
 
 
-  static private final String SQL_CREATE_JOB_TABLE =
-          "CREATE TABLE " + TABLE_JOB +
+  static private final String SQL_CREATE_ITEM_TABLE =
+          "CREATE TABLE " + TABLE_ITEM +
                   " ( " +
                   "id              INTEGER  PRIMARY KEY," +
-                  "type            TEXT     NOT NULL," +
                   "product_id      TEXT     NOT NULL," +
                   "order_quantity  INT      NOT NULL" +
                   " )";
@@ -144,64 +134,25 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
   static private final String SQL_CREATE_OPTION_TABLE =
           "CREATE TABLE " + TABLE_OPTION +
                   " ( " +
-                  "job_id          INTEGER  NOT NULL," +
+                  "item_id         INTEGER  NOT NULL," +
                   "name            TEXT     NOT NULL," +
                   "value           TEXT     NOT NULL" +
                   " )";
 
   static private final String SQL_CREATE_OPTION_INDEX_1 =
-          "CREATE UNIQUE INDEX OptionIndex1 ON " + TABLE_OPTION + " ( job_id, name )";
+          "CREATE UNIQUE INDEX OptionIndex1 ON " + TABLE_OPTION + " ( item_id, name )";
 
 
-  static private final String SQL_CREATE_JOB_ASSET_TABLE =
-          "CREATE TABLE " + TABLE_JOB_ASSET +
+  static private final String SQL_CREATE_ITEM_IMAGE_SPEC_TABLE =
+          "CREATE TABLE " + TABLE_ITEM_IMAGE_SPEC +
                   " ( " +
-                  "job_id          INTEGER  NOT NULL," +
-                  "asset_index     INTEGER  NOT NULL," +
-                  "asset_id        INTEGER      NULL" +
+                  "item_id               INTEGER  NOT NULL," +
+                  "image_spec_index  INTEGER  NOT NULL," +
+                  "image_spec_id     INTEGER      NULL" +
                   " )";
 
-  static private final String SQL_CREATE_JOB_ASSET_INDEX_1 =
-          "CREATE UNIQUE INDEX JobAssetIndex1 ON " + TABLE_JOB_ASSET + " ( job_id, asset_index )";
-
-
-  static private final String SQL_CREATE_PHOTOBOOK_JOB_TABLE =
-          "CREATE TABLE " + TABLE_PHOTOBOOK_JOB +
-                  " ( " +
-                  "job_id                INTEGER  NOT NULL," +
-                  "front_cover_asset_id  INTEGER  NOT NULL" +
-                  " )";
-
-  static private final String SQL_CREATE_PHOTOBOOK_JOB_INDEX_1 =
-          "CREATE UNIQUE INDEX PhotobookJobIndex1 ON " + TABLE_PHOTOBOOK_JOB + " ( job_id )";
-
-
-  static private final String SQL_CREATE_POSTCARD_JOB_TABLE =
-          "CREATE TABLE " + TABLE_POSTCARD_JOB +
-                  " ( " +
-                  "job_id                INTEGER  NOT NULL," +
-                  "front_image_asset_id  INTEGER  NOT NULL," +
-                  "back_image_asset_id   INTEGER  NOT NULL," +
-                  "message               TEXT         NULL," +
-                  "address_id            INTEGER  NOT NULL"  +
-                  " )";
-
-  static private final String SQL_CREATE_POSTCARD_JOB_INDEX_1 =
-          "CREATE UNIQUE INDEX PostcardJobIndex1 ON " + TABLE_POSTCARD_JOB + " ( job_id )";
-
-
-  static private final String SQL_CREATE_GREETING_CARD_JOB_TABLE =
-          "CREATE TABLE " + TABLE_GREETING_CARD_JOB +
-                  " ( " +
-                  "job_id                       INTEGER  NOT NULL," +
-                  "front_image_asset_id         INTEGER  NOT NULL," +
-                  "back_image_asset_id          INTEGER      NULL," +
-                  "inside_left_image_asset_id   INTEGER      NULL," +
-                  "inside_right_image_asset_id  INTEGER      NULL" +
-                  " )";
-
-  static private final String SQL_CREATE_GREETING_CARD_JOB_INDEX_1 =
-          "CREATE UNIQUE INDEX GreetingCardJobIndex1 ON " + TABLE_GREETING_CARD_JOB + " ( job_id )";
+  static private final String SQL_CREATE_ITEM_IMAGE_SPEC_INDEX_1 =
+          "CREATE UNIQUE INDEX ItemImageSpecIndex1 ON " + TABLE_ITEM_IMAGE_SPEC + " ( item_id, image_spec_index )";
 
 
   ////////// Static Variable(s) //////////
@@ -238,19 +189,13 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
     // Create the tables and any indexes
 
     database.execSQL( SQL_CREATE_ADDRESS_TABLE );
-    database.execSQL( SQL_CREATE_ASSET_TABLE );
-    database.execSQL( SQL_CREATE_GREETING_CARD_JOB_TABLE );
-    database.execSQL( SQL_CREATE_JOB_TABLE );
-    database.execSQL( SQL_CREATE_JOB_ASSET_TABLE );
+    database.execSQL( SQL_CREATE_IMAGE_SPEC_TABLE );
+    database.execSQL( SQL_CREATE_ITEM_TABLE );
+    database.execSQL( SQL_CREATE_ITEM_IMAGE_SPEC_TABLE );
     database.execSQL( SQL_CREATE_OPTION_TABLE );
-    database.execSQL( SQL_CREATE_PHOTOBOOK_JOB_TABLE );
-    database.execSQL( SQL_CREATE_POSTCARD_JOB_TABLE );
 
-    database.execSQL( SQL_CREATE_GREETING_CARD_JOB_INDEX_1 );
-    database.execSQL( SQL_CREATE_JOB_ASSET_INDEX_1 );
+    database.execSQL( SQL_CREATE_ITEM_IMAGE_SPEC_INDEX_1 );
     database.execSQL( SQL_CREATE_OPTION_INDEX_1 );
-    database.execSQL( SQL_CREATE_PHOTOBOOK_JOB_INDEX_1 );
-    database.execSQL( SQL_CREATE_POSTCARD_JOB_INDEX_1 );
     }
 
   
@@ -262,14 +207,25 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
   @Override
   public void onUpgrade( SQLiteDatabase database, int oldVersionNumber, int newVersionNumber )
     {
-    database.execSQL( SQL_DROP_ADDRESS_TABLE );
-    database.execSQL( SQL_DROP_JOB_ASSET_TABLE );
-    database.execSQL( SQL_DROP_GREETING_CARD_JOB_TABLE );
-    database.execSQL( SQL_DROP_PHOTOBOOK_JOB_TABLE );
-    database.execSQL( SQL_DROP_POSTCARD_JOB_TABLE );
-    database.execSQL( SQL_DROP_ASSET_TABLE );
-    database.execSQL( SQL_DROP_OPTION_TABLE );
-    database.execSQL( SQL_DROP_JOB_TABLE );
+    if ( oldVersionNumber < 4 )
+      {
+      database.execSQL( "DROP TABLE Address" );
+      database.execSQL( "DROP TABLE JobAsset" );
+      database.execSQL( "DROP TABLE Asset" );
+      database.execSQL( "DROP TABLE GreetingCardJob" );
+      database.execSQL( "DROP TABLE PhotobookJob" );
+      database.execSQL( "DROP TABLE PostcardJob" );
+      database.execSQL( "DROP TABLE Option" );
+      database.execSQL( "DROP TABLE Job" );
+      }
+    else
+      {
+      database.execSQL( SQL_DROP_ADDRESS_TABLE );
+      database.execSQL( SQL_DROP_ITEM_IMAGE_SPEC_TABLE );
+      database.execSQL( SQL_DROP_IMAGE_SPEC_TABLE );
+      database.execSQL( SQL_DROP_OPTION_TABLE );
+      database.execSQL( SQL_DROP_ITEM_TABLE );
+      }
 
     onCreate( database );
     }
@@ -282,7 +238,7 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
    * Clears the basket.
    *
    *****************************************************/
-  public void clearBasket()
+  public void clear()
     {
     SQLiteDatabase database = getWritableDatabase();
 
@@ -296,182 +252,73 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
 
     // Delete rows in an order that is safe should we ever use foreign keys
 
-    database.execSQL( "DELETE FROM " + TABLE_JOB_ASSET );
-    database.execSQL( "DELETE FROM " + TABLE_PHOTOBOOK_JOB );
-    database.execSQL( "DELETE FROM " + TABLE_POSTCARD_JOB );
-    database.execSQL( "DELETE FROM " + TABLE_GREETING_CARD_JOB );
+    database.execSQL( "DELETE FROM " + TABLE_ITEM_IMAGE_SPEC );
     database.execSQL( "DELETE FROM " + TABLE_ADDRESS );
-    database.execSQL( "DELETE FROM " + TABLE_ASSET );
+    database.execSQL( "DELETE FROM " + TABLE_IMAGE_SPEC );
     database.execSQL( "DELETE FROM " + TABLE_OPTION );
-    database.execSQL( "DELETE FROM " + TABLE_JOB );
+    database.execSQL( "DELETE FROM " + TABLE_ITEM );
     }
 
 
   /*****************************************************
    *
-   * Saves an order to the basket. Note that any jobs
-   * within the basket will be added to any existing
-   * jobs within the basket.
+   * Saves an item to the basket.
    *
    *****************************************************/
-  public void saveToBasket( Order order )
+  public void saveItem( Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, int orderQuantity )
     {
-    if ( order != null )
-      {
-      // Go through each of the jobs, and save them
+    // Create the item and product options
 
-      for ( Job job : order.getJobs() )
-        {
-        saveToBasket( job );
-        }
-      }
+    long itemId = newItem( product, optionsMap, orderQuantity );
+
+    if ( itemId < 0 ) return;
+
+
+    // Create the image specs
+
+    long[] imageSpecIds = insertImageSpecs( imageSpecList );
+
+    if ( imageSpecIds == null ) return;
+
+
+    // Create item image specs
+    insertItemImageSpecs( itemId, imageSpecIds );
     }
 
 
   /*****************************************************
    *
-   * Saves a job to the basket.
-   *
-   *****************************************************/
-  public void saveToBasket( Job job )
-    {
-    // Work out what type of job this is
-
-    if ( job instanceof PhotobookJob )
-      {
-      PhotobookJob photobookJob = (PhotobookJob)job;
-
-
-      // Create the job and product options
-
-      long jobId = newJob( photobookJob, JOB_TYPE_PHOTOBOOK );
-
-      if ( jobId < 0 ) return;
-
-
-      // Create the content assets
-
-      long[] contentAssetIds = insertAssets( photobookJob.getAssets() );
-
-      if ( contentAssetIds == null ) return;
-
-
-      // Create the front cover asset
-      long[] coverAssetIds = insertAssets( photobookJob.getFrontCoverAsset() );
-
-
-      // Create the photobook job
-      insertPhotobookJob( jobId, coverAssetIds );
-
-      // Create job assets
-      insertJobAssets( jobId, contentAssetIds );
-      }
-    else if ( job instanceof PostcardJob )
-      {
-      PostcardJob postcardJob = (PostcardJob)job;
-
-
-      // Create the job and product options
-
-      long jobId = newJob( postcardJob, JOB_TYPE_POSTCARD );
-
-      if ( jobId < 0 ) return;
-
-
-      // Create the asset(s)
-      long[] assetIds = insertAssets(
-              postcardJob.getFrontImageAsset(),
-              postcardJob.getBackImageAsset() );
-
-
-      // Create the address
-      long addressId = insertAddress( postcardJob.getAddress() );
-
-
-      // Create the postcard job
-      insertPostcardJob( jobId, assetIds, postcardJob.getMessage(), addressId );
-      }
-    else if ( job instanceof GreetingCardJob )
-      {
-      GreetingCardJob greetingCardJob = (GreetingCardJob)job;
-
-
-      // Create the job and product options
-
-      long jobId = newJob( greetingCardJob, JOB_TYPE_GREETING_CARD );
-
-      if ( jobId < 0 ) return;
-
-
-      // Create the asset(s)
-      long[] assetIds = insertAssets(
-              greetingCardJob.getFrontImageAsset(),
-              greetingCardJob.getBackImageAsset(),
-              greetingCardJob.getInsideLeftImageAsset(),
-              greetingCardJob.getInsideRightImageAsset() );
-
-
-      // Create the greeting card job
-      insertGreetingCardJob( jobId, assetIds );
-      }
-    else if ( job instanceof AssetListJob )
-      {
-      AssetListJob assetListJob = (AssetListJob)job;
-
-
-      // Create the job and product options
-
-      long jobId = newJob( assetListJob, JOB_TYPE_ASSET_LIST );
-
-      if ( jobId < 0 ) return;
-
-
-      // Create the assets
-
-      long[] assetIds = insertAssets( assetListJob.getAssets() );
-
-      if ( assetIds == null ) return;
-
-
-      // Create job assets
-      insertJobAssets( jobId, assetIds );
-      }
-    }
-
-
-  /*****************************************************
-   *
-   * Inserts a job and its new options.
+   * Inserts an item and its options.
    *
    * @return The (primary key /) id of the new job, or -1,
    *         if the job could not be created.
    *
    *****************************************************/
-  private long newJob( Job job, String jobType )
+  private long newItem( Product product, HashMap<String,String> optionsMap, int orderQuantity )
     {
-    // Insert the job
+    // Insert the item
 
-    long jobId = insertJob( job, jobType );
+    long itemId = insertItem( product, orderQuantity );
 
-    if ( jobId < 0 ) return ( jobId );
+    if ( itemId < 0 ) return ( itemId );
 
 
     // Insert the options
-    insertOptions( jobId, job.getProductOptions() );
+    insertOptions( itemId, optionsMap );
 
-    return ( jobId );
+    return ( itemId );
     }
 
 
   /*****************************************************
    *
-   * Inserts a job.
+   * Inserts an item.
    *
-   * @return The (primary key /) id of the new job, or -1,
-   *         if the job could not be created.
+   * @return The (primary key /) id of the new item, or -1,
+   *         if the item could not be created.
    *
    *****************************************************/
-  private long insertJob( Job job, String jobType )
+  private long insertItem( Product product, int orderQuantity )
     {
     SQLiteDatabase database = getWritableDatabase();
 
@@ -483,32 +330,31 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
       }
 
 
-    // Create the values to be inserted. We don't specify the job id because
+    // Create the values to be inserted. We don't specify the item id because
     // we want the database to auto-generate it for us.
 
     ContentValues contentValues = new ContentValues();
 
-    contentValues.put( "type",           jobType );
-    contentValues.put( "product_id",     job.getProduct().getId() );
-    contentValues.put( "order_quantity", 1 );
+    contentValues.put( "product_id",     product.getId() );
+    contentValues.put( "order_quantity", orderQuantity );
 
 
-    // Try to insert the new job
+    // Try to insert the new item
 
     try
       {
-      long jobId = database.insert( TABLE_JOB, null, contentValues );
+      long itemId = database.insert( TABLE_ITEM, null, contentValues );
 
-      if ( jobId < 0 )
+      if ( itemId < 0 )
         {
-        Log.e( LOG_TAG, "Unable to insert new job" );
+        Log.e( LOG_TAG, "Unable to insert new item" );
         }
 
-      return ( jobId );
+      return ( itemId );
       }
     catch ( Exception exception )
       {
-      Log.e( LOG_TAG, "Unable to insert new job", exception );
+      Log.e( LOG_TAG, "Unable to insert new item", exception );
 
       return ( -1 );
       }
@@ -527,7 +373,7 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
    *         or null, if any of the assets could not be created.
    *
    *****************************************************/
-  private void insertOptions( long jobId, HashMap<String,String> optionMap )
+  private void insertOptions( long itemId, HashMap<String,String> optionsMap )
     {
     SQLiteDatabase database = getWritableDatabase();
 
@@ -543,15 +389,15 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
       {
       // Go through each of the options
 
-      for ( String name : optionMap.keySet() )
+      for ( String name : optionsMap.keySet() )
         {
         // Create and try to insert the new option
 
         ContentValues contentValues = new ContentValues();
 
-        contentValues.put( "job_id", jobId );
-        contentValues.put( "name",   name );
-        contentValues.put( "value",  optionMap.get( name ) );
+        contentValues.put( "item_id", itemId );
+        contentValues.put( "name",    name );
+        contentValues.put( "value",   optionsMap.get( name ) );
 
         database.insert( TABLE_OPTION, null, contentValues );
         }
@@ -569,31 +415,31 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
 
   /*****************************************************
    *
-   * Inserts a list of assets.
+   * Inserts a list of image specs.
    *
    * @return The (primary keys /) ids of the inserted assets,
    *         or null, if any of the assets could not be created.
    *
    *****************************************************/
-  private long[] insertAssets( List<Asset> assetList )
+  private long[] insertImageSpecs( List<ImageSpec> imageSpecList )
     {
-    Asset[] assetArray = new Asset[ assetList.size() ];
+    ImageSpec[] imageSpecArray = new ImageSpec[ imageSpecList.size() ];
 
-    assetList.toArray( assetArray );
+    imageSpecList.toArray( imageSpecArray );
 
-    return ( insertAssets( assetArray ) );
+    return ( insertImageSpecs( imageSpecArray ) );
     }
 
 
   /*****************************************************
    *
-   * Inserts an array of assets.
+   * Inserts an array of image specs.
    *
    * @return The (primary keys /) ids of the inserted assets,
    *         or null, if any of the assets could not be created.
    *
    *****************************************************/
-  private long[] insertAssets( Asset... assets )
+  private long[] insertImageSpecs( ImageSpec... imageSpecs )
     {
     SQLiteDatabase database = getWritableDatabase();
 
@@ -606,55 +452,64 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
 
 
     // Create a return array
-    long[] assetIds = new long[ assets.length ];
+    long[] imageSpecIds = new long[ imageSpecs.length ];
 
 
     try
       {
-      // Go through each of the assets in order
+      // Go through each of the image specs in order
 
-      int assetIndex = 0;
+      int imageSpecIndex = 0;
 
-      for ( Asset asset : assets )
+      for ( ImageSpec imageSpec : imageSpecs )
         {
-        // If the asset is null, we use a placeholder value of -1 for the asset id.
+        // If the image spec is null, we use a placeholder value of -1 for the id.
 
-        long assetId;
+        long imageSpecId;
 
-        if ( asset != null )
+        if ( imageSpec != null )
           {
-          // Create and try to insert the new asset
+          // Create and try to insert the new image spec
+
+          AssetFragment assetFragment         = imageSpec.getAssetFragment();
+          Asset         asset                 = assetFragment.getAsset();
+          RectF         proportionalRectangle = assetFragment.getProportionalRectangle();
 
           ContentValues contentValues = new ContentValues();
 
           // If the asset isn't an image file, this should throw an exception, which is what we want.
           contentValues.put( "image_file_path", asset.getImageFilePath() );
+          contentValues.put( "left",            proportionalRectangle.left );
+          contentValues.put( "top",             proportionalRectangle.top );
+          contentValues.put( "right",           proportionalRectangle.right );
+          contentValues.put( "bottom",          proportionalRectangle.bottom );
+          contentValues.put( "quantity",        imageSpec.getQuantity() );
 
-          assetId = database.insert( TABLE_ASSET, null, contentValues );
+          imageSpecId = database.insert( TABLE_IMAGE_SPEC, null, contentValues );
 
-          if ( assetId < 0 )
+          if ( imageSpecId < 0 )
             {
-            Log.e( LOG_TAG, "Unable to insert new asset" );
+            Log.e( LOG_TAG, "Unable to insert new image spec" );
 
             return ( null );
             }
           }
         else
           {
-          assetId = -1;
+          imageSpecId = -1;
           }
 
 
         // Save the asset id
-        assetIds[ assetIndex ++ ] = assetId;
+        imageSpecIds[ imageSpecIndex ++ ] = imageSpecId;
         }
 
 
-      return ( assetIds );
+      return ( imageSpecIds );
       }
     catch ( Exception exception )
       {
-      Log.e( LOG_TAG, "Unable to insert new asset", exception );
+      Log.e( LOG_TAG, "Unable to insert new image spec", exception );
 
       return ( null );
       }
@@ -667,10 +522,10 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
 
   /*****************************************************
    *
-   * Inserts a set of job-asset mappings.
+   * Inserts a set of item / image spec mappings.
    *
    *****************************************************/
-  private void insertJobAssets( long jobId, long[] assetIds )
+  private void insertItemImageSpecs( long itemId, long[] imageSpecIds )
     {
     SQLiteDatabase database = getWritableDatabase();
 
@@ -684,27 +539,28 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
 
     try
       {
-      // Go through each of the asset ids. We create a row for blank (< 0) asset
+      // Go through each of the image spec ids. We create a row for blank (< 0) asset
       // ids.
 
-      int assetIndex = 0;
+      int imageSpecIndex = 0;
 
-      for ( long assetId : assetIds )
+      for ( long imageSpecId : imageSpecIds )
         {
-        // Create and try to insert the new job asset
+        // Create and try to insert the new item image spec
 
-        ContentValues jobAssetContentValues = new ContentValues();
+        ContentValues contentValues = new ContentValues();
 
-        jobAssetContentValues.put( "job_id",      jobId );
-        jobAssetContentValues.put( "asset_index", assetIndex ++ );
-        putAssetId( jobAssetContentValues, assetId );
+        contentValues.put( "item_id",          itemId );
+        contentValues.put( "image_spec_index", imageSpecIndex ++ );
 
-        database.insert( TABLE_JOB_ASSET, null, jobAssetContentValues );
+        putImageSpecId( contentValues, imageSpecId );
+
+        database.insert( TABLE_ITEM_IMAGE_SPEC, null, contentValues );
         }
       }
     catch ( Exception exception )
       {
-      Log.e( LOG_TAG, "Unable to insert new job asset", exception );
+      Log.e( LOG_TAG, "Unable to insert new item image spec", exception );
       }
     finally
       {
@@ -771,164 +627,29 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
 
   /*****************************************************
    *
-   * Inserts a photobook job.
+   * Puts an image spec id into a content value, for
+   * the supplied key. If the asset id < 0 then a null is
+   * put instead.
    *
    *****************************************************/
-  private void insertPhotobookJob( long jobId, long[] assetIds )
+  private void putImageSpecId( ContentValues contentValues, String key, long imageSpecId )
     {
-    SQLiteDatabase database = getWritableDatabase();
-
-    if ( database == null )
-      {
-      Log.e( LOG_TAG, "Unable to get writable database" );
-
-      return;
-      }
-
-
-    // Create the values to be inserted.
-
-    ContentValues contentValues = new ContentValues();
-
-    contentValues.put( "job_id", jobId );
-
-    putAssetId( contentValues, "front_cover_asset_id", assetIds[ 0 ] );
-
-
-    // Try to insert the new job
-
-    try
-      {
-      database.insert( TABLE_PHOTOBOOK_JOB, null, contentValues );
-      }
-    catch ( Exception exception )
-      {
-      Log.e( LOG_TAG, "Unable to insert photobook job", exception );
-      }
-    finally
-      {
-      if ( database != null ) database.close();
-      }
+    if ( imageSpecId >= 0 ) contentValues.put( key, imageSpecId );
+    else                    contentValues.putNull( key );
     }
 
 
   /*****************************************************
    *
-   * Inserts a postcard job.
+   * Puts an image spec id into a content value. If the
+   * asset id < 0 then a null is put instead.
    *
    *****************************************************/
-  private void insertPostcardJob( long jobId, long[] assetIds, String message, long addressId )
+  private void putImageSpecId( ContentValues contentValues, long imageSpecId )
     {
-    SQLiteDatabase database = getWritableDatabase();
-
-    if ( database == null )
-      {
-      Log.e( LOG_TAG, "Unable to get writable database" );
-
-      return;
-      }
-
-
-    // Create the values to be inserted.
-
-    ContentValues contentValues = new ContentValues();
-
-    contentValues.put( "job_id", jobId );
-
-    putAssetId( contentValues, "front_image_asset_id", assetIds[ 0 ] );
-    putAssetId( contentValues, "back_image_asset_id",  assetIds[ 1 ] );
-
-    putString( contentValues, "message", message );
-
-    contentValues.put( "address_id", addressId );
-
-
-    // Try to insert the new job
-
-    try
-      {
-      database.insert( TABLE_POSTCARD_JOB, null, contentValues );
-      }
-    catch ( Exception exception )
-      {
-      Log.e( LOG_TAG, "Unable to insert postcard job", exception );
-      }
-    finally
-      {
-      if ( database != null ) database.close();
-      }
+    putImageSpecId( contentValues, COLUMN_IMAGE_SPEC_ID, imageSpecId );
     }
 
-
-  /*****************************************************
-   *
-   * Inserts a greeting card job.
-   *
-   *****************************************************/
-  private void insertGreetingCardJob( long jobId, long[] assetIds )
-    {
-    SQLiteDatabase database = getWritableDatabase();
-
-    if ( database == null )
-      {
-      Log.e( LOG_TAG, "Unable to get writable database" );
-
-      return;
-      }
-
-
-    // Create the values to be inserted.
-
-    ContentValues contentValues = new ContentValues();
-
-    contentValues.put( "job_id", jobId );
-
-    putAssetId( contentValues, "front_image_asset_id",        assetIds[ 0 ] );
-    putAssetId( contentValues, "back_image_asset_id",         assetIds[ 1 ] );
-    putAssetId( contentValues, "inside_left_image_asset_id",  assetIds[ 2 ] );
-    putAssetId( contentValues, "inside_right_image_asset_id", assetIds[ 3 ] );
-
-
-    // Try to insert the new job
-
-    try
-      {
-      database.insert( TABLE_GREETING_CARD_JOB, null, contentValues );
-      }
-    catch ( Exception exception )
-      {
-      Log.e( LOG_TAG, "Unable to insert greeting card job", exception );
-      }
-    finally
-      {
-      if ( database != null ) database.close();
-      }
-    }
-
-
-  /*****************************************************
-   *
-   * Puts an asset id into a content value, for the supplied
-   * key. If the asset id < 0 then a null is put instead.
-   *
-   *****************************************************/
-  private void putAssetId( ContentValues contentValues, String key, long assetId )
-    {
-    if ( assetId >= 0 ) contentValues.put( key, assetId );
-    else                contentValues.putNull( key );
-    }
-
-
-  /*****************************************************
-   *
-   * Puts an asset id into a content value. If the asset
-   * id < 0 then a null is put instead.
-   *
-   *****************************************************/
-  private void putAssetId( ContentValues contentValues, long assetId )
-    {
-    putAssetId( contentValues, COLUMN_ASSET_ID, assetId );
-    }
 
   /*****************************************************
    *
@@ -947,16 +668,16 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
    *
    * Loads the basket.
    *
-   * @return An Order containing all the jobs in the basket.
+   * @return An list of basket items.
    *
    *****************************************************/
-  public Order loadBasket( Catalogue catalogue )
+  public List<BasketItem> loadBasket( Catalogue catalogue )
     {
-    // Get all the jobs
+    // Get all the items
 
-    List<ContentValues> jobContentValuesList = selectAllJobs();
+    List<ContentValues> itemContentValuesList = selectAllItems();
 
-    if ( jobContentValuesList == null )
+    if ( itemContentValuesList == null )
       {
       return ( null );
       }
@@ -972,21 +693,21 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
       }
 
 
-    // Get all the assets
+    // Get all the image specs
 
-    SparseArray<String> assetsSparseArray = selectAllAssets();
+    SparseArray<ImageSpec> imageSpecSparseArray = selectAllImageSpecs();
 
-    if ( assetsSparseArray == null )
+    if ( imageSpecSparseArray == null )
       {
       return ( null );
       }
 
 
-    // Get all the job assets
+    // Get all the item image specs
 
-    SparseArray<List<Long>> jobAssetsSparseArray = selectAllJobAssets();
+    SparseArray<List<Long>> itemImageSpecsSparseArray = selectAllItemImageSpecs();
 
-    if ( jobAssetsSparseArray == null )
+    if ( itemImageSpecsSparseArray == null )
       {
       return ( null );
       }
@@ -1002,28 +723,23 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
       }
 
 
-    // We now need to combine all the data structures into one order
+    // We now need to combine all the data structures into one list of basket items
 
-    Order basket = new Order();
+    List<BasketItem> basketItemList = new ArrayList<>( itemContentValuesList.size() );
 
 
-    // Go through the job list
+    // Go through the item list
 
-    for ( ContentValues jobContentValues : jobContentValuesList )
+    for ( ContentValues itemContentValues : itemContentValuesList )
       {
-      // Get the base job details
+      // Get the base item details
 
-      long   jobId         = jobContentValues.getAsLong( "job_id" );
-      String jobType       = jobContentValues.getAsString( "job_type" );
-      String productId     = jobContentValues.getAsString( "job_product_id" );
-      int    orderQuantity = jobContentValues.getAsInteger( "job_order_quantity" );
+      long   itemId        = itemContentValues.getAsLong( "item_id" );
+      String productId     = itemContentValues.getAsString( "product_id" );
+      int    orderQuantity = itemContentValues.getAsInteger( "order_quantity" );
 
-      if ( jobType == null )
-        {
-        Log.e( LOG_TAG, "Type not found for job " + jobId );
 
-        continue;
-        }
+      // Look up the product from its id
 
       Product product = catalogue.getProductById( productId );
 
@@ -1036,97 +752,48 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
 
 
       // Get any options for this job (which may be null)
-      HashMap<String,String> optionsMap = optionsSparseArray.get( (int)jobId );
+      HashMap<String,String> optionsMap = optionsSparseArray.get( (int)itemId );
 
 
-      // Determine the job type
+      // Get any image specs, and set all their cropped for ids to the product. This is
+      // so that if we edit the item later, the creation fragments don't think that the
+      // assets were cropped for a different product, and try and crop them again.
 
-      Job job;
+      ArrayList<ImageSpec> imageSpecList = getImageSpecList( itemImageSpecsSparseArray.get( (int)itemId ), imageSpecSparseArray );
 
-      if ( jobType.equals( JOB_TYPE_GREETING_CARD ) )
+      for ( ImageSpec imageSpec : imageSpecList )
         {
-        ///// Greeting card /////
-
-        Asset frontImageAsset       = getAsset( assetsSparseArray, jobContentValues.getAsLong( "gc_front_asset_id" ) );
-        Asset backImageAsset        = getAsset( assetsSparseArray, jobContentValues.getAsLong( "gc_back_asset_id" ) );
-        Asset insideLeftImageAsset  = getAsset( assetsSparseArray, jobContentValues.getAsLong( "gc_inside_left_asset_id" ) );
-        Asset insideRightImageAsset = getAsset( assetsSparseArray, jobContentValues.getAsLong( "gc_inside_right_asset_id" ) );
-
-        job = new GreetingCardJob( jobId, product, orderQuantity, optionsMap, frontImageAsset, backImageAsset, insideLeftImageAsset, insideRightImageAsset );
-        }
-      else if ( jobType.equals( JOB_TYPE_PHOTOBOOK ) )
-        {
-        ///// Photobook /////
-
-        Asset frontCoverAsset = getAsset( assetsSparseArray, jobContentValues.getAsLong( "pb_front_asset_id" ) );
-
-        List<Asset> assetList = getAssetList( jobAssetsSparseArray.get( (int)jobId ), assetsSparseArray );
-
-        job = new PhotobookJob( jobId, product, orderQuantity, optionsMap, frontCoverAsset, assetList );
-        }
-      else if ( jobType.equals( JOB_TYPE_POSTCARD ) )
-        {
-        ///// Postcard /////
-
-        Asset   frontImageAsset = getAsset( assetsSparseArray, jobContentValues.getAsLong( "pc_front_asset_id" ) );
-        Asset   backImageAsset  = getAsset( assetsSparseArray, jobContentValues.getAsLong( "pc_back_asset_id" ) );
-        String  message         = jobContentValues.getAsString( "pc_message" );
-        Address address         = getAddress( addressesSparseArray, jobContentValues.getAsLong( "pc_address_id" ) );
-
-        job = new PostcardJob( jobId, product, orderQuantity, optionsMap, frontImageAsset, backImageAsset, message, address );
-        }
-      else if ( jobType.equals( JOB_TYPE_ASSET_LIST ) )
-        {
-        ///// Asset List /////
-
-        List<Asset> assetList = getAssetList( jobAssetsSparseArray.get( (int)jobId ), assetsSparseArray );
-
-        job = new AssetListJob( jobId, product, orderQuantity, optionsMap, assetList );
-        }
-      else
-        {
-        Log.e( LOG_TAG, "Invalid job type: " + jobType );
-
-        continue;
+        imageSpec.setCroppedForProductId( productId );
         }
 
 
-      basket.addJob( job );
+      // Create a basket item and add it to our list
+
+      BasketItem basketItem = new BasketItem( itemId, product, orderQuantity, optionsMap, imageSpecList );
+
+      basketItemList.add( basketItem );
       }
 
 
-    return ( basket );
+    return ( basketItemList );
     }
 
 
   /*****************************************************
    * 
    * Returns a sparse array of content values resulting
-   * from selecting all jobs, indexes by job_id.
+   * from selecting all items, indexed by item_id.
    * 
    *****************************************************/
-  List<ContentValues> selectAllJobs()
+  List<ContentValues> selectAllItems()
     {
     // Construct the SQL statement:
     StringBuilder sqlStringBuilder = new StringBuilder()
-            .append( "SELECT Job.id                                       AS job_id," )
-            .append(        "Job.type                                     AS job_type," )
-            .append(        "Job.product_id                               AS job_product_id," )
-            .append(        "Job.order_quantity                           AS job_order_quantity," )
-            .append(        "PhotobookJob.front_cover_asset_id            AS pb_front_asset_id," )
-            .append(        "PostcardJob.front_image_asset_id             AS pc_front_asset_id," )
-            .append(        "PostcardJob.back_image_asset_id              AS pc_back_asset_id," )
-            .append(        "PostcardJob.message                          AS pc_message," )
-            .append(        "PostcardJob.address_id                       AS pc_address_id," )
-            .append(        "GreetingCardJob.front_image_asset_id         AS gc_front_asset_id," )
-            .append(        "GreetingCardJob.back_image_asset_id          AS gc_back_asset_id," )
-            .append(        "GreetingCardJob.inside_left_image_asset_id   AS gc_inside_left_asset_id," )
-            .append(        "GreetingCardJob.inside_right_image_asset_id  AS gc_inside_right_asset_id" )
-            .append( "  FROM Job" )
-            .append( "  LEFT OUTER JOIN PhotobookJob    ON PhotobookJob.job_id    = Job.id" )
-            .append( "  LEFT OUTER JOIN PostcardJob     ON PostcardJob.job_id     = Job.id" )
-            .append( "  LEFT OUTER JOIN GreetingCardJob ON GreetingCardJob.job_id = Job.id" )
-            .append( " ORDER BY Job.id");
+            .append( "SELECT id                                      AS item_id," )
+            .append(        "product_id                              AS product_id," )
+            .append(        "order_quantity                          AS order_quantity" )
+            .append( "  FROM Item" )
+            .append( " ORDER BY id");
 
 
     // Initialise the database and cursor
@@ -1153,12 +820,11 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
 
         ContentValues contentValues = new ContentValues();
 
-        long jobId = cursor.getLong(   cursor.getColumnIndex( "job_id" ) );
+        long itemId = cursor.getLong(   cursor.getColumnIndex( "item_id" ) );
 
-        contentValues.put( "job_id",             jobId );
-        contentValues.put( "job_type",           cursor.getString( cursor.getColumnIndex( "job_type" ) ) );
-        contentValues.put( "job_product_id",     cursor.getString( cursor.getColumnIndex( "job_product_id" ) ) );
-        contentValues.put( "job_order_quantity", cursor.getInt   ( cursor.getColumnIndex( "job_order_quantity" ) ) );
+        contentValues.put( "item_id",        itemId );
+        contentValues.put( "product_id",     cursor.getString( cursor.getColumnIndex( "product_id" ) ) );
+        contentValues.put( "order_quantity", cursor.getInt   ( cursor.getColumnIndex( "order_quantity" ) ) );
 
         putLong(   cursor, "pb_front_asset_id",        contentValues );
 
@@ -1205,11 +871,11 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
     {
     // Construct the SQL statement:
     StringBuilder sqlStringBuilder = new StringBuilder()
-            .append( "SELECT job_id," )
+            .append( "SELECT item_id," )
             .append(        "name," )
             .append(        "value" )
             .append( "  FROM Option" )
-            .append( " ORDER BY job_id, name");
+            .append( " ORDER BY item_id, name");
 
 
     // Initialise the database and cursor
@@ -1238,20 +904,20 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
         {
         // Get the values from the cursor
 
-        long   jobId = cursor.getLong  ( cursor.getColumnIndex( "job_id" ) );
-        String name  = cursor.getString( cursor.getColumnIndex( "name" ) );
-        String value = cursor.getString( cursor.getColumnIndex( "value" ) );
+        long   itemId = cursor.getLong  ( cursor.getColumnIndex( "item_id" ) );
+        String name   = cursor.getString( cursor.getColumnIndex( "name" ) );
+        String value  = cursor.getString( cursor.getColumnIndex( "value" ) );
 
 
         // If this is a new job, create a new options hash map and insert it into the array
 
-        if ( jobId != currentJobId )
+        if ( itemId != currentJobId )
           {
-          currentJobId   = jobId;
+          currentJobId   = itemId;
 
           optionsHashMap = new HashMap<>();
 
-          optionsSparseArray.put( (int)jobId, optionsHashMap );
+          optionsSparseArray.put( (int)itemId, optionsHashMap );
           }
 
 
@@ -1281,16 +947,22 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
 
   /*****************************************************
    *
-   * Returns a sparse array of assets, indexed by asset_id.
+   * Returns a sparse array of image specs, indexed by
+   * image spec id.
    *
    *****************************************************/
-  SparseArray<String> selectAllAssets()
+  SparseArray<ImageSpec> selectAllImageSpecs()
     {
     // Construct the SQL statement:
     StringBuilder sqlStringBuilder = new StringBuilder()
             .append( "SELECT id," )
-            .append(        "image_file_path" )
-            .append( "  FROM Asset" )
+            .append(        "image_file_path," )
+            .append(        "left," )
+            .append(        "top," )
+            .append(        "right," )
+            .append(        "bottom," )
+            .append(        "quantity" )
+            .append( "  FROM ImageSpec" )
             .append( " ORDER BY id");
 
 
@@ -1307,7 +979,7 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
       cursor = database.rawQuery( sqlStringBuilder.toString(), null );
 
 
-      SparseArray<String> assetsSparseArray = new SparseArray<>();
+      SparseArray<ImageSpec> imageSpecSparseArray = new SparseArray<>();
 
 
       // Process every row; each row corresponds to a single asset
@@ -1316,14 +988,21 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
         {
         // Get the values from the cursor
 
-        long   assetId       = cursor.getLong  ( cursor.getColumnIndex( "id" ) );
+        long   imageSpecId   = cursor.getLong  ( cursor.getColumnIndex( "id" ) );
         String imageFilePath = cursor.getString( cursor.getColumnIndex( "image_file_path" ) );
+        float  left          = cursor.getFloat( cursor.getColumnIndex( "left" ) );
+        float  top           = cursor.getFloat( cursor.getColumnIndex( "top" ) );
+        float  right         = cursor.getFloat( cursor.getColumnIndex( "right" ) );
+        float  bottom        = cursor.getFloat( cursor.getColumnIndex( "bottom" ) );
+        int    quantity      = cursor.getInt( cursor.getColumnIndex( "quantity" ) );
 
-        assetsSparseArray.put( (int)assetId, imageFilePath );
+        ImageSpec imageSpec = new ImageSpec( new Asset( imageFilePath ), new RectF( left, top, right, bottom ), quantity );
+
+        imageSpecSparseArray.put( (int)imageSpecId, imageSpec );
         }
 
 
-      return ( assetsSparseArray );
+      return ( imageSpecSparseArray );
       }
     catch ( Exception exception )
       {
@@ -1345,18 +1024,18 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
 
   /*****************************************************
    *
-   * Returns a sparse array of assets, indexed by
-   * job_id.
+   * Returns a sparse array of assets fragment ids, indexed by
+   * item_id.
    *
    *****************************************************/
-  SparseArray<List<Long>> selectAllJobAssets()
+  SparseArray<List<Long>> selectAllItemImageSpecs()
     {
     // Construct the SQL statement:
     StringBuilder sqlStringBuilder = new StringBuilder()
-            .append( "SELECT job_id," )
-            .append(        "asset_id" )
-            .append( "  FROM JobAsset" )
-            .append( " ORDER BY job_id, asset_index");
+            .append( "SELECT item_id," )
+            .append(        "image_spec_id" )
+            .append( "  FROM ItemImageSpec" )
+            .append( " ORDER BY item_id, image_spec_index");
 
 
     // Initialise the database and cursor
@@ -1372,11 +1051,11 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
       cursor = database.rawQuery( sqlStringBuilder.toString(), null );
 
 
-      SparseArray<List<Long>> jobAssetsSparseArray = new SparseArray<>();
+      SparseArray<List<Long>> itemImageSpecsSparseArray = new SparseArray<>();
 
-      long currentJobId = -1;
+      long currentItemId = -1;
 
-      List<Long> assetIdList = null;
+      List<Long> imageSpecIdList = null;
 
 
       // Process every row; each row corresponds to an asset
@@ -1385,39 +1064,39 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
         {
         // Get the values from the cursor
 
-        long jobId = cursor.getLong  ( cursor.getColumnIndex( "job_id" ) );
+        long itemId = cursor.getLong  ( cursor.getColumnIndex( "item_id" ) );
 
 
         // The asset id may be null (or not exist), so we need to create a blank entry for this
 
-        int assetIdColumnIndex = cursor.getColumnIndex( "asset_id" );
+        int imageSpecIdColumnIndex = cursor.getColumnIndex( "image_spec_id" );
 
-        Long assetIdLong = ( assetIdColumnIndex >= 0 && ( ! cursor.isNull( assetIdColumnIndex ) )
-                ? cursor.getLong( assetIdColumnIndex )
+        Long imageSpecIdLong = ( imageSpecIdColumnIndex >= 0 && ( ! cursor.isNull( imageSpecIdColumnIndex ) )
+                ? cursor.getLong( imageSpecIdColumnIndex )
                 : null );
 
 
-        // If this is a new job, create a new asset list and insert it into the array
+        // If this is a new item, create a new image spec list and insert it into the array
 
-        if ( jobId != currentJobId )
+        if ( itemId != currentItemId )
           {
-          currentJobId = jobId;
+          currentItemId = itemId;
 
-          assetIdList = new ArrayList<>();
+          imageSpecIdList = new ArrayList<>();
 
-          jobAssetsSparseArray.put( (int)jobId, assetIdList );
+          itemImageSpecsSparseArray.put( (int)itemId, imageSpecIdList );
           }
 
 
-        assetIdList.add( assetIdLong );
+        imageSpecIdList.add( imageSpecIdLong );
         }
 
 
-      return ( jobAssetsSparseArray );
+      return ( itemImageSpecsSparseArray );
       }
     catch ( Exception exception )
       {
-      Log.e( LOG_TAG, "Unable to select all job assets", exception );
+      Log.e( LOG_TAG, "Unable to select all item image specs", exception );
 
       return ( null );
       }
@@ -1550,21 +1229,22 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
 
   /*****************************************************
    *
-   * Converts a list of asset ids into a list of assets.
+   * Converts a list of image spec ids into a list of
+   * image specs.
    *
    *****************************************************/
-  private List<Asset> getAssetList( List<Long> assetIdList, SparseArray<String> imageFilePathSparseArray )
+  private ArrayList<ImageSpec> getImageSpecList( List<Long> imageSpecIdList, SparseArray<ImageSpec> imageSpecSparseArray )
     {
-    if ( assetIdList == null ) assetIdList = new ArrayList<>( 0 );
+    if ( imageSpecIdList == null ) imageSpecIdList = new ArrayList<>( 0 );
 
-    List<Asset> assetList = new ArrayList<>( assetIdList.size() );
+    ArrayList<ImageSpec> imageSpecList = new ArrayList<>( imageSpecIdList.size() );
 
-    for ( Long assetIdLong : assetIdList )
+    for ( Long imageSpecIdLong : imageSpecIdList )
       {
-      assetList.add( getAsset( imageFilePathSparseArray, assetIdLong ) );
+      imageSpecList.add( getImageSpec( imageSpecSparseArray, imageSpecIdLong ) );
       }
 
-    return ( assetList );
+    return ( imageSpecList );
     }
 
 
@@ -1573,20 +1253,9 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
    * Returns an asset for the asset id.
    *
    *****************************************************/
-  private Asset getAsset( SparseArray<String> imageFilePathSparseArray, Long assetIdLong )
+  private ImageSpec getImageSpec( SparseArray<ImageSpec> imageSpecSparseArray, Long imageSpecIdLong )
     {
-    return ( assetIdLong != null ? getAsset( imageFilePathSparseArray.get( assetIdLong.intValue() ) ) : null );
-    }
-
-
-  /*****************************************************
-   *
-   * Returns an asset for the asset id.
-   *
-   *****************************************************/
-  private Asset getAsset( String imageFilePath )
-    {
-    return ( imageFilePath != null ? new Asset( imageFilePath ) : null );
+    return ( imageSpecIdLong != null ? imageSpecSparseArray.get( imageSpecIdLong.intValue() ) : null );
     }
 
 
@@ -1611,7 +1280,7 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
     // Construct the SQL statement:
     StringBuilder sqlStringBuilder = new StringBuilder()
             .append( "SELECT SUM( order_quantity ) AS item_count" )
-            .append( "  FROM Job" );
+            .append( "  FROM Item" );
 
 
     // Initialise the database and cursor
@@ -1638,7 +1307,7 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
       }
     catch ( Exception exception )
       {
-      Log.e( LOG_TAG, "Unable to select all addresses", exception );
+      Log.e( LOG_TAG, "Unable to select item count", exception );
 
       return ( 0 );
       }
@@ -1656,23 +1325,23 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
 
   /*****************************************************
    *
-   * Updates the order quantity for a job, then returns
+   * Updates the order quantity for an item, then returns
    * the new quantity.
    *
    *****************************************************/
-  public int updateOrderQuantity( long jobId, int quantityDelta )
+  public int updateOrderQuantity( long itemId, int quantityDelta )
     {
     // Construct the update SQL statement:
     StringBuilder updateSQLStringBuilder = new StringBuilder()
-            .append( "UPDATE Job" )
+            .append( "UPDATE Item" )
             .append(   " SET order_quantity = order_quantity + " ).append( quantityDelta )
-            .append( " WHERE id = " ).append( jobId );
+            .append( " WHERE id = " ).append( itemId );
 
     // Construct the select SQL statement:
     StringBuilder selectSQLStringBuilder = new StringBuilder()
             .append( "SELECT order_quantity" )
-            .append( "  FROM Job" )
-            .append( " WHERE id = " ).append( jobId );
+            .append( "  FROM Item" )
+            .append( " WHERE id = " ).append( itemId );
 
 
     // Initialise the database and cursor
@@ -1702,7 +1371,7 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
       }
     catch ( Exception exception )
       {
-      Log.e( LOG_TAG, "Unable to select all addresses", exception );
+      Log.e( LOG_TAG, "Unable to update order quantity", exception );
 
       return ( 0 );
       }
@@ -1720,65 +1389,25 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
 
   /*****************************************************
    *
-   * Deletes a job.
+   * Deletes an  item.
    *
    *****************************************************/
-  public void deleteJob( long jobId )
+  public void deleteItem( long itemId )
     {
     // Construct the delete SQL statements.
 
-    String deleteAddressSQLString = "DELETE" +
-                                     " FROM Address" +
-                                    " WHERE id IN ( SELECT address_id" +
-                                                    " FROM PostcardJob" +
-                                                   " WHERE job_id = " + jobId + " )";
-
-    String deleteAssetSQLString   = "DELETE" +
-                                     " FROM Asset" +
-                                    " WHERE id IN ( SELECT asset_id" +
-                                                    " FROM JobAsset" +
-                                                   " WHERE job_id = " + jobId +
-                                                   " UNION ALL" +
-                                                  " SELECT front_cover_asset_id" +
-                                                    " FROM PhotobookJob" +
-                                                   " WHERE job_id = " + jobId +
-                                                   " UNION ALL" +
-                                                  " SELECT front_image_asset_id" +
-                                                    " FROM PostcardJob" +
-                                                   " WHERE job_id = " + jobId +
-                                                   " UNION ALL" +
-                                                  " SELECT back_image_asset_id" +
-                                                    " FROM PostcardJob" +
-                                                   " WHERE job_id = " + jobId +
-                                                   " UNION ALL" +
-                                                  " SELECT front_image_asset_id" +
-                                                    " FROM GreetingCardJob" +
-                                                   " WHERE job_id = " + jobId +
-                                                   " UNION ALL" +
-                                                  " SELECT back_image_asset_id" +
-                                                    " FROM GreetingCardJob" +
-                                                   " WHERE job_id = " + jobId +
-                                                   " UNION ALL" +
-                                                  " SELECT inside_left_image_asset_id" +
-                                                    " FROM GreetingCardJob" +
-                                                   " WHERE job_id = " + jobId +
-                                                   " UNION ALL" +
-                                                  " SELECT inside_right_image_asset_id" +
-                                                    " FROM GreetingCardJob" +
-                                                   " WHERE job_id = " + jobId +
+    String deleteImageSpecSQLString = "DELETE" +
+                                     " FROM ImageSpec" +
+                                    " WHERE id IN ( SELECT image_spec_id" +
+                                                    " FROM ItemImageSpec" +
+                                                   " WHERE item_id = " + itemId +
                                                 " )";
 
-    String deleteJobAssetSQLString     = "DELETE FROM JobAsset WHERE job_id = " + jobId;
+    String deleteItemImageSpecSQLString = "DELETE FROM ItemImageSpec WHERE item_id = " + itemId;
 
-    String deleteGreetingCardSQLString = "DELETE FROM GreetingCardJob WHERE job_id = " + jobId;
+    String deleteOptionSQLString        = "DELETE FROM Option WHERE item_id = " + itemId;
 
-    String deletePhotobookJobSQLString = "DELETE FROM PhotobookJob WHERE job_id = " + jobId;
-
-    String deletePostcardJobSQLString  = "DELETE FROM PostcardJob WHERE job_id = " + jobId;
-
-    String deleteOptionSQLString       = "DELETE FROM Option WHERE job_id = " + jobId;
-
-    String deleteJobSQLString          = "DELETE FROM Job WHERE id = " + jobId;
+    String deleteItemSQLString          = "DELETE FROM Item WHERE id = " + itemId;
 
 
     SQLiteDatabase database = null;
@@ -1789,18 +1418,15 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
       database = getWritableDatabase();
 
       // Execute the delete statements
-      database.execSQL( deleteAddressSQLString );
-      database.execSQL( deleteAssetSQLString );
-      database.execSQL( deleteJobAssetSQLString );
-      database.execSQL( deleteGreetingCardSQLString );
-      database.execSQL( deletePhotobookJobSQLString );
-      database.execSQL( deletePostcardJobSQLString );
+      //database.execSQL( deleteAddressSQLString );
+      database.execSQL( deleteImageSpecSQLString );
+      database.execSQL( deleteItemImageSpecSQLString );
       database.execSQL( deleteOptionSQLString );
-      database.execSQL( deleteJobSQLString );
+      database.execSQL( deleteItemSQLString );
       }
     catch ( Exception exception )
       {
-      Log.e( LOG_TAG, "Unable to delete job", exception );
+      Log.e( LOG_TAG, "Unable to delete item", exception );
       }
     finally
       {

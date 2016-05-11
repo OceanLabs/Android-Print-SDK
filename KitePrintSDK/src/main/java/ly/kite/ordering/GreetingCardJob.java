@@ -13,7 +13,8 @@ import java.util.List;
 import java.util.Set;
 
 import ly.kite.catalogue.Product;
-import ly.kite.util.Asset;
+import ly.kite.util.AssetFragment;
+import ly.kite.util.UploadableImage;
 
 /**
  * Created by dbotha on 23/12/2015.
@@ -28,26 +29,25 @@ import ly.kite.util.Asset;
  *****************************************************/
 public class GreetingCardJob extends Job
   {
+  private UploadableImage  mFrontUploadableImage;
+  private UploadableImage  mBackUploadableImage;
+  private UploadableImage  mInsideLeftUploadableImage;
+  private UploadableImage  mInsideRightUploadableImage;
 
-  private Asset mFrontImageAsset;
-  private Asset mBackImageAsset;
-  private Asset mInsideLeftImageAsset;
-  private Asset mInsideRightImageAsset;
 
-
-  public GreetingCardJob( long jobId, Product product, int orderQuantity, HashMap<String,String> optionsMap, Asset frontImageAsset, Asset backImageAsset, Asset insideLeftImageAsset, Asset insideRightImageAsset )
+  public GreetingCardJob( long jobId, Product product, int orderQuantity, HashMap<String,String> optionsMap, Object frontImage, Object backImage, Object insideLeftImage, Object insideRightImage )
     {
     super( jobId, product, orderQuantity, optionsMap );
 
-    mFrontImageAsset       = frontImageAsset;
-    mBackImageAsset        = backImageAsset;
-    mInsideLeftImageAsset  = insideLeftImageAsset;
-    mInsideRightImageAsset = insideRightImageAsset;
+    mFrontUploadableImage       = singleUploadableImageFrom( frontImage );
+    mBackUploadableImage        = singleUploadableImageFrom( backImage );
+    mInsideLeftUploadableImage  = singleUploadableImageFrom( insideLeftImage );
+    mInsideRightUploadableImage = singleUploadableImageFrom( insideRightImage );
     }
 
-  public GreetingCardJob( Product product, int orderQuantity, HashMap<String,String> optionsMap, Asset frontImageAsset, Asset backImageAsset, Asset insideLeftImageAsset, Asset insideRightImageAsset )
+  public GreetingCardJob( Product product, int orderQuantity, HashMap<String,String> optionsMap, Object frontImage, Object backImage, Object insideLeftImage, Object insideRightImage )
     {
-    this( 0, product, orderQuantity, optionsMap, frontImageAsset, backImageAsset, insideLeftImageAsset, insideRightImageAsset );
+    this( 0, product, orderQuantity, optionsMap, frontImage, backImage, insideLeftImage, insideRightImage );
     }
 
 
@@ -70,15 +70,18 @@ public class GreetingCardJob extends Job
     }
 
   @Override
-  List<Asset> getAssetsForUploading()
+  List<UploadableImage> getImagesForUploading()
     {
-    ArrayList<Asset> assets = new ArrayList<Asset>();
-    if ( mFrontImageAsset != null ) assets.add( mFrontImageAsset );
-    if ( mBackImageAsset != null ) assets.add( mBackImageAsset );
-    if ( mInsideLeftImageAsset != null ) assets.add( mInsideLeftImageAsset );
-    if ( mInsideRightImageAsset != null ) assets.add( mInsideRightImageAsset );
-    return assets;
+    ArrayList<UploadableImage> uploadableImageArrayList = new ArrayList<>();
+
+    if ( mFrontUploadableImage       != null ) uploadableImageArrayList.add( mFrontUploadableImage );
+    if ( mBackUploadableImage        != null ) uploadableImageArrayList.add( mBackUploadableImage );
+    if ( mInsideLeftUploadableImage  != null ) uploadableImageArrayList.add( mInsideLeftUploadableImage );
+    if ( mInsideRightUploadableImage != null ) uploadableImageArrayList.add( mInsideRightUploadableImage );
+
+    return ( uploadableImageArrayList );
     }
+
 
   @Override
   JSONObject getJSONRepresentation()
@@ -90,13 +93,13 @@ public class GreetingCardJob extends Job
       addProductOptions( json );
 
       JSONObject assets = new JSONObject();
+
       json.put( "assets", assets );
-      if ( mFrontImageAsset != null ) assets.put( "front_image", mFrontImageAsset.getId() );
-      if ( mBackImageAsset != null ) assets.put( "back_image", mBackImageAsset.getId() );
-      if ( mInsideRightImageAsset != null )
-        assets.put( "inside_right_image", mInsideRightImageAsset.getId() );
-      if ( mInsideLeftImageAsset != null )
-        assets.put( "inside_left_image", mInsideLeftImageAsset.getId() );
+
+      if ( mFrontUploadableImage != null ) assets.put( "front_image",        mFrontUploadableImage.getUploadedAssetId() );
+      if ( mBackUploadableImage != null ) assets.put( "back_image",         mBackUploadableImage.getUploadedAssetId() );
+      if ( mInsideRightUploadableImage != null ) assets.put( "inside_right_image", mInsideRightUploadableImage.getUploadedAssetId() );
+      if ( mInsideLeftUploadableImage != null ) assets.put( "inside_left_image",  mInsideLeftUploadableImage.getUploadedAssetId() );
 
       }
     catch ( JSONException e )
@@ -117,19 +120,20 @@ public class GreetingCardJob extends Job
   public void writeToParcel( Parcel parcel, int flags )
     {
     super.writeToParcel( parcel, flags );
-    parcel.writeParcelable( mFrontImageAsset, flags );
-    parcel.writeParcelable( mBackImageAsset, flags );
-    parcel.writeParcelable( mInsideLeftImageAsset, flags );
-    parcel.writeParcelable( mInsideRightImageAsset, flags );
+    parcel.writeParcelable( mFrontUploadableImage, flags );
+    parcel.writeParcelable( mBackUploadableImage, flags );
+    parcel.writeParcelable( mInsideLeftUploadableImage, flags );
+    parcel.writeParcelable( mInsideRightUploadableImage, flags );
     }
 
   private GreetingCardJob( Parcel parcel )
     {
     super( parcel );
-    mFrontImageAsset = parcel.readParcelable( Asset.class.getClassLoader() );
-    mBackImageAsset = parcel.readParcelable( Asset.class.getClassLoader() );
-    mInsideLeftImageAsset = parcel.readParcelable( Asset.class.getClassLoader() );
-    mInsideRightImageAsset = parcel.readParcelable( Asset.class.getClassLoader() );
+
+    mFrontUploadableImage = parcel.readParcelable( AssetFragment.class.getClassLoader() );
+    mBackUploadableImage = parcel.readParcelable( AssetFragment.class.getClassLoader() );
+    mInsideLeftUploadableImage = parcel.readParcelable( AssetFragment.class.getClassLoader() );
+    mInsideRightUploadableImage = parcel.readParcelable( AssetFragment.class.getClassLoader() );
     }
 
   public static final Parcelable.Creator<GreetingCardJob> CREATOR
@@ -147,27 +151,6 @@ public class GreetingCardJob extends Job
     };
 
 
-  public Asset getFrontImageAsset()
-    {
-    return ( mFrontImageAsset );
-    }
-
-  public Asset getBackImageAsset()
-    {
-    return ( mBackImageAsset );
-    }
-
-  public Asset getInsideLeftImageAsset()
-    {
-    return ( mInsideLeftImageAsset );
-    }
-
-  public Asset getInsideRightImageAsset()
-    {
-    return ( mInsideRightImageAsset );
-    }
-
-
   @Override
   public boolean equals( Object otherObject )
     {
@@ -175,10 +158,10 @@ public class GreetingCardJob extends Job
 
     GreetingCardJob otherGreetingCardJob = (GreetingCardJob) otherObject;
 
-    if ( ! Asset.areBothNullOrEqual( mFrontImageAsset,       otherGreetingCardJob.mFrontImageAsset       ) ) return ( false );
-    if ( ! Asset.areBothNullOrEqual( mBackImageAsset,        otherGreetingCardJob.mBackImageAsset        ) ) return ( false );
-    if ( ! Asset.areBothNullOrEqual( mInsideLeftImageAsset,  otherGreetingCardJob.mInsideLeftImageAsset  ) ) return ( false );
-    if ( ! Asset.areBothNullOrEqual( mInsideRightImageAsset, otherGreetingCardJob.mInsideRightImageAsset ) ) return ( false );
+    if ( ! UploadableImage.areBothNullOrEqual( mFrontUploadableImage,       otherGreetingCardJob.mFrontUploadableImage       ) ) return ( false );
+    if ( ! UploadableImage.areBothNullOrEqual( mBackUploadableImage,        otherGreetingCardJob.mBackUploadableImage        ) ) return ( false );
+    if ( ! UploadableImage.areBothNullOrEqual( mInsideLeftUploadableImage,  otherGreetingCardJob.mInsideLeftUploadableImage  ) ) return ( false );
+    if ( ! UploadableImage.areBothNullOrEqual( mInsideRightUploadableImage, otherGreetingCardJob.mInsideRightUploadableImage ) ) return ( false );
 
     return ( super.equals( otherObject ) );
     }

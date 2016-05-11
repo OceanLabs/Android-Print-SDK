@@ -221,9 +221,6 @@ public class ShippingActivity extends AKiteActivity implements View.OnClickListe
       mInitialEmail    = savedInstanceState.getString( KEY_EMAIL );
       mInitialPhone    = savedInstanceState.getString( KEY_PHONE );
       }
-    else
-      {
-      }
 
 
     // If some values weren't saved - try and get them from the intent

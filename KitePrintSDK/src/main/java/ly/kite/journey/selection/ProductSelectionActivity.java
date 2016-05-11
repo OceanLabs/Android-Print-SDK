@@ -39,8 +39,6 @@ package ly.kite.journey.selection;
 
 ///// Import(s) /////
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -65,9 +63,8 @@ import ly.kite.catalogue.CatalogueLoader;
 import ly.kite.catalogue.ICatalogueConsumer;
 import ly.kite.catalogue.ProductOption;
 import ly.kite.journey.AKiteActivity;
-import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.journey.creation.ProductCreationActivity;
-import ly.kite.journey.creation.reviewandedit.ReviewAndEditFragment;
+import ly.kite.ordering.ImageSpec;
 import ly.kite.util.Asset;
 import ly.kite.catalogue.Product;
 import ly.kite.catalogue.ProductGroup;
@@ -107,7 +104,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
 
   ////////// Member Variable(s) //////////
 
-  private ArrayList<AssetsAndQuantity>  mAssetsAndQuantityArrayList;
+  private ArrayList<ImageSpec>          mImageSpecArrayList;
   private String[]                      mProductIds;
 
   private ProgressBar                   mProgressSpinner;
@@ -154,16 +151,16 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
    * array list, with the quantities set to 1.
    *
    *****************************************************/
-  private static ArrayList<AssetsAndQuantity> assetsAndQuantityArrayListFrom( ArrayList<Asset> assetArrayList )
+  private static ArrayList<ImageSpec> imageSpecArrayListFrom( ArrayList<Asset> assetArrayList )
     {
-    ArrayList<AssetsAndQuantity> assetsAndQuantityArrayList = new ArrayList<>( assetArrayList.size() );
+    ArrayList<ImageSpec> imageSpecArrayList = new ArrayList<>( assetArrayList.size() );
 
     for ( Asset asset : assetArrayList )
       {
-      assetsAndQuantityArrayList.add( new AssetsAndQuantity( asset ) );
+      imageSpecArrayList.add( new ImageSpec( asset ) );
       }
 
-    return ( assetsAndQuantityArrayList );
+    return ( imageSpecArrayList );
     }
 
 
@@ -229,7 +226,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
     // to cropping and editing) because if the user comes out of product creation, and
     // goes back into another product - we want to remember quantities.
 
-    mAssetsAndQuantityArrayList = assetsAndQuantityArrayListFrom( assetArrayList );
+    mImageSpecArrayList = imageSpecArrayListFrom( assetArrayList );
 
 
     // Set up the screen content
@@ -275,9 +272,9 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
 
     if ( data != null )
       {
-      ArrayList<AssetsAndQuantity> assetsAndQuantityArrayList = data.getParcelableArrayListExtra( INTENT_EXTRA_NAME_ASSETS_AND_QUANTITY__LIST );
+      ArrayList<ImageSpec> imageSpecArrayList = data.getParcelableArrayListExtra( INTENT_EXTRA_NAME_IMAGE_SPEC_LIST );
 
-      if ( assetsAndQuantityArrayList != null ) mAssetsAndQuantityArrayList = assetsAndQuantityArrayList;
+      if ( imageSpecArrayList != null ) mImageSpecArrayList = imageSpecArrayList;
       }
 
 
@@ -563,7 +560,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
     // we then hand over to the product creation activity to choose the journey
     // depending on the product.
 
-    ProductCreationActivity.startForResult( this, mAssetsAndQuantityArrayList, product, mProductOptionValueMap, ACTIVITY_REQUEST_CODE_CREATE );
+    ProductCreationActivity.startForResult( this, product, mProductOptionValueMap, mImageSpecArrayList, ACTIVITY_REQUEST_CODE_CREATE );
     }
 
 

@@ -48,6 +48,7 @@
         android:textColor="@android:color/white"/>
 
     <FrameLayout
+        android:id="@+id/edit_touch_frame"
         android:layout_marginLeft="@dimen/basket_item_product_label_margin"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
@@ -64,6 +65,12 @@
                 android:textSize="@dimen/basket_item_product_label_size"
                 android:textStyle="bold"
                 android:singleLine="true"/>
+            <ly.kite.widget.CustomTypefaceTextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/basket_item_product_label_size"
+                android:textColor="@color/basket_light"
+                android:text="@string/Edit"/>
         </LinearLayout>
     </FrameLayout>
 

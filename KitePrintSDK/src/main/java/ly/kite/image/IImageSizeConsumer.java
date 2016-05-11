@@ -1,11 +1,11 @@
 /*****************************************************
  *
- * IAssetsAndQuantityHolder.java
+ * IImageSizeConsumer.java
  *
  *
  * Modified MIT License
  *
- * Copyright (c) 2010-2015 Kite Tech Ltd. https://www.kite.ly
+ * Copyright (c) 2010-2016 Kite Tech Ltd. https://www.kite.ly
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,44 +34,38 @@
 
 ///// Package Declaration /////
 
-package ly.kite.journey;
+package ly.kite.image;
 
 
 ///// Import(s) /////
 
-import java.util.ArrayList;
+import android.graphics.Bitmap;
 
 
 ///// Class Declaration /////
 
 /*****************************************************
  *
- * This interface defines a holder for an assets and quantity
- * list.
+ * This interface defines an image size consumer. This
  *
  *****************************************************/
-public interface IAssetsAndQuantityHolder
+public interface IImageSizeConsumer
   {
-  ////////// Static Constant(s) //////////
-
-
   ////////// Method(s) //////////
 
   /*****************************************************
    *
-   * Returns the assets and quantity list.
+   * Called when the image size is available.
    *
    *****************************************************/
-  public ArrayList<AssetsAndQuantity> getAssetsAndQuantityArrayList();
+  public void onImageSizeAvailable( int width, int height );
 
-
-  ////////// Inner Class(es) //////////
 
   /*****************************************************
    *
-   * ...
+   * Called when an image could not be loaded. An exception
+   * may or may not be additionally returned.
    *
    *****************************************************/
-
+  public void onImageSizeUnavailable( Exception exception );
   }
-

@@ -455,6 +455,17 @@ public class Product implements Parcelable, IGroupOrProduct
     }
 
 
+  /*****************************************************
+   *
+   * Returns a display price.
+   *
+   *****************************************************/
+  public String getDisplayPriceMultipliedBy( int quantity )
+    {
+    return ( mCost.getDefaultDisplayAmountWithFallbackMultipliedBy( quantity ) );
+    }
+
+
   ////////// Method(s) //////////
 
   /*****************************************************

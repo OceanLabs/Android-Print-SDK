@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * AssetAndQuantityAdaptor.java
+ * ImageSpecAdaptor.java
  *
  *
  * Modified MIT License
@@ -50,10 +50,10 @@ import android.widget.TextView;
 import java.util.List;
 
 import ly.kite.R;
-import ly.kite.util.Asset;
-import ly.kite.journey.AssetsAndQuantity;
+import ly.kite.ordering.ImageSpec;
 import ly.kite.catalogue.BorderF;
 import ly.kite.catalogue.Product;
+import ly.kite.util.AssetFragment;
 import ly.kite.widget.FramedImageView;
 import ly.kite.widget.ViewHelper;
 
@@ -65,12 +65,12 @@ import ly.kite.widget.ViewHelper;
  * An adaptor for the image sources.
  *
  *****************************************************/
-public class AssetAndQuantityAdaptor extends BaseAdapter
+public class ImageSpecAdaptor extends BaseAdapter
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG          = "AssetAndQuantityAdaptor";
+  private static final String  LOG_TAG          = "ImageSpecAdaptor";
 
   private static final int     MAX_BORDER_VALUE                      = 1000;
   private static final float   BORDER_VALUE_TO_PROPORTION_MULTIPLIER = 1.0f / MAX_BORDER_VALUE;
@@ -82,7 +82,7 @@ public class AssetAndQuantityAdaptor extends BaseAdapter
   ////////// Member Variable(s) //////////
 
   private Context                  mContext;
-  private List<AssetsAndQuantity>  mAssetsAndQuantityList;
+  private List<ImageSpec>          mImageSpecList;
   private Product                  mProduct;
   private IListener                mListener;
 
@@ -97,14 +97,14 @@ public class AssetAndQuantityAdaptor extends BaseAdapter
 
   ////////// Constructor(s) //////////
 
-  public AssetAndQuantityAdaptor( Context context, List<AssetsAndQuantity> assetsAndQuantityList, Product product, IListener listener )
+  public ImageSpecAdaptor( Context context, List<ImageSpec> imageSpecList, Product product, IListener listener )
     {
-    mContext               = context;
-    mAssetsAndQuantityList = assetsAndQuantityList;
-    mProduct               = product;
-    mListener              = listener;
+    mContext         = context;
+    mImageSpecList   = imageSpecList;
+    mProduct         = product;
+    mListener        = listener;
 
-    mLayoutInflator        = LayoutInflater.from( context );
+    mLayoutInflator  = LayoutInflater.from( context );
     }
 
 
@@ -118,7 +118,7 @@ public class AssetAndQuantityAdaptor extends BaseAdapter
   @Override
   public int getCount()
     {
-    return ( mAssetsAndQuantityList.size() );
+    return ( mImageSpecList.size() );
     }
 
 
@@ -130,7 +130,7 @@ public class AssetAndQuantityAdaptor extends BaseAdapter
   @Override
   public Object getItem( int position )
     {
-    return ( mAssetsAndQuantityList.get( position ) );
+    return ( mImageSpecList.get( position ) );
     }
 
 
@@ -207,13 +207,13 @@ public class AssetAndQuantityAdaptor extends BaseAdapter
 
     // Set up the view
 
-    AssetsAndQuantity assetsAndQuantity = (AssetsAndQuantity)getItem( position );
-    Asset             editedAsset       = assetsAndQuantity.getEditedAsset();
+    ImageSpec     imageSpec     = (ImageSpec)getItem( position );
+    AssetFragment assetFragment = imageSpec.getAssetFragment();
 
-    viewReferences.framedImageView.requestScaledImageOnceSized( editedAsset );
+    viewReferences.framedImageView.requestScaledImageOnceSized( assetFragment );
 
-    viewReferences.quantityTextView.setText( String.valueOf( assetsAndQuantity.getQuantity() ) );
-    viewReferences.assetIndex = position;
+    viewReferences.quantityTextView.setText( String.valueOf( imageSpec.getQuantity() ) );
+    viewReferences.imageIndex = position;
 
     viewReferences.framedImageView.setOnClickListener( viewReferences );
     viewReferences.decreaseButton.setOnClickListener( viewReferences );
@@ -261,19 +261,19 @@ public class AssetAndQuantityAdaptor extends BaseAdapter
     Button           increaseButton;
     Button           editButton;
 
-    int              assetIndex;
+    int              imageIndex;
 
 
     @Override
     public void onClick( View view )
       {
-      AssetsAndQuantity assetAndQuantity = mAssetsAndQuantityList.get( this.assetIndex );
+      ImageSpec imageSpec = mImageSpecList.get( this.imageIndex );
 
       if ( view == this.framedImageView )
         {
         ///// (Image) /////
 
-        mListener.onEdit( this.assetIndex );
+        mListener.onEdit( this.imageIndex );
         }
       else if ( view == this.decreaseButton )
         {
@@ -281,30 +281,30 @@ public class AssetAndQuantityAdaptor extends BaseAdapter
 
         // If the quantity would go to zero, notify the listener first.
 
-        if ( assetAndQuantity.getQuantity() <= 1 )
+        if ( imageSpec.getQuantity() <= 1 )
           {
-          mListener.onWantsToBeZero( this.assetIndex );
+          mListener.onWantsToBeZero( this.imageIndex );
           }
         else
           {
-          this.quantityTextView.setText( String.valueOf( assetAndQuantity.decrement() ) );
+          this.quantityTextView.setText( String.valueOf( imageSpec.decrementQuantity() ) );
 
-          mListener.onQuantityChanged( this.assetIndex );
+          mListener.onQuantityChanged( this.imageIndex );
           }
         }
       else if ( view == this.increaseButton )
         {
         ///// Increase /////
 
-        this.quantityTextView.setText( String.valueOf( assetAndQuantity.increment() ) );
+        this.quantityTextView.setText( String.valueOf( imageSpec.incrementQuantity() ) );
 
-        mListener.onQuantityChanged( this.assetIndex );
+        mListener.onQuantityChanged( this.imageIndex );
         }
       else if ( view == this.editButton )
         {
         ///// Edit /////
 
-        mListener.onEdit( this.assetIndex );
+        mListener.onEdit( this.imageIndex );
         }
       }
     }
