@@ -116,6 +116,7 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
   private static final String  JSON_NAME_OPTION_CODE                 = "code";
   private static final String  JSON_NAME_HIGHLIGHTS_URL              = "product_highlights_url";
   private static final String  JSON_NAME_PIXELS                      = "px";
+  private static final String  JSON_NAME_PRODUCT_ACTIVE              = "product_active";
   private static final String  JSON_NAME_PRODUCT_ARRAY               = "objects";
   private static final String  JSON_NAME_PRODUCT_CODE                = "product_code";
   private static final String  JSON_NAME_PRODUCT_DETAIL              = "product";
@@ -462,6 +463,8 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
           Log.d( LOG_TAG, "Product JSON:\n" + productJSONObject.toString() );
           }
 
+        boolean                          productActive      = productJSONObject.optBoolean( JSON_NAME_PRODUCT_ACTIVE, true );
+
         String                           productId          = productJSONObject.getString( JSON_NAME_PRODUCT_ID );
         String                           productName        = productJSONObject.getString( JSON_NAME_PRODUCT_NAME );
         String                           productDescription = productJSONObject.getString( JSON_NAME_DESCRIPTION );
@@ -559,13 +562,14 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
         // Add the product to the catalogue. If it doesn't have a supported
         // user journey, then we add it has a discarded product.
 
-        if ( ProductCreationActivity.isSupported( userJourneyType ) )
+        if ( productActive && ProductCreationActivity.isSupported( userJourneyType ) )
           {
           catalogue.addProduct( groupLabel, groupImageURL, product );
           }
         else
           {
-          Log.i( LOG_TAG, "-- Product discarded: no user journey --" );
+          if ( productActive ) Log.i( LOG_TAG, "-- Product discarded: no user journey --" );
+          else                 Log.i( LOG_TAG, "-- Product discarded: inactive --" );
 
           catalogue.addDiscardedProduct( product );
           }

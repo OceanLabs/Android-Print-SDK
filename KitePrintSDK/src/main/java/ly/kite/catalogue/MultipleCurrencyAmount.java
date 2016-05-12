@@ -50,6 +50,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Currency;
 import java.util.HashMap;
@@ -67,13 +68,15 @@ public class MultipleCurrencyAmount implements Parcelable
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                     = "MultipleCurrencyAmount";
+  static private final String  LOG_TAG                     = "MultipleCurrencyAmount";
 
-  private static final String  FALLBACK_CURRENCY_CODE_1    = "USD";
-  private static final String  FALLBACK_CURRENCY_CODE_2    = "GBP";
-  private static final String  FALLBACK_CURRENCY_CODE_3    = "EUR";
+  static private final String  JSON_NAME_AMOUNT            = "amount";
 
-  public  static final String[] FALLBACK_CURRENCY_CODES =
+  static private final String  FALLBACK_CURRENCY_CODE_1    = "USD";
+  static private final String  FALLBACK_CURRENCY_CODE_2    = "GBP";
+  static private final String  FALLBACK_CURRENCY_CODE_3    = "EUR";
+
+  static public  final String[] FALLBACK_CURRENCY_CODES =
     {
     FALLBACK_CURRENCY_CODE_1,
     FALLBACK_CURRENCY_CODE_2,
@@ -138,9 +141,26 @@ public class MultipleCurrencyAmount implements Parcelable
       try
         {
         String currencyCode = currencyIterator.next();
-        BigDecimal amount = new BigDecimal( jsonObject.getString( currencyCode ) );
 
-        add( new SingleCurrencyAmount( Currency.getInstance( currencyCode ), amount ) );
+
+        // The amount might be a simple decimal value, or another JSON object in the form:
+        //   {"amount":"0.00000"}
+
+        BigDecimal amountBigDecimal;
+
+        try
+          {
+          amountBigDecimal = new BigDecimal( jsonObject.getString( currencyCode ) );
+          }
+        catch ( NumberFormatException nfe )
+          {
+          JSONObject amountJSONObject = jsonObject.getJSONObject( currencyCode );
+
+          amountBigDecimal = new BigDecimal( amountJSONObject.getString( JSON_NAME_AMOUNT ) );
+          }
+
+
+        add( new SingleCurrencyAmount( Currency.getInstance( currencyCode ), amountBigDecimal ) );
         }
       catch ( JSONException je )
         {

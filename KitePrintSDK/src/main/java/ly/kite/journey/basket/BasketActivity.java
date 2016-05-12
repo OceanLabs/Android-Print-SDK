@@ -273,9 +273,9 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
 
     KiteSDK kiteSDK = KiteSDK.getInstance( this );
 
-    if ( mShippingAddress == null ) mShippingAddress = kiteSDK.getAddressParameter( PARAMETER_NAME_SHIPPING_ADDRESS );
-    if ( mContactEmail    == null ) mContactEmail    = kiteSDK.getStringParameter( PARAMETER_NAME_CONTACT_EMAIL, null );
-    if ( mContactPhone    == null ) mContactPhone    = kiteSDK.getStringParameter( PARAMETER_NAME_CONTACT_PHONE, null );
+    if ( mShippingAddress == null ) mShippingAddress = kiteSDK.getAddressAppParameter( KiteSDK.Scope.CUSTOMER_SESSION, PARAMETER_NAME_SHIPPING_ADDRESS );
+    if ( mContactEmail    == null ) mContactEmail    = kiteSDK.getStringAppParameter( KiteSDK.Scope.CUSTOMER_SESSION, PARAMETER_NAME_CONTACT_EMAIL, null );
+    if ( mContactPhone    == null ) mContactPhone    = kiteSDK.getStringAppParameter( KiteSDK.Scope.CUSTOMER_SESSION, PARAMETER_NAME_CONTACT_PHONE, null );
 
 
     // See what mode we're in
@@ -635,9 +635,9 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
 
     KiteSDK kiteSDK = KiteSDK.getInstance( this );
 
-    kiteSDK.setParameter( PARAMETER_NAME_SHIPPING_ADDRESS, mShippingAddress );
-    kiteSDK.setParameter( PARAMETER_NAME_CONTACT_EMAIL,    mContactEmail );
-    kiteSDK.setParameter( PARAMETER_NAME_CONTACT_PHONE,    mContactPhone );
+    kiteSDK.setAppParameter( KiteSDK.Scope.CUSTOMER_SESSION, PARAMETER_NAME_SHIPPING_ADDRESS, mShippingAddress );
+    kiteSDK.setAppParameter( KiteSDK.Scope.CUSTOMER_SESSION, PARAMETER_NAME_CONTACT_EMAIL,    mContactEmail );
+    kiteSDK.setAppParameter( KiteSDK.Scope.CUSTOMER_SESSION, PARAMETER_NAME_CONTACT_PHONE,    mContactPhone );
 
     onShippingAddress();
     }
