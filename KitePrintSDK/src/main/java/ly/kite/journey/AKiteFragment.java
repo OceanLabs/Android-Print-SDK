@@ -357,25 +357,28 @@ abstract public class AKiteFragment extends Fragment
     targetCanvas.drawBitmap( basketBitmap, rect, rect, null );
 
 
-    // Draw the quantity text
+    if ( itemCount > 0 )
+      {
+      // Draw the quantity text
 
-    float quantityTextSize = resources.getDimension( R.dimen.basket_action_icon_quantity_text_size );
+      float quantityTextSize = resources.getDimension( R.dimen.basket_action_icon_quantity_text_size );
 
-    Paint paint = new Paint();
-    paint.setTextSize( quantityTextSize );
-    paint.setColor( resources.getColor( R.color.basket_action_icon_quantity_text ) );
-    paint.setTextAlign( Paint.Align.CENTER );
+      Paint paint = new Paint();
+      paint.setTextSize( quantityTextSize );
+      paint.setColor( resources.getColor( R.color.basket_action_icon_quantity_text ) );
+      paint.setTextAlign( Paint.Align.CENTER );
 
 
-    TypedValue insetValue = new TypedValue();
+      TypedValue insetValue = new TypedValue();
 
-    resources.getValue( R.dimen.basket_action_icon_quantity_text_horizontal_inset, insetValue, true );
-    float horizontalInsetProportion = insetValue.getFloat();
+      resources.getValue( R.dimen.basket_action_icon_quantity_text_horizontal_inset, insetValue, true );
+      float horizontalInsetProportion = insetValue.getFloat();
 
-    resources.getValue( R.dimen.basket_action_icon_quantity_text_vertical_inset, insetValue, true );
-    float verticalInsetProportion = insetValue.getFloat();
+      resources.getValue( R.dimen.basket_action_icon_quantity_text_vertical_inset, insetValue, true );
+      float verticalInsetProportion = insetValue.getFloat();
 
-    targetCanvas.drawText( String.valueOf( itemCount ), width - ( horizontalInsetProportion * width ), verticalInsetProportion * height, paint );
+      targetCanvas.drawText( String.valueOf( itemCount ), width - ( horizontalInsetProportion * width ), verticalInsetProportion * height, paint );
+      }
 
 
     return ( new BitmapDrawable( resources, targetBitmap ) );

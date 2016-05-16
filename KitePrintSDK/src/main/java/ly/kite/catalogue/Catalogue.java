@@ -75,6 +75,7 @@ public class Catalogue
   ////////// Member Variable(s) //////////
 
   private JSONObject                    mUserConfigJSONObject;
+  private HashMap<String,JSONObject>    mCustomDataTable;
 
   private HashMap<String,ProductGroup>  mNameGroupTable;
   private ArrayList<ProductGroup>       mGroupList;
@@ -94,6 +95,11 @@ public class Catalogue
 
   Catalogue()
     {
+    mCustomDataTable         = new HashMap<>();
+
+    setUserConfigData( null );
+
+
     mNameGroupTable          = new HashMap<>();
     mGroupList               = new ArrayList<>();
     mIdProductTable          = new HashMap<>();
@@ -102,26 +108,63 @@ public class Catalogue
     mIdDiscardedProductTable = new HashMap<>();
     }
 
-  Catalogue( JSONObject userConfigJSONObject )
-    {
-    this();
-
-    setCustomData( userConfigJSONObject );
-    }
-
 
   ////////// Method(s) //////////
 
   /*****************************************************
    *
-   * Sets the custom user data.
+   * Sets the user config data.
    *
    *****************************************************/
-  void setCustomData( JSONObject userConfigJSONObject )
+  void setUserConfigData( JSONObject userConfigJSONObject )
     {
     // Make sure we always have a JSON object, even if we weren't supplied one.
     mUserConfigJSONObject = ( userConfigJSONObject != null ? userConfigJSONObject
                                                            : new JSONObject() );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a user config string.
+   *
+   *****************************************************/
+  public String getUserConfigString( String name )
+    {
+    return ( mUserConfigJSONObject.optString( name ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the custom data table.
+   *
+   *****************************************************/
+  private void setCustomData( HashMap<String,JSONObject> customDataTable )
+    {
+    mCustomDataTable = customDataTable;
+    }
+
+
+  /*****************************************************
+   *
+   * Sets a custom data object.
+   *
+   *****************************************************/
+  void setCustomObject( String name, JSONObject customJSONObject )
+    {
+    mCustomDataTable.put( name, customJSONObject );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a custom data object.
+   *
+   *****************************************************/
+  public JSONObject getCustomObject( String name )
+    {
+    return ( mCustomDataTable.get( name ) );
     }
 
 
@@ -261,17 +304,6 @@ public class Catalogue
 
   /*****************************************************
    *
-   * Returns a custom data string.
-   *
-   *****************************************************/
-  public String getCustomDataString( String name )
-    {
-    return ( mUserConfigJSONObject.optString( name ) );
-    }
-
-
-  /*****************************************************
-   *
    * Creates a copy of this catalogue that is filtered
    * by a set of product ids.
    *
@@ -281,8 +313,12 @@ public class Catalogue
    *****************************************************/
   public Catalogue createFiltered( String[] productIds )
     {
-    // Create a catalogue with the same custom data
-    Catalogue filteredCatalogue = new Catalogue( mUserConfigJSONObject );
+    // Create a catalogue with the same custom and user config data
+
+    Catalogue filteredCatalogue = new Catalogue();
+
+    filteredCatalogue.setCustomData( mCustomDataTable );
+    filteredCatalogue.setUserConfigData( mUserConfigJSONObject );
 
 
     // For each product corresponding to an id in the filter list - add it to

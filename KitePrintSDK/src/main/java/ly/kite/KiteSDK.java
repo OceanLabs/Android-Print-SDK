@@ -86,6 +86,7 @@ public class KiteSDK
 
   static public  final String SDK_VERSION                                          = "5.1.1";
 
+  static public  final String IMAGE_CATEGORY_APP                                   = "app";
   static public  final String IMAGE_CATEGORY_PRODUCT_ITEM                          = "product_item";
   static public  final String IMAGE_CATEGORY_SESSION_ASSET                         = "session_asset";
   static public  final String IMAGE_CATEGORY_BASKET_ASSET                          = "basket_asset";

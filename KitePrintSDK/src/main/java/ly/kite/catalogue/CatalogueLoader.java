@@ -621,8 +621,8 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
       try
         {
         JSONObject errorJSONObject = jsonData.getJSONObject( HTTPJSONRequest.ERROR_RESPONSE_JSON_OBJECT_NAME );
-        String errorMessage = errorJSONObject.getString( HTTPJSONRequest.ERROR_RESPONSE_MESSAGE_JSON_NAME );
-        String errorCode = errorJSONObject.getString( HTTPJSONRequest.ERROR_RESPONSE_CODE_JSON_NAME );
+        String     errorMessage    = errorJSONObject.getString( HTTPJSONRequest.ERROR_RESPONSE_MESSAGE_JSON_NAME );
+        String     errorCode       = errorJSONObject.getString( HTTPJSONRequest.ERROR_RESPONSE_CODE_JSON_NAME );
 
         Exception exception = new KiteSDKException( errorMessage );
 
@@ -760,20 +760,67 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
    ****************************************************/
   public void onCatalogue( JSONObject jsonData )
     {
-    // Create a new catalogue, with any custom data.
-
-    JSONObject userConfigJSONObject = jsonData.optJSONObject( JSON_NAME_USER_CONFIG );
-
-    Catalogue  catalogue            = new Catalogue( userConfigJSONObject );
-
-
     try
       {
-      // Try to get a set of products, then parse it.
+      // Create a new catalogue
 
-      JSONArray productsJSONArray = jsonData.getJSONArray( JSON_NAME_PRODUCT_ARRAY );
+      Catalogue catalogue = new Catalogue();
 
-      parseProducts( productsJSONArray, catalogue );
+
+      // Iterate through the top-level keys
+
+      Iterator<String> topLevelKeysIterator = jsonData.keys();
+
+      while ( topLevelKeysIterator.hasNext() )
+        {
+        String topLevelKey = topLevelKeysIterator.next();
+
+        if ( topLevelKey == null || topLevelKey.trim().equals( "" ) ) continue;
+
+
+        // Determine what type of data this is
+
+        if ( topLevelKey.equals( JSON_NAME_USER_CONFIG ) )
+          {
+          ///// User config data /////
+
+          catalogue.setUserConfigData( jsonData.getJSONObject( topLevelKey ) );
+          }
+
+        else if ( topLevelKey.equals( JSON_NAME_PRODUCT_ARRAY ) )
+          {
+          ///// Product data /////
+
+            // Try to get a set of products, then parse them.
+
+            JSONArray productsJSONArray = jsonData.getJSONArray( JSON_NAME_PRODUCT_ARRAY );
+
+            parseProducts( productsJSONArray, catalogue );
+          }
+
+        else
+          {
+          ///// Custom data /////
+
+          // Custom data could either be an object or an array
+
+          Object customData = jsonData.get( topLevelKey );
+
+          if ( customData instanceof JSONObject )
+            {
+            catalogue.setCustomObject( topLevelKey, jsonData.getJSONObject( topLevelKey ) );
+            }
+          else if ( customData instanceof JSONArray )
+            {
+            Log.i( LOG_TAG, "Unable to use custom array " + topLevelKey + " : " + customData.toString() );
+            }
+          else
+            {
+            Log.i( LOG_TAG, "Unable to use custom data " + topLevelKey + " : " + customData.toString() );
+            }
+          }
+
+        }
 
 
       // Save the query result
@@ -785,6 +832,8 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
       }
     catch ( JSONException je )
       {
+      Log.e( LOG_TAG, "Error creating catalogue", je );
+
       postErrorToConsumers( je );
       }
 
