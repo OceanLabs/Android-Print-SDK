@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.journey;
+package ly.kite.instagramphotopicker;
 
 
 ///// Import(s) /////
@@ -49,6 +49,7 @@ import java.util.List;
 
 import ly.kite.R;
 import ly.kite.KiteSDK;
+import ly.kite.journey.AImageSource;
 import ly.kite.util.Asset;
 import ly.kite.instagramphotopicker.InstagramPhoto;
 import ly.kite.instagramphotopicker.InstagramPhotoPicker;
@@ -151,6 +152,18 @@ public class InstagramImageSource extends AImageSource
 
       assetConsumer.isacOnAssets( assetList );
       }
+    }
+
+
+  /*****************************************************
+   *
+   * Called to end the customer session.
+   *
+   *****************************************************/
+  @Override
+  public void endCustomerSession( Context context )
+    {
+    InstagramPhotoPicker.logout( context );
     }
 
 

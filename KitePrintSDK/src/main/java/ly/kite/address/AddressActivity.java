@@ -1,11 +1,11 @@
 /*****************************************************
  *
- * StringUtils.java
+ * AddressActivity.java
  *
  *
  * Modified MIT License
  *
- * Copyright (c) 2010-2015 Kite Tech Ltd. https://www.kite.ly
+ * Copyright (c) 2010-2016 Kite Tech Ltd. https://www.kite.ly
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.util;
+package ly.kite.address;
 
 
 ///// Import(s) /////
@@ -42,20 +42,25 @@ package ly.kite.util;
 
 ///// Class Declaration /////
 
-import java.util.ArrayList;
-import java.util.List;
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Parcelable;
+
+import ly.kite.journey.AKiteActivity;
 
 /*****************************************************
  *
- * This class provides methods for use with Strings.
+ * This class is the parent class of address activities.
  *
  *****************************************************/
-public class StringUtils
+public class AddressActivity extends AKiteActivity
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "StringUtils";
+  static private final String  LOG_TAG     = "AddressActivity";
+
+  static public  final String  KEY_ADDRESS = "ly.kite.address";
 
 
   ////////// Static Variable(s) //////////
@@ -71,41 +76,25 @@ public class StringUtils
 
   /*****************************************************
    *
-   * Returns true if the string is null or blank.
+   * Returns an address bundled as an extra within an intent.
    *
    *****************************************************/
-  static public boolean isNullOrBlank( String string )
+  static public Address getAddress( Intent data )
     {
-    if ( string == null || string.trim().equals( "" ) ) return ( true );
+    if ( data == null ) return ( null );
 
-    return ( false );
+    return ( data.getParcelableExtra( KEY_ADDRESS ) );
     }
 
 
   /*****************************************************
    *
-   * Returns true if the two strings are either both null,
-   * or equal.
+   * Adds an address to an intent.
    *
    *****************************************************/
-  static public boolean isNeitherNullNorBlank( String string )
+  static public void addAddress( Address address, Intent intent )
     {
-    return ( ! isNullOrBlank( string  ) );
-    }
-
-
-  /*****************************************************
-   *
-   * Returns true if the two strings are either both null,
-   * or equal.
-   *
-   *****************************************************/
-  static public boolean areBothNullOrEqual( String string1, String string2 )
-    {
-    if ( string1 == null && string2 == null ) return ( true );
-    if ( string1 == null || string2 == null ) return ( false );
-
-    return ( string1.equals( string2 ) );
+    if ( address != null ) intent.putExtra( KEY_ADDRESS, (Parcelable)address );
     }
 
 
@@ -116,9 +105,17 @@ public class StringUtils
 
   /*****************************************************
    *
-   * ...
+   * Returns an address result.
    *
    *****************************************************/
+  public void returnAddressResult( Address address )
+    {
+    Intent data = new Intent();
+
+    addAddress( address, data );
+
+    setResult( Activity.RESULT_OK, data );
+    }
 
 
   ////////// Inner Class(es) //////////

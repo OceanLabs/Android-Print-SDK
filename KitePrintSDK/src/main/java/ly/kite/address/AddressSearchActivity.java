@@ -29,7 +29,7 @@ import java.util.Locale;
 
 import ly.kite.R;
 
-public class AddressSearchActivity extends Activity implements ActionBar.OnNavigationListener, AddressSearchRequestListener {
+public class AddressSearchActivity extends AddressActivity implements ActionBar.OnNavigationListener, AddressSearchRequestListener {
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -83,9 +83,7 @@ public class AddressSearchActivity extends Activity implements ActionBar.OnNavig
         }
       else
         {
-        Intent intent = new Intent( AddressSearchActivity.this, AddressEditActivity.class );
-        intent.putExtra( AddressEditActivity.EXTRA_ADDRESS, (Parcelable) addr );
-        startActivityForResult( intent, REQUEST_CODE_ADDRESS );
+        AddressEditActivity.startForResult( AddressSearchActivity.this, addr, REQUEST_CODE_ADDRESS );
         }
       }
     } );
@@ -212,9 +210,7 @@ public class AddressSearchActivity extends Activity implements ActionBar.OnNavig
             @Override
             public void onUniqueAddress(AddressSearchRequest req, Address address) {
                 dialog.dismiss();
-                Intent intent = new Intent(AddressSearchActivity.this, AddressEditActivity.class);
-                intent.putExtra(AddressEditActivity.EXTRA_ADDRESS, (Parcelable) address);
-                startActivityForResult(intent, REQUEST_CODE_ADDRESS);
+                AddressEditActivity.startForResult( AddressSearchActivity.this, address, REQUEST_CODE_ADDRESS );
             }
 
             @Override

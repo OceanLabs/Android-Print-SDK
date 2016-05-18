@@ -46,23 +46,33 @@ import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.Toast;
+
+import org.json.JSONObject;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.catalogue.CatalogueLoader;
+import ly.kite.image.ImageAgent;
 import ly.kite.journey.creation.imagesource.ImageSourceFragment;
+import ly.kite.util.StringUtils;
 
 
 ///// Class Declaration /////
@@ -98,6 +108,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
   static public  final int     ACTIVITY_RESULT_CODE_CONTINUE_SHOPPING       = 15;
   static public  final int     ACTIVITY_RESULT_CODE_CHECKED_OUT             = 25;
+  static public  final int     ACTIVITY_RESULT_CODE_END_CUSTOMER_SESSION    = 35;
 
 
   ////////// Static Variable(s) //////////
@@ -117,6 +128,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
   protected AKiteFragment     mTopFragment;
 
+  private   ImageView         mEndCustomerSessionImageView;
   private   Button            mCTABarLeftButton;
   private   Button            mCTABarRightButton;
 
@@ -280,6 +292,114 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     }
 
 
+//  /*****************************************************
+//   *
+//   * Called to create the options menu.
+//   *
+//   *****************************************************/
+//  @Override
+//  public boolean onCreateOptionsMenu( Menu menu )
+//    {
+//    boolean displayMenu = super.onCreateOptionsMenu( menu );
+//
+//
+//
+//    // If we have been supplied an end customer session icon - inflate the menu
+//    // and set the icon.
+//
+//    String endCustomerSessionIconURL = KiteSDK.getInstance( this ).getEndCustomerSessionIconURL();
+//
+//    if ( StringUtils.isNeitherNullNorBlank( endCustomerSessionIconURL ) )
+//      {
+//      MenuInflater menuInflator = getMenuInflater();
+//
+//      menuInflator.inflate( R.menu.end_customer_session, menu );
+//
+//      MenuItem endCustomerSessionMenuItem = menu.findItem( R.id.end_customer_session_item );
+//
+//      if ( endCustomerSessionMenuItem != null )
+//        {
+//        try
+//          {
+//          ImageAgent
+//                  .with( this )
+//                  .load( new URL( endCustomerSessionIconURL ), KiteSDK.IMAGE_CATEGORY_APP )
+//                  .reduceColourSpace()
+//                  .into( endCustomerSessionMenuItem );
+//
+//          displayMenu = true;
+//          }
+//        catch ( MalformedURLException mue )
+//          {
+//          Log.e( LOG_TAG, "Unable to set end customer session icon", mue );
+//          }
+//        }
+//      }
+//
+//
+//    return ( displayMenu );
+//    }
+
+
+  /*****************************************************
+   *
+   * Called to prepare the options menu.
+   *
+   *****************************************************/
+  @Override
+  public boolean onPrepareOptionsMenu( Menu menu )
+    {
+    boolean displayMenu = super.onPrepareOptionsMenu( menu );
+
+
+
+    // If we have been supplied an end customer session icon - inflate the menu
+    // and set the icon.
+
+    String endCustomerSessionIconURL = KiteSDK.getInstance( this ).getEndCustomerSessionIconURL();
+
+    if ( StringUtils.isNeitherNullNorBlank( endCustomerSessionIconURL ) )
+      {
+      // Only add the end customer session menu item if it has not already been added
+
+      if ( menu.findItem( R.id.end_customer_session_item ) == null )
+        {
+        MenuInflater menuInflator = getMenuInflater();
+
+        menuInflator.inflate( R.menu.end_customer_session, menu );
+
+        MenuItem   endCustomerSessionMenuItem;
+        View       actionView;
+
+        if ( ( endCustomerSessionMenuItem   = menu.findItem( R.id.end_customer_session_item )                            ) != null &&
+             ( actionView                   = endCustomerSessionMenuItem.getActionView()                                 ) != null &&
+             ( mEndCustomerSessionImageView = (ImageView)actionView.findViewById( R.id.end_customer_session_image_view ) ) != null )
+          {
+          try
+            {
+            ImageAgent
+                    .with( this )
+                    .load( new URL( endCustomerSessionIconURL ), KiteSDK.IMAGE_CATEGORY_APP )
+                    .reduceColourSpace()
+                    .into( mEndCustomerSessionImageView );
+
+            displayMenu = true;
+
+            mEndCustomerSessionImageView.setOnClickListener( this );
+            }
+          catch ( MalformedURLException mue )
+            {
+            Log.e( LOG_TAG, "Unable to set end customer session icon", mue );
+            }
+          }
+        }
+      }
+
+
+    return ( displayMenu );
+    }
+
+
   /*****************************************************
    *
    * Called when an item in the options menu is selected.
@@ -399,11 +519,14 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     // If we successfully completed check-out then return the result back to any
     // calling activity, and exit so the user goes back to the original app.
 
-    if ( resultCode == ACTIVITY_RESULT_CODE_CHECKED_OUT )
+    if ( resultCode == ACTIVITY_RESULT_CODE_CHECKED_OUT ||
+         resultCode == ACTIVITY_RESULT_CODE_END_CUSTOMER_SESSION )
       {
       setResult( resultCode );
 
       finish();
+
+      return;
       }
 
 
@@ -444,8 +567,28 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   @Override
   public void onClick( View view )
     {
-    if      ( view == mCTABarLeftButton  ) onLeftButtonClicked();
-    else if ( view == mCTABarRightButton ) onRightButtonClicked();
+    if ( view == mEndCustomerSessionImageView )
+      {
+      ///// End customer session /////
+
+      KiteSDK.getInstance( this ).endCustomerSession();
+
+      setResult( ACTIVITY_RESULT_CODE_END_CUSTOMER_SESSION );
+
+      finish();
+      }
+    else if ( view == mCTABarLeftButton )
+      {
+      ///// CTA bar left button /////
+
+      onLeftButtonClicked();
+      }
+    else if ( view == mCTABarRightButton )
+      {
+      ///// CTA bar right button /////
+
+      onRightButtonClicked();
+      }
     }
 
 
@@ -962,6 +1105,17 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     }
 
 
+  /*****************************************************
+   *
+   * Creates and returns a parameter transferer.
+   *
+   *****************************************************/
+  protected ParameterTransferer using( JSONObject jsonObject, KiteSDK.Scope scope )
+    {
+    return ( new ParameterTransferer( jsonObject, scope ) );
+    }
+
+
   ////////// Inner Class(es) //////////
 
   /*****************************************************
@@ -1063,6 +1217,66 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
         mNegativeRunnable.run();
         }
       }
+    }
+
+
+  /*****************************************************
+   *
+   * A parameter transferer.
+   *
+   *****************************************************/
+  protected class ParameterTransferer
+    {
+    private JSONObject     mSourceJSONObject;
+    private KiteSDK.Scope  mTargetScope;
+
+    private KiteSDK        mKiteSDK;
+
+    ParameterTransferer( JSONObject sourceJSONObject, KiteSDK.Scope targetScope )
+      {
+      mSourceJSONObject = sourceJSONObject;
+      mTargetScope      = targetScope;
+
+      mKiteSDK = KiteSDK.getInstance( AKiteActivity.this );
+      }
+
+
+    /*****************************************************
+     *
+     * Retrieves a string parameter from a JSON object, and
+     * saves it as a parameter.
+     *
+     *****************************************************/
+    public ParameterTransferer transferString( String sourceParameterName, String targetParameterName )
+      {
+      String stringValue = mSourceJSONObject.optString( sourceParameterName );
+
+      if ( stringValue == null )
+        {
+        Log.e( LOG_TAG, "Unable to find parameter " + sourceParameterName + " in " + mSourceJSONObject.toString() );
+
+        // TODO: Decide what we want to do here
+
+        return ( this );
+        }
+
+      mKiteSDK.setAppParameter( mTargetScope, targetParameterName, stringValue );
+
+      return ( this );
+      }
+
+
+    /*****************************************************
+     *
+     * Retrieves a string parameter from a JSON object, and
+     * saves it as a parameter.
+     *
+     *****************************************************/
+    public ParameterTransferer transferString( String parameterName )
+      {
+      return ( transferString( parameterName, parameterName ) );
+      }
+
     }
 
 

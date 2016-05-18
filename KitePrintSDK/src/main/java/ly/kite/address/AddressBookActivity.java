@@ -71,14 +71,12 @@ import ly.kite.journey.AKiteActivity;
  * the user to edit/delete them or add new ones.
  *
  *****************************************************/
-public class AddressBookActivity extends AKiteActivity
+public class AddressBookActivity extends AddressActivity
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings("unused")
   private static final String LOG_TAG = "AddressBookActivity";
-
-  public static final String EXTRA_ADDRESS = "ly.kite.EXTRA_ADDRESS";
 
   private static final int REQUEST_CODE_ADD_ADDRESS = 0;
 
@@ -109,17 +107,6 @@ public class AddressBookActivity extends AKiteActivity
     Intent intent = new Intent( activity, AddressBookActivity.class );
 
     activity.startActivityForResult( intent, requestCode );
-    }
-
-
-  /*****************************************************
-   *
-   * Returns an address bundled as an extra within an intent.
-   *
-   *****************************************************/
-  static public Address getAddress( Intent data )
-    {
-    return ( data.getParcelableExtra( AddressBookActivity.EXTRA_ADDRESS ) );
     }
 
 
@@ -220,7 +207,7 @@ public class AddressBookActivity extends AKiteActivity
     {
     if ( requestCode == REQUEST_CODE_ADD_ADDRESS && resultCode == RESULT_OK )
       {
-      Address address = data.getParcelableExtra( AddressEditActivity.EXTRA_ADDRESS );
+      Address address = getAddress( data );
 
       address.saveToAddressBook( this );
 
@@ -260,9 +247,7 @@ public class AddressBookActivity extends AKiteActivity
                   {
                   if ( i == 0 )
                     {
-                    Intent intent = new Intent( AddressBookActivity.this, AddressEditActivity.class );
-                    intent.putExtra( AddressEditActivity.EXTRA_ADDRESS, (Parcelable) address );
-                    startActivityForResult( intent, REQUEST_CODE_ADD_ADDRESS );
+                    AddressEditActivity.startForResult( AddressBookActivity.this, address, REQUEST_CODE_ADD_ADDRESS );
                     }
                   else if ( i == 1 )
                     {
@@ -287,9 +272,7 @@ public class AddressBookActivity extends AKiteActivity
 
         Address selectedAddress = (Address)mAddressBookListAdaptor.getItem( (int) position );
 
-        Intent data = new Intent();
-        data.putExtra( EXTRA_ADDRESS, (Parcelable)selectedAddress );
-        setResult( Activity.RESULT_OK, data );
+        returnAddressResult( selectedAddress );
 
         finish();
         }

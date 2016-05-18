@@ -53,11 +53,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.util.Pair;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -947,6 +949,42 @@ public class ImageLoadRequest
 
   /*****************************************************
    *
+   * A menu item target.
+   *
+   *****************************************************/
+  private class MenuItemTarget extends ATarget
+    {
+    private MenuItem  mMenuItem;
+
+
+    MenuItemTarget( MenuItem menuItem )
+      {
+      mMenuItem = menuItem;
+      }
+
+
+    @Override
+    void onImageDownloading()
+      {
+      // Ignore
+      }
+
+    @Override
+    void onImageAvailable( Bitmap bitmap )
+      {
+      mMenuItem.setIcon( new BitmapDrawable( bitmap ) );
+      }
+
+    @Override
+    void onImageUnavailable( Exception exception )
+      {
+      // Ignore
+      }
+    }
+
+
+  /*****************************************************
+   *
    * An image consumer target.
    *
    *****************************************************/
@@ -1356,6 +1394,19 @@ public class ImageLoadRequest
     public ImageLoadRequest into( ImageView imageView )
       {
       setTarget( new ImageViewTarget( imageView ) );
+
+      return ( create() );
+      }
+
+
+    /*****************************************************
+     *
+     * Sets the target of the image.
+     *
+     *****************************************************/
+    public ImageLoadRequest into( MenuItem menuItem )
+      {
+      setTarget( new MenuItemTarget( menuItem ) );
 
       return ( create() );
       }

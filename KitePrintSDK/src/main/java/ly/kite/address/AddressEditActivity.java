@@ -1,8 +1,8 @@
 package ly.kite.address;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,13 +15,11 @@ import android.widget.Spinner;
 
 import java.util.Locale;
 
+import ly.kite.KiteSDK;
 import ly.kite.R;
-import ly.kite.journey.AKiteActivity;
 
-public class AddressEditActivity extends AKiteActivity implements View.OnClickListener
+public class AddressEditActivity extends AddressActivity implements View.OnClickListener
   {
-
-  public static final String EXTRA_ADDRESS = "ly.kite.EXTRA_ADDRESS";
 
   private Address address;
 
@@ -33,6 +31,24 @@ public class AddressEditActivity extends AKiteActivity implements View.OnClickLi
   private EditText  mAddressCountyEditText;
   private EditText  mAddressPostcodeEditText;
   private Button    mProceedButton;
+
+
+
+  ////////// Static Method(s) //////////
+
+  /*****************************************************
+   *
+   * Starts the activity.
+   *
+   *****************************************************/
+  static public void startForResult( Activity activity, Address address, int requestCode )
+    {
+    Intent intent = new Intent( activity, AddressEditActivity.class );
+
+    addAddress( address, intent );
+
+    activity.startActivityForResult( intent, requestCode );
+    }
 
 
   @Override
@@ -53,7 +69,7 @@ public class AddressEditActivity extends AKiteActivity implements View.OnClickLi
     mProceedButton           = (Button)findViewById( R.id.proceed_overlay_button );
 
 
-    address = getIntent().getParcelableExtra( EXTRA_ADDRESS );
+    address = getAddress( getIntent() );
 
     if ( address != null )
       {
@@ -115,9 +131,19 @@ public class AddressEditActivity extends AKiteActivity implements View.OnClickLi
   @Override
   public boolean onCreateOptionsMenu( Menu menu )
     {
-    // Inflate the menu; this adds items to the action bar if it is present.
-    getMenuInflater().inflate( R.menu.address_edit, menu );
-    return true;
+    // We only add actions if the address book is enabled. At the moment the only
+    // action is to save the address (which we won't want to do).
+
+    if ( KiteSDK.getInstance( this ).addressBookIsEnabled() )
+      {
+      // Inflate the menu; this adds items to the action bar if it is present.
+      getMenuInflater().inflate( R.menu.address_edit, menu );
+
+      return ( true );
+      }
+
+
+    return ( super.onCreateOptionsMenu( menu ) );
     }
 
   @Override
@@ -183,9 +209,8 @@ public class AddressEditActivity extends AKiteActivity implements View.OnClickLi
     address.setStateOrCounty  ( mAddressCountyEditText.getText().toString() );
     address.setZipOrPostalCode( postalCode );
 
-    Intent output = new Intent();
-    output.putExtra( EXTRA_ADDRESS, (Parcelable) address );
-    setResult( RESULT_OK, output );
+    returnAddressResult( address );
+
     finish();
     }
 

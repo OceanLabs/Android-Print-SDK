@@ -105,15 +105,15 @@ public class AssetHelper
 
   /*****************************************************
    *
-   * Clears any cached asset image files, but not any
-   * basket assets.
+   * Clears any asset image files for a particular image
+   * category.
    *
    *****************************************************/
-  static public void clearSessionAssets( Context context )
+  static private void clearAssets( Context context, String imageCategory )
     {
     // Get the image cache directory
 
-    String imageCacheDirectoryPath = ImageAgent.getInstance( context ).getImageDirectoryPath( KiteSDK.IMAGE_CATEGORY_SESSION_ASSET );
+    String imageCacheDirectoryPath = ImageAgent.getInstance( context ).getImageDirectoryPath( imageCategory );
 
     File imageCacheDirectory = new File( imageCacheDirectoryPath );
 
@@ -129,6 +129,28 @@ public class AssetHelper
         imageFile.delete();
         }
       }
+    }
+
+
+  /*****************************************************
+   *
+   * Clears any session asset image files.
+   *
+   *****************************************************/
+  static public void clearSessionAssets( Context context )
+    {
+    clearAssets( context, KiteSDK.IMAGE_CATEGORY_SESSION_ASSET );
+    }
+
+
+  /*****************************************************
+   *
+   * Clears any basket asset image files.
+   *
+   *****************************************************/
+  static public void clearBasketAssets( Context context )
+    {
+    clearAssets( context, KiteSDK.IMAGE_CATEGORY_BASKET_ASSET );
     }
 
 
@@ -598,11 +620,11 @@ public class AssetHelper
     }
 
 
-/*****************************************************
- *
- * Returns the underlying assets from an image spec list.
- *
- *****************************************************/
+  /*****************************************************
+   *
+   * Returns the underlying assets from an image spec list.
+   *
+   *****************************************************/
   static public List<Asset> sourceAssetListFrom( List<ImageSpec> imageSpecList )
     {
     if ( imageSpecList == null ) return ( new ArrayList<>( 0 ) );

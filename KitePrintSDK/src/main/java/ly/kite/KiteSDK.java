@@ -56,6 +56,7 @@ import com.paypal.android.sdk.payments.PayPalConfiguration;
 
 import ly.kite.address.Address;
 import ly.kite.address.Country;
+import ly.kite.basket.BasketAgent;
 import ly.kite.catalogue.CatalogueLoader;
 import ly.kite.checkout.PaymentActivity;
 import ly.kite.journey.basket.BasketActivity;
@@ -63,7 +64,7 @@ import ly.kite.ordering.Order;
 import ly.kite.util.Asset;
 import ly.kite.journey.AImageSource;
 import ly.kite.journey.DeviceImageSource;
-import ly.kite.journey.InstagramImageSource;
+import ly.kite.instagramphotopicker.InstagramImageSource;
 import ly.kite.journey.selection.ProductSelectionActivity;
 import ly.kite.util.AssetHelper;
 import ly.kite.util.DelimitedStringBuilder;
@@ -114,10 +115,16 @@ public class KiteSDK
   static private final String PARAMETER_NAME_PAYPAL_CLIENT_ID                      = "paypay_client_id";
   static private final String PARAMETER_NAME_PAYPAL_PASSWORD                       = "paypal_password";
 
+  static private final String PARAMETER_NAME_STRIPE_PUBLIC_KEY                     = "stripe_public_key";
+
   static private final String PARAMETER_NAME_INSTAGRAM_CLIENT_ID                   = "instagram_client_id";
   static private final String PARAMETER_NAME_INSTAGRAM_REDIRECT_URI                = "instagram_redirect_uri";
 
   static private final String PARAMETER_NAME_REQUEST_PHONE_NUMBER                  = "request_phone_number";
+
+  static private final String PARAMETER_NAME_END_CUSTOMER_SESSION_ICON_URL         = "end_customer_session_icon_url";
+
+  static private final String PARAMETER_NAME_ADDRESS_BOOK_ENABLED                  = "address_book_enabled";
 
   static private final String SHARED_PREFERENCES_KEY_SUFFIX_RECIPIENT              = "_recipient";
   static private final String SHARED_PREFERENCES_KEY_SUFFIX_LINE1                  = "_line1";
@@ -529,6 +536,32 @@ public class KiteSDK
 
   /*****************************************************
    *
+   * Ends the customer session.
+   *
+   *****************************************************/
+  public void endCustomerSession()
+    {
+    clearAllParameters( Scope.CUSTOMER_SESSION );
+
+
+    // Empty any basket
+
+    BasketAgent basketAgent = BasketAgent.getInstance( mApplicationContext );
+
+    basketAgent.clear();
+
+
+    // Go through all the images sources and end any social logins
+
+    for ( AImageSource imageSource : getAvailableImageSources() )
+      {
+      imageSource.endCustomerSession( mApplicationContext );
+      }
+    }
+
+
+  /*****************************************************
+   *
    * Clears the Instagram developer credentials.
    *
    *****************************************************/
@@ -630,6 +663,32 @@ public class KiteSDK
 
 
     return ( mUniqueUserId );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the enabled state of the address book.
+   *
+   *****************************************************/
+  public KiteSDK setAddressBookEnabled( boolean enabled )
+    {
+    setSDKParameter( Scope.PERMANENT, PARAMETER_NAME_ADDRESS_BOOK_ENABLED, enabled );
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the enabled state of the address book. If the
+   * parameter has not been explicitly set, it defaults
+   * to true.
+   *
+   *****************************************************/
+  public boolean addressBookIsEnabled()
+    {
+    return ( getBooleanSDKParameter( Scope.PERMANENT, PARAMETER_NAME_ADDRESS_BOOK_ENABLED, true ) );
     }
 
 
@@ -764,6 +823,54 @@ public class KiteSDK
 
 
     return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the Stripe public key.
+   *
+   *****************************************************/
+  public KiteSDK setStripePublicKey( String stripePublicKey )
+    {
+    setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_STRIPE_PUBLIC_KEY, stripePublicKey );
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the Stripe public key.
+   *
+   *****************************************************/
+  public String getStripePublicKey()
+    {
+    return ( getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_STRIPE_PUBLIC_KEY, null ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the end customer session icon URL.
+   *
+   *****************************************************/
+  public KiteSDK setEndCustomerSessionIconURL( String endCustomerSessionIconURL )
+    {
+    setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_END_CUSTOMER_SESSION_ICON_URL, endCustomerSessionIconURL );
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the end customer session icon URL.
+   *
+   *****************************************************/
+  public String getEndCustomerSessionIconURL()
+    {
+    return ( getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_END_CUSTOMER_SESSION_ICON_URL, null ) );
     }
 
 

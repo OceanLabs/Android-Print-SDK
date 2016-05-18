@@ -62,6 +62,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import ly.kite.KiteSDK;
+import ly.kite.address.AddressActivity;
+import ly.kite.address.AddressEditActivity;
 import ly.kite.analytics.Analytics;
 import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.ICatalogueConsumer;
@@ -102,9 +104,12 @@ public class ShippingActivity extends AKiteActivity implements View.OnClickListe
 
   //private static final long                           MAXIMUM_PRODUCT_AGE_MILLIS   = 1 * 60 * 60 * 1000;
 
-  static private final String                         SHIPPING_PREFERENCES         = "shipping_preferences";
-  static private final String                         SHIPPING_PREFERENCE_EMAIL    = "shipping_preferences.email";
-  static private final String                         SHIPPING_PREFERENCE_PHONE    = "shipping_preferences.phone";
+//  static private final String                         SHIPPING_PREFERENCES         = "shipping_preferences";
+//  static private final String                         SHIPPING_PREFERENCE_EMAIL    = "shipping_preferences.email";
+//  static private final String                         SHIPPING_PREFERENCE_PHONE    = "shipping_preferences.phone";
+
+  static private final String                         PARAMETER_NAME_SHIPPING_EMAIL = "shipping_email";
+  static private final String                         PARAMETER_NAME_SHIPPING_PHONE = "shipping_phone";
 
   static private final int                            REQUEST_CODE_PAYMENT         = 1;
   static private final int                            REQUEST_CODE_ADDRESS_BOOK    = 2;
@@ -242,10 +247,8 @@ public class ShippingActivity extends AKiteActivity implements View.OnClickListe
 
     // If we still don't have an email or phone - try and get persisted values
 
-    SharedPreferences settings = getSharedPreferences( SHIPPING_PREFERENCES, 0 );
-
-    if ( mInitialEmail == null ) mInitialEmail = settings.getString( SHIPPING_PREFERENCE_EMAIL, null );
-    if ( mInitialPhone == null ) mInitialPhone = settings.getString( SHIPPING_PREFERENCE_PHONE, null );
+    if ( mInitialEmail == null ) mInitialEmail = KiteSDK.getStringAppParameter( this, KiteSDK.Scope.CUSTOMER_SESSION, PARAMETER_NAME_SHIPPING_EMAIL, null );
+    if ( mInitialPhone == null ) mInitialPhone = KiteSDK.getStringAppParameter( this, KiteSDK.Scope.CUSTOMER_SESSION, PARAMETER_NAME_SHIPPING_PHONE, null );
 
 
     // Set up the screen
@@ -354,7 +357,7 @@ public class ShippingActivity extends AKiteActivity implements View.OnClickListe
     {
     if ( requestCode == REQUEST_CODE_ADDRESS_BOOK && resultCode == RESULT_OK )
       {
-      mShippingAddress = AddressBookActivity.getAddress( data );
+      mShippingAddress = AddressActivity.getAddress( data );
 
       onShippingAddress( mShippingAddress );
       }
@@ -388,8 +391,17 @@ public class ShippingActivity extends AKiteActivity implements View.OnClickListe
 
   public void onChooseDeliveryAddressButtonClicked( View view )
     {
-    Intent i = new Intent( this, AddressBookActivity.class );
-    startActivityForResult( i, REQUEST_CODE_ADDRESS_BOOK );
+    // If the address book is enabled - go to the address book activity. Otherwise
+    // go direct to the new address activity.
+
+    if ( KiteSDK.getInstance( this ).addressBookIsEnabled() )
+      {
+      AddressBookActivity.startForResult( this, REQUEST_CODE_ADDRESS_BOOK );
+      }
+    else
+      {
+      AddressEditActivity.startForResult( this, mShippingAddress, REQUEST_CODE_ADDRESS_BOOK );
+      }
     }
 
   private void showErrorDialog( String title, String message )
@@ -424,11 +436,7 @@ public class ShippingActivity extends AKiteActivity implements View.OnClickListe
     resultIntent.putExtra( KEY_SHIPPING_ADDRESS, (Parcelable)mShippingAddress );
 
 
-    // Save any valid email / phone
-    SharedPreferences.Editor sharedPreferencesEditor = getSharedPreferences( SHIPPING_PREFERENCES, 0 ).edit();
-
-
-    // Check that we have a valid email
+    // Validate the email
 
     String email = getPopulatedStringOrNull( mEmailEditText );
 
@@ -439,9 +447,12 @@ public class ShippingActivity extends AKiteActivity implements View.OnClickListe
       return;
       }
 
+
+    // Save the email
+
     resultIntent.putExtra( KEY_EMAIL, email );
 
-    sharedPreferencesEditor.putString( SHIPPING_PREFERENCE_EMAIL, email );
+    KiteSDK.setAppParameter( this, KiteSDK.Scope.CUSTOMER_SESSION, PARAMETER_NAME_SHIPPING_EMAIL, email );
 
 
     // Check that we need and have a valid phone number
@@ -457,14 +468,14 @@ public class ShippingActivity extends AKiteActivity implements View.OnClickListe
         return;
         }
 
+
+      // Save the phone number
+
       resultIntent.putExtra( KEY_PHONE, phone );
 
-      sharedPreferencesEditor.putString( SHIPPING_PREFERENCE_PHONE, phone );
+      KiteSDK.setAppParameter( this, KiteSDK.Scope.CUSTOMER_SESSION, PARAMETER_NAME_SHIPPING_PHONE, phone );
       }
 
-
-    // Commit the shared preferences
-    sharedPreferencesEditor.apply();
 
     // Return the values
     setResult( RESULT_OK, resultIntent );
