@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="@dimen/basket_item_height"
+    android:orientation="horizontal"
+    android:padding="@dimen/basket_item_padding"
+    android:background="@android:color/white">
+
+    <ly.kite.widget.CustomTypefaceButton
+        android:id="@+id/decrement_button"
+        android:layout_width="@dimen/basket_item_button_width"
+        android:layout_height="fill_parent"
+        android:background="@color/basket_item_button_colour"
+        android:gravity="center"
+        android:text="-"
+        android:textColor="@android:color/white"/>
+
+    <FrameLayout
+        android:layout_marginLeft="@dimen/basket_item_image_margin"
+        android:layout_marginRight="@dimen/basket_item_image_margin"
+        android:layout_width="@dimen/basket_item_image_width"
+        android:layout_height="fill_parent">
+        <ImageView
+            android:id="@+id/product_image_view"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:scaleType="centerCrop"/>
+        <TextView
+            android:id="@+id/quantity_text_view"
+            android:layout_gravity="top|right"
+            android:layout_margin="@dimen/basket_item_quantity_margin"
+            android:layout_width="@dimen/basket_item_quantity_view_size"
+            android:layout_height="@dimen/basket_item_quantity_view_size"
+            android:background="@android:color/white"
+            android:gravity="center"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/basket_item_quantity_text_size"/>
+    </FrameLayout>
+
+    <ly.kite.widget.CustomTypefaceButton
+        android:id="@+id/increment_button"
+        android:layout_width="@dimen/basket_item_button_width"
+        android:layout_height="fill_parent"
+        android:background="@color/basket_item_button_colour"
+        android:gravity="center"
+        android:text="+"
+        android:textColor="@android:color/white"/>
+
+    <FrameLayout
+        android:id="@+id/edit_touch_frame"
+        android:layout_marginLeft="@dimen/basket_item_product_label_margin"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_weight="1.0">
+        <LinearLayout
+            android:layout_gravity="left|center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <ly.kite.widget.CustomTypefaceTextView
+                android:id="@+id/product_name_text_view"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/basket_item_product_label_size"
+                android:textStyle="bold"
+                android:singleLine="true"/>
+            <ly.kite.widget.CustomTypefaceTextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/basket_item_product_label_size"
+                android:textColor="@color/basket_light"
+                android:text="@string/Edit"/>
+        </LinearLayout>
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="@dimen/basket_price_column_width"
+        android:layout_height="fill_parent">
+
+        <ly.kite.widget.CustomTypefaceTextView
+            android:id="@+id/price_text_view"
+            android:layout_marginRight="@dimen/basket_order_frame_padding"
+            android:layout_gravity="right|center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="@dimen/basket_item_price_size"
+            android:textColor="@color/basket_item_price_text"/>
+
+    </FrameLayout>
+
+</LinearLayout>

@@ -50,6 +50,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Currency;
 import java.util.HashMap;
@@ -67,13 +68,15 @@ public class MultipleCurrencyAmount implements Parcelable
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                     = "MultipleCurrencyAmount";
+  static private final String  LOG_TAG                     = "MultipleCurrencyAmount";
 
-  private static final String  FALLBACK_CURRENCY_CODE_1    = "USD";
-  private static final String  FALLBACK_CURRENCY_CODE_2    = "GBP";
-  private static final String  FALLBACK_CURRENCY_CODE_3    = "EUR";
+  static private final String  JSON_NAME_AMOUNT            = "amount";
 
-  public  static final String[] FALLBACK_CURRENCY_CODES =
+  static private final String  FALLBACK_CURRENCY_CODE_1    = "USD";
+  static private final String  FALLBACK_CURRENCY_CODE_2    = "GBP";
+  static private final String  FALLBACK_CURRENCY_CODE_3    = "EUR";
+
+  static public  final String[] FALLBACK_CURRENCY_CODES =
     {
     FALLBACK_CURRENCY_CODE_1,
     FALLBACK_CURRENCY_CODE_2,
@@ -138,9 +141,26 @@ public class MultipleCurrencyAmount implements Parcelable
       try
         {
         String currencyCode = currencyIterator.next();
-        BigDecimal amount = new BigDecimal( jsonObject.getString( currencyCode ) );
 
-        add( new SingleCurrencyAmount( Currency.getInstance( currencyCode ), amount ) );
+
+        // The amount might be a simple decimal value, or another JSON object in the form:
+        //   {"amount":"0.00000"}
+
+        BigDecimal amountBigDecimal;
+
+        try
+          {
+          amountBigDecimal = new BigDecimal( jsonObject.getString( currencyCode ) );
+          }
+        catch ( NumberFormatException nfe )
+          {
+          JSONObject amountJSONObject = jsonObject.getJSONObject( currencyCode );
+
+          amountBigDecimal = new BigDecimal( amountJSONObject.getString( JSON_NAME_AMOUNT ) );
+          }
+
+
+        add( new SingleCurrencyAmount( Currency.getInstance( currencyCode ), amountBigDecimal ) );
         }
       catch ( JSONException je )
         {
@@ -295,6 +315,18 @@ public class MultipleCurrencyAmount implements Parcelable
    * if the amount is not known in the requested currency.
    *
    *****************************************************/
+  public SingleCurrencyAmount getAmountWithFallbackMultipliedBy( int quantity, Currency preferredCurrency )
+    {
+    return ( getAmountWithFallback( preferredCurrency.getCurrencyCode() ).multipliedBy( quantity ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the amount in a specific currency, falling back
+   * if the amount is not known in the requested currency.
+   *
+   *****************************************************/
   public SingleCurrencyAmount getAmountWithFallback( Locale locale )
     {
     return ( getAmountWithFallback( Currency.getInstance( locale ) ) );
@@ -360,14 +392,62 @@ public class MultipleCurrencyAmount implements Parcelable
    * would believe we were being quoted in Swedish Kroner).
    *
    *****************************************************/
+  public String getDefaultDisplayAmountWithFallbackMultipliedBy( int quantity )
+    {
+    return ( getDisplayAmountWithFallbackMultipliedBy( quantity, Locale.getDefault() ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the amount as a formatted string. Tries to use
+   * the default currency, but will fall back to other
+   * currencies if the preferred is not available.
+   *
+   * If the currency that we found matches the main currency
+   * for the default locale, then we use the number formatter
+   * to format the amount.
+   *
+   * If the currency that we found is different, then we format
+   * the amount with the full currency code. We do this to
+   * avoid any ambiguity. For example, if we were to live in
+   * Sweden but found a cost in Danish Krone, then having an
+   * amount such as 4.00 kr would be ambiguous (because we
+   * would believe we were being quoted in Swedish Kroner).
+   *
+   *****************************************************/
   public String getDisplayAmountWithFallback( Locale locale )
+    {
+    return ( getDisplayAmountWithFallbackMultipliedBy( 1, locale ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the amount as a formatted string. Tries to use
+   * the default currency, but will fall back to other
+   * currencies if the preferred is not available.
+   *
+   * If the currency that we found matches the main currency
+   * for the default locale, then we use the number formatter
+   * to format the amount.
+   *
+   * If the currency that we found is different, then we format
+   * the amount with the full currency code. We do this to
+   * avoid any ambiguity. For example, if we were to live in
+   * Sweden but found a cost in Danish Krone, then having an
+   * amount such as 4.00 kr would be ambiguous (because we
+   * would believe we were being quoted in Swedish Kroner).
+   *
+   *****************************************************/
+  public String getDisplayAmountWithFallbackMultipliedBy( int quantity, Locale locale )
     {
     Currency defaultCurrency = Currency.getInstance( locale );
 
 
     // Get the single currency amount
 
-    SingleCurrencyAmount amount = getAmountWithFallback( defaultCurrency.getCurrencyCode() );
+    SingleCurrencyAmount amount = getAmountWithFallback( defaultCurrency.getCurrencyCode() ).multipliedBy( quantity );
 
     if ( amount == null ) return ( null );
 
@@ -376,6 +456,7 @@ public class MultipleCurrencyAmount implements Parcelable
     // we asked for.
     return ( amount.getDisplayAmountForLocale( locale ) );
     }
+
 
   /*****************************************************
    *

@@ -55,9 +55,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
+import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.catalogue.ICatalogueConsumer;
-import ly.kite.journey.AKiteActivity;
 import ly.kite.journey.AKiteFragment;
 import ly.kite.catalogue.IGroupOrProduct;
 import ly.kite.widget.HeaderFooterGridView;
@@ -176,7 +176,6 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements I
     {
     super.onTop();
 
-
     getProducts();
     }
 
@@ -189,6 +188,8 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements I
   @Override
   public void onNotTop()
     {
+    super.onNotTop();
+
     if ( mGridView != null ) mGridView.setAdapter( null );
 
     mGridAdaptor = null;
@@ -462,7 +463,7 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements I
         }
 
 
-      viewReferences.productImageView.requestScaledImageOnceSized( AKiteActivity.IMAGE_CLASS_STRING_PRODUCT_ITEM, imageURL );
+      viewReferences.productImageView.requestScaledImageOnceSized( KiteSDK.IMAGE_CATEGORY_PRODUCT_ITEM, imageURL );
 
 
       return ( view );

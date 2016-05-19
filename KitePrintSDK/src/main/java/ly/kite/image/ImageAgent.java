@@ -54,6 +54,7 @@ import java.util.HashMap;
 
 import ly.kite.KiteSDK;
 import ly.kite.util.Asset;
+import ly.kite.util.AssetFragment;
 import ly.kite.util.FileDownloader;
 
 
@@ -79,7 +80,9 @@ public class ImageAgent
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String  LOG_TAG                   = "ImageAgent";
+  static private final String  LOG_TAG                     = "ImageAgent";
+
+  static public  final RectF   FULL_PROPORTIONAL_RECTANGLE = new RectF( 0.0f, 0.0f, 1.0f, 1.0f );
 
   static private final int     CROPPED_IMAGE_FILLER_COLOUR = 0xffffffff;
 
@@ -212,20 +215,56 @@ public class ImageAgent
 
   /*****************************************************
    *
+   * Returns a crop rectangle.
+   *
+   *****************************************************/
+  static public RectF getProportionalCropRectangle( int originalWidth, int originalHeight, float croppedAspectRatio )
+    {
+    // Avoid divide by zero
+    if ( originalHeight < KiteSDK.FLOAT_ZERO_THRESHOLD ) return ( FULL_PROPORTIONAL_RECTANGLE );
+
+    float originalAspectRatio = (float)originalWidth / (float)originalHeight;
+
+
+
+    // Calculate the crop rectangle
+
+    RectF proportionalCropRectangle;
+
+    if ( croppedAspectRatio <= originalAspectRatio )
+      {
+      float croppedHalfWidthProportion = ( croppedAspectRatio / originalAspectRatio ) * 0.5f ;
+
+      proportionalCropRectangle = new RectF( 0.5f - croppedHalfWidthProportion, 0.0f, 0.5f + croppedHalfWidthProportion, 1.0f );
+      }
+    else
+      {
+      float croppedHalfHeightProportion = ( originalAspectRatio / croppedAspectRatio ) * 0.5f;
+
+      proportionalCropRectangle = new RectF( 0.0f, 0.5f - croppedHalfHeightProportion, 1.0f, 0.5f + croppedHalfHeightProportion );
+      }
+
+
+    return ( proportionalCropRectangle );
+    }
+
+
+  /*****************************************************
+   *
    * Returns a cropped bitmap image.
    *
    *****************************************************/
-  static public Bitmap crop( Bitmap originalBitmap, RectF cropBounds )
+  static public Bitmap crop( Bitmap originalBitmap, RectF proportionalCropRectangle )
     {
     // Get the bitmap dimensions
     int originalWidth  = originalBitmap.getWidth();
     int originalHeight = originalBitmap.getHeight();
 
     // Get the actual bounds
-    int left   = (int)( cropBounds.left   * originalWidth );
-    int top    = (int)( cropBounds.top    * originalHeight );
-    int right  = (int)( cropBounds.right  * originalWidth );
-    int bottom = (int)( cropBounds.bottom * originalHeight );
+    int left   = (int)( proportionalCropRectangle.left   * originalWidth );
+    int top    = (int)( proportionalCropRectangle.top    * originalHeight );
+    int right  = (int)( proportionalCropRectangle.right  * originalWidth );
+    int bottom = (int)( proportionalCropRectangle.bottom * originalHeight );
 
     // If the bounds are completely within the image, we can simply create a new bitmap from the sub area
     if ( left >= 0 && top >= 0 && right < originalWidth && bottom < originalHeight )
@@ -590,9 +629,7 @@ public class ImageAgent
     {
     ImageLoadRequest.Builder builder = getImageRequestBuilder();
 
-    builder.load( bitmapBytes );
-
-    return ( builder );
+    return ( builder.load( bitmapBytes ) );
     }
 
 
@@ -605,9 +642,7 @@ public class ImageAgent
     {
     ImageLoadRequest.Builder builder = getImageRequestBuilder();
 
-    builder.load( bitmap );
-
-    return ( builder );
+    return ( builder.load( bitmap ) );
     }
 
 
@@ -620,9 +655,7 @@ public class ImageAgent
     {
     ImageLoadRequest.Builder builder = getImageRequestBuilder();
 
-    builder.load( file );
-
-    return ( builder );
+    return ( builder.load( file ) );
     }
 
 
@@ -635,9 +668,7 @@ public class ImageAgent
     {
     ImageLoadRequest.Builder builder = getImageRequestBuilder();
 
-    builder.load( url, imageCategory );
-
-    return ( builder );
+    return( builder.load( url, imageCategory ) );
     }
 
 
@@ -650,9 +681,7 @@ public class ImageAgent
     {
     ImageLoadRequest.Builder builder = getImageRequestBuilder();
 
-    builder.loadURL( urlString, imageCategory );
-
-    return ( builder );
+    return ( builder.loadURL( urlString, imageCategory ) );
     }
 
 
@@ -665,9 +694,7 @@ public class ImageAgent
     {
     ImageLoadRequest.Builder builder = getImageRequestBuilder();
 
-    builder.load( uri );
-
-    return ( builder );
+    return ( builder.load( uri ) );
     }
 
 
@@ -680,9 +707,7 @@ public class ImageAgent
     {
     ImageLoadRequest.Builder builder = getImageRequestBuilder();
 
-    builder.load( bitmapResourceId );
-
-    return ( builder );
+    return ( builder.load( bitmapResourceId ) );
     }
 
 
@@ -695,9 +720,33 @@ public class ImageAgent
     {
     ImageLoadRequest.Builder builder = getImageRequestBuilder();
 
-    builder.load( asset );
+    return ( builder.load( asset ) );
+    }
 
-    return ( builder );
+
+  /*****************************************************
+   *
+   * Sets the source of the image as an asset fragment.
+   *
+   *****************************************************/
+  public ImageLoadRequest.Builder load( AssetFragment assetFragment )
+    {
+    ImageLoadRequest.Builder builder = getImageRequestBuilder();
+
+    return ( builder.load( assetFragment ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the source of the image as an asset.
+   *
+   *****************************************************/
+  public ImageLoadRequest.Builder loadSizeOf( Asset asset )
+    {
+    ImageLoadRequest.Builder builder = getImageRequestBuilder();
+
+    return ( builder.loadSizeOf( asset ) );
     }
 
 

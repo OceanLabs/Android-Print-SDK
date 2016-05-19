@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * IEditedAssetSubscriber.java
+ * AddressActivity.java
  *
  *
  * Modified MIT License
@@ -34,28 +34,97 @@
 
 ///// Package Declaration /////
 
-package ly.kite.journey.creation;
+package ly.kite.address;
 
 
 ///// Import(s) /////
 
-import ly.kite.journey.AssetsAndQuantity;
-
 
 ///// Class Declaration /////
 
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Parcelable;
+
+import ly.kite.journey.AKiteActivity;
+
 /*****************************************************
  *
- * This interface identifies a fragment that wishes to
- * be notified when an asset is edited.
+ * This class is the parent class of address activities.
  *
  *****************************************************/
-public interface IUpdatedAssetListener
+public class AddressActivity extends AKiteActivity
   {
+  ////////// Static Constant(s) //////////
+
+  @SuppressWarnings( "unused" )
+  static private final String  LOG_TAG     = "AddressActivity";
+
+  static public  final String  KEY_ADDRESS = "ly.kite.address";
+
+
+  ////////// Static Variable(s) //////////
+
+
+  ////////// Member Variable(s) //////////
+
+
+  ////////// Static Initialiser(s) //////////
+
+
+  ////////// Static Method(s) //////////
+
   /*****************************************************
    *
-   * Called when an asset is updated.
+   * Returns an address bundled as an extra within an intent.
    *
    *****************************************************/
-  public void onAssetUpdated( int assetIndex, AssetsAndQuantity assetsAndQuantity );
+  static public Address getAddress( Intent data )
+    {
+    if ( data == null ) return ( null );
+
+    return ( data.getParcelableExtra( KEY_ADDRESS ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Adds an address to an intent.
+   *
+   *****************************************************/
+  static public void addAddress( Address address, Intent intent )
+    {
+    if ( address != null ) intent.putExtra( KEY_ADDRESS, (Parcelable)address );
+    }
+
+
+  ////////// Constructor(s) //////////
+
+
+  ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Returns an address result.
+   *
+   *****************************************************/
+  public void returnAddressResult( Address address )
+    {
+    Intent data = new Intent();
+
+    addAddress( address, data );
+
+    setResult( Activity.RESULT_OK, data );
+    }
+
+
+  ////////// Inner Class(es) //////////
+
+  /*****************************************************
+   *
+   * ...
+   *
+   *****************************************************/
+
   }
+

@@ -40,13 +40,17 @@ package ly.kite.journey;
 ///// Import(s) /////
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import ly.kite.R;
 import ly.kite.catalogue.Product;
+import ly.kite.ordering.ImageSpec;
 import ly.kite.ordering.Job;
 import ly.kite.ordering.Order;
 import ly.kite.util.Asset;
+import ly.kite.util.AssetFragment;
+import ly.kite.util.UploadableImage;
 import ly.kite.widget.EditableMaskedImageView;
 
 
@@ -61,23 +65,72 @@ import ly.kite.widget.EditableMaskedImageView;
 public enum UserJourneyType
   {
   CIRCLE        ( R.drawable.filled_white_circle,    EditableMaskedImageView.BorderHighlight.OVAL ),
+
   FRAME,
+
   GREETINGCARD  ( R.drawable.filled_white_rectangle, EditableMaskedImageView.BorderHighlight.RECTANGLE )
             {
             // Greeting cards have their own job
             @Override
-            public void addJobsToOrder( Product product, List<Asset> assetList, Order order )
+            public void addJobsToOrder( Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, Order order )
               {
-              for ( Asset asset : assetList )
+              for ( ImageSpec imageSpec : imageSpecList )
                 {
-                order.addJob( Job.createGreetingCardJob( product, asset ) );
+                AssetFragment assetFragment = imageSpec.getAssetFragment();
+                int           quantity      = imageSpec.getQuantity();
+
+                // We create a new job for each asset fragment
+                for ( int index = 0; index < quantity; index ++ )
+                  {
+                  order.addJob( Job.createGreetingCardJob( product, orderQuantity, optionsMap, assetFragment ) );
+                  }
                 }
               }
             },
+
   PHONE_CASE    ( true ),
-  PHOTOBOOK     ( R.drawable.filled_white_rectangle, EditableMaskedImageView.BorderHighlight.RECTANGLE ),
+
+  PHOTOBOOK     ( R.drawable.filled_white_rectangle, EditableMaskedImageView.BorderHighlight.RECTANGLE )
+            {
+            // Photobooks have their own job
+            @Override
+            public void addJobsToOrder( Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, Order order )
+              {
+              // We take the first image as the front cover, and use the remainder for the content pages
+
+              AssetFragment       frontCoverAssetFragment = null;
+              List<AssetFragment> contentAssetFragmentList = new ArrayList<>();
+
+              int pageIndex = 0;
+
+              for ( ImageSpec imageSpec : imageSpecList )
+                {
+                AssetFragment assetFragment = imageSpec.getAssetFragment();
+                int           quantity      = imageSpec.getQuantity();
+
+                if ( pageIndex == 0 )
+                  {
+                  frontCoverAssetFragment = assetFragment;
+                  }
+                else
+                  {
+                  for ( int index = 0; index < quantity; index ++ )
+                    {
+                    contentAssetFragmentList.add( assetFragment );
+                    }
+                  }
+
+                pageIndex ++;
+
+                order.addJob( Job.createPhotobookJob( product, orderQuantity, optionsMap, frontCoverAssetFragment, contentAssetFragmentList ) );
+                }
+              }
+            },
+
   POSTCARD,
+
   POSTER,
+
   RECTANGLE     ( R.drawable.filled_white_rectangle, EditableMaskedImageView.BorderHighlight.RECTANGLE );
 
 
@@ -168,9 +221,25 @@ public enum UserJourneyType
    * job.
    *
    *****************************************************/
-  public void addJobsToOrder( Product product, List<Asset> assetList, Order order )
+  public void addJobsToOrder( Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, Order order )
     {
-    order.addJob( Job.createPrintJob( product, assetList ) );
+    // Create a list of uploadable images.
+
+    List<UploadableImage> uploadableImageList = new ArrayList<>();
+
+    for ( ImageSpec imageSpec : imageSpecList )
+      {
+      AssetFragment assetFragment = imageSpec.getAssetFragment();
+      int           quantity      = imageSpec.getQuantity();
+
+      // We need to duplicate images according to the ImageSpec quantity.
+      for ( int index = 0; index < quantity; index ++ )
+        {
+        uploadableImageList.add( new UploadableImage( assetFragment ) );
+        }
+      }
+
+    order.addJob( Job.createPrintJob( product, orderQuantity, optionsMap, uploadableImageList ) );
     }
 
 

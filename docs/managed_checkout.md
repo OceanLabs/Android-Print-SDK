@@ -16,23 +16,23 @@ Prerequisites
 
 Overview
 --------
-1. Create and start a `CheckoutActivity` passing it the `Order` object you created in the Prerequisite Step 1
-2. Handle the `CheckoutActivity` result
+1. Start managed check-out, passing in the `Order` object you created in the Prerequisite Step 1
+2. Handle the result
 
 Sample Code
 -----------
 
-1. Create and start a `CheckoutActivity` passing it the `Order` object you created in the Prerequisite Step 1
+1. Start managed check-out, passing in the `Order` object you created in the Prerequisite Step 1
 
     ```java
     // SomeActivity.java
     private static final int REQUEST_CODE_CHECKOUT = 1;
 
     public void submitPrintOrder( Order order ) {
-        CheckoutActivity.startForResult( activity, order, REQUEST_CODE_CHECKOUT )
+        KiteSDK.getInstance( context ).startCheckout( activity, order, REQUEST_CODE_CHECKOUT );
     }
     ```
-2. Handle the `CheckoutActivity` result
+2. Handle the result
 
     ```java
     // Elsewhere in SomeActivity.java

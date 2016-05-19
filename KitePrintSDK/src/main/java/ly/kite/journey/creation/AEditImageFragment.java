@@ -39,7 +39,6 @@ package ly.kite.journey.creation;
 
 ///// Import(s) /////
 
-import android.graphics.Bitmap;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.util.Log;
@@ -55,10 +54,10 @@ import ly.kite.image.ImageAgent;
 import ly.kite.image.ImageProcessingRequest;
 import ly.kite.journey.AImageSource;
 import ly.kite.journey.AKiteActivity;
+import ly.kite.ordering.ImageSpec;
 import ly.kite.util.Asset;
-import ly.kite.util.AssetHelper;
 import ly.kite.catalogue.Product;
-import ly.kite.journey.AssetsAndQuantity;
+import ly.kite.util.AssetFragment;
 import ly.kite.widget.EditableImageContainerFrame;
 import ly.kite.widget.PromptTextFrame;
 
@@ -78,12 +77,10 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String      LOG_TAG                             = "AEditImageFragment";
+  static private final String      LOG_TAG                = "AEditImageFragment";
 
-  static public  final String      BUNDLE_KEY_PRODUCT                  = "product";
-  static private final String      BUNDLE_KEY_IMAGE_ASSET              = "imageAsset";
-
-  static private final long        PROMPT_ANIMATION_START_DELAY_MILLIS = 500L;
+  static public  final String      BUNDLE_KEY_PRODUCT     = "product";
+  static private final String      BUNDLE_KEY_IMAGE_ASSET = "imageAsset";
 
 
   ////////// Static Variable(s) //////////
@@ -126,7 +123,7 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
    * Creates a new instance of this fragment.
    *
    *****************************************************/
-  protected AEditImageFragment( Product product , Asset imageAsset )
+  protected AEditImageFragment( Product product, Asset imageAsset )
     {
     Bundle arguments = new Bundle();
 
@@ -441,13 +438,13 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
       // Add the assets to the shared list
       for ( Asset asset : assetList )
         {
-        mAssetsAndQuantityArrayList.add( 0, new AssetsAndQuantity( asset ) );
+        mImageSpecArrayList.add( 0, new ImageSpec( asset ) );
         }
 
 
       // Save the first asset and use it
 
-      mImageAsset = mAssetsAndQuantityArrayList.get( 0 ).getUneditedAsset();
+      mImageAsset = mImageSpecArrayList.get( 0 ).getAsset();
 
       useAssetForImage( mImageAsset, true );
       }
@@ -564,8 +561,9 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
 
   /*****************************************************
    *
-   * Gets the cropped image and creates a file-backed
-   * asset from it.
+   * Called by child fragments when editing is complete.
+   * This may be asynchronous; the {@link #onEditedAsset(AssetFragment)}
+   * method is called with the asset fragment.
    *
    *****************************************************/
   protected void requestEditedAsset()
@@ -573,13 +571,13 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
     if ( mEditableImageContainerFrame == null ) return;
 
 
-    RectF imageCropBounds = mEditableImageContainerFrame.getEditableImageView().getImageCropBounds();
+    RectF imageProportionalCropRectangle = mEditableImageContainerFrame.getEditableImageView().getImageProportionalCropRectangle();
 
 
     // Sometimes users can hit the next button before we've actually got all the images, so check
     // for this.
 
-    if ( imageCropBounds == null )
+    if ( imageProportionalCropRectangle == null )
       {
       Log.w( LOG_TAG, "Cropped image not yet available" );
 
@@ -587,34 +585,20 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
       }
 
 
-    // Process the image using the crop bounds
+    Asset asset = ( mLastEditedAsset != null ? mLastEditedAsset : mImageAsset );
 
-    ImageProcessingRequest.Builder builder;
-
-    if ( mLastEditedAsset != null )
-      {
-      builder = ImageAgent.with( mKiteActivity )
-              .transform( mLastEditedAsset );
-      }
-    else
-      {
-      builder = ImageAgent.with( mKiteActivity )
-              .transform( mImageAsset )
-              .intoNewAsset();
-      }
-
-    builder
-            .byCroppingTo( imageCropBounds )
-            .thenNotify( new CompletedImageHandler() );
+    onEditedAsset( new AssetFragment( asset, imageProportionalCropRectangle ) );
     }
 
 
   /*****************************************************
    *
-   * Called when an edited asset is returned.
+   * Called when an edited asset is available and may be
+   * returned to the activity. Child fragments override
+   * this method.
    *
    *****************************************************/
-  abstract protected void onEditedAsset( Asset editedAsset );
+  abstract protected void onEditedAsset( AssetFragment assetFragment );
 
 
   ////////// Inner Class(es) //////////
@@ -648,28 +632,6 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
       mLastEditedAsset = processedAsset;
 
       if ( mEditableImageContainerFrame != null ) mEditableImageContainerFrame.setAndLoadImage( processedAsset );
-      }
-
-    @Override
-    public void ipcOnImageUnavailable()
-      {
-      // Ignore
-      }
-    }
-
-
-  /*****************************************************
-   *
-   * Image processing callback that sets the image and
-   * loads it.
-   *
-   *****************************************************/
-  private class CompletedImageHandler implements ImageProcessingRequest.ICallback
-    {
-    @Override
-    public void ipcOnImageAvailable( Asset processedAsset )
-      {
-      onEditedAsset( processedAsset );
       }
 
     @Override

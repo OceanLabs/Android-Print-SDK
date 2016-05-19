@@ -140,9 +140,10 @@ public class ImageLoadRequestTests extends TestCase
 
     Assert.assertEquals( 512, ImageLoadRequest.sampleSizeForResize( 1024, 768,   1,  1 ) );
 
-    Assert.assertEquals(   1, ImageLoadRequest.sampleSizeForResize( 1024, 768,  -1,  -1 ) );
+    Assert.assertEquals(   1, ImageLoadRequest.sampleSizeForResize( 1024, 768,   0,   0 ) );
     Assert.assertEquals(   1, ImageLoadRequest.sampleSizeForResize( 1024, 768,  -1,   0 ) );
     Assert.assertEquals(   1, ImageLoadRequest.sampleSizeForResize( 1024, 768,   0,  -1 ) );
+    Assert.assertEquals(   1, ImageLoadRequest.sampleSizeForResize( 1024, 768,  -1,  -1 ) );
     }
 
   }

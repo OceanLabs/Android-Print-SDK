@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.0.0'
+        classpath 'com.android.tools.build:gradle:2.1.0'
     }
 }
 apply plugin: 'com.android.library'
@@ -33,13 +33,12 @@ android {
 }
 
 dependencies {
-    compile files('libs/PayPalAndroidSDK-2.9.10.jar')
     compile 'com.android.support:support-v4:22.2.1'
     compile 'com.android.support:appcompat-v7:22.2.1'
     compile 'com.android.support:recyclerview-v7:22.2.1'
-    compile 'ly.kite:instagram-photo-picker:1.1.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'ly.kite:photo-picker:1.1.4'
+    compile 'ly.kite:instagram-photo-picker:1.1.0'
+    compile files('libs/PayPalAndroidSDK-2.9.10.jar')
+    compile 'com.stripe:stripe-android:+'
 }
-
-apply from: 'https://raw.github.com/shamanland/gradle-mvn-push/cc18d56549cdea03f744b6fff27911569394073e/gradle-mvn-push.gradle'

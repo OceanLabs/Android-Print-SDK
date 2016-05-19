@@ -107,7 +107,7 @@ public class ACacheTests extends TestCase
     Assert.assertEquals( true, cache.registerForValue( "key", consumer2 ) );
 
 
-    cache.onValueAvailable( "wrong_key", "wrong_value" );
+    cache.saveAndDistributeValue( "wrong_key", "wrong_value" );
 
     Assert.assertEquals( null, consumer1.value );
     Assert.assertEquals( null, consumer2.value );
@@ -115,7 +115,7 @@ public class ACacheTests extends TestCase
     Assert.assertEquals( null, cache.getCachedValue( "key" ) );
 
 
-    cache.onValueAvailable( "key", "right_value" );
+    cache.saveAndDistributeValue( "key", "right_value" );
 
     Assert.assertEquals( "right_value", consumer1.value );
     Assert.assertEquals( "right_value", consumer2.value );
@@ -153,7 +153,7 @@ public class ACacheTests extends TestCase
    * Consumer implementation.
    *
    *****************************************************/
-  private class Consumer implements ACache.IConsumer
+  private class Consumer
     {
     String     value;
     Exception  exception;

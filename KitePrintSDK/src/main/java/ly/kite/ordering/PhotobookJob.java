@@ -50,17 +50,18 @@ import java.util.HashMap;
 import java.util.List;
 
 import ly.kite.catalogue.Product;
-import ly.kite.util.Asset;
+import ly.kite.util.AssetFragment;
+import ly.kite.util.UploadableImage;
 
 
 ///// Class Declaration /////
 
 /*****************************************************
  *
- * This class represents a photobook print job.
+ * This class represents a photobook job.
  *
  *****************************************************/
-public class PhotobookJob extends PrintJob
+public class PhotobookJob extends ImagesJob
   {
   ////////// Static Constant(s) //////////
 
@@ -86,7 +87,7 @@ public class PhotobookJob extends PrintJob
 
   ////////// Member Variable(s) //////////
 
-  private Asset  mFrontCoverAsset;
+  private UploadableImage  mFrontCoverUploadableImage;
 
 
   ////////// Static Initialiser(s) //////////
@@ -97,18 +98,23 @@ public class PhotobookJob extends PrintJob
 
   ////////// Constructor(s) //////////
 
-  protected PhotobookJob( Product product, HashMap<String,String> optionMap, Asset frontCoverAsset, List<Asset> contentAssetList )
+  public PhotobookJob( long jobId, Product product, int orderQuantity, HashMap<String,String> optionsMap, Object frontCoverImage, List<?> contentObjectList )
     {
-    super( product, optionMap, contentAssetList );
+    super( jobId, product, orderQuantity, optionsMap, contentObjectList );
 
-    mFrontCoverAsset = frontCoverAsset;
+    mFrontCoverUploadableImage = singleUploadableImageFrom( frontCoverImage );
+    }
+
+  public PhotobookJob( Product product, int orderQuantity, HashMap<String,String> optionsMap, Object frontCoverImage, List<?> contentObjectList )
+    {
+    this( 0, product, orderQuantity, optionsMap, frontCoverImage, contentObjectList );
     }
 
   protected PhotobookJob( Parcel parcel )
     {
     super( parcel );
 
-    mFrontCoverAsset = parcel.readParcelable( Asset.class.getClassLoader() );
+    mFrontCoverUploadableImage = parcel.readParcelable( AssetFragment.class.getClassLoader() );
     }
 
 
@@ -119,11 +125,31 @@ public class PhotobookJob extends PrintJob
     {
     super.writeToParcel( parcel, flags );
 
-    parcel.writeParcelable( mFrontCoverAsset, flags );
+    parcel.writeParcelable( mFrontCoverUploadableImage, flags );
     }
 
 
-  ////////// PrintsPrintJob Method(s) //////////
+  ////////// ImagesJob Method(s) //////////
+
+  /*****************************************************
+   *
+   * Returns a list of asset fragments that need uploading.
+   *
+   *****************************************************/
+  @Override
+  public List<UploadableImage> getImagesForUploading()
+    {
+    // Start with the content pages asset fragments, then add
+    // the front cover.
+
+    List<UploadableImage> uploadableImageList = super.getImagesForUploading();
+
+    uploadableImageList.add( mFrontCoverUploadableImage );
+
+
+    return ( uploadableImageList );
+    }
+
 
   /*****************************************************
    *
@@ -152,7 +178,7 @@ public class PhotobookJob extends PrintJob
    *
    *****************************************************/
   @Override
-  protected void putAssetsJSON( List<Asset> assetList, JSONObject jsonObject ) throws JSONException
+  protected void putAssetsJSON( List<UploadableImage> uploadableImageList, JSONObject jsonObject ) throws JSONException
     {
     JSONObject assetsJSONObject = new JSONObject();
 
@@ -162,16 +188,16 @@ public class PhotobookJob extends PrintJob
 
 
     // Add the front cover
-    assetsJSONObject.put( "front_cover", getPageJSONObject( assetList, 0 ) );
+    assetsJSONObject.put( "front_cover", getPageJSONObject( mFrontCoverUploadableImage ) );
 
 
-    // Add the remaining pages
+    // Add the content pages
 
     JSONArray pagesJSONArray = new JSONArray();
 
-    for ( int assetIndex = 1; assetIndex < assetList.size(); assetIndex ++ )
+    for ( UploadableImage uploadableImage : uploadableImageList )
       {
-      pagesJSONArray.put( getPageJSONObject( assetList, assetIndex ) );
+      pagesJSONArray.put( getPageJSONObject( uploadableImage ) );
       }
 
     assetsJSONObject.put( "pages", pagesJSONArray );
@@ -186,16 +212,14 @@ public class PhotobookJob extends PrintJob
    * Returns a JSON object that represents a page.
    *
    *****************************************************/
-  protected JSONObject getPageJSONObject( List<Asset> assetList, int assetIndex ) throws JSONException
+  protected JSONObject getPageJSONObject( UploadableImage uploadableImage ) throws JSONException
     {
     JSONObject pageJSONObject = new JSONObject();
 
-    Asset asset = assetList.get( assetIndex );
-
-    if ( asset != null )
+    if ( uploadableImage != null )
       {
       pageJSONObject.put( "layout", "single_centered" );
-      pageJSONObject.put( "asset", "" + asset.getId() );
+      pageJSONObject.put( "asset", "" + uploadableImage.getUploadedAssetId() );
       }
     else
       {
@@ -203,6 +227,27 @@ public class PhotobookJob extends PrintJob
       }
 
     return ( pageJSONObject );
+    }
+
+
+  ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Returns true if the other object is the same as this
+   * photobook job.
+   *
+   *****************************************************/
+  @Override
+  public boolean equals( Object otherObject )
+    {
+    if ( otherObject == null || ( !( otherObject instanceof PhotobookJob ) ) ) return ( false );
+
+    PhotobookJob otherPhotobookJob = (PhotobookJob)otherObject;
+
+    if ( ! UploadableImage.areBothNullOrEqual( mFrontCoverUploadableImage, otherPhotobookJob.mFrontCoverUploadableImage ) ) return ( false );
+
+    return ( super.equals( otherObject ) );
     }
 
 

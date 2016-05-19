@@ -53,6 +53,7 @@ import ly.kite.journey.UserJourneyType;
 import ly.kite.journey.creation.AEditImageFragment;
 import ly.kite.util.Asset;
 import ly.kite.catalogue.Product;
+import ly.kite.util.AssetFragment;
 import ly.kite.widget.EditableMaskedImageView;
 
 
@@ -69,10 +70,6 @@ public class EditImageFragment extends AEditImageFragment
 
   @SuppressWarnings( "unused" )
   private static final String      LOG_TAG                     = "EditImageFragment";
-
-  public  static final String      BUNDLE_KEY_UNEDITED_ASSET   = "uneditedAsset";
-  public  static final String      BUNDLE_KEY_MASK_RESOURCE_ID = "maskResourceId";
-  public  static final String      BUNDLE_KEY_PRODUCT          = "product";
 
 
   ////////// Static Variable(s) //////////
@@ -122,7 +119,6 @@ public class EditImageFragment extends AEditImageFragment
   public void onCreate( Bundle savedInstanceState )
     {
     super.onCreate( savedInstanceState );
-
 
     setHasOptionsMenu( true );
     }
@@ -214,11 +210,11 @@ public class EditImageFragment extends AEditImageFragment
    * Called when an edited asset is returned.
    *
    *****************************************************/
-  protected void onEditedAsset( Asset editedAsset )
+  protected void onEditedAsset( AssetFragment assetFragment )
     {
-    if ( editedAsset != null && mKiteActivity instanceof ICallback )
+    if ( assetFragment != null && mKiteActivity instanceof ICallback )
       {
-      ((ICallback) mKiteActivity).eiOnConfirm( editedAsset );
+      ((ICallback)mKiteActivity).eiOnConfirm( assetFragment );
       }
     }
 
@@ -260,7 +256,7 @@ public class EditImageFragment extends AEditImageFragment
   public interface ICallback
     {
     public void eiOnCancel();
-    public void eiOnConfirm( Asset editedAsset );
+    public void eiOnConfirm( AssetFragment assetFragment );
     }
 
   }

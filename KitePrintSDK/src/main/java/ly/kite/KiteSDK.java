@@ -54,12 +54,18 @@ import android.util.Log;
 
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 
+import ly.kite.address.Address;
+import ly.kite.address.Country;
+import ly.kite.basket.BasketAgent;
 import ly.kite.catalogue.CatalogueLoader;
 import ly.kite.checkout.PaymentActivity;
+import ly.kite.journey.basket.BasketActivity;
+import ly.kite.ordering.Order;
+import ly.kite.payment.PayPalCard;
 import ly.kite.util.Asset;
 import ly.kite.journey.AImageSource;
 import ly.kite.journey.DeviceImageSource;
-import ly.kite.journey.InstagramImageSource;
+import ly.kite.instagramphotopicker.InstagramImageSource;
 import ly.kite.journey.selection.ProductSelectionActivity;
 import ly.kite.util.AssetHelper;
 import ly.kite.util.DelimitedStringBuilder;
@@ -78,48 +84,74 @@ public class KiteSDK
   {
   ////////// Static Constant(s) //////////
 
-  static private final String LOG_TAG                                             = "KiteSDK";
+  static private final String LOG_TAG                                              = "KiteSDK";
 
-  public  static final String SDK_VERSION                                         = "5.0.0";
+  static public  final String SDK_VERSION                                          = "5.2.0";
 
-  static private final String SHARED_PREFERENCES_NAME                             = "kite_shared_prefs";
+  static public  final String IMAGE_CATEGORY_APP                                   = "app";
+  static public  final String IMAGE_CATEGORY_PRODUCT_ITEM                          = "product_item";
+  static public  final String IMAGE_CATEGORY_SESSION_ASSET                         = "session_asset";
+  static public  final String IMAGE_CATEGORY_BASKET_ASSET                          = "basket_asset";
 
-  static private final String SHARED_PREFERENCES_KEY_API_KEY                      = "api_key";
-  static private final String SHARED_PREFERENCES_KEY_UNIQUE_USER_ID               = "unique_user_id";
-  static private final String SHARED_PREFERENCES_KEY_ENVIRONMENT_NAME             = "environment_name";
-  static private final String SHARED_PREFERENCES_KEY_API_ENDPOINT                 = "api_endpoint";
-  static private final String SHARED_PREFERENCES_KEY_IMAGE_SOURCES                = "image_sources";
+  static private final String SHARED_PREFERENCES_NAME_PERMANENT                    = "kite_permanent_shared_prefs";
+  static private final String SHARED_PREFERENCES_NAME_APP_SESSION                  = "kite_app_session_shared_prefs";
+  static private final String SHARED_PREFERENCES_NAME_CUSTOMER_SESSION             = "kite_customer_session_shared_prefs";
 
-  static private final String SHARED_PREFERENCES_KEY_PAYMENT_ACTIVITY_ENVIRONMENT = "payment_activity_environment";
-  static private final String SHARED_PREFERENCES_KEY_PAYPAL_ENVIRONMENT           = "paypal_environment";
-  static private final String SHARED_PREFERENCES_KEY_PAYPAL_API_ENDPOINT          = "paypal_api_endpoint";
-  static private final String SHARED_PREFERENCES_KEY_PAYPAL_CLIENT_ID             = "paypay_client_id";
-  static private final String SHARED_PREFERENCES_KEY_PAYPAL_PASSWORD              = "paypal_password";
 
-  static private final String SHARED_PREFERENCES_KEY_INSTAGRAM_CLIENT_ID          = "instagram_client_id";
-  static private final String SHARED_PREFERENCES_KEY_INSTAGRAM_REDIRECT_URI       = "instagram_redirect_uri";
+  // Shared preference keys are formed by:
+  //   shared preferences key prefix + parameter name + [ shared preferences key suffix ]
 
-  static private final String SHARED_PREFERENCES_KEY_REQUEST_PHONE_NUMBER         = "request_phone_number";
+  static private final String SHARED_PREFERENCES_KEY_PREFIX_SDK                    = "sdk_";
+  static private final String SHARED_PREFERENCES_KEY_PREFIX_APP                    = "app_";
 
-  static private final String SHARED_PREFERENCES_CUSTOM_PARAMETER_KEY_PREFIX      = "custom_parameter_";
+  static private final String PARAMETER_NAME_API_KEY                               = "api_key";
+  static private final String PARAMETER_NAME_UNIQUE_USER_ID                        = "unique_user_id";
+  static private final String PARAMETER_NAME_ENVIRONMENT_NAME                      = "environment_name";
+  static private final String PARAMETER_NAME_API_ENDPOINT                          = "api_endpoint";
+  static private final String PARAMETER_NAME_IMAGE_SOURCES                         = "image_sources";
 
-  static public  final String PAYPAL_LIVE_API_ENDPOINT                            = "api.paypal.com";
-  static public  final String PAYPAL_LIVE_CLIENT_ID                               = "ASYVBBCHF_KwVUstugKy4qvpQaPlUeE_5beKRJHpIP2d3SA_jZrsaUDTmLQY";
-  static public  final String PAYPAL_LIVE_PASSWORD                                = "";
+  static private final String PARAMETER_NAME_PAYMENT_ACTIVITY_ENVIRONMENT          = "payment_activity_environment";
+  static private final String PARAMETER_NAME_PAYPAL_ENVIRONMENT                    = "paypal_environment";
+  static private final String PARAMETER_NAME_PAYPAL_API_ENDPOINT                   = "paypal_api_endpoint";
+  static private final String PARAMETER_NAME_PAYPAL_CLIENT_ID                      = "paypay_client_id";
+  static private final String PARAMETER_NAME_PAYPAL_PASSWORD                       = "paypal_password";
 
-  static public  final String PAYPAL_SANDBOX_API_ENDPOINT                         = "api.sandbox.paypal.com";
-  static public  final String PAYPAL_SANDBOX_CLIENT_ID                            = "AcEcBRDxqcCKiikjm05FyD4Sfi4pkNP98AYN67sr3_yZdBe23xEk0qhdhZLM";
-  static public  final String PAYPAL_SANDBOX_PASSWORD                             = "";
+  static private final String PARAMETER_NAME_STRIPE_PUBLIC_KEY                     = "stripe_public_key";
 
-  static public  final String CLASS_NAMES_SEPARATOR                               = ",";
+  static private final String PARAMETER_NAME_INSTAGRAM_CLIENT_ID                   = "instagram_client_id";
+  static private final String PARAMETER_NAME_INSTAGRAM_REDIRECT_URI                = "instagram_redirect_uri";
 
-  static public final String INTENT_PREFIX                                        = "ly.kite";
+  static private final String PARAMETER_NAME_REQUEST_PHONE_NUMBER                  = "request_phone_number";
 
-  static public final long   MAX_ACCEPTED_PRODUCT_AGE_MILLIS                      = 1000 * 60 * 60;  // 1 hour
+  static private final String PARAMETER_NAME_END_CUSTOMER_SESSION_ICON_URL         = "end_customer_session_icon_url";
 
-  static public final float  FLOAT_ZERO_THRESHOLD                                 = 0.0001f;
+  static private final String PARAMETER_NAME_ADDRESS_BOOK_ENABLED                  = "address_book_enabled";
 
-  static public final int    ACTIVITY_REQUEST_CODE_FIRST                          = 10;
+  static private final String SHARED_PREFERENCES_KEY_SUFFIX_RECIPIENT              = "_recipient";
+  static private final String SHARED_PREFERENCES_KEY_SUFFIX_LINE1                  = "_line1";
+  static private final String SHARED_PREFERENCES_KEY_SUFFIX_LINE2                  = "_line2";
+  static private final String SHARED_PREFERENCES_KEY_SUFFIX_CITY                   = "_city";
+  static private final String SHARED_PREFERENCES_KEY_SUFFIX_STATE_OR_COUNTY        = "_state_or_county";
+  static private final String SHARED_PREFERENCES_KEY_SUFFIX_ZIP_OR_POSTAL_CODE     = "_zip_or_postal_code";
+  static private final String SHARED_PREFERENCES_KEY_SUFFIX_COUNTRY_CODE           = "_country_code";
+
+  static public  final String PAYPAL_LIVE_API_ENDPOINT                             = "api.paypal.com";
+  static public  final String PAYPAL_LIVE_CLIENT_ID                                = "ASYVBBCHF_KwVUstugKy4qvpQaPlUeE_5beKRJHpIP2d3SA_jZrsaUDTmLQY";
+  static public  final String PAYPAL_LIVE_PASSWORD                                 = "";
+
+  static public  final String PAYPAL_SANDBOX_API_ENDPOINT                          = "api.sandbox.paypal.com";
+  static public  final String PAYPAL_SANDBOX_CLIENT_ID                             = "AcEcBRDxqcCKiikjm05FyD4Sfi4pkNP98AYN67sr3_yZdBe23xEk0qhdhZLM";
+  static public  final String PAYPAL_SANDBOX_PASSWORD                              = "";
+
+  static public  final String CLASS_NAMES_SEPARATOR                                = ",";
+
+  static public final String INTENT_PREFIX                                         = "ly.kite";
+
+  static public final long   MAX_ACCEPTED_PRODUCT_AGE_MILLIS                       = 1000 * 60 * 60;  // 1 hour
+
+  static public final float  FLOAT_ZERO_THRESHOLD                                  = 0.0001f;
+
+  static public final int    ACTIVITY_REQUEST_CODE_FIRST                           = 10;
 
 
   ////////// Static Variable(s) //////////
@@ -144,15 +176,192 @@ public class KiteSDK
 
   /*****************************************************
    *
-   * Returns an instance of the SDK, assuming it has
-   * already been initialised.
+   * Validates a parameter name, then generates a key from it.
+   *
+   *****************************************************/
+  static private String getParameterKey( String prefix, String name )
+    {
+    // Check that the name is populated
+    if ( name == null || name.trim().equals( "" ) )
+      {
+      throw ( new IllegalArgumentException( "Parameter name must be supplied: " + name ) );
+      }
+
+    return ( ( prefix != null ? prefix.trim() : "" ) + name );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets a string parameter.
+   *
+   *****************************************************/
+  static private void setParameter( Context context, Scope scope, String prefix, String name, String value )
+    {
+    String key = getParameterKey( prefix, name );
+
+    scope.sharedPreferences( context )
+            .edit()
+            .putString( key, value )
+            .apply();
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a string parameter.
+   *
+   *****************************************************/
+  static private String getStringParameter( Context context, Scope scope, String prefix, String name, String defaultValue )
+    {
+    String key = getParameterKey( prefix, name );
+
+    return ( scope.sharedPreferences( context ).getString( key, defaultValue ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets a boolean parameter.
+   *
+   *****************************************************/
+  static private void setParameter( Context context, Scope scope, String prefix, String name, boolean value )
+    {
+    String key = getParameterKey( prefix, name );
+
+    scope.sharedPreferences( context )
+      .edit()
+        .putBoolean( key, value )
+      .apply();
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a boolean parameter.
+   *
+   *****************************************************/
+  static private boolean getBooleanParameter( Context context, Scope scope, String prefix, String name, boolean defaultValue )
+    {
+    String key = getParameterKey( prefix, name );
+
+    return ( scope.sharedPreferences( context ).getBoolean( key, defaultValue ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets an address parameter.
+   *
+   *****************************************************/
+  static private void setParameter( Context context, Scope scope, String prefix, String name, Address address )
+    {
+    String key = getParameterKey( prefix, name );
+
+    scope.sharedPreferences( context )
+      .edit()
+        .putString( key + SHARED_PREFERENCES_KEY_SUFFIX_RECIPIENT,          address.getRecipientName() )
+        .putString( key + SHARED_PREFERENCES_KEY_SUFFIX_LINE1,              address.getLine1() )
+        .putString( key + SHARED_PREFERENCES_KEY_SUFFIX_LINE2,              address.getLine2() )
+        .putString( key + SHARED_PREFERENCES_KEY_SUFFIX_CITY,               address.getCity() )
+        .putString( key + SHARED_PREFERENCES_KEY_SUFFIX_STATE_OR_COUNTY,    address.getStateOrCounty() )
+        .putString( key + SHARED_PREFERENCES_KEY_SUFFIX_ZIP_OR_POSTAL_CODE, address.getZipOrPostalCode() )
+        .putString( key + SHARED_PREFERENCES_KEY_SUFFIX_COUNTRY_CODE,       address.getCountry().iso3Code() )
+      .apply();
+    }
+
+
+  /*****************************************************
+   *
+   * Returns an address parameter.
+   *
+   *****************************************************/
+  static private Address getAddressParameter( Context context, Scope scope, String prefix, String name )
+    {
+    String key = getParameterKey( prefix, name );
+
+    SharedPreferences sharedPreferences = scope.sharedPreferences( context );
+
+    String  recipient       = sharedPreferences.getString( key + SHARED_PREFERENCES_KEY_SUFFIX_RECIPIENT, null );
+    String  line1           = sharedPreferences.getString( key + SHARED_PREFERENCES_KEY_SUFFIX_LINE1, null );
+    String  line2           = sharedPreferences.getString( key + SHARED_PREFERENCES_KEY_SUFFIX_LINE2, null );
+    String  city            = sharedPreferences.getString( key + SHARED_PREFERENCES_KEY_SUFFIX_CITY, null );
+    String  stateOrCounty   = sharedPreferences.getString( key + SHARED_PREFERENCES_KEY_SUFFIX_STATE_OR_COUNTY, null );
+    String  zipOrPostalCode = sharedPreferences.getString( key + SHARED_PREFERENCES_KEY_SUFFIX_ZIP_OR_POSTAL_CODE, null );
+    Country country         = Country.getInstance( sharedPreferences.getString( key + SHARED_PREFERENCES_KEY_SUFFIX_COUNTRY_CODE, null ) );
+
+    if ( recipient == null && line1 == null && line2 == null && city == null && stateOrCounty == null && zipOrPostalCode == null && country == null ) return ( null );
+
+    return ( new Address( recipient, line1, line2, city, stateOrCounty, zipOrPostalCode, country ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets a boolean app parameter.
+   *
+   * Allows an app to use parameters before the SDK
+   * is initialised.
+   *
+   *****************************************************/
+  static public void setAppParameter( Context context, Scope scope, String name, boolean booleanValue )
+    {
+    setParameter( context, scope, SHARED_PREFERENCES_KEY_PREFIX_APP, name, booleanValue );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets a string app parameter.
+   *
+   * Allows an app to use parameters before the SDK
+   * is initialised.
+   *
+   *****************************************************/
+  static public void setAppParameter( Context context, Scope scope, String name, String stringValue )
+    {
+    setParameter( context, scope, SHARED_PREFERENCES_KEY_PREFIX_APP, name, stringValue );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a boolean app parameter.
+   *
+   * Allows an app to use parameters before the SDK
+   * is initialised.
+   *
+   *****************************************************/
+  static public boolean getBooleanAppParameter( Context context, Scope scope, String name, boolean defaultValue )
+    {
+    return ( getBooleanParameter( context, scope, SHARED_PREFERENCES_KEY_PREFIX_APP, name, defaultValue ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a string app parameter.
+   *
+   * Allows an app to use parameters before the SDK
+   * is initialised.
+   *
+   *****************************************************/
+  static public String getStringAppParameter( Context context, Scope scope, String name, String defaultValue )
+    {
+    return ( getStringParameter( context, scope, SHARED_PREFERENCES_KEY_PREFIX_APP, name, defaultValue ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns an instance of an already-initialised SDK.
    *
    *****************************************************/
   static public KiteSDK getInstance( Context context )
     {
     if ( sKiteSDK == null )
       {
-      sKiteSDK = new KiteSDK( context, context.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE ) );
+      sKiteSDK = new KiteSDK( context );
       }
 
     return ( sKiteSDK );
@@ -230,40 +439,36 @@ public class KiteSDK
 
   /*****************************************************
    *
-   * Creates a new instance by reading in previously persisted
-   * values.
+   * Creates a new instance of an already initialised SDK.
    *
    *****************************************************/
   private KiteSDK( Context context )
     {
     mApplicationContext = context.getApplicationContext();
-    }
 
 
-  /*****************************************************
-   *
-   * Creates a new instance from shared preferences.
-   *
-   *****************************************************/
-  private KiteSDK( Context context, SharedPreferences sharedPreferences )
-    {
-    this( context );
+    // A permanent API key overrides an app session key
 
+    String apiKey = getStringSDKParameter( Scope.PERMANENT, PARAMETER_NAME_API_KEY, null );
 
-    String apiKey = sharedPreferences.getString( SHARED_PREFERENCES_KEY_API_KEY, null );
+    if ( apiKey == null )
+      {
+      apiKey = getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_API_KEY, null );
+      }
 
     if ( apiKey == null ) throw ( new IllegalStateException( "Unable to load API key ... have you initialised the SDK?" ) );
 
 
-    Environment environment = new Environment( sharedPreferences );
+    Environment environment = new Environment( this );
 
     if ( environment == null ) throw ( new IllegalStateException( "Unable to load environment ... have you initialised the SDK?" ) );
 
 
-    setEnvironment( apiKey, environment );
+    // Set the environment but don't bother saving it out again
+    setEnvironment( apiKey, environment, false );
 
 
-    String imageSourceClassNames = sharedPreferences.getString( SHARED_PREFERENCES_KEY_IMAGE_SOURCES, null );
+    String imageSourceClassNames = getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_IMAGE_SOURCES, null );
 
     restoreImageSourcesByClassNames( imageSourceClassNames );
     }
@@ -271,27 +476,51 @@ public class KiteSDK
 
   /*****************************************************
    *
-   * Creates a new instance with the supplied Kite API key
-   * and environment.
+   * Creates and initialises a new instance, using the
+   * supplied Kite API key and environment.
    *
    *****************************************************/
   private KiteSDK( Context context, String apiKey, IEnvironment environment )
     {
-    this( context );
+    mApplicationContext = context.getApplicationContext();
+
+    // Clear all session parameters
+    clearAllParameters( Scope.APP_SESSION );
+    clearAllParameters( Scope.CUSTOMER_SESSION );
 
     setEnvironment( apiKey, environment );
-
-    clearInstagramCredentials();
 
     // Set default image sources
     setImageSources( new DeviceImageSource(), new InstagramImageSource() );
 
     // Clear any temporary assets
-    AssetHelper.clearCachedImages( context );
+    AssetHelper.clearSessionAssets( context );
     }
 
 
   ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Sets a new API key and environment, optionally
+   * persisting them.
+   *
+   *****************************************************/
+  private KiteSDK setEnvironment( String apiKey, IEnvironment environment, boolean save )
+    {
+    mAPIKey      = apiKey;
+    mEnvironment = Environment.getFrom( environment );
+
+    if ( save )
+      {
+      setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_API_KEY, apiKey );
+
+      mEnvironment.saveTo( this );
+      }
+
+    return ( this );
+    }
+
 
   /*****************************************************
    *
@@ -302,21 +531,57 @@ public class KiteSDK
    *****************************************************/
   public KiteSDK setEnvironment( String apiKey, IEnvironment environment )
     {
-    mAPIKey      = apiKey;
-    mEnvironment = Environment.getFrom( environment );
+    return ( setEnvironment( apiKey, environment, true ) );
+    }
 
-    SharedPreferences.Editor editor = mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE ).edit();
 
-    editor.putString( SHARED_PREFERENCES_KEY_API_KEY, apiKey );
+  /*****************************************************
+   *
+   * Ends the customer session.
+   *
+   *****************************************************/
+  public void endCustomerSession()
+    {
+    clearAllParameters( Scope.CUSTOMER_SESSION );
 
-    environment.writeTo( editor );
 
-    if ( ! editor.commit() )
+    // Empty any basket
+
+    BasketAgent basketAgent = BasketAgent.getInstance( mApplicationContext );
+
+    basketAgent.clear();
+
+
+    // Go through all the images sources and end any social network log-ins
+
+    for ( AImageSource imageSource : getAvailableImageSources() )
       {
-      Log.e( LOG_TAG, "Unable to save current environment to shared preferences" );
+      imageSource.endCustomerSession( mApplicationContext );
       }
 
-    return ( sKiteSDK );
+
+    // Empty address book
+    Address.deleteAddressBook( mApplicationContext );
+
+
+    // Clear credit card
+    PayPalCard.clearLastUsedCard( mApplicationContext );
+    }
+
+
+  /*****************************************************
+   *
+   * Clears the Instagram developer credentials.
+   *
+   *****************************************************/
+  public KiteSDK clearAllParameters( Scope scope )
+    {
+    scope.sharedPreferences( mApplicationContext )
+      .edit()
+        .clear()
+      .apply();
+
+    return ( this );
     }
 
 
@@ -328,38 +593,8 @@ public class KiteSDK
    *****************************************************/
   public KiteSDK setInstagramCredentials( String clientId, String redirectUri )
     {
-    SharedPreferences.Editor editor = mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE ).edit();
-
-    editor
-      .putString( SHARED_PREFERENCES_KEY_INSTAGRAM_CLIENT_ID, clientId )
-      .putString( SHARED_PREFERENCES_KEY_INSTAGRAM_REDIRECT_URI, redirectUri );
-
-    if ( ! editor.commit() )
-      {
-      Log.e( LOG_TAG, "Unable to save instagram credentials to shared preferences" );
-      }
-
-    return ( this );
-    }
-
-
-  /*****************************************************
-   *
-   * Clears the Instagram developer credentials.
-   *
-   *****************************************************/
-  public KiteSDK clearInstagramCredentials()
-    {
-    SharedPreferences.Editor editor = mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE ).edit();
-
-    editor
-      .remove( SHARED_PREFERENCES_KEY_INSTAGRAM_CLIENT_ID )
-      .remove( SHARED_PREFERENCES_KEY_INSTAGRAM_REDIRECT_URI );
-
-    if ( ! editor.commit() )
-      {
-      Log.e( LOG_TAG, "Unable to clear Instagram credentials from shared preferences" );
-      }
+    setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_INSTAGRAM_CLIENT_ID,    clientId );
+    setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_INSTAGRAM_REDIRECT_URI, redirectUri );
 
     return ( this );
     }
@@ -384,16 +619,7 @@ public class KiteSDK
    *****************************************************/
   public KiteSDK setRequestPhoneNumber( boolean requestPhoneNumber )
     {
-    SharedPreferences.Editor editor = mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE ).edit();
-
-    editor.putBoolean( SHARED_PREFERENCES_KEY_REQUEST_PHONE_NUMBER, requestPhoneNumber );
-
-    if ( ! editor.commit() )
-      {
-      Log.e( LOG_TAG, "Unable to save request phone number preference to shared preferences" );
-      }
-
-    return ( this );
+    return ( setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_REQUEST_PHONE_NUMBER, requestPhoneNumber ) );
     }
 
 
@@ -433,23 +659,45 @@ public class KiteSDK
 
     if ( mUniqueUserId == null )
       {
-      SharedPreferences sharedPreferences = mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE );
+      // The scope is permanent, because we don't want it changing per app session
+      mUniqueUserId = getStringSDKParameter( Scope.PERMANENT, PARAMETER_NAME_UNIQUE_USER_ID, null );
 
-      String uniqueUserId = sharedPreferences.getString( SHARED_PREFERENCES_KEY_UNIQUE_USER_ID, null );
-
-      if ( uniqueUserId == null )
+      if ( mUniqueUserId == null )
         {
-        uniqueUserId = UUID.randomUUID().toString();
+        mUniqueUserId = UUID.randomUUID().toString();
 
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString( SHARED_PREFERENCES_KEY_UNIQUE_USER_ID, uniqueUserId );
-        editor.apply();
+        setSDKParameter( Scope.PERMANENT, PARAMETER_NAME_UNIQUE_USER_ID, mUniqueUserId );
         }
-
-      mUniqueUserId = uniqueUserId;
       }
 
+
     return ( mUniqueUserId );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the enabled state of the address book.
+   *
+   *****************************************************/
+  public KiteSDK setAddressBookEnabled( boolean enabled )
+    {
+    setSDKParameter( Scope.PERMANENT, PARAMETER_NAME_ADDRESS_BOOK_ENABLED, enabled );
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the enabled state of the address book. If the
+   * parameter has not been explicitly set, it defaults
+   * to true.
+   *
+   *****************************************************/
+  public boolean addressBookIsEnabled()
+    {
+    return ( getBooleanSDKParameter( Scope.PERMANENT, PARAMETER_NAME_ADDRESS_BOOK_ENABLED, true ) );
     }
 
 
@@ -461,9 +709,7 @@ public class KiteSDK
    *****************************************************/
   public String getInstagramClientId()
     {
-    SharedPreferences sharedPreferences = mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE );
-
-    return ( sharedPreferences.getString( SHARED_PREFERENCES_KEY_INSTAGRAM_CLIENT_ID, null ) );
+    return ( getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_INSTAGRAM_CLIENT_ID, null ) );
     }
 
 
@@ -475,9 +721,7 @@ public class KiteSDK
    *****************************************************/
   public String getInstagramRedirectURI()
     {
-    SharedPreferences sharedPreferences = mApplicationContext.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-
-    return ( sharedPreferences.getString( SHARED_PREFERENCES_KEY_INSTAGRAM_REDIRECT_URI, null ) );
+    return ( getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_INSTAGRAM_REDIRECT_URI, null ) );
     }
 
 
@@ -489,9 +733,7 @@ public class KiteSDK
    *****************************************************/
   public boolean getRequestPhoneNumber()
     {
-    SharedPreferences prefs = mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE );
-
-    return ( prefs.getBoolean( SHARED_PREFERENCES_KEY_REQUEST_PHONE_NUMBER, true ) );
+    return ( getBooleanSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_REQUEST_PHONE_NUMBER, true ) );
     }
 
 
@@ -585,10 +827,7 @@ public class KiteSDK
 
     if ( saveSources )
       {
-      mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE )
-        .edit()
-          .putString( SHARED_PREFERENCES_KEY_IMAGE_SOURCES, classNamesStringBuilder.toString() )
-        .apply();
+      setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_IMAGE_SOURCES, classNamesStringBuilder.toString() );
       }
 
 
@@ -598,23 +837,12 @@ public class KiteSDK
 
   /*****************************************************
    *
-   * Sets a custom parameter.
+   * Sets the Stripe public key.
    *
    *****************************************************/
-  public KiteSDK setCustomString( String name, String value )
+  public KiteSDK setStripePublicKey( String stripePublicKey )
     {
-    // Check that the parameter name doesn't start with the custom prefix
-
-    if ( name.startsWith( SHARED_PREFERENCES_CUSTOM_PARAMETER_KEY_PREFIX ) )
-      {
-      throw ( new IllegalArgumentException( "Custom parameter names must not start with " + SHARED_PREFERENCES_CUSTOM_PARAMETER_KEY_PREFIX ) );
-      }
-
-
-    mApplicationContext.getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE )
-      .edit()
-        .putString( SHARED_PREFERENCES_CUSTOM_PARAMETER_KEY_PREFIX + name, value )
-      .apply();
+    setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_STRIPE_PUBLIC_KEY, stripePublicKey );
 
     return ( this );
     }
@@ -622,22 +850,156 @@ public class KiteSDK
 
   /*****************************************************
    *
-   * Returns the value of a custom parameter.
+   * Returns the Stripe public key.
    *
    *****************************************************/
-  public String getCustomString( String name, String defaultValue )
+  public String getStripePublicKey()
     {
-    // Check that the parameter name doesn't start with the custom prefix
-
-    if ( name.startsWith( SHARED_PREFERENCES_CUSTOM_PARAMETER_KEY_PREFIX ) )
-      {
-      throw ( new IllegalArgumentException( "Custom parameter names must not start with " + SHARED_PREFERENCES_CUSTOM_PARAMETER_KEY_PREFIX ) );
-      }
+    return ( getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_STRIPE_PUBLIC_KEY, null ) );
+    }
 
 
-    return ( mApplicationContext
-               .getSharedPreferences( SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE )
-               .getString( SHARED_PREFERENCES_CUSTOM_PARAMETER_KEY_PREFIX + name, defaultValue ) );
+  /*****************************************************
+   *
+   * Sets the end customer session icon URL.
+   *
+   *****************************************************/
+  public KiteSDK setEndCustomerSessionIconURL( String endCustomerSessionIconURL )
+    {
+    setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_END_CUSTOMER_SESSION_ICON_URL, endCustomerSessionIconURL );
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the end customer session icon URL.
+   *
+   *****************************************************/
+  public String getEndCustomerSessionIconURL()
+    {
+    return ( getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_END_CUSTOMER_SESSION_ICON_URL, null ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets a string SDK parameter.
+   *
+   *****************************************************/
+  public KiteSDK setSDKParameter( Scope scope, String name, String string )
+    {
+    setParameter( mApplicationContext, scope, SHARED_PREFERENCES_KEY_PREFIX_SDK, name, string );
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets a string app parameter.
+   *
+   *****************************************************/
+  public KiteSDK setAppParameter( Scope scope, String name, String string )
+    {
+    setParameter( mApplicationContext, scope, SHARED_PREFERENCES_KEY_PREFIX_APP, name, string );
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets a boolean SDK parameter.
+   *
+   *****************************************************/
+  public KiteSDK setSDKParameter( Scope scope, String name, boolean booleanValue )
+    {
+    setParameter( mApplicationContext, scope, SHARED_PREFERENCES_KEY_PREFIX_SDK, name, booleanValue );
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets a boolean app parameter.
+   *
+   *****************************************************/
+  public KiteSDK setAppParameter( Scope scope, String name, boolean booleanValue )
+    {
+    setParameter( mApplicationContext, scope, SHARED_PREFERENCES_KEY_PREFIX_APP, name, booleanValue );
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets an address app parameter.
+   *
+   *****************************************************/
+  public KiteSDK setAppParameter( Scope scope, String name, Address address )
+    {
+    setParameter( mApplicationContext, scope, SHARED_PREFERENCES_KEY_PREFIX_APP, name, address );
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the value of an SDK string parameter.
+   *
+   *****************************************************/
+  public String getStringSDKParameter( Scope scope, String name, String defaultValue )
+    {
+    return ( getStringParameter( mApplicationContext, scope, SHARED_PREFERENCES_KEY_PREFIX_SDK, name, defaultValue ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the value of an app string parameter.
+   *
+   *****************************************************/
+  public String getStringAppParameter( Scope scope, String name, String defaultValue )
+    {
+    return ( getStringParameter( mApplicationContext, scope, SHARED_PREFERENCES_KEY_PREFIX_APP, name, defaultValue ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the value of an SDK boolean parameter.
+   *
+   *****************************************************/
+  public boolean getBooleanSDKParameter( Scope scope, String name, boolean defaultValue )
+    {
+    return ( getBooleanParameter( mApplicationContext, scope, SHARED_PREFERENCES_KEY_PREFIX_SDK, name, defaultValue ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the value of an app boolean parameter.
+   *
+   *****************************************************/
+  public boolean getBooleanAppParameter( Scope scope, String name, boolean defaultValue )
+    {
+    return ( getBooleanParameter( mApplicationContext, scope, SHARED_PREFERENCES_KEY_PREFIX_APP, name, defaultValue ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the value of a custom address parameter.
+   *
+   *****************************************************/
+  public Address getAddressAppParameter( Scope scope, String name )
+    {
+    return ( getAddressParameter( mApplicationContext, scope, SHARED_PREFERENCES_KEY_PREFIX_APP, name ) );
     }
 
 
@@ -684,7 +1046,7 @@ public class KiteSDK
   public void startShoppingByProductId( Context context, ArrayList<Asset> assetArrayList, String... productIds )
     {
     // Clear any temporary assets
-    AssetHelper.clearCachedImages( context );
+    AssetHelper.clearSessionAssets( context );
 
     // Make sure all the assets are parcelable (this may create some new cached
     // assets). Note that from here on in the SDK is responsible for ensuring
@@ -693,6 +1055,28 @@ public class KiteSDK
 
     // We use the activity context here, not the application context
     ProductSelectionActivity.start( context, assetArrayList, productIds );
+    }
+
+
+  /*****************************************************
+   *
+   * Launches managed checkout.
+   *
+   *****************************************************/
+  public void startCheckout( Context context, Order order )
+    {
+    BasketActivity.start( context, order );
+    }
+
+
+  /*****************************************************
+   *
+   * Launches managed checkout, and returns the result.
+   *
+   *****************************************************/
+  public void startCheckout( Activity activity, Order order, int requestCode )
+    {
+    BasketActivity.startForResult( activity, order, requestCode );
     }
 
 
@@ -791,8 +1175,6 @@ public class KiteSDK
     public String getPayPalAPIEndpoint();
     public String getPayPalClientId();
     public String getPayPalPassword();
-
-    public void writeTo( SharedPreferences.Editor editor );
     }
 
 
@@ -872,15 +1254,15 @@ public class KiteSDK
       }
 
 
-    Environment( SharedPreferences sharedPreferences )
+    Environment( KiteSDK kiteSDK )
       {
-      mName                       = sharedPreferences.getString( SHARED_PREFERENCES_KEY_ENVIRONMENT_NAME, null );
-      mAPIEndpoint                = sharedPreferences.getString( SHARED_PREFERENCES_KEY_API_ENDPOINT, null );
-      mPaymentActivityEnvironment = sharedPreferences.getString( SHARED_PREFERENCES_KEY_PAYMENT_ACTIVITY_ENVIRONMENT, null );
-      mPayPalEnvironment          = sharedPreferences.getString( SHARED_PREFERENCES_KEY_PAYPAL_ENVIRONMENT, null );
-      mPayPalAPIEndpoint          = sharedPreferences.getString( SHARED_PREFERENCES_KEY_PAYPAL_API_ENDPOINT, null );
-      mPayPalClientId             = sharedPreferences.getString( SHARED_PREFERENCES_KEY_PAYPAL_CLIENT_ID, null );
-      mPayPalPassword             = sharedPreferences.getString( SHARED_PREFERENCES_KEY_PAYPAL_PASSWORD, null );
+      mName                       = kiteSDK.getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_ENVIRONMENT_NAME,             null );
+      mAPIEndpoint                = kiteSDK.getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_API_ENDPOINT,                 null );
+      mPaymentActivityEnvironment = kiteSDK.getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYMENT_ACTIVITY_ENVIRONMENT, null );
+      mPayPalEnvironment          = kiteSDK.getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYPAL_ENVIRONMENT,           null );
+      mPayPalAPIEndpoint          = kiteSDK.getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYPAL_API_ENDPOINT,          null );
+      mPayPalClientId             = kiteSDK.getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYPAL_CLIENT_ID,             null );
+      mPayPalPassword             = kiteSDK.getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYPAL_PASSWORD,              null );
       }
 
 
@@ -892,7 +1274,7 @@ public class KiteSDK
       mPayPalEnvironment          = parcel.readString();
       mPayPalAPIEndpoint          = parcel.readString();
       mPayPalClientId             = parcel.readString();
-      mPayPalPassword            = parcel.readString();
+      mPayPalPassword             = parcel.readString();
       }
 
 
@@ -948,15 +1330,15 @@ public class KiteSDK
       return ( mPayPalPassword );
       }
 
-    public void writeTo( SharedPreferences.Editor editor )
+    void saveTo( KiteSDK kiteSDK )
       {
-      editor.putString( SHARED_PREFERENCES_KEY_ENVIRONMENT_NAME, mName );
-      editor.putString( SHARED_PREFERENCES_KEY_API_ENDPOINT, mAPIEndpoint );
-      editor.putString( SHARED_PREFERENCES_KEY_PAYMENT_ACTIVITY_ENVIRONMENT, mPaymentActivityEnvironment );
-      editor.putString( SHARED_PREFERENCES_KEY_PAYPAL_ENVIRONMENT, mPayPalEnvironment );
-      editor.putString( SHARED_PREFERENCES_KEY_PAYPAL_API_ENDPOINT, mPayPalAPIEndpoint );
-      editor.putString( SHARED_PREFERENCES_KEY_PAYPAL_CLIENT_ID, mPayPalClientId );
-      editor.putString( SHARED_PREFERENCES_KEY_PAYPAL_PASSWORD, mPayPalPassword );
+      kiteSDK.setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_ENVIRONMENT_NAME,             mName );
+      kiteSDK.setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_API_ENDPOINT,                 mAPIEndpoint );
+      kiteSDK.setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYMENT_ACTIVITY_ENVIRONMENT, mPaymentActivityEnvironment );
+      kiteSDK.setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYPAL_ENVIRONMENT,           mPayPalEnvironment );
+      kiteSDK.setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYPAL_API_ENDPOINT,          mPayPalAPIEndpoint );
+      kiteSDK.setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYPAL_CLIENT_ID,             mPayPalClientId );
+      kiteSDK.setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYPAL_PASSWORD,              mPayPalPassword );
       }
 
 
@@ -969,14 +1351,53 @@ public class KiteSDK
 
   /*****************************************************
    *
+   * There are a number of different scopes for things like
+   * parameters:
+   *   - Permanent
+   *   - App session: until the SDK is re-initialised
+   *   - Customer session: for apps that can be used by
+   *     multiple customers, until the next customer.
+   *
+   *****************************************************/
+  public enum Scope
+    {
+    PERMANENT         ( SHARED_PREFERENCES_NAME_PERMANENT        ),
+    APP_SESSION       ( SHARED_PREFERENCES_NAME_APP_SESSION      ),
+    CUSTOMER_SESSION  ( SHARED_PREFERENCES_NAME_CUSTOMER_SESSION );
+
+
+    private String  mSharedPreferencesName;
+
+
+    private Scope( String sharedPreferencesName )
+      {
+      mSharedPreferencesName = sharedPreferencesName;
+      }
+
+
+    String sharedPreferencesName()
+      {
+      return ( mSharedPreferencesName );
+      }
+
+
+    SharedPreferences sharedPreferences( Context context )
+      {
+      return( context.getSharedPreferences( mSharedPreferencesName, Context.MODE_PRIVATE ) );
+      }
+    }
+
+
+  /*****************************************************
+   *
    * A set of pre-defined environments.
    *
    *****************************************************/
   public static enum DefaultEnvironment implements IEnvironment
     {
-    LIVE    ( "Live",    "https://api.kite.ly/v2.0",     PaymentActivity.ENVIRONMENT_LIVE,    PayPalConfiguration.ENVIRONMENT_PRODUCTION, PAYPAL_LIVE_API_ENDPOINT,    PAYPAL_LIVE_CLIENT_ID,    PAYPAL_LIVE_PASSWORD    ),
-    TEST    ( "Test",    "https://api.kite.ly/v2.0",     PaymentActivity.ENVIRONMENT_TEST,    PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_ENDPOINT, PAYPAL_SANDBOX_CLIENT_ID, PAYPAL_SANDBOX_PASSWORD ),
-    STAGING ( "Staging", "https://staging.kite.ly/v2.0", PaymentActivity.ENVIRONMENT_STAGING, PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_ENDPOINT, PAYPAL_SANDBOX_CLIENT_ID, PAYPAL_SANDBOX_PASSWORD ); /* private environment intended only for Ocean Labs use, hands off :) */
+    LIVE    ( "Live",    "https://api.kite.ly/v2.2",     PaymentActivity.ENVIRONMENT_LIVE,    PayPalConfiguration.ENVIRONMENT_PRODUCTION, PAYPAL_LIVE_API_ENDPOINT,    PAYPAL_LIVE_CLIENT_ID,    PAYPAL_LIVE_PASSWORD    ),
+    TEST    ( "Test",    "https://api.kite.ly/v2.2",     PaymentActivity.ENVIRONMENT_TEST,    PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_ENDPOINT, PAYPAL_SANDBOX_CLIENT_ID, PAYPAL_SANDBOX_PASSWORD ),
+    STAGING ( "Staging", "https://staging.kite.ly/v2.2", PaymentActivity.ENVIRONMENT_STAGING, PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_ENDPOINT, PAYPAL_SANDBOX_CLIENT_ID, PAYPAL_SANDBOX_PASSWORD ); /* private environment intended only for Ocean Labs use, hands off :) */
 
 
     private Environment  mEnvironment;
@@ -1021,12 +1442,6 @@ public class KiteSDK
     public String getPayPalPassword()
       {
       return ( mEnvironment.getPayPalPassword() );
-      }
-
-
-    public void writeTo( SharedPreferences.Editor editor )
-      {
-      mEnvironment.writeTo( editor );
       }
     }
 

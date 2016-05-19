@@ -51,8 +51,8 @@ import android.view.ViewGroup;
 
 import ly.kite.R;
 import ly.kite.journey.creation.AEditImageFragment;
-import ly.kite.util.Asset;
 import ly.kite.catalogue.Product;
+import ly.kite.util.AssetFragment;
 
 
 ///// Class Declaration /////
@@ -68,7 +68,7 @@ public class PhoneCaseFragment extends AEditImageFragment
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String      LOG_TAG                                   = "PhoneCaseFragment";
+  static private final String  LOG_TAG = "PhoneCaseFragment";
 
 
   ////////// Static Variable(s) //////////
@@ -118,7 +118,6 @@ public class PhoneCaseFragment extends AEditImageFragment
   public void onCreate( Bundle savedInstanceState )
     {
     super.onCreate( savedInstanceState );
-
 
     setHasOptionsMenu( true );
     }
@@ -170,9 +169,9 @@ public class PhoneCaseFragment extends AEditImageFragment
 
     if ( mImageAsset == null )
       {
-      if ( mAssetsAndQuantityArrayList != null && mAssetsAndQuantityArrayList.size() > 0 )
+      if ( mImageSpecArrayList != null && mImageSpecArrayList.size() > 0 )
         {
-        mImageAsset = mAssetsAndQuantityArrayList.get( 0 ).getUneditedAsset();
+        mImageAsset = mImageSpecArrayList.get( 0 ).getAsset();
         }
       }
 
@@ -214,11 +213,12 @@ public class PhoneCaseFragment extends AEditImageFragment
    * Called when an edited asset is returned.
    *
    *****************************************************/
-  protected void onEditedAsset( Asset editedAsset )
+  @Override
+  protected void onEditedAsset( AssetFragment assetFragment )
     {
-    if ( editedAsset != null && mKiteActivity instanceof ICallback )
+    if ( assetFragment != null && mKiteActivity instanceof ICallback )
       {
-      ( (ICallback)mKiteActivity ).pcOnCreated( editedAsset );
+      ( (ICallback)mKiteActivity ).pcOnCreated( assetFragment );
       }
     }
 
@@ -246,7 +246,7 @@ public class PhoneCaseFragment extends AEditImageFragment
    *****************************************************/
   public interface ICallback
     {
-    public void pcOnCreated( Asset imageAsset );
+    public void pcOnCreated( AssetFragment assetFragment );
     }
 
   }

@@ -63,9 +63,8 @@ import ly.kite.catalogue.CatalogueLoader;
 import ly.kite.catalogue.ICatalogueConsumer;
 import ly.kite.catalogue.ProductOption;
 import ly.kite.journey.AKiteActivity;
-import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.journey.creation.ProductCreationActivity;
-import ly.kite.journey.creation.reviewandedit.ReviewAndEditFragment;
+import ly.kite.ordering.ImageSpec;
 import ly.kite.util.Asset;
 import ly.kite.catalogue.Product;
 import ly.kite.catalogue.ProductGroup;
@@ -105,21 +104,20 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
 
   ////////// Member Variable(s) //////////
 
-  private ArrayList<AssetsAndQuantity>  mAssetsAndQuantityArrayList;
+  private ArrayList<ImageSpec>          mImageSpecArrayList;
   private String[]                      mProductIds;
 
   private ProgressBar                   mProgressSpinner;
   private ChooseProductGroupFragment    mProductGroupFragment;
   private ChooseProductFragment         mProductFragment;
   private ProductOverviewFragment       mProductOverviewFragment;
-  private ReviewAndEditFragment         mReviewAndCropFragment;
 
   private CatalogueLoader               mCatalogueLoader;
   private Catalogue                     mCatalogue;
   private ICatalogueConsumer            mCatalogueConsumer;
   private boolean                       mAddFragmentOnCatalogue;
 
-  private HashMap<String,String> mProductOptionValueMap;
+  private HashMap<String,String>        mProductOptionValueMap;
 
 
   ////////// Static Initialiser(s) //////////
@@ -153,16 +151,16 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
    * array list, with the quantities set to 1.
    *
    *****************************************************/
-  private static ArrayList<AssetsAndQuantity> assetsAndQuantityArrayListFrom( ArrayList<Asset> assetArrayList )
+  private static ArrayList<ImageSpec> imageSpecArrayListFrom( ArrayList<Asset> assetArrayList )
     {
-    ArrayList<AssetsAndQuantity> assetsAndQuantityArrayList = new ArrayList<>( assetArrayList.size() );
+    ArrayList<ImageSpec> imageSpecArrayList = new ArrayList<>( assetArrayList.size() );
 
     for ( Asset asset : assetArrayList )
       {
-      assetsAndQuantityArrayList.add( new AssetsAndQuantity( asset ) );
+      imageSpecArrayList.add( new ImageSpec( asset ) );
       }
 
-    return ( assetsAndQuantityArrayList );
+    return ( imageSpecArrayList );
     }
 
 
@@ -228,7 +226,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
     // to cropping and editing) because if the user comes out of product creation, and
     // goes back into another product - we want to remember quantities.
 
-    mAssetsAndQuantityArrayList = assetsAndQuantityArrayListFrom( assetArrayList );
+    mImageSpecArrayList = imageSpecArrayListFrom( assetArrayList );
 
 
     // Set up the screen content
@@ -270,20 +268,28 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
   @Override
   protected void onActivityResult( int requestCode, int resultCode, Intent data )
     {
-    super.onActivityResult( requestCode, resultCode, data );
-
-
-    // The parent method will check for the checkout result.
-
-
     // See if we got an updated assets + quantity list
 
     if ( data != null )
       {
-      ArrayList<AssetsAndQuantity> assetsAndQuantityArrayList = data.getParcelableArrayListExtra( INTENT_EXTRA_NAME_ASSETS_AND_QUANTITY__LIST );
+      ArrayList<ImageSpec> imageSpecArrayList = data.getParcelableArrayListExtra( INTENT_EXTRA_NAME_IMAGE_SPEC_LIST );
 
-      if ( assetsAndQuantityArrayList != null ) mAssetsAndQuantityArrayList = assetsAndQuantityArrayList;
+      if ( imageSpecArrayList != null ) mImageSpecArrayList = imageSpecArrayList;
       }
+
+
+    // If we get a continue shopping result - go back to the product group screen
+
+    if ( resultCode == ACTIVITY_RESULT_CODE_CONTINUE_SHOPPING )
+      {
+      mFragmentManager.popBackStackImmediate( ChooseProductGroupFragment.TAG, 0 );
+
+      return;
+      }
+
+
+    // The parent method will check for the checkout result.
+    super.onActivityResult( requestCode, resultCode, data );
     }
 
 
@@ -554,7 +560,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
     // we then hand over to the product creation activity to choose the journey
     // depending on the product.
 
-    ProductCreationActivity.startForResult( this, mAssetsAndQuantityArrayList, product, mProductOptionValueMap, ACTIVITY_REQUEST_CODE_CHECKOUT );
+    ProductCreationActivity.startForResult( this, product, mProductOptionValueMap, mImageSpecArrayList, ACTIVITY_REQUEST_CODE_CREATE );
     }
 
 

@@ -1,0 +1,11 @@
+<menu
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/basket_menu_item"
+        android:icon="@drawable/ic_basket_empty"
+        android:showAsAction="always"
+        tools:ignore="AppCompatResource,MenuTitle"/>
+
+</menu>

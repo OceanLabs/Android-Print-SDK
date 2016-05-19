@@ -21,6 +21,7 @@ import ly.kite.KiteSDK;
 import ly.kite.util.Asset;
 import ly.kite.util.AssetHelper;
 import ly.kite.util.HTTPJSONRequest;
+import ly.kite.util.UploadableImage;
 
 /**
  * Created by deonbotha on 07/02/2014.
@@ -54,21 +55,21 @@ public class AssetUploadRequest {
         }
     }
 
-    public void uploadAsset(Asset asset, Context context, IProgressListener uploadListener) {
-        ArrayList<Asset> list = new ArrayList<Asset>();
-        list.add(asset);
+    public void uploadAsset( UploadableImage uploadableImage, Context context, IProgressListener uploadListener) {
+        ArrayList<UploadableImage> list = new ArrayList<>();
+        list.add(uploadableImage);
         uploadAssets(context, list, uploadListener);
     }
 
-    public void uploadAssets( Context context, final List<Asset> assets, final IProgressListener uploadListener) {
-        ArrayList<Asset> urlsToRegister = new ArrayList<Asset>();
-        ArrayList<Asset> assetsToUpload = new ArrayList<Asset>();
+    public void uploadAssets( Context context, final List<UploadableImage> uploadableImages, final IProgressListener uploadListener) {
+        ArrayList<UploadableImage> urlsToRegister = new ArrayList<>();
+        ArrayList<UploadableImage> assetsToUpload = new ArrayList<>();
 
-        for (Asset asset : assets) {
-            if (asset.getType() == Asset.Type.REMOTE_URL) {
-                urlsToRegister.add(asset);
+        for (UploadableImage uploadableImage : uploadableImages) {
+            if (uploadableImage.getType() == Asset.Type.REMOTE_URL) {
+                urlsToRegister.add(uploadableImage);
             } else {
-                assetsToUpload.add(asset);
+                assetsToUpload.add(uploadableImage);
             }
         }
 
@@ -82,28 +83,28 @@ public class AssetUploadRequest {
             @Override
             public void onSuccess() {
                 if (cancelled || notifiedUploadListenerOfOutcome) return;
-                completedOutstandingAsyncOperation(assets, null, uploadListener);
+                completedOutstandingAsyncOperation(uploadableImages, null, uploadListener);
             }
 
             @Override
             public void onError(Exception ex) {
                 if (cancelled || notifiedUploadListenerOfOutcome) return;
-                completedOutstandingAsyncOperation(assets, ex, uploadListener);
+                completedOutstandingAsyncOperation(uploadableImages, ex, uploadListener);
             }
         };
 
         if (assetsToUpload.size() > 0) {
             ++numOutstandingAsyncOpertions;
-            uploadAssets(assetsToUpload, context, listener);
+            uploadAssets( context, assetsToUpload, listener);
         }
 
         if (urlsToRegister.size() > 0) {
             ++numOutstandingAsyncOpertions;
-            registerImageURLs(urlsToRegister, context, listener);
+            registerImageURLs( context, urlsToRegister, listener);
         }
     }
 
-    private void completedOutstandingAsyncOperation(List<Asset> assets, Exception ex, IProgressListener listener) {
+    private void completedOutstandingAsyncOperation( List<UploadableImage> uploadableImages, Exception ex, IProgressListener listener) {
         if (cancelled || notifiedUploadListenerOfOutcome) {
             return;
         }
@@ -117,18 +118,18 @@ public class AssetUploadRequest {
         if (--numOutstandingAsyncOpertions == 0) {
             notifiedUploadListenerOfOutcome = true;
             assert ex == null : "errors should be covered above";
-            listener.onUploadComplete( this, assets);
+            listener.onUploadComplete( this, uploadableImages);
         }
     }
 
-    private void getSignedS3UploadRequestURLs(final List<Asset> assets, Context context, final SignS3UploadsRequestListener listener) {
+    private void getSignedS3UploadRequestURLs( Context context, final List<UploadableImage> uploadableImages, final SignS3UploadsRequestListener listener) {
         StringBuilder mimeTypes = new StringBuilder();
-        for (Asset asset : assets) {
+        for ( UploadableImage uploadableImage : uploadableImages) {
             if (mimeTypes.length() > 0) {
                 mimeTypes.append(",");
             }
 
-            mimeTypes.append( AssetHelper.getMimeType( context, asset ).mimeTypeString());
+            mimeTypes.append( AssetHelper.getMimeType( context, uploadableImage.getAsset() ).mimeTypeString());
         }
 
         String url = String.format("%s/asset/sign/?mime_types=%s&client_asset=true", KiteSDK.getInstance( context ).getAPIEndpoint(), mimeTypes.toString());
@@ -150,8 +151,8 @@ public class AssetUploadRequest {
                     JSONArray assetS3PreviewURLs = json.getJSONArray("urls");
                     JSONArray assetIds = json.getJSONArray("asset_ids");
 
-                    if (assets.size() != signedUploadReqURLs.length() || signedUploadReqURLs.length() != assetS3PreviewURLs.length() || assetS3PreviewURLs.length() != assetIds.length()) {
-                        listener.onError(new IllegalStateException(String.format("Only got sign %d/%d sign requests", signedUploadReqURLs.length(), assets.size())));
+                    if (uploadableImages.size() != signedUploadReqURLs.length() || signedUploadReqURLs.length() != assetS3PreviewURLs.length() || assetS3PreviewURLs.length() != assetIds.length()) {
+                        listener.onError(new IllegalStateException(String.format("Only got sign %d/%d sign requests", signedUploadReqURLs.length(), uploadableImages.size())));
                         return;
                     }
 
@@ -161,7 +162,7 @@ public class AssetUploadRequest {
                         d.signedS3UploadReqURL = new URL(signedUploadReqURLs.getString(i));
                         d.s3AssetPreviewURL = new URL(assetS3PreviewURLs.getString(i));
                         d.assetId = assetIds.getLong(i);
-                        d.asset = assets.get(i);
+                        d.uploadableImage = uploadableImages.get(i);
                         details.add(d);
                     }
 
@@ -183,7 +184,7 @@ public class AssetUploadRequest {
             throw new IllegalStateException("Attempting to kick off asset upload on a thread that is not the main thread");
         }
 
-        final String mimeType = AssetHelper.getMimeType( context, details.asset ).mimeTypeString();
+        final String mimeType = AssetHelper.getMimeType( context, details.uploadableImage.getAsset() ).mimeTypeString();
         AsyncTask<Void, Void, Exception> uploadTask = new AsyncTask<Void, Void, Exception>() {
             @Override
             protected Exception doInBackground(Void... voids) {
@@ -220,12 +221,12 @@ public class AssetUploadRequest {
         uploadTask.execute();
     }
 
-    private void uploadAssetsToS3(final List<SignedS3RequestUploadDetails> remainingAssetsToUpload, final List<Asset> uploadedAssetAccumulator, final Context context, final AssetUploadOrRegisterListener listener) {
+    private void uploadAssetsToS3( final Context context, final List<SignedS3RequestUploadDetails> remainingAssetsToUpload, final List<UploadableImage> uploadedAssetAccumulator, final AssetUploadOrRegisterListener listener) {
         if (cancelled || notifiedUploadListenerOfOutcome) return;
 
         final SignedS3RequestUploadDetails assetToUploadDetails = remainingAssetsToUpload.remove(0);
         final int totalAssetsToUpload = uploadedAssetAccumulator.size() + remainingAssetsToUpload.size() + 1;
-        AssetHelper.requestImageBytes( context, assetToUploadDetails.asset, new AssetHelper.IImageBytesConsumer()
+        AssetHelper.requestImageBytes( context, assetToUploadDetails.uploadableImage.getAsset(), new AssetHelper.IImageBytesConsumer()
         {
         @Override
         public void onAssetBytes( Asset asset, byte[] bytes )
@@ -247,16 +248,16 @@ public class AssetUploadRequest {
                 {
                 if ( cancelled || notifiedUploadListenerOfOutcome ) return;
 
-                Asset asset = assetToUploadDetails.asset;
-                asset.markAsUploaded( assetToUploadDetails.assetId, assetToUploadDetails.s3AssetPreviewURL );
-                uploadedAssetAccumulator.add( asset );
+                UploadableImage uploadableImage = assetToUploadDetails.uploadableImage;
+                uploadableImage.markAsUploaded( assetToUploadDetails.assetId, assetToUploadDetails.s3AssetPreviewURL );
+                uploadedAssetAccumulator.add( uploadableImage );
                 if ( remainingAssetsToUpload.size() == 0 )
                     {
                     listener.onSuccess();
                     }
                 else
                     {
-                    uploadAssetsToS3( remainingAssetsToUpload, uploadedAssetAccumulator, context, listener );
+                    uploadAssetsToS3( context, remainingAssetsToUpload, uploadedAssetAccumulator, listener );
                     }
                 }
 
@@ -278,12 +279,12 @@ public class AssetUploadRequest {
         } );
     }
 
-    private void uploadAssets(final List<Asset> assets, final Context context, final AssetUploadOrRegisterListener listener) {
-        getSignedS3UploadRequestURLs(assets, context, new SignS3UploadsRequestListener() {
+    private void uploadAssets( final Context context, final List<UploadableImage> uploadableImages, final AssetUploadOrRegisterListener listener) {
+        getSignedS3UploadRequestURLs( context, uploadableImages, new SignS3UploadsRequestListener() {
 
             @Override
             public void onSuccess(ArrayList<SignedS3RequestUploadDetails> details) {
-                uploadAssetsToS3(details, new ArrayList<Asset>(), context, listener);
+                uploadAssetsToS3( context, details, new ArrayList<UploadableImage>(), listener);
             }
 
             @Override
@@ -293,19 +294,19 @@ public class AssetUploadRequest {
         });
     }
 
-    private void registerImageURLs(final List<Asset> assets, Context context, final AssetUploadOrRegisterListener listener) {
+    private void registerImageURLs( Context context, final List<UploadableImage> uploadableImages, final AssetUploadOrRegisterListener listener) {
         int c = 0;
         JSONObject jsonBody = new JSONObject();
         JSONArray objects = new JSONArray();
         try {
             jsonBody.put("objects", objects);
-            for (Asset asset : assets) {
-                if (asset.getType() == Asset.Type.REMOTE_URL) {
+            for (UploadableImage uploadableImage : uploadableImages) {
+                if (uploadableImage.getType() == Asset.Type.REMOTE_URL) {
                     ++c;
                     JSONObject o = new JSONObject();
-                    o.put("url", asset.getRemoteURL().toString());
+                    o.put("url", uploadableImage.getRemoteURL().toString());
                     o.put("client_asset", true);
-                    o.put("mime_type", AssetHelper.getMimeType( context, asset ).mimeTypeString());
+                    o.put("mime_type", AssetHelper.getMimeType( context, uploadableImage.getAsset() ).mimeTypeString());
                     objects.put(o);
                 }
             }
@@ -330,9 +331,9 @@ public class AssetUploadRequest {
                             long assetId = o.getLong("asset_id");
                             URL previewURL = new URL(o.getString("url"));
 
-                            for (Asset asset : assets) {
-                                if (asset.getType() == Asset.Type.REMOTE_URL && asset.getRemoteURL().equals(previewURL)) {
-                                    asset.markAsUploaded(assetId, previewURL);
+                            for (UploadableImage uploadableImage : uploadableImages) {
+                                if (uploadableImage.getType() == Asset.Type.REMOTE_URL && uploadableImage.getRemoteURL().equals(previewURL)) {
+                                    uploadableImage.markAsUploaded(assetId, previewURL);
                                     ++registeredAssetCount;
                                 }
                             }
@@ -364,7 +365,7 @@ public class AssetUploadRequest {
         URL signedS3UploadReqURL;
         URL s3AssetPreviewURL;
         long assetId;
-        Asset asset;
+        UploadableImage uploadableImage;
     }
 
     private static interface AssetUploadOrRegisterListener {
@@ -389,7 +390,7 @@ public class AssetUploadRequest {
     {
     void onProgress( AssetUploadRequest req, int totalAssetsUploaded, int totalAssetsToUpload, long bytesWritten, long totalAssetBytesWritten, long totalAssetBytesExpectedToWrite );
 
-    void onUploadComplete( AssetUploadRequest req, List<Asset> assets );
+    void onUploadComplete( AssetUploadRequest req, List<UploadableImage> uploadableImages );
 
     void onError( AssetUploadRequest req, Exception error );
     }

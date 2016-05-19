@@ -116,6 +116,7 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
   private static final String  JSON_NAME_OPTION_CODE                 = "code";
   private static final String  JSON_NAME_HIGHLIGHTS_URL              = "product_highlights_url";
   private static final String  JSON_NAME_PIXELS                      = "px";
+  private static final String  JSON_NAME_PRODUCT_ACTIVE              = "product_active";
   private static final String  JSON_NAME_PRODUCT_ARRAY               = "objects";
   private static final String  JSON_NAME_PRODUCT_CODE                = "product_code";
   private static final String  JSON_NAME_PRODUCT_DETAIL              = "product";
@@ -462,6 +463,8 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
           Log.d( LOG_TAG, "Product JSON:\n" + productJSONObject.toString() );
           }
 
+        boolean                          productActive      = productJSONObject.optBoolean( JSON_NAME_PRODUCT_ACTIVE, true );
+
         String                           productId          = productJSONObject.getString( JSON_NAME_PRODUCT_ID );
         String                           productName        = productJSONObject.getString( JSON_NAME_PRODUCT_NAME );
         String                           productDescription = productJSONObject.getString( JSON_NAME_DESCRIPTION );
@@ -559,13 +562,14 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
         // Add the product to the catalogue. If it doesn't have a supported
         // user journey, then we add it has a discarded product.
 
-        if ( ProductCreationActivity.isSupported( userJourneyType ) )
+        if ( productActive && ProductCreationActivity.isSupported( userJourneyType ) )
           {
           catalogue.addProduct( groupLabel, groupImageURL, product );
           }
         else
           {
-          Log.i( LOG_TAG, "-- Product discarded: no user journey --" );
+          if ( productActive ) Log.i( LOG_TAG, "-- Product discarded: no user journey --" );
+          else                 Log.i( LOG_TAG, "-- Product discarded: inactive --" );
 
           catalogue.addDiscardedProduct( product );
           }
@@ -617,8 +621,8 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
       try
         {
         JSONObject errorJSONObject = jsonData.getJSONObject( HTTPJSONRequest.ERROR_RESPONSE_JSON_OBJECT_NAME );
-        String errorMessage = errorJSONObject.getString( HTTPJSONRequest.ERROR_RESPONSE_MESSAGE_JSON_NAME );
-        String errorCode = errorJSONObject.getString( HTTPJSONRequest.ERROR_RESPONSE_CODE_JSON_NAME );
+        String     errorMessage    = errorJSONObject.getString( HTTPJSONRequest.ERROR_RESPONSE_MESSAGE_JSON_NAME );
+        String     errorCode       = errorJSONObject.getString( HTTPJSONRequest.ERROR_RESPONSE_CODE_JSON_NAME );
 
         Exception exception = new KiteSDKException( errorMessage );
 
@@ -756,20 +760,67 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
    ****************************************************/
   public void onCatalogue( JSONObject jsonData )
     {
-    // Create a new catalogue, with any custom data.
-
-    JSONObject userConfigJSONObject = jsonData.optJSONObject( JSON_NAME_USER_CONFIG );
-
-    Catalogue  catalogue            = new Catalogue( userConfigJSONObject );
-
-
     try
       {
-      // Try to get a set of products, then parse it.
+      // Create a new catalogue
 
-      JSONArray productsJSONArray = jsonData.getJSONArray( JSON_NAME_PRODUCT_ARRAY );
+      Catalogue catalogue = new Catalogue();
 
-      parseProducts( productsJSONArray, catalogue );
+
+      // Iterate through the top-level keys
+
+      Iterator<String> topLevelKeysIterator = jsonData.keys();
+
+      while ( topLevelKeysIterator.hasNext() )
+        {
+        String topLevelKey = topLevelKeysIterator.next();
+
+        if ( topLevelKey == null || topLevelKey.trim().equals( "" ) ) continue;
+
+
+        // Determine what type of data this is
+
+        if ( topLevelKey.equals( JSON_NAME_USER_CONFIG ) )
+          {
+          ///// User config data /////
+
+          catalogue.setUserConfigData( jsonData.getJSONObject( topLevelKey ) );
+          }
+
+        else if ( topLevelKey.equals( JSON_NAME_PRODUCT_ARRAY ) )
+          {
+          ///// Product data /////
+
+            // Try to get a set of products, then parse them.
+
+            JSONArray productsJSONArray = jsonData.getJSONArray( JSON_NAME_PRODUCT_ARRAY );
+
+            parseProducts( productsJSONArray, catalogue );
+          }
+
+        else
+          {
+          ///// Custom data /////
+
+          // Custom data could either be an object or an array
+
+          Object customData = jsonData.get( topLevelKey );
+
+          if ( customData instanceof JSONObject )
+            {
+            catalogue.setCustomObject( topLevelKey, jsonData.getJSONObject( topLevelKey ) );
+            }
+          else if ( customData instanceof JSONArray )
+            {
+            Log.i( LOG_TAG, "Unable to use custom array " + topLevelKey + " : " + customData.toString() );
+            }
+          else
+            {
+            Log.i( LOG_TAG, "Unable to use custom data " + topLevelKey + " : " + customData.toString() );
+            }
+          }
+
+        }
 
 
       // Save the query result
@@ -781,6 +832,8 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
       }
     catch ( JSONException je )
       {
+      Log.e( LOG_TAG, "Error creating catalogue", je );
+
       postErrorToConsumers( je );
       }
 

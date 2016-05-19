@@ -52,9 +52,9 @@ import java.util.List;
 import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.journey.AImageSource;
-import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.journey.ImageSourceAdaptor;
 import ly.kite.journey.creation.AProductCreationFragment;
+import ly.kite.ordering.ImageSpec;
 import ly.kite.util.Asset;
 import ly.kite.catalogue.Product;
 
@@ -190,7 +190,7 @@ public class ImageSourceFragment extends AProductCreationFragment implements Ada
 
       for ( Asset asset : assetList )
         {
-        mAssetsAndQuantityArrayList.add( new AssetsAndQuantity( asset ) );
+        mImageSpecArrayList.add( new ImageSpec( asset ) );
         }
 
 

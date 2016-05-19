@@ -55,8 +55,10 @@ import android.widget.ProgressBar;
 
 import java.net.URL;
 
+import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.util.Asset;
+import ly.kite.util.AssetFragment;
 import ly.kite.util.AssetHelper;
 import ly.kite.image.IImageConsumer;
 import ly.kite.image.ImageAgent;
@@ -437,6 +439,20 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
 
   /*****************************************************
    *
+   * Sets the source of the image as an asset fragment to
+   * be cropped and scaled to the correct size.
+   *
+   *****************************************************/
+  public void requestScaledImageOnceSized( AssetFragment assetFragment )
+    {
+    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "requestScaledImageOnceSized( assetFragment = " + assetFragment + " )" );
+
+    requestScaledImageOnceSized( KiteSDK.IMAGE_CATEGORY_SESSION_ASSET, assetFragment );
+    }
+
+
+  /*****************************************************
+   *
    * Sets the source of the image as an asset to be scaled
    * to the correct size.
    *
@@ -445,7 +461,7 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
     {
     if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "requestScaledImageOnceSized( asset = " + asset + " )" );
 
-    requestScaledImageOnceSized( AssetHelper.IMAGE_CLASS_STRING_ASSET, asset );
+    requestScaledImageOnceSized( KiteSDK.IMAGE_CATEGORY_SESSION_ASSET, asset );
     }
 
 
@@ -461,27 +477,44 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
 
     if ( mWidth > 0 && mHeight > 0 && mRequestImageSource != null )
       {
+      if ( mRequestImageSource instanceof AssetFragment )
+        {
+        setExpectedKey( mRequestImageSource );
+
+        AssetFragment requestAssetFragment = (AssetFragment)mRequestImageSource;
+
+        ImageAgent.with( getContext() )
+                .load( requestAssetFragment )
+                .reduceColourSpace()
+                .resize( mWidth, mHeight )
+                .onlyScaleDown()
+                .into( this, mRequestImageSource );
+        }
       if ( mRequestImageSource instanceof Asset )
         {
         setExpectedKey( mRequestImageSource );
 
+        Asset requestAsset = (Asset)mRequestImageSource;
+
         ImageAgent.with( getContext() )
-                .load( (Asset)mRequestImageSource )
+                .load( requestAsset )
                 .reduceColourSpace()
                 .resize( mWidth, mHeight )
                 .onlyScaleDown()
-                .into( this, (Asset) mRequestImageSource );
+                .into( this, mRequestImageSource );
         }
       else if ( mRequestImageSource instanceof URL )
         {
         setExpectedKey( mRequestImageSource );
 
+        URL requestURL = (URL)mRequestImageSource;
+
         ImageAgent.with( getContext() )
-                .load( (URL)mRequestImageSource, mRequestImageClass )
+                .load( requestURL, mRequestImageClass )
                 .reduceColourSpace()
                 .resize( mWidth, mHeight )
                 .onlyScaleDown()
-                .into( this, (URL)mRequestImageSource );
+                .into( this, mRequestImageSource );
         }
       }
     }

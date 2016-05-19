@@ -59,11 +59,11 @@ import ly.kite.KiteSDK;
 import ly.kite.journey.AImageSource;
 import ly.kite.journey.creation.AProductCreationFragment;
 import ly.kite.journey.ImageSourceAdaptor;
-import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.catalogue.Product;
 
 import ly.kite.R;
-import ly.kite.journey.creation.IUpdatedAssetListener;
+import ly.kite.journey.creation.IUpdatedImageListener;
+import ly.kite.ordering.ImageSpec;
 import ly.kite.util.BooleanUtils;
 import ly.kite.widget.VisibilitySettingAnimationListener;
 
@@ -79,7 +79,7 @@ import ly.kite.widget.VisibilitySettingAnimationListener;
 public class ImageSelectionFragment extends AProductCreationFragment implements AdapterView.OnItemClickListener,
                                                                                 View.OnClickListener,
                                                                                 ImageSelectionAdaptor.IOnImageCheckChangeListener,
-                                                                                IUpdatedAssetListener
+                                                                                IUpdatedImageListener
   {
   ////////// Static Constant(s) //////////
 
@@ -214,11 +214,11 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
     mUncheckedImagesCount = 0;
 
-    if ( mAssetIsCheckedArrayList == null || mAssetIsCheckedArrayList.size() != mAssetsAndQuantityArrayList.size() )
+    if ( mAssetIsCheckedArrayList == null || mAssetIsCheckedArrayList.size() != mImageSpecArrayList.size() )
       {
-      mAssetIsCheckedArrayList = new ArrayList<>( mAssetsAndQuantityArrayList.size() );
+      mAssetIsCheckedArrayList = new ArrayList<>( mImageSpecArrayList.size() );
 
-      for ( AssetsAndQuantity assetAndQuantity : mAssetsAndQuantityArrayList ) mAssetIsCheckedArrayList.add( true );
+      for ( ImageSpec imageSpec : mImageSpecArrayList ) mAssetIsCheckedArrayList.add( true );
       }
     else
       {
@@ -362,13 +362,13 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
    * Called when an image is cropped.
    *
    *****************************************************/
-  protected void onImageCropped( AssetsAndQuantity assetsAndQuantity )
+  protected void onImageCropped( ImageSpec imageSpec )
     {
     // Update the adaptor with the edited (cropped) image
 
     if ( mImagePackAdaptor != null )
       {
-      int position = mImagePackAdaptor.positionOf( assetsAndQuantity );
+      int position = mImagePackAdaptor.positionOf( imageSpec );
 
       if ( position >= 0 ) mImagePackAdaptor.notifyItemChanged( position );
       }
@@ -381,11 +381,11 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
    *
    *****************************************************/
   @Override
-  protected void onAssetAdded( AssetsAndQuantity assetsAndQuantity )
+  protected void onAssetAdded( ImageSpec imageSpec )
     {
     mAssetIsCheckedArrayList.add( true );
 
-    mImagePackAdaptor.addAsset( assetsAndQuantity );
+    mImagePackAdaptor.addAsset( imageSpec );
     }
 
 
@@ -439,11 +439,11 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
       // We need to go through all the assets and remove any that are unchecked - from
       // both lists, and the "is checked" value.
 
-      for ( int assetIndex = 0; assetIndex < mAssetsAndQuantityArrayList.size(); assetIndex ++ )
+      for ( int assetIndex = 0; assetIndex < mImageSpecArrayList.size(); assetIndex ++ )
         {
         if ( ! mAssetIsCheckedArrayList.get( assetIndex ) )
           {
-          mAssetsAndQuantityArrayList.remove( assetIndex );
+          mImageSpecArrayList.remove( assetIndex );
           mAssetIsCheckedArrayList.remove( assetIndex );
 
           // If we delete an asset, then the next asset now falls into its place
@@ -467,7 +467,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
       {
       ///// Review and Crop /////
 
-      if ( mAssetsAndQuantityArrayList.isEmpty() )
+      if ( mImageSpecArrayList.isEmpty() )
         {
         mKiteActivity.displayModalDialog(R.string.alert_dialog_title_oops, R.string.alert_dialog_message_no_images_selected, R.string.OK, null, 0, null);
         }
@@ -528,11 +528,11 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
   /*****************************************************
    *
-   * Updates the assets and quantity.
+   * Updates the image spec.
    *
    *****************************************************/
   @Override
-  public void onAssetUpdated( int assetIndex, AssetsAndQuantity assetsAndQuantity )
+  public void onImageUpdated( int imageIndex, ImageSpec imageSpec )
     {
     // We don't need to request any cropped image because it is the edited asset
     // that has been updated. So just updated the recycler view.
@@ -554,7 +554,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
       mNumberOfColumns = getResources().getInteger( R.integer.image_selection_grid_num_columns );
       }
 
-    mImagePackAdaptor = new ImageSelectionAdaptor( mKiteActivity, mProduct, mAssetsAndQuantityArrayList, mAssetIsCheckedArrayList, mNumberOfColumns, this );
+    mImagePackAdaptor = new ImageSelectionAdaptor( mKiteActivity, mProduct, mImageSpecArrayList, mAssetIsCheckedArrayList, mNumberOfColumns, this );
 
     mImageLayoutManager = new GridLayoutManager( mKiteActivity, mNumberOfColumns );
     mImageLayoutManager.setSpanSizeLookup( mImagePackAdaptor.new SpanSizeLookup( mNumberOfColumns ) );
@@ -578,9 +578,9 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
     int assetIndex = 0;
 
-    for ( AssetsAndQuantity assetAndQuantity : mAssetsAndQuantityArrayList )
+    for ( ImageSpec imageSpec : mImageSpecArrayList )
       {
-      if ( mAssetIsCheckedArrayList.get( assetIndex ) ) numberOfImages += assetAndQuantity.getQuantity();
+      if ( mAssetIsCheckedArrayList.get( assetIndex ) ) numberOfImages += imageSpec.getQuantity();
 
       assetIndex ++;
       }

@@ -52,7 +52,7 @@ import java.util.HashMap;
  * to consumers.
  *
  *****************************************************/
-abstract public class ACache<K,V,C extends ACache.IConsumer>
+abstract public class ACache<K,V,C>
   {
   ////////// Static Constant(s) //////////
 
@@ -140,7 +140,7 @@ abstract public class ACache<K,V,C extends ACache.IConsumer>
    * any consumers.
    *
    *****************************************************/
-  protected void onValueAvailable( K key, V value )
+  protected void saveAndDistributeValue( K key, V value )
     {
     // Cache the value
     mCacheMap.put( key, value );
@@ -200,15 +200,6 @@ abstract public class ACache<K,V,C extends ACache.IConsumer>
 
 
   ////////// Inner Class(es) //////////
-
-  /*****************************************************
-   *
-   * A consumer.
-   *
-   *****************************************************/
-  public interface IConsumer
-    {
-    }
 
   }
 

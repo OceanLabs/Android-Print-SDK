@@ -106,12 +106,6 @@ public class Asset implements Parcelable
   private byte[]     mImageBytes;
   private MIMEType   mMIMEType;
 
-  private boolean    mHasBeenUploaded;
-
-  // The next two are only valid once an asset has been uploaded to the server
-  private long       mId;
-  private URL        mPreviewURL;
-
 
   ////////// Static Initialiser(s) //////////
 
@@ -131,6 +125,47 @@ public class Asset implements Parcelable
       }
 
     return ( false );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns true if both the assets are null, or equal.
+   *
+   *****************************************************/
+  static public boolean areBothNullOrEqual( Asset asset1, Asset asset2 )
+    {
+    if ( asset1 == null && asset2 == null ) return ( true );
+    if ( asset1 == null || asset2 == null ) return ( false );
+
+    return ( asset1.equals( asset2 ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns true if both the asset lists are null, or equal.
+   *
+   *****************************************************/
+  static public boolean areBothNullOrEqual( List<Asset> assetList1, List<Asset> assetList2 )
+    {
+    if ( assetList1 == null && assetList2 == null ) return ( true );
+    if ( assetList1 == null || assetList2 == null ) return ( false );
+
+    if ( assetList1.size() != assetList2.size() ) return ( false );
+
+
+    int assetIndex = 0;
+
+    for ( Asset asset1 : assetList1 )
+      {
+      if ( ! Asset.areBothNullOrEqual( asset1, assetList2.get( assetIndex ) ) ) return ( false );
+
+      assetIndex ++;
+      }
+
+
+    return ( true );
     }
 
 
@@ -311,9 +346,6 @@ public class Asset implements Parcelable
     mBitmapResourceId = sourceParcel.readInt();
     mImageFilePath    = sourceParcel.readString();
     mMIMEType         = MIMEType.fromString( sourceParcel.readString() );
-    mHasBeenUploaded  = (Boolean)sourceParcel.readValue( Boolean.class.getClassLoader() );
-    mId               = sourceParcel.readLong();
-    mPreviewURL       = (URL)sourceParcel.readSerializable();
     }
 
 
@@ -338,9 +370,6 @@ public class Asset implements Parcelable
     targetParcel.writeInt( mBitmapResourceId );
     targetParcel.writeString( mImageFilePath );
     targetParcel.writeString( mMIMEType != null ? mMIMEType.mimeTypeString() : null );
-    targetParcel.writeValue( mHasBeenUploaded );
-    targetParcel.writeLong( mId );
-    targetParcel.writeSerializable( mPreviewURL );
     }
 
 
@@ -471,56 +500,6 @@ public class Asset implements Parcelable
       }
 
     return ( mMIMEType );
-    }
-
-
-  /*****************************************************
-   *
-   * Saves the results of uploading.
-   *
-   *****************************************************/
-  public void markAsUploaded( long assetId, URL previewURL )
-    {
-    mHasBeenUploaded = true;
-    mId              = assetId;
-    mPreviewURL      = previewURL;
-    }
-
-
-  /*****************************************************
-   *
-   * Returns true if the asset has been uploaded.
-   *
-   *****************************************************/
-  public boolean hasBeenUploaded()
-    {
-    return ( mHasBeenUploaded );
-    }
-
-
-  /*****************************************************
-   *
-   * Returns the id following upload.
-   *
-   *****************************************************/
-  public long getId()
-    {
-    if ( ! mHasBeenUploaded ) throw ( new IllegalStateException( "The id cannot be returned if the asset has not been uploaded" ) );
-
-    return ( mId );
-    }
-
-
-  /*****************************************************
-   *
-   * Returns the preview URL following upload.
-   *
-   *****************************************************/
-  public URL getPreviewURL()
-    {
-    if ( ! mHasBeenUploaded ) throw ( new IllegalStateException( "The preview URL cannot be returned if the asset has not been uploaded" ) );
-
-    return ( mPreviewURL );
     }
 
 

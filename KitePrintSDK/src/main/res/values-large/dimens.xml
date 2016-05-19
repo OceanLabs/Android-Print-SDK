@@ -63,10 +63,10 @@
     <dimen name="proceed_bar_frame_height">75dp</dimen>
     <dimen name="proceed_bar_padding">12dp</dimen>
 
+    <dimen name="image_source_prompt_margin">25dp</dimen>
     <dimen name="image_source_vertical_spacing">6dp</dimen>
 
     <dimen name="progress_banner_landscape_height">50dp</dimen>
-
 
     <dimen name="photobook_add_image_size">18dp</dimen>
 
@@ -92,6 +92,27 @@
 
     <dimen name="photobook_drag_distance">6dp</dimen>
 
+    <dimen name="basket_action_icon_quantity_text_size">11sp</dimen>
+    <dimen name="basket_item_product_label_margin">13dp</dimen>
+    <dimen name="basket_item_product_label_size">18sp</dimen>
+    <dimen name="basket_item_height">100dp</dimen>
+    <dimen name="basket_item_image_margin">3dp</dimen>
+    <dimen name="basket_item_quantity_margin">3dp</dimen>
+    <dimen name="basket_item_quantity_view_size">20dp</dimen>
+    <dimen name="basket_item_quantity_text_size">14sp</dimen>
+    <dimen name="basket_item_heading_padding">13dp</dimen>
+    <dimen name="basket_item_heading_text_size">15sp</dimen>
+    <dimen name="basket_item_quantity_column_width">163dp</dimen>
+    <dimen name="basket_price_column_width">130dp</dimen>
+    <dimen name="basket_item_padding">6dp</dimen>
+    <dimen name="basket_item_button_width">30dp</dimen>
+    <dimen name="basket_item_image_width">88dp</dimen>
+    <dimen name="basket_item_price_size">20sp</dimen>
+    <dimen name="basket_order_frame_padding">13dp</dimen>
+    <dimen name="basket_order_frame_item_height">63dp</dimen>
+    <dimen name="basket_order_item_text_margin">13dp</dimen>
+    <dimen name="basket_order_item_text_size">20sp</dimen>
+    <dimen name="basket_total_price_size">22sp</dimen>
 
     <dimen name="delivery_address_button_text_size">18sp</dimen>
 

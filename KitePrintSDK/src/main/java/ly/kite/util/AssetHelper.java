@@ -50,6 +50,7 @@ import android.webkit.MimeTypeMap;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -57,13 +58,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
+import ly.kite.KiteSDK;
 import ly.kite.image.IImageConsumer;
 import ly.kite.image.ImageAgent;
 import ly.kite.image.ImageLoadRequest;
+import ly.kite.ordering.ImageSpec;
 import ly.kite.util.Asset.Type;
 import ly.kite.util.Asset.MIMEType;
 
@@ -80,13 +85,11 @@ public class AssetHelper
   {
   ////////// Static Constant(s) //////////
 
-  @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                       = "AssetHelper";
+  @SuppressWarnings("unused")
+  private static final String LOG_TAG = "AssetHelper";
 
-  public  static final String  IMAGE_CLASS_STRING_ASSET      = "asset";
-
-  private static final int     READ_BUFFER_SIZE_IN_BYTES     = 8192;  // 8 KB
-  private static final int     TRANSFER_BUFFER_SIZE_IN_BYTES = 8192;  // 8 KB
+  private static final int READ_BUFFER_SIZE_IN_BYTES = 8192;  // 8 KB
+  private static final int TRANSFER_BUFFER_SIZE_IN_BYTES = 8192;  // 8 KB
 
 
   ////////// Static Variable(s) //////////
@@ -102,14 +105,15 @@ public class AssetHelper
 
   /*****************************************************
    *
-   * Clears any cached asset image files.
+   * Clears any asset image files for a particular image
+   * category.
    *
    *****************************************************/
-  static public void clearCachedImages( Context context )
+  static private void clearAssets( Context context, String imageCategory )
     {
     // Get the image cache directory
 
-    String imageCacheDirectoryPath = ImageAgent.getInstance( context ).getImageDirectoryPath( IMAGE_CLASS_STRING_ASSET );
+    String imageCacheDirectoryPath = ImageAgent.getInstance( context ).getImageDirectoryPath( imageCategory );
 
     File imageCacheDirectory = new File( imageCacheDirectoryPath );
 
@@ -130,14 +134,36 @@ public class AssetHelper
 
   /*****************************************************
    *
-   * Generates the file path of a cached asset file, and ensures
-   * that the directory exists.
+   * Clears any session asset image files.
    *
    *****************************************************/
-  static public String prepareForCachedFile( Context context, MIMEType mimeType )
+  static public void clearSessionAssets( Context context )
+    {
+    clearAssets( context, KiteSDK.IMAGE_CATEGORY_SESSION_ASSET );
+    }
+
+
+  /*****************************************************
+   *
+   * Clears any basket asset image files.
+   *
+   *****************************************************/
+  static public void clearBasketAssets( Context context )
+    {
+    clearAssets( context, KiteSDK.IMAGE_CATEGORY_BASKET_ASSET );
+    }
+
+
+  /*****************************************************
+   *
+   * Generates the file path of an asset file, and
+   * ensures that the directory exists.
+   *
+   *****************************************************/
+  static public String prepareForFileAsset( Context context, String imageCategory, MIMEType mimeType )
     {
     // Generate a random file name within the cache
-    Pair<String,String> imageDirectoryAndFilePath = ImageAgent.getInstance( context ).getImageDirectoryAndFilePath( IMAGE_CLASS_STRING_ASSET, UUID.randomUUID().toString() );
+    Pair<String, String> imageDirectoryAndFilePath = ImageAgent.getInstance( context ).getImageDirectoryAndFilePath( imageCategory, UUID.randomUUID().toString() );
 
     File imageDirectory = new File( imageDirectoryAndFilePath.first );
 
@@ -149,12 +175,36 @@ public class AssetHelper
 
   /*****************************************************
    *
+   * Generates the file path of a session asset file, and
+   * ensures that the directory exists.
+   *
+   *****************************************************/
+  static public String prepareForSessionAsset( Context context, MIMEType mimeType )
+    {
+    return ( prepareForFileAsset( context, KiteSDK.IMAGE_CATEGORY_SESSION_ASSET, mimeType ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Generates the file path of a basket asset file, and
+   * ensures that the directory exists.
+   *
+   *****************************************************/
+  static public String prepareForBasketAsset( Context context, Asset sourceAsset )
+    {
+    return ( prepareForFileAsset( context, KiteSDK.IMAGE_CATEGORY_BASKET_ASSET, getMimeType( context, sourceAsset ) ) );
+    }
+
+
+  /*****************************************************
+   *
    * Creates a placeholder asset on the filesystem.
    *
    *****************************************************/
-  static public Asset createAsCachedFile( Context context, Asset.MIMEType mimeType )
+  static public Asset createAsSessionAsset( Context context, Asset.MIMEType mimeType )
     {
-    return ( new Asset( prepareForCachedFile( context, mimeType ) ) );
+    return ( new Asset( prepareForSessionAsset( context, mimeType ) ) );
     }
 
 
@@ -164,9 +214,9 @@ public class AssetHelper
    * to a file. The file path is automatically generated.
    *
    *****************************************************/
-  static public Asset createAsCachedFile( Context context, byte[] imageBytes, Asset.MIMEType mimeType )
+  static public Asset createAsSessionAsset( Context context, byte[] imageBytes, Asset.MIMEType mimeType )
     {
-    return ( createAsCachedFile( imageBytes, prepareForCachedFile( context, mimeType ) ) );
+    return ( createAsSessionAsset( imageBytes, prepareForSessionAsset( context, mimeType ) ) );
     }
 
 
@@ -194,19 +244,19 @@ public class AssetHelper
    * to a file. The file path is automatically generated.
    *
    *****************************************************/
-  static public Asset createAsCachedFile( Context context, int bitmapResourceId, Asset.MIMEType mimeType )
+  static public Asset createAsSessionAsset( Context context, int bitmapResourceId, Asset.MIMEType mimeType )
     {
-    String filePath = prepareForCachedFile( context, mimeType );
+    String filePath = prepareForSessionAsset( context, mimeType );
 
 
     // Encode the bitmap directly to the filesystem, to avoid using more memory than necessary.
 
-    InputStream      is  = null;
+    InputStream is = null;
     FileOutputStream fos = null;
 
     try
       {
-      is  = context.getResources().openRawResource( bitmapResourceId );
+      is = context.getResources().openRawResource( bitmapResourceId );
       fos = new FileOutputStream( filePath );
 
       transferBytes( is, fos );
@@ -271,9 +321,9 @@ public class AssetHelper
    * to a file. The file path is automatically generated.
    *
    *****************************************************/
-  static public Asset createAsCachedFile( Context context, Bitmap bitmap )
+  static public Asset createAsSessionAsset( Context context, Bitmap bitmap )
     {
-    String filePath = prepareForCachedFile( context, MIMEType.JPEG );
+    String filePath = prepareForSessionAsset( context, MIMEType.JPEG );
 
     return ( saveToFile( bitmap, filePath ) );
     }
@@ -289,7 +339,7 @@ public class AssetHelper
     {
     // Encode the bitmap directly to the filesystem, to avoid using more memory than necessary.
 
-    FileOutputStream     fos = null;
+    FileOutputStream fos = null;
     BufferedOutputStream bos = null;
 
     try
@@ -355,11 +405,11 @@ public class AssetHelper
       {
       case BITMAP:
 
-        return ( createAsCachedFile( context, originalAsset.getBitmap() ) );
+        return ( createAsSessionAsset( context, originalAsset.getBitmap() ) );
 
       case IMAGE_BYTES:
 
-        return ( createAsCachedFile( context, originalAsset.getImageBytes(), originalAsset.getMIMEType() ) );
+        return ( createAsSessionAsset( context, originalAsset.getImageBytes(), originalAsset.getMIMEType() ) );
       }
 
 
@@ -373,7 +423,7 @@ public class AssetHelper
    * to a file.
    *
    *****************************************************/
-  static public Asset createAsCachedFile( byte[] imageBytes, String filePath )
+  static public Asset createAsSessionAsset( byte[] imageBytes, String filePath )
     {
     // Write the bitmap to the file
 
@@ -407,6 +457,186 @@ public class AssetHelper
       }
 
     return ( null );
+    }
+
+
+  /*****************************************************
+   *
+   * Creates a basket asset from a session asset.
+   *
+   *****************************************************/
+  static public Asset createAsBasketAsset( Context context, Asset sourceAsset )
+    {
+    // It is perfectly valid to supply a null asset, in which case we return null back.
+    if ( sourceAsset == null ) return ( null );
+
+
+    String basketFilePath = prepareForBasketAsset( context, sourceAsset );
+
+    File basketAssetFile = new File( basketFilePath );
+
+
+    InputStream  sourceStream = null;
+    OutputStream targetStream = null;
+
+    try
+      {
+      sourceStream = getInputStream( context, sourceAsset );
+      targetStream = new FileOutputStream( basketAssetFile );
+
+      transferBytes( sourceStream, targetStream );
+
+      return ( new Asset( basketAssetFile ) );
+      }
+    catch ( IOException ioe )
+      {
+      Log.e( LOG_TAG, "Unable to copy asset to basket", ioe );
+
+      return ( null );
+      }
+    finally
+      {
+      if ( sourceStream != null )
+        {
+        try
+          {
+          sourceStream.close();
+          }
+        catch ( IOException ioe )
+          {
+          Log.e( LOG_TAG, "Unable to close session stream", ioe );
+          }
+        }
+
+      if ( targetStream != null )
+        {
+        try
+          {
+          targetStream.close();
+          }
+        catch ( IOException ioe )
+          {
+          Log.e( LOG_TAG, "Unable to close basket stream", ioe );
+          }
+        }
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Creates a list of basket asset fragments from session
+   * assets.
+   *
+   *****************************************************/
+  static public List<ImageSpec> createAsBasketAssets( Context context, List<ImageSpec> sessionImageSpecList )
+    {
+    if ( sessionImageSpecList == null ) return ( new ArrayList<>( 0 ) );
+
+    List<ImageSpec> basketImageSpecList = new ArrayList<>( sessionImageSpecList.size() );
+
+    for ( ImageSpec imageSpec : sessionImageSpecList )
+      {
+      Asset basketAsset = createAsBasketAsset( context, imageSpec.getAsset() );
+
+      basketImageSpecList.add( new ImageSpec( basketAsset, imageSpec.getAssetFragment().getProportionalRectangle(), imageSpec.getQuantity() ) );
+      }
+
+    return ( basketImageSpecList );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns an input stream for the asset.
+   *
+   *****************************************************/
+  static private InputStream getInputStream( Context context, Asset asset ) throws IOException
+    {
+    Asset.Type type = asset.getType();
+
+    InputStream inputStream = null;
+
+    switch ( type )
+      {
+      case IMAGE_URI:
+
+        inputStream = context.getContentResolver().openInputStream( asset.getImageURI() );
+
+        break;
+
+
+      case BITMAP_RESOURCE_ID:
+
+        inputStream = context.getResources().openRawResource( asset.getBitmapResourceId() );
+
+        break;
+
+
+      case BITMAP:
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        Bitmap bitmap = asset.getBitmap();
+
+        bitmap.compress( Bitmap.CompressFormat.JPEG, Asset.BITMAP_TO_JPEG_QUALITY, baos );
+
+        baos.close();
+
+        inputStream = new ByteArrayInputStream( baos.toByteArray() );
+
+        break;
+
+
+      case IMAGE_BYTES:
+
+        inputStream = new ByteArrayInputStream( asset.getImageBytes() );
+
+        break;
+
+
+      case IMAGE_FILE:
+
+        File file = new File( asset.getImageFilePath() );
+
+        inputStream = new FileInputStream( file );
+
+        break;
+
+
+      case REMOTE_URL:
+
+        inputStream = asset.getRemoteURL().openStream();
+
+        break;
+
+
+      default:
+        throw( new IllegalStateException( "Input stream for asset type not supported : " + type ) );
+      }
+
+
+    return ( new BufferedInputStream( inputStream ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the underlying assets from an image spec list.
+   *
+   *****************************************************/
+  static public List<Asset> sourceAssetListFrom( List<ImageSpec> imageSpecList )
+    {
+    if ( imageSpecList == null ) return ( new ArrayList<>( 0 ) );
+
+    List<Asset> assetList = new ArrayList<>( imageSpecList.size() );
+
+    for ( ImageSpec imageSpec : imageSpecList )
+      {
+      assetList.add( imageSpec.getAsset() );
+      }
+
+    return ( assetList );
     }
 
 
@@ -525,7 +755,7 @@ public class AssetHelper
         ImageAgent.with( context )
                 .load( asset )
                 .into( convertorTask, asset );
-        //ImageAgent.getInstance( context ).requestImage( IMAGE_CLASS_STRING_ASSET, , asset.getRemoteURL(), convertorTask );
+        //ImageAgent.getInstance( context ).requestImage( IMAGE_CATEGORY_SESSION_ASSET, , asset.getRemoteURL(), convertorTask );
 
         return;
       }
@@ -590,7 +820,7 @@ public class AssetHelper
 
       case REMOTE_URL:
 
-        imageRequestBuilder.load( asset.getRemoteURL(), IMAGE_CLASS_STRING_ASSET );
+        imageRequestBuilder.load( asset.getRemoteURL(), KiteSDK.IMAGE_CATEGORY_SESSION_ASSET );
 
         return;
 

@@ -51,10 +51,11 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.journey.UserJourneyType;
+import ly.kite.ordering.ImageSpec;
 import ly.kite.util.Asset;
 import ly.kite.catalogue.Product;
+import ly.kite.util.AssetFragment;
 import ly.kite.widget.CheckableImageContainerFrame;
 
 import ly.kite.R;
@@ -114,7 +115,7 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
 
   ////////// Constructor(s) //////////
 
-  public ImageSelectionAdaptor( Context context, Product product, List<AssetsAndQuantity> assetsAndQuantityList, List<Boolean> sharedAssetIsCheckedList, int numberOfColumns, IOnImageCheckChangeListener listener )
+  public ImageSelectionAdaptor( Context context, Product product, List<ImageSpec> imageSpecList, List<Boolean> sharedAssetIsCheckedList, int numberOfColumns, IOnImageCheckChangeListener listener )
     {
     mContext                  = context;
     mProduct                  = product;
@@ -146,7 +147,7 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
     addPack();
 
     // Add any assets
-    for ( AssetsAndQuantity assetsAndQuantity : assetsAndQuantityList )
+    for ( ImageSpec assetsAndQuantity : imageSpecList )
       {
       addAsset( assetsAndQuantity );
       }
@@ -255,7 +256,7 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
 
       case IMAGE:
 
-        Asset editedAsset = item.assetsAndQuantity.getEditedAsset();
+        AssetFragment assetFragment = item.imageSpec.getAssetFragment();
 
 
         // If have got an edited asset - request the image once the view
@@ -263,9 +264,9 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
 
         viewHolder.checkableImageView.setBackgroundColor( mPlaceholderBackgroundColour1 );
 
-        if ( editedAsset != null )
+        if ( assetFragment != null )
           {
-          viewHolder.checkableImageView.requestScaledImageOnceSized( editedAsset );
+          viewHolder.checkableImageView.requestScaledImageOnceSized( assetFragment );
           }
         else
           {
@@ -334,11 +335,11 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
 
   /*****************************************************
    *
-   * Returns the position of the AssetsAndQuantity object
+   * Returns the position of the ImageSpec object
    * for use with various adapter change notification methods
    *
    *****************************************************/
-  public int positionOf( AssetsAndQuantity assetsAndQuantity )
+  public int positionOf( ImageSpec assetsAndQuantity )
     {
     // Check that we actually have an item list
     if ( mItemList == null ) return ( -1 );
@@ -347,7 +348,7 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
       {
       Item candidateItem = mItemList.get( candidateItemIndex );
 
-      if ( candidateItem.assetsAndQuantity == assetsAndQuantity )
+      if ( candidateItem.imageSpec == assetsAndQuantity )
         {
         return ( candidateItemIndex );
         }
@@ -365,7 +366,7 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
    * from scratch.
    *
    *****************************************************/
-  public void addAsset( AssetsAndQuantity assetsAndQuantity )
+  public void addAsset( ImageSpec assetsAndQuantity )
     {
     // See if we need to add a new pack
     if ( ( mFilledItemCount % mItemsPerPack ) == 0 )
@@ -479,7 +480,7 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
     ItemType          itemType;
     String            title;
     int               assetIndex;
-    AssetsAndQuantity assetsAndQuantity;
+    ImageSpec         imageSpec;
     int               checkerBoardValue;
 
     ViewHolder        viewHolder;
@@ -491,17 +492,17 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
       this.title                = title;
       }
 
-    Item( int assetIndex, AssetsAndQuantity assetsAndQuantity )
+    Item( int assetIndex, ImageSpec imageSpec )
       {
-      this.itemType          = ItemType.IMAGE;
-      this.assetIndex        = assetIndex;
-      this.assetsAndQuantity = assetsAndQuantity;
+      this.itemType   = ItemType.IMAGE;
+      this.assetIndex = assetIndex;
+      this.imageSpec  = imageSpec;
       }
 
     Item( int checkerBoardValue )
       {
-      this.itemType             = ItemType.PLACEHOLDER;
-      this.checkerBoardValue    = checkerBoardValue;
+      this.itemType          = ItemType.PLACEHOLDER;
+      this.checkerBoardValue = checkerBoardValue;
       }
 
     Item()

@@ -8,108 +8,162 @@ import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
 import ly.kite.catalogue.Product;
-import ly.kite.util.Asset;
+import ly.kite.util.AssetFragment;
+import ly.kite.util.UploadableImage;
 
 /**
  * Created by dbotha on 23/12/2015.
  */
+
+///// Class Declaration /////
+
+/*****************************************************
+ *
+ * This class represents a greeting card job.
+ *
+ *****************************************************/
 public class GreetingCardJob extends Job
+  {
+  private UploadableImage  mFrontUploadableImage;
+  private UploadableImage  mBackUploadableImage;
+  private UploadableImage  mInsideLeftUploadableImage;
+  private UploadableImage  mInsideRightUploadableImage;
+
+
+  public GreetingCardJob( long jobId, Product product, int orderQuantity, HashMap<String,String> optionsMap, Object frontImage, Object backImage, Object insideLeftImage, Object insideRightImage )
     {
+    super( jobId, product, orderQuantity, optionsMap );
 
-    private Asset mFrontImageAsset;
-    private Asset mBackImageAsset;
-    private Asset mInsideLeftImageAsset;
-    private Asset mInsideRightImageAsset;
-
-    public GreetingCardJob( Product product, Asset frontImageAsset, Asset backImageAsset, Asset insideLeftImageAsset, Asset insideRightImageAsset) {
-        super( product );
-
-        mFrontImageAsset       = frontImageAsset;
-        mBackImageAsset        = backImageAsset;
-        mInsideLeftImageAsset  = insideLeftImageAsset;
-        mInsideRightImageAsset = insideRightImageAsset;
+    mFrontUploadableImage       = singleUploadableImageFrom( frontImage );
+    mBackUploadableImage        = singleUploadableImageFrom( backImage );
+    mInsideLeftUploadableImage  = singleUploadableImageFrom( insideLeftImage );
+    mInsideRightUploadableImage = singleUploadableImageFrom( insideRightImage );
     }
 
-    @Override
-    public BigDecimal getCost(String currencyCode) {
-        return getProduct().getCost(currencyCode);
+  public GreetingCardJob( Product product, int orderQuantity, HashMap<String,String> optionsMap, Object frontImage, Object backImage, Object insideLeftImage, Object insideRightImage )
+    {
+    this( 0, product, orderQuantity, optionsMap, frontImage, backImage, insideLeftImage, insideRightImage );
     }
 
-    @Override
-    public Set<String> getCurrenciesSupported() {
-        return getProduct().getCurrenciesSupported();
+
+  @Override
+  public BigDecimal getCost( String currencyCode )
+    {
+    return getProduct().getCost( currencyCode );
     }
 
-    @Override
-    public int getQuantity() {
-        return 1;
+  @Override
+  public Set<String> getCurrenciesSupported()
+    {
+    return getProduct().getCurrenciesSupported();
     }
 
-    @Override
-    List<Asset> getAssetsForUploading() {
-        ArrayList<Asset> assets = new ArrayList<Asset>();
-        if (mFrontImageAsset != null) assets.add( mFrontImageAsset );
-        if (mBackImageAsset != null) assets.add( mBackImageAsset );
-        if (mInsideLeftImageAsset != null) assets.add( mInsideLeftImageAsset );
-        if (mInsideRightImageAsset != null) assets.add( mInsideRightImageAsset );
-        return assets;
+  @Override
+  public int getQuantity()
+    {
+    return 1;
     }
 
-    @Override
-    JSONObject getJSONRepresentation() {
-        JSONObject json = new JSONObject();
-        try {
-            json.put("template_id", getProductId() );
-            addProductOptions(json);
+  @Override
+  List<UploadableImage> getImagesForUploading()
+    {
+    ArrayList<UploadableImage> uploadableImageArrayList = new ArrayList<>();
 
-            JSONObject assets = new JSONObject();
-            json.put("assets", assets);
-            if (mFrontImageAsset != null) assets.put( "front_image", mFrontImageAsset.getId() );
-            if (mBackImageAsset != null) assets.put( "back_image", mBackImageAsset.getId() );
-            if (mInsideRightImageAsset != null) assets.put( "inside_right_image", mInsideRightImageAsset.getId() );
-            if (mInsideLeftImageAsset != null) assets.put( "inside_left_image", mInsideLeftImageAsset.getId() );
+    if ( mFrontUploadableImage       != null ) uploadableImageArrayList.add( mFrontUploadableImage );
+    if ( mBackUploadableImage        != null ) uploadableImageArrayList.add( mBackUploadableImage );
+    if ( mInsideLeftUploadableImage  != null ) uploadableImageArrayList.add( mInsideLeftUploadableImage );
+    if ( mInsideRightUploadableImage != null ) uploadableImageArrayList.add( mInsideRightUploadableImage );
 
-        } catch (JSONException e) {
-            // ignore - won't happen ;)
-        }
-
-        return json;
+    return ( uploadableImageArrayList );
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+
+  @Override
+  JSONObject getJSONRepresentation()
+    {
+    JSONObject json = new JSONObject();
+    try
+      {
+      json.put( "template_id", getProductId() );
+      addProductOptions( json );
+
+      JSONObject assets = new JSONObject();
+
+      json.put( "assets", assets );
+
+      if ( mFrontUploadableImage != null ) assets.put( "front_image",        mFrontUploadableImage.getUploadedAssetId() );
+      if ( mBackUploadableImage != null ) assets.put( "back_image",         mBackUploadableImage.getUploadedAssetId() );
+      if ( mInsideRightUploadableImage != null ) assets.put( "inside_right_image", mInsideRightUploadableImage.getUploadedAssetId() );
+      if ( mInsideLeftUploadableImage != null ) assets.put( "inside_left_image",  mInsideLeftUploadableImage.getUploadedAssetId() );
+
+      }
+    catch ( JSONException e )
+      {
+      // ignore - won't happen ;)
+      }
+
+    return json;
     }
 
-    @Override
-    public void writeToParcel(Parcel parcel, int flags) {
-        super.writeToParcel(parcel, flags);
-        parcel.writeParcelable( mFrontImageAsset, flags);
-        parcel.writeParcelable( mBackImageAsset, flags);
-        parcel.writeParcelable( mInsideLeftImageAsset, flags);
-        parcel.writeParcelable( mInsideRightImageAsset, flags);
+  @Override
+  public int describeContents()
+    {
+    return 0;
     }
 
-    private GreetingCardJob( Parcel parcel) {
-        super( parcel );
-        mFrontImageAsset = parcel.readParcelable(Asset.class.getClassLoader());
-        mBackImageAsset = parcel.readParcelable(Asset.class.getClassLoader());
-        mInsideLeftImageAsset = parcel.readParcelable(Asset.class.getClassLoader());
-        mInsideRightImageAsset = parcel.readParcelable(Asset.class.getClassLoader());
+  @Override
+  public void writeToParcel( Parcel parcel, int flags )
+    {
+    super.writeToParcel( parcel, flags );
+    parcel.writeParcelable( mFrontUploadableImage, flags );
+    parcel.writeParcelable( mBackUploadableImage, flags );
+    parcel.writeParcelable( mInsideLeftUploadableImage, flags );
+    parcel.writeParcelable( mInsideRightUploadableImage, flags );
     }
 
-    public static final Parcelable.Creator<GreetingCardJob> CREATOR
-            = new Parcelable.Creator<GreetingCardJob>() {
-        public GreetingCardJob createFromParcel( Parcel in) {
-            return new GreetingCardJob(in);
-        }
+  private GreetingCardJob( Parcel parcel )
+    {
+    super( parcel );
 
-        public GreetingCardJob[] newArray( int size) {
-            return new GreetingCardJob[size];
-        }
+    mFrontUploadableImage = parcel.readParcelable( AssetFragment.class.getClassLoader() );
+    mBackUploadableImage = parcel.readParcelable( AssetFragment.class.getClassLoader() );
+    mInsideLeftUploadableImage = parcel.readParcelable( AssetFragment.class.getClassLoader() );
+    mInsideRightUploadableImage = parcel.readParcelable( AssetFragment.class.getClassLoader() );
+    }
+
+  public static final Parcelable.Creator<GreetingCardJob> CREATOR
+          = new Parcelable.Creator<GreetingCardJob>()
+    {
+    public GreetingCardJob createFromParcel( Parcel in )
+      {
+      return new GreetingCardJob( in );
+      }
+
+    public GreetingCardJob[] newArray( int size )
+      {
+      return new GreetingCardJob[ size ];
+      }
     };
-}
+
+
+  @Override
+  public boolean equals( Object otherObject )
+    {
+    if ( otherObject == null || ( !( otherObject instanceof GreetingCardJob ) ) ) return ( false );
+
+    GreetingCardJob otherGreetingCardJob = (GreetingCardJob) otherObject;
+
+    if ( ! UploadableImage.areBothNullOrEqual( mFrontUploadableImage,       otherGreetingCardJob.mFrontUploadableImage       ) ) return ( false );
+    if ( ! UploadableImage.areBothNullOrEqual( mBackUploadableImage,        otherGreetingCardJob.mBackUploadableImage        ) ) return ( false );
+    if ( ! UploadableImage.areBothNullOrEqual( mInsideLeftUploadableImage,  otherGreetingCardJob.mInsideLeftUploadableImage  ) ) return ( false );
+    if ( ! UploadableImage.areBothNullOrEqual( mInsideRightUploadableImage, otherGreetingCardJob.mInsideRightUploadableImage ) ) return ( false );
+
+    return ( super.equals( otherObject ) );
+    }
+
+  }

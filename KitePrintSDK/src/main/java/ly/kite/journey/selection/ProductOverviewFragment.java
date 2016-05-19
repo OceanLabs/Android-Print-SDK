@@ -44,6 +44,8 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
@@ -207,6 +209,8 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
       return;
       }
 
+
+    setHasOptionsMenu( true );
     }
 
 
@@ -600,6 +604,16 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
     }
 
 
+  /*****************************************************
+   *
+   * Called to create the menu.
+   *
+   *****************************************************/
+  @Override
+  public void onCreateOptionsMenu( Menu menu, MenuInflater menuInflator )
+    {
+    menuInflator.inflate( R.menu.product_overview, menu );
+    }
 
 
   ////////// View.OnClickListener Method(s) //////////

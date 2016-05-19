@@ -61,9 +61,9 @@ import android.widget.PopupMenu;
 
 import ly.kite.journey.AImageSource;
 import ly.kite.journey.creation.AProductCreationFragment;
-import ly.kite.journey.creation.IUpdatedAssetListener;
+import ly.kite.journey.creation.IUpdatedImageListener;
+import ly.kite.ordering.ImageSpec;
 import ly.kite.util.Asset;
-import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.catalogue.Product;
 import ly.kite.R;
 
@@ -79,7 +79,7 @@ import ly.kite.R;
 public class PhotobookFragment extends AProductCreationFragment implements PhotobookAdaptor.IListener,
                                                                            View.OnClickListener,
                                                                            AImageSource.IAssetConsumer,
-                                                                           IUpdatedAssetListener,
+                                                                           IUpdatedImageListener,
                                                                            View.OnDragListener,
                                                                            ActionMode.Callback,
                                                                            PopupMenu.OnMenuItemClickListener
@@ -109,10 +109,10 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
 
   private Parcelable                      mPhotobookViewState;
 
-  private int                             mAddImageAssetIndex;
+  private int                             mAddImageIndex;
   private PopupMenu                       mAddImagePopupMenu;
 
-  private int                             mDraggedAssetIndex;
+  private int                             mDraggedImageIndex;
 
   private Handler                         mHandler;
   private ScrollRunnable                  mScrollRunnable;
@@ -218,7 +218,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     {
     // Limit the number of images selectable, if the image source supports it.
 
-    int maxImages = 1 + mProduct.getQuantityPerSheet() - mAssetsAndQuantityArrayList.size();
+    int maxImages = 1 + mProduct.getQuantityPerSheet() - mImageSpecArrayList.size();
 
     if ( maxImages < 0 ) maxImages = 0;
 
@@ -308,7 +308,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     {
     // We intercept this call so that we can call the version
     // that inserts new assets into a sparse list instead.
-    super.onAddAssets( newAssetList, mAddImageAssetIndex );
+    super.onAddAssets( newAssetList, mAddImageIndex );
     }
 
 
@@ -328,7 +328,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
       {
       ///// Checkout /////
 
-      if ( mAssetsAndQuantityArrayList.isEmpty() )
+      if ( mImageSpecArrayList.isEmpty() )
         {
         mKiteActivity.displayModalDialog(R.string.alert_dialog_title_oops, R.string.alert_dialog_message_no_images_selected, R.string.OK, null, 0, null);
         }
@@ -342,9 +342,9 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
 
         int actualImageCount = 0;
 
-        for ( AssetsAndQuantity assetsAndQuantity : mAssetsAndQuantityArrayList )
+        for ( ImageSpec imageSpec : mImageSpecArrayList )
           {
-          if ( assetsAndQuantity != null ) actualImageCount ++;
+          if ( imageSpec != null ) actualImageCount ++;
           }
 
 
@@ -370,10 +370,10 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
    *
    *****************************************************/
   @Override
-  public void onClickImage( int assetIndex, View view )
+  public void onClickImage( int imageIndex, View view )
     {
     // Determine whether the click is on a filled, or blank, page.
-    if ( mAssetsAndQuantityArrayList.get( assetIndex) != null )
+    if ( mImageSpecArrayList.get( imageIndex) != null )
       {
       ///// Filled page /////
 
@@ -384,13 +384,13 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
       mPhotobookAdaptor.setSelectionMode( true );
 
       // Select the image that was clicked
-      mPhotobookAdaptor.selectAsset( assetIndex );
+      mPhotobookAdaptor.selectImage( imageIndex );
       }
     else
       {
       ///// Blank page /////
 
-      mAddImageAssetIndex = assetIndex;
+      mAddImageIndex = imageIndex;
 
       mAddImagePopupMenu = new PopupMenu( mKiteActivity, view );
       mAddImagePopupMenu.inflate( R.menu.photobook_add_image_popup );
@@ -411,7 +411,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     {
     if ( draggedAssetIndex < 0 ) return;
 
-    mDraggedAssetIndex = draggedAssetIndex;
+    mDraggedImageIndex = draggedAssetIndex;
 
     mPhotobookView.startDrag( null, new View.DragShadowBuilder( view ), null, 0 );
     }
@@ -423,7 +423,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
    *
    *****************************************************/
   @Override
-  public void onSelectedAssetsChanged( int selectedAssetCount )
+  public void onSelectedImagesChanged( int selectedAssetCount )
     {
     // The edit action is only available when the selected asset count
     // exactly equals 1
@@ -469,7 +469,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
    * Updates the assets and quantity.
    *
    *****************************************************/
-  public void onAssetUpdated( int assetIndex, AssetsAndQuantity assetsAndQuantity )
+  public void onImageUpdated( int imageIndex, ImageSpec imageSpec )
     {
     if ( mPhotobookAdaptor != null )
       {
@@ -503,12 +503,12 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
 
       // Get the asset that we are currently dragged over
 
-      int currentAssetIndex = assetIndexFromPoint( (int)x, (int)y );
+      int currentAssetIndex = imageIndexFromPoint( (int)x, (int)y );
 
       if ( currentAssetIndex >= 0 )
         {
         // We only highlight the target image if it is different from the dragged one
-        if ( currentAssetIndex != mDraggedAssetIndex ) mPhotobookAdaptor.setHighlightedAsset( currentAssetIndex );
+        if ( currentAssetIndex != mDraggedImageIndex ) mPhotobookAdaptor.setHighlightedAsset( currentAssetIndex );
         else                                           mPhotobookAdaptor.clearHighlightedAsset();
         }
 
@@ -658,7 +658,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
       // Delete the selected assets, leaving blank pages in their stead
       for ( int selectedAssetIndex : selectedAssetIndexHashSet )
         {
-        mAssetsAndQuantityArrayList.set( selectedAssetIndex, null );
+        mImageSpecArrayList.set( selectedAssetIndex, null );
         }
 
       mPhotobookAdaptor.notifyDataSetChanged();
@@ -727,17 +727,17 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
 
     // Remove any excess assets
 
-    while ( mAssetsAndQuantityArrayList.size() > requiredAssetCount )
+    while ( mImageSpecArrayList.size() > requiredAssetCount )
       {
-      mAssetsAndQuantityArrayList.remove( mAssetsAndQuantityArrayList.size() - 1 );
+      mImageSpecArrayList.remove( mImageSpecArrayList.size() - 1 );
       }
 
 
     // Pad out any shortfall
 
-    while ( mAssetsAndQuantityArrayList.size() < requiredAssetCount )
+    while ( mImageSpecArrayList.size() < requiredAssetCount )
       {
-      mAssetsAndQuantityArrayList.add( null );
+      mImageSpecArrayList.add( null );
       }
     }
 
@@ -751,7 +751,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     {
     // Set up the photobook view
 
-    mPhotobookAdaptor = new PhotobookAdaptor( mKiteActivity, mProduct, mAssetsAndQuantityArrayList, this );
+    mPhotobookAdaptor = new PhotobookAdaptor( mKiteActivity, mProduct, mImageSpecArrayList, this );
 
     mPhotobookView.setAdapter( mPhotobookAdaptor );
 
@@ -835,21 +835,21 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     mPhotobookAdaptor.clearHighlightedAsset();
 
     // Determine which asset the drag ended on
-    int dropAssetIndex = assetIndexFromPoint( dropX, dropY );
+    int dropImageIndex = imageIndexFromPoint( dropX, dropY );
 
-    if ( dropAssetIndex >= 0 )
+    if ( dropImageIndex >= 0 )
       {
       // Make sure we haven't dropped the image back on itself
 
-      if ( dropAssetIndex != mDraggedAssetIndex )
+      if ( dropImageIndex != mDraggedImageIndex )
         {
         // Simply swap the two positions
 
-        AssetsAndQuantity draggedAssetsAndQuantity = mAssetsAndQuantityArrayList.get( mDraggedAssetIndex );
-        AssetsAndQuantity dropAssetsAndQuantity    = mAssetsAndQuantityArrayList.get( dropAssetIndex );
+        ImageSpec draggedImageSpec = mImageSpecArrayList.get( mDraggedImageIndex );
+        ImageSpec dropImageSpec    = mImageSpecArrayList.get( dropImageIndex );
 
-        mAssetsAndQuantityArrayList.set( dropAssetIndex,     draggedAssetsAndQuantity );
-        mAssetsAndQuantityArrayList.set( mDraggedAssetIndex, dropAssetsAndQuantity );
+        mImageSpecArrayList.set( dropImageIndex,     draggedImageSpec );
+        mImageSpecArrayList.set( mDraggedImageIndex, dropImageSpec );
 
 
         mPhotobookAdaptor.notifyDataSetChanged();
@@ -864,7 +864,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
    * Called when dragging stops.
    *
    *****************************************************/
-  private int assetIndexFromPoint( int x, int y )
+  private int imageIndexFromPoint( int x, int y )
     {
     int position = mPhotobookView.positionFromPoint( x, y );
 

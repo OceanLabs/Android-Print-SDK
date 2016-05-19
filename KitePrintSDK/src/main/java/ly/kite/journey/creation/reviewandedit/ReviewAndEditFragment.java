@@ -53,9 +53,9 @@ import android.widget.GridView;
 import ly.kite.R;
 import ly.kite.analytics.Analytics;
 import ly.kite.journey.creation.AProductCreationFragment;
-import ly.kite.journey.AssetsAndQuantity;
 import ly.kite.catalogue.Product;
-import ly.kite.journey.creation.IUpdatedAssetListener;
+import ly.kite.journey.creation.IUpdatedImageListener;
+import ly.kite.ordering.ImageSpec;
 
 /*****************************************************
  *
@@ -63,9 +63,9 @@ import ly.kite.journey.creation.IUpdatedAssetListener;
  * for images.
  *
  *****************************************************/
-public class ReviewAndEditFragment extends AProductCreationFragment implements AssetAndQuantityAdaptor.IListener,
+public class ReviewAndEditFragment extends AProductCreationFragment implements ImageSpecAdaptor.IListener,
                                                                                View.OnClickListener,
-                                                                               IUpdatedAssetListener
+                                                                               IUpdatedImageListener
   {
   ////////// Static Constant(s) //////////
 
@@ -78,11 +78,11 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
 
   ////////// Member Variable(s) //////////
 
-  private GridView                     mGridView;
-  private Parcelable                   mGridViewState;
-  private Button                       mProceedOverlayButton;
+  private GridView          mGridView;
+  private Parcelable        mGridViewState;
+  private Button            mProceedOverlayButton;
 
-  private AssetAndQuantityAdaptor      mAssetAndQuantityAdaptor;
+  private ImageSpecAdaptor  mImageSpecAdaptor;
 
 
   ////////// Static Initialiser(s) //////////
@@ -165,8 +165,8 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
     super.onTop();
 
     // Create and set the adaptor
-    mAssetAndQuantityAdaptor = new AssetAndQuantityAdaptor( mKiteActivity, mAssetsAndQuantityArrayList, mProduct, this );
-    mGridView.setAdapter( mAssetAndQuantityAdaptor );
+    mImageSpecAdaptor = new ImageSpecAdaptor( mKiteActivity, mImageSpecArrayList, mProduct, this );
+    mGridView.setAdapter( mImageSpecAdaptor );
 
     // restore gridview state
     if ( mGridViewState != null )
@@ -201,7 +201,7 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
       mGridView.setAdapter( null );
       }
 
-    mAssetAndQuantityAdaptor = null;
+    mImageSpecAdaptor = null;
     }
 
 
@@ -283,9 +283,9 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
         // prompt the user for confirmation to continue
         int numberOfImages = 0;
 
-        for ( AssetsAndQuantity assetsAndQuantity : mAssetsAndQuantityArrayList )
+        for ( ImageSpec imageSpec : mImageSpecArrayList )
           {
-          numberOfImages += assetsAndQuantity.getQuantity();
+          numberOfImages += imageSpec.getQuantity();
           }
 
         int quantityPerPack = mProduct.getQuantityPerSheet();
@@ -312,11 +312,11 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
    *
    *****************************************************/
   @Override
-  public void onAssetUpdated( int assetIndex, AssetsAndQuantity assetsAndQuantity )
+  public void onImageUpdated( int imageIndex, ImageSpec imageSpec )
     {
-    if ( mAssetAndQuantityAdaptor != null )
+    if ( mImageSpecAdaptor != null )
       {
-      mAssetAndQuantityAdaptor.notifyDataSetInvalidated();
+      mImageSpecAdaptor.notifyDataSetInvalidated();
       }
     }
 
@@ -334,9 +334,9 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
 
     int numberOfImages = 0;
 
-    for ( AssetsAndQuantity assetsAndQuantity : mAssetsAndQuantityArrayList )
+    for ( ImageSpec imageSpec : mImageSpecArrayList )
       {
-      numberOfImages += assetsAndQuantity.getQuantity();
+      numberOfImages += imageSpec.getQuantity();
       }
 
 
@@ -356,7 +356,7 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
    *****************************************************/
   public interface ICallback
     {
-    public void reOnEdit( int assetIndex );
+    public void reOnEdit( int imageIndex );
     public void reOnConfirm();
     }
 
@@ -396,10 +396,10 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements A
     public void run()
       {
       // Remove the asset
-      mAssetsAndQuantityArrayList.remove( mAssetIndex );
+      mImageSpecArrayList.remove( mAssetIndex );
 
       // Update the screen
-      mAssetAndQuantityAdaptor.notifyDataSetInvalidated();
+      mImageSpecAdaptor.notifyDataSetInvalidated();
 
       setTitle();
       }

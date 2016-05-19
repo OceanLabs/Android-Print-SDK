@@ -39,13 +39,14 @@ package ly.kite.journey.creation;
 
 ///// Import(s) /////
 
-
-///// Interface Declaration /////
-
 import android.app.Activity;
 import android.content.Intent;
 
 import ly.kite.util.Asset;
+import ly.kite.util.AssetFragment;
+
+
+///// Interface Declaration /////
 
 /*****************************************************
  *
@@ -65,15 +66,15 @@ public interface ICustomImageEditorAgent
    * Called to start the editor.
    *
    *****************************************************/
-  public void onStartEditor( Activity activity, Asset sourceAsset, int requestCode );
+  public void onStartEditor( Activity activity, Asset asset, int requestCode );
 
 
   /*****************************************************
    *
-   * Called to return the edited asset.
+   * Called to return the edited asset fragment.
    *
    *****************************************************/
-  public Asset getEditedAsset( Intent resultIntent );
+  public AssetFragment getAssetFragment( Intent resultIntent );
 
 
   ////////// Inner Class(es) //////////

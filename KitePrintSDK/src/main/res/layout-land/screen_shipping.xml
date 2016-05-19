@@ -15,31 +15,6 @@
             android:orientation="vertical">
 
 
-            <!-- Progress banner -->
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="@dimen/progress_banner_landscape_height"
-                android:orientation="horizontal">
-                <View
-                    android:layout_width="0dp"
-                    android:layout_weight="0.25"
-                    android:layout_height="fill_parent"
-                    android:background="@color/progress_banner_left_filler"/>
-                <ImageView
-                    android:id="@+id/checkout_progress_indicator"
-                    android:layout_width="0dp"
-                    android:layout_weight="0.50"
-                    android:layout_height="fill_parent"
-                    android:src="@drawable/checkout_progress_indicator1"/>
-                <View
-                    android:layout_width="0dp"
-                    android:layout_weight="0.25"
-                    android:layout_height="fill_parent"
-                    android:background="@color/progress_banner_right_filler"/>
-            </LinearLayout>
-
-
             <!-- Two-column content -->
 
             <LinearLayout

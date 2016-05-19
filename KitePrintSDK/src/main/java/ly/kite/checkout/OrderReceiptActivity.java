@@ -21,7 +21,7 @@ import ly.kite.R;
 
 public class OrderReceiptActivity extends Activity
   {
-  public static final String EXTRA_PRINT_ORDER = "ly.kite.EXTRA_PRINT_ORDER";
+  public static final String EXTRA_PRINT_ORDER = "ly.kite.EXTRA_ORDER";
 
   private Order mPrintOrder;
 

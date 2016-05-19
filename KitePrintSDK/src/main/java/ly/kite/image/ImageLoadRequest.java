@@ -52,15 +52,19 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.util.Pair;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
 import ly.kite.util.Asset;
+import ly.kite.util.AssetFragment;
 import ly.kite.util.AssetHelper;
 import ly.kite.util.FileDownloader;
 
@@ -91,21 +95,25 @@ public class ImageLoadRequest
 
   ////////// Member Variable(s) //////////
 
-  private Context            mApplicationContext;
+  private Context             mApplicationContext;
 
-  private ASource            mSource;
-  private ATarget            mTarget;
+  private ASource             mSource;
+  private ATarget             mTarget;
+  private IImageSizeConsumer  mImageSizeConsumer;
 
-  private IImageTransformer  mPreResizeTransformer;
+  private IImageTransformer   mPreResizeTransformer;
 
-  private int                mResizeWidth;
-  private int                mResizeHeight;
+  private int                 mResizeWidth;
+  private int                 mResizeHeight;
 
-  private boolean            mOnlyScaleDown;
-  private Bitmap.Config      mBitmapConfig;
+  private boolean             mOnlyLoadBounds;
+  private boolean             mOnlyScaleDown;
+  private Bitmap.Config       mBitmapConfig;
 
-  private Bitmap             mBitmap;
-  private Exception          mException;
+  private int                 mOriginalWidth;
+  private int                 mOriginalHeight;
+  private Bitmap              mBitmap;
+  private Exception           mException;
 
 
   ////////// Static Initialiser(s) //////////
@@ -127,7 +135,7 @@ public class ImageLoadRequest
     {
     int sampleSize = 1;
 
-    if ( resizeWidth >= 0 && resizeHeight >= 0 )
+    if ( resizeWidth > 0 && resizeHeight > 0 )
       {
       int width      = originalWidth;
       int height     = originalHeight;
@@ -304,7 +312,6 @@ public class ImageLoadRequest
   ImageLoadRequest( Context context )
     {
     mApplicationContext = context.getApplicationContext();
-
     mBitmapConfig       = Bitmap.Config.ARGB_8888;
     }
 
@@ -357,11 +364,18 @@ public class ImageLoadRequest
    *****************************************************/
   public void execute()
     {
-    // Ensure that both source and target have been set
+    // Check we have all we need
 
-    if ( mSource == null ) throw ( new IllegalStateException( "No image source has been specified" ) );
+    if ( mOnlyLoadBounds )
+      {
+      if ( mImageSizeConsumer == null ) throw ( new IllegalStateException( "No image size consumer has been specified" ) );
+      }
+    else
+      {
+      if ( mSource == null ) throw ( new IllegalStateException( "No image source has been specified" ) );
+      if ( mTarget == null ) throw ( new IllegalStateException( "No image target has been specified" ) );
+      }
 
-    if ( mTarget == null ) throw ( new IllegalStateException( "No image target has been specified" ) );
 
 
     // Request an image load. If a bitmap is returned immediately, deliver it
@@ -392,14 +406,20 @@ public class ImageLoadRequest
 
       BitmapFactory.Options bitmapFactoryOptions = getBoundsBitmapOptions();
 
-      int originalWidth  = bitmapFactoryOptions.outWidth;
-      int originalHeight = bitmapFactoryOptions.outHeight;
+      mSource.load( mApplicationContext, bitmapFactoryOptions );
+
+      mOriginalWidth  = bitmapFactoryOptions.outWidth;
+      mOriginalHeight = bitmapFactoryOptions.outHeight;
+
+
+      // If we only need to get the size, return now
+      if ( mOnlyLoadBounds ) return ( true );
 
 
       // If resizing has been requested, sub-sample the bitmap to just larger
       // than the resize dimensions.
 
-      int sampleSize = sampleSizeForResize( originalWidth, originalHeight, mResizeWidth, mResizeHeight );
+      int sampleSize = sampleSizeForResize( mOriginalWidth, mOriginalHeight, mResizeWidth, mResizeHeight );
 
 
       // Image loading *must* work. So even if colour space reduction or resizing hasn't
@@ -524,8 +544,19 @@ public class ImageLoadRequest
    *****************************************************/
   void onProcessingComplete()
     {
-    if      ( mBitmap    != null ) mTarget.onImageAvailable( mBitmap );
-    else if ( mException != null ) mTarget.onImageUnavailable( mException );
+    // Check for a size consumer
+    if ( mImageSizeConsumer != null )
+      {
+      if ( mException == null ) mImageSizeConsumer.onImageSizeAvailable( mOriginalWidth, mOriginalHeight );
+      else                      mImageSizeConsumer.onImageSizeUnavailable( mException );
+      }
+
+    // Check for a target
+    if ( mTarget != null )
+      {
+      if      ( mBitmap    != null ) mTarget.onImageAvailable( mBitmap );
+      else if ( mException != null ) mTarget.onImageUnavailable( mException );
+      }
     }
 
 
@@ -751,8 +782,8 @@ public class ImageLoadRequest
         }
       else
         {
-        // Notify the target that the image will need to be downloaded
-        mTarget.onImageDownloading();
+        // Notify any target that the image will need to be downloaded
+        if ( mTarget != null ) mTarget.onImageDownloading();
 
         // Make a request to download the image, and use us as the callback.
         FileDownloader.getInstance( mApplicationContext ).requestFileDownload( mSourceURL, imageDirectory, imageFile, this );
@@ -918,6 +949,42 @@ public class ImageLoadRequest
 
   /*****************************************************
    *
+   * A menu item target.
+   *
+   *****************************************************/
+  private class MenuItemTarget extends ATarget
+    {
+    private MenuItem  mMenuItem;
+
+
+    MenuItemTarget( MenuItem menuItem )
+      {
+      mMenuItem = menuItem;
+      }
+
+
+    @Override
+    void onImageDownloading()
+      {
+      // Ignore
+      }
+
+    @Override
+    void onImageAvailable( Bitmap bitmap )
+      {
+      mMenuItem.setIcon( new BitmapDrawable( bitmap ) );
+      }
+
+    @Override
+    void onImageUnavailable( Exception exception )
+      {
+      // Ignore
+      }
+    }
+
+
+  /*****************************************************
+   *
    * An image consumer target.
    *
    *****************************************************/
@@ -972,7 +1039,7 @@ public class ImageLoadRequest
    *****************************************************/
   public class Builder
     {
-    private IExecutor  mExecutor;
+    private IExecutor mExecutor;
 
 
     ////////// Constructor(s) //////////
@@ -1042,8 +1109,8 @@ public class ImageLoadRequest
 
       Integer mappedBitmapResourceIdAsInteger;
 
-      if ( ! FORCE_FILE_DOWNLOAD &&
-           ( mappedBitmapResourceIdAsInteger = ImageAgent.getInstance( mApplicationContext ).getMappedResource( url ) ) != null )
+      if ( !FORCE_FILE_DOWNLOAD &&
+              ( mappedBitmapResourceIdAsInteger = ImageAgent.getInstance( mApplicationContext ).getMappedResource( url ) ) != null )
         {
         setSource( new BitmapResourceSource( mappedBitmapResourceIdAsInteger ) );
         }
@@ -1080,8 +1147,8 @@ public class ImageLoadRequest
 
       Integer mappedBitmapResourceIdAsInteger;
 
-      if ( ! FORCE_FILE_DOWNLOAD &&
-           ( mappedBitmapResourceIdAsInteger = ImageAgent.getInstance( mApplicationContext ).getMappedResource( uri ) ) != null )
+      if ( !FORCE_FILE_DOWNLOAD &&
+              ( mappedBitmapResourceIdAsInteger = ImageAgent.getInstance( mApplicationContext ).getMappedResource( uri ) ) != null )
         {
         setSource( new BitmapResourceSource( mappedBitmapResourceIdAsInteger ) );
         }
@@ -1124,6 +1191,48 @@ public class ImageLoadRequest
 
     /*****************************************************
      *
+     * Sets the source of the image as an asset fragment.
+     *
+     *****************************************************/
+    public Builder load( AssetFragment assetFragment )
+      {
+      // Get the Asset Helper to set the source for us
+      AssetHelper.setSource( assetFragment.getAsset(), this );
+
+      return ( cropBeforeResizeTo( assetFragment.getProportionalRectangle() ) );
+      }
+
+
+    /*****************************************************
+     *
+     * Specifies that only the bounds should be loaded.
+     *
+     *****************************************************/
+    public Builder onlyLoadBounds()
+      {
+      mOnlyLoadBounds = true;
+
+      return ( this );
+      }
+
+
+    /*****************************************************
+     *
+     * Sets the source of the image as an asset, and specifies
+     * that the bounds should be loaded only.
+     *
+     *****************************************************/
+    public Builder loadSizeOf( Asset asset )
+      {
+      // Get the Asset Helper to set the source for us
+      AssetHelper.setSource( asset, this );
+
+      return ( onlyLoadBounds() );
+      }
+
+
+    /*****************************************************
+     *
      * Transforms an image before it is resized.
      *
      *****************************************************/
@@ -1132,6 +1241,17 @@ public class ImageLoadRequest
       mPreResizeTransformer = transformer;
 
       return ( this );
+      }
+
+
+    /*****************************************************
+     *
+     * Crops an image before it is resized.
+     *
+     *****************************************************/
+    public Builder cropBeforeResizeTo( RectF proportionalCropRectangle )
+      {
+      return ( transformBeforeResize( new CropImageTransformer( proportionalCropRectangle ) ) );
       }
 
 
@@ -1281,6 +1401,32 @@ public class ImageLoadRequest
 
     /*****************************************************
      *
+     * Sets the target of the image.
+     *
+     *****************************************************/
+    public ImageLoadRequest into( MenuItem menuItem )
+      {
+      setTarget( new MenuItemTarget( menuItem ) );
+
+      return ( create() );
+      }
+
+
+    /*****************************************************
+     *
+     * Sets the image size consumer.
+     *
+     *****************************************************/
+    public ImageLoadRequest into( IImageSizeConsumer imageSizeConsumer )
+      {
+      mImageSizeConsumer = imageSizeConsumer;
+
+      return ( create() );
+      }
+
+
+    /*****************************************************
+     *
      * Creates the request and optionally executes it.
      *
      *****************************************************/
@@ -1294,5 +1440,28 @@ public class ImageLoadRequest
 
     }
 
+
+  /*****************************************************
+   *
+   * An image crop transformer.
+   *
+   *****************************************************/
+  static public class CropImageTransformer implements IImageTransformer
+    {
+    private RectF  mProportionalCropRectangle;
+
+
+    public CropImageTransformer( RectF proportionalCropRectangle )
+      {
+      mProportionalCropRectangle = proportionalCropRectangle;
+      }
+
+
+    @Override
+    public Bitmap getTransformedBitmap( Bitmap originalBitmap )
+      {
+      return ( ImageAgent.crop( originalBitmap, mProportionalCropRectangle ) );
+      }
+    }
   }
 

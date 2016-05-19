@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * IPricingConsumer.java
+ * IImageSpecStore.java
  *
  *
  * Modified MIT License
@@ -34,35 +34,37 @@
 
 ///// Package Declaration /////
 
-package ly.kite.pricing;
+package ly.kite.journey;
 
 
 ///// Import(s) /////
 
-import ly.kite.pricing.PricingAgent;
-import ly.kite.util.ACache;
+import java.util.ArrayList;
+
+import ly.kite.ordering.ImageSpec;
 
 
 ///// Class Declaration /////
 
 /*****************************************************
  *
- * This interface defines a price consumer.
+ * This interface defines a holder for an assets and quantity
+ * list.
  *
  *****************************************************/
-public interface IPricingConsumer extends ACache.IConsumer
+public interface IImageSpecStore
   {
   ////////// Static Constant(s) //////////
 
 
-  ////////// Static Variable(s) //////////
-
-
   ////////// Method(s) //////////
 
-  public void paOnSuccess( OrderPricing pricing );
-
-  public void paOnError( Exception exception );
+  /*****************************************************
+   *
+   * Returns the assets and quantity list.
+   *
+   *****************************************************/
+  ArrayList<ImageSpec> getImageSpecArrayList();
 
 
   ////////// Inner Class(es) //////////

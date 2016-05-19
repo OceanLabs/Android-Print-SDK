@@ -63,8 +63,8 @@ abstract public class AImageSource
 
   static private final String  LOG_TAG          = "AImageSource";
 
-  static public  final int     UNLIMITED_IMAGES      = 0;
-  static public  final int     SINGLE_IMAGE          = 1;
+  static public  final int     UNLIMITED_IMAGES = 0;
+  static public  final int     SINGLE_IMAGE     = 1;
 
 
   ///// Member Variable(s) /////
@@ -226,6 +226,17 @@ abstract public class AImageSource
    *
    *****************************************************/
   abstract public void getAssetsFromPickerResult( Activity activity, Intent data, IAssetConsumer assetConsumer );
+
+
+  /*****************************************************
+   *
+   * Called to end the customer session. May be used to
+   * log out of any social networks.
+   *
+   *****************************************************/
+  public void endCustomerSession( Context context )
+    {
+    }
 
 
   ///// Inner class(es) /////

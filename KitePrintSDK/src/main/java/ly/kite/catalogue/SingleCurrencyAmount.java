@@ -306,6 +306,17 @@ public class SingleCurrencyAmount implements Parcelable
     }
 
 
+  /*****************************************************
+   *
+   * Returns this amount multiplied by the supplied quantity.
+   *
+   *****************************************************/
+  public SingleCurrencyAmount multipliedBy( int quantity )
+    {
+    return ( new SingleCurrencyAmount( mCurrency, mAmount.multiply( BigDecimal.valueOf( quantity ) ) ) );
+    }
+
+
   ////////// Inner Class(es) //////////
 
   /*****************************************************
