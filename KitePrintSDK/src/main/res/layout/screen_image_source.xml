@@ -6,32 +6,25 @@
     <LinearLayout
         style="@style/single_column_inset_layout"
         android:layout_gravity="center"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <ly.kite.widget.CustomTypefaceTextView
             android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.3"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/image_source_prompt_margin"
             android:gravity="center"
             android:textSize="@dimen/prompt_text_size"
             android:text="@string/image_source_prompt"
             android:textColor="@color/prompt_text"/>
 
-        <FrameLayout
+        <GridView
+            android:id="@+id/image_source_grid_view"
+            android:layout_gravity="top"
             android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.7">
-
-            <GridView
-                android:id="@+id/image_source_grid_view"
-                android:layout_gravity="top"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:verticalSpacing="@dimen/image_source_vertical_spacing"
-                android:numColumns="1"/>
-
-        </FrameLayout>
+            android:layout_height="wrap_content"
+            android:verticalSpacing="@dimen/image_source_vertical_spacing"
+            android:numColumns="1"/>
 
     </LinearLayout>
 

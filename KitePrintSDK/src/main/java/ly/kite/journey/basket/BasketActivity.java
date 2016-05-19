@@ -115,8 +115,6 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
   private Order             mManagedOrder;
   private List<BasketItem>  mBasketItemList;
 
-  private Order             mBasketOrder;
-
   private Address           mShippingAddress;
   private String            mContactEmail;
   private String            mContactPhone;
@@ -414,35 +412,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
   protected void onRightButtonClicked()
     {
     // Set up the order shipping details
-
     Order order = getOrder();
-
-    order.setShippingAddress( mShippingAddress );
-    order.setNotificationEmail( mContactEmail );
-    order.setNotificationPhoneNumber( mContactPhone );
-
-
-    // Populate the order with the shipping / contact details
-
-    JSONObject userData = order.getUserData();
-
-    if ( userData == null )
-      {
-      userData = new JSONObject();
-      }
-
-    try
-      {
-      userData.put( "email", mContactEmail );
-      userData.put( "phone", mContactPhone );
-      }
-    catch ( JSONException je )
-      {
-      // Ignore
-      }
-
-    order.setUserData( userData );
-
 
     // Go to payment screen
     PaymentActivity.startForResult( this, order, ACTIVITY_REQUEST_CODE_CHECKOUT );
@@ -549,8 +519,6 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
    *****************************************************/
   private void loadAndDisplayBasket()
     {
-    mBasketOrder = null;
-
     mBasketItemList = BasketAgent.getInstance( this ).getAllItems( mCatalogue );
 
     onGotBasket();
@@ -604,23 +572,50 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
     if ( mIsManagedCheckout ) return ( mManagedOrder );
 
 
-    if ( mBasketOrder == null )
+    // Create an order from the basket items
+
+    Order basketOrder = new Order();
+
+    for ( BasketItem item : mBasketItemList )
       {
-      // Create an order from the basket items
+      Product product       = item.getProduct();
+      int     orderQuantity = item.getOrderQuantity();
 
-      mBasketOrder = new Order();
-
-      for ( BasketItem item : mBasketItemList )
-        {
-        Product product       = item.getProduct();
-        int     orderQuantity = item.getOrderQuantity();
-
-        product.getUserJourneyType().addJobsToOrder( product, orderQuantity, item.getOptionsMap(), item.getImageSpecList(), mBasketOrder );
-        }
+      product.getUserJourneyType().addJobsToOrder( product, orderQuantity, item.getOptionsMap(), item.getImageSpecList(), basketOrder );
       }
 
 
-    return ( mBasketOrder );
+    // Add the shipping and notification details
+
+    basketOrder.setShippingAddress( mShippingAddress );
+    basketOrder.setNotificationEmail( mContactEmail );
+    basketOrder.setNotificationPhoneNumber( mContactPhone );
+
+
+    // Populate the order with the shipping / contact details
+
+    JSONObject userData = basketOrder.getUserData();
+
+    if ( userData == null )
+      {
+      userData = new JSONObject();
+      }
+
+    try
+      {
+      userData.put( "email", mContactEmail );
+      userData.put( "phone", mContactPhone );
+      }
+    catch ( JSONException je )
+      {
+      // Ignore
+      }
+
+    basketOrder.setUserData( userData );
+
+
+
+    return ( basketOrder );
     }
 
 
@@ -655,7 +650,21 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
     // The Checkout button is only enabled when we have an address
     setRightButtonEnabled( true );
 
-    requestPrices();
+    checkRequestPrices();
+    }
+
+
+  /*****************************************************
+   *
+   * Checks if we have enough to request the prices.
+   *
+   *****************************************************/
+  private void checkRequestPrices()
+    {
+    if ( mBasketItemList != null && mShippingAddress != null )
+      {
+      requestPrices();
+      }
     }
 
 
@@ -847,10 +856,6 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
 
           orderQuantity = basketAgent.incrementOrderQuantity( mBasketItem.getId() );
           }
-
-
-        // The order will have changed, so clear any cached one.
-        mBasketOrder = null;
 
 
         // If order quantity goes down to 0, remove the job and refresh the whole basket list.

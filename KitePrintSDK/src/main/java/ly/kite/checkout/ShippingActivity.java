@@ -372,7 +372,11 @@ public class ShippingActivity extends AKiteActivity implements View.OnClickListe
     if ( view == mForwardsButton )
       {
       onForwardsButtonClicked();
+
+      return;
       }
+
+    super.onClick( view );
     }
 
 

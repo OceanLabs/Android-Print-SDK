@@ -713,11 +713,17 @@ public class PaymentActivity extends AKiteActivity implements PricingAgent.IPric
     if ( view == mPayPalButton )
       {
       onPayPalButtonClicked( view );
+
+      return;
       }
     else if ( view == mCreditCardButton )
       {
       onCreditCardButtonClicked( view );
+
+      return;
       }
+
+    super.onClick( view );
     }
 
 

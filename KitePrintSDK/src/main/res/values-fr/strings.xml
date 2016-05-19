@@ -56,6 +56,10 @@
     <string name="alert_dialog_message_invalid_email_address">Veuillez indiquer une adresse email valide</string>
     <string name="alert_dialog_title_invalid_phone_number">Numéro de téléphone invalide</string>
     <string name="alert_dialog_message_invalid_phone_number">Veuillez saisir un numéro de téléphone valide</string>
+
+    <string name="alert_dialog_title_end_customer_session">Terminer session</string>
+    <string name="alert_dialog_message_end_customer_session">Etes-vous sûr que vous voulez terminer votre session?</string>
+
     <string name="alert_dialog_message_connectivity">Veuillez vérifier votre connexion Internet et réessayez</string>
     <string name="alert_dialog_message_processing">Veuillez patienter…</string>
     <string name="alert_dialog_message_uploading_images">Images en cours de t&#233;l&#233;chargement</string>
@@ -73,6 +77,7 @@
     <string name="Details">Détails</string>
     <string name="Done">Terminé</string>
     <string name="Edit">Modifier</string>
+    <string name="End_Session">Terminer session</string>
     <string name="Flip">Pivoter</string>
     <string name="Free">Gratuit</string>
     <string name="add_more">Ajouter plus</string>

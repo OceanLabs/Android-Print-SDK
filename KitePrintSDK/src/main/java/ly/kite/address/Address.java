@@ -450,6 +450,11 @@ public class Address implements Parcelable, Serializable
     persistAddressesToDisk( c, addresses );
     }
 
+  static public void deleteAddressBook( Context context )
+    {
+    context.deleteFile( PERSISTED_ADDRESS_BOOK_FILENAME );
+    }
+
   private static void persistAddressesToDisk( Context c, List<Address> addresses )
     {
     ObjectOutputStream os = null;

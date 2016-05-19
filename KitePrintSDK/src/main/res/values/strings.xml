@@ -95,6 +95,9 @@
     <string name="alert_dialog_title_processing">@string/Processing_</string>
     <string name="alert_dialog_message_processing">One moment…</string>
 
+    <string name="alert_dialog_title_end_customer_session">End Session</string>
+    <string name="alert_dialog_message_end_customer_session">Are you sure you want to end your session?</string>
+
     <string name="alert_dialog_message_uploading_images">Uploading images</string>
 
     <string name="alert_dialog_message_no_payment_id">No payment id found in proof of payment</string>
@@ -121,6 +124,7 @@
     <string name="Details">Details</string>
     <string name="Done">Done</string>
     <string name="Edit">Edit</string>
+    <string name="End_Session">End Session</string>
     <string name="Flip">Flip</string>
     <string name="Free">Free</string>
     <string name="ITEM">ITEM</string>

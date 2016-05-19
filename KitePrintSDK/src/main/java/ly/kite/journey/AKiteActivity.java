@@ -58,9 +58,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -292,55 +290,6 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     }
 
 
-//  /*****************************************************
-//   *
-//   * Called to create the options menu.
-//   *
-//   *****************************************************/
-//  @Override
-//  public boolean onCreateOptionsMenu( Menu menu )
-//    {
-//    boolean displayMenu = super.onCreateOptionsMenu( menu );
-//
-//
-//
-//    // If we have been supplied an end customer session icon - inflate the menu
-//    // and set the icon.
-//
-//    String endCustomerSessionIconURL = KiteSDK.getInstance( this ).getEndCustomerSessionIconURL();
-//
-//    if ( StringUtils.isNeitherNullNorBlank( endCustomerSessionIconURL ) )
-//      {
-//      MenuInflater menuInflator = getMenuInflater();
-//
-//      menuInflator.inflate( R.menu.end_customer_session, menu );
-//
-//      MenuItem endCustomerSessionMenuItem = menu.findItem( R.id.end_customer_session_item );
-//
-//      if ( endCustomerSessionMenuItem != null )
-//        {
-//        try
-//          {
-//          ImageAgent
-//                  .with( this )
-//                  .load( new URL( endCustomerSessionIconURL ), KiteSDK.IMAGE_CATEGORY_APP )
-//                  .reduceColourSpace()
-//                  .into( endCustomerSessionMenuItem );
-//
-//          displayMenu = true;
-//          }
-//        catch ( MalformedURLException mue )
-//          {
-//          Log.e( LOG_TAG, "Unable to set end customer session icon", mue );
-//          }
-//        }
-//      }
-//
-//
-//    return ( displayMenu );
-//    }
-
-
   /*****************************************************
    *
    * Called to prepare the options menu.
@@ -439,11 +388,34 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   @Override
   public void onBackPressed()
     {
+    // If there is a top fragment and it consumes the back press, don't
+    // do anything more.
     if ( mTopFragment != null && mTopFragment.onBackPressIntercepted() )
       {
       return;
       }
 
+
+    // If this is the last fragment - call the hook
+    if ( mFragmentManager.getBackStackEntryCount() <= 1 )
+      {
+      onBackFromLastFragment();
+
+      return;
+      }
+
+
+    super.onBackPressed();
+    }
+
+
+  /*****************************************************
+   *
+   * Called when there is just one fragment left.
+   *
+   *****************************************************/
+  protected void onBackFromLastFragment()
+    {
     super.onBackPressed();
     }
 
@@ -549,7 +521,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
     if ( entryCount < 1 )
       {
-      finish();
+      onNoMoreFragments();
       }
 
 
@@ -571,23 +543,27 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
       {
       ///// End customer session /////
 
-      KiteSDK.getInstance( this ).endCustomerSession();
+      showEndCustomerSessionDialog();
 
-      setResult( ACTIVITY_RESULT_CODE_END_CUSTOMER_SESSION );
-
-      finish();
+      return;
       }
-    else if ( view == mCTABarLeftButton )
+
+    if ( view == mCTABarLeftButton )
       {
       ///// CTA bar left button /////
 
       onLeftButtonClicked();
+
+      return;
       }
-    else if ( view == mCTABarRightButton )
+
+    if ( view == mCTABarRightButton )
       {
       ///// CTA bar right button /////
 
       onRightButtonClicked();
+
+      return;
       }
     }
 
@@ -638,6 +614,18 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   public boolean isVisible()
     {
     return ( mActivityIsVisible );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when there are no more fragments on the back
+   * stack.
+   *
+   *****************************************************/
+  protected void onNoMoreFragments()
+    {
+    finish();
     }
 
 
@@ -738,6 +726,25 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   protected void showErrorDialog( int messageResourceId )
     {
     showErrorDialog( getString( messageResourceId ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Displays an end session confirmation dialog.
+   *
+   *****************************************************/
+  protected void showEndCustomerSessionDialog()
+    {
+    displayModalDialog
+            (
+            R.string.alert_dialog_title_end_customer_session,
+            R.string.alert_dialog_message_end_customer_session,
+            R.string.End_Session,
+            new EndCustomerSessionRunnable(),
+            R.string.Cancel,
+            null
+            );
     }
 
 
@@ -1132,6 +1139,29 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     @Override
     public void run()
       {
+      finish();
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * A runnable that ends the customer session.
+   *
+   *****************************************************/
+  public class EndCustomerSessionRunnable implements Runnable
+    {
+    public EndCustomerSessionRunnable()
+      {
+      }
+
+    @Override
+    public void run()
+      {
+      KiteSDK.getInstance( AKiteActivity.this ).endCustomerSession();
+
+      setResult( ACTIVITY_RESULT_CODE_END_CUSTOMER_SESSION );
+
       finish();
       }
     }

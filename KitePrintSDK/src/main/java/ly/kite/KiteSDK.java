@@ -61,6 +61,7 @@ import ly.kite.catalogue.CatalogueLoader;
 import ly.kite.checkout.PaymentActivity;
 import ly.kite.journey.basket.BasketActivity;
 import ly.kite.ordering.Order;
+import ly.kite.payment.PayPalCard;
 import ly.kite.util.Asset;
 import ly.kite.journey.AImageSource;
 import ly.kite.journey.DeviceImageSource;
@@ -85,7 +86,7 @@ public class KiteSDK
 
   static private final String LOG_TAG                                              = "KiteSDK";
 
-  static public  final String SDK_VERSION                                          = "5.1.1";
+  static public  final String SDK_VERSION                                          = "5.2.0";
 
   static public  final String IMAGE_CATEGORY_APP                                   = "app";
   static public  final String IMAGE_CATEGORY_PRODUCT_ITEM                          = "product_item";
@@ -551,12 +552,20 @@ public class KiteSDK
     basketAgent.clear();
 
 
-    // Go through all the images sources and end any social logins
+    // Go through all the images sources and end any social network log-ins
 
     for ( AImageSource imageSource : getAvailableImageSources() )
       {
       imageSource.endCustomerSession( mApplicationContext );
       }
+
+
+    // Empty address book
+    Address.deleteAddressBook( mApplicationContext );
+
+
+    // Clear credit card
+    PayPalCard.clearLastUsedCard( mApplicationContext );
     }
 
 
