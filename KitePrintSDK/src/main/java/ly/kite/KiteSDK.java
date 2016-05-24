@@ -86,7 +86,7 @@ public class KiteSDK
 
   static private final String LOG_TAG                                              = "KiteSDK";
 
-  static public  final String SDK_VERSION                                          = "5.2.0";
+  static public  final String SDK_VERSION                                          = "5.2.1";
 
   static public  final String IMAGE_CATEGORY_APP                                   = "app";
   static public  final String IMAGE_CATEGORY_PRODUCT_ITEM                          = "product_item";
@@ -126,6 +126,8 @@ public class KiteSDK
   static private final String PARAMETER_NAME_END_CUSTOMER_SESSION_ICON_URL         = "end_customer_session_icon_url";
 
   static private final String PARAMETER_NAME_ADDRESS_BOOK_ENABLED                  = "address_book_enabled";
+
+  static private final String PARAMETER_NAME_INACTIVITY_TIMER_ENABLED              = "inactivity_timer_enabled";
 
   static private final String SHARED_PREFERENCES_KEY_SUFFIX_RECIPIENT              = "_recipient";
   static private final String SHARED_PREFERENCES_KEY_SUFFIX_LINE1                  = "_line1";
@@ -571,7 +573,7 @@ public class KiteSDK
 
   /*****************************************************
    *
-   * Clears the Instagram developer credentials.
+   * Clears parameters for a particular scope.
    *
    *****************************************************/
   public KiteSDK clearAllParameters( Scope scope )
@@ -672,6 +674,33 @@ public class KiteSDK
 
 
     return ( mUniqueUserId );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the enabled state of the inactivity timer.
+   *
+   *****************************************************/
+  public KiteSDK setInactivityTimerEnabled( boolean enabled )
+    {
+    setSDKParameter( Scope.PERMANENT, PARAMETER_NAME_INACTIVITY_TIMER_ENABLED, enabled );
+
+    return ( this );
+    }
+
+
+
+  /*****************************************************
+   *
+   * Returns the enabled state of the inactivity timer.
+   * If the parameter has not been explicitly set, it defaults
+   * to false.
+   *
+   *****************************************************/
+  public boolean inactivityTimerIsEnabled()
+    {
+    return ( getBooleanSDKParameter( Scope.PERMANENT, PARAMETER_NAME_INACTIVITY_TIMER_ENABLED, false ) );
     }
 
 
