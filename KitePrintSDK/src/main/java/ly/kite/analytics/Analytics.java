@@ -427,7 +427,16 @@ public class Analytics
 
 
       mCachedPropertiesMap.put( JSON_PROPERTY_NAME_KITE_SDK_VERSION, KiteSDK.SDK_VERSION );
-      mCachedPropertiesMap.put( JSON_PROPERTY_NAME_LOCALE_COUNTRY,   Country.getInstance( Locale.getDefault() ).displayName() );
+
+
+      // Some emulators do not return a recognised locale country
+
+      Locale  locale  = Locale.getDefault();
+      Country country = Country.getInstance( locale );
+
+      String countryString = ( country != null ? country.displayName() : String.valueOf( locale ) );
+
+      mCachedPropertiesMap.put( JSON_PROPERTY_NAME_LOCALE_COUNTRY,   countryString );
       }
 
 
@@ -495,6 +504,7 @@ public class Analytics
       }
 
     trackEvent( EVENT_NAME_SDK_LOADED, propertiesJSONObject );
+
     getEventCallback().onSDKLoaded( entryPoint );
     }
 
