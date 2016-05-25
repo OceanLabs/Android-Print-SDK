@@ -58,7 +58,9 @@ import ly.kite.address.Address;
 import ly.kite.address.Country;
 import ly.kite.basket.BasketAgent;
 import ly.kite.catalogue.CatalogueLoader;
+import ly.kite.checkout.AShippingActivity;
 import ly.kite.checkout.PaymentActivity;
+import ly.kite.checkout.ShippingActivity;
 import ly.kite.journey.basket.BasketActivity;
 import ly.kite.ordering.Order;
 import ly.kite.payment.PayPalCard;
@@ -125,6 +127,7 @@ public class KiteSDK
 
   static private final String PARAMETER_NAME_END_CUSTOMER_SESSION_ICON_URL         = "end_customer_session_icon_url";
 
+  static private final String PARAMETER_NAME_SHIPPING_ACTIVITY_CLASS_NAME          = "shipping_activity_class_name";
   static private final String PARAMETER_NAME_ADDRESS_BOOK_ENABLED                  = "address_book_enabled";
 
   static private final String PARAMETER_NAME_INACTIVITY_TIMER_ENABLED              = "inactivity_timer_enabled";
@@ -706,6 +709,42 @@ public class KiteSDK
 
   /*****************************************************
    *
+   * Sets the shipping activity.
+   *
+   *****************************************************/
+  public KiteSDK setShippingActivity( Class<? extends AShippingActivity> shippingActivity )
+    {
+    return ( setSDKParameter( Scope.PERMANENT, PARAMETER_NAME_SHIPPING_ACTIVITY_CLASS_NAME, shippingActivity.getName() ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the shipping activity.
+   *
+   *****************************************************/
+  public Class<? extends AShippingActivity> getShippingActivityClass()
+    {
+    String shippingActivityClassName = getStringSDKParameter( Scope.PERMANENT, PARAMETER_NAME_SHIPPING_ACTIVITY_CLASS_NAME, null );
+
+    if ( shippingActivityClassName != null )
+      {
+      try
+        {
+        return ( (Class<? extends AShippingActivity>)Class.forName( shippingActivityClassName ) );
+        }
+      catch ( Exception e )
+        {
+        Log.e( LOG_TAG, "Unable to get shipping activity " + shippingActivityClassName, e );
+        }
+      }
+
+    return ( null );
+    }
+
+
+  /*****************************************************
+   *
    * Sets the enabled state of the address book.
    *
    *****************************************************/
@@ -788,7 +827,6 @@ public class KiteSDK
         try
           {
           Class<?>       imageSourceClass            = Class.forName( className );
-          //Constructor<?> imageSourceClassConstructor = imageSourceClass.getConstructor();
           AImageSource   imageSource                 = (AImageSource)imageSourceClass.newInstance();
 
           imageSourceList.add( imageSource );

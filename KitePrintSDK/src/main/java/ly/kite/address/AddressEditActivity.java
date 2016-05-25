@@ -18,7 +18,7 @@ import java.util.Locale;
 import ly.kite.KiteSDK;
 import ly.kite.R;
 
-public class AddressEditActivity extends AddressActivity implements View.OnClickListener
+public class AddressEditActivity extends AAddressActivity implements View.OnClickListener
   {
 
   private Address address;

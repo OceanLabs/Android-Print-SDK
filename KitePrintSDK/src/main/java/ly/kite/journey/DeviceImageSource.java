@@ -39,13 +39,14 @@ package ly.kite.journey;
 
 ///// Import(s) /////
 
+import java.util.ArrayList;
+import java.util.List;
+
+import android.Manifest;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import ly.kite.R;
 import ly.kite.util.Asset;
@@ -65,7 +66,7 @@ public class DeviceImageSource extends AImageSource
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String  LOG_TAG = "DeviceImageSource";
+  static private final String  LOG_TAG                                       = "DeviceImageSource";
 
 
   ////////// Static Variable(s) //////////
@@ -114,21 +115,13 @@ public class DeviceImageSource extends AImageSource
    *****************************************************/
   public void onPick( Fragment fragment, int maxImageCount )
     {
-    // If the caller would prefer a single image then use the system photo picker. Otherwise
-    // use the photo picker.
-
-    // There seems to be a bug with determining the orientation of URI-based images on
-    // (e.g.) Samsung S6, so we need to always use the photo picker (which returns file
-    // paths) rather than the built-in gallery picker (which returns URIs).
-
-    // TODO: Max image count is ignored for now
-    PhotoPicker.startPhotoPickerForResult( fragment, getActivityRequestCode() );
+    requestPermission( Manifest.permission.READ_EXTERNAL_STORAGE, new StartPickerRunnable( fragment, maxImageCount ) );
     }
 
 
   /*****************************************************
    *
-   * Adds any picked images to the supplied list. Note that
+   * Adds any picked images to the supplied list. Note thatALaunchPickRunnable
    * the result might either be from the built-in single image
    * picker, or the multiple photo picker.
    *
@@ -168,9 +161,28 @@ public class DeviceImageSource extends AImageSource
 
   /*****************************************************
    *
-   * ...
+   * A runnable that simply calls the onPick method. Used
+   * to call the method once permissions have been granted.
    *
    *****************************************************/
+  private class StartPickerRunnable extends AStartPickerRunnable
+    {
+    StartPickerRunnable( Fragment fragment, int maxImageCount )
+      {
+      super( fragment, maxImageCount );
+      }
+
+
+    @Override
+    public void run()
+      {
+      // There seems to be a bug with determining the orientation of URI-based images on
+      // (e.g.) Samsung S6, so we need to always use the photo picker (which returns file
+      // paths) rather than the built-in gallery picker (which returns URIs).
+
+      // TODO: Max image count is ignored for now
+      PhotoPicker.startPhotoPickerForResult( mFragment, getActivityRequestCode() );
+      }
+    }
 
   }
-

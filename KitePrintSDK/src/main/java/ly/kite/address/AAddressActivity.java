@@ -53,7 +53,7 @@ import ly.kite.journey.AKiteActivity;
  * This class is the parent class of address activities.
  *
  *****************************************************/
-public class AddressActivity extends AKiteActivity
+abstract public class AAddressActivity extends AKiteActivity
   {
   ////////// Static Constant(s) //////////
 

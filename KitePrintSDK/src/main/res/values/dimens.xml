@@ -97,6 +97,8 @@
     <dimen name="page_number_text_inset">10dp</dimen>
     <dimen name="page_number_text_size">14sp</dimen>
 
+    <dimen name="inactivity_warning_description_text_size">18sp</dimen>
+    <dimen name="inactivity_warning_time_remaining_text_size">24sp</dimen>
 
     <dimen name="photobook_add_image_size">15dp</dimen>
 

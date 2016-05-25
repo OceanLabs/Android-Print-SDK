@@ -57,6 +57,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import ly.kite.KiteSDK;
@@ -66,6 +67,7 @@ import ly.kite.basket.BasketItem;
 import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.ICatalogueConsumer;
 import ly.kite.catalogue.Product;
+import ly.kite.checkout.AShippingActivity;
 import ly.kite.checkout.PaymentActivity;
 import ly.kite.checkout.ShippingActivity;
 import ly.kite.image.ImageAgent;
@@ -110,14 +112,15 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
 
   ////////// Member Variable(s) //////////
 
-  private boolean           mIsManagedCheckout;
+  private boolean                 mIsManagedCheckout;
 
-  private Order             mManagedOrder;
-  private List<BasketItem>  mBasketItemList;
+  private Order                   mManagedOrder;
+  private List<BasketItem>        mBasketItemList;
 
-  private Address           mShippingAddress;
-  private String            mContactEmail;
-  private String            mContactPhone;
+  private Address                 mShippingAddress;
+  private String                  mContactEmail;
+  private String                  mContactPhone;
+  private HashMap<String,String>  mAdditionalParametersMap;
 
   private ListView          mListView;
   private TextView          mBasketEmptyTextView;
@@ -344,9 +347,10 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
 
     if ( requestCode == ACTIVITY_REQUEST_CODE_GET_CONTACT_DETAILS && resultCode == RESULT_OK )
       {
-      mShippingAddress = ShippingActivity.getShippingAddress( data );
-      mContactEmail    = ShippingActivity.getEmail( data );
-      mContactPhone    = ShippingActivity.getPhone( data );
+      mShippingAddress         = AShippingActivity.getShippingAddress( data );
+      mContactEmail            = AShippingActivity.getEmail( data );
+      mContactPhone            = AShippingActivity.getPhone( data );
+      mAdditionalParametersMap = AShippingActivity.getAdditionalParameters( data );
 
       onNewShippingDetails();
 
@@ -469,7 +473,27 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
     {
     if ( view == mDeliveryAddressTextView )
       {
-      ShippingActivity.startForResult( this, getOrder(), ACTIVITY_REQUEST_CODE_GET_CONTACT_DETAILS );
+      Order order = getOrder();
+
+
+      // We want to start the shipping activity, but we need to check if a custom one has been
+      // set first.
+
+      Class<? extends AShippingActivity> shippingActivityClass = KiteSDK.getInstance( this ).getShippingActivityClass();
+
+      if ( shippingActivityClass != null )
+        {
+        Intent intent = new Intent( this, shippingActivityClass );
+
+        AShippingActivity.addExtras( order, intent );
+
+        startActivityForResult( intent, ACTIVITY_REQUEST_CODE_GET_CONTACT_DETAILS );
+        }
+      else
+        {
+        // Start the default shipping activity
+        ShippingActivity.startForResult( this, order, ACTIVITY_REQUEST_CODE_GET_CONTACT_DETAILS );
+        }
 
       return;
       }
@@ -591,8 +615,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
     basketOrder.setNotificationEmail( mContactEmail );
     basketOrder.setNotificationPhoneNumber( mContactPhone );
 
-
-    // Populate the order with the shipping / contact details
+    basketOrder.setAdditionalParameters( mAdditionalParametersMap );
 
     JSONObject userData = basketOrder.getUserData();
 

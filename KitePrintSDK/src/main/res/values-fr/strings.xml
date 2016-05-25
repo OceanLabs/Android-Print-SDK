@@ -70,6 +70,9 @@
     <string name="alert_dialog_message_card_not_recognised"><![CDATA[Désolé, nous n\'avons pu reconnaître votre carte. Veuillez essayer de saisir manuellement les détails de votre carte si nécessaire.]]></string>
     <string name="alert_dialog_item_pay_with_new_card">Changer de carte bancaire</string>
     <string name="alert_dialog_item_pay_with_existing_card_format_string">Payer avec la carte se terminant par %1$s</string>
+
+    <string name="log_out_warning">Vous déconnecter automatiquement en:</string>
+
     <string name="Cancel">Annuler</string>
     <string name="Continue_Shopping">Poursuivre vos achats</string>
     <string name="Country">Pays</string>
@@ -82,6 +85,7 @@
     <string name="Free">Gratuit</string>
     <string name="add_more">Ajouter plus</string>
     <string name="Loading">Chargement</string>
+    <string name="Log_Out">Se déconnecter</string>
     <string name="No_Results">Aucun résultat</string>
     <string name="OK">OK</string>
     <string name="Order_Id">Numéro de commande</string>

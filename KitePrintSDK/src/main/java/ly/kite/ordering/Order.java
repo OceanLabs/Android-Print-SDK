@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -48,6 +49,7 @@ public class Order implements Parcelable /* , Serializable */
     private String proofOfPayment;
     private String voucherCode;
     private JSONObject userData;
+    private HashMap<String,String>  mAdditionalParametersMap;
     private ArrayList<Job> jobs = new ArrayList<Job>();
 
     private boolean userSubmittedForPrinting;
@@ -119,6 +121,16 @@ public class Order implements Parcelable /* , Serializable */
     public void setUserData(JSONObject userData) {
         this.userData = userData;
     }
+
+    public void setAdditionalParameters( HashMap<String, String> additionalParametersMap )
+      {
+      mAdditionalParametersMap = additionalParametersMap;
+      }
+
+    public HashMap<String,String> getAdditionalParameters()
+      {
+      return ( mAdditionalParametersMap );
+      }
 
     public void setNotificationEmail(String receiptEmail) {
         this.statusNotificationEmail = receiptEmail;
@@ -267,6 +279,23 @@ public class Order implements Parcelable /* , Serializable */
                   .append( job.getProductId() )
                   .append( ":" )
                   .append( String.valueOf( job.getQuantity() ) );
+
+          separatorString = ",";
+          }
+        }
+
+
+      // Add in the additional parameters
+
+      if ( mAdditionalParametersMap != null )
+        {
+        for ( String parameterName : mAdditionalParametersMap.keySet() )
+          {
+          stringBuilder
+                  .append( separatorString )
+                  .append( parameterName )
+                  .append( ":" )
+                  .append( mAdditionalParametersMap.get( parameterName ) );
 
           separatorString = ",";
           }
@@ -495,50 +524,54 @@ public class Order implements Parcelable /* , Serializable */
     }
 
     @Override
-    public void writeToParcel(Parcel p, int flags) {
-        p.writeValue( shippingAddress );
-        p.writeString(proofOfPayment);
-        p.writeString( voucherCode );
-        String userDataString = userData == null ? null : userData.toString();
-        p.writeString( userDataString );
+    public void writeToParcel( Parcel p, int flags )
+      {
+      p.writeValue( shippingAddress );
+      p.writeString( proofOfPayment );
+      p.writeString( voucherCode );
 
-        p.writeInt( jobs.size() );
+      String userDataString = userData == null ? null : userData.toString();
+      p.writeString( userDataString );
 
-        for ( Job job : jobs )
+      p.writeSerializable( mAdditionalParametersMap );
+
+      p.writeInt( jobs.size() );
+
+      for ( Job job : jobs )
+        {
+        if ( job instanceof PostcardJob )
           {
-          if ( job instanceof PostcardJob )
-            {
-            p.writeInt( JOB_TYPE_POSTCARD );
-            job.writeToParcel( p, flags );
-            }
-          else if ( job instanceof GreetingCardJob )
-            {
-            p.writeInt( JOB_TYPE_GREETING_CARD );
-            job.writeToParcel( p, flags );
-            }
-          else if ( job instanceof PhotobookJob )
-            {
-            p.writeInt( JOB_TYPE_PHOTOBOOK );
-            job.writeToParcel( p, flags );
-            }
-          else
-            {
-            p.writeInt( JOB_TYPE_PRINTS );
-            job.writeToParcel( p, flags );
-            }
+          p.writeInt( JOB_TYPE_POSTCARD );
+          job.writeToParcel( p, flags );
           }
+        else if ( job instanceof GreetingCardJob )
+          {
+          p.writeInt( JOB_TYPE_GREETING_CARD );
+          job.writeToParcel( p, flags );
+          }
+        else if ( job instanceof PhotobookJob )
+          {
+          p.writeInt( JOB_TYPE_PHOTOBOOK );
+          job.writeToParcel( p, flags );
+          }
+        else
+          {
+          p.writeInt( JOB_TYPE_PRINTS );
+          job.writeToParcel( p, flags );
+          }
+        }
 
-        p.writeValue(userSubmittedForPrinting);
-        p.writeValue(assetUploadComplete);
-        p.writeValue( lastPrintSubmissionDate );
-        p.writeString( receipt );
-        p.writeSerializable( lastPrintSubmissionError );
-        p.writeInt( storageIdentifier );
-        p.writeString( promoCode );
-        p.writeParcelable( mOrderPricing, flags );
-        p.writeString( statusNotificationEmail );
-        p.writeString( statusNotificationPhone );
-    }
+      p.writeValue( userSubmittedForPrinting );
+      p.writeValue( assetUploadComplete );
+      p.writeValue( lastPrintSubmissionDate );
+      p.writeString( receipt );
+      p.writeSerializable( lastPrintSubmissionError );
+      p.writeInt( storageIdentifier );
+      p.writeString( promoCode );
+      p.writeParcelable( mOrderPricing, flags );
+      p.writeString( statusNotificationEmail );
+      p.writeString( statusNotificationPhone );
+      }
 
     private Order( Parcel p) {
         this.shippingAddress = (Address) p.readValue(Address.class.getClassLoader());
@@ -552,6 +585,8 @@ public class Order implements Parcelable /* , Serializable */
                 throw new RuntimeException(ex); // will never happen ;)
             }
         }
+
+        mAdditionalParametersMap = (HashMap<String,String>)p.readSerializable();
 
         int numJobs = p.readInt();
 

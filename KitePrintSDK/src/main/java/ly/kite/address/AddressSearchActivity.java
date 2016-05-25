@@ -1,16 +1,13 @@
 package ly.kite.address;
 
-import android.app.Activity;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,7 +26,7 @@ import java.util.Locale;
 
 import ly.kite.R;
 
-public class AddressSearchActivity extends AddressActivity implements ActionBar.OnNavigationListener, AddressSearchRequestListener {
+public class AddressSearchActivity extends AAddressActivity implements ActionBar.OnNavigationListener, AddressSearchRequestListener {
 
     /**
      * The serialization (saved instance state) Bundle key representing the

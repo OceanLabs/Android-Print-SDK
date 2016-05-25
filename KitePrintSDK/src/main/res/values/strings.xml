@@ -109,6 +109,9 @@
     <string name="alert_dialog_item_pay_with_new_card">Pay with new card</string>
     <string name="alert_dialog_item_pay_with_existing_card_format_string">Pay with card ending %1$s</string>
 
+    <string name="log_out_warning">Automatically\nlogging you out in</string>
+    <string name="time_remaining_format_string">%1$s</string>
+
     <string name="progress_dialog_title_add_to_basket">Adding to basket</string>
     <string name="progress_dialog_title_updating_basket">Updating basket</string>
 
@@ -129,6 +132,7 @@
     <string name="Free">Free</string>
     <string name="ITEM">ITEM</string>
     <string name="Loading">Loading</string>
+    <string name="Log_Out">Log Out</string>
     <string name="Next">Next</string>
     <string name="No_Results">No Results</string>
     <string name="OK">OK</string>
