@@ -80,6 +80,7 @@
     <string name="alert_dialog_message_no_recipient">Please enter a recipient name</string>
     <string name="alert_dialog_message_no_line1">Please fill in Line 1 of the address</string>
     <string name="alert_dialog_message_no_postal_code">Please fill in your Postcode / ZIP code</string>
+    <string name="alert_dialog_message_no_email_address">Please enter an email address</string>
 
     <string name="alert_dialog_title_invalid_delivery_address">Invalid Delivery Address</string>
     <string name="alert_dialog_message_invalid_delivery_address">Please choose a delivery address</string>
@@ -127,6 +128,7 @@
     <string name="Details">Details</string>
     <string name="Done">Done</string>
     <string name="Edit">Edit</string>
+    <string name="Email">Email</string>
     <string name="End_Session">End Session</string>
     <string name="Flip">Flip</string>
     <string name="Free">Free</string>
@@ -218,9 +220,10 @@
     <string name="address_hint_text_city">City</string>
     <string name="address_hint_text_county_or_state">County / State</string>
     <string name="address_hint_text_postcode_or_zip">Postcode / ZIP code</string>
+    <string name="address_hint_text_email" translatable="false">@string/Email</string>
 
     <string name="shipping_delivery_address_button_text">Choose Delivery Address</string>
-    <string name="shipping_email_hint_text">Email</string>
+    <string name="shipping_email_hint_text" translatable="false">@string/Email</string>
     <string name="shipping_phone_hint_text">Phone number</string>
     <string name="shipping_email_reason">Your email is required so that we can send you order confirmation updates.</string>
     <string name="shipping_phone_reason">Your phone number is required in case there are any delivery issues.</string>

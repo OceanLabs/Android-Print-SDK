@@ -3,6 +3,7 @@ package ly.kite.ordering;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,16 +34,20 @@ import ly.kite.util.UploadableImage;
 public class Order implements Parcelable /* , Serializable */
     {
 
-    static private final String LOG_TAG = "PrintOrder";
+    static private final String LOG_TAG                = "PrintOrder";
 
-    private static final int NOT_PERSISTED          = -1;
+    private static final int    NOT_PERSISTED          = -1;
 
-    private static final int JOB_TYPE_POSTCARD      = 0;
-    private static final int JOB_TYPE_GREETING_CARD = 1;
-    private static final int JOB_TYPE_PHOTOBOOK     = 2;
-    private static final int JOB_TYPE_PRINTS        = 3;
+    private static final int    JOB_TYPE_POSTCARD      = 0;
+    private static final int    JOB_TYPE_GREETING_CARD = 1;
+    private static final int    JOB_TYPE_PHOTOBOOK     = 2;
+    private static final int    JOB_TYPE_PRINTS        = 3;
 
-    static private final String JSON_NAME_LOCALE = "locale";
+    static private final String JSON_NAME_LOCALE       = "locale";
+    static private final String JSON_NAME_JOB_ID       = "job_id";
+    static private final String JSON_NAME_QUANTITY     = "quantity";
+    static private final String JSON_NAME_TEMPLATE_ID  = "template_id";
+    static private final String JSON_NAME_COUNTRY_CODE = "country_code";
 
 
     private Address shippingAddress;
@@ -122,6 +127,7 @@ public class Order implements Parcelable /* , Serializable */
         this.userData = userData;
     }
 
+
     public void setAdditionalParameters( HashMap<String, String> additionalParametersMap )
       {
       mAdditionalParametersMap = additionalParametersMap;
@@ -131,6 +137,26 @@ public class Order implements Parcelable /* , Serializable */
       {
       return ( mAdditionalParametersMap );
       }
+
+
+    public Order setAdditionalParameter( String parameterName, String parameterValue )
+      {
+      if ( mAdditionalParametersMap == null ) mAdditionalParametersMap = new HashMap<>();
+
+      mAdditionalParametersMap.put( parameterName, parameterValue );
+
+      return ( this );
+      }
+
+
+    public String getAdditionalParameter( String parameterName )
+      {
+      if ( mAdditionalParametersMap != null ) return ( mAdditionalParametersMap.get( parameterName ) );
+
+      return ( null );
+      }
+
+
 
     public void setNotificationEmail(String receiptEmail) {
         this.statusNotificationEmail = receiptEmail;
@@ -201,6 +227,17 @@ public class Order implements Parcelable /* , Serializable */
         json.put( "user_data", userData );
 
 
+        // Add any additional parameters
+
+        if ( mAdditionalParametersMap != null )
+          {
+          for ( String parameterName : mAdditionalParametersMap.keySet() )
+            {
+            json.put( parameterName, mAdditionalParametersMap.get( parameterName ) );
+            }
+          }
+
+
         // Add the customer payment information
 
         OrderPricing orderPricing = getOrderPricing();
@@ -254,16 +291,25 @@ public class Order implements Parcelable /* , Serializable */
         return supported == null ? Collections.EMPTY_SET : supported;
     }
 
+
     /*****************************************************
      *
-     * Returns a string representation of this order as a
-     * basket, in the form:
+     * Returns this order as a JSON basket.
      *
-     *   <template-id>:<quantity>[,<template-id>:<quantity> ...]
+     *    [
+     *     {
+     *     "country_code": "GBR",
+     *     "job_id": "48CD1DFA-254B-4FF9-A81C-1FB7A854C509",
+     *     "quantity": 1,
+     *     "template_id":"i6splus_case"
+     *     }
+     *   ]
      *
      *****************************************************/
-    public void toBasketString( StringBuilder stringBuilder )
+    public JSONArray asBasketJSONArray( String countryCode )
       {
+      JSONArray jsonArray = new JSONArray();
+
       String separatorString = "";
 
       for ( Job job : jobs )
@@ -274,50 +320,25 @@ public class Order implements Parcelable /* , Serializable */
 
         for ( int index = 0; index < orderQuantity; index ++ )
           {
-          stringBuilder
-                  .append( separatorString )
-                  .append( job.getProductId() )
-                  .append( ":" )
-                  .append( String.valueOf( job.getQuantity() ) );
+          JSONObject itemJSONObject = new JSONObject();
 
-          separatorString = ",";
+          try
+            {
+            itemJSONObject.put( JSON_NAME_JOB_ID,       job.getId() );
+            itemJSONObject.put( JSON_NAME_QUANTITY,     job.getQuantity() );
+            itemJSONObject.put( JSON_NAME_TEMPLATE_ID,  job.getProductId() );
+            itemJSONObject.put( JSON_NAME_COUNTRY_CODE, countryCode );
+            }
+          catch ( JSONException je )
+            {
+            Log.e( LOG_TAG, "Unable to create basket item JSON", je );
+            }
+
+          jsonArray.put( itemJSONObject );
           }
         }
 
-
-      // Add in the additional parameters
-
-      if ( mAdditionalParametersMap != null )
-        {
-        for ( String parameterName : mAdditionalParametersMap.keySet() )
-          {
-          stringBuilder
-                  .append( separatorString )
-                  .append( parameterName )
-                  .append( ":" )
-                  .append( mAdditionalParametersMap.get( parameterName ) );
-
-          separatorString = ",";
-          }
-        }
-      }
-
-
-    /*****************************************************
-     *
-     * Returns a string representation of this order as a
-     * basket, in the form:
-     *
-     *   <template-id>:<quantity>[,<template-id>:<quantity> ...]
-     *
-     *****************************************************/
-    public String toBasketString()
-      {
-      StringBuilder basketStringBuilder = new StringBuilder();
-
-      toBasketString( basketStringBuilder );
-
-      return ( basketStringBuilder.toString() );
+      return ( jsonArray );
       }
 
 

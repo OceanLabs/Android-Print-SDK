@@ -59,8 +59,9 @@ import ly.kite.address.Country;
 import ly.kite.basket.BasketAgent;
 import ly.kite.catalogue.CatalogueLoader;
 import ly.kite.checkout.AShippingActivity;
+import ly.kite.checkout.DefaultPaymentFragment;
+import ly.kite.checkout.APaymentFragment;
 import ly.kite.checkout.PaymentActivity;
-import ly.kite.checkout.ShippingActivity;
 import ly.kite.journey.basket.BasketActivity;
 import ly.kite.ordering.Order;
 import ly.kite.payment.PayPalCard;
@@ -132,6 +133,8 @@ public class KiteSDK
 
   static private final String PARAMETER_NAME_INACTIVITY_TIMER_ENABLED              = "inactivity_timer_enabled";
 
+  static private final String PARAMETER_NAME_PAYMENT_FRAGMENT_CLASS_NAME           = "payment_fragment_class_name";
+
   static private final String SHARED_PREFERENCES_KEY_SUFFIX_RECIPIENT              = "_recipient";
   static private final String SHARED_PREFERENCES_KEY_SUFFIX_LINE1                  = "_line1";
   static private final String SHARED_PREFERENCES_KEY_SUFFIX_LINE2                  = "_line2";
@@ -139,6 +142,10 @@ public class KiteSDK
   static private final String SHARED_PREFERENCES_KEY_SUFFIX_STATE_OR_COUNTY        = "_state_or_county";
   static private final String SHARED_PREFERENCES_KEY_SUFFIX_ZIP_OR_POSTAL_CODE     = "_zip_or_postal_code";
   static private final String SHARED_PREFERENCES_KEY_SUFFIX_COUNTRY_CODE           = "_country_code";
+
+  static private final String ENVIRONMENT_TEST                                     = "ly.kite.ENVIRONMENT_TEST";
+  static private final String ENVIRONMENT_STAGING                                  = "ly.kite.ENVIRONMENT_STAGING";
+  static private final String ENVIRONMENT_LIVE                                     = "ly.kite.ENVIRONMENT_LIVE";
 
   static public  final String PAYPAL_LIVE_API_ENDPOINT                             = "api.paypal.com";
   static public  final String PAYPAL_LIVE_CLIENT_ID                                = "ASYVBBCHF_KwVUstugKy4qvpQaPlUeE_5beKRJHpIP2d3SA_jZrsaUDTmLQY";
@@ -771,6 +778,46 @@ public class KiteSDK
 
   /*****************************************************
    *
+   * Sets the payment fragment. The payment fragment displays
+   * the payment option buttons and processes them.
+   *
+   *****************************************************/
+  public KiteSDK setPaymentFragment( Class<? extends APaymentFragment> paymentFragment )
+    {
+    return ( setSDKParameter( Scope.PERMANENT, PARAMETER_NAME_PAYMENT_FRAGMENT_CLASS_NAME, paymentFragment.getName() ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the payment fragment.
+   *
+   *****************************************************/
+  public APaymentFragment getPaymentFragment()
+    {
+    String paymentFragmentClassName = getStringSDKParameter( Scope.PERMANENT, PARAMETER_NAME_PAYMENT_FRAGMENT_CLASS_NAME, null );
+
+    if ( paymentFragmentClassName != null )
+      {
+      try
+        {
+        Class<?> paymentFragmentClass = Class.forName( paymentFragmentClassName );
+
+        return ( (APaymentFragment)paymentFragmentClass.newInstance() );
+        }
+      catch ( Exception e )
+        {
+        Log.e( LOG_TAG, "Unable to get payment fragment " + paymentFragmentClassName, e );
+        }
+      }
+
+    // If anything goes wrong - return the default payment agent
+    return ( new DefaultPaymentFragment() );
+    }
+
+
+  /*****************************************************
+   *
    * Returns the instagram client id or null if one has
    * not been set.
    *
@@ -1141,9 +1188,32 @@ public class KiteSDK
    * Launches managed checkout, and returns the result.
    *
    *****************************************************/
-  public void startCheckout( Activity activity, Order order, int requestCode )
+  public void startCheckoutForResult( Activity activity, Order order, int requestCode )
     {
     BasketActivity.startForResult( activity, order, requestCode );
+    }
+
+
+  /*****************************************************
+   *
+   * Launches managed checkout, and returns the result.
+   *
+   *****************************************************/
+  @Deprecated
+  public void startCheckout( Activity activity, Order order, int requestCode )
+    {
+    startCheckoutForResult( activity, order, requestCode );
+    }
+
+
+  /*****************************************************
+   *
+   * Launches the payment screen, and returns the result.
+   *
+   *****************************************************/
+  public void startPaymentForResult( Activity activity, Order order, int requestCode )
+    {
+    PaymentActivity.startForResult( activity, order, requestCode );
     }
 
 
@@ -1462,9 +1532,9 @@ public class KiteSDK
    *****************************************************/
   public static enum DefaultEnvironment implements IEnvironment
     {
-    LIVE    ( "Live",    "https://api.kite.ly/v2.2",     PaymentActivity.ENVIRONMENT_LIVE,    PayPalConfiguration.ENVIRONMENT_PRODUCTION, PAYPAL_LIVE_API_ENDPOINT,    PAYPAL_LIVE_CLIENT_ID,    PAYPAL_LIVE_PASSWORD    ),
-    TEST    ( "Test",    "https://api.kite.ly/v2.2",     PaymentActivity.ENVIRONMENT_TEST,    PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_ENDPOINT, PAYPAL_SANDBOX_CLIENT_ID, PAYPAL_SANDBOX_PASSWORD ),
-    STAGING ( "Staging", "https://staging.kite.ly/v2.2", PaymentActivity.ENVIRONMENT_STAGING, PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_ENDPOINT, PAYPAL_SANDBOX_CLIENT_ID, PAYPAL_SANDBOX_PASSWORD ); /* private environment intended only for Ocean Labs use, hands off :) */
+    LIVE    ( "Live",    "https://api.kite.ly/v2.2",     ENVIRONMENT_LIVE,    PayPalConfiguration.ENVIRONMENT_PRODUCTION, PAYPAL_LIVE_API_ENDPOINT,    PAYPAL_LIVE_CLIENT_ID,    PAYPAL_LIVE_PASSWORD    ),
+    TEST    ( "Test",    "https://api.kite.ly/v2.2",     ENVIRONMENT_TEST,    PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_ENDPOINT, PAYPAL_SANDBOX_CLIENT_ID, PAYPAL_SANDBOX_PASSWORD ),
+    STAGING ( "Staging", "https://staging.kite.ly/v2.2", ENVIRONMENT_STAGING, PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_ENDPOINT, PAYPAL_SANDBOX_CLIENT_ID, PAYPAL_SANDBOX_PASSWORD ); /* private environment intended only for Ocean Labs use, hands off :) */
 
 
     private Environment  mEnvironment;

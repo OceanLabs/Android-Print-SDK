@@ -86,27 +86,49 @@ abstract public class AShippingActivity extends AKiteActivity
 
   /*****************************************************
    *
+   * Adds a shipping address as an extra to the intent.
+   *
+   *****************************************************/
+  static public void addShippingAddress( Address shippingAddress, Intent intent )
+    {
+    if ( shippingAddress != null ) intent.putExtra( KEY_SHIPPING_ADDRESS, (Parcelable)shippingAddress );
+    }
+
+
+  /*****************************************************
+   *
+   * Adds an email address as an extra to the intent.
+   *
+   *****************************************************/
+  static public void addEmail( String email, Intent intent )
+    {
+    if ( email != null ) intent.putExtra( KEY_EMAIL, email );
+    }
+
+
+  /*****************************************************
+   *
    * Adds the order and contact details as extras to the
    * intent.
    *
    *****************************************************/
   static public void addExtras( Order order, Intent intent )
     {
-    // We only need to pass the order to the activity for analytics
     if ( order != null )
       {
+      // We need to pass the order to the activity for analytics
       intent.putExtra( KEY_ORDER, order );
 
 
       // Put any shipping address, email, and phone number from the order into the intent.
 
-      intent.putExtra( KEY_SHIPPING_ADDRESS, (Parcelable) order.getShippingAddress() );
+      addShippingAddress( order.getShippingAddress(), intent );
 
       JSONObject userData = order.getUserData();
 
       if ( userData != null )
         {
-        intent.putExtra( KEY_EMAIL, userData.optString( "email" ) );
+        addEmail( userData.optString( "email" ), intent );
         intent.putExtra( KEY_PHONE, userData.optString( "phone" ) );
         }
 
@@ -177,6 +199,26 @@ abstract public class AShippingActivity extends AKiteActivity
   static public HashMap<String,String> getAdditionalParameters( Intent data )
     {
     return ( (HashMap<String,String>)data.getSerializableExtra( KEY_ADDITIONAL_PARAMETERS ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets an additional parameter in an intent.
+   *
+   *****************************************************/
+  static public void setAdditionalParameter( String name, String value, Intent data )
+    {
+    HashMap<String,String> additionalParameterMap = getAdditionalParameters( data );
+
+    if ( additionalParameterMap == null )
+      {
+      additionalParameterMap = new HashMap<>();
+
+      data.putExtra( KEY_ADDITIONAL_PARAMETERS, additionalParameterMap );
+      }
+
+    additionalParameterMap.put( name, value );
     }
 
 

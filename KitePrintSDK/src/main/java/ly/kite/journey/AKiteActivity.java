@@ -601,7 +601,8 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     // calling activity, and exit so the user goes back to the original app.
 
     if ( resultCode == ACTIVITY_RESULT_CODE_CHECKED_OUT ||
-         resultCode == ACTIVITY_RESULT_CODE_END_CUSTOMER_SESSION )
+         resultCode == ACTIVITY_RESULT_CODE_END_CUSTOMER_SESSION ||
+         ( requestCode == ACTIVITY_REQUEST_CODE_CHECKOUT && resultCode == RESULT_OK ) )
       {
       setResult( resultCode );
 
@@ -974,7 +975,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
    * Displays an error dialog.
    *
    *****************************************************/
-  protected void showErrorDialog( String message )
+  public void showErrorDialog( String message )
     {
     displayModalDialog
             (
@@ -993,7 +994,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
    * Displays an error dialog.
    *
    *****************************************************/
-  protected void showErrorDialog( int messageResourceId )
+  public void showErrorDialog( int messageResourceId )
     {
     showErrorDialog( getString( messageResourceId ) );
     }
@@ -1230,9 +1231,31 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
    * Sets the text of a button.
    *
    *****************************************************/
-  private void setButtonText( Button button, int textResourceId )
+  private void setButtonText( Button button, String text )
     {
-    if ( button != null ) button.setText( textResourceId );
+    if ( button != null ) button.setText( text );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the text of any left button.
+   *
+   *****************************************************/
+  protected void setLeftButtonText( String text )
+    {
+    setButtonText( getLeftButton(), text );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the text of any right button.
+   *
+   *****************************************************/
+  protected void setRightButtonText( String text )
+    {
+    setButtonText( getRightButton(), text );
     }
 
 
@@ -1243,7 +1266,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
    *****************************************************/
   protected void setLeftButtonText( int textResourceId )
     {
-    setButtonText( getLeftButton(), textResourceId );
+    setLeftButtonText( getString( textResourceId ) );
     }
 
 
@@ -1254,7 +1277,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
    *****************************************************/
   protected void setRightButtonText( int textResourceId )
     {
-    setButtonText( getRightButton(), textResourceId );
+    setRightButtonText( getString( textResourceId ) );
     }
 
 

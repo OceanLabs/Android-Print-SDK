@@ -151,6 +151,7 @@ public class Analytics
   public  static final String  PAYMENT_METHOD_PAYPAL                       = "PayPal";
   public  static final String  PAYMENT_METHOD_CREDIT_CARD                  = "Credit Card";
   public  static final String  PAYMENT_METHOD_FREE                         = "Free";
+  public  static final String  PAYMENT_METHOD_PAY_AT_TILL                  = "Pay At Till";
 
   private static final String  JSON_PROPERTY_VALUE_YES                     = "Yes";
   private static final String  JSON_PROPERTY_VALUE_NO                      = "No";
@@ -274,8 +275,8 @@ public class Analytics
 
       if ( userDataJSONObject != null )
         {
-        String email = userDataJSONObject.getString( JSON_PROPERTY_NAME_EMAIL );
-        String phone = userDataJSONObject.getString( JSON_PROPERTY_NAME_PHONE );
+        String email = userDataJSONObject.optString( JSON_PROPERTY_NAME_EMAIL, null );
+        String phone = userDataJSONObject.optString( JSON_PROPERTY_NAME_PHONE, null );
 
         if ( email != null ) jsonObject.put( JSON_PROPERTY_NAME_SHIPPING_EMAIL, email );
         if ( phone != null ) jsonObject.put( JSON_PROPERTY_NAME_SHIPPING_PHONE, phone );

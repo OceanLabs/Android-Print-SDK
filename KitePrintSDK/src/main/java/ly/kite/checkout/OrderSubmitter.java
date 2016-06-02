@@ -72,14 +72,14 @@ public class OrderSubmitter implements Order.ISubmissionProgressListener, OrderS
 
   ////////// Member Variable(s) //////////
 
-  private Context            mContext;
-  private Order mOrder;
-  private IProgressListener  mProgressListener;
+  private Context                           mApplicationContext;
+  private Order                             mOrder;
+  private IOrderSubmissionProgressListener  mProgressListener;
 
-  private Handler            mHandler;
+  private Handler                           mHandler;
 
-  private long               mPollingStartElapsedRealtimeMillis;
-  private long               mPollingEndElapsedRealtimeMillis;
+  private long                              mPollingStartElapsedRealtimeMillis;
+  private long                              mPollingEndElapsedRealtimeMillis;
 
 
   ////////// Static Initialiser(s) //////////
@@ -90,13 +90,13 @@ public class OrderSubmitter implements Order.ISubmissionProgressListener, OrderS
 
   ////////// Constructor(s) //////////
 
-  public OrderSubmitter( Context context, Order order, IProgressListener progressListener )
+  public OrderSubmitter( Context context, Order order, IOrderSubmissionProgressListener progressListener )
     {
-    mContext          = context;
-    mOrder            = order;
-    mProgressListener = progressListener;
+    mApplicationContext = context.getApplicationContext();
+    mOrder              = order;
+    mProgressListener   = progressListener;
 
-    mHandler          = new Handler();
+    mHandler            = new Handler();
     }
 
 
@@ -218,7 +218,7 @@ public class OrderSubmitter implements Order.ISubmissionProgressListener, OrderS
 
     if ( mOrder.getReceipt() == null )
       {
-      mOrder.submitForPrinting( mContext, this );
+      mOrder.submitForPrinting( mApplicationContext, this );
       }
     else
       {
@@ -249,26 +249,11 @@ public class OrderSubmitter implements Order.ISubmissionProgressListener, OrderS
    *****************************************************/
   private void pollOrderStatus()
     {
-    new OrderStatusRequest( mContext, this ).start( mOrder.getReceipt() );
+    new OrderStatusRequest( mApplicationContext, this ).start( mOrder.getReceipt() );
     }
 
 
   ////////// Inner Class(es) //////////
-
-  /*****************************************************
-   *
-   * A progress listener.
-   *
-   *****************************************************/
-  public interface IProgressListener
-    {
-    public void onOrderUpdate( Order order, OrderState state, int primaryProgressPercent, int secondaryProgressPercent );
-    public void onOrderComplete( Order order, OrderState state );
-    public void onOrderTimeout( Order order );
-    public void onOrderError( Order order, Exception exception );
-    public void onOrderDuplicate( Order order, String originalOrderId );
-    }
-
 
   /*****************************************************
    *

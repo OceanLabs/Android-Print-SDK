@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * AddressActivity.java
+ * APaymentFragment.java
  *
  *
  * Modified MIT License
@@ -34,124 +34,142 @@
 
 ///// Package Declaration /////
 
-package ly.kite.address;
+package ly.kite.checkout;
 
 
 ///// Import(s) /////
 
+import android.app.Activity;
+import android.content.Context;
+import android.view.View;
+
+import ly.kite.KiteSDK;
+import ly.kite.R;
+import ly.kite.journey.AKiteFragment;
+import ly.kite.ordering.Order;
+import ly.kite.pricing.OrderPricing;
+
 
 ///// Class Declaration /////
 
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Parcelable;
-
-import ly.kite.journey.AKiteActivity;
-
 /*****************************************************
  *
- * This class is the parent class of address activities.
+ * This is the parent class of payment fragments.
  *
  *****************************************************/
-abstract public class AAddressActivity extends AKiteActivity
+abstract public class APaymentFragment extends AKiteFragment implements View.OnClickListener
   {
   ////////// Static Constant(s) //////////
 
-  @SuppressWarnings( "unused" )
-  static private final String  LOG_TAG           = "AddressActivity";
-
-  static public  final String  KEY_ADDRESS       = "ly.kite.address";
-  static public  final String  KEY_EMAIL_ADDRESS = "ly.kite.emailaddress";
-
-
-  ////////// Static Variable(s) //////////
+  static public final String  TAG = "APaymentFragment";
 
 
   ////////// Member Variable(s) //////////
 
-
-  ////////// Static Initialiser(s) //////////
+  protected OrderPricing  mOrderPricing;
 
 
   ////////// Static Method(s) //////////
-
-  /*****************************************************
-   *
-   * Returns an address bundled as an extra within an intent.
-   *
-   *****************************************************/
-  static public Address getAddress( Intent data )
-    {
-    if ( data == null ) return ( null );
-
-    return ( data.getParcelableExtra( KEY_ADDRESS ) );
-    }
-
-
-  /*****************************************************
-   *
-   * Returns an email address bundled as an extra within an intent.
-   *
-   *****************************************************/
-  static public String getEmailAddress( Intent data )
-    {
-    if ( data == null ) return ( null );
-
-    return ( data.getStringExtra( KEY_EMAIL_ADDRESS ) );
-    }
-
-
-  /*****************************************************
-   *
-   * Adds an address to an intent.
-   *
-   *****************************************************/
-  static public void addAddress( Address address, Intent intent )
-    {
-    if ( address != null ) intent.putExtra( KEY_ADDRESS, (Parcelable)address );
-    }
-
-
-  /*****************************************************
-   *
-   * Adds an email address to an intent.
-   *
-   *****************************************************/
-  static public void addEmailAddress( String emailAddress, Intent intent )
-    {
-    if ( emailAddress != null ) intent.putExtra( KEY_EMAIL_ADDRESS, emailAddress );
-    }
-
-
-  ////////// Constructor(s) //////////
 
 
   ////////// Method(s) //////////
 
   /*****************************************************
    *
-   * Returns an address result.
+   * Returns the payment activity.
    *
    *****************************************************/
-  public void returnResult( Address address, String emailAddress )
+  protected PaymentActivity getPaymentActivity()
     {
-    Intent data = new Intent();
+    Activity activity = getActivity();
 
-    addAddress( address, data );
-    addEmailAddress( emailAddress, data );
+    if ( activity != null && activity instanceof PaymentActivity )
+      {
+      return ( (PaymentActivity)activity );
+      }
 
-    setResult( Activity.RESULT_OK, data );
+    return ( null );
     }
 
 
   /*****************************************************
    *
-   * Returns an address result.
+   * Returns the Kite SDK environment.
    *
    *****************************************************/
-  public void returnResult( Address address )
+  protected KiteSDK.Environment getKiteSDKEnvironment()
     {
-    returnResult( address, null );
+    Activity activity = getActivity();
+
+    if ( activity != null )
+      {
+      return ( KiteSDK.getInstance( activity ).getEnvironment() );
+      }
+
+    return ( null );
+    }
+
+
+  /*****************************************************
+   *
+   * Called to enable / disable buttons.
+   *
+   *****************************************************/
+  abstract public void onEnableButtons( boolean enabled );
+
+
+  /*****************************************************
+   *
+   * Called with the order pricing.
+   *
+   *****************************************************/
+  public void onOrderPricing( OrderPricing orderPricing )
+    {
+    mOrderPricing = orderPricing;
+    }
+
+
+  /*****************************************************
+   *
+   * Called to set / unset free checkout.
+   *
+   *****************************************************/
+  abstract public void onCheckoutFree( boolean free );
+
+
+  /*****************************************************
+   *
+   * Displays an error dialog.
+   *
+   *****************************************************/
+  protected void showErrorDialog( String message )
+    {
+    PaymentActivity paymentActivity = getPaymentActivity();
+
+    if ( paymentActivity != null ) paymentActivity.showErrorDialog( message );
+    }
+
+
+  /*****************************************************
+   *
+   * Displays an error dialog.
+   *
+   *****************************************************/
+  protected void showErrorDialog( int messageResourceId )
+    {
+    PaymentActivity paymentActivity = getPaymentActivity();
+
+    if ( paymentActivity != null ) paymentActivity.showErrorDialog( messageResourceId );
+    }
+
+
+  /*****************************************************
+   *
+   * Called just before the order is submited.
+   *
+   *****************************************************/
+  public void onPreSubmission( Order order )
+    {
     }
 
 

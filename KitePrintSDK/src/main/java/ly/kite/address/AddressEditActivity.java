@@ -20,8 +20,12 @@ import ly.kite.R;
 
 public class AddressEditActivity extends AAddressActivity implements View.OnClickListener
   {
+  static private  final String  KEY_ADDRESS_READ_ONLY     = "ly.kite.addressreadonly";
+  static private  final String  KEY_REQUEST_EMAIL_ADDRESS = "ly.kite.requestemailaddress";
 
-  private Address address;
+
+  private Address  mAddress;
+  private boolean  mRequestEmailAddress;
 
 
   private EditText  mRecipientNameEditText;
@@ -30,6 +34,7 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
   private EditText  mAddressCityEditText;
   private EditText  mAddressCountyEditText;
   private EditText  mAddressPostcodeEditText;
+  private EditText  mEmailAddressEditText;
   private Button    mProceedButton;
 
 
@@ -41,13 +46,33 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
    * Starts the activity.
    *
    *****************************************************/
-  static public void startForResult( Activity activity, Address address, int requestCode )
+  static public void startForResult( Activity activity, Address address, boolean addressReadOnly, boolean requestEmailAddress, String emailAddress, int requestCode )
     {
     Intent intent = new Intent( activity, AddressEditActivity.class );
 
+
     addAddress( address, intent );
 
+    intent.putExtra( KEY_ADDRESS_READ_ONLY,     addressReadOnly );
+
+
+    intent.putExtra( KEY_REQUEST_EMAIL_ADDRESS, requestEmailAddress );
+
+    addEmailAddress( emailAddress, intent );
+
+
     activity.startActivityForResult( intent, requestCode );
+    }
+
+
+  /*****************************************************
+   *
+   * Starts the activity.
+   *
+   *****************************************************/
+  static public void startForResult( Activity activity, Address address, int requestCode )
+    {
+    startForResult( activity, address, false, false, null, requestCode );
     }
 
 
@@ -55,6 +80,21 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
   public void onCreate( Bundle savedInstanceState )
     {
     super.onCreate( savedInstanceState );
+
+
+    Intent intent = getIntent();
+
+    boolean addressReadOnly     = false;
+    String  emailAddress        = null;
+
+    if ( intent != null )
+      {
+      mAddress             = getAddress( intent );
+      addressReadOnly      = intent.getBooleanExtra( KEY_ADDRESS_READ_ONLY,     false );
+
+      mRequestEmailAddress = intent.getBooleanExtra( KEY_REQUEST_EMAIL_ADDRESS, false );
+      emailAddress         = getEmailAddress( intent );
+      }
 
 
     setContentView( R.layout.screen_address_edit );
@@ -65,13 +105,12 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
     mAddressCityEditText     = (EditText)findViewById( R.id.edit_text_address_city     );
     mAddressCountyEditText   = (EditText)findViewById( R.id.edit_text_address_county   );
     mAddressPostcodeEditText = (EditText)findViewById( R.id.edit_text_address_postcode );
+    mEmailAddressEditText    = (EditText)findViewById( R.id.edit_text_email_address    );
 
     mProceedButton           = (Button)findViewById( R.id.proceed_overlay_button );
 
 
-    address = getAddress( getIntent() );
-
-    if ( address != null )
+    if ( mAddress != null )
       {
       setTitle( R.string.title_activity_address_edit );
       }
@@ -79,21 +118,38 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
       {
       setTitle( R.string.manual_add_address );
 
-      address = new Address();
-      address.setCountry( Country.getInstance( Locale.getDefault() ) );
+      mAddress = new Address();
+      mAddress.setCountry( Country.getInstance( Locale.getDefault() ) );
       }
 
 
-    mRecipientNameEditText.setText( address.getRecipientName() );
-    mAddressLine1EditText.setText( address.getLine1() );
-    mAddressLine2EditText.setText( address.getLine2() );
-    mAddressCityEditText.setText( address.getCity() );
-    mAddressCountyEditText.setText( address.getStateOrCounty() );
-    mAddressPostcodeEditText.setText( address.getZipOrPostalCode() );
+    mRecipientNameEditText.setText( mAddress.getRecipientName() );
+    mAddressLine1EditText.setText( mAddress.getLine1() );
+    mAddressLine2EditText.setText( mAddress.getLine2() );
+    mAddressCityEditText.setText( mAddress.getCity() );
+    mAddressCountyEditText.setText( mAddress.getStateOrCounty() );
+    mAddressPostcodeEditText.setText( mAddress.getZipOrPostalCode() );
+
+
+    // If there is an email address text field - set it up according to whether we want
+    // the user to enter an email address.
+
+    if ( mEmailAddressEditText != null )
+      {
+      if ( mRequestEmailAddress )
+        {
+        mEmailAddressEditText.setVisibility( View.VISIBLE );
+        mEmailAddressEditText.setText( emailAddress );
+        }
+      else
+        {
+        mEmailAddressEditText.setVisibility( View.GONE );
+        }
+      }
 
 
     final Country[] countries = Country.values();
-    int selected = address.getCountry().ordinal();
+    int selected = mAddress.getCountry().ordinal();
     Spinner spinner = (Spinner)findViewById( R.id.spinner_country );
     spinner.setAdapter( new ArrayAdapter<Country>( this, android.R.layout.simple_spinner_dropdown_item, countries ) );
     spinner.setOnItemSelectedListener( new AdapterView.OnItemSelectedListener()
@@ -104,7 +160,7 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
       if ( i >= 0 && i < countries.length )
         {
         Country c = countries[ (int) i ];
-        address.setCountry( c );
+        mAddress.setCountry( c );
         }
       }
 
@@ -115,6 +171,17 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
     } );
 
     spinner.setSelection( selected );
+
+
+    if ( addressReadOnly )
+      {
+      mAddressLine1EditText.setEnabled( false );
+      mAddressLine2EditText.setEnabled( false );
+      mAddressCityEditText.setEnabled( false );
+      mAddressCountyEditText.setEnabled( false );
+      mAddressPostcodeEditText.setEnabled( false );
+      spinner.setEnabled( false );
+      }
 
 
     mProceedButton.setText( R.string.address_edit_proceed_button_text );
@@ -180,36 +247,67 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
 
   public void onSaveClicked()
     {
+    // Get and verify the recipient name
 
     String recipient = mRecipientNameEditText.getText().toString();
+
     if ( recipient.trim().length() == 0 )
       {
       displayModalDialog( R.string.alert_dialog_title_oops, R.string.alert_dialog_message_no_recipient, R.string.OK, null, 0, null );
+
       return;
       }
 
+
+    // Get and verify the first address line
+
     String line1 = mAddressLine1EditText.getText().toString();
+
     if ( line1.trim().length() == 0 )
       {
       displayModalDialog( R.string.alert_dialog_title_oops, R.string.alert_dialog_message_no_line1, R.string.OK, null, 0, null );
+
       return;
       }
 
+
+    // Get and verify the post code
+
     String postalCode = mAddressPostcodeEditText.getText().toString();
+
     if ( postalCode.trim().length() == 0 )
       {
       displayModalDialog( R.string.alert_dialog_title_oops, R.string.alert_dialog_message_no_postal_code, R.string.OK, null, 0, null );
       return;
       }
 
-    address.setRecipientName  ( recipient );
-    address.setLine1          ( line1 );
-    address.setLine2          ( mAddressLine2EditText.getText().toString() );
-    address.setCity           ( mAddressCityEditText.getText().toString() );
-    address.setStateOrCounty  ( mAddressCountyEditText.getText().toString() );
-    address.setZipOrPostalCode( postalCode );
 
-    returnAddressResult( address );
+    // If we want an email address, make sure one was entered
+
+    String emailAddress = null;
+
+    if ( mRequestEmailAddress && mEmailAddressEditText != null )
+      {
+      emailAddress = mEmailAddressEditText.getText().toString();
+
+      if ( emailAddress.trim().length() < 1 )
+        {
+        displayModalDialog( R.string.alert_dialog_title_oops, R.string.alert_dialog_message_no_email_address, R.string.OK, null, NO_BUTTON, null );
+
+        return;
+        }
+      }
+
+
+    // Update the address
+    mAddress.setRecipientName  ( recipient );
+    mAddress.setLine1          ( line1 );
+    mAddress.setLine2          ( mAddressLine2EditText.getText().toString() );
+    mAddress.setCity           ( mAddressCityEditText.getText().toString() );
+    mAddress.setStateOrCounty  ( mAddressCountyEditText.getText().toString() );
+    mAddress.setZipOrPostalCode( postalCode );
+
+    returnResult( mAddress, emailAddress );
 
     finish();
     }

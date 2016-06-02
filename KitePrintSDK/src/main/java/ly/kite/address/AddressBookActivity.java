@@ -270,7 +270,7 @@ public class AddressBookActivity extends AAddressActivity
 
         Address selectedAddress = (Address)mAddressBookListAdaptor.getItem( (int) position );
 
-        returnAddressResult( selectedAddress );
+        returnResult( selectedAddress );
 
         finish();
         }

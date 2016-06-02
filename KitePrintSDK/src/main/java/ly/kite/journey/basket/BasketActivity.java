@@ -52,6 +52,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -67,8 +68,8 @@ import ly.kite.basket.BasketItem;
 import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.ICatalogueConsumer;
 import ly.kite.catalogue.Product;
+import ly.kite.checkout.AOrderSubmissionActivity;
 import ly.kite.checkout.AShippingActivity;
-import ly.kite.checkout.PaymentActivity;
 import ly.kite.checkout.ShippingActivity;
 import ly.kite.image.ImageAgent;
 import ly.kite.journey.AKiteActivity;
@@ -122,18 +123,18 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
   private String                  mContactPhone;
   private HashMap<String,String>  mAdditionalParametersMap;
 
-  private ListView          mListView;
-  private TextView          mBasketEmptyTextView;
-  private ProgressBar       mProgressSpinner;
-  private TextView          mDeliveryAddressTextView;
-  private TextView          mTotalShippingPriceTextView;
-  private TextView          mTotalPriceTextView;
+  private ListView                mListView;
+  private TextView                mBasketEmptyTextView;
+  private ProgressBar             mProgressSpinner;
+  private TextView                mDeliveryAddressTextView;
+  private TextView                mTotalShippingPriceTextView;
+  private TextView                mTotalPriceTextView;
 
-  private Catalogue         mCatalogue;
+  private Catalogue               mCatalogue;
 
-  private BasketAdaptor     mBasketAdaptor;
+  private BasketAdaptor           mBasketAdaptor;
 
-  private int               mPricingRequestId;
+  private int                     mPricingRequestId;
 
 
   ////////// Static Initialiser(s) //////////
@@ -244,6 +245,9 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
     mDeliveryAddressTextView    = (TextView)findViewById( R.id.delivery_address_text_view );
     mTotalShippingPriceTextView = (TextView)findViewById( R.id.total_shipping_price_text_view );
     mTotalPriceTextView         = (TextView)findViewById( R.id.total_price_text_view );
+
+
+    KiteSDK kiteSDK = KiteSDK.getInstance( this );
 
 
     setTitle( R.string.title_basket );
@@ -418,8 +422,8 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
     // Set up the order shipping details
     Order order = getOrder();
 
-    // Go to payment screen
-    PaymentActivity.startForResult( this, order, ACTIVITY_REQUEST_CODE_CHECKOUT );
+    // Start the payment
+    KiteSDK.getInstance( this ).startPaymentForResult( this, order, ACTIVITY_REQUEST_CODE_CHECKOUT );
     }
 
 
@@ -530,7 +534,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
     {
     Log.e( LOG_TAG, "Unable to get pricing", exception );
 
-    // TODO
+    Toast.makeText( this, "Unable to get pricing: " + exception.getMessage(), Toast.LENGTH_SHORT ).show();
     }
 
 
@@ -657,7 +661,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
     kiteSDK.setAppParameter( KiteSDK.Scope.CUSTOMER_SESSION, PARAMETER_NAME_CONTACT_EMAIL,    mContactEmail );
     kiteSDK.setAppParameter( KiteSDK.Scope.CUSTOMER_SESSION, PARAMETER_NAME_CONTACT_PHONE,    mContactPhone );
 
-    onShippingAddress();
+    if ( mShippingAddress != null ) onShippingAddress();
     }
 
 
