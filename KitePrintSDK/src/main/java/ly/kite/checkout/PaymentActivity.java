@@ -42,16 +42,11 @@ package ly.kite.checkout;
 import java.math.BigDecimal;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.FragmentManager;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
@@ -64,27 +59,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.paypal.android.sdk.payments.PayPalConfiguration;
-import com.paypal.android.sdk.payments.PayPalPayment;
 import com.paypal.android.sdk.payments.PayPalService;
-import com.paypal.android.sdk.payments.PaymentConfirmation;
-import com.paypal.android.sdk.payments.ProofOfPayment;
-
-import io.card.payment.CardIOActivity;
-import io.card.payment.CreditCard;
 
 import ly.kite.analytics.Analytics;
-import ly.kite.api.OrderState;
 import ly.kite.pricing.OrderPricing;
 import ly.kite.pricing.PricingAgent;
 import ly.kite.KiteSDK;
 import ly.kite.catalogue.MultipleCurrencyAmount;
 import ly.kite.ordering.Order;
 import ly.kite.R;
-import ly.kite.payment.PayPalCard;
-import ly.kite.payment.PayPalCardChargeListener;
-import ly.kite.payment.PayPalCardVaultStorageListener;
-import ly.kite.journey.AKiteActivity;
-import ly.kite.catalogue.SingleCurrencyAmount;
 
 
 ///// Class Declaration /////
@@ -359,6 +342,21 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
       R.string.Cancel,
       new FinishRunnable()
       );
+    }
+
+
+
+  /*****************************************************
+   *
+   * Called when the order is successfully submitted.
+   *
+   *****************************************************/
+  @Override
+  protected void onOrderSuccess( Order order )
+    {
+    super.onOrderSuccess( order );
+
+    if ( mPaymentFragment != null ) mPaymentFragment.onOrderSuccess( this, order, ACTIVITY_REQUEST_CODE_CHECKOUT );
     }
 
 

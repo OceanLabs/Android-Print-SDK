@@ -105,6 +105,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   static private final boolean DEBUG_INACTIVITY_TIMER                       = false;
 
   static public  final String  INTENT_EXTRA_NAME_IMAGE_SPEC_LIST            = KiteSDK.INTENT_PREFIX + ".imageSpecList";
+  static public  final String  INTENT_EXTRA_NAME_ORDER                      = KiteSDK.INTENT_PREFIX + ".order";
 
   static public  final int     ACTIVITY_REQUEST_CODE_ADD_TO_BASKET          = 10;
   static public  final int     ACTIVITY_REQUEST_CODE_GO_TO_BASKET           = 11;
@@ -428,8 +429,11 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
       // We intercept the home button and do the same as if the
       // back key had been pressed. We don't allow fragments to
       // intercept this one.
+      // We do, however, allow the activity to intercept it. For
+      // instance, pressing either back (action / device key) on
+      // the basket screen continues shopping.
 
-      super.onBackPressed();
+      onBackPressed();
 
       return ( true );
       }

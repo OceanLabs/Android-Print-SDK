@@ -94,7 +94,7 @@
                     android:textSize="16sp"/>
 
                 <ly.kite.widget.CustomTypefaceTextView
-                    android:id="@+id/order_id_text_view"
+                    android:id="@+id/order_receipt_text_view"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.0"
@@ -104,11 +104,10 @@
                     android:textStyle="bold"/>
 
                 <ly.kite.widget.CustomTypefaceButton
-                    android:id="@+id/continue_shopping_button"
+                    android:id="@+id/next_button"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:background="#ffe34b"
-                    android:onClick="onContinueShoppingClicked"
                     android:text="@string/Continue_Shopping"
                     android:textColor="#515151"
                     android:textSize="@dimen/control_label_text_size"/>

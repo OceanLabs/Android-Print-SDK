@@ -173,6 +173,18 @@ abstract public class APaymentFragment extends AKiteFragment implements View.OnC
     }
 
 
+  /*****************************************************
+   *
+   * Called when the order is successfully submitted.
+   *
+   *****************************************************/
+  public void onOrderSuccess( Activity activity, Order order, int requestCode )
+    {
+    // The default action is to go to the receipt screen
+    OrderReceiptActivity.startForResult( activity, order, requestCode );
+    }
+
+
   ////////// Inner Class(es) //////////
 
   /*****************************************************

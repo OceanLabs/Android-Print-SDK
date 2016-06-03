@@ -314,7 +314,7 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
 
     if ( savedInstanceState == null )
       {
-      addFirstFragment();
+      addNextFragment();
 
       Analytics.getInstance( this ).trackCreateProductScreenViewed( mProduct );
       }
@@ -404,19 +404,14 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
 
   /*****************************************************
    *
-   * Called when a phone case has been created.
+   * Called when image assets have been selected.
    *
    *****************************************************/
   @Override
   public void isOnAssetsAdded()
     {
-    // We want to remove the image source fragment without triggering the back stack listener - otherwise
-    // it will detect that there are no fragments and exit.
-
-    popFragmentSecretly();
-
-
-    addFirstFragment();
+    // Go to the first creation fragment appropriate for the journey type
+    addNextFragment();
     }
 
 
@@ -576,7 +571,7 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
    * for the supplied product.
    *
    *****************************************************/
-  private void addFirstFragment()
+  private void addNextFragment()
     {
     // For all user journeys, if there are no assets - we first display the image
     // source fragment.

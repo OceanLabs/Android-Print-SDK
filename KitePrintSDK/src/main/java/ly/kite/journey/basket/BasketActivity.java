@@ -68,7 +68,6 @@ import ly.kite.basket.BasketItem;
 import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.ICatalogueConsumer;
 import ly.kite.catalogue.Product;
-import ly.kite.checkout.AOrderSubmissionActivity;
 import ly.kite.checkout.AShippingActivity;
 import ly.kite.checkout.ShippingActivity;
 import ly.kite.image.ImageAgent;

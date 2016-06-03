@@ -219,7 +219,9 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
     // Handle action bar item clicks here. The action bar will
     // automatically handle clicks on the Home/Up button, so long
     // as you specify a parent activity in AndroidManifest.xml.
+
     int id = item.getItemId();
+
     if ( id == R.id.action_save )
       {
       onSaveClicked();
@@ -228,10 +230,19 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
       }
     else if ( id == android.R.id.home )
       {
-      finish();
+      onCancel();
+
       return true;
       }
+
     return super.onOptionsItemSelected( item );
+    }
+
+
+  @Override
+  public void onBackPressed()
+    {
+    onCancel();
     }
 
 
@@ -241,7 +252,11 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
     if ( view == mProceedButton )
       {
       onSaveClicked();
+
+      return;
       }
+
+    super.onClick( view );
     }
 
 
@@ -308,6 +323,14 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
     mAddress.setZipOrPostalCode( postalCode );
 
     returnResult( mAddress, emailAddress );
+
+    finish();
+    }
+
+
+  private void onCancel()
+    {
+    setResult( RESULT_CANCELED );
 
     finish();
     }

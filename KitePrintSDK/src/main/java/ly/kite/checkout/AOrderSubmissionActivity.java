@@ -210,21 +210,6 @@ public class AOrderSubmissionActivity extends AKiteActivity implements IOrderSub
     }
 
 
-  /*****************************************************
-   *
-   * Proceeds to the receipt screen.
-   *
-   *****************************************************/
-  private void onOrderSuccess( Order order )
-    {
-    cleanUpAfterOrderSubmission();
-
-    Analytics.getInstance( this ).trackOrderSubmission( order );
-
-    OrderReceiptActivity.startForResult( this, order, ACTIVITY_REQUEST_CODE_CHECKOUT );
-    }
-
-
   ////////// Method(s) //////////
 
   /*****************************************************
@@ -236,6 +221,19 @@ public class AOrderSubmissionActivity extends AKiteActivity implements IOrderSub
     {
     // Submit the order using the order submission fragment
     mOrderSubmissionFragment = OrderSubmissionFragment.start( this, order );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the order is successfully submitted.
+   *
+   *****************************************************/
+  protected void onOrderSuccess( Order order )
+    {
+    cleanUpAfterOrderSubmission();
+
+    Analytics.getInstance( this ).trackOrderSubmission( order );
     }
 
 
