@@ -161,6 +161,8 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   private   String[]              mPermissions;
   private   Runnable              mPermissionsRunnable;
 
+  private   boolean               mConfirmEndSessionAction;
+
 
   ////////// Static Initialiser(s) //////////
 
@@ -224,8 +226,10 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
 
     // See if we are displaying the log out dialog fragment
-
     mInactivityLogOutDialogFragment = (LogOutDialogFragment)mFragmentManager.findFragmentByTag( LogOutDialogFragment.TAG );
+
+
+    setConfirmEndSessionAction( true );
     }
 
 
@@ -657,7 +661,8 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
       {
       ///// End customer session /////
 
-      showEndCustomerSessionDialog();
+      if ( mConfirmEndSessionAction ) showEndCustomerSessionDialog();
+      else                            endCustomerSession();
 
       return;
       }
@@ -772,6 +777,18 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
       {
       resetInactivityTimer();
       }
+    }
+
+
+  /*****************************************************
+   *
+   * Sets whether the end customer session action button
+   * displays a confirmation dialog first.
+   *
+   *****************************************************/
+  protected void setConfirmEndSessionAction( boolean confirm )
+    {
+    mConfirmEndSessionAction = confirm;
     }
 
 

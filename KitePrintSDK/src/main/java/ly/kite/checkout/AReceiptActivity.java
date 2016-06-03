@@ -207,7 +207,7 @@ abstract public class AReceiptActivity extends AOrderSubmissionActivity implemen
    *
    *****************************************************/
   @Override
-  public boolean onMenuItemSelected( int featureId, MenuItem item )
+  public boolean onOptionsItemSelected( MenuItem item )
     {
     if ( item.getItemId() == android.R.id.home )
       {
@@ -216,7 +216,7 @@ abstract public class AReceiptActivity extends AOrderSubmissionActivity implemen
       return ( true );
       }
 
-    return ( super.onMenuItemSelected( featureId, item ) );
+    return ( super.onOptionsItemSelected( item ) );
     }
 
 
@@ -272,14 +272,20 @@ abstract public class AReceiptActivity extends AOrderSubmissionActivity implemen
       ///// Next /////
 
       onNext();
+
+      return;
       }
 
-    else if ( view == mRetryPrintButton )
+    if ( view == mRetryPrintButton )
       {
       ///// Retry print /////
 
       onRetryPrint();
+
+      return;
       }
+
+    super.onClick( view );
     }
 
 
