@@ -10,6 +10,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import ly.kite.util.HTTPJSONRequest;
+import ly.kite.api.KiteAPIRequest;
 import ly.kite.KiteSDK;
 import ly.kite.KiteSDKException;
 
@@ -18,7 +19,7 @@ import ly.kite.KiteSDKException;
  */
 public class AddressSearchRequest {
 
-    private HTTPJSONRequest searchRequest;
+    private KiteAPIRequest searchRequest;
 
     public void cancelSearch() {
         if (searchRequest != null) {
@@ -63,8 +64,8 @@ public class AddressSearchRequest {
     }
 
     private void startSearch(Context context, String url, final Country country, final AddressSearchRequestListener listener) {
-        searchRequest = new HTTPJSONRequest(context, HTTPJSONRequest.HttpMethod.GET, url, null, null);
-        searchRequest.start(new HTTPJSONRequest.HTTPJSONRequestListener() {
+        searchRequest = new KiteAPIRequest(context, KiteAPIRequest.HttpMethod.GET, url, null, null);
+        searchRequest.start(new HTTPJSONRequest.IJSONResponseListener() {
             @Override
             public void onSuccess(int httpStatusCode, JSONObject json) {
                 searchRequest = null;

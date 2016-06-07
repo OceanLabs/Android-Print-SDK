@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * DeviceImageSource.java
+ * FromPhoneImageSource.java
  *
  *
  * Modified MIT License
@@ -58,21 +58,23 @@ import ly.kite.photopicker.PhotoPicker;
 
 /*****************************************************
  *
- * This class represents a local device image source.
+ * This class represents an upload from phone image source.
  *
  *****************************************************/
-public class DeviceImageSource extends AImageSource
+public class FromPhoneImageSource extends AImageSource
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String  LOG_TAG                                       = "DeviceImageSource";
+  static private final String  LOG_TAG  = "FromPhoneImageSource";
 
 
   ////////// Static Variable(s) //////////
 
 
   ////////// Member Variable(s) //////////
+
+  private PhotoFromPhoneFragment  mPhotoFromPhotaFragment;
 
 
   ////////// Static Initialiser(s) //////////
@@ -83,13 +85,13 @@ public class DeviceImageSource extends AImageSource
 
   ////////// Constructor(s) //////////
 
-  public DeviceImageSource()
+  public FromPhoneImageSource()
     {
-    super( R.color.image_source_background_device,
-           R.drawable.ic_add_photo_white,
-           R.string.image_source_device,
-           R.id.add_photo_from_device,
-           R.string.select_photo_from_device );
+    super( R.color.image_source_background_from_phone,
+            R.drawable.ic_add_photo_white,
+            R.string.image_source_from_phone,
+            R.id.upload_photo_from_phone,
+            R.string.upload_photo_from_phone );
     }
 
 
@@ -115,7 +117,13 @@ public class DeviceImageSource extends AImageSource
    *****************************************************/
   public void onPick( Fragment fragment, int maxImageCount )
     {
-    requestPermission( Manifest.permission.READ_EXTERNAL_STORAGE, new StartPickerRunnable( fragment, maxImageCount ) );
+    // Start the photo from phone fragment
+
+    mPhotoFromPhotaFragment = new PhotoFromPhoneFragment();
+
+    mPhotoFromPhotaFragment.setTargetFragment( fragment, 0 );
+
+    mPhotoFromPhotaFragment.show( fragment.getFragmentManager(), PhotoFromPhoneFragment.TAG );
     }
 
 
@@ -129,60 +137,12 @@ public class DeviceImageSource extends AImageSource
   @Override
   public void getAssetsFromPickerResult( Activity activity, Intent data, IAssetConsumer assetConsumer )
     {
-    if ( data != null )
-      {
-      List<Asset> assetList = new ArrayList<>();
-
-
-      try
-        {
-        Photo[] devicePhotos = PhotoPicker.getResultPhotos( data );
-
-        if ( devicePhotos != null )
-          {
-          for ( Photo devicePhoto : devicePhotos )
-            {
-            assetList.add( new Asset( devicePhoto.getUri() ) );
-            }
-          }
-        }
-      catch ( NullPointerException npe )
-        {
-        // Ignore
-        }
-
-
-      assetConsumer.isacOnAssets( assetList );
-      }
+    // The upload photo from phone dialog is a fragment, not an activity, so it doesn't return
+    // a result in the same way as other pickers. This method, therefore, is redundant for this
+    // picker.
     }
 
 
   ////////// Inner Class(es) //////////
-
-  /*****************************************************
-   *
-   * A runnable that simply calls the onPick method. Used
-   * to call the method once permissions have been granted.
-   *
-   *****************************************************/
-  private class StartPickerRunnable extends AStartPickerRunnable
-    {
-    StartPickerRunnable( Fragment fragment, int maxImageCount )
-      {
-      super( fragment, maxImageCount );
-      }
-
-
-    @Override
-    public void run()
-      {
-      // There seems to be a bug with determining the orientation of URI-based images on
-      // (e.g.) Samsung S6, so we need to always use the photo picker (which returns file
-      // paths) rather than the built-in gallery picker (which returns URIs).
-
-      // TODO: Max image count is ignored for now
-      PhotoPicker.startPhotoPickerForResult( mFragment, getActivityRequestCode() );
-      }
-    }
 
   }

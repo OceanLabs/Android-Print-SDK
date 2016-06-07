@@ -568,7 +568,14 @@ public class KiteSDK
 
     for ( AImageSource imageSource : getAvailableImageSources() )
       {
-      imageSource.endCustomerSession( mApplicationContext );
+      try
+        {
+        imageSource.endCustomerSession( mApplicationContext );
+        }
+      catch ( Exception e )
+        {
+        Log.e( LOG_TAG, "Unable to end customer session for image source: " + imageSource, e );
+        }
       }
 
 

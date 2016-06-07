@@ -53,6 +53,7 @@
     <color name="image_source_background_device">#ff48cfad</color>
     <color name="image_source_background_instagram">#fff6bb42</color>
     <color name="image_source_background_facebook">#ff5d9cec</color>
+    <color name="image_source_background_from_phone">#ffaa3311</color>
 
     <color name="image_selection_placeholder_background_1">#ffe6e9ed</color>
     <color name="image_selection_placeholder_background_2">#ffdce0e5</color>
@@ -62,6 +63,8 @@
     <color name="review_and_crop_quantity_highlight">#fff29919</color>
 
     <color name="photobook_target_image_highlight">#ff66cccc</color>
+
+    <color name="qr_code_url">#ff59acd6</color>
 
     <color name="basket_action_icon_quantity_background">#ff45a18a</color>
     <color name="basket_action_icon_quantity_text">@android:color/white</color>

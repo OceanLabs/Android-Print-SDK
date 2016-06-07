@@ -62,7 +62,7 @@ import ly.kite.util.HTTPJSONRequest;
  * API.
  *
  *****************************************************/
-public class MixpanelAgent implements HTTPJSONRequest.HTTPJSONRequestListener
+public class MixpanelAgent implements HTTPJSONRequest.IJSONResponseListener
   {
   ////////// Static Constant(s) //////////
 

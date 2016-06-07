@@ -31,7 +31,7 @@ public class AssetUploadRequest {
     private Context mContext;
 
     private boolean cancelled;
-    private HTTPJSONRequest registerImageURLAssetsReq, signReq;
+    private KiteAPIRequest registerImageURLAssetsReq, signReq;
     private int numOutstandingAsyncOpertions = 0;
     private boolean notifiedUploadListenerOfOutcome = false;
 
@@ -133,8 +133,8 @@ public class AssetUploadRequest {
         }
 
         String url = String.format("%s/asset/sign/?mime_types=%s&client_asset=true", KiteSDK.getInstance( context ).getAPIEndpoint(), mimeTypes.toString());
-        registerImageURLAssetsReq = new HTTPJSONRequest( context, HTTPJSONRequest.HttpMethod.GET, url, null, (String) null);
-        registerImageURLAssetsReq.start(new HTTPJSONRequest.HTTPJSONRequestListener() {
+        registerImageURLAssetsReq = new KiteAPIRequest( context, KiteAPIRequest.HttpMethod.GET, url, null, (String) null);
+        registerImageURLAssetsReq.start(new HTTPJSONRequest.IJSONResponseListener() {
             @Override
             public void onSuccess(int httpStatusCode, JSONObject json) {
                 if (cancelled || notifiedUploadListenerOfOutcome) return;
@@ -318,8 +318,8 @@ public class AssetUploadRequest {
         final int expectedRegisteredAssetCount = c;
 
         String url = String.format("%s/asset/", KiteSDK.getInstance( context ).getAPIEndpoint());
-        registerImageURLAssetsReq = new HTTPJSONRequest( context, HTTPJSONRequest.HttpMethod.PATCH, url, null, jsonBody.toString());
-        registerImageURLAssetsReq.start(new HTTPJSONRequest.HTTPJSONRequestListener() {
+        registerImageURLAssetsReq = new KiteAPIRequest( context, KiteAPIRequest.HttpMethod.PATCH, url, null, jsonBody.toString());
+        registerImageURLAssetsReq.start(new HTTPJSONRequest.IJSONResponseListener() {
             @Override
             public void onSuccess(int httpStatusCode, JSONObject json) {
                 int registeredAssetCount = 0;

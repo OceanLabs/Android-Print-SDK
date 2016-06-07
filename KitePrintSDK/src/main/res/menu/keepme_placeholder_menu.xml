@@ -19,4 +19,8 @@
         android:id="@+id/add_photo_from_facebook"
         android:title=""/>
 
+    <item
+        android:id="@+id/upload_photo_from_phone"
+        android:title=""/>
+
 </menu>

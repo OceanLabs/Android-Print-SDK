@@ -467,6 +467,20 @@ public class Asset implements Parcelable
 
   /*****************************************************
    *
+   * Returns the image file path.
+   *
+   * @throw IllegalStateException if the asset was not
+   *        constructed from an image file.
+   *
+   *****************************************************/
+  public File getImageFile()
+    {
+    return ( new File( getImageFilePath() ) );
+    }
+
+
+  /*****************************************************
+   *
    * Returns the stored image bytes. Note that this is only
    * for use by the {@link AssetHelper}. The proper way to
    * get the MIME type is to use

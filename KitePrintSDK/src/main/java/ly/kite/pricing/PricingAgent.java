@@ -53,6 +53,7 @@ import ly.kite.address.Address;
 import ly.kite.address.Country;
 import ly.kite.util.ACache;
 import ly.kite.util.HTTPJSONRequest;
+import ly.kite.api.KiteAPIRequest;
 import ly.kite.ordering.Order;
 
 
@@ -151,7 +152,7 @@ public class PricingAgent extends ACache<String,OrderPricing,PricingAgent.Consum
 
       String requestURLString = String.format( PRICING_ENDPOINT_FORMAT_STRING, kiteSDK.getAPIEndpoint() );
 
-      HTTPJSONRequest request = new HTTPJSONRequest( context, HTTPJSONRequest.HttpMethod.POST, requestURLString, null, requestBodyString );
+      KiteAPIRequest request = new KiteAPIRequest( context, KiteAPIRequest.HttpMethod.POST, requestURLString, null, requestBodyString );
 
       request.start( new PriceRequestListener( requestBodyString ) );
       }
@@ -362,7 +363,7 @@ public class PricingAgent extends ACache<String,OrderPricing,PricingAgent.Consum
    * The callback for a price request.
    *
    *****************************************************/
-  private class PriceRequestListener implements HTTPJSONRequest.HTTPJSONRequestListener
+  private class PriceRequestListener implements HTTPJSONRequest.IJSONResponseListener
     {
     private String  mRequestBodyString;
 

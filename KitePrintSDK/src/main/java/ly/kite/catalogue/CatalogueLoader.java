@@ -62,6 +62,7 @@ import ly.kite.KiteSDK;
 import ly.kite.journey.creation.ProductCreationActivity;
 import ly.kite.journey.UserJourneyType;
 import ly.kite.util.HTTPJSONRequest;
+import ly.kite.api.KiteAPIRequest;
 
 
 ///// Class Declaration /////
@@ -75,7 +76,7 @@ import ly.kite.util.HTTPJSONRequest;
  *   - Additional details such as banners etc.
  *
  ****************************************************/
-public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
+public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
   {
   ////////// Static Constant(s) //////////
 
@@ -151,7 +152,7 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
 
   private Handler                        mHandler;
 
-  private HTTPJSONRequest                mHTTPJSONRequest;
+  private KiteAPIRequest mHTTPJSONRequest;
   private LinkedList<ICatalogueConsumer> mConsumerList;
   private String                         mRequestAPIKey;
 
@@ -620,9 +621,9 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
 
       try
         {
-        JSONObject errorJSONObject = jsonData.getJSONObject( HTTPJSONRequest.ERROR_RESPONSE_JSON_OBJECT_NAME );
-        String     errorMessage    = errorJSONObject.getString( HTTPJSONRequest.ERROR_RESPONSE_MESSAGE_JSON_NAME );
-        String     errorCode       = errorJSONObject.getString( HTTPJSONRequest.ERROR_RESPONSE_CODE_JSON_NAME );
+        JSONObject errorJSONObject = jsonData.getJSONObject( KiteAPIRequest.ERROR_RESPONSE_JSON_OBJECT_NAME );
+        String     errorMessage    = errorJSONObject.getString( KiteAPIRequest.ERROR_RESPONSE_MESSAGE_JSON_NAME );
+        String     errorCode       = errorJSONObject.getString( KiteAPIRequest.ERROR_RESPONSE_CODE_JSON_NAME );
 
         Exception exception = new KiteSDKException( errorMessage );
 
@@ -706,7 +707,7 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
 
     String url = String.format( TEMPLATE_REQUEST_FORMAT_STRING, KiteSDK.getInstance( mContext ).getAPIEndpoint() );
 
-    mHTTPJSONRequest = new HTTPJSONRequest( mContext, HTTPJSONRequest.HttpMethod.GET, url, null, null );
+    mHTTPJSONRequest = new KiteAPIRequest( mContext, KiteAPIRequest.HttpMethod.GET, url, null, null );
     mConsumerList.addLast( consumer );
     mRequestAPIKey = currentAPIKey;
 

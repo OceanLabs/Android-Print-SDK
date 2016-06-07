@@ -160,13 +160,15 @@
     <string name="Size">Size</string>
     <string name="Total">Total</string>
 
-    <string name="image_source_device">CAMERA</string>
-    <string name="image_source_instagram">INSTAGRAM</string>
-    <string name="image_source_facebook">FACEBOOK</string>
+    <string name="image_source_device">Camera</string>
+    <string name="image_source_instagram">Instagram</string>
+    <string name="image_source_facebook">Facebook</string>
+    <string name="image_source_from_phone">Upload from Phone</string>
 
     <string name="select_photo_from_device">Choose camera photo</string>
     <string name="select_photo_from_instagram">Choose Instagram photo</string>
     <string name="select_photo_from_facebook">Choose Facebook photo</string>
+    <string name="upload_photo_from_phone">Upload photo from phone</string>
 
     <string name="destination_description_gbr">UK</string>
     <string name="destination_description_europe">Europe</string>
@@ -284,6 +286,10 @@
 
     <string name="alert_dialog_title_order_cancelled">Order Cancelled</string>
     <string name="alert_dialog_message_order_cancelled">Something has gone wrong - your order appears to have been cancelled during submission.</string>
+
+    <string name="scan_qr_code">Scan QR Code</string>
+    <string name="scan_qr_code_instructions">Please scan the QR code using a\nQR reader app on your device.</string>
+    <string name="scan_qr_code_alternate_instructions">Alternatively type the following URL into your mobile browser\'s address bar:</string>
 
     <!--
     <string name="title_section1">Section 1</string>
