@@ -342,14 +342,13 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
   /*****************************************************
    *
-   * Called to prepare the options menu.
+   * Called to create the options menu.
    *
    *****************************************************/
   @Override
-  public boolean onPrepareOptionsMenu( Menu menu )
+  public boolean onCreateOptionsMenu( Menu menu )
     {
-    boolean displayMenu = super.onPrepareOptionsMenu( menu );
-
+    boolean displayMenu = false;
 
 
     // If we have been supplied an end customer session icon - inflate the menu
@@ -393,6 +392,10 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
           }
         }
       }
+
+
+    // Normal actions (including the basket icon) go to the right of the end session icon
+    if ( super.onCreateOptionsMenu( menu ) ) displayMenu = true;
 
 
     return ( displayMenu );
@@ -996,17 +999,39 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
    * Displays an error dialog.
    *
    *****************************************************/
-  public void showErrorDialog( String message )
+  public void showErrorDialog( String title, String message )
     {
     displayModalDialog
             (
-            R.string.alert_dialog_title_oops,
+            title,
             message,
             R.string.OK,
             null,
             NO_BUTTON,
             null
             );
+    }
+
+
+  /*****************************************************
+   *
+   * Displays an error dialog.
+   *
+   *****************************************************/
+  public void showErrorDialog( String message )
+    {
+    showErrorDialog( getString( R.string.alert_dialog_title_oops ), message );
+    }
+
+
+  /*****************************************************
+   *
+   * Displays an error dialog.
+   *
+   *****************************************************/
+  public void showErrorDialog( int titleResourceId, int messageResourceId )
+    {
+    showErrorDialog( getString( titleResourceId ), getString( messageResourceId ) );
     }
 
 

@@ -100,6 +100,9 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
 
   private APaymentFragment     mPaymentFragment;
 
+  private boolean              mWaitingForInstanceStateRestore;
+  private boolean              mPaymentFragmentReady;
+
   private ListView             mOrderSummaryListView;
   private EditText             mPromoEditText;
   private Button               mPromoButton;
@@ -153,7 +156,13 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
 
     if ( savedInstanceState != null )
       {
+      mWaitingForInstanceStateRestore = true;
+
       mOrder = savedInstanceState.getParcelable( KEY_ORDER );
+      }
+    else
+      {
+      mWaitingForInstanceStateRestore = false;
       }
 
     if ( mOrder == null )
@@ -255,6 +264,16 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
 
 
   @Override
+  public void onRestoreInstanceState( Bundle state )
+    {
+    super.onRestoreInstanceState( state );
+
+    mWaitingForInstanceStateRestore = false;
+
+    checkRequestPrices();
+    }
+
+  @Override
   public void onSaveInstanceState( Bundle outState )
     {
     super.onSaveInstanceState( outState );
@@ -307,10 +326,7 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
   @Override
   public void paOnSuccess( int requestId, OrderPricing pricing )
     {
-    mOrderPricing                = pricing;
-
-    mLastPriceRetrievalSucceeded = true;
-
+    mOrderPricing = pricing;
 
     mPromoButton.setEnabled( true );
 
@@ -393,8 +409,24 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
    *****************************************************/
   public void onPaymentFragmentReady()
     {
-    // Get the pricing information
-    requestPrices();
+    mPaymentFragmentReady = true;
+
+    checkRequestPrices();
+    }
+
+
+  /*****************************************************
+   *
+   * Checks if the state has been restored, and the payment
+   * fragment is ready, before requesting prices.
+   *
+   *****************************************************/
+  private void checkRequestPrices()
+    {
+    if ( mPaymentFragmentReady && ( ! mWaitingForInstanceStateRestore ) )
+      {
+      requestPrices();
+      }
     }
 
 
@@ -405,11 +437,11 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
    *****************************************************/
   void requestPrices()
     {
-    mLastSubmittedPromoCode = mPromoEditText.getText().toString();
+    String promoCode = mPromoEditText.getText().toString();
 
-    if ( mLastSubmittedPromoCode.trim().equals( "" ) ) mLastSubmittedPromoCode = null;
+    if ( promoCode != null && promoCode.trim().equals( "" ) ) promoCode = null;
 
-    mOrderPricing  = PricingAgent.getInstance().requestPricing( this, mOrder, mLastSubmittedPromoCode, this );
+    mOrderPricing = PricingAgent.getInstance().requestPricing( this, mOrder, mLastSubmittedPromoCode = promoCode, this );
 
 
     // If the pricing wasn't cached - disable the buttons, and show the progress spinner, whilst
@@ -439,7 +471,7 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
    *****************************************************/
   void onGotPrices()
     {
-    if ( mPaymentFragment != null ) mPaymentFragment.onOrderPricing( mOrderPricing );
+    if ( mPaymentFragment != null ) mPaymentFragment.onOrderUpdate( mOrder, mOrderPricing );
 
 
     // Verify that amy promo code was accepted
@@ -448,6 +480,9 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
 
     if ( promoCodeInvalidMessage != null )
       {
+      mLastPriceRetrievalSucceeded = false;
+
+
       // A promo code was sent with the request but was invalid.
 
       // Change the colour to highlight it
@@ -468,6 +503,9 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
       }
     else
       {
+      mLastPriceRetrievalSucceeded = true;
+
+
       // Either there was no promo code, or it was valid. Save which ever it was.
 
       mOrder.setPromoCode( mLastSubmittedPromoCode );
@@ -574,7 +612,7 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
       // If we are clearing a promo code that was successfully used - re-request the
       // prices (i.e. without the code).
 
-      if ( mLastSubmittedPromoCode != null && mLastPriceRetrievalSucceeded )
+      if ( mLastPriceRetrievalSucceeded && mLastSubmittedPromoCode != null  )
         {
         requestPrices();
         }

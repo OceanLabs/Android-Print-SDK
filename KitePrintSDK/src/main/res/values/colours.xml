@@ -53,7 +53,7 @@
     <color name="image_source_background_device">#ff48cfad</color>
     <color name="image_source_background_instagram">#fff6bb42</color>
     <color name="image_source_background_facebook">#ff5d9cec</color>
-    <color name="image_source_background_from_phone">#ffaa3311</color>
+    <color name="image_source_background_from_phone">#ff48cfad</color>
 
     <color name="image_selection_placeholder_background_1">#ffe6e9ed</color>
     <color name="image_selection_placeholder_background_2">#ffdce0e5</color>

@@ -133,10 +133,25 @@ public class BasketAgent
    * been added to the basket.
    *
    *****************************************************/
-  public void addItem( Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, int orderQuantity, IAddListener addListener )
+  public void addItem( long itemId, Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, int orderQuantity, IAddListener addListener )
     {
     // Create an add item task and start it
-    new AddItemTask( product, optionsMap, imageSpecList, orderQuantity, addListener ).execute();
+    new AddItemTask( itemId, product, optionsMap, imageSpecList, orderQuantity, addListener ).execute();
+    }
+
+
+  /*****************************************************
+   *
+   * Saves an item to the basket. This is performed
+   * asynchronously because assets may need to be copied
+   * into a dedicated directory, so a listener should be
+   * provided. The listener is called once the order has
+   * been added to the basket.
+   *
+   *****************************************************/
+  public void addItem( Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, int orderQuantity, IAddListener addListener )
+    {
+    addItem( -1, product, optionsMap, imageSpecList, orderQuantity, addListener );
     }
 
 
@@ -166,7 +181,7 @@ public class BasketAgent
 
     mDatabaseAgent.deleteItem( itemId );
 
-    addItem( product, optionsMap, imageSpecList, orderQuantity, addListener );
+    addItem( itemId, product, optionsMap, imageSpecList, orderQuantity, addListener );
     }
 
 
@@ -175,12 +190,12 @@ public class BasketAgent
    * Saves an item to the basket synchronously.
    *
    *****************************************************/
-  private void addItem( Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, int orderQuantity )
+  private void addItem( long itemId, Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, int orderQuantity )
     {
     // Move any referenced assets to the basket
     List<ImageSpec> basketImageSpecList = AssetHelper.createAsBasketAssets( mApplicationContext, imageSpecList );
 
-    mDatabaseAgent.saveItem( product, optionsMap, basketImageSpecList, orderQuantity );
+    mDatabaseAgent.saveItem( itemId, product, optionsMap, basketImageSpecList, orderQuantity );
     }
 
 
@@ -256,6 +271,7 @@ public class BasketAgent
    *****************************************************/
   private class AddItemTask extends AsyncTask<Void,Void,Void>
     {
+    private long                    mItemId;
     private Product                 mProduct;
     private HashMap<String,String>  mOptionsMap;
     private List<ImageSpec>         mImageSpecList;
@@ -263,8 +279,9 @@ public class BasketAgent
     private IAddListener            mAddListener;
 
 
-    AddItemTask( Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, int orderQuantity, IAddListener addListener )
+    AddItemTask( long itemId, Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, int orderQuantity, IAddListener addListener )
       {
+      mItemId        = itemId;
       mProduct       = product;
       mOptionsMap    = optionsMap;
       mImageSpecList = imageSpecList;
@@ -276,7 +293,7 @@ public class BasketAgent
     @Override
     protected Void doInBackground( Void... params )
       {
-      addItem( mProduct, mOptionsMap, mImageSpecList, mOrderQuantity );
+      addItem( mItemId, mProduct, mOptionsMap, mImageSpecList, mOrderQuantity );
 
       return ( null );
       }

@@ -498,7 +498,7 @@ public class KiteSDK
 
     // Clear all session parameters
     clearAllParameters( Scope.APP_SESSION );
-    clearAllParameters( Scope.CUSTOMER_SESSION );
+    //clearAllParameters( Scope.CUSTOMER_SESSION );
 
     setEnvironment( apiKey, environment );
 

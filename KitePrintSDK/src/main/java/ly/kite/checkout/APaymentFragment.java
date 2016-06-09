@@ -66,6 +66,7 @@ abstract public class APaymentFragment extends AKiteFragment implements View.OnC
 
   ////////// Member Variable(s) //////////
 
+  protected Order         mOrder;
   protected OrderPricing  mOrderPricing;
 
 
@@ -123,8 +124,9 @@ abstract public class APaymentFragment extends AKiteFragment implements View.OnC
    * Called with the order pricing.
    *
    *****************************************************/
-  public void onOrderPricing( OrderPricing orderPricing )
+  public void onOrderUpdate( Order order, OrderPricing orderPricing )
     {
+    mOrder        = order;
     mOrderPricing = orderPricing;
     }
 

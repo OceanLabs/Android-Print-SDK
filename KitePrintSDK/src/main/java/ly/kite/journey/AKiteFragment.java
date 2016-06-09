@@ -283,21 +283,6 @@ abstract public class AKiteFragment extends Fragment
     }
 
 
-//  /*****************************************************
-//   *
-//   * Called to create the menu.
-//   *
-//   *****************************************************/
-//  protected void onCreateOptionsMenu( Menu menu, MenuInflater menuInflator, int menuResourceId )
-//    {
-//    // Inflate the menu
-//    menuInflator.inflate( menuResourceId, menu );
-//
-//    // Get a reference to the basket action icon
-//    mBasketMenuItem = menu.findItem( R.id.basket_menu_item );
-//    }
-
-
   /*****************************************************
    *
    * Called to prepare the menu.

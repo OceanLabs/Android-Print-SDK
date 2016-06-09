@@ -337,19 +337,6 @@ public class ShippingActivity extends AShippingActivity implements View.OnClickL
       }
     }
 
-  private void showErrorDialog( String title, String message )
-    {
-    AlertDialog.Builder builder = new AlertDialog.Builder( this );
-    builder.setTitle( title ).setMessage( message ).setPositiveButton( R.string.OK, null );
-    Dialog d = builder.create();
-    d.show();
-    }
-
-  private void showErrorDialog( int titleResourceId, int messageResourceId )
-    {
-    showErrorDialog( getString( titleResourceId ), getString( messageResourceId ) );
-    }
-
 
   public void onForwardsButtonClicked()
     {

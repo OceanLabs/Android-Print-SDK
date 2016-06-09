@@ -5,7 +5,7 @@
 
     <item
         android:id="@+id/item_done"
-        android:icon="@drawable/ic_done_black_24dp"
+        android:icon="@drawable/ip_icon_done"
         android:title="@string/Done"
         android:showAsAction="ifRoom|withText"
         android:visible="false"

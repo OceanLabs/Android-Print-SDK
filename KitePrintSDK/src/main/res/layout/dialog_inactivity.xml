@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
+    android:layout_width="@dimen/log_out_dialog_width"
     android:layout_height="wrap_content"
     android:paddingLeft="@dimen/screen_horizontal_margin"
     android:paddingTop="@dimen/screen_vertical_margin"
@@ -44,16 +44,17 @@
             android:id="@+id/log_out_button"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:background="@color/inactivity_warning_log_out_button_background"
+            android:background="@drawable/inactivity_warning_log_out_button_background"
             android:padding="10dp"
             android:textColor="@android:color/white"
             android:text="@string/Log_Out"/>
         <ly.kite.widget.CustomTypefaceButton
             android:id="@+id/cancel_button"
             android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:background="@color/inactivity_warning_cancel_button_background"
+            android:background="@drawable/inactivity_warning_cancel_button_background"
             android:padding="10dp"
             android:textColor="@android:color/white"
             android:text="@string/Cancel"/>

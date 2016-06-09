@@ -418,6 +418,17 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
   @Override
   protected void onRightButtonClicked()
     {
+    // If we don't have a shipping address - display a dialog to the user
+
+    if ( mShippingAddress == null )
+      {
+      showErrorDialog( R.string.alert_dialog_title_invalid_delivery_address, R.string.alert_dialog_message_invalid_delivery_address );
+
+      return;
+      }
+
+
+
     // Set up the order shipping details
     Order order = getOrder();
 
@@ -444,6 +455,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
     if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.INVISIBLE );
 
     setLeftButtonEnabled( true );
+    setRightButtonEnabled( true );
 
 
     loadAndDisplayBasket();
@@ -672,9 +684,6 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
   private void onShippingAddress()
     {
     mDeliveryAddressTextView.setText( mShippingAddress.toSingleLineText() );
-
-    // The Checkout button is only enabled when we have an address
-    setRightButtonEnabled( true );
 
     checkRequestPrices();
     }

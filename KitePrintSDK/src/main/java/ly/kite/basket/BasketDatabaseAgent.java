@@ -265,11 +265,11 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
    * Saves an item to the basket.
    *
    *****************************************************/
-  public void saveItem( Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, int orderQuantity )
+  public void saveItem( long itemId, Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, int orderQuantity )
     {
     // Create the item and product options
 
-    long itemId = newItem( product, optionsMap, orderQuantity );
+    itemId = newItem( itemId, product, optionsMap, orderQuantity );
 
     if ( itemId < 0 ) return;
 
@@ -294,11 +294,11 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
    *         if the job could not be created.
    *
    *****************************************************/
-  private long newItem( Product product, HashMap<String,String> optionsMap, int orderQuantity )
+  private long newItem( long itemId, Product product, HashMap<String,String> optionsMap, int orderQuantity )
     {
     // Insert the item
 
-    long itemId = insertItem( product, orderQuantity );
+    itemId = insertItem( itemId, product, orderQuantity );
 
     if ( itemId < 0 ) return ( itemId );
 
@@ -318,7 +318,7 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
    *         if the item could not be created.
    *
    *****************************************************/
-  private long insertItem( Product product, int orderQuantity )
+  private long insertItem( long itemId, Product product, int orderQuantity )
     {
     SQLiteDatabase database = getWritableDatabase();
 
@@ -335,6 +335,7 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
 
     ContentValues contentValues = new ContentValues();
 
+    if ( itemId >= 0 ) contentValues.put( "id", itemId );
     contentValues.put( "product_id",     product.getId() );
     contentValues.put( "order_quantity", orderQuantity );
 
@@ -343,7 +344,7 @@ public class BasketDatabaseAgent extends SQLiteOpenHelper
 
     try
       {
-      long itemId = database.insert( TABLE_ITEM, null, contentValues );
+      itemId = database.insert( TABLE_ITEM, null, contentValues );
 
       if ( itemId < 0 )
         {

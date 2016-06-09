@@ -113,7 +113,7 @@ public class LogOutDialogFragment extends DialogFragment implements View.OnClick
   @Override
   public View onCreateView( LayoutInflater layoutInflator, ViewGroup parent, Bundle savedInstanceState )
     {
-    View view = layoutInflator.inflate( R.layout.dialog_log_out, parent, false );
+    View view = layoutInflator.inflate( R.layout.dialog_inactivity, parent, false );
 
     mTimeRemainingTextView = (TextView)view.findViewById( R.id.time_remaining_text_view );
     mCancelButton          = (Button)view.findViewById( R.id.cancel_button );

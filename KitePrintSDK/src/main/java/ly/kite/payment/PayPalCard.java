@@ -2,6 +2,7 @@
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.paypal.android.sdk.payments.PayPalPayment;
 
@@ -33,11 +34,15 @@ import java.util.Locale;
 
 import ly.kite.KiteSDK;
 import ly.kite.KiteSDKException;
+import ly.kite.address.Address;
+import ly.kite.address.Country;
 
-/**
+ /**
  * Created by deonbotha on 16/02/2014.
  */
 public class PayPalCard implements Serializable {
+
+   static private final String LOG_TAG = "PayPalCard";
 
     private static final String PERSISTED_LUC_FILENAME = "luc";
 
@@ -290,7 +295,7 @@ public class PayPalCard implements Serializable {
         });
     }
 
-    private JSONObject createAuthorisationJSON( BigDecimal amount, String currencyCode, String description ) throws JSONException {
+    private JSONObject createAuthorisationJSON( BigDecimal amount, String currencyCode, String description, Address shippingAddress ) throws JSONException {
         JSONObject fundingInstrument = new JSONObject();
         if (number != null) {
             // take payment directly using full card number
@@ -319,103 +324,176 @@ public class PayPalCard implements Serializable {
         payer.put("funding_instruments", fundingInstruments);
         fundingInstruments.put(fundingInstrument);
 
-        JSONArray transactions = new JSONArray();
-        payment.put("transactions", transactions);
-        JSONObject transaction = new JSONObject();
-        transactions.put(transaction);
-        transaction.put("description", description);
-        JSONObject _amount = new JSONObject();
-        transaction.put("amount", _amount);
-        _amount.put("total", String.format(Locale.ENGLISH, "%.2f", amount.floatValue())); // Local.ENGLISH to force . separator instead of comma
-        _amount.put("currency", currencyCode);
 
-        return payment;
+    JSONObject transaction = new JSONObject();
+
+    transaction.put("description", description);
+
+    JSONObject _amount = new JSONObject();
+    _amount.put("total", String.format(Locale.ENGLISH, "%.2f", amount.floatValue())); // Local.ENGLISH to force . separator instead of comma
+    _amount.put("currency", currencyCode);
+
+    transaction.put("amount", _amount);
+
+
+    // Create an item list that contains the shipping address
+    if ( shippingAddress != null )
+      {
+      JSONObject shippingAddressJSONObject = new JSONObject();
+
+      String  recipientName   = shippingAddress.getRecipientName();
+      String  line1           = shippingAddress.getLine1();
+      String  line2           = shippingAddress.getLine2();
+      String  city            = shippingAddress.getCity();
+      String  stateOrCounty   = shippingAddress.getStateOrCounty();
+      String  zipOrPostalCode = shippingAddress.getZipOrPostalCode();
+      Country country         = shippingAddress.getCountry();
+
+      if ( recipientName   != null ) shippingAddressJSONObject.put( "recipient_name", recipientName );
+      if ( line1           != null ) shippingAddressJSONObject.put( "line1",          line1 );
+      if ( line2           != null ) shippingAddressJSONObject.put( "line2",          line2 );
+      if ( city            != null ) shippingAddressJSONObject.put( "city",           city );
+      if ( stateOrCounty   != null ) shippingAddressJSONObject.put( "state",          stateOrCounty );
+      if ( zipOrPostalCode != null ) shippingAddressJSONObject.put( "postal_code",    zipOrPostalCode );
+      if ( country         != null ) shippingAddressJSONObject.put( "country_code",   country.iso2Code() );
+
+      JSONObject itemListJSONObject = new JSONObject();
+
+      itemListJSONObject.put( "shipping_address", shippingAddressJSONObject );
+
+      transaction.put( "item_list", itemListJSONObject );
+      }
+
+
+    JSONArray transactions = new JSONArray();
+    payment.put("transactions", transactions);
+    transactions.put(transaction);
+
+    return payment;
     }
 
-    public void authoriseCard( final KiteSDK.Environment environment, final BigDecimal amount, final String currencyCode, final String description, final PayPalCardChargeListener listener ) {
-        getAccessToken(environment, new AccessTokenListener() {
-            @Override
-            public void onAccessToken(final String accessToken) {
-                JSONObject paymentJSON = null;
-                try {
-                    paymentJSON = createAuthorisationJSON( amount, currencyCode, description );
-                } catch (JSONException ex) {
-                    listener.onError(PayPalCard.this, ex);
-                    return;
+
+  public void authoriseCard( final KiteSDK.Environment environment, final BigDecimal amount, final String currencyCode, final String description, final Address shippingAddress, final PayPalCardChargeListener listener )
+    {
+    getAccessToken( environment, new AccessTokenListener()
+      {
+      @Override
+      public void onAccessToken( final String accessToken )
+        {
+        JSONObject paymentJSON = null;
+        try
+          {
+          paymentJSON = createAuthorisationJSON( amount, currencyCode, description, shippingAddress );
+          }
+        catch ( JSONException ex )
+          {
+          listener.onError( PayPalCard.this, ex );
+          return;
+          }
+
+        AsyncTask<JSONObject, Void, Object> requestTask = new AsyncTask<JSONObject, Void, Object>()
+          {
+          @Override
+          protected Object doInBackground( JSONObject... jsons )
+            {
+            JSONObject paymentJSON = jsons[ 0 ];
+
+            HttpClient httpclient = new DefaultHttpClient();
+            HttpPost req = new HttpPost( String.format( "https://%s/v1/payments/payment", environment.getPayPalAPIEndpoint() ) );
+            req.setHeader( "Content-Type", "application/json" );
+            req.setHeader( "Accept-Language", "en" );
+            try
+              {
+              req.setEntity( new StringEntity( paymentJSON.toString() ) );
+              }
+            catch ( UnsupportedEncodingException e )
+              {
+              return e;
+              }
+
+            req.setHeader( "Authorization", "Bearer " + accessToken );
+
+            try
+              {
+              HttpResponse response = httpclient.execute( req );
+              BufferedReader reader = new BufferedReader( new InputStreamReader( response.getEntity().getContent(), "UTF-8" ) );
+              StringBuilder builder = new StringBuilder();
+              for ( String line = null; ( line = reader.readLine() ) != null; )
+                {
+                builder.append( line ).append( "\n" );
                 }
 
-                AsyncTask<JSONObject, Void, Object> requestTask = new AsyncTask<JSONObject, Void, Object>() {
-                    @Override
-                    protected Object doInBackground(JSONObject... jsons) {
-                        JSONObject paymentJSON = jsons[0];
+              JSONTokener t = new JSONTokener( builder.toString() );
+              JSONObject json = new JSONObject( t );
+              int statusCode = response.getStatusLine().getStatusCode();
+              if ( statusCode >= 200 && statusCode <= 299 )
+                {
+                String paymentId = json.getString( "id" );
+                String paymentState = json.getString( "state" );
+                if ( !paymentState.equalsIgnoreCase( "approved" ) )
+                  {
+                  return new KiteSDKException( "Your payment was not approved. Please try again." );
+                  }
 
-                        HttpClient httpclient = new DefaultHttpClient();
-                        HttpPost req = new HttpPost(String.format("https://%s/v1/payments/payment", environment.getPayPalAPIEndpoint() ));
-                        req.setHeader("Content-Type", "application/json");
-                        req.setHeader("Accept-Language", "en");
-                        try {
-                            req.setEntity(new StringEntity(paymentJSON.toString()));
-                        } catch (UnsupportedEncodingException e) {
-                            return e;
-                        }
+                return paymentId;
+                }
+              else
+                {
+                Log.e( LOG_TAG, "Invalid status code for response: " + json.toString() );
 
-                        req.setHeader("Authorization", "Bearer " + accessToken);
+                String errorMessage = json.optString( "message" );
+                if ( errorMessage == null )
+                  {
+                  errorMessage = "Failed to make the payment. Please check your internet connectivity and try again.";
+                  }
 
-                        try {
-                            HttpResponse response = httpclient.execute(req);
-                            BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
-                            StringBuilder builder = new StringBuilder();
-                            for (String line = null; (line = reader.readLine()) != null;) {
-                                builder.append(line).append("\n");
-                            }
-
-                            JSONTokener t = new JSONTokener(builder.toString());
-                            JSONObject json = new JSONObject(t);
-                            int statusCode = response.getStatusLine().getStatusCode();
-                            if (statusCode >= 200 && statusCode <= 299) {
-                                String paymentId = json.getString("id");
-                                String paymentState = json.getString("state");
-                                if (!paymentState.equalsIgnoreCase("approved")) {
-                                    return new KiteSDKException("Your payment was not approved. Please try again.");
-                                }
-
-                                return paymentId;
-                            } else {
-                                String errorMessage = json.optString("message");
-                                if (errorMessage == null) {
-                                    errorMessage = "Failed to make the payment. Please check your internet connectivity and try again.";
-                                }
-
-                                return new KiteSDKException(errorMessage);
-                            }
-                        } catch (Exception e) {
-                            return e;
-                        }
-                    }
-
-                    @Override
-                    protected void onPostExecute(Object response) {
-                        if (response instanceof String) {
-                            listener.onChargeSuccess(PayPalCard.this, (String) response);
-                        } else {
-                            listener.onError(PayPalCard.this, (Exception) response);
-                        }
-                    }
-                };
-
-                requestTask.execute(paymentJSON);
+                return new KiteSDKException( errorMessage );
+                }
+              }
+            catch ( Exception e )
+              {
+              return e;
+              }
             }
 
-            @Override
-            public void onError(Exception error) {
-                listener.onError(PayPalCard.this, error);
+          @Override
+          protected void onPostExecute( Object response )
+            {
+            if ( response instanceof String )
+              {
+              listener.onChargeSuccess( PayPalCard.this, (String) response );
+              }
+            else
+              {
+              listener.onError( PayPalCard.this, (Exception) response );
+              }
             }
-        });
+          };
+
+        requestTask.execute( paymentJSON );
+        }
+
+      @Override
+      public void onError( Exception error )
+        {
+        listener.onError( PayPalCard.this, error );
+        }
+      } );
     }
 
-    public boolean isStoredInVault() {
-        return vaultId != null;
+
+
+  public void authoriseCard( final KiteSDK.Environment environment, final BigDecimal amount, final String currencyCode, final String description, final PayPalCardChargeListener listener )
+    {
+    authoriseCard( environment, amount, currencyCode, description, null, listener );
     }
+
+
+  public boolean isStoredInVault()
+    {
+    return vaultId != null;
+    }
+
 
     public boolean hasVaultStorageExpired() {
         if (vaultExpireDate == null) {

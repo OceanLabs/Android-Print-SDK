@@ -48,6 +48,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -80,16 +81,18 @@ abstract public class AReceiptActivity extends AOrderSubmissionActivity implemen
 
   ////////// Member Variable(s) //////////
 
-  protected Order     mOrder;
-  private   boolean   mOrderSuccess;
+  protected Order         mOrder;
+  private   boolean       mOrderSuccess;
 
-  protected TextView  mOrderReceiptTextView;
-  protected TextView  mOrderProofOfPaymentTextView;
-  protected TextView  mNotificationEmailAddressTextView;
-  protected ListView  mOrderSummaryListView;
+  protected TextView      mOrderReceiptTextView;
+  protected TextView      mOrderProofOfPaymentTextView;
+  protected TextView      mNotificationEmailAddressTextView;
 
-  protected Button    mNextButton;
-  protected Button    mRetryPrintButton;
+  protected ListView      mOrderSummaryListView;
+  protected LinearLayout  mOrderSummaryLinearLayout;
+
+  protected Button        mNextButton;
+  protected Button        mRetryPrintButton;
 
 
   ////////// Static Initialiser(s) //////////
@@ -159,6 +162,7 @@ abstract public class AReceiptActivity extends AOrderSubmissionActivity implemen
     mOrderProofOfPaymentTextView      = (TextView)findViewById( R.id.order_proof_of_payment_text_view );
     mNotificationEmailAddressTextView = (TextView)findViewById( R.id.notification_email_address_text_view );
     mOrderSummaryListView             = (ListView)findViewById( R.id.order_summary_list_view );
+    mOrderSummaryLinearLayout         = (LinearLayout)findViewById( R.id.order_summary_linear_layout );
 
     mNextButton                       = (Button)findViewById( R.id.next_button );
     mRetryPrintButton                 = (Button)findViewById( R.id.retry_print_button );
@@ -184,6 +188,11 @@ abstract public class AReceiptActivity extends AOrderSubmissionActivity implemen
     if ( mOrderSummaryListView != null )
       {
       mOrderSummaryListView.setAdapter( new OrderPricingAdaptor( this, mOrder.getOrderPricing() ) );
+      }
+
+    if ( mOrderSummaryLinearLayout != null )
+      {
+      OrderPricingAdaptor.addItems( this, mOrder.getOrderPricing(), mOrderSummaryLinearLayout );
       }
 
 

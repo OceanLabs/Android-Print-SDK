@@ -429,7 +429,7 @@ public class DefaultPaymentFragment extends APaymentFragment
 
       ICreditCardFragment creditCardFragment = (ICreditCardFragment)fragmentClass.newInstance();
 
-      creditCardFragment.display( getActivity() );
+      creditCardFragment.display( getActivity(), mOrder );
       }
     catch ( ClassNotFoundException cnfe )
       {
@@ -476,6 +476,7 @@ public class DefaultPaymentFragment extends APaymentFragment
             totalCost.getAmount(),
             totalCost.getCurrencyCode(),
             "",
+            mOrder.getShippingAddress(),
             new PayPalCardChargeListener()
               {
               @Override
@@ -489,7 +490,10 @@ public class DefaultPaymentFragment extends APaymentFragment
               @Override
               public void onError( PayPalCard card, Exception ex )
                 {
+                Log.e( LOG_TAG, "Error authorising card", ex );
+
                 dialog.dismiss();
+
                 showErrorDialog( ex.getMessage() );
                 }
               } );
