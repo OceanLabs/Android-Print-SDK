@@ -41,6 +41,8 @@ package ly.kite.checkout;
 
 import android.app.Activity;
 
+import ly.kite.ordering.Order;
+
 
 ///// Interface Declaration /////
 
@@ -59,7 +61,7 @@ public interface ICreditCardFragment
    * Displays the fragment.
    *
    *****************************************************/
-  public void display( Activity activity );
+  public void display( Activity activity, Order order );
 
 
   }

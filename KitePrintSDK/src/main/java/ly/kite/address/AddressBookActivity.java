@@ -46,7 +46,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -60,7 +59,6 @@ import android.widget.TextView;
 import java.util.List;
 
 import ly.kite.R;
-import ly.kite.journey.AKiteActivity;
 
 
 ///// Class Declaration /////
@@ -71,7 +69,7 @@ import ly.kite.journey.AKiteActivity;
  * the user to edit/delete them or add new ones.
  *
  *****************************************************/
-public class AddressBookActivity extends AddressActivity
+public class AddressBookActivity extends AAddressActivity
   {
   ////////// Static Constant(s) //////////
 
@@ -272,7 +270,7 @@ public class AddressBookActivity extends AddressActivity
 
         Address selectedAddress = (Address)mAddressBookListAdaptor.getItem( (int) position );
 
-        returnAddressResult( selectedAddress );
+        returnResult( selectedAddress );
 
         finish();
         }

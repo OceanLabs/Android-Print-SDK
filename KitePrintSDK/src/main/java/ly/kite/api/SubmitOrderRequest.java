@@ -22,7 +22,7 @@ public class SubmitOrderRequest
 
 
     private final Order printOrder;
-    private HTTPJSONRequest req;
+    private KiteAPIRequest req;
 
     public SubmitOrderRequest( Order printOrder) {
         this.printOrder = printOrder;
@@ -36,8 +36,8 @@ public class SubmitOrderRequest
     if ( DISPLAY_PRINT_ORDER_JSON ) Log.d( LOG_TAG, "Print Order JSON:\n" + json.toString() );
 
         String url = String.format("%s/print", KiteSDK.getInstance( context ).getAPIEndpoint());
-        req = new HTTPJSONRequest( context, HTTPJSONRequest.HttpMethod.POST, url, null, json.toString());
-        req.start(new HTTPJSONRequest.HTTPJSONRequestListener() {
+        req = new KiteAPIRequest( context, KiteAPIRequest.HttpMethod.POST, url, null, json.toString());
+        req.start(new HTTPJSONRequest.IJSONResponseListener() {
             @Override
             public void onSuccess(int httpStatusCode, JSONObject json) {
 

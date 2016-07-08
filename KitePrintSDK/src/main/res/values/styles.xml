@@ -45,6 +45,10 @@
         <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar.Opaque</item>
     </style>
 
+    <style name="Theme.KiteSDK.OrderHistory">
+        <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar.Opaque</item>
+    </style>
+
     <!--  -->
 
 

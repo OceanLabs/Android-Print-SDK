@@ -55,7 +55,7 @@ import android.util.Log;
 import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.analytics.Analytics;
-import ly.kite.basket.BasketAgent;
+import ly.kite.ordering.OrderingDataAgent;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.journey.IImageSpecStore;
 import ly.kite.ordering.ImageSpec;
@@ -86,7 +86,7 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
                                                                       PhotobookFragment.ICallback,
                                                                       ReviewAndEditFragment.ICallback,
                                                                       EditImageFragment.ICallback,
-                                                                      BasketAgent.IAddListener
+                                                                      OrderingDataAgent.IAddListener
   {
   ////////// Static Constant(s) //////////
 
@@ -314,7 +314,7 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
 
     if ( savedInstanceState == null )
       {
-      addFirstFragment();
+      addNextFragment();
 
       Analytics.getInstance( this ).trackCreateProductScreenViewed( mProduct );
       }
@@ -404,19 +404,14 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
 
   /*****************************************************
    *
-   * Called when a phone case has been created.
+   * Called when image assets have been selected.
    *
    *****************************************************/
   @Override
   public void isOnAssetsAdded()
     {
-    // We want to remove the image source fragment without triggering the back stack listener - otherwise
-    // it will detect that there are no fragments and exit.
-
-    popFragmentSecretly();
-
-
-    addFirstFragment();
+    // Go to the first creation fragment appropriate for the journey type
+    addNextFragment();
     }
 
 
@@ -576,7 +571,7 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
    * for the supplied product.
    *
    *****************************************************/
-  private void addFirstFragment()
+  private void addNextFragment()
     {
     // For all user journeys, if there are no assets - we first display the image
     // source fragment.
@@ -727,7 +722,7 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
    *****************************************************/
   private void onNewBasketItem( List<ImageSpec> imageSpecList )
     {
-    BasketAgent basketAgent = BasketAgent.getInstance( this );
+    OrderingDataAgent basketAgent = OrderingDataAgent.getInstance( this );
 
     if ( mInEditMode )
       {

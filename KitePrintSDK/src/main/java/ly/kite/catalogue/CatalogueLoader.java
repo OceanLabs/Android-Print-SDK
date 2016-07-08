@@ -62,6 +62,7 @@ import ly.kite.KiteSDK;
 import ly.kite.journey.creation.ProductCreationActivity;
 import ly.kite.journey.UserJourneyType;
 import ly.kite.util.HTTPJSONRequest;
+import ly.kite.api.KiteAPIRequest;
 
 
 ///// Class Declaration /////
@@ -75,14 +76,14 @@ import ly.kite.util.HTTPJSONRequest;
  *   - Additional details such as banners etc.
  *
  ****************************************************/
-public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
+public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings("unused")
   private static final String  LOG_TAG                               = "CatalogueLoader";
 
-  private static final boolean DISPLAY_PRODUCT_JSON                  = false;
+  private static final boolean DISPLAY_PRODUCT_JSON                  = true;
   private static final boolean DISPLAY_PRODUCTS                      = false;
   private static final boolean DISPLAY_DEBUGGING                     = false;
   private static final boolean DISPLAY_PRE_CACHING_INFO              = false;
@@ -91,6 +92,7 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
 
   private static final String TEMPLATE_REQUEST_FORMAT_STRING         = "%s/template/?limit=100";
 
+  private static final String  JSON_NAME_ACTIVE                      = "active";
   private static final String  JSON_NAME_AMOUNT                      = "amount";
   private static final String  JSON_NAME_BACKGROUND_IMAGE_URL        = "product_background_image_url";
   private static final String  JSON_NAME_BOTTOM                      = "bottom";
@@ -151,7 +153,7 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
 
   private Handler                        mHandler;
 
-  private HTTPJSONRequest                mHTTPJSONRequest;
+  private KiteAPIRequest mHTTPJSONRequest;
   private LinkedList<ICatalogueConsumer> mConsumerList;
   private String                         mRequestAPIKey;
 
@@ -463,7 +465,8 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
           Log.d( LOG_TAG, "Product JSON:\n" + productJSONObject.toString() );
           }
 
-        boolean                          productActive      = productJSONObject.optBoolean( JSON_NAME_PRODUCT_ACTIVE, true );
+        boolean                          active             = productJSONObject.optBoolean( JSON_NAME_ACTIVE,         false );
+        boolean                          productActive      = productJSONObject.optBoolean( JSON_NAME_PRODUCT_ACTIVE, false );
 
         String                           productId          = productJSONObject.getString( JSON_NAME_PRODUCT_ID );
         String                           productName        = productJSONObject.getString( JSON_NAME_PRODUCT_NAME );
@@ -562,7 +565,7 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
         // Add the product to the catalogue. If it doesn't have a supported
         // user journey, then we add it has a discarded product.
 
-        if ( productActive && ProductCreationActivity.isSupported( userJourneyType ) )
+        if ( active && productActive && ProductCreationActivity.isSupported( userJourneyType ) )
           {
           catalogue.addProduct( groupLabel, groupImageURL, product );
           }
@@ -620,9 +623,9 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
 
       try
         {
-        JSONObject errorJSONObject = jsonData.getJSONObject( HTTPJSONRequest.ERROR_RESPONSE_JSON_OBJECT_NAME );
-        String     errorMessage    = errorJSONObject.getString( HTTPJSONRequest.ERROR_RESPONSE_MESSAGE_JSON_NAME );
-        String     errorCode       = errorJSONObject.getString( HTTPJSONRequest.ERROR_RESPONSE_CODE_JSON_NAME );
+        JSONObject errorJSONObject = jsonData.getJSONObject( KiteAPIRequest.ERROR_RESPONSE_JSON_OBJECT_NAME );
+        String     errorMessage    = errorJSONObject.getString( KiteAPIRequest.ERROR_RESPONSE_MESSAGE_JSON_NAME );
+        String     errorCode       = errorJSONObject.getString( KiteAPIRequest.ERROR_RESPONSE_CODE_JSON_NAME );
 
         Exception exception = new KiteSDKException( errorMessage );
 
@@ -706,7 +709,7 @@ public class CatalogueLoader implements HTTPJSONRequest.HTTPJSONRequestListener
 
     String url = String.format( TEMPLATE_REQUEST_FORMAT_STRING, KiteSDK.getInstance( mContext ).getAPIEndpoint() );
 
-    mHTTPJSONRequest = new HTTPJSONRequest( mContext, HTTPJSONRequest.HttpMethod.GET, url, null, null );
+    mHTTPJSONRequest = new KiteAPIRequest( mContext, KiteAPIRequest.HttpMethod.GET, url, null, null );
     mConsumerList.addLast( consumer );
     mRequestAPIKey = currentAPIKey;
 

@@ -52,12 +52,11 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 
 import ly.kite.R;
-import ly.kite.basket.BasketAgent;
+import ly.kite.ordering.OrderingDataAgent;
 import ly.kite.journey.basket.BasketActivity;
 
 
@@ -283,21 +282,6 @@ abstract public class AKiteFragment extends Fragment
     }
 
 
-//  /*****************************************************
-//   *
-//   * Called to create the menu.
-//   *
-//   *****************************************************/
-//  protected void onCreateOptionsMenu( Menu menu, MenuInflater menuInflator, int menuResourceId )
-//    {
-//    // Inflate the menu
-//    menuInflator.inflate( menuResourceId, menu );
-//
-//    // Get a reference to the basket action icon
-//    mBasketMenuItem = menu.findItem( R.id.basket_menu_item );
-//    }
-
-
   /*****************************************************
    *
    * Called to prepare the menu.
@@ -335,7 +319,7 @@ abstract public class AKiteFragment extends Fragment
     {
     // Get the number of items in the basket
 
-    int itemCount = BasketAgent.getInstance( getActivity() ).getItemCount();
+    int itemCount = OrderingDataAgent.getInstance( getActivity() ).getItemCount();
 
 
     Resources resources = getResources();

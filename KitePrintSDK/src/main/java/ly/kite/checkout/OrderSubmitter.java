@@ -42,6 +42,7 @@ package ly.kite.checkout;
 import android.content.Context;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.util.Log;
 
 import ly.kite.api.OrderState;
 import ly.kite.api.OrderStatusRequest;
@@ -63,6 +64,8 @@ public class OrderSubmitter implements Order.ISubmissionProgressListener, OrderS
   @SuppressWarnings( "unused" )
   static private final String  LOG_TAG                 = "OrderSubmitter";
 
+  static private final boolean DEBUGGING_ENABLED       = false;
+
   static private final long    POLLING_TIMEOUT_MILLIS  = 1000 * 20;  // 20 seconds
   static private final long    POLLING_INTERVAL_MILLIS = 1000 * 2;   //  2 seconds
 
@@ -72,14 +75,14 @@ public class OrderSubmitter implements Order.ISubmissionProgressListener, OrderS
 
   ////////// Member Variable(s) //////////
 
-  private Context            mContext;
-  private Order mOrder;
-  private IProgressListener  mProgressListener;
+  private Context                           mApplicationContext;
+  private Order                             mOrder;
+  private IOrderSubmissionProgressListener  mProgressListener;
 
-  private Handler            mHandler;
+  private Handler                           mHandler;
 
-  private long               mPollingStartElapsedRealtimeMillis;
-  private long               mPollingEndElapsedRealtimeMillis;
+  private long                              mPollingStartElapsedRealtimeMillis;
+  private long                              mPollingEndElapsedRealtimeMillis;
 
 
   ////////// Static Initialiser(s) //////////
@@ -90,13 +93,13 @@ public class OrderSubmitter implements Order.ISubmissionProgressListener, OrderS
 
   ////////// Constructor(s) //////////
 
-  public OrderSubmitter( Context context, Order order, IProgressListener progressListener )
+  public OrderSubmitter( Context context, Order order, IOrderSubmissionProgressListener progressListener )
     {
-    mContext          = context;
-    mOrder            = order;
-    mProgressListener = progressListener;
+    mApplicationContext = context.getApplicationContext();
+    mOrder              = order;
+    mProgressListener   = progressListener;
 
-    mHandler          = new Handler();
+    mHandler            = new Handler();
     }
 
 
@@ -110,6 +113,8 @@ public class OrderSubmitter implements Order.ISubmissionProgressListener, OrderS
   @Override
   public void onProgress( Order order, int primaryProgressPercent, int secondaryProgressPercent )
     {
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "onProgress( order = " + order + ", primaryProgressPercent = " + primaryProgressPercent + ", secondaryProgressPercent = " + secondaryProgressPercent + " )" );
+
     mProgressListener.onOrderUpdate( mOrder, OrderState.UPLOADING, primaryProgressPercent, secondaryProgressPercent );
     }
 
@@ -126,6 +131,8 @@ public class OrderSubmitter implements Order.ISubmissionProgressListener, OrderS
   @Override
   public void onSubmissionComplete( Order order, String orderId )
     {
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "onSubmissionComplete( order = " + order + ", orderId = " + orderId + " )" );
+
     mProgressListener.onOrderUpdate( mOrder, OrderState.POSTED, 0, 0 );
 
     // The order has been submitted, so start polling for the order status
@@ -141,6 +148,8 @@ public class OrderSubmitter implements Order.ISubmissionProgressListener, OrderS
   @Override
   public void onError( Order order, Exception exception )
     {
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "onError( order = " + order + ", exception = " + exception + " )" );
+
     mProgressListener.onOrderError( order, exception );
     }
 
@@ -156,6 +165,8 @@ public class OrderSubmitter implements Order.ISubmissionProgressListener, OrderS
   @Override
   public void osOnSuccess( OrderStatusRequest request, OrderState state )
     {
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "osOnSuccess( request = " + request + ", state = " + state  + " )" );
+
     // If the order is in one of these states - stop polling
     if ( state == OrderState.VALIDATED ||
          state == OrderState.PROCESSED ||
@@ -191,6 +202,8 @@ public class OrderSubmitter implements Order.ISubmissionProgressListener, OrderS
   @Override
   public void osOnError( OrderStatusRequest request, OrderStatusRequest.ErrorType errorType, String originalOrderId, Exception exception )
     {
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "osOnError( request = " + request + ", errorType = " + errorType + ", originalOrderId = " + originalOrderId + ", exception = " + exception + " )" );
+
     // Check the type of error
 
     if ( errorType == OrderStatusRequest.ErrorType.DUPLICATE )
@@ -199,6 +212,10 @@ public class OrderSubmitter implements Order.ISubmissionProgressListener, OrderS
       }
     else
       {
+      // Clear the receipt (which will have been set by the initial
+      // successful submission), and set the error.
+      mOrder.setError( exception);
+
       mProgressListener.onOrderError( mOrder, exception );
       }
     }
@@ -213,12 +230,14 @@ public class OrderSubmitter implements Order.ISubmissionProgressListener, OrderS
    *****************************************************/
   void submit()
     {
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "submit()" );
+
     // If the order already has an id (from the server) then
     // we don't want to resubmit it.
 
     if ( mOrder.getReceipt() == null )
       {
-      mOrder.submitForPrinting( mContext, this );
+      mOrder.submitForPrinting( mApplicationContext, this );
       }
     else
       {
@@ -234,6 +253,8 @@ public class OrderSubmitter implements Order.ISubmissionProgressListener, OrderS
    *****************************************************/
   private void startPollingOrderStatus()
     {
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "startPollingOrderStatus()" );
+
     // Save the time at which we started polling
     mPollingStartElapsedRealtimeMillis = SystemClock.elapsedRealtime();
     mPollingEndElapsedRealtimeMillis   = mPollingStartElapsedRealtimeMillis + POLLING_TIMEOUT_MILLIS;
@@ -249,26 +270,13 @@ public class OrderSubmitter implements Order.ISubmissionProgressListener, OrderS
    *****************************************************/
   private void pollOrderStatus()
     {
-    new OrderStatusRequest( mContext, this ).start( mOrder.getReceipt() );
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "pollOrderStatus()" );
+
+    new OrderStatusRequest( mApplicationContext, this ).start( mOrder.getReceipt() );
     }
 
 
   ////////// Inner Class(es) //////////
-
-  /*****************************************************
-   *
-   * A progress listener.
-   *
-   *****************************************************/
-  public interface IProgressListener
-    {
-    public void onOrderUpdate( Order order, OrderState state, int primaryProgressPercent, int secondaryProgressPercent );
-    public void onOrderComplete( Order order, OrderState state );
-    public void onOrderTimeout( Order order );
-    public void onOrderError( Order order, Exception exception );
-    public void onOrderDuplicate( Order order, String originalOrderId );
-    }
-
 
   /*****************************************************
    *

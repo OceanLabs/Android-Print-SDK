@@ -1,208 +1,175 @@
+/*****************************************************
+ *
+ * OrderReceiptActivity.java
+ *
+ *
+ * Modified MIT License
+ *
+ * Copyright (c) 2010-2015 Kite Tech Ltd. https://www.kite.ly
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The software MAY ONLY be used with the Kite Tech Ltd platform and MAY NOT be modified
+ * to be used with any competitor platforms. This means the software MAY NOT be modified
+ * to place orders with any competitors to Kite Tech Ltd, all orders MUST go through the
+ * Kite Tech Ltd platform servers.
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ *****************************************************/
+
+///// Package Declaration /////
+
 package ly.kite.checkout;
 
-import android.app.ActionBar;
+
+///// Import(s) /////
+
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
-import android.os.Looper;
-import android.os.Parcelable;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.Window;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import ly.kite.ordering.Order;
 import ly.kite.R;
 
-public class OrderReceiptActivity extends Activity
+
+///// Class Declaration /////
+
+/*****************************************************
+ *
+ * This activity displays the order receipt screen.
+ *
+ *****************************************************/
+public class OrderReceiptActivity extends AReceiptActivity
   {
-  public static final String EXTRA_PRINT_ORDER = "ly.kite.EXTRA_ORDER";
-
-  private Order mPrintOrder;
 
 
-  static public void startForResult( Activity activity, Order printOrder, int requestCode )
+  ////////// Static Method(s) //////////
+
+  /*****************************************************
+   *
+   * Returns an intent used to start this activity.
+   *
+   *****************************************************/
+  static private Intent getStartIntent( Context context, long previousOrderId, Order order, boolean hideSuccessfulNextButton )
     {
-    Intent intent = new Intent( activity, OrderReceiptActivity.class );
+    Intent intent = new Intent( context, OrderReceiptActivity.class );
 
-    intent.putExtra( OrderReceiptActivity.EXTRA_PRINT_ORDER, (Parcelable)printOrder );
+    addPreviousOrder( previousOrderId, intent );
+
+    addExtra( order, intent );
+    addHideSuccessfulNextButton( hideSuccessfulNextButton, intent );
+
+    return ( intent );
+    }
+
+
+  /*****************************************************
+   *
+   * Convenience method for starting this activity.
+   *
+   *****************************************************/
+  static public void start( Context context, long previousOrderId, Order order, boolean hideSuccessfulNextButton )
+    {
+    Intent intent = getStartIntent( context, previousOrderId, order, hideSuccessfulNextButton );
+
+    context.startActivity( intent );
+    }
+
+
+  /*****************************************************
+   *
+   * Convenience method for starting this activity.
+   *
+   *****************************************************/
+  static public void start( Context context, Order order )
+    {
+    start( context, NO_ORDER_ID, order, false );
+    }
+
+
+  /*****************************************************
+   *
+   * Convenience method for starting this activity.
+   *
+   *****************************************************/
+  static public void startForResult( Activity activity, long previousOrderId, Order order, int requestCode )
+    {
+    Intent intent = getStartIntent( activity, previousOrderId, order, false );
 
     activity.startActivityForResult( intent, requestCode );
     }
 
 
+  /*****************************************************
+   *
+   * Convenience method for starting this activity.
+   *
+   *****************************************************/
+  static public void startForResult( Activity activity, Order order, int requestCode )
+    {
+    startForResult( activity, NO_ORDER_ID, order, requestCode );
+    }
+
+
+  ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Displays the success screen.
+   *
+   *****************************************************/
   @Override
-  protected void onCreate( Bundle savedInstanceState )
+  protected void onShowReceiptSuccess()
     {
-    super.onCreate( savedInstanceState );
+    setContentView( R.layout.screen_order_receipt );
 
-    requestWindowFeature( Window.FEATURE_ACTION_BAR );
-
-    Order printOrder = (Order) getIntent().getParcelableExtra( EXTRA_PRINT_ORDER );
-
-    processPrintOrder( printOrder );
+    setDisplayActionBarHomeAsUpEnabled( false );
     }
 
+
+  /*****************************************************
+   *
+   * Displays the failure.
+   *
+   *****************************************************/
   @Override
-  public boolean onMenuItemSelected( int featureId, MenuItem item )
+  protected void onShowReceiptFailure()
     {
-    if ( item.getItemId() == android.R.id.home )
+    setContentView( R.layout.screen_order_failure );
+
+    setDisplayActionBarHomeAsUpEnabled( true );
+
+    if ( mOrder.getLastPrintSubmissionError() != null )
       {
-      leaveScreen();
-
-      return ( true );
+      showErrorDialog( mOrder.getLastPrintSubmissionError().getMessage() );
       }
-
-    return ( super.onMenuItemSelected( featureId, item ) );
     }
 
+
+  /*****************************************************
+   *
+   * Called when the next button is clicked.
+   *
+   *****************************************************/
   @Override
-  public void onBackPressed()
+  protected void onNext()
     {
-    // Keep the back key regardless of whether the order succeeded or failed, just in case
-    // there is no "continue shopping" button.
-
-    setResult( Activity.RESULT_OK );
-
-    super.onBackPressed();
-    }
-
-
-  private void processPrintOrder( Order printOrder )
-    {
-    // Make sure we got a print order
-    if ( printOrder == null )
-      {
-      throw new IllegalArgumentException( "The print order is null" );
-      }
-
-
-    // Save the print order
-    mPrintOrder = printOrder;
-
-    // Get the action bar
-    ActionBar actionBar = getActionBar();
-
-    if ( mPrintOrder.isPrinted() )
-      {
-      ///// Success /////
-
-      setContentView( R.layout.screen_order_receipt );
-
-      ListView listView        = (ListView)findViewById( R.id.order_summary_list_view );
-      TextView orderIdTextView = (TextView)findViewById( R.id.order_id_text_view );
-
-
-      listView.setAdapter( new OrderPricingAdaptor( this, mPrintOrder.getOrderPricing() ) );
-
-
-      if ( orderIdTextView != null ) orderIdTextView.setText( mPrintOrder.getReceipt() );
-
-      // If the order was successful - disable the back action
-      if ( actionBar != null ) getActionBar().setDisplayHomeAsUpEnabled( false );
-      }
-    else
-      {
-      ///// Failure /////
-
-      setContentView( R.layout.screen_order_failure );
-
-      TextView paymentIdTextView = (TextView)findViewById( R.id.payment_id_text_view );
-      Button   retryPrintButton  = (Button)findViewById( R.id.retry_print_button );
-
-
-      if ( paymentIdTextView != null )
-        {
-        StringBuilder receipt = new StringBuilder();
-
-        if ( mPrintOrder.getProofOfPayment() != null )
-          {
-          paymentIdTextView.setText( mPrintOrder.getProofOfPayment() );
-          }
-        }
-
-
-      // Show an error dialog if we're arriving with a recent Payment success but we failed to successfully print the order.
-      if ( getParent() instanceof PaymentActivity && mPrintOrder.getLastPrintSubmissionError() != null )
-        {
-        showErrorDialog( mPrintOrder.getLastPrintSubmissionError().getMessage() );
-        }
-
-      // If the order failed - enable the back action
-      if ( actionBar != null ) getActionBar().setDisplayHomeAsUpEnabled( true );
-      }
-
-    }
-
-
-  private void leaveScreen()
-    {
-    setResult( Activity.RESULT_OK );
-
-    finish();
-    }
-
-  public void onContinueShoppingClicked( View view )
-    {
-    leaveScreen();
-    }
-
-  public void onRetryPrintClicked( View view )
-    {
-    final ProgressDialog dialog = new ProgressDialog( this );
-    dialog.setCancelable( false );
-    dialog.setIndeterminate( false );
-    dialog.setProgressStyle( ProgressDialog.STYLE_HORIZONTAL );
-    dialog.setTitle( R.string.alert_dialog_title_processing );
-    dialog.setMessage( getString( R.string.alert_dialog_message_processing ) );
-    dialog.setMax( 100 );
-    dialog.show();
-
-    mPrintOrder.submitForPrinting( this, new Order.ISubmissionProgressListener()
-    {
-    @Override
-    public void onProgress( Order printOrder, int primaryProgressPercent, int secondaryProgressPercent )
-      {
-      if ( Looper.myLooper() != Looper.getMainLooper() )
-        throw new AssertionError( "Should be calling back on the main thread" );
-      dialog.setProgress( primaryProgressPercent );
-      dialog.setSecondaryProgress( secondaryProgressPercent );
-      dialog.setMessage( getString( R.string.alert_dialog_message_uploading_images ) );
-      }
-
-    @Override
-    public void onSubmissionComplete( Order printOrder, String orderIdReceipt )
-      {
-      if ( Looper.myLooper() != Looper.getMainLooper() )
-        throw new AssertionError( "Should be calling back on the main thread" );
-      //mPrintOrder.saveToHistory(OrderReceiptActivity.this);
-      dialog.dismiss();
-
-      processPrintOrder( printOrder );
-      }
-
-    @Override
-    public void onError( Order printOrder, Exception error )
-      {
-      if ( Looper.myLooper() != Looper.getMainLooper() )
-        throw new AssertionError( "Should be calling back on the main thread" );
-      dialog.dismiss();
-      showErrorDialog( error.getMessage() );
-      }
-    } );
-    }
-
-  private void showErrorDialog( String message )
-    {
-    AlertDialog.Builder builder = new AlertDialog.Builder( this );
-    builder.setTitle( R.string.alert_dialog_title_oops ).setMessage( message ).setPositiveButton( R.string.OK, null );
-    Dialog d = builder.create();
-    d.show();
+    continueShopping();
     }
 
   }

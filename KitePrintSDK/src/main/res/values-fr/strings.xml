@@ -47,9 +47,12 @@
     <string name="alert_dialog_delete_photo_cancel_text">Garder</string>
     <string name="alert_dialog_delete_photo_confirm_text">Effacer</string>
     <string name="alert_dialog_message_no_images_selected">Veuillez d\'abord sélectionner quelques images.</string>
+
     <string name="alert_dialog_message_no_recipient">Veuillez entrer un nom de destinataire</string>
     <string name="alert_dialog_message_no_line1">Veuillez remplir la ligne 1 de l\'adresse </string>
     <string name="alert_dialog_message_no_postal_code">Veuillez remplir votre code postal</string>
+    <string name="alert_dialog_message_no_email_address">Veuillez remplir votre adresse email</string>
+
     <string name="alert_dialog_title_invalid_delivery_address">Adresse de livraison invalide</string>
     <string name="alert_dialog_message_invalid_delivery_address">S\'il vous plaît choisir une adresse de livraison</string>
     <string name="alert_dialog_title_invalid_email_address">Adresse e-mail invalide</string>
@@ -66,10 +69,13 @@
     <string name="alert_dialog_message_no_payment_id">Aucun n&#176; de paiement trouv&#233; dans la preuve de paiement</string>
     <string name="alert_dialog_message_no_proof_of_payment">Aucune preuve de paiement indiqu&#233;e sur la confirmation de paiement</string>
     <string name="alert_dialog_message_no_paypal_confirmation">Aucune confirmation de paiement re&#231;ue de PayPal</string>
-    <string name="alert_dialog_message_card_expired"><![CDATA[Désolé il semble que cette carte a expiré. Veuillez réessayer.]]></string>
-    <string name="alert_dialog_message_card_not_recognised"><![CDATA[Désolé, nous n\'avons pu reconnaître votre carte. Veuillez essayer de saisir manuellement les détails de votre carte si nécessaire.]]></string>
+    <string name="alert_dialog_message_card_expired">Désolé il semble que cette carte a expiré. Veuillez réessayer.</string>
+    <string name="alert_dialog_message_card_not_recognised">Désolé, nous n\'avons pu reconnaître votre carte. Veuillez essayer de saisir manuellement les détails de votre carte si nécessaire.</string>
     <string name="alert_dialog_item_pay_with_new_card">Changer de carte bancaire</string>
     <string name="alert_dialog_item_pay_with_existing_card_format_string">Payer avec la carte se terminant par %1$s</string>
+
+    <string name="log_out_warning">Vous déconnecter automatiquement en:</string>
+
     <string name="Cancel">Annuler</string>
     <string name="Continue_Shopping">Poursuivre vos achats</string>
     <string name="Country">Pays</string>
@@ -77,12 +83,15 @@
     <string name="Details">Détails</string>
     <string name="Done">Terminé</string>
     <string name="Edit">Modifier</string>
+    <string name="Email">Email</string>
     <string name="End_Session">Terminer session</string>
     <string name="Flip">Pivoter</string>
     <string name="Free">Gratuit</string>
     <string name="add_more">Ajouter plus</string>
     <string name="Loading">Chargement</string>
+    <string name="Log_Out">Se déconnecter</string>
     <string name="No_Results">Aucun résultat</string>
+    <string name="Next_Customer">Prochain client</string>
     <string name="OK">OK</string>
     <string name="Order_Id">Numéro de commande</string>
     <string name="ORDER_ID">NUMÉRO DE COMMANDE</string>
@@ -102,12 +111,17 @@
     <string name="Shipping">Livraison</string>
     <string name="Size">Taille</string>
     <string name="Total">Total</string>
-    <string name="image_source_device">APPAREIL PHOTO</string>
-    <string name="image_source_instagram">INSTAGRAM</string>
-    <string name="image_source_facebook">FACEBOOK</string>
+
+    <string name="image_source_device">Appareil Photo</string>
+    <string name="image_source_instagram">Instagram</string>
+    <string name="image_source_facebook">Facebook</string>
+    <string name="image_source_from_phone">Télécharger du téléphone</string>
+
     <string name="select_photo_from_device">Prendre une photo</string>
     <string name="select_photo_from_instagram">Choisir une photo Instagram</string>
     <string name="select_photo_from_facebook">Choisir une photo Facebook</string>
+    <string name="upload_photo_from_phone">Télécharger photo du téléphone</string>
+
     <string name="destination_description_gbr">Royaume-Uni</string>
     <string name="destination_description_europe">Europe</string>
     <string name="destination_description_rest_of_world">Reste du monde</string>
@@ -120,6 +134,7 @@
     <string name="product_overview_start_button_text">Lancer la création</string>
     <string name="phone_case_proceed_button_text">Suivant</string>
     <string name="address_book_empty">Répertoire vide</string>
+
     <string name="image_source_prompt">Ajouter des photos en appuyant sur ​​l\'une des options</string>
 
     <string name="image_selection_pack_title_format_string">#%1$d Paquet de %2$d %3$s</string>
@@ -136,7 +151,6 @@
     <string name="address_hint_text_county_or_state">État</string>
     <string name="address_hint_text_postcode_or_zip">Code postal</string>
     <string name="shipping_delivery_address_button_text">Choisissez l\'adresse de livraison</string>
-    <string name="shipping_email_hint_text">Email</string>
     <string name="shipping_phone_hint_text">Numéro de téléphone</string>
     <string name="shipping_email_reason">Votre e-mail est nécessaire pour que nous puissions vous envoyer les mises à jour du suivi de vos commandes</string>
     <string name="shipping_phone_reason">Votre numéro de téléphone est obligatoire en cas de problème de livraison</string>
@@ -192,6 +206,10 @@
     <string name="action_save_address">Enregistrer adresse</string>
     <string name="search_title">Rechercher</string>
     <string name="country_search_hint">Recherche des adresses</string>
+
+    <string name="scan_qr_code">Scannez le code QR</string>
+    <string name="scan_qr_code_instructions">S\'il vous plaît scanner le code QR en utilisant un lecteur app QR sur votre appareil.</string>
+    <string name="scan_qr_code_alternate_instructions">Vous pouvez également saisir l\'URL suivante dans la barre d\'adresse de votre navigateur mobile:</string>
 
     <plurals name="Photo_plurals">
         <item quantity="zero">%d Photos</item>

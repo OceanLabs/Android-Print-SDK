@@ -263,11 +263,11 @@ public class Asset implements Parcelable
    * Constructs an asset from an image file.
    *
    *****************************************************/
-  public Asset( String imagePath )
+  public Asset( String imageFilePath )
     {
     // Check that we support the file type
 
-    String path = imagePath.toLowerCase( Locale.UK );
+    String path = imageFilePath.toLowerCase( Locale.UK );
 
     if ( ! path.endsWith( JPEG_FILE_SUFFIX_PRIMARY   ) &&
          ! path.endsWith( JPEG_FILE_SUFFIX_SECONDARY ) &&
@@ -278,7 +278,7 @@ public class Asset implements Parcelable
 
 
     mType          = Type.IMAGE_FILE;
-    mImageFilePath = imagePath;
+    mImageFilePath = imageFilePath;
     }
 
 
@@ -462,6 +462,36 @@ public class Asset implements Parcelable
     if ( mType != Type.IMAGE_FILE ) throw ( new IllegalStateException( "The image file path has been requested, but the asset type is: " + mType ) );
 
     return ( mImageFilePath );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the image file path.
+   *
+   * @throw IllegalStateException if the asset was not
+   *        constructed from an image file.
+   *
+   *****************************************************/
+  public File getImageFile()
+    {
+    return ( new File( getImageFilePath() ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the image file name.
+   *
+   * @throw IllegalStateException if the asset was not
+   *        constructed from an image file.
+   *
+   *****************************************************/
+  public String getImageFileName()
+    {
+    File imageFile = getImageFile();
+
+    return ( imageFile.getName() );
     }
 
 

@@ -759,7 +759,7 @@ public class ImageLoadRequest
 
       // Generate the directory and file that the image would be downloaded to
 
-      Pair<String, String> directoryAndFilePath = ImageAgent.getInstance( mApplicationContext ).getImageDirectoryAndFilePath( mImageCategory, mSourceURL.toString() );
+      Pair<String, String> directoryAndFilePath = ImageAgent.getInstance( mApplicationContext ).getImageCacheDirectoryAndFilePath( mImageCategory, mSourceURL.toString() );
 
       String imageDirectoryPath = directoryAndFilePath.first;
       String imageFilePath      = directoryAndFilePath.second;
@@ -1109,8 +1109,8 @@ public class ImageLoadRequest
 
       Integer mappedBitmapResourceIdAsInteger;
 
-      if ( !FORCE_FILE_DOWNLOAD &&
-              ( mappedBitmapResourceIdAsInteger = ImageAgent.getInstance( mApplicationContext ).getMappedResource( url ) ) != null )
+      if ( ! FORCE_FILE_DOWNLOAD &&
+           ( mappedBitmapResourceIdAsInteger = ImageAgent.getInstance( mApplicationContext ).getMappedResource( url ) ) != null )
         {
         setSource( new BitmapResourceSource( mappedBitmapResourceIdAsInteger ) );
         }

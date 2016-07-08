@@ -57,7 +57,11 @@
 
         </LinearLayout>
 
-        <include layout="@layout/include_cta_bar_divided"/>
+        <FrameLayout
+            android:id="@+id/payment_fragment_container"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.0"/>
 
     </LinearLayout>
 

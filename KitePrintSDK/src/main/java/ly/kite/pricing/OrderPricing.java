@@ -44,6 +44,7 @@ package ly.kite.pricing;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -100,6 +101,8 @@ public class OrderPricing implements Parcelable
 
 
   ////////// Member Variable(s) //////////
+
+  private JSONObject              mOrderPricingJSONObject;
 
   private String                  mPromoCodeInvalidMessage;
   private MultipleCurrencyAmount  mPromoCodeDiscount;
@@ -174,14 +177,16 @@ public class OrderPricing implements Parcelable
    * }
    *
    *****************************************************/
-  OrderPricing( JSONObject jsonObject ) throws JSONException
+  OrderPricing( JSONObject orderPricingJSONObject ) throws JSONException
     {
+    mOrderPricingJSONObject = orderPricingJSONObject;
+
     // Get the top level items
-    JSONObject promoCodeJSONObject         = jsonObject.optJSONObject( JSON_NAME_PROMO_CODE );
-    JSONObject totalProductCostJSONObject  = jsonObject.getJSONObject( JSON_NAME_TOTAL_PRODUCT_COST );
-    JSONArray  lineItemsJSONArray          = jsonObject.getJSONArray( JSON_NAME_LINE_ITEMS );
-    JSONObject totalJSONObject             = jsonObject.getJSONObject( JSON_NAME_TOTAL );
-    JSONObject totalShippingCostJSONObject = jsonObject.getJSONObject( JSON_NAME_TOTAL_SHIPPING_COST );
+    JSONObject promoCodeJSONObject         = orderPricingJSONObject.optJSONObject( JSON_NAME_PROMO_CODE );
+    JSONObject totalProductCostJSONObject  = orderPricingJSONObject.getJSONObject( JSON_NAME_TOTAL_PRODUCT_COST );
+    JSONArray  lineItemsJSONArray          = orderPricingJSONObject.getJSONArray( JSON_NAME_LINE_ITEMS );
+    JSONObject totalJSONObject             = orderPricingJSONObject.getJSONObject( JSON_NAME_TOTAL );
+    JSONObject totalShippingCostJSONObject = orderPricingJSONObject.getJSONObject( JSON_NAME_TOTAL_SHIPPING_COST );
 
 
     // Promo code
@@ -230,11 +235,31 @@ public class OrderPricing implements Parcelable
 
   /*****************************************************
    *
+   * Creates a new pricing object from JSON, in the following form:
+   *
+   *****************************************************/
+  public OrderPricing( String orderPricingJSON ) throws JSONException
+    {
+    this( new JSONObject( orderPricingJSON ) );
+    }
+
+
+  /*****************************************************
+   *
    * Creates order pricing from a parcel.
    *
    *****************************************************/
   private OrderPricing( Parcel parcel )
     {
+    try
+      {
+      mOrderPricingJSONObject = new JSONObject( parcel.readString() );
+      }
+    catch ( JSONException je )
+      {
+      Log.e( LOG_TAG, "Unable to parse pricing JSON", je );
+      }
+
     mPromoCodeInvalidMessage = parcel.readString();
     mPromoCodeDiscount       = (MultipleCurrencyAmount)parcel.readParcelable( MultipleCurrencyAmount.class.getClassLoader() );
 
@@ -269,6 +294,8 @@ public class OrderPricing implements Parcelable
   @Override
   public void writeToParcel( Parcel parcel, int flags )
     {
+    parcel.writeString( mOrderPricingJSONObject.toString() );
+
     parcel.writeString( mPromoCodeInvalidMessage );
     parcel.writeParcelable( mPromoCodeDiscount, flags );
 
@@ -282,6 +309,17 @@ public class OrderPricing implements Parcelable
 
 
   ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Returns the pricing JSON string.
+   *
+   *****************************************************/
+  public String getPricingJSONString()
+    {
+    return ( mOrderPricingJSONObject.toString() );
+    }
+
 
   /*****************************************************
    *

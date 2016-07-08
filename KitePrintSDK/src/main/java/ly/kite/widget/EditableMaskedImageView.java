@@ -560,13 +560,9 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
    * Sets the mask.
    *
    *****************************************************/
-  public void setMask( Drawable drawable, float aspectRatio, Bleed bleed )
+  public void setMask( Drawable maskDrawable, float aspectRatio, Bleed bleed )
     {
-    mMaskDrawable = drawable;
-
-
-    int maskIntrinsicWidth  = mMaskDrawable.getIntrinsicWidth();
-    int maskIntrinsicHeight = mMaskDrawable.getIntrinsicHeight();
+    mMaskDrawable = maskDrawable;
 
 
     // If an aspect ratio was supplied - invent a suitable width and height.
@@ -577,8 +573,16 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
       }
     else
       {
-      mMaskWidth  = maskIntrinsicWidth;
-      mMaskHeight = maskIntrinsicHeight;
+      if ( maskDrawable != null )
+        {
+        mMaskWidth  = maskDrawable.getIntrinsicWidth();
+        mMaskHeight = maskDrawable.getIntrinsicHeight();
+        }
+      else
+        {
+        mMaskWidth  = 0;
+        mMaskHeight = 0;
+        }
       }
 
     if ( bleed != null ) mMaskBleed  = bleed;

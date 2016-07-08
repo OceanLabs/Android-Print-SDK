@@ -56,8 +56,11 @@ import com.paypal.android.sdk.payments.PayPalConfiguration;
 
 import ly.kite.address.Address;
 import ly.kite.address.Country;
-import ly.kite.basket.BasketAgent;
+import ly.kite.ordering.OrderingDataAgent;
 import ly.kite.catalogue.CatalogueLoader;
+import ly.kite.checkout.AShippingActivity;
+import ly.kite.checkout.DefaultPaymentFragment;
+import ly.kite.checkout.APaymentFragment;
 import ly.kite.checkout.PaymentActivity;
 import ly.kite.journey.basket.BasketActivity;
 import ly.kite.ordering.Order;
@@ -86,12 +89,11 @@ public class KiteSDK
 
   static private final String LOG_TAG                                              = "KiteSDK";
 
-  static public  final String SDK_VERSION                                          = "5.2.1";
+  static public  final String SDK_VERSION                                          = "5.2.2";
 
   static public  final String IMAGE_CATEGORY_APP                                   = "app";
   static public  final String IMAGE_CATEGORY_PRODUCT_ITEM                          = "product_item";
   static public  final String IMAGE_CATEGORY_SESSION_ASSET                         = "session_asset";
-  static public  final String IMAGE_CATEGORY_BASKET_ASSET                          = "basket_asset";
 
   static private final String SHARED_PREFERENCES_NAME_PERMANENT                    = "kite_permanent_shared_prefs";
   static private final String SHARED_PREFERENCES_NAME_APP_SESSION                  = "kite_app_session_shared_prefs";
@@ -125,9 +127,12 @@ public class KiteSDK
 
   static private final String PARAMETER_NAME_END_CUSTOMER_SESSION_ICON_URL         = "end_customer_session_icon_url";
 
+  static private final String PARAMETER_NAME_SHIPPING_ACTIVITY_CLASS_NAME          = "shipping_activity_class_name";
   static private final String PARAMETER_NAME_ADDRESS_BOOK_ENABLED                  = "address_book_enabled";
 
   static private final String PARAMETER_NAME_INACTIVITY_TIMER_ENABLED              = "inactivity_timer_enabled";
+
+  static private final String PARAMETER_NAME_PAYMENT_FRAGMENT_CLASS_NAME           = "payment_fragment_class_name";
 
   static private final String SHARED_PREFERENCES_KEY_SUFFIX_RECIPIENT              = "_recipient";
   static private final String SHARED_PREFERENCES_KEY_SUFFIX_LINE1                  = "_line1";
@@ -136,6 +141,10 @@ public class KiteSDK
   static private final String SHARED_PREFERENCES_KEY_SUFFIX_STATE_OR_COUNTY        = "_state_or_county";
   static private final String SHARED_PREFERENCES_KEY_SUFFIX_ZIP_OR_POSTAL_CODE     = "_zip_or_postal_code";
   static private final String SHARED_PREFERENCES_KEY_SUFFIX_COUNTRY_CODE           = "_country_code";
+
+  static private final String ENVIRONMENT_TEST                                     = "ly.kite.ENVIRONMENT_TEST";
+  static private final String ENVIRONMENT_STAGING                                  = "ly.kite.ENVIRONMENT_STAGING";
+  static private final String ENVIRONMENT_LIVE                                     = "ly.kite.ENVIRONMENT_LIVE";
 
   static public  final String PAYPAL_LIVE_API_ENDPOINT                             = "api.paypal.com";
   static public  final String PAYPAL_LIVE_CLIENT_ID                                = "ASYVBBCHF_KwVUstugKy4qvpQaPlUeE_5beKRJHpIP2d3SA_jZrsaUDTmLQY";
@@ -175,6 +184,20 @@ public class KiteSDK
 
 
   ////////// Static Method(s) //////////
+
+  /*****************************************************
+   *
+   * Clears parameters for a particular scope.
+   *
+   *****************************************************/
+  static public void clearAllParameters( Context context, Scope scope )
+    {
+    scope.sharedPreferences( context )
+      .edit()
+        .clear()
+      .apply();
+    }
+
 
   /*****************************************************
    *
@@ -488,7 +511,7 @@ public class KiteSDK
 
     // Clear all session parameters
     clearAllParameters( Scope.APP_SESSION );
-    clearAllParameters( Scope.CUSTOMER_SESSION );
+    //clearAllParameters( Scope.CUSTOMER_SESSION );
 
     setEnvironment( apiKey, environment );
 
@@ -549,16 +572,23 @@ public class KiteSDK
 
     // Empty any basket
 
-    BasketAgent basketAgent = BasketAgent.getInstance( mApplicationContext );
+    OrderingDataAgent basketAgent = OrderingDataAgent.getInstance( mApplicationContext );
 
-    basketAgent.clear();
+    basketAgent.clearDefaultBasket();
 
 
     // Go through all the images sources and end any social network log-ins
 
     for ( AImageSource imageSource : getAvailableImageSources() )
       {
-      imageSource.endCustomerSession( mApplicationContext );
+      try
+        {
+        imageSource.endCustomerSession( mApplicationContext );
+        }
+      catch ( Exception e )
+        {
+        Log.e( LOG_TAG, "Unable to end customer session for image source: " + imageSource, e );
+        }
       }
 
 
@@ -578,10 +608,7 @@ public class KiteSDK
    *****************************************************/
   public KiteSDK clearAllParameters( Scope scope )
     {
-    scope.sharedPreferences( mApplicationContext )
-      .edit()
-        .clear()
-      .apply();
+    clearAllParameters( mApplicationContext, scope );
 
     return ( this );
     }
@@ -706,6 +733,42 @@ public class KiteSDK
 
   /*****************************************************
    *
+   * Sets the shipping activity.
+   *
+   *****************************************************/
+  public KiteSDK setShippingActivity( Class<? extends AShippingActivity> shippingActivity )
+    {
+    return ( setSDKParameter( Scope.PERMANENT, PARAMETER_NAME_SHIPPING_ACTIVITY_CLASS_NAME, shippingActivity.getName() ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the shipping activity.
+   *
+   *****************************************************/
+  public Class<? extends AShippingActivity> getShippingActivityClass()
+    {
+    String shippingActivityClassName = getStringSDKParameter( Scope.PERMANENT, PARAMETER_NAME_SHIPPING_ACTIVITY_CLASS_NAME, null );
+
+    if ( shippingActivityClassName != null )
+      {
+      try
+        {
+        return ( (Class<? extends AShippingActivity>)Class.forName( shippingActivityClassName ) );
+        }
+      catch ( Exception e )
+        {
+        Log.e( LOG_TAG, "Unable to get shipping activity " + shippingActivityClassName, e );
+        }
+      }
+
+    return ( null );
+    }
+
+
+  /*****************************************************
+   *
    * Sets the enabled state of the address book.
    *
    *****************************************************/
@@ -727,6 +790,46 @@ public class KiteSDK
   public boolean addressBookIsEnabled()
     {
     return ( getBooleanSDKParameter( Scope.PERMANENT, PARAMETER_NAME_ADDRESS_BOOK_ENABLED, true ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the payment fragment. The payment fragment displays
+   * the payment option buttons and processes them.
+   *
+   *****************************************************/
+  public KiteSDK setPaymentFragment( Class<? extends APaymentFragment> paymentFragment )
+    {
+    return ( setSDKParameter( Scope.PERMANENT, PARAMETER_NAME_PAYMENT_FRAGMENT_CLASS_NAME, paymentFragment.getName() ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the payment fragment.
+   *
+   *****************************************************/
+  public APaymentFragment getPaymentFragment()
+    {
+    String paymentFragmentClassName = getStringSDKParameter( Scope.PERMANENT, PARAMETER_NAME_PAYMENT_FRAGMENT_CLASS_NAME, null );
+
+    if ( paymentFragmentClassName != null )
+      {
+      try
+        {
+        Class<?> paymentFragmentClass = Class.forName( paymentFragmentClassName );
+
+        return ( (APaymentFragment)paymentFragmentClass.newInstance() );
+        }
+      catch ( Exception e )
+        {
+        Log.e( LOG_TAG, "Unable to get payment fragment " + paymentFragmentClassName, e );
+        }
+      }
+
+    // If anything goes wrong - return the default payment agent
+    return ( new DefaultPaymentFragment() );
     }
 
 
@@ -788,7 +891,6 @@ public class KiteSDK
         try
           {
           Class<?>       imageSourceClass            = Class.forName( className );
-          //Constructor<?> imageSourceClassConstructor = imageSourceClass.getConstructor();
           AImageSource   imageSource                 = (AImageSource)imageSourceClass.newInstance();
 
           imageSourceList.add( imageSource );
@@ -1103,9 +1205,32 @@ public class KiteSDK
    * Launches managed checkout, and returns the result.
    *
    *****************************************************/
-  public void startCheckout( Activity activity, Order order, int requestCode )
+  public void startCheckoutForResult( Activity activity, Order order, int requestCode )
     {
     BasketActivity.startForResult( activity, order, requestCode );
+    }
+
+
+  /*****************************************************
+   *
+   * Launches managed checkout, and returns the result.
+   *
+   *****************************************************/
+  @Deprecated
+  public void startCheckout( Activity activity, Order order, int requestCode )
+    {
+    startCheckoutForResult( activity, order, requestCode );
+    }
+
+
+  /*****************************************************
+   *
+   * Launches the payment screen, and returns the result.
+   *
+   *****************************************************/
+  public void startPaymentForResult( Activity activity, Order order, int requestCode )
+    {
+    PaymentActivity.startForResult( activity, order, requestCode );
     }
 
 
@@ -1424,9 +1549,9 @@ public class KiteSDK
    *****************************************************/
   public static enum DefaultEnvironment implements IEnvironment
     {
-    LIVE    ( "Live",    "https://api.kite.ly/v2.2",     PaymentActivity.ENVIRONMENT_LIVE,    PayPalConfiguration.ENVIRONMENT_PRODUCTION, PAYPAL_LIVE_API_ENDPOINT,    PAYPAL_LIVE_CLIENT_ID,    PAYPAL_LIVE_PASSWORD    ),
-    TEST    ( "Test",    "https://api.kite.ly/v2.2",     PaymentActivity.ENVIRONMENT_TEST,    PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_ENDPOINT, PAYPAL_SANDBOX_CLIENT_ID, PAYPAL_SANDBOX_PASSWORD ),
-    STAGING ( "Staging", "https://staging.kite.ly/v2.2", PaymentActivity.ENVIRONMENT_STAGING, PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_ENDPOINT, PAYPAL_SANDBOX_CLIENT_ID, PAYPAL_SANDBOX_PASSWORD ); /* private environment intended only for Ocean Labs use, hands off :) */
+    LIVE    ( "Live",    "https://api.kite.ly/v2.2",     ENVIRONMENT_LIVE,    PayPalConfiguration.ENVIRONMENT_PRODUCTION, PAYPAL_LIVE_API_ENDPOINT,    PAYPAL_LIVE_CLIENT_ID,    PAYPAL_LIVE_PASSWORD    ),
+    TEST    ( "Test",    "https://api.kite.ly/v2.2",     ENVIRONMENT_TEST,    PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_ENDPOINT, PAYPAL_SANDBOX_CLIENT_ID, PAYPAL_SANDBOX_PASSWORD ),
+    STAGING ( "Staging", "https://staging.kite.ly/v2.2", ENVIRONMENT_STAGING, PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_ENDPOINT, PAYPAL_SANDBOX_CLIENT_ID, PAYPAL_SANDBOX_PASSWORD ); /* private environment intended only for Ocean Labs use, hands off :) */
 
 
     private Environment  mEnvironment;

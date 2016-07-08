@@ -39,19 +39,12 @@ package ly.kite.checkout;
 
 ///// Import(s) /////
 
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
-
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Parcelable;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -62,19 +55,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import ly.kite.KiteSDK;
-import ly.kite.address.AddressActivity;
+import ly.kite.address.AAddressActivity;
 import ly.kite.address.AddressEditActivity;
 import ly.kite.analytics.Analytics;
-import ly.kite.catalogue.Catalogue;
-import ly.kite.catalogue.ICatalogueConsumer;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.pricing.PricingAgent;
-import ly.kite.ordering.Job;
 import ly.kite.ordering.Order;
 import ly.kite.R;
 import ly.kite.address.Address;
 import ly.kite.address.AddressBookActivity;
-import ly.kite.catalogue.CatalogueLoader;
 
 
 ///// Class Declaration /////
@@ -90,23 +79,12 @@ import ly.kite.catalogue.CatalogueLoader;
  * address, email and phone number.
  *
  *****************************************************/
-public class ShippingActivity extends AKiteActivity implements View.OnClickListener
+public class ShippingActivity extends AShippingActivity implements View.OnClickListener
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
   static private final String                         LOG_TAG                      = "ShippingActivity";
-
-  static public  final String                         KEY_ORDER                    = "ly.kite.order";
-  static public  final String                         KEY_SHIPPING_ADDRESS         = "ly.kite.shippingaddress";
-  static public  final String                         KEY_EMAIL                    = "ly.kite.email";
-  static public  final String                         KEY_PHONE                    = "ly.kite.phone";
-
-  //private static final long                           MAXIMUM_PRODUCT_AGE_MILLIS   = 1 * 60 * 60 * 1000;
-
-//  static private final String                         SHIPPING_PREFERENCES         = "shipping_preferences";
-//  static private final String                         SHIPPING_PREFERENCE_EMAIL    = "shipping_preferences.email";
-//  static private final String                         SHIPPING_PREFERENCE_PHONE    = "shipping_preferences.phone";
 
   static private final String                         PARAMETER_NAME_SHIPPING_EMAIL = "shipping_email";
   static private final String                         PARAMETER_NAME_SHIPPING_PHONE = "shipping_phone";
@@ -147,58 +125,9 @@ public class ShippingActivity extends AKiteActivity implements View.OnClickListe
     {
     Intent intent = new Intent( activity, ShippingActivity.class );
 
-
-    // We only need to pass the order to the activity for analytics
-    intent.putExtra( KEY_ORDER, order );
-
-
-    // Put any shipping address, email, and phone number from the order into the intent.
-
-    intent.putExtra( KEY_SHIPPING_ADDRESS, (Parcelable)order.getShippingAddress() );
-
-    JSONObject userData = order.getUserData();
-
-    if ( userData != null )
-      {
-      intent.putExtra( KEY_EMAIL, userData.optString( "email" ) );
-      intent.putExtra( KEY_PHONE, userData.optString( "phone" ) );
-      }
-
+    addExtras( order, intent );
 
     activity.startActivityForResult( intent, requestCode );
-    }
-
-
-  /*****************************************************
-   *
-   * Returns the shipping address from an intent.
-   *
-   *****************************************************/
-  static public Address getShippingAddress( Intent data )
-    {
-    return ( data.getParcelableExtra( KEY_SHIPPING_ADDRESS ) );
-    }
-
-
-  /*****************************************************
-   *
-   * Returns the email from an intent.
-   *
-   *****************************************************/
-  static public String getEmail( Intent data )
-    {
-    return ( data.getStringExtra( KEY_EMAIL ) );
-    }
-
-
-  /*****************************************************
-   *
-   * Returns the phone number from an intent.
-   *
-   *****************************************************/
-  static public String getPhone( Intent data )
-    {
-    return ( data.getStringExtra( KEY_PHONE ) );
     }
 
 
@@ -213,7 +142,7 @@ public class ShippingActivity extends AKiteActivity implements View.OnClickListe
    *
    *****************************************************/
   @Override
-  public void onCreate( Bundle savedInstanceState )
+  protected void onCreate( Bundle savedInstanceState )
     {
     super.onCreate( savedInstanceState );
 
@@ -232,7 +161,7 @@ public class ShippingActivity extends AKiteActivity implements View.OnClickListe
 
     Intent intent = getIntent();
 
-    Order order   = null;
+    Order  order  = null;
 
     if ( intent != null )
       {
@@ -357,7 +286,7 @@ public class ShippingActivity extends AKiteActivity implements View.OnClickListe
     {
     if ( requestCode == REQUEST_CODE_ADDRESS_BOOK && resultCode == RESULT_OK )
       {
-      mShippingAddress = AddressActivity.getAddress( data );
+      mShippingAddress = AAddressActivity.getAddress( data );
 
       onShippingAddress( mShippingAddress );
       }
@@ -406,19 +335,6 @@ public class ShippingActivity extends AKiteActivity implements View.OnClickListe
       {
       AddressEditActivity.startForResult( this, mShippingAddress, REQUEST_CODE_ADDRESS_BOOK );
       }
-    }
-
-  private void showErrorDialog( String title, String message )
-    {
-    AlertDialog.Builder builder = new AlertDialog.Builder( this );
-    builder.setTitle( title ).setMessage( message ).setPositiveButton( R.string.OK, null );
-    Dialog d = builder.create();
-    d.show();
-    }
-
-  private void showErrorDialog( int titleResourceId, int messageResourceId )
-    {
-    showErrorDialog( getString( titleResourceId ), getString( messageResourceId ) );
     }
 
 

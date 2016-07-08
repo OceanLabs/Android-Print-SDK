@@ -43,7 +43,6 @@ package ly.kite.api;
 ///// Class Declaration /////
 
 import android.content.Context;
-import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -57,7 +56,7 @@ import ly.kite.util.HTTPJSONRequest;
  * an order.
  *
  *****************************************************/
-public class OrderStatusRequest implements HTTPJSONRequest.HTTPJSONRequestListener
+public class OrderStatusRequest implements HTTPJSONRequest.IJSONResponseListener
   {
   ////////// Static Constant(s) //////////
 
@@ -207,7 +206,7 @@ public class OrderStatusRequest implements HTTPJSONRequest.HTTPJSONRequestListen
 
     String url = String.format( URL_FORMAT_STRING, KiteSDK.getInstance( mContext ).getAPIEndpoint(), orderId );
 
-    HTTPJSONRequest request = new HTTPJSONRequest( mContext, HTTPJSONRequest.HttpMethod.GET, url, null, null );
+    KiteAPIRequest request = new KiteAPIRequest( mContext, KiteAPIRequest.HttpMethod.GET, url, null, null );
 
     request.start( this );
     }

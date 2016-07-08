@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * AddressActivity.java
+ * BasketItem.java
  *
  *
  * Modified MIT License
@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.address;
+package ly.kite.ordering;
 
 
 ///// Import(s) /////
@@ -42,25 +42,24 @@ package ly.kite.address;
 
 ///// Class Declaration /////
 
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Parcelable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
-import ly.kite.journey.AKiteActivity;
+import ly.kite.catalogue.Product;
+import ly.kite.ordering.ImageSpec;
 
 /*****************************************************
  *
- * This class is the parent class of address activities.
+ * This class holds a basket item.
  *
  *****************************************************/
-public class AddressActivity extends AKiteActivity
+public class BasketItem
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String  LOG_TAG     = "AddressActivity";
-
-  static public  final String  KEY_ADDRESS = "ly.kite.address";
+  static private final String  LOG_TAG = "BasketItem";
 
 
   ////////// Static Variable(s) //////////
@@ -68,53 +67,96 @@ public class AddressActivity extends AKiteActivity
 
   ////////// Member Variable(s) //////////
 
+  private long                    mId;
+  private Product                 mProduct;
+  private int                     mOrderQuantity;
+  private HashMap<String,String>  mOptionsMap;
+  private ArrayList<ImageSpec>    mImageSpecList;
+
 
   ////////// Static Initialiser(s) //////////
 
 
   ////////// Static Method(s) //////////
 
-  /*****************************************************
-   *
-   * Returns an address bundled as an extra within an intent.
-   *
-   *****************************************************/
-  static public Address getAddress( Intent data )
-    {
-    if ( data == null ) return ( null );
-
-    return ( data.getParcelableExtra( KEY_ADDRESS ) );
-    }
-
-
-  /*****************************************************
-   *
-   * Adds an address to an intent.
-   *
-   *****************************************************/
-  static public void addAddress( Address address, Intent intent )
-    {
-    if ( address != null ) intent.putExtra( KEY_ADDRESS, (Parcelable)address );
-    }
-
 
   ////////// Constructor(s) //////////
+
+  public BasketItem( long id, Product product, int orderQuantity, HashMap<String,String> optionsMap, ArrayList<ImageSpec> imageSpecList )
+    {
+    mId            = id;
+    mProduct       = product;
+    mOrderQuantity = orderQuantity;
+    mOptionsMap    = optionsMap;
+    mImageSpecList = imageSpecList;
+    }
 
 
   ////////// Method(s) //////////
 
   /*****************************************************
    *
-   * Returns an address result.
+   * Returns the item id.
    *
    *****************************************************/
-  public void returnAddressResult( Address address )
+  public long getId()
     {
-    Intent data = new Intent();
+    return ( mId );
+    }
 
-    addAddress( address, data );
 
-    setResult( Activity.RESULT_OK, data );
+  /*****************************************************
+   *
+   * Returns the product.
+   *
+   *****************************************************/
+  public Product getProduct()
+    {
+    return ( mProduct );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the order quantity.
+   *
+   *****************************************************/
+  public void setOrderQuantity( int orderQuantity )
+    {
+    mOrderQuantity = orderQuantity;
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the order quantity.
+   *
+   *****************************************************/
+  public int getOrderQuantity()
+    {
+    return ( mOrderQuantity );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the options map.
+   *
+   *****************************************************/
+  public HashMap<String,String> getOptionsMap()
+    {
+    return ( mOptionsMap );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the image spec list.
+   *
+   *****************************************************/
+  public ArrayList<ImageSpec> getImageSpecList()
+    {
+    return ( mImageSpecList );
     }
 
 

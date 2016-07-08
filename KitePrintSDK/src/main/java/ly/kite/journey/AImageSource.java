@@ -220,6 +220,37 @@ abstract public class AImageSource
 
   /*****************************************************
    *
+   * Calls the runnable once the supplied permissions
+   * have been granted.
+   *
+   *****************************************************/
+  protected void requestPermissions( String[] permissions, AStartPickerRunnable runnable )
+    {
+    Activity activity = runnable.getActivity();
+
+    if ( activity instanceof AKiteActivity )
+      {
+      ( (AKiteActivity)activity ).callRunnableWithPermissions( permissions, runnable );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Calls the runnable once the supplied permission
+   * have been granted.
+   *
+   *****************************************************/
+  protected void requestPermission( String permission, AStartPickerRunnable runnable )
+    {
+    final String[] permissions = new String[]{ permission };
+
+    requestPermissions( permissions, runnable );
+    }
+
+
+  /*****************************************************
+   *
    * Returns picked photos as assets. May call back to the
    * consumer asynchronously or synchronously (i.e. from
    * within this method).
@@ -249,6 +280,30 @@ abstract public class AImageSource
   public interface IAssetConsumer
     {
     public void isacOnAssets( List<Asset> assetList );
+    }
+
+
+  /*****************************************************
+   *
+   * A runnable that simply calls the onPick method. Used
+   * to call the method once permissions have been granted.
+   *
+   *****************************************************/
+  protected abstract class AStartPickerRunnable implements Runnable
+    {
+    protected Fragment  mFragment;
+    protected int       mMaxImageCount;
+
+    AStartPickerRunnable( Fragment fragment, int maxImageCount )
+      {
+      mFragment      = fragment;
+      mMaxImageCount = maxImageCount;
+      }
+
+    Activity getActivity()
+      {
+      return ( mFragment.getActivity() );
+      }
     }
 
   }

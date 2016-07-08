@@ -91,6 +91,17 @@ public class OrderPricingAdaptor extends BaseAdapter
 
   ////////// Static Method(s) //////////
 
+  /*****************************************************
+   *
+   * Adds the pricing items as individual views to a linear
+   * layout rather than a list view.
+   *
+   *****************************************************/
+  static public void addItems( Context context, OrderPricing pricing, ViewGroup viewGroup )
+    {
+    new OrderPricingAdaptor( context, pricing ).addItems( viewGroup );
+    }
+
 
   ////////// Constructor(s) //////////
 
@@ -242,8 +253,8 @@ public class OrderPricingAdaptor extends BaseAdapter
       }
     else
       {
-      view                           = mLayoutInflator.inflate( R.layout.list_item_order_pricing, parent, false );
-      viewHolder                     = new ViewHolder( view );
+      view       = mLayoutInflator.inflate( R.layout.list_item_order_pricing, parent, false );
+      viewHolder = new ViewHolder( view );
 
       view.setTag( viewHolder );
       }
@@ -257,6 +268,29 @@ public class OrderPricingAdaptor extends BaseAdapter
 
 
     return ( view );
+    }
+
+
+  ////////// BaseAdapter Method(s) //////////
+
+  /*****************************************************
+   *
+   * Adds the pricing items to a view group, as child views.
+   *
+   *****************************************************/
+  private void addItems( ViewGroup viewGroup )
+    {
+    for ( int position = 0; position < getCount(); position ++ )
+      {
+      View       view       = mLayoutInflator.inflate( R.layout.list_item_order_pricing, viewGroup, false );
+      ViewHolder viewHolder = new ViewHolder( view );
+
+      Item item = (Item)getItem( position );
+
+      viewHolder.bind( item );
+
+      viewGroup.addView( view );
+      }
     }
 
 

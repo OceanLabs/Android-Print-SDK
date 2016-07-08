@@ -39,31 +39,42 @@ package ly.kite.journey;
 
 ///// Import(s) /////
 
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Random;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
@@ -82,31 +93,40 @@ import ly.kite.util.StringUtils;
  *
  *****************************************************/
 public abstract class AKiteActivity extends Activity implements FragmentManager.OnBackStackChangedListener,
-                                                                View.OnClickListener
+                                                                View.OnClickListener,
+                                                                LogOutDialogFragment.ICallback,
+                                                                ActivityCompat.OnRequestPermissionsResultCallback
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
   static private final String  LOG_TAG                                      = "AKiteActivity";
 
-  static public  final String INTENT_EXTRA_NAME_IMAGE_SPEC_LIST             = KiteSDK.INTENT_PREFIX + ".imageSpecList";
+  static private final boolean DEBUG_INACTIVITY_TIMER                       = false;
 
-  static public  final int     NO_BUTTON                                    = 0;
+  static public  final String  INTENT_EXTRA_NAME_IMAGE_SPEC_LIST            = KiteSDK.INTENT_PREFIX + ".imageSpecList";
+  static public  final String  INTENT_EXTRA_NAME_ORDER                      = KiteSDK.INTENT_PREFIX + ".order";
 
   static public  final int     ACTIVITY_REQUEST_CODE_ADD_TO_BASKET          = 10;
   static public  final int     ACTIVITY_REQUEST_CODE_GO_TO_BASKET           = 11;
   static public  final int     ACTIVITY_REQUEST_CODE_EDIT_BASKET_ITEM       = 12;
   static public  final int     ACTIVITY_REQUEST_CODE_CHECKOUT               = 20;
   static public  final int     ACTIVITY_REQUEST_CODE_CREATE                 = 30;
-  static public  final int     ACTIVITY_REQUEST_CODE_GET_ADDRESS            = 40;
+  //static public  final int     ACTIVITY_REQUEST_CODE_GET_ADDRESS            = 40;
   static public  final int     ACTIVITY_REQUEST_CODE_GET_CONTACT_DETAILS    = 45;
-  static public  final int     ACTIVITY_REQUEST_CODE_SELECT_DEVICE_IMAGE    = 50;
-  static public  final int     ACTIVITY_REQUEST_CODE_SELECT_INSTAGRAM_IMAGE = 60;
+  //static public  final int     ACTIVITY_REQUEST_CODE_SELECT_DEVICE_IMAGE    = 50;
+  //static public  final int     ACTIVITY_REQUEST_CODE_SELECT_INSTAGRAM_IMAGE = 60;
   static public  final int     ACTIVITY_REQUEST_CODE_EDIT_IMAGE             = 70;
 
   static public  final int     ACTIVITY_RESULT_CODE_CONTINUE_SHOPPING       = 15;
   static public  final int     ACTIVITY_RESULT_CODE_CHECKED_OUT             = 25;
   static public  final int     ACTIVITY_RESULT_CODE_END_CUSTOMER_SESSION    = 35;
+
+  static public  final int     NO_BUTTON                                    = 0;
+
+  static private final long    INACTIVITY_WARNING_DELAY_MILLIS              = 1000 * 60;  // 1 minute from last activity
+  static private final long    INACTIVITY_LOG_OUT_DELAY_MILLIS              = 1000 * 60;  // 1 minute from dialog pop-up
+  static private final long    INACTIVITY_WARNING_UPDATE_DELAY_MILLIS       = 1000;       // 1 second
 
 
   ////////// Static Variable(s) //////////
@@ -114,21 +134,35 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
   ////////// Member Variable(s) //////////
 
-  private   boolean           mActivityIsVisible;
-  private   boolean           mCanAddFragment;
+  private   boolean               mActivityIsVisible;
+  private   boolean               mCanAddFragment;
 
-  private   AKiteFragment     mPendingFragment;
-  private   String            mPendingFragmentTag;
+  private   boolean               mInactivityTimerEnabled;
+  private   Handler               mInactivityHandler;
+  private   InactivityRunnable    mInactivityRunnable;
+  private   long                  mInactivityWarningElapsedRealtimeMillis;
+  private   long                  mInactivityLogOutElapsedRealtimeMillis;
+  private   LogOutDialogFragment  mInactivityLogOutDialogFragment;
 
-  private   Dialog            mDialog;
+  private   AKiteFragment         mPendingFragment;
+  private   String                mPendingFragmentTag;
 
-  protected FragmentManager   mFragmentManager;
+  private   Dialog                mPendingDialog;
+  private   Dialog                mDialog;
 
-  protected AKiteFragment     mTopFragment;
+  protected FragmentManager       mFragmentManager;
 
-  private   ImageView         mEndCustomerSessionImageView;
-  private   Button            mCTABarLeftButton;
-  private   Button            mCTABarRightButton;
+  protected AKiteFragment         mTopFragment;
+
+  private   ImageView             mEndCustomerSessionImageView;
+  private   Button                mCTABarLeftButton;
+  private   Button                mCTABarRightButton;
+
+  private   int                   mPermissionsRequestCode;
+  private   String[]              mPermissions;
+  private   Runnable              mPermissionsRunnable;
+
+  private   boolean               mConfirmEndSessionAction;
 
 
   ////////// Static Initialiser(s) //////////
@@ -174,8 +208,15 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     super.onCreate( savedInstanceState );
 
 
-    // TODO: Fix this dirty hack
+    // TODO: Check that we can now delete this line
     CatalogueLoader.getInstance( this );
+
+
+    // Check if the inactivity timer is enabled
+
+    mInactivityTimerEnabled = KiteSDK.getInstance( this ).inactivityTimerIsEnabled();
+
+    setInactivityTimerEnabledForThisActivity( mInactivityTimerEnabled );
 
 
     // Listen for changes to the fragment back stack
@@ -183,6 +224,13 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     mFragmentManager = getFragmentManager();
 
     mFragmentManager.addOnBackStackChangedListener( this );
+
+
+    // See if we are displaying the log out dialog fragment
+    mInactivityLogOutDialogFragment = (LogOutDialogFragment)mFragmentManager.findFragmentByTag( LogOutDialogFragment.TAG );
+
+
+    setConfirmEndSessionAction( true );
     }
 
 
@@ -287,19 +335,32 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
       mPendingFragment    = null;
       mPendingFragmentTag = null;
       }
+
+
+    // If a modal dialog is pending - display it now
+
+    if ( mPendingDialog != null )
+      {
+      mDialog        = mPendingDialog;
+      mPendingDialog = null;
+
+      mDialog.show();
+      }
+
+
+    onUserActivity();
     }
 
 
   /*****************************************************
    *
-   * Called to prepare the options menu.
+   * Called to create the options menu.
    *
    *****************************************************/
   @Override
-  public boolean onPrepareOptionsMenu( Menu menu )
+  public boolean onCreateOptionsMenu( Menu menu )
     {
-    boolean displayMenu = super.onPrepareOptionsMenu( menu );
-
+    boolean displayMenu = false;
 
 
     // If we have been supplied an end customer session icon - inflate the menu
@@ -345,7 +406,26 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
       }
 
 
+    // Normal actions (including the basket icon) go to the right of the end session icon
+    if ( super.onCreateOptionsMenu( menu ) ) displayMenu = true;
+
+
     return ( displayMenu );
+    }
+
+
+  /*****************************************************
+   *
+   * Called for all motion events. We use this to detect
+   * activity.
+   *
+   *****************************************************/
+  @Override
+  public boolean dispatchTouchEvent (MotionEvent event )
+    {
+    onUserActivity();
+
+    return ( super.dispatchTouchEvent( event ) );
     }
 
 
@@ -368,14 +448,58 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
       // We intercept the home button and do the same as if the
       // back key had been pressed. We don't allow fragments to
       // intercept this one.
+      // We do, however, allow the activity to intercept it. For
+      // instance, pressing either back (action / device key) on
+      // the basket screen continues shopping.
 
-      super.onBackPressed();
+      onBackPressed();
 
       return ( true );
       }
 
 
     return ( super.onOptionsItemSelected( item ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Called with any granted permissions.
+   *
+   *****************************************************/
+  public void onRequestPermissionsResult( int requestCode, String[] permissions, int[] grantResults )
+    {
+    if ( requestCode == mPermissionsRequestCode )
+      {
+      if ( permissions  != null &&
+           grantResults != null &&
+           permissions.length == mPermissions.length &&
+           permissions.length == grantResults.length )
+        {
+        // Make sure we have all the requested permissions
+
+        int permissionIndex = 0;
+
+        for ( String permission : permissions )
+          {
+          if ( ! StringUtils.areBothNullOrEqual( permission, mPermissions[ permissionIndex] ) ||
+               grantResults[ permissionIndex ] != PackageManager.PERMISSION_GRANTED )
+            {
+            return;
+            }
+
+          permissionIndex ++;
+          }
+
+
+        // We have all the permissions, so call the runnable
+        if ( mPermissionsRunnable != null ) mPermissionsRunnable.run();
+
+        mPermissionsRequestCode = -1;
+        mPermissions            = null;
+        mPermissionsRunnable    = null;
+        }
+      }
     }
 
 
@@ -445,6 +569,9 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     super.onPause();
 
     mCanAddFragment = false;
+
+    ensureLogOutWarningGone();;
+    ensureInactivityTimerStopped();
     }
 
 
@@ -458,6 +585,11 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     {
     mCanAddFragment    = false;
     mActivityIsVisible = false;
+
+    mPendingDialog     = null;
+
+    ensureLogOutWarningGone();
+    ensureInactivityTimerStopped();
 
     super.onStop();
     }
@@ -474,7 +606,11 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     mCanAddFragment    = false;
     mActivityIsVisible = false;
 
+    mPendingDialog     = null;
+
     ensureDialogGone();
+    ensureLogOutWarningGone();;
+    ensureInactivityTimerStopped();
 
     super.onDestroy();
     }
@@ -492,7 +628,8 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     // calling activity, and exit so the user goes back to the original app.
 
     if ( resultCode == ACTIVITY_RESULT_CODE_CHECKED_OUT ||
-         resultCode == ACTIVITY_RESULT_CODE_END_CUSTOMER_SESSION )
+         resultCode == ACTIVITY_RESULT_CODE_END_CUSTOMER_SESSION ||
+         ( requestCode == ACTIVITY_REQUEST_CODE_CHECKOUT && resultCode == RESULT_OK ) )
       {
       setResult( resultCode );
 
@@ -543,7 +680,8 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
       {
       ///// End customer session /////
 
-      showEndCustomerSessionDialog();
+      if ( mConfirmEndSessionAction ) showEndCustomerSessionDialog();
+      else                            endCustomerSession();
 
       return;
       }
@@ -565,6 +703,36 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
       return;
       }
+    }
+
+
+  ////////// LogOutDialogFragment.ICallback Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when cancel is clicked.
+   *
+   *****************************************************/
+  @Override
+  public void onCancelLogOut()
+    {
+    ensureLogOutWarningGone();
+
+    resetInactivityTimer();
+    }
+
+
+  /*****************************************************
+   *
+   * Called when log out is clicked.
+   *
+   *****************************************************/
+  @Override
+  public void onLogOut()
+    {
+    ensureLogOutWarningGone();
+
+    endCustomerSession();
     }
 
 
@@ -619,6 +787,149 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
   /*****************************************************
    *
+   * Called when there is some user activity.
+   *
+   *****************************************************/
+  private void onUserActivity()
+    {
+    if ( mInactivityTimerEnabled && ( mInactivityLogOutDialogFragment == null ) )
+      {
+      resetInactivityTimer();
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Sets whether the end customer session action button
+   * displays a confirmation dialog first.
+   *
+   *****************************************************/
+  protected void setConfirmEndSessionAction( boolean confirm )
+    {
+    mConfirmEndSessionAction = confirm;
+    }
+
+
+  /*****************************************************
+   *
+   * Ends the customer session.
+   *
+   *****************************************************/
+  protected void endCustomerSession()
+    {
+    KiteSDK.getInstance( AKiteActivity.this ).endCustomerSession();
+
+    setResult( ACTIVITY_RESULT_CODE_END_CUSTOMER_SESSION );
+
+    finish();
+    }
+
+
+  /*****************************************************
+   *
+   * Resets the inactivity timer.
+   *
+   *****************************************************/
+  private void resetInactivityTimer()
+    {
+    // Clear any delayed callback
+    mInactivityHandler.removeCallbacks( mInactivityRunnable );
+
+
+    // Set the times
+
+    long currentElapsedRealtimeMillis = SystemClock.elapsedRealtime();
+
+    mInactivityWarningElapsedRealtimeMillis = currentElapsedRealtimeMillis + INACTIVITY_WARNING_DELAY_MILLIS;
+    mInactivityLogOutElapsedRealtimeMillis  = mInactivityWarningElapsedRealtimeMillis + INACTIVITY_LOG_OUT_DELAY_MILLIS;
+
+    if ( DEBUG_INACTIVITY_TIMER )
+      {
+      Log.d( LOG_TAG, "mInactivityWarningElapsedRealtimeMillis = " + mInactivityWarningElapsedRealtimeMillis );
+      Log.d( LOG_TAG, "mInactivityLogOutElapsedRealtimeMillis  = " + mInactivityLogOutElapsedRealtimeMillis );
+      }
+
+
+    postInactivityRunnable( INACTIVITY_WARNING_DELAY_MILLIS );
+    }
+
+
+  /*****************************************************
+   *
+   * Posts the inactivity runnable.
+   *
+   *****************************************************/
+  private void postInactivityRunnable( long delayMillis )
+    {
+    if ( DEBUG_INACTIVITY_TIMER ) Log.d( LOG_TAG, "Posting inactivity runnable with delayMillis = " + delayMillis );
+
+    mInactivityHandler.postDelayed( mInactivityRunnable, delayMillis );
+    }
+
+
+  /*****************************************************
+   *
+   * Ensures that the inactivity timer is not running.
+   *
+   *****************************************************/
+  private void ensureInactivityTimerStopped()
+    {
+    if ( mInactivityHandler != null )
+      {
+      mInactivityHandler.removeCallbacks( mInactivityRunnable );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Ensures that the log out warning dialog is gone.
+   *
+   *****************************************************/
+  private void ensureLogOutWarningGone()
+    {
+    if ( mInactivityLogOutDialogFragment != null )
+      {
+      mInactivityLogOutDialogFragment.dismiss();
+
+      mInactivityLogOutDialogFragment = null;
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the enabled state of the inactivity timer for this
+   * activity only.
+   *
+   *****************************************************/
+  protected void setInactivityTimerEnabledForThisActivity( boolean enabled )
+    {
+    mInactivityTimerEnabled = enabled;
+
+    if ( enabled )
+      {
+      mInactivityHandler  = new Handler();
+      mInactivityRunnable = new InactivityRunnable();
+
+      resetInactivityTimer();
+      }
+    else
+      {
+      if ( mInactivityHandler != null )
+        {
+        mInactivityHandler.removeCallbacks( mInactivityRunnable );
+
+        mInactivityHandler  = null;
+        mInactivityRunnable = null;
+        }
+      }
+    }
+
+
+  /*****************************************************
+   *
    * Called when there are no more fragments on the back
    * stack.
    *
@@ -642,10 +953,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
           int      negativeTextResourceId,
           Runnable negativeRunnable )
     {
-    // Don't do anything if the activity is no longer visible
-    if ( ! mActivityIsVisible ) return;
-
-    ensureDialogGone();
+    // Build the dialog
 
     DialogCallbackHandler callbackHandler = new DialogCallbackHandler( positiveRunnable, negativeRunnable );
 
@@ -658,9 +966,26 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     if ( positiveTextResourceId != 0 ) alertDialogBuilder.setPositiveButton( positiveTextResourceId, callbackHandler );
     if ( negativeTextResourceId != 0 ) alertDialogBuilder.setNegativeButton( negativeTextResourceId, callbackHandler );
 
-    mDialog = alertDialogBuilder.create();
 
-    mDialog.show();
+    Dialog dialog = alertDialogBuilder.create();
+
+
+    // If the activity is visible - show the dialog now. Otherwise save it as a pending dialog,
+    // so it will get displayed when the activity becomes visible.
+
+    if ( mActivityIsVisible )
+      {
+      ensureDialogGone();
+
+      mDialog = dialog;
+
+      mDialog.show();
+      }
+    else
+      {
+      mPendingDialog = alertDialogBuilder.create();
+      }
+
     }
 
 
@@ -704,11 +1029,11 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
    * Displays an error dialog.
    *
    *****************************************************/
-  protected void showErrorDialog( String message )
+  public void showErrorDialog( String title, String message )
     {
     displayModalDialog
             (
-            R.string.alert_dialog_title_oops,
+            title,
             message,
             R.string.OK,
             null,
@@ -723,7 +1048,29 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
    * Displays an error dialog.
    *
    *****************************************************/
-  protected void showErrorDialog( int messageResourceId )
+  public void showErrorDialog( String message )
+    {
+    showErrorDialog( getString( R.string.alert_dialog_title_oops ), message );
+    }
+
+
+  /*****************************************************
+   *
+   * Displays an error dialog.
+   *
+   *****************************************************/
+  public void showErrorDialog( int titleResourceId, int messageResourceId )
+    {
+    showErrorDialog( getString( titleResourceId ), getString( messageResourceId ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Displays an error dialog.
+   *
+   *****************************************************/
+  public void showErrorDialog( int messageResourceId )
     {
     showErrorDialog( getString( messageResourceId ) );
     }
@@ -960,9 +1307,31 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
    * Sets the text of a button.
    *
    *****************************************************/
-  private void setButtonText( Button button, int textResourceId )
+  private void setButtonText( Button button, String text )
     {
-    if ( button != null ) button.setText( textResourceId );
+    if ( button != null ) button.setText( text );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the text of any left button.
+   *
+   *****************************************************/
+  protected void setLeftButtonText( String text )
+    {
+    setButtonText( getLeftButton(), text );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the text of any right button.
+   *
+   *****************************************************/
+  protected void setRightButtonText( String text )
+    {
+    setButtonText( getRightButton(), text );
     }
 
 
@@ -973,7 +1342,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
    *****************************************************/
   protected void setLeftButtonText( int textResourceId )
     {
-    setButtonText( getLeftButton(), textResourceId );
+    setLeftButtonText( getString( textResourceId ) );
     }
 
 
@@ -984,7 +1353,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
    *****************************************************/
   protected void setRightButtonText( int textResourceId )
     {
-    setButtonText( getRightButton(), textResourceId );
+    setRightButtonText( getString( textResourceId ) );
     }
 
 
@@ -1123,7 +1492,123 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     }
 
 
+  /*****************************************************
+   *
+   * Requests permission(s), and calls a runnable when
+   * they are granted.
+   *
+   *****************************************************/
+  public void callRunnableWithPermissions( String[] permissions, Runnable runnable )
+    {
+    // If we are running on a pre-Marshmallow device, we already have the permissions
+    // we need (because they were all granted at install time).
+
+    if ( Build.VERSION.SDK_INT < Build.VERSION_CODES.M )
+      {
+      runnable.run();
+
+      return;
+      }
+
+
+    // We are running Marshmallow onwards
+
+
+    // Create a list of the permissions we need
+
+    ArrayList<String> requiredPermissionList = new ArrayList<>( permissions.length );
+
+    for ( String permission: permissions )
+      {
+      if ( ContextCompat.checkSelfPermission( this, permission ) != PackageManager.PERMISSION_GRANTED )
+        {
+        requiredPermissionList.add( permission );
+        }
+      }
+
+
+    // See if we already have the permissions we need
+
+    int requiredPermissionCount = requiredPermissionList.size();
+
+    if ( requiredPermissionCount < 1 )
+      {
+      runnable.run();
+
+      return;
+      }
+
+
+    // Request the permissions we need
+
+    String[] requiredPermissions = new String[ requiredPermissionCount ];
+
+    requiredPermissionList.toArray( requiredPermissions );
+
+    mPermissionsRequestCode = new Random().nextInt( 16384 );  // Must not be negative!
+    mPermissions            = requiredPermissions;
+    mPermissionsRunnable    = runnable;
+
+    ActivityCompat.requestPermissions( this, mPermissions, mPermissionsRequestCode );
+    }
+
+
   ////////// Inner Class(es) //////////
+
+  /*****************************************************
+   *
+   * A runnable that tests the inactivity timer.
+   *
+   *****************************************************/
+  private class InactivityRunnable implements Runnable
+    {
+    public void run()
+      {
+      // Check where we are in relation to the times
+
+      long currentElapsedRealtimeMillis = SystemClock.elapsedRealtime();
+
+      if ( currentElapsedRealtimeMillis < mInactivityWarningElapsedRealtimeMillis )
+        {
+        ///// Before warning /////
+
+        // Re-post until the warning time
+        postInactivityRunnable( mInactivityWarningElapsedRealtimeMillis - currentElapsedRealtimeMillis );
+        }
+      else if ( currentElapsedRealtimeMillis < mInactivityLogOutElapsedRealtimeMillis )
+        {
+        ///// Warning /////
+
+        if ( mInactivityLogOutDialogFragment == null )
+          {
+          if ( DEBUG_INACTIVITY_TIMER ) Log.d( LOG_TAG, "Displaying inactivity warning" );
+
+
+          // Display the log-out warning dialog
+
+          mInactivityLogOutDialogFragment = new LogOutDialogFragment();
+
+          mInactivityLogOutDialogFragment.show( mFragmentManager, LogOutDialogFragment.TAG );
+          }
+
+        // Update the time remaining display
+        mInactivityLogOutDialogFragment.setTimeRemaining( mInactivityLogOutElapsedRealtimeMillis - currentElapsedRealtimeMillis );
+
+        // Re-post every second until the log-out time, so we can count down
+        postInactivityRunnable( INACTIVITY_WARNING_UPDATE_DELAY_MILLIS );
+        }
+      else
+        {
+        ///// Log out /////
+
+        if ( DEBUG_INACTIVITY_TIMER ) Log.d( LOG_TAG, "Ending customer session" );
+
+        endCustomerSession();
+        }
+
+      }
+    }
+
 
   /*****************************************************
    *
@@ -1132,10 +1617,6 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
    *****************************************************/
   public class FinishRunnable implements Runnable
     {
-    public FinishRunnable()
-      {
-      }
-
     @Override
     public void run()
       {
@@ -1158,11 +1639,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     @Override
     public void run()
       {
-      KiteSDK.getInstance( AKiteActivity.this ).endCustomerSession();
-
-      setResult( ACTIVITY_RESULT_CODE_END_CUSTOMER_SESSION );
-
-      finish();
+      endCustomerSession();
       }
     }
 

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:paddingLeft="50dp"
+        android:paddingTop="20dp"
+        android:paddingRight="50dp"
+        android:paddingBottom="20dp"
+        android:orientation="vertical">
+
+        <ly.kite.widget.CustomTypefaceTextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:text="@string/scan_qr_code"/>
+
+        <ly.kite.widget.CustomTypefaceTextView
+            android:layout_marginTop="10dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:text="@string/scan_qr_code_instructions"/>
+
+        <ImageView
+            android:id="@+id/qr_code_image_view"
+            android:layout_marginTop="10dp"
+            android:layout_width="fill_parent"
+            android:layout_height="180dp"
+            android:scaleType="fitCenter"/>
+
+        <ly.kite.widget.CustomTypefaceTextView
+            android:layout_marginTop="10dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:text="@string/scan_qr_code_alternate_instructions"/>
+
+        <ly.kite.widget.CustomTypefaceTextView
+            android:id="@+id/url_text_view"
+            android:layout_marginTop="10dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/qr_code_url"/>
+
+
+    </LinearLayout>
+
+
+    <ProgressBar
+        android:id="@+id/progress_spinner"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="?android:indeterminateProgressStyle"
+        android:visibility="invisible"/>
+
+</FrameLayout>

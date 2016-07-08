@@ -165,13 +165,16 @@ public class PhoneCaseFragment extends AEditImageFragment
     super.onActivityCreated( savedInstanceState );
 
 
-    // If we haven't already got an image asset - look in the asset list
+    // If we haven't already got an image asset - look in the asset list. Always use the
+    // last one in the list - the most recently selected.
 
     if ( mImageAsset == null )
       {
-      if ( mImageSpecArrayList != null && mImageSpecArrayList.size() > 0 )
+      int imageSpecCount = ( mImageSpecArrayList != null ? mImageSpecArrayList.size() : 0 );
+
+      if ( imageSpecCount > 0 )
         {
-        mImageAsset = mImageSpecArrayList.get( 0 ).getAsset();
+        mImageAsset = mImageSpecArrayList.get( imageSpecCount - 1 ).getAsset();
         }
       }
 

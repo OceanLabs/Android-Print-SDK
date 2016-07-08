@@ -27,6 +27,7 @@
     <string name="title_payment">Payment</string>
     <string name="title_payment_source_sandbox">Payment Source (Sandbox)</string>
     <string name="title_payment_source">Payment Source</string>
+    <string name="title_order_history">Order History</string>
 
     <string name="drawer_open">Drawer open</string>
     <string name="drawer_closed">Drawer closed</string>
@@ -80,6 +81,7 @@
     <string name="alert_dialog_message_no_recipient">Please enter a recipient name</string>
     <string name="alert_dialog_message_no_line1">Please fill in Line 1 of the address</string>
     <string name="alert_dialog_message_no_postal_code">Please fill in your Postcode / ZIP code</string>
+    <string name="alert_dialog_message_no_email_address">Please enter an email address</string>
 
     <string name="alert_dialog_title_invalid_delivery_address">Invalid Delivery Address</string>
     <string name="alert_dialog_message_invalid_delivery_address">Please choose a delivery address</string>
@@ -109,6 +111,9 @@
     <string name="alert_dialog_item_pay_with_new_card">Pay with new card</string>
     <string name="alert_dialog_item_pay_with_existing_card_format_string">Pay with card ending %1$s</string>
 
+    <string name="log_out_warning">Automatically\nlogging you out in</string>
+    <string name="time_remaining_format_string">%1$s</string>
+
     <string name="progress_dialog_title_add_to_basket">Adding to basket</string>
     <string name="progress_dialog_title_updating_basket">Updating basket</string>
 
@@ -119,16 +124,19 @@
     <string name="Cancel">Cancel</string>
     <string name="Choose_Delivery_Address">Choose Delivery Address</string>
     <string name="Continue_Shopping">Continue Shopping</string>
+    <string name="Next_Customer">Next Customer</string>
     <string name="Country">Country</string>
     <string name="Description">Description</string>
     <string name="Details">Details</string>
     <string name="Done">Done</string>
     <string name="Edit">Edit</string>
+    <string name="Email">Email</string>
     <string name="End_Session">End Session</string>
     <string name="Flip">Flip</string>
     <string name="Free">Free</string>
     <string name="ITEM">ITEM</string>
     <string name="Loading">Loading</string>
+    <string name="Log_Out">Log Out</string>
     <string name="Next">Next</string>
     <string name="No_Results">No Results</string>
     <string name="OK">OK</string>
@@ -153,13 +161,15 @@
     <string name="Size">Size</string>
     <string name="Total">Total</string>
 
-    <string name="image_source_device">CAMERA</string>
-    <string name="image_source_instagram">INSTAGRAM</string>
-    <string name="image_source_facebook">FACEBOOK</string>
+    <string name="image_source_device">Camera</string>
+    <string name="image_source_instagram">Instagram</string>
+    <string name="image_source_facebook">Facebook</string>
+    <string name="image_source_from_phone">Upload from Phone</string>
 
     <string name="select_photo_from_device">Choose camera photo</string>
     <string name="select_photo_from_instagram">Choose Instagram photo</string>
     <string name="select_photo_from_facebook">Choose Facebook photo</string>
+    <string name="upload_photo_from_phone">Upload photo from phone</string>
 
     <string name="destination_description_gbr">UK</string>
     <string name="destination_description_europe">Europe</string>
@@ -214,9 +224,10 @@
     <string name="address_hint_text_city">City</string>
     <string name="address_hint_text_county_or_state">County / State</string>
     <string name="address_hint_text_postcode_or_zip">Postcode / ZIP code</string>
+    <string name="address_hint_text_email" translatable="false">@string/Email</string>
 
     <string name="shipping_delivery_address_button_text">Choose Delivery Address</string>
-    <string name="shipping_email_hint_text">Email</string>
+    <string name="shipping_email_hint_text" translatable="false">@string/Email</string>
     <string name="shipping_phone_hint_text">Phone number</string>
     <string name="shipping_email_reason">Your email is required so that we can send you order confirmation updates.</string>
     <string name="shipping_phone_reason">Your phone number is required in case there are any delivery issues.</string>
@@ -276,6 +287,10 @@
 
     <string name="alert_dialog_title_order_cancelled">Order Cancelled</string>
     <string name="alert_dialog_message_order_cancelled">Something has gone wrong - your order appears to have been cancelled during submission.</string>
+
+    <string name="scan_qr_code">Scan QR Code</string>
+    <string name="scan_qr_code_instructions">Please scan the QR code using a\nQR reader app on your device.</string>
+    <string name="scan_qr_code_alternate_instructions">Alternatively type the following URL into your mobile browser\'s address bar:</string>
 
     <!--
     <string name="title_section1">Section 1</string>

@@ -1,11 +1,11 @@
 /*****************************************************
  *
- * BasketItem.java
+ * FromPhoneImageSource.java
  *
  *
  * Modified MIT License
  *
- * Copyright (c) 2010-2016 Kite Tech Ltd. https://www.kite.ly
+ * Copyright (c) 2010-2015 Kite Tech Ltd. https://www.kite.ly
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,32 +34,39 @@
 
 ///// Package Declaration /////
 
-package ly.kite.basket;
+package ly.kite.journey;
 
 
 ///// Import(s) /////
 
+import java.util.ArrayList;
+import java.util.List;
+
+import android.Manifest;
+import android.app.Activity;
+import android.app.Fragment;
+import android.content.Context;
+import android.content.Intent;
+
+import ly.kite.R;
+import ly.kite.util.Asset;
+import ly.kite.photopicker.Photo;
+import ly.kite.photopicker.PhotoPicker;
+
 
 ///// Class Declaration /////
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import ly.kite.catalogue.Product;
-import ly.kite.ordering.ImageSpec;
-
 /*****************************************************
  *
- * This class holds a basket item.
+ * This class represents an upload from phone image source.
  *
  *****************************************************/
-public class BasketItem
+public class FromPhoneImageSource extends AImageSource
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String  LOG_TAG = "BasketItem";
+  static private final String  LOG_TAG  = "FromPhoneImageSource";
 
 
   ////////// Static Variable(s) //////////
@@ -67,11 +74,7 @@ public class BasketItem
 
   ////////// Member Variable(s) //////////
 
-  private long                    mId;
-  private Product                 mProduct;
-  private int                     mOrderQuantity;
-  private HashMap<String,String>  mOptionsMap;
-  private ArrayList<ImageSpec>    mImageSpecList;
+  private PhotoFromPhoneFragment  mPhotoFromPhotaFragment;
 
 
   ////////// Static Initialiser(s) //////////
@@ -82,91 +85,64 @@ public class BasketItem
 
   ////////// Constructor(s) //////////
 
-  public BasketItem( long id, Product product, int orderQuantity, HashMap<String,String> optionsMap, ArrayList<ImageSpec> imageSpecList )
+  public FromPhoneImageSource()
     {
-    mId            = id;
-    mProduct       = product;
-    mOrderQuantity = orderQuantity;
-    mOptionsMap    = optionsMap;
-    mImageSpecList = imageSpecList;
+    super( R.color.image_source_background_from_phone,
+            R.drawable.ic_add_photo_white,
+            R.string.image_source_from_phone,
+            R.id.upload_photo_from_phone,
+            R.string.upload_photo_from_phone );
     }
 
 
-  ////////// Method(s) //////////
+  ////////// AImageSource Method(s) //////////
 
   /*****************************************************
    *
-   * Returns the item id.
+   * Returns true, since this image source is always
+   * available.
    *
    *****************************************************/
-  public long getId()
+  public boolean isAvailable( Context context )
     {
-    return ( mId );
-    }
-
-
-  /*****************************************************
-   *
-   * Returns the product.
-   *
-   *****************************************************/
-  public Product getProduct()
-    {
-    return ( mProduct );
+    return ( true );
     }
 
 
   /*****************************************************
    *
-   * Sets the order quantity.
+   * Called when the image source is picked to select
+   * images.
    *
    *****************************************************/
-  public void setOrderQuantity( int orderQuantity )
+  public void onPick( Fragment fragment, int maxImageCount )
     {
-    mOrderQuantity = orderQuantity;
+    // Start the photo from phone fragment
+
+    mPhotoFromPhotaFragment = new PhotoFromPhoneFragment();
+
+    mPhotoFromPhotaFragment.setTargetFragment( fragment, 0 );
+
+    mPhotoFromPhotaFragment.show( fragment.getFragmentManager(), PhotoFromPhoneFragment.TAG );
     }
 
 
   /*****************************************************
    *
-   * Returns the order quantity.
+   * Adds any picked images to the supplied list. Note that
+   * the result might either be from the built-in single image
+   * picker, or the multiple photo picker.
    *
    *****************************************************/
-  public int getOrderQuantity()
+  @Override
+  public void getAssetsFromPickerResult( Activity activity, Intent data, IAssetConsumer assetConsumer )
     {
-    return ( mOrderQuantity );
-    }
-
-
-  /*****************************************************
-   *
-   * Returns the options map.
-   *
-   *****************************************************/
-  public HashMap<String,String> getOptionsMap()
-    {
-    return ( mOptionsMap );
-    }
-
-
-  /*****************************************************
-   *
-   * Returns the image spec list.
-   *
-   *****************************************************/
-  public ArrayList<ImageSpec> getImageSpecList()
-    {
-    return ( mImageSpecList );
+    // The upload photo from phone dialog is a fragment, not an activity, so it doesn't return
+    // a result in the same way as other pickers. This method, therefore, is redundant for this
+    // picker.
     }
 
 
   ////////// Inner Class(es) //////////
 
-  /*****************************************************
-   *
-   * ...
-   *
-   *****************************************************/
-
   }
-

@@ -51,13 +51,18 @@ import com.stripe.android.model.Card;
 import com.stripe.android.model.Token;
 import com.stripe.exception.AuthenticationException;
 
+import org.json.JSONObject;
+
 import ly.kite.KiteSDK;
+import ly.kite.address.Address;
+import ly.kite.address.Country;
 import ly.kite.analytics.Analytics;
 import ly.kite.app.IndeterminateProgressDialogFragment;
 import ly.kite.checkout.ACreditCardDialogFragment;
 import ly.kite.checkout.ICreditCardFragment;
 import ly.kite.checkout.PaymentActivity;
 import ly.kite.R;
+import ly.kite.ordering.Order;
 
 
 ///// Class Declaration /////
@@ -82,6 +87,7 @@ public class StripeCreditCardFragment extends ACreditCardDialogFragment implemen
   ////////// Member Variable(s) //////////
 
   private Activity  mActivity;
+  private Order     mOrder;
 
 
   ////////// Static Initialiser(s) //////////
@@ -101,9 +107,10 @@ public class StripeCreditCardFragment extends ACreditCardDialogFragment implemen
    *
    *****************************************************/
   @Override
-  public void display( Activity activity )
+  public void display( Activity activity, Order order )
     {
     mActivity = activity;
+    mOrder    = order;
 
     // Since we are a subclass of a dialog fragment, display us
     // as a dialog.
@@ -170,7 +177,7 @@ public class StripeCreditCardFragment extends ACreditCardDialogFragment implemen
 
 
     // We can't call back to the activity because it has no concept of other credit cards. So
-    // we need to do the processing ourself, and then return the token as the payment id to the
+    // we need to do the processing ourselves, and then return the token as the payment id to the
     // Payment Activity.
 
     String stripePublicKey = KiteSDK.getInstance( mActivity ).getStripePublicKey();

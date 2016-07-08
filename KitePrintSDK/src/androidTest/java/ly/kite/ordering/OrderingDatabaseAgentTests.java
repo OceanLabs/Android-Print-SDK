@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * BasketDatabaseAgentTests.java
+ * OrderingDatabaseAgentTests.java
  *
  *
  * Modified MIT License
@@ -34,25 +34,12 @@
 
 ///// Package Declaration /////
 
-package ly.kite.basket;
+package ly.kite.ordering;
 
 
 ///// Import(s) /////
 
 import android.test.AndroidTestCase;
-
-import junit.framework.Assert;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import ly.kite.address.Address;
-import ly.kite.catalogue.Catalogue;
-import ly.kite.catalogue.Product;
-import ly.kite.ordering.Job;
-import ly.kite.ordering.Order;
-import ly.kite.util.Asset;
 
 
 ///// Class Declaration /////
@@ -62,12 +49,12 @@ import ly.kite.util.Asset;
  * This class tests the image agent class.
  *
  *****************************************************/
-public class BasketDatabaseAgentTests extends AndroidTestCase
+public class OrderingDatabaseAgentTests extends AndroidTestCase
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "BasketDatabaseAgentTests";
+  private static final String  LOG_TAG = "OrderingDatabaseAgentTests";
 
 
   ////////// Static Variable(s) //////////
@@ -89,6 +76,8 @@ public class BasketDatabaseAgentTests extends AndroidTestCase
 
 
   ////////// Method(s) //////////
+
+  // TODO: Re-write these tests now that we have a different database structure
 
 //  /*****************************************************
 //   *

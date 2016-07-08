@@ -54,7 +54,9 @@ import ly.kite.image.ImageAgent;
 
 /*****************************************************
  *
- * This class defines part or all of an asset.
+ * An AssetFragment combines an Asset with a proportional
+ * rectangle, to define a resultant image that may be all
+ * or a part of the original source asset.
  *
  *****************************************************/
 public class AssetFragment implements Parcelable

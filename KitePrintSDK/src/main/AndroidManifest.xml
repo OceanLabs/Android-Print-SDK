@@ -51,6 +51,11 @@
             android:theme="@style/Theme.KiteSDK.OrderReceipt"/>
 
         <activity
+            android:name=".journey.ordering.OrderHistoryActivity"
+            android:label="@string/title_order_history"
+            android:theme="@style/Theme.KiteSDK.OrderHistory"/>
+
+        <activity
             android:name=".address.AddressBookActivity"
             android:label="@string/title_activity_address_book"
             android:theme="@style/Theme.KiteSDK.AddressBook"/>

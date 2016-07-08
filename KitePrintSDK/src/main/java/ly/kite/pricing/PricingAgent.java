@@ -42,15 +42,18 @@ package ly.kite.pricing;
 import android.content.Context;
 import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.URLEncoder;
+import java.util.HashMap;
 
 import ly.kite.KiteSDK;
 import ly.kite.address.Address;
 import ly.kite.address.Country;
 import ly.kite.util.ACache;
 import ly.kite.util.HTTPJSONRequest;
+import ly.kite.api.KiteAPIRequest;
 import ly.kite.ordering.Order;
 
 
@@ -66,9 +69,15 @@ public class PricingAgent extends ACache<String,OrderPricing,PricingAgent.Consum
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG               = "PricingAgent";
+  static private final String  LOG_TAG                        = "PricingAgent";
 
-  private static final String  REQUEST_FORMAT_STRING = "%s/price/?basket=%s&shipping_country_code=%s&promo_code=%s";
+  static private final boolean DEBUGGING_ENABLED              = true;
+
+  static private final String  PRICING_ENDPOINT_FORMAT_STRING = "%s/price/";
+
+  static private final String  JSON_NAME_BASKET                = "basket";
+  static private final String  JSON_NAME_SHIPPING_COUNTRY_CODE = "shipping_country_code";
+  static private final String  JSON_NAME_PROMO_CODE            = "promo_code";
 
 
   ////////// Static Variable(s) //////////
@@ -119,11 +128,65 @@ public class PricingAgent extends ACache<String,OrderPricing,PricingAgent.Consum
    *****************************************************/
   public OrderPricing requestPricing( Context context, Order order, String promoCode, IPricingConsumer consumer, int requestId )
     {
+    // Get the request body first, because we also use it as the caching key
+    String requestBodyString = getRequestBody( context, order, promoCode );
+
     // Construct the request URL first, because we also use it as the caching key.
+    //String requestURLString = getRequestURLString( context, order, promoCode );
 
-    KiteSDK kiteSDK = KiteSDK.getInstance( context );
 
-    String basketString = order.toBasketString();
+    // If we already have the price information cached from a previous retrieval - return it now
+
+    OrderPricing cachedPricing = getCachedValue( requestBodyString );
+
+    if ( cachedPricing != null ) return ( cachedPricing );
+
+
+    // We don't already have the price information. If there is already a request running -
+    // add this consumer to the list of consumers waiting for the result. Otherwise start
+    // a new request.
+
+    if ( ! registerForValue( requestBodyString, new ConsumerHolder( consumer, requestId ) ) )
+      {
+      KiteSDK kiteSDK = KiteSDK.getInstance( context );
+
+      String requestURLString = String.format( PRICING_ENDPOINT_FORMAT_STRING, kiteSDK.getAPIEndpoint() );
+
+      KiteAPIRequest request = new KiteAPIRequest( context, KiteAPIRequest.HttpMethod.POST, requestURLString, null, requestBodyString );
+
+      request.start( new PriceRequestListener( requestBodyString ) );
+      }
+
+
+    return ( null );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the pricing request JSON body.
+   *
+   * {
+   * "basket":
+   *   [
+   *     {
+   *     "country_code": "GBR",
+   *     "job_id": "48CD1DFA-254B-4FF9-A81C-1FB7A854C509",
+   *     "quantity": 1,
+   *     "template_id":"i6splus_case"
+   *     }
+   *   ],
+   * "pay_in_store": 0,
+   * "payment_gateway": "APPLE_PAY",
+   * "promo_code": "",
+   * "ship_to_store": 0,
+   * "shipping_country_code": "GBR"
+   * }
+   *****************************************************/
+  private String getRequestBody( Context context, Order order, String promoCode )
+    {
+    JSONObject bodyJSONObject = new JSONObject();
+
 
     Address  shippingAddress;
     Country  country;
@@ -142,25 +205,34 @@ public class PricingAgent extends ACache<String,OrderPricing,PricingAgent.Consum
     if ( promoCode == null ) promoCode = "";
 
 
-    String requestURLString = String.format( REQUEST_FORMAT_STRING, kiteSDK.getAPIEndpoint(), basketString, shippingCountryCode, URLEncoder.encode( promoCode ) );
+    JSONArray basketJSONArray = order.asBasketJSONArray( shippingCountryCode );
 
 
-    // If we already have the price information cached from a previous retrieval - return it now
-
-    OrderPricing cachedPricing = getCachedValue( requestURLString );
-
-    if ( cachedPricing != null ) return ( cachedPricing );
-
-
-    // We don't already have the price information. If there is already a request running -
-    // add this consumer to the list of consumers waiting for the result. Otherwise start
-    // a new request.
-
-    if ( ! registerForValue( requestURLString, new ConsumerHolder( consumer, requestId ) ) )
+    try
       {
-      HTTPJSONRequest request = new HTTPJSONRequest( context, HTTPJSONRequest.HttpMethod.GET, requestURLString, null, null );
+      bodyJSONObject.put( JSON_NAME_BASKET,                basketJSONArray );
+      bodyJSONObject.put( JSON_NAME_SHIPPING_COUNTRY_CODE, shippingCountryCode );
+      bodyJSONObject.put( JSON_NAME_PROMO_CODE,            promoCode );
 
-      request.start( new PriceRequestListener( requestURLString ) );
+
+      // Add in any additional parameters
+
+      HashMap<String,String> additionalParametersMap = order.getAdditionalParameters();
+
+      if ( additionalParametersMap != null )
+        {
+        for ( String parameterName : additionalParametersMap.keySet() )
+          {
+          bodyJSONObject.put( parameterName, additionalParametersMap.get( parameterName ) );
+          }
+        }
+
+
+      return ( bodyJSONObject.toString() );
+      }
+    catch ( JSONException je )
+      {
+      Log.e( LOG_TAG, "Unable to create body JSON", je );
       }
 
 
@@ -236,14 +308,14 @@ public class PricingAgent extends ACache<String,OrderPricing,PricingAgent.Consum
    * The callback for a price request.
    *
    *****************************************************/
-  private class PriceRequestListener implements HTTPJSONRequest.HTTPJSONRequestListener
+  private class PriceRequestListener implements HTTPJSONRequest.IJSONResponseListener
     {
-    private String  mRequestURLString;
+    private String  mRequestBodyString;
 
 
-    PriceRequestListener( String requestURLString )
+    PriceRequestListener( String requestBodyString )
       {
-      mRequestURLString = requestURLString;
+      mRequestBodyString = requestBodyString;
       }
 
 
@@ -255,17 +327,19 @@ public class PricingAgent extends ACache<String,OrderPricing,PricingAgent.Consum
     @Override
     public void onSuccess( int httpStatusCode, JSONObject jsonObject )
       {
+      if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "Request body: " + mRequestBodyString + "\nReturned JSON: " + jsonObject.toString() );
+
       try
         {
         OrderPricing pricing = new OrderPricing( jsonObject );
 
-        PricingAgent.this.saveAndDistributeValue( mRequestURLString, pricing );
+        PricingAgent.this.saveAndDistributeValue( mRequestBodyString, pricing );
         }
       catch ( Exception exception )
         {
-        Log.e( LOG_TAG, "Unable to creating pricing from JSON: " + jsonObject.toString(), exception );
+        Log.e( LOG_TAG, "Unable to get pricing:\nRequest body: " + mRequestBodyString + "\nReturned JSON: " + jsonObject.toString(), exception );
 
-        PricingAgent.this.onError( mRequestURLString, exception );
+        PricingAgent.this.onError( mRequestBodyString, exception );
         }
       }
 
@@ -278,7 +352,7 @@ public class PricingAgent extends ACache<String,OrderPricing,PricingAgent.Consum
     @Override
     public void onError( Exception exception )
       {
-      PricingAgent.this.onError( mRequestURLString, exception );
+      PricingAgent.this.onError( mRequestBodyString, exception );
       }
     }
 
