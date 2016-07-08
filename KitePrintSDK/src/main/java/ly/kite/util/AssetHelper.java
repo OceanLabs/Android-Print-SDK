@@ -58,7 +58,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -86,10 +85,12 @@ public class AssetHelper
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings("unused")
-  private static final String LOG_TAG = "AssetHelper";
+  static private final String LOG_TAG                       = "AssetHelper";
 
-  private static final int READ_BUFFER_SIZE_IN_BYTES = 8192;  // 8 KB
-  private static final int TRANSFER_BUFFER_SIZE_IN_BYTES = 8192;  // 8 KB
+  static private final String BASKET_DIRECTORY              = "basket";
+
+  static private final int    READ_BUFFER_SIZE_IN_BYTES     = 8192;  // 8 KB
+  static private final int    TRANSFER_BUFFER_SIZE_IN_BYTES = 8192;  // 8 KB
 
 
   ////////// Static Variable(s) //////////
@@ -109,26 +110,41 @@ public class AssetHelper
    * category.
    *
    *****************************************************/
-  static private void clearAssets( Context context, String imageCategory )
+  static private void removeDirectory( String assetDirectoryString )
     {
-    // Get the image cache directory
-
-    String imageCacheDirectoryPath = ImageAgent.getInstance( context ).getImageDirectoryPath( imageCategory );
-
-    File imageCacheDirectory = new File( imageCacheDirectoryPath );
+    File imageDirectory = new File( assetDirectoryString );
 
 
     // Go through all the files and delete them
 
-    File[] imageFiles = imageCacheDirectory.listFiles();
+    File[] imageFiles = imageDirectory.listFiles();
 
     if ( imageFiles != null )
       {
-      for ( File imageFile : imageCacheDirectory.listFiles() )
+      for ( File imageFile : imageDirectory.listFiles() )
         {
         imageFile.delete();
         }
       }
+
+
+    // Delete the directory itself
+    imageDirectory.delete();
+    }
+
+
+  /*****************************************************
+   *
+   * Clears any asset image files for a particular image
+   * category.
+   *
+   *****************************************************/
+  static private void clearCacheAssetsForCategory( Context context, String imageCategory )
+    {
+    // Get the image cache directory
+    String imageCacheDirectoryPath = ImageAgent.getInstance( context ).getImageCacheDirectoryForCategory( imageCategory );
+
+    removeDirectory( imageCacheDirectoryPath );
     }
 
 
@@ -139,7 +155,18 @@ public class AssetHelper
    *****************************************************/
   static public void clearSessionAssets( Context context )
     {
-    clearAssets( context, KiteSDK.IMAGE_CATEGORY_SESSION_ASSET );
+    clearCacheAssetsForCategory( context, KiteSDK.IMAGE_CATEGORY_SESSION_ASSET );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the directory for a basket id.
+   *
+   *****************************************************/
+  static private String basketDirectoryString( Context context, long basketId )
+    {
+    return ( context.getFilesDir() + File.separator + BASKET_DIRECTORY + File.separator + String.valueOf( basketId ) );
     }
 
 
@@ -148,9 +175,23 @@ public class AssetHelper
    * Clears any basket asset image files.
    *
    *****************************************************/
-  static public void clearBasketAssets( Context context )
+  static public void clearBasketAssets( Context context, long basketId )
     {
-    clearAssets( context, KiteSDK.IMAGE_CATEGORY_BASKET_ASSET );
+    removeDirectory( basketDirectoryString( context, basketId ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Moves asset image files between baskets.
+   *
+   *****************************************************/
+  static public void moveBasket( Context context, long oldBasketId, long newBasketId )
+    {
+    File oldBasketDirectory = new File( basketDirectoryString( context, oldBasketId ) );
+    File newBasketDirectory = new File( basketDirectoryString( context, newBasketId ) );
+
+    oldBasketDirectory.renameTo( newBasketDirectory );
     }
 
 
@@ -160,10 +201,30 @@ public class AssetHelper
    * ensures that the directory exists.
    *
    *****************************************************/
-  static public String prepareForFileAsset( Context context, String imageCategory, MIMEType mimeType )
+  static public String reserveFileAsset( Context context, String directoryPath, MIMEType mimeType )
+    {
+    File directory = new File( directoryPath );
+
+    directory.mkdirs();
+
+
+    String filePath = directoryPath + File.separator + ImageAgent.toSafeString( UUID.randomUUID().toString() ) + ( mimeType != null ? mimeType.primaryFileSuffix() : "" );
+
+
+    return ( filePath );
+    }
+
+
+  /*****************************************************
+   *
+   * Generates the file path of an asset file, and
+   * ensures that the directory exists.
+   *
+   *****************************************************/
+  static public String reserveCacheFileAsset( Context context, String imageCategory, MIMEType mimeType )
     {
     // Generate a random file name within the cache
-    Pair<String, String> imageDirectoryAndFilePath = ImageAgent.getInstance( context ).getImageDirectoryAndFilePath( imageCategory, UUID.randomUUID().toString() );
+    Pair<String, String> imageDirectoryAndFilePath = ImageAgent.getInstance( context ).getImageCacheDirectoryAndFilePath( imageCategory, UUID.randomUUID().toString() );
 
     File imageDirectory = new File( imageDirectoryAndFilePath.first );
 
@@ -179,9 +240,9 @@ public class AssetHelper
    * ensures that the directory exists.
    *
    *****************************************************/
-  static public String prepareForSessionAsset( Context context, MIMEType mimeType )
+  static public String reserveSessionAsset( Context context, MIMEType mimeType )
     {
-    return ( prepareForFileAsset( context, KiteSDK.IMAGE_CATEGORY_SESSION_ASSET, mimeType ) );
+    return ( reserveCacheFileAsset( context, KiteSDK.IMAGE_CATEGORY_SESSION_ASSET, mimeType ) );
     }
 
 
@@ -191,9 +252,9 @@ public class AssetHelper
    * ensures that the directory exists.
    *
    *****************************************************/
-  static public String prepareForBasketAsset( Context context, Asset sourceAsset )
+  static public String reserveBasketAsset( Context context, long basketId, Asset sourceAsset )
     {
-    return ( prepareForFileAsset( context, KiteSDK.IMAGE_CATEGORY_BASKET_ASSET, getMimeType( context, sourceAsset ) ) );
+    return ( reserveFileAsset( context, basketDirectoryString( context, basketId ), getMimeType( context, sourceAsset ) ) );
     }
 
 
@@ -204,7 +265,7 @@ public class AssetHelper
    *****************************************************/
   static public Asset createAsSessionAsset( Context context, Asset.MIMEType mimeType )
     {
-    return ( new Asset( prepareForSessionAsset( context, mimeType ) ) );
+    return ( new Asset( reserveSessionAsset( context, mimeType ) ) );
     }
 
 
@@ -216,7 +277,7 @@ public class AssetHelper
    *****************************************************/
   static public Asset createAsSessionAsset( Context context, byte[] imageBytes, Asset.MIMEType mimeType )
     {
-    return ( createAsSessionAsset( imageBytes, prepareForSessionAsset( context, mimeType ) ) );
+    return ( createAsSessionAsset( imageBytes, reserveSessionAsset( context, mimeType ) ) );
     }
 
 
@@ -246,7 +307,7 @@ public class AssetHelper
    *****************************************************/
   static public Asset createAsSessionAsset( Context context, int bitmapResourceId, Asset.MIMEType mimeType )
     {
-    String filePath = prepareForSessionAsset( context, mimeType );
+    String filePath = reserveSessionAsset( context, mimeType );
 
 
     // Encode the bitmap directly to the filesystem, to avoid using more memory than necessary.
@@ -323,7 +384,7 @@ public class AssetHelper
    *****************************************************/
   static public Asset createAsSessionAsset( Context context, Bitmap bitmap )
     {
-    String filePath = prepareForSessionAsset( context, MIMEType.JPEG );
+    String filePath = reserveSessionAsset( context, MIMEType.JPEG );
 
     return ( saveToFile( bitmap, filePath ) );
     }
@@ -465,13 +526,13 @@ public class AssetHelper
    * Creates a basket asset from a session asset.
    *
    *****************************************************/
-  static public Asset createAsBasketAsset( Context context, Asset sourceAsset )
+  static public Asset createAsBasketAsset( Context context, long basketId, Asset sourceAsset )
     {
     // It is perfectly valid to supply a null asset, in which case we return null back.
     if ( sourceAsset == null ) return ( null );
 
 
-    String basketFilePath = prepareForBasketAsset( context, sourceAsset );
+    String basketFilePath = reserveBasketAsset( context, basketId, sourceAsset );
 
     File basketAssetFile = new File( basketFilePath );
 
@@ -525,11 +586,24 @@ public class AssetHelper
 
   /*****************************************************
    *
+   * Creates a basket asset.
+   *
+   *****************************************************/
+  static public Asset createExistingBasketAsset( Context context, long basketId, String imageFileName )
+    {
+    String imageFilePath = basketDirectoryString( context, basketId ) + File.separator + imageFileName;
+
+    return ( new Asset( imageFilePath ) );
+    }
+
+
+  /*****************************************************
+   *
    * Creates a list of basket asset fragments from session
    * assets.
    *
    *****************************************************/
-  static public List<ImageSpec> createAsBasketAssets( Context context, List<ImageSpec> sessionImageSpecList )
+  static public List<ImageSpec> createAsBasketAssets( Context context, long basketId, List<ImageSpec> sessionImageSpecList )
     {
     if ( sessionImageSpecList == null ) return ( new ArrayList<>( 0 ) );
 
@@ -537,7 +611,7 @@ public class AssetHelper
 
     for ( ImageSpec imageSpec : sessionImageSpecList )
       {
-      Asset basketAsset = createAsBasketAsset( context, imageSpec.getAsset() );
+      Asset basketAsset = createAsBasketAsset( context, basketId, imageSpec.getAsset() );
 
       basketImageSpecList.add( new ImageSpec( basketAsset, imageSpec.getAssetFragment().getProportionalRectangle(), imageSpec.getQuantity() ) );
       }

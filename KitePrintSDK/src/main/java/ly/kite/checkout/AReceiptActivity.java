@@ -73,7 +73,9 @@ abstract public class AReceiptActivity extends AOrderSubmissionActivity implemen
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String  LOG_TAG = "AReceiptActivity";
+  static private final String  LOG_TAG                                       = "AReceiptActivity";
+
+  static private final String  INTENT_EXTRA_NAME_HIDE_SUCCESSFUL_NEXT_BUTTON = "ly.kite.hideSuccessfulNextButton";
 
 
   ////////// Static Variable(s) //////////
@@ -82,6 +84,7 @@ abstract public class AReceiptActivity extends AOrderSubmissionActivity implemen
   ////////// Member Variable(s) //////////
 
   protected Order         mOrder;
+  private   boolean       mHideSuccessfulNextButton;
   private   boolean       mOrderSuccess;
 
   protected TextView      mOrderReceiptTextView;
@@ -111,6 +114,17 @@ abstract public class AReceiptActivity extends AOrderSubmissionActivity implemen
     }
 
 
+  /*****************************************************
+   *
+   * Adds the hide successful next button flag to an intent.
+   *
+   *****************************************************/
+  static protected void addHideSuccessfulNextButton( boolean hide, Intent intent )
+    {
+    intent.putExtra( INTENT_EXTRA_NAME_HIDE_SUCCESSFUL_NEXT_BUTTON, hide );
+    }
+
+
   ////////// Constructor(s) //////////
 
 
@@ -134,6 +148,8 @@ abstract public class AReceiptActivity extends AOrderSubmissionActivity implemen
 
       if ( order != null )
         {
+        mHideSuccessfulNextButton = intent.getBooleanExtra( INTENT_EXTRA_NAME_HIDE_SUCCESSFUL_NEXT_BUTTON, false );
+
         onOrder( order );
         }
       else
@@ -260,7 +276,19 @@ abstract public class AReceiptActivity extends AOrderSubmissionActivity implemen
   @Override
   protected void onOrderSuccess( Order order )
     {
-    super.onOrderSuccess( order );
+    onOrder( order );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the order fails.
+   *
+   *****************************************************/
+  @Override
+  protected void onOrderFailure( long localOrderId, Order order, Exception exception )
+    {
+    // The local order id should not have changed, so we don't need to save it
 
     onOrder( order );
     }
@@ -313,6 +341,11 @@ abstract public class AReceiptActivity extends AOrderSubmissionActivity implemen
     if ( mOrderSuccess )
       {
       onShowReceiptSuccess();
+
+      if ( mHideSuccessfulNextButton )
+        {
+        if ( mNextButton != null ) mNextButton.setVisibility( View.GONE );
+        }
       }
     else
       {
@@ -378,8 +411,8 @@ abstract public class AReceiptActivity extends AOrderSubmissionActivity implemen
    *****************************************************/
   protected void onRetryPrint()
     {
-    // Start order submission again
-    OrderSubmissionFragment.start( this, mOrder );
+    // Submit the order again
+    submitOrder( mOrder );
     }
 
 

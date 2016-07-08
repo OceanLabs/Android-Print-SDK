@@ -27,6 +27,7 @@
     <string name="title_payment">Payment</string>
     <string name="title_payment_source_sandbox">Payment Source (Sandbox)</string>
     <string name="title_payment_source">Payment Source</string>
+    <string name="title_order_history">Order History</string>
 
     <string name="drawer_open">Drawer open</string>
     <string name="drawer_closed">Drawer closed</string>

@@ -56,7 +56,7 @@ import com.paypal.android.sdk.payments.PayPalConfiguration;
 
 import ly.kite.address.Address;
 import ly.kite.address.Country;
-import ly.kite.basket.BasketAgent;
+import ly.kite.ordering.OrderingDataAgent;
 import ly.kite.catalogue.CatalogueLoader;
 import ly.kite.checkout.AShippingActivity;
 import ly.kite.checkout.DefaultPaymentFragment;
@@ -89,12 +89,11 @@ public class KiteSDK
 
   static private final String LOG_TAG                                              = "KiteSDK";
 
-  static public  final String SDK_VERSION                                          = "5.2.1";
+  static public  final String SDK_VERSION                                          = "5.2.2";
 
   static public  final String IMAGE_CATEGORY_APP                                   = "app";
   static public  final String IMAGE_CATEGORY_PRODUCT_ITEM                          = "product_item";
   static public  final String IMAGE_CATEGORY_SESSION_ASSET                         = "session_asset";
-  static public  final String IMAGE_CATEGORY_BASKET_ASSET                          = "basket_asset";
 
   static private final String SHARED_PREFERENCES_NAME_PERMANENT                    = "kite_permanent_shared_prefs";
   static private final String SHARED_PREFERENCES_NAME_APP_SESSION                  = "kite_app_session_shared_prefs";
@@ -185,6 +184,20 @@ public class KiteSDK
 
 
   ////////// Static Method(s) //////////
+
+  /*****************************************************
+   *
+   * Clears parameters for a particular scope.
+   *
+   *****************************************************/
+  static public void clearAllParameters( Context context, Scope scope )
+    {
+    scope.sharedPreferences( context )
+      .edit()
+        .clear()
+      .apply();
+    }
+
 
   /*****************************************************
    *
@@ -559,9 +572,9 @@ public class KiteSDK
 
     // Empty any basket
 
-    BasketAgent basketAgent = BasketAgent.getInstance( mApplicationContext );
+    OrderingDataAgent basketAgent = OrderingDataAgent.getInstance( mApplicationContext );
 
-    basketAgent.clear();
+    basketAgent.clearDefaultBasket();
 
 
     // Go through all the images sources and end any social network log-ins
@@ -595,10 +608,7 @@ public class KiteSDK
    *****************************************************/
   public KiteSDK clearAllParameters( Scope scope )
     {
-    scope.sharedPreferences( mApplicationContext )
-      .edit()
-        .clear()
-      .apply();
+    clearAllParameters( mApplicationContext, scope );
 
     return ( this );
     }

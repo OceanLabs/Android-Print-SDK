@@ -41,6 +41,7 @@ package ly.kite.checkout;
 
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 
 import ly.kite.R;
@@ -48,6 +49,7 @@ import ly.kite.analytics.Analytics;
 import ly.kite.api.OrderState;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.ordering.Order;
+import ly.kite.ordering.OrderingDataAgent;
 
 
 ///// Class Declaration /////
@@ -58,14 +60,18 @@ import ly.kite.ordering.Order;
  * orders.
  *
  *****************************************************/
-public class AOrderSubmissionActivity extends AKiteActivity implements IOrderSubmissionResultListener
+abstract public class AOrderSubmissionActivity extends AKiteActivity implements IOrderSubmissionResultListener
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String  LOG_TAG = "AOrderSubmissionActivity";
+  static private   final String  LOG_TAG               = "AOrderSubmissionActivity";
 
-  //private static final int REQUEST_CODE_RECEIPT = 57;
+  static private   final boolean FORCE_ORDER_TO_FAIL   = false;
+
+  static private   final String  KEY_PREVIOUS_ORDER_ID = "ly.kite.previousOrderId";
+
+  static protected final long    NO_ORDER_ID           = -1;
 
 
   ////////// Static Variable(s) //////////
@@ -75,11 +81,23 @@ public class AOrderSubmissionActivity extends AKiteActivity implements IOrderSub
 
   private OrderSubmissionFragment  mOrderSubmissionFragment;
 
+  private long                     mPreviousOrderId;
+
 
   ////////// Static Initialiser(s) //////////
 
 
   ////////// Static Method(s) //////////
+
+  /*****************************************************
+   *
+   * Adds a previous order id as an extra to an intent.
+   *
+   *****************************************************/
+  static protected void addPreviousOrder( long previousOrderId, Intent intent )
+    {
+    if ( previousOrderId >= 0 ) intent.putExtra( KEY_PREVIOUS_ORDER_ID, previousOrderId );
+    }
 
 
   ////////// Constructor(s) //////////
@@ -96,6 +114,16 @@ public class AOrderSubmissionActivity extends AKiteActivity implements IOrderSub
   protected void onCreate( Bundle savedInstanceState )
     {
     super.onCreate( savedInstanceState );
+
+
+    // Check for a previous order id
+
+    Intent intent = getIntent();
+
+    if ( intent != null )
+      {
+      mPreviousOrderId = intent.getLongExtra( KEY_PREVIOUS_ORDER_ID, -1 );
+      }
 
 
     // See if there is a retained order submission fragment already running
@@ -116,6 +144,9 @@ public class AOrderSubmissionActivity extends AKiteActivity implements IOrderSub
   @Override
   public void onOrderComplete( Order order, OrderState state )
     {
+    cleanUpAfterOrderSubmission();
+
+
     // Determine what the order state is, and set the progress dialog accordingly
 
     switch ( state )
@@ -134,8 +165,6 @@ public class AOrderSubmissionActivity extends AKiteActivity implements IOrderSub
 
       case CANCELLED:
 
-        cleanUpAfterOrderSubmission();
-
         displayModalDialog
                 (
                         R.string.alert_dialog_title_order_cancelled,
@@ -150,13 +179,15 @@ public class AOrderSubmissionActivity extends AKiteActivity implements IOrderSub
       }
 
 
-    // For anything that's not cancelled - go to the receipt screen
-    onOrderSuccess( order );
+    Analytics.getInstance( this ).trackOrderSubmission( order );
+
+    onOrderSuccessInt( order );
     }
 
 
   /*****************************************************
-   *
+   *      mHideSuccessfulNextButton = intent.getBooleanExtra( INTENT_EXTRA_NAME_HIDE_SUCCESSFUL_NEXT_BUTTON );
+
    * Called when there is an error submitting the order.
    *
    *****************************************************/
@@ -164,24 +195,21 @@ public class AOrderSubmissionActivity extends AKiteActivity implements IOrderSub
     {
     cleanUpAfterOrderSubmission();
 
-    displayModalDialog
-            (
-                    R.string.alert_dialog_title_order_submission_error,
-                    exception.getMessage(),
-                    R.string.OK,
-                    null,
-                    NO_BUTTON,
-                    null
-            );
-
-    // We no longer seem to have a route into the receipt screen on error
-    //OrderReceiptActivity.startForResult( PaymentActivity.this, order, REQUEST_CODE_RECEIPT );
+    onOrderFailureInt( order, exception );
     }
 
 
+  /*****************************************************
+   *
+   * Called when there is a duplicate (successful) order.
+   *
+   *****************************************************/
   @Override
   public void onOrderDuplicate( Order order, String originalOrderId )
     {
+    cleanUpAfterOrderSubmission();
+
+
     // We do need to replace any order id with the original one
     order.setReceipt( originalOrderId );
 
@@ -189,10 +217,16 @@ public class AOrderSubmissionActivity extends AKiteActivity implements IOrderSub
     // A duplicate is treated in the same way as a successful submission, since it means
     // the proof of payment has already been accepted and processed.
 
-    onOrderSuccess( order );
+    onOrderSuccessInt( order );
     }
 
 
+  /*****************************************************
+   *
+   * Called when polling for a completed order status
+   * times out.
+   *
+   *****************************************************/
   @Override
   public void onOrderTimeout( Order order )
     {
@@ -219,6 +253,16 @@ public class AOrderSubmissionActivity extends AKiteActivity implements IOrderSub
    *****************************************************/
   protected void submitOrder( Order order )
     {
+    if ( FORCE_ORDER_TO_FAIL )
+      {
+      // If we are forcing an order to fail, save the proof of payment in
+      // the user data, so that we can set it back later if we want.
+      order.setNotificationEmail( null );
+      order.removeUserDataParameter( "email" );
+      order.setUserDataParameter( "proof_of_payment", order.getProofOfPayment() );
+      order.setProofOfPayment( "PAY-error" );
+      }
+
     // Submit the order using the order submission fragment
     mOrderSubmissionFragment = OrderSubmissionFragment.start( this, order );
     }
@@ -226,15 +270,48 @@ public class AOrderSubmissionActivity extends AKiteActivity implements IOrderSub
 
   /*****************************************************
    *
-   * Called when the order is successfully submitted.
+   * Called when the order succeeds.
    *
    *****************************************************/
-  protected void onOrderSuccess( Order order )
+  private void onOrderSuccessInt( Order order )
     {
-    cleanUpAfterOrderSubmission();
+    // Save the successful order, taking into consideration any previous order id
+    OrderingDataAgent.getInstance( this ).onOrderSuccess( mPreviousOrderId, order );
 
-    Analytics.getInstance( this ).trackOrderSubmission( order );
+    // Deliver the successful order to the app
+    onOrderSuccess( order );
     }
+
+
+  /*****************************************************
+   *
+   * Called when the order fails.
+   *
+   *****************************************************/
+  private void onOrderFailureInt( Order order, Exception exception )
+    {
+    // Save the failed order
+    long localOrderId = OrderingDataAgent.getInstance( this ).onOrderFailure( mPreviousOrderId, order );
+
+    // Deliver the failed order to the app
+    onOrderFailure( localOrderId, order, exception );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the order succeeds.
+   *
+   *****************************************************/
+  abstract protected void onOrderSuccess( Order order );
+
+
+  /*****************************************************
+   *
+   * Called when the order fails.
+   *
+   *****************************************************/
+  abstract protected void onOrderFailure( long localOrderId, Order order, Exception exception );
 
 
   /*****************************************************

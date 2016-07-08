@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.basket;
+package ly.kite.ordering;
 
 
 ///// Import(s) /////

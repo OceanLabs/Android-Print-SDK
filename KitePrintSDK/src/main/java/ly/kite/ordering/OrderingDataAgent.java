@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * BasketAgent.java
+ * OrderingDataAgent.java
  *
  *
  * Modified MIT License
@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.basket;
+package ly.kite.ordering;
 
 
 ///// Import(s) /////
@@ -50,7 +50,6 @@ import java.util.List;
 
 import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.Product;
-import ly.kite.ordering.ImageSpec;
 import ly.kite.util.AssetHelper;
 
 /*****************************************************
@@ -58,23 +57,25 @@ import ly.kite.util.AssetHelper;
  * This class manages the basket.
  *
  *****************************************************/
-public class BasketAgent
+public class OrderingDataAgent
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String  LOG_TAG = "BasketAgent";
+  static private final String  LOG_TAG           = "OrderingDataAgent";
+
+  static public  final long    BASKET_ID_DEFAULT = 0;
 
 
   ////////// Static Variable(s) //////////
 
-  static private BasketAgent  sBasketAgent;
+  static private OrderingDataAgent sDataAgent;
 
 
   ////////// Member Variable(s) //////////
 
-  private Context              mApplicationContext;
-  private BasketDatabaseAgent  mDatabaseAgent;
+  private Context                mApplicationContext;
+  private OrderingDatabaseAgent  mDatabaseAgent;
 
 
   ////////// Static Initialiser(s) //////////
@@ -87,23 +88,23 @@ public class BasketAgent
    * Returns an instance of this agent.
    *
    *****************************************************/
-  static public BasketAgent getInstance( Context context )
+  static public OrderingDataAgent getInstance( Context context )
     {
-    if ( sBasketAgent == null )
+    if ( sDataAgent == null )
       {
-      sBasketAgent = new BasketAgent( context );
+      sDataAgent = new OrderingDataAgent( context );
       }
 
-    return ( sBasketAgent );
+    return ( sDataAgent );
     }
 
 
   ////////// Constructor(s) //////////
 
-  private BasketAgent( Context context )
+  private OrderingDataAgent( Context context )
     {
     mApplicationContext = context.getApplicationContext();
-    mDatabaseAgent      = new BasketDatabaseAgent( mApplicationContext, null );
+    mDatabaseAgent      = new OrderingDatabaseAgent( mApplicationContext, null );
     }
 
 
@@ -111,16 +112,27 @@ public class BasketAgent
 
   /*****************************************************
    *
-   * Clears the basket.
+   * Clears a basket.
    *
    *****************************************************/
-  public BasketAgent clear()
+  public OrderingDataAgent clearBasket( long basketId )
     {
-    mDatabaseAgent.clear();
+    mDatabaseAgent.clearBasket( basketId );
 
-    AssetHelper.clearBasketAssets( mApplicationContext );
+    AssetHelper.clearBasketAssets( mApplicationContext, basketId );
 
     return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Clears the default basket.
+   *
+   *****************************************************/
+  public OrderingDataAgent clearDefaultBasket()
+    {
+    return ( clearBasket( BASKET_ID_DEFAULT ) );
     }
 
 
@@ -172,7 +184,7 @@ public class BasketAgent
 
   /*****************************************************
    *
-   * Replaces an item.
+   * Replaces an item in the default basket.
    *
    *****************************************************/
   public void replaceItem( long itemId, Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, int orderQuantity, IAddListener addListener )
@@ -187,32 +199,32 @@ public class BasketAgent
 
   /*****************************************************
    *
-   * Saves an item to the basket synchronously.
+   * Saves an item to the default basket synchronously.
    *
    *****************************************************/
   private void addItem( long itemId, Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, int orderQuantity )
     {
     // Move any referenced assets to the basket
-    List<ImageSpec> basketImageSpecList = AssetHelper.createAsBasketAssets( mApplicationContext, imageSpecList );
+    List<ImageSpec> basketImageSpecList = AssetHelper.createAsBasketAssets( mApplicationContext, BASKET_ID_DEFAULT, imageSpecList );
 
-    mDatabaseAgent.saveItem( itemId, product, optionsMap, basketImageSpecList, orderQuantity );
+    mDatabaseAgent.saveDefaultBasketItem( itemId, product, optionsMap, basketImageSpecList, orderQuantity );
     }
 
 
   /*****************************************************
    *
-   * Returns a list of basket items.
+   * Returns a list of default basket items.
    *
    *****************************************************/
   public List<BasketItem> getAllItems( Catalogue catalogue )
     {
-    return ( mDatabaseAgent.loadBasket( catalogue ) );
+    return ( mDatabaseAgent.loadDefaultBasket( mApplicationContext, catalogue ) );
     }
 
 
   /*****************************************************
    *
-   * Returns the item count.
+   * Returns the item count for the default basket.
    *
    *****************************************************/
   public int getItemCount()
@@ -223,31 +235,113 @@ public class BasketAgent
 
   /*****************************************************
    *
-   * Increments the order quantity.
+   * Increments the order quantity for a basket item.
    *
    *****************************************************/
-  public int incrementOrderQuantity( long jobId )
+  public int incrementOrderQuantity( long itemId )
     {
-    return ( mDatabaseAgent.updateOrderQuantity( jobId, +1 ) );
+    return ( mDatabaseAgent.updateOrderQuantity( itemId, +1 ) );
     }
 
 
   /*****************************************************
    *
-   * Decrements the order quantity.
+   * Decrements the order quantity for a basket item.
    *
    *****************************************************/
-  public int decrementOrderQuantity( long jobId )
+  public int decrementOrderQuantity( long itemId )
     {
-    int orderQuantity = mDatabaseAgent.updateOrderQuantity( jobId, -1 );
+    int orderQuantity = mDatabaseAgent.updateOrderQuantity( itemId, -1 );
 
-    // If the order quantity has gone to zero - delete the job
+    // If the order quantity has gone to zero - delete the item
     if ( orderQuantity < 1 )
       {
-      mDatabaseAgent.deleteItem( jobId );
+      mDatabaseAgent.deleteItem( itemId );
       }
 
     return ( orderQuantity );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a list of order history items.
+   *
+   *****************************************************/
+  public List<OrderHistoryItem> getOrderHistoryList( Catalogue catalogue )
+    {
+    return ( mDatabaseAgent.loadOrderHistory( mApplicationContext, catalogue ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when an order was successfully completed from
+   * the default basket.
+   *
+   *****************************************************/
+  public void onOrderSuccess( long previousOrderId, Order order )
+    {
+    if ( previousOrderId >= 0 )
+      {
+      // If a previously failed order has now been successful, it will already have its own
+      // order id, so we just need to:
+      //   - Determine its basket id
+      //   - Remove its basket (assets & database entries)
+      //   - Clear all order details except those required for a successful order history entry
+
+      long basketId = mDatabaseAgent.selectBasketIdForOrder( previousOrderId );
+
+      if ( basketId >= 0 )
+        {
+        clearBasket( basketId );
+
+        mDatabaseAgent.updateToSuccessfulOrder( previousOrderId, order.getReceipt() );
+        }
+      }
+    else
+      {
+      // This is a new order, so simply clear its basket and create a new database order
+
+      clearDefaultBasket();
+
+      mDatabaseAgent.insertSuccessfulOrder( order.getItemsDescription(), order.getReceipt(), order.getOrderPricing().getPricingJSONString() );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Called when an order failed.
+   *
+   *****************************************************/
+  public long onOrderFailure( long previousOrderId, Order order )
+    {
+    if ( previousOrderId >= 0 )
+      {
+      // If the order has already failed at least once, and fails
+      // again - we don't need to do anything to it.
+      // TODO: Do we need to update the date?
+      // So simply retrieve the basket id and return it.
+
+      return ( mDatabaseAgent.selectBasketIdForOrder( previousOrderId ) );
+      }
+    else
+      {
+      // Get a new basket id
+      long newBasketId = mDatabaseAgent.insertBasket( -1 );
+
+
+      // Move items and assets from the default basket to the new basket
+
+      AssetHelper.moveBasket( mApplicationContext, BASKET_ID_DEFAULT, newBasketId );
+
+      mDatabaseAgent.updateBasket( BASKET_ID_DEFAULT, newBasketId );
+
+
+      // Create the new order on the database, and return its id
+      return ( mDatabaseAgent.newOrder( newBasketId, order ) );
+      }
     }
 
 
@@ -266,7 +360,7 @@ public class BasketAgent
 
   /*****************************************************
    *
-   * Task for adding orders to the basket.
+   * Task for adding orders to the default basket.
    *
    *****************************************************/
   private class AddItemTask extends AsyncTask<Void,Void,Void>

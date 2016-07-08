@@ -20,6 +20,7 @@ import java.util.Set;
 import ly.kite.address.Address;
 import ly.kite.api.AssetUploadRequest;
 import ly.kite.api.SubmitOrderRequest;
+import ly.kite.catalogue.Product;
 import ly.kite.catalogue.SingleCurrencyAmount;
 import ly.kite.image.ImageAgent;
 import ly.kite.image.ImageProcessingRequest;
@@ -33,15 +34,14 @@ import ly.kite.util.UploadableImage;
  */
 public class Order implements Parcelable /* , Serializable */
     {
+    static private final String LOG_TAG                = "Order";
 
-    static private final String LOG_TAG                = "PrintOrder";
+    static private final int    NOT_PERSISTED          = -1;
 
-    private static final int    NOT_PERSISTED          = -1;
-
-    private static final int    JOB_TYPE_POSTCARD      = 0;
-    private static final int    JOB_TYPE_GREETING_CARD = 1;
-    private static final int    JOB_TYPE_PHOTOBOOK     = 2;
-    private static final int    JOB_TYPE_PRINTS        = 3;
+    static private final int    JOB_TYPE_POSTCARD      = 0;
+    static private final int    JOB_TYPE_GREETING_CARD = 1;
+    static private final int    JOB_TYPE_PHOTOBOOK     = 2;
+    static private final int    JOB_TYPE_PRINTS        = 3;
 
     static private final String JSON_NAME_LOCALE       = "locale";
     static private final String JSON_NAME_JOB_ID       = "job_id";
@@ -50,44 +50,102 @@ public class Order implements Parcelable /* , Serializable */
     static private final String JSON_NAME_COUNTRY_CODE = "country_code";
 
 
-    private Address shippingAddress;
-    private String proofOfPayment;
-    private String voucherCode;
-    private JSONObject userData;
-    private HashMap<String,String>  mAdditionalParametersMap;
-    private ArrayList<Job> jobs = new ArrayList<Job>();
+    // These values are used to build the order
+    private ArrayList<Job>               jobs = new ArrayList<Job>();
+    private Address                      shippingAddress;
+    private String                       statusNotificationEmail;
+    private String                       statusNotificationPhone;
+    private JSONObject                   userData;
+    private HashMap<String,String>       mAdditionalParametersMap;
+    private String                       promoCode;
+    //private String                       voucherCode;
 
-    private boolean userSubmittedForPrinting;
-    //private long totalBytesWritten, totalBytesExpectedToWrite;
-    private AssetUploadRequest assetUploadReq;
-    private int                   mImagesToCropCount;
-    private List<UploadableImage> mImagesToUpload;
-    //private List<AssetFragment>  assetFragmentsToUpload;
-    private boolean assetUploadComplete;
-    private SubmitOrderRequest printOrderReq;
-    private Date lastPrintSubmissionDate;
-    private String receipt;
-    private ISubmissionProgressListener submissionListener;
-    private Exception lastPrintSubmissionError;
-    private int storageIdentifier = NOT_PERSISTED;
+    // These values are generated throughout the order processing, but
+    // need to be persisted in some form for the order history
+    private OrderPricing                 mOrderPricing;
+    private String                       proofOfPayment;
+    private String                       receipt;
 
-    private String promoCode;
+    // Transient values solely used during order submission
+    private boolean                      userSubmittedForPrinting;
+    private AssetUploadRequest           assetUploadReq;
+    private int                          mImagesToCropCount;
+    private List<UploadableImage>        mImagesToUpload;
+    private boolean                      assetUploadComplete;
+    private SubmitOrderRequest           printOrderReq;
+    private Date                         lastPrintSubmissionDate;
+    private ISubmissionProgressListener  submissionListener;
+    private Exception                    lastPrintSubmissionError;
+    private int                          storageIdentifier = NOT_PERSISTED;
 
-    private OrderPricing  mOrderPricing;
-
-    //MultipleCurrencyAmount  mPromoCodeDiscount;
-    //private BigDecimal promoCodeDiscount;
-    private String statusNotificationEmail;
-    private String statusNotificationPhone;
-    //private String currencyCode = null;
-
-    //private MultipleCurrencyAmount mTotalCost;
 
     public Order() {}
 
-    public void setShippingAddress(Address shippingAddress) {
-        this.shippingAddress = shippingAddress;
-    }
+
+    /*****************************************************
+     *
+     * Constructor used by basket activity.
+     *
+     *****************************************************/
+    public Order( List<BasketItem>       basketItemList,
+                  Address                shippingAddress,
+                  String                 contactEmail,
+                  String                 contactPhone,
+                  HashMap<String,String> additionalParametersMap )
+      {
+      // Convert the basket items into jobs
+
+      if ( basketItemList != null )
+        {
+        for ( BasketItem basketItem : basketItemList )
+          {
+          Product product = basketItem.getProduct();
+          int orderQuantity = basketItem.getOrderQuantity();
+
+          product.getUserJourneyType().addJobsToOrder( product, orderQuantity, basketItem.getOptionsMap(), basketItem.getImageSpecList(), this );
+          }
+        }
+
+
+      setShippingAddress( shippingAddress );
+      setEmail( contactEmail );
+      setPhone( contactPhone );
+      setAdditionalParameters( additionalParametersMap );
+      }
+
+
+    /*****************************************************
+     *
+     * Constructor used by order history fragment.
+     *
+     *****************************************************/
+    public Order( List<BasketItem>       basketItemList,
+                  Address                shippingAddress,
+                  String                 contactEmail,
+                  String                 contactPhone,
+                  JSONObject             userDataJSONObject,
+                  HashMap<String,String> additionalParametersMap,
+                  String                 promoCode,
+                  OrderPricing           orderPricing,
+                  String                 proofOfPayment,
+                  String                 receipt )
+      {
+      this( basketItemList, shippingAddress, contactEmail, contactPhone, additionalParametersMap );
+
+      setUserData( userDataJSONObject );
+      setPromoCode( promoCode );
+      setOrderPricing( orderPricing );
+      if ( proofOfPayment != null ) setProofOfPayment( proofOfPayment );
+      setReceipt( receipt );
+      }
+
+
+    public Order setShippingAddress( Address shippingAddress )
+      {
+      this.shippingAddress = shippingAddress;
+
+      return ( this );
+      }
 
     public Address getShippingAddress() {
         return shippingAddress;
@@ -115,13 +173,13 @@ public class Order implements Parcelable /* , Serializable */
         return proofOfPayment;
     }
 
-    public void setVoucherCode(String voucherCode) {
-        this.voucherCode = voucherCode;
-    }
-
-    public String getVoucherCode() {
-        return voucherCode;
-    }
+//    public void setVoucherCode(String voucherCode) {
+//        this.voucherCode = voucherCode;
+//    }
+//
+//    public String getVoucherCode() {
+//        return voucherCode;
+//    }
 
     public void setUserData(JSONObject userData) {
         this.userData = userData;
@@ -156,6 +214,75 @@ public class Order implements Parcelable /* , Serializable */
       return ( null );
       }
 
+
+    /*****************************************************
+     *
+     * Sets a user data parameter, creating a user data object
+     * if necessary.
+     *
+     *****************************************************/
+    public Order setUserDataParameter( String parameterName, String parameterValue )
+      {
+      if ( userData == null ) userData = new JSONObject();
+
+      try
+        {
+        userData.put( parameterName, parameterValue );
+        }
+      catch ( JSONException je )
+        {
+        Log.e( LOG_TAG, "Unable to set " + parameterName + " = " + parameterValue, je );
+        }
+
+      return ( this );
+      }
+
+
+    /*****************************************************
+     *
+     * Clears a user data parameter.
+     *
+     *****************************************************/
+    public Order removeUserDataParameter( String parameterName )
+      {
+      // We don't need to clear anything if there is no user data
+      if ( userData != null )
+        {
+        userData.remove( parameterName );
+        }
+
+      return ( this );
+      }
+
+
+    /*****************************************************
+     *
+     * Sets both the notification and user data email.
+     *
+     *****************************************************/
+    public Order setEmail( String email )
+      {
+      setNotificationEmail( email );
+
+      setUserDataParameter( "email", email );
+
+      return ( this );
+      }
+
+
+    /*****************************************************
+     *
+     * Sets both the notification and user data phone number.
+     *
+     *****************************************************/
+    public Order setPhone( String phone )
+      {
+      setNotificationPhoneNumber( phone );
+
+      setUserDataParameter( "phone", phone );
+
+      return ( this );
+      }
 
 
     public void setNotificationEmail(String receiptEmail) {
@@ -294,6 +421,40 @@ public class Order implements Parcelable /* , Serializable */
 
     /*****************************************************
      *
+     * Returns a string description of the items. This is
+     * primarily used as the item description on the order
+     * history screen.
+     *
+     *****************************************************/
+    public String getItemsDescription()
+      {
+      StringBuilder descriptionBuilder = new StringBuilder();
+
+      String separatorString = "";
+
+
+      // Go through each of the jobs
+
+      for ( Job job : jobs )
+        {
+        Product product = job.getProduct();
+
+        String itemString = product.getDisplayLabel();
+
+        descriptionBuilder
+                .append( separatorString )
+                .append( itemString );
+
+        separatorString = ", ";
+        }
+
+
+      return ( descriptionBuilder.toString() );
+      }
+
+
+    /*****************************************************
+     *
      * Returns this order as a JSON basket.
      *
      *    [
@@ -404,6 +565,8 @@ public class Order implements Parcelable /* , Serializable */
         jobs.remove(job);
     }
 
+
+
     private boolean isAssetUploadInProgress() {
         // There may be a brief window where assetUploadReq == null whilst we asynchronously collect info about the assets
         // to upload. assetsToUpload will be non nil whilst this is happening.
@@ -504,6 +667,10 @@ public class Order implements Parcelable /* , Serializable */
         @Override
         public void onSubmissionComplete( SubmitOrderRequest req, String orderId )
             {
+            // The initial submission was successful, but note that this doesn't mean the order will
+            // pass validation. It may fail subsequently when we are polling the order status. So remember
+            // to clear the receipt / set the error if we find a problem later.
+
             setReceipt( orderId );
 
             printOrderReq = null;
@@ -549,7 +716,7 @@ public class Order implements Parcelable /* , Serializable */
       {
       p.writeValue( shippingAddress );
       p.writeString( proofOfPayment );
-      p.writeString( voucherCode );
+      //p.writeString( voucherCode );
 
       String userDataString = userData == null ? null : userData.toString();
       p.writeString( userDataString );
@@ -597,7 +764,7 @@ public class Order implements Parcelable /* , Serializable */
     private Order( Parcel p) {
         this.shippingAddress = (Address) p.readValue(Address.class.getClassLoader());
         this.proofOfPayment = p.readString();
-        this.voucherCode = p.readString();
+        //this.voucherCode = p.readString();
         String userDataString = p.readString();
         if (userDataString != null) {
             try {
@@ -688,6 +855,22 @@ public class Order implements Parcelable /* , Serializable */
     public OrderPricing getOrderPricing()
       {
       return ( mOrderPricing );
+      }
+
+
+
+    /*****************************************************
+     *
+     * Resets the order state with an error. This is likely
+     * to have been returned from polling the order status.
+     *
+     *****************************************************/
+    public void setError( Exception exception )
+      {
+      clearReceipt();
+
+      lastPrintSubmissionError = exception;
+      userSubmittedForPrinting = false;
       }
 
 

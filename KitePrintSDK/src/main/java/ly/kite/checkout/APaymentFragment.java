@@ -167,7 +167,7 @@ abstract public class APaymentFragment extends AKiteFragment implements View.OnC
 
   /*****************************************************
    *
-   * Called just before the order is submited.
+   * Called just before the order is submitted.
    *
    *****************************************************/
   public void onPreSubmission( Order order )
@@ -177,13 +177,25 @@ abstract public class APaymentFragment extends AKiteFragment implements View.OnC
 
   /*****************************************************
    *
-   * Called when the order is successfully submitted.
+   * Called when the order succeeds.
    *
    *****************************************************/
   public void onOrderSuccess( Activity activity, Order order, int requestCode )
     {
     // The default action is to go to the receipt screen
     OrderReceiptActivity.startForResult( activity, order, requestCode );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the order fails.
+   *
+   *****************************************************/
+  public void onOrderFailure( Activity activity, long localOrderId, Order order, Exception exception, int requestCode )
+    {
+    // The default action is to go to the receipt screen
+    OrderReceiptActivity.startForResult( activity, localOrderId, order, requestCode );
     }
 
 

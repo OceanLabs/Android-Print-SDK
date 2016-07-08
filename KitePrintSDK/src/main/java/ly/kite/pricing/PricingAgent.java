@@ -240,61 +240,6 @@ public class PricingAgent extends ACache<String,OrderPricing,PricingAgent.Consum
     }
 
 
-//  /*****************************************************
-//   *
-//   * Returns the pricing request URL.
-//   *
-//   *****************************************************/
-//  private String getRequestURLString( Context context, Order order, String promoCode )
-//    {
-//    StringBuilder stringBuilder = new StringBuilder();
-//
-//
-//    KiteSDK kiteSDK = KiteSDK.getInstance( context );
-//
-//    String basketString = order.toBasketString();
-//
-//    Address  shippingAddress;
-//    Country  country;
-//    String   shippingCountryCode;
-//
-//    if ( ( shippingAddress = order.getShippingAddress()   ) != null &&
-//            ( country         = shippingAddress.getCountry() ) != null )
-//      {
-//      shippingCountryCode = country.iso3Code();
-//      }
-//    else
-//      {
-//      shippingCountryCode = Country.getInstance().iso3Code();
-//      }
-//
-//    if ( promoCode == null ) promoCode = "";
-//
-//
-//    stringBuilder.append( String.format( REQUEST_FORMAT_STRING, kiteSDK.getAPIEndpoint(), basketString, shippingCountryCode, URLEncoder.encode( promoCode ) ) );
-//
-//
-//    // Add in the additional parameters
-//
-//    HashMap<String,String> additionalParametersMap = order.getAdditionalParameters();
-//
-//    if ( additionalParametersMap != null )
-//      {
-//      for ( String parameterName : additionalParametersMap.keySet() )
-//        {
-//        stringBuilder
-//                .append( '&' )
-//                .append( parameterName )
-//                .append( '=' )
-//                .append( additionalParametersMap.get( parameterName ) );
-//        }
-//      }
-//
-//
-//    return ( stringBuilder.toString() );
-//    }
-
-
   /*****************************************************
    *
    * Retrieves the price information for an order. The promo

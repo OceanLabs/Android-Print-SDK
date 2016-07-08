@@ -62,7 +62,7 @@ import ly.kite.util.HTTPJSONRequest;
  * This service registers for GCM.
  *
  *****************************************************/
-public class GCMRegistrationService extends IntentService implements HTTPJSONRequest.HTTPJSONRequestListener
+public class GCMRegistrationService extends IntentService implements HTTPJSONRequest.IJSONResponseListener
   {
   ////////// Static Constant(s) //////////
 

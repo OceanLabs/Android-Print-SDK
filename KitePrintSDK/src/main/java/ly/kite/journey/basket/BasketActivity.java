@@ -63,8 +63,8 @@ import java.util.List;
 
 import ly.kite.KiteSDK;
 import ly.kite.address.Address;
-import ly.kite.basket.BasketAgent;
-import ly.kite.basket.BasketItem;
+import ly.kite.ordering.OrderingDataAgent;
+import ly.kite.ordering.BasketItem;
 import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.ICatalogueConsumer;
 import ly.kite.catalogue.Product;
@@ -365,9 +365,6 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
 
     else if ( requestCode == ACTIVITY_REQUEST_CODE_CHECKOUT && resultCode == RESULT_OK )
       {
-      // If we checked out OK, then we'll want to clear the basket
-      BasketAgent.getInstance( this ).clear();
-
       setResult( ACTIVITY_RESULT_CODE_CHECKED_OUT );
 
       finish();
@@ -558,7 +555,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
    *****************************************************/
   private void loadAndDisplayBasket()
     {
-    mBasketItemList = BasketAgent.getInstance( this ).getAllItems( mCatalogue );
+    mBasketItemList = OrderingDataAgent.getInstance( this ).getAllItems( mCatalogue );
 
     onGotBasket();
     }
@@ -610,50 +607,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
     {
     if ( mIsManagedCheckout ) return ( mManagedOrder );
 
-
-    // Create an order from the basket items
-
-    Order basketOrder = new Order();
-
-    for ( BasketItem item : mBasketItemList )
-      {
-      Product product       = item.getProduct();
-      int     orderQuantity = item.getOrderQuantity();
-
-      product.getUserJourneyType().addJobsToOrder( product, orderQuantity, item.getOptionsMap(), item.getImageSpecList(), basketOrder );
-      }
-
-
-    // Add the shipping and notification details
-
-    basketOrder.setShippingAddress( mShippingAddress );
-    basketOrder.setNotificationEmail( mContactEmail );
-    basketOrder.setNotificationPhoneNumber( mContactPhone );
-
-    basketOrder.setAdditionalParameters( mAdditionalParametersMap );
-
-    JSONObject userData = basketOrder.getUserData();
-
-    if ( userData == null )
-      {
-      userData = new JSONObject();
-      }
-
-    try
-      {
-      userData.put( "email", mContactEmail );
-      userData.put( "phone", mContactPhone );
-      }
-    catch ( JSONException je )
-      {
-      // Ignore
-      }
-
-    basketOrder.setUserData( userData );
-
-
-
-    return ( basketOrder );
+    return ( new Order( mBasketItemList, mShippingAddress, mContactEmail, mContactPhone, mAdditionalParametersMap ) );
     }
 
 
@@ -862,7 +816,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
       @Override
       public void onClick( View view )
         {
-        BasketAgent basketAgent = BasketAgent.getInstance( BasketActivity.this );
+        OrderingDataAgent basketAgent = OrderingDataAgent.getInstance( BasketActivity.this );
 
 
         // Check for edit

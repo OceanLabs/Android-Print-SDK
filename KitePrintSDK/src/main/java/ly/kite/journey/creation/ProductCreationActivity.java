@@ -55,7 +55,7 @@ import android.util.Log;
 import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.analytics.Analytics;
-import ly.kite.basket.BasketAgent;
+import ly.kite.ordering.OrderingDataAgent;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.journey.IImageSpecStore;
 import ly.kite.ordering.ImageSpec;
@@ -86,7 +86,7 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
                                                                       PhotobookFragment.ICallback,
                                                                       ReviewAndEditFragment.ICallback,
                                                                       EditImageFragment.ICallback,
-                                                                      BasketAgent.IAddListener
+                                                                      OrderingDataAgent.IAddListener
   {
   ////////// Static Constant(s) //////////
 
@@ -722,7 +722,7 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
    *****************************************************/
   private void onNewBasketItem( List<ImageSpec> imageSpecList )
     {
-    BasketAgent basketAgent = BasketAgent.getInstance( this );
+    OrderingDataAgent basketAgent = OrderingDataAgent.getInstance( this );
 
     if ( mInEditMode )
       {

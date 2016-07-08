@@ -245,6 +245,10 @@ public class OrderSubmissionFragment extends DialogFragment implements IOrderSub
   @Override
   public void onOrderComplete( final Order order, final OrderState state )
     {
+    // The call-back might get called when we are not attached to an activity,
+    // and there is no target fragment. The runnable will therefore get re-run
+    // when we are attached or a target fragment is set.
+
     mLastEventRunnable = new Runnable()
       {
       @Override
@@ -270,6 +274,10 @@ public class OrderSubmissionFragment extends DialogFragment implements IOrderSub
   @Override
   public void onOrderTimeout( final Order order )
     {
+    // The call-back might get called when we are not attached to an activity,
+    // and there is no target fragment. The runnable will therefore get re-run
+    // when we are attached or a target fragment is set.
+
     mLastEventRunnable = new Runnable()
       {
       @Override
@@ -295,6 +303,10 @@ public class OrderSubmissionFragment extends DialogFragment implements IOrderSub
   @Override
   public void onOrderError( final Order order, final Exception exception )
     {
+    // The call-back might get called when we are not attached to an activity,
+    // and there is no target fragment. The runnable will therefore get re-run
+    // when we are attached or a target fragment is set.
+
     mLastEventRunnable = new Runnable()
       {
       @Override
@@ -320,6 +332,10 @@ public class OrderSubmissionFragment extends DialogFragment implements IOrderSub
   @Override
   public void onOrderDuplicate( final Order order, final String originalOrderId )
     {
+    // The call-back might get called when we are not attached to an activity,
+    // and there is no target fragment. The runnable will therefore get re-run
+    // when we are attached or a target fragment is set.
+
     mLastEventRunnable = new Runnable()
       {
       @Override

@@ -147,6 +147,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   private   AKiteFragment         mPendingFragment;
   private   String                mPendingFragmentTag;
 
+  private   Dialog                mPendingDialog;
   private   Dialog                mDialog;
 
   protected FragmentManager       mFragmentManager;
@@ -333,6 +334,17 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
       mPendingFragment    = null;
       mPendingFragmentTag = null;
+      }
+
+
+    // If a modal dialog is pending - display it now
+
+    if ( mPendingDialog != null )
+      {
+      mDialog        = mPendingDialog;
+      mPendingDialog = null;
+
+      mDialog.show();
       }
 
 
@@ -574,7 +586,9 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     mCanAddFragment    = false;
     mActivityIsVisible = false;
 
-    ensureLogOutWarningGone();;
+    mPendingDialog     = null;
+
+    ensureLogOutWarningGone();
     ensureInactivityTimerStopped();
 
     super.onStop();
@@ -591,6 +605,8 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     {
     mCanAddFragment    = false;
     mActivityIsVisible = false;
+
+    mPendingDialog     = null;
 
     ensureDialogGone();
     ensureLogOutWarningGone();;
@@ -937,10 +953,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
           int      negativeTextResourceId,
           Runnable negativeRunnable )
     {
-    // Don't do anything if the activity is no longer visible
-    if ( ! mActivityIsVisible ) return;
-
-    ensureDialogGone();
+    // Build the dialog
 
     DialogCallbackHandler callbackHandler = new DialogCallbackHandler( positiveRunnable, negativeRunnable );
 
@@ -953,9 +966,26 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     if ( positiveTextResourceId != 0 ) alertDialogBuilder.setPositiveButton( positiveTextResourceId, callbackHandler );
     if ( negativeTextResourceId != 0 ) alertDialogBuilder.setNegativeButton( negativeTextResourceId, callbackHandler );
 
-    mDialog = alertDialogBuilder.create();
 
-    mDialog.show();
+    Dialog dialog = alertDialogBuilder.create();
+
+
+    // If the activity is visible - show the dialog now. Otherwise save it as a pending dialog,
+    // so it will get displayed when the activity becomes visible.
+
+    if ( mActivityIsVisible )
+      {
+      ensureDialogGone();
+
+      mDialog = dialog;
+
+      mDialog.show();
+      }
+    else
+      {
+      mPendingDialog = alertDialogBuilder.create();
+      }
+
     }
 
 

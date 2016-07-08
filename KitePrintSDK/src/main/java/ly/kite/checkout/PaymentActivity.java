@@ -146,7 +146,7 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
    *
    *****************************************************/
   @Override
-  public void onCreate( Bundle savedInstanceState )
+  protected void onCreate( Bundle savedInstanceState )
     {
     super.onCreate( savedInstanceState );
 
@@ -370,9 +370,19 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
   @Override
   protected void onOrderSuccess( Order order )
     {
-    super.onOrderSuccess( order );
-
     if ( mPaymentFragment != null ) mPaymentFragment.onOrderSuccess( this, order, ACTIVITY_REQUEST_CODE_CHECKOUT );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the order fails.
+   *
+   *****************************************************/
+  @Override
+  protected void onOrderFailure( long localOrderId, Order order, Exception exception )
+    {
+    if ( mPaymentFragment != null ) mPaymentFragment.onOrderFailure( this, localOrderId, order, exception, ACTIVITY_REQUEST_CODE_CHECKOUT );
     }
 
 
