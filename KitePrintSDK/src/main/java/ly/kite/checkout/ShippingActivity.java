@@ -381,7 +381,7 @@ public class ShippingActivity extends AShippingActivity implements View.OnClickL
       {
       String phone = getPopulatedStringOrNull( mPhoneEditText );
 
-      if ( phone.length() < 5 )
+      if ( phone == null || phone.trim().length() < 5 )
         {
         showErrorDialog( R.string.alert_dialog_title_invalid_phone_number, R.string.alert_dialog_message_invalid_phone_number );
 

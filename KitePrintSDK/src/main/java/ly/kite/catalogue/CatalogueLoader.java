@@ -83,7 +83,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
   @SuppressWarnings("unused")
   private static final String  LOG_TAG                               = "CatalogueLoader";
 
-  private static final boolean DISPLAY_PRODUCT_JSON                  = true;
+  private static final boolean DISPLAY_PRODUCT_JSON                  = false;
   private static final boolean DISPLAY_PRODUCTS                      = false;
   private static final boolean DISPLAY_DEBUGGING                     = false;
   private static final boolean DISPLAY_PRE_CACHING_INFO              = false;

@@ -66,6 +66,7 @@
                 android:textStyle="bold"
                 android:singleLine="true"/>
             <ly.kite.widget.CustomTypefaceTextView
+                android:id="@+id/edit_label_text_view"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/basket_item_product_label_size"
