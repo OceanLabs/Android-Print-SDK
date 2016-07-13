@@ -3,6 +3,8 @@
 
     <string name="app_name">Kite SDK</string>
 
+    <string name="action_bar_typeface_asset_name"></string>
+
     <string name="analytics_event_callback_class_name">ly.kite.analytics.NullAnalyticsEventCallback</string>
     <string name="custom_image_editor_agent_class_name"></string>
 

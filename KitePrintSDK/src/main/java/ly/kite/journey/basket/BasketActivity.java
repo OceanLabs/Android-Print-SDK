@@ -54,9 +54,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -113,6 +110,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
   ////////// Member Variable(s) //////////
 
   private boolean                 mIsManagedCheckout;
+  private boolean                 mAllowBasketEditing;
 
   private Order                   mManagedOrder;
   private List<BasketItem>        mBasketItemList;
@@ -234,6 +232,11 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
       if ( mContactEmail    == null ) mContactEmail    = mManagedOrder.getNotificationEmail();
       if ( mContactPhone    == null ) mContactPhone    = mManagedOrder.getNotificationPhoneNumber();
       }
+
+
+    // If we are using managed check-out, then we don't allow basket editing. However, we
+    // are using a different flag so that we could override this in the future.
+    mAllowBasketEditing = ! mIsManagedCheckout;
 
 
     setContentView( R.layout.screen_basket );
@@ -605,7 +608,19 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
    *****************************************************/
   private Order getOrder()
     {
-    if ( mIsManagedCheckout ) return ( mManagedOrder );
+    // Make sure the most current details are applied if the order is
+    // managed
+
+    if ( mIsManagedCheckout )
+      {
+      mManagedOrder.setShippingAddress( mShippingAddress );
+      mManagedOrder.setEmail( mContactEmail );
+      mManagedOrder.setPhone( mContactPhone );
+      mManagedOrder.setAdditionalParameters( mAdditionalParametersMap );
+
+      return ( mManagedOrder );
+      }
+
 
     return ( new Order( mBasketItemList, mShippingAddress, mContactEmail, mContactPhone, mAdditionalParametersMap ) );
     }
@@ -625,6 +640,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
     kiteSDK.setAppParameter( KiteSDK.Scope.CUSTOMER_SESSION, PARAMETER_NAME_SHIPPING_ADDRESS, mShippingAddress );
     kiteSDK.setAppParameter( KiteSDK.Scope.CUSTOMER_SESSION, PARAMETER_NAME_CONTACT_EMAIL,    mContactEmail );
     kiteSDK.setAppParameter( KiteSDK.Scope.CUSTOMER_SESSION, PARAMETER_NAME_CONTACT_PHONE,    mContactPhone );
+
 
     if ( mShippingAddress != null ) onShippingAddress();
     }
@@ -788,6 +804,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
       private Button      mIncrementButton;
 
       private View        mEditTouchFrame;
+      private TextView    mEditLabelTextView;
 
       private TextView    mProductNameTextView;
       private TextView    mPriceTextView;
@@ -802,14 +819,18 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
         mIncrementButton     = (Button)view.findViewById( R.id.increment_button );
 
         mEditTouchFrame      = view.findViewById( R.id.edit_touch_frame );
+        mEditLabelTextView   = (TextView)findViewById( R.id.edit_label_text_view );
 
         mProductNameTextView = (TextView)view.findViewById( R.id.product_name_text_view );
 
         mPriceTextView       = (TextView)view.findViewById( R.id.price_text_view );
 
-        mDecrementButton.setOnClickListener( this );
-        mIncrementButton.setOnClickListener( this );
-        mEditTouchFrame.setOnClickListener( this );
+        if ( mAllowBasketEditing )
+          {
+          mDecrementButton.setOnClickListener( this );
+          mIncrementButton.setOnClickListener( this );
+          mEditTouchFrame.setOnClickListener( this );
+          }
         }
 
 
@@ -819,50 +840,55 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
         OrderingDataAgent basketAgent = OrderingDataAgent.getInstance( BasketActivity.this );
 
 
-        // Check for edit
+        // Check that basket editing is allowed
 
-        if ( view == mEditTouchFrame )
+        if ( mAllowBasketEditing )
           {
-          ProductCreationActivity.startForResult( BasketActivity.this, mBasketItem.getId(), mBasketItem.getProduct(), mBasketItem.getOptionsMap(), mBasketItem.getImageSpecList(), mBasketItem.getOrderQuantity(), ACTIVITY_REQUEST_CODE_EDIT_BASKET_ITEM );
+          // Check for edit
 
-          return;
-          }
+          if ( view == mEditTouchFrame )
+            {
+            ProductCreationActivity.startForResult( BasketActivity.this, mBasketItem.getId(), mBasketItem.getProduct(), mBasketItem.getOptionsMap(), mBasketItem.getImageSpecList(), mBasketItem.getOrderQuantity(), ACTIVITY_REQUEST_CODE_EDIT_BASKET_ITEM );
 
-
-        // Check for quantity change
-
-        int orderQuantity = mBasketItem.getOrderQuantity();
-
-        if ( view == mDecrementButton )
-          {
-          // Try to decrement the order quantity for this job
-
-          orderQuantity = basketAgent.decrementOrderQuantity( mBasketItem.getId() );
-          }
-        else if ( view == mIncrementButton )
-          {
-          // Try to increment the order quantity for this job
-
-          orderQuantity = basketAgent.incrementOrderQuantity( mBasketItem.getId() );
-          }
+            return;
+            }
 
 
-        // If order quantity goes down to 0, remove the job and refresh the whole basket list.
-        // Otherwise update the order quantity for the job, and display the new quantity on
-        // screen.
+          // Check for quantity change
 
-        if ( orderQuantity > 0 )
-          {
-          mBasketItem.setOrderQuantity( orderQuantity );
+          int orderQuantity = mBasketItem.getOrderQuantity();
 
-          setQuantityDependentText();
+          if ( view == mDecrementButton )
+            {
+            // Try to decrement the order quantity for this job
 
-          // If we have a shipping address - re-request the prices
-          if ( mShippingAddress != null ) requestPrices();
-          }
-        else
-          {
-          loadAndDisplayBasket();
+            orderQuantity = basketAgent.decrementOrderQuantity( mBasketItem.getId() );
+            }
+          else if ( view == mIncrementButton )
+            {
+            // Try to increment the order quantity for this job
+
+            orderQuantity = basketAgent.incrementOrderQuantity( mBasketItem.getId() );
+            }
+
+
+          // If order quantity goes down to 0, remove the job and refresh the whole basket list.
+          // Otherwise update the order quantity for the job, and display the new quantity on
+          // screen.
+
+          if ( orderQuantity > 0 )
+            {
+            mBasketItem.setOrderQuantity( orderQuantity );
+
+            setQuantityDependentText();
+
+            // If we have a shipping address - re-request the prices
+            if ( mShippingAddress != null ) requestPrices();
+            }
+          else
+            {
+            loadAndDisplayBasket();
+            }
           }
         }
 
@@ -891,15 +917,17 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
         mProductNameTextView.setText( mProduct.getName() );
 
 
-        if ( mIsManagedCheckout )
+        if ( mAllowBasketEditing )
           {
-          mDecrementButton.setVisibility( View.INVISIBLE );
-          mIncrementButton.setVisibility( View.INVISIBLE );
+          setViewVisibilitySafely( mDecrementButton, View.VISIBLE );
+          setViewVisibilitySafely( mIncrementButton, View.VISIBLE );
+          setViewVisibilitySafely( mEditLabelTextView, View.VISIBLE );
           }
         else
           {
-          mDecrementButton.setVisibility( View.VISIBLE );
-          mIncrementButton.setVisibility( View.VISIBLE );
+          setViewVisibilitySafely( mDecrementButton, View.INVISIBLE );
+          setViewVisibilitySafely( mIncrementButton, View.INVISIBLE );
+          setViewVisibilitySafely( mEditLabelTextView, View.INVISIBLE );
           }
         }
 

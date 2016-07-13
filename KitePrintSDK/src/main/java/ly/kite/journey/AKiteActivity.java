@@ -56,6 +56,9 @@ import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.TypefaceSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -82,6 +85,7 @@ import ly.kite.catalogue.CatalogueLoader;
 import ly.kite.image.ImageAgent;
 import ly.kite.journey.creation.imagesource.ImageSourceFragment;
 import ly.kite.util.StringUtils;
+import ly.kite.widget.CustomTypefaceSpan;
 
 
 ///// Class Declaration /////
@@ -192,6 +196,20 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     }
 
 
+  /*****************************************************
+   *
+   * Sets the visibility of a view, if it is not null.
+   *
+   *****************************************************/
+  static protected void setViewVisibilitySafely( View view, int visibility )
+    {
+    if ( view != null )
+      {
+      view.setVisibility( visibility );
+      }
+    }
+
+
   ////////// Constructor(s) //////////
 
 
@@ -236,6 +254,38 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
   /*****************************************************
    *
+   * Sets the title.
+   *
+   *****************************************************/
+  @Override
+  public void setTitle( CharSequence title )
+    {
+    // If a custom typeface is defined for the action bar title, create
+    // a custom typeface span, a new spannable string containing the title,
+    // and apply it.
+
+    Resources resources = getResources();
+
+    String typefaceAssetName = getString( R.string.action_bar_typeface_asset_name );
+    float  textSize          = resources.getDimension( R.dimen.action_bar_text_size );
+
+    if ( typefaceAssetName != null && ! typefaceAssetName.trim().equals( "" ) )
+      {
+      CustomTypefaceSpan customTypefaceSpan = new CustomTypefaceSpan( this, typefaceAssetName, textSize );
+
+      SpannableString spannableTitle = new SpannableString( title );
+      spannableTitle.setSpan( customTypefaceSpan, 0, title.length(), 0 );
+
+      title = spannableTitle;
+      }
+
+
+    super.setTitle( title );
+    }
+
+
+  /*****************************************************
+   *
    * Sets the content view.
    *
    *****************************************************/
@@ -247,6 +297,8 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
     Resources resources = getResources();
 
+
+    // Adjust the action bar title margin
 
     int titleViewId = resources.getIdentifier( "action_bar_title", "id", "android" );
 
@@ -289,6 +341,19 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   protected void onPostCreate( Bundle savedInstanceState )
     {
     super.onPostCreate( savedInstanceState );
+
+
+    // The label from the manifest appears to be applied as the title somewhere
+    // between onCreate and onPostCreate, so make sure the title uses the correct
+    // font here.
+
+    CharSequence title = getActionBar().getTitle();
+
+    if ( title != null )
+      {
+      setTitle( title );
+      }
+
 
     // If we are being re-created - work out the top fragment.
     if ( savedInstanceState != null )

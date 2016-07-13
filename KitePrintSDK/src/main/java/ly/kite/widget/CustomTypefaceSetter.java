@@ -43,7 +43,11 @@ package ly.kite.widget;
 ///// Class Declaration /////
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Typeface;
+import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.widget.TextView;
 
 import ly.kite.R;
@@ -59,6 +63,8 @@ public class CustomTypefaceSetter
 
   @SuppressWarnings( "unused" )
   static private final String  LOG_TAG = "CustomTypefaceSetter";
+
+  static public  final String  CUSTOM_TYPEFACE_STYLE_PREFIX = "custom_typeface_style_";
 
 
   ////////// Static Variable(s) //////////
@@ -77,39 +83,90 @@ public class CustomTypefaceSetter
    * Sets the typeface for a component.
    *
    *****************************************************/
-  static public void setTypeface( Context context, TextView textView )
+  static public void setTypeface( Context context, TextView textView, AttributeSet attributeSet, int defaultStyle )
     {
     if ( textView == null ) return;
 
 
-    // If a custom typeface has been defined in the resources - try to use it, but make sure
-    // we keep the current style.
+    // A custom typeface is set according to the following priority order:
+    //   1. The R.string.custom_typeface_file_name string
+    //   2. The "customTypefaceAssetName" attribute
+    //   3. The "customTypefaceStyle" attribute ( -> "custom_typeface_style_x" )
 
-    String customFont = context.getResources().getString( R.string.custom_typeface_file_name );
 
-    if ( customFont != null && ! customFont.equals( "" ) )
+    Resources resources = context.getResources();
+
+    // 1
+    Typeface customTypeface = loadTypeface( context, resources.getString( R.string.custom_typeface_file_name ) );
+
+
+    if ( customTypeface == null )
       {
-      Typeface customTypeface = TypefaceCache.getTypeface( context, customFont );
-
-      if ( customTypeface != null )
+      if ( attributeSet != null )
         {
-        Typeface currentTypeface = textView.getTypeface();
+        TypedArray typedArray = context.obtainStyledAttributes( attributeSet, R.styleable.CustomTypefaceWidget, defaultStyle, defaultStyle );
 
-        if ( currentTypeface != null )
+        TypedValue value = new TypedValue();
+
+        // 2
+        customTypeface = loadTypeface( context, typedArray.getString( R.styleable.CustomTypefaceWidget_customTypefaceAssetName  ) );
+
+        if ( customTypeface == null )
           {
-          int style = currentTypeface.getStyle();
+          // 3
 
-          textView.setTypeface( customTypeface, style );
-          }
-        else
-          {
-          textView.setTypeface( customTypeface );
+          String customTypefaceStyle = typedArray.getString( R.styleable.CustomTypefaceWidget_customTypefaceStyle );
+
+          if ( customTypefaceStyle != null && ! customTypefaceStyle.trim().equals( "" ) )
+            {
+            String customTypefaceResourceName = CUSTOM_TYPEFACE_STYLE_PREFIX + customTypefaceStyle;
+
+            int customTypefaceAssetNameResourceId = resources.getIdentifier( customTypefaceResourceName, "string", context.getPackageName() );
+
+            if ( customTypefaceAssetNameResourceId != 0 )
+              {
+              customTypeface = loadTypeface( context, resources.getString( customTypefaceAssetNameResourceId ) );
+              }
+            }
           }
 
+        typedArray.recycle();
         }
-
       }
 
+
+    // If we found a custom typeface - try to use it, but make sure we keep any
+    // current style.
+
+    if ( customTypeface != null )
+      {
+      Typeface currentTypeface = textView.getTypeface();
+
+      if ( currentTypeface != null )
+        {
+        int style = currentTypeface.getStyle();
+
+        textView.setTypeface( customTypeface, style );
+        }
+      else
+        {
+        textView.setTypeface( customTypeface );
+        }
+      }
+
+    }
+
+
+  /*****************************************************
+   *
+   * Tries to load a typeface asset.
+   *
+   *****************************************************/
+  static private Typeface loadTypeface( Context context, String typefaceAssetName )
+    {
+    if ( typefaceAssetName == null || typefaceAssetName.trim().equals( "" ) ) return ( null );
+
+    return ( TypefaceCache.getTypeface( context, typefaceAssetName ) );
     }
 
 

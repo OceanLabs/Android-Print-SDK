@@ -83,21 +83,21 @@ public class CustomTypefaceEditText extends EditText
     {
     super( context );
 
-    initialise( context );
+    initialise( context, null, 0 );
     }
 
   public CustomTypefaceEditText( Context context, AttributeSet attrs )
     {
     super( context, attrs );
 
-    initialise( context );
+    initialise( context, attrs, 0 );
     }
 
   public CustomTypefaceEditText( Context context, AttributeSet attrs, int defStyleAttr )
     {
     super( context, attrs, defStyleAttr );
 
-    initialise( context );
+    initialise( context, attrs, defStyleAttr );
     }
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -105,7 +105,7 @@ public class CustomTypefaceEditText extends EditText
     {
     super( context, attrs, defStyleAttr, defStyleRes );
 
-    initialise( context );
+    initialise( context, attrs, defStyleAttr );
     }
 
 
@@ -116,9 +116,9 @@ public class CustomTypefaceEditText extends EditText
    * Initialises this widget.
    *
    *****************************************************/
-  private void initialise( Context context )
+  private void initialise( Context context, AttributeSet attributeSet, int defaultStyle )
     {
-    CustomTypefaceSetter.setTypeface( context, this );
+    CustomTypefaceSetter.setTypeface( context, this, attributeSet, defaultStyle );
     }
 
 

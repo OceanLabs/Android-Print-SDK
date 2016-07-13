@@ -3,6 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:id="@+id/checkable_image_view"
-    android:layout_width="wrap_content"
+    android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     custom:aspectRatio="@dimen/image_selection_image_aspect_ratio"/>

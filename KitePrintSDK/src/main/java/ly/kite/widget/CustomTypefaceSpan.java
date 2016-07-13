@@ -1,11 +1,11 @@
 /*****************************************************
  *
- * CustomTypefaceTextView.java
+ * CustomTypefaceSpan.java
  *
  *
  * Modified MIT License
  *
- * Copyright (c) 2010-2015 Kite Tech Ltd. https://www.kite.ly
+ * Copyright (c) 2010-2016 Kite Tech Ltd. https://www.kite.ly
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,36 +39,35 @@ package ly.kite.widget;
 
 ///// Import(s) /////
 
-import android.annotation.TargetApi;
-import android.content.Context;
-import android.graphics.Typeface;
-import android.os.Build;
-import android.util.AttributeSet;
-import android.widget.TextView;
-
-import ly.kite.R;
-
 
 ///// Class Declaration /////
 
+import android.content.Context;
+import android.graphics.Paint;
+import android.graphics.Typeface;
+import android.text.TextPaint;
+import android.text.style.MetricAffectingSpan;
+
 /*****************************************************
  *
- * This widget is a TextView that allows the font to
- * be customised.
+ * This class applies a custom typeface to a text span.
  *
  *****************************************************/
-public class CustomTypefaceTextView extends TextView
+public class CustomTypefaceSpan extends MetricAffectingSpan
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "CustomTypefaceTextView";
+  static private final String  LOG_TAG = "CustomTypefaceSpan";
 
 
   ////////// Static Variable(s) //////////
 
 
   ////////// Member Variable(s) //////////
+
+  private Typeface  mTypeface;
+  private float     mTextSize;
 
 
   ////////// Static Initialiser(s) //////////
@@ -79,33 +78,36 @@ public class CustomTypefaceTextView extends TextView
 
   ////////// Constructor(s) //////////
 
-  public CustomTypefaceTextView( Context context )
+  public CustomTypefaceSpan( Context context, String typefaceAssetName, float textSize )
     {
-    super( context );
+    if ( typefaceAssetName == null || typefaceAssetName.trim().equals( "" ) )
+      {
+      throw ( new IllegalArgumentException( "No typeface asset name supplied: " + typefaceAssetName ) );
+      }
 
-    initialise( context, null, 0 );
+    mTypeface = TypefaceCache.getTypeface( context, typefaceAssetName );
+    mTextSize = textSize;
     }
 
-  public CustomTypefaceTextView( Context context, AttributeSet attrs )
-    {
-    super( context, attrs );
 
-    initialise( context, attrs, 0 );
+  public CustomTypefaceSpan( Context context, String typefaceAssetName )
+    {
+    this( context, typefaceAssetName, 0f );
     }
 
-  public CustomTypefaceTextView( Context context, AttributeSet attrs, int defStyleAttr )
-    {
-    super( context, attrs, defStyleAttr );
 
-    initialise( context, attrs, 0 );
+  ////////// MetricAffectingSpan Method(s) //////////
+
+  @Override
+  public void updateDrawState( TextPaint textPaint )
+    {
+    setTypeface( textPaint );
     }
 
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-  public CustomTypefaceTextView( Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes )
+  @Override
+  public void updateMeasureState( TextPaint textPaint )
     {
-    super( context, attrs, defStyleAttr, defStyleRes );
-
-    initialise( context, attrs, defStyleAttr );
+    setTypeface( textPaint );
     }
 
 
@@ -113,12 +115,35 @@ public class CustomTypefaceTextView extends TextView
 
   /*****************************************************
    *
-   * Initialises this widget.
+   * Applies the typeface to the paint.
    *
    *****************************************************/
-  private void initialise( Context context, AttributeSet attributeSet, int defaultStyle )
+  private void setTypeface( Paint paint )
     {
-    CustomTypefaceSetter.setTypeface( context, this, attributeSet, defaultStyle );
+    int previousStyle;
+
+    Typeface previousTypeface = paint.getTypeface();
+
+    if ( previousTypeface == null ) previousStyle = 0;
+    else                            previousStyle = previousTypeface.getStyle();
+
+    Typeface newTypeface = Typeface.create( mTypeface, previousStyle );
+
+    int fake = previousStyle & ~newTypeface.getStyle();
+
+    if ( ( fake & Typeface.BOLD ) != 0 )
+      {
+      paint.setFakeBoldText( true );
+      }
+
+    if ( ( fake & Typeface.ITALIC ) != 0 )
+      {
+      paint.setTextSkewX( -0.25f );
+      }
+
+    paint.setTypeface( newTypeface );
+
+    if ( mTextSize >= 1f ) paint.setTextSize( mTextSize );
     }
 
 
@@ -131,4 +156,3 @@ public class CustomTypefaceTextView extends TextView
    *****************************************************/
 
   }
-

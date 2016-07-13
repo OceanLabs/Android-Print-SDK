@@ -9,6 +9,7 @@
     <dimen name="activity_horizontal_margin">@dimen/screen_horizontal_margin</dimen>
     <dimen name="activity_vertical_margin">@dimen/screen_vertical_margin</dimen>
 
+    <dimen name="action_bar_text_size">0sp</dimen> <!-- 0 = use the default -->
     <dimen name="action_bar_home_as_up_icon_left_spacing">10dp</dimen>
     <dimen name="action_bar_title_text_left_spacing">10dp</dimen>
 
