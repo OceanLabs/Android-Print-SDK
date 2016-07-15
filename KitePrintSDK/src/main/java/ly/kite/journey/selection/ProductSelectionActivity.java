@@ -444,11 +444,26 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
    *
    * Called before the product group grid view is populated.
    *
+   * Override this to add headers / banners to the grid.
+   *
    *****************************************************/
   @Override
   public void pgOnPrePopulateProductGroupGrid( Catalogue catalogue, HeaderFooterGridView headerFooterGridView )
     {
-    // Do nothing
+    // The default is to do nothing
+    }
+
+
+  /*****************************************************
+   *
+   * Called when a header or footer view (i.e. non product
+   * group) is clicked.
+   *
+   *****************************************************/
+  @Override
+  public void pgOnHeaderOrFooterClicked( int position, int adaptorIndex )
+    {
+    // The default is to do nothing
     }
 
 
