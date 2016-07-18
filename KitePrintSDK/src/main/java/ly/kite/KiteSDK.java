@@ -89,7 +89,7 @@ public class KiteSDK
 
   static private final String LOG_TAG                                              = "KiteSDK";
 
-  static public  final String SDK_VERSION                                          = "5.2.3";
+  static public  final String SDK_VERSION                                          = "5.2.4";
 
   static public  final String IMAGE_CATEGORY_APP                                   = "app";
   static public  final String IMAGE_CATEGORY_PRODUCT_ITEM                          = "product_item";

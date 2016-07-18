@@ -77,7 +77,7 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String      LOG_TAG                = "AEditImageFragment";
+  static public final String       TAG                    = "AEditImageFragment";
 
   static public  final String      BUNDLE_KEY_PRODUCT     = "product";
   static private final String      BUNDLE_KEY_IMAGE_ASSET = "imageAsset";
@@ -165,7 +165,7 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
 
     if ( arguments == null )
       {
-      Log.e( LOG_TAG, "No arguments found" );
+      Log.e( TAG, "No arguments found" );
 
       mKiteActivity.displayModalDialog(
               R.string.alert_dialog_title_no_arguments,
@@ -186,7 +186,7 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
 
     if ( mProduct == null )
       {
-      Log.e( LOG_TAG, "No product found" );
+      Log.e( TAG, "No product found" );
 
       mKiteActivity.displayModalDialog(
               R.string.alert_dialog_title_product_not_found,
@@ -579,7 +579,7 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
 
     if ( imageProportionalCropRectangle == null )
       {
-      Log.w( LOG_TAG, "Cropped image not yet available" );
+      Log.w( TAG, "Cropped image not yet available" );
 
       return;
       }

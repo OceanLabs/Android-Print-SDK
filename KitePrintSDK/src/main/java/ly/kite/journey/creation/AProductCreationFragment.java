@@ -81,7 +81,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String  LOG_TAG           = "AProductCreationFrag.";
+  static public  final String  TAG               = "AProductCreationFrag.";
 
   static private final int     PROGRESS_COMPLETE = 100;  // 100%
 
@@ -133,7 +133,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
     if ( arguments == null )
       {
-      Log.e( LOG_TAG, "No arguments found" );
+      Log.e( TAG, "No arguments found" );
 
       return;
       }

@@ -107,6 +107,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   static private final String  LOG_TAG                                      = "AKiteActivity";
 
   static private final boolean DEBUG_INACTIVITY_TIMER                       = false;
+  static private final boolean DEBUG_FRAGMENT_NOTIFICATION                  = false;
 
   static public  final String  INTENT_EXTRA_NAME_IMAGE_SPEC_LIST            = KiteSDK.INTENT_PREFIX + ".imageSpecList";
   static public  final String  INTENT_EXTRA_NAME_ORDER                      = KiteSDK.INTENT_PREFIX + ".order";
@@ -1227,6 +1228,11 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
    *****************************************************/
   private void determineTopFragment( int entryCount )
     {
+    if ( DEBUG_FRAGMENT_NOTIFICATION )
+      {
+      Log.d( LOG_TAG, "determineTopFragment( entryCount = " + entryCount + " )" );
+      }
+
     AKiteFragment lastTopFragment = mTopFragment;
 
 
@@ -1243,6 +1249,8 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
         {
         mTopFragment = (AKiteFragment)mFragmentManager.findFragmentByTag( entry.getName() );
 
+        Log.d( LOG_TAG, "  Fragment # " + entryIndex + " : " + mTopFragment );
+
         if ( mTopFragment != null ) onNotifyTop( mTopFragment );
         }
       else
@@ -1256,6 +1264,8 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
       for ( entryIndex --; entryIndex >= 0; entryIndex -- )
         {
         entry = mFragmentManager.getBackStackEntryAt( entryIndex );
+
+        Log.d( LOG_TAG, "  Fragment # " + entryIndex + " : " + entry );
 
         if ( entry != null )
           {

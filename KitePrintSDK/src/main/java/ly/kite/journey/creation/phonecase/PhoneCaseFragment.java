@@ -68,7 +68,7 @@ public class PhoneCaseFragment extends AEditImageFragment
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String  LOG_TAG = "PhoneCaseFragment";
+  static public final String  TAG = "PhoneCaseFragment";
 
 
   ////////// Static Variable(s) //////////

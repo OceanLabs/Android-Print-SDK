@@ -92,23 +92,23 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings("unused")
-  public static final String      TAG                                       = "ProductOverviewFragment";
+  static public final String      TAG                                       = "ProductOverviewFragment";
 
-  public static final String      BUNDLE_KEY_PRODUCT                        = "product";
+  static public final String      BUNDLE_KEY_PRODUCT                        = "product";
 
-  private static final long       PAGING_DOT_ANIMATION_DURATION_MILLIS      = 300L;
-  private static final float      PAGING_DOT_ANIMATION_OPAQUE               = 1.0f;
-  private static final float      PAGING_DOT_ANIMATION_TRANSLUCENT          = 0.5f;
-  private static final float      PAGING_DOT_ANIMATION_NORMAL_SCALE         = 1.0f;
+  static private final long       PAGING_DOT_ANIMATION_DURATION_MILLIS      = 300L;
+  static private final float      PAGING_DOT_ANIMATION_OPAQUE               = 1.0f;
+  static private final float      PAGING_DOT_ANIMATION_TRANSLUCENT          = 0.5f;
+  static private final float      PAGING_DOT_ANIMATION_NORMAL_SCALE         = 1.0f;
 
-  private static final long       SLIDE_ANIMATION_DURATION_MILLIS           = 500L;
-  private static final long       OPEN_CLOSE_ICON_ANIMATION_DELAY_MILLIS    = 250L;
-  private static final long       OPEN_CLOSE_ICON_ANIMATION_DURATION_MILLIS = SLIDE_ANIMATION_DURATION_MILLIS - OPEN_CLOSE_ICON_ANIMATION_DELAY_MILLIS;
+  static private final long       SLIDE_ANIMATION_DURATION_MILLIS           = 500L;
+  static private final long       OPEN_CLOSE_ICON_ANIMATION_DELAY_MILLIS    = 250L;
+  static private final long       OPEN_CLOSE_ICON_ANIMATION_DURATION_MILLIS = SLIDE_ANIMATION_DURATION_MILLIS - OPEN_CLOSE_ICON_ANIMATION_DELAY_MILLIS;
 
-  private static final float      OPEN_CLOSE_ICON_ROTATION_UP               = -180f;
-  private static final float      OPEN_CLOSE_ICON_ROTATION_DOWN             = 0f;
+  static private final float      OPEN_CLOSE_ICON_ROTATION_UP               = -180f;
+  static private final float      OPEN_CLOSE_ICON_ROTATION_DOWN             = 0f;
 
-  private static final String     BUNDLE_KEY_SLIDING_DRAWER_IS_EXPANDED     = "slidingDrawerIsExpanded";
+  static private final String     BUNDLE_KEY_SLIDING_DRAWER_IS_EXPANDED     = "slidingDrawerIsExpanded";
 
 
   ////////// Static Variable(s) //////////

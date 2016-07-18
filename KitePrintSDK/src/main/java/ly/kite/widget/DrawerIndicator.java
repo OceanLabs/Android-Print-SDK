@@ -47,7 +47,7 @@ public class DrawerIndicator extends Drawable
   {
   static private final String  LOG_TAG           = "DrawerIndicator";
 
-  static private final boolean DEBUGGING_ENABLED = true;
+  static private final boolean DEBUGGING_ENABLED = false;
 
   /**
    * Direction to make the arrow point towards the left.

@@ -418,7 +418,16 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
   @Override
   protected void onRightButtonClicked()
     {
-    // If we don't have a shipping address - display a dialog to the user
+    // Make sure we have something in the basket
+
+    if ( mBasketItemList == null || mBasketItemList.size() < 1 )
+      {
+      showErrorDialog( R.string.alert_dialog_title_empty_basket, R.string.alert_dialog_message_empty_basket );
+
+      return;
+      }
+
+    // Make sure we have a shipping address
 
     if ( mShippingAddress == null )
       {
@@ -685,14 +694,19 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
     mTotalPriceTextView.setText( null );
 
 
-    // Re-request the pricing if the shipping address changes, as the shipping price may
-    // have changed.
+    // Only request the pricing if there is something in the basket
 
-    OrderPricing pricing = PricingAgent.getInstance().requestPricing( this, getOrder(), NO_PROMO_CODE_YET, this, ++ mPricingRequestId );
-
-    if ( pricing != null )
+    if ( mBasketItemList != null && mBasketItemList.size() > 0 )
       {
-      setOrderPricing( pricing );
+      // Re-request the pricing if the shipping address changes, as the shipping price may
+      // have changed.
+
+      OrderPricing pricing = PricingAgent.getInstance().requestPricing( this, getOrder(), NO_PROMO_CODE_YET, this, ++mPricingRequestId );
+
+      if ( pricing != null )
+        {
+        setOrderPricing( pricing );
+        }
       }
     }
 
@@ -860,35 +874,42 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
 
           if ( view == mDecrementButton )
             {
-            // Try to decrement the order quantity for this job
+            // If order quantity goes down to 0, prompt the user to confirm that that they wish to
+            // remove the job.
 
+            if ( orderQuantity <= 1 )
+              {
+              displayModalDialog(
+                      R.string.alert_dialog_title_remove_item,
+                      R.string.alert_dialog_message_remove_item,
+                      R.string.Remove,
+                      new RemoveItemRunnable( mBasketItem ),
+                      R.string.Keep,
+                      null );
+
+              return;
+              }
+
+            // Try to decrement the order quantity for this job
             orderQuantity = basketAgent.decrementOrderQuantity( mBasketItem.getId() );
             }
           else if ( view == mIncrementButton )
             {
             // Try to increment the order quantity for this job
-
             orderQuantity = basketAgent.incrementOrderQuantity( mBasketItem.getId() );
             }
 
 
-          // If order quantity goes down to 0, remove the job and refresh the whole basket list.
-          // Otherwise update the order quantity for the job, and display the new quantity on
+          // Update the order quantity for the job, and display the new quantity on
           // screen.
 
-          if ( orderQuantity > 0 )
-            {
-            mBasketItem.setOrderQuantity( orderQuantity );
+          mBasketItem.setOrderQuantity( orderQuantity );
 
-            setQuantityDependentText();
+          setQuantityDependentText();
 
-            // If we have a shipping address - re-request the prices
-            if ( mShippingAddress != null ) requestPrices();
-            }
-          else
-            {
-            loadAndDisplayBasket();
-            }
+
+          // If we have a shipping address - re-request the prices
+          if ( mShippingAddress != null ) requestPrices();
           }
         }
 
@@ -939,7 +960,37 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
         }
       }
 
+
+    /*****************************************************
+     *
+     * Runnable that removes an item from the basket.
+     *
+     *****************************************************/
+    private class RemoveItemRunnable implements Runnable
+      {
+      BasketItem  mBasketItem;
+
+
+      RemoveItemRunnable( BasketItem basketItem )
+        {
+        mBasketItem = basketItem;
+        }
+
+
+      @Override
+      public void run()
+        {
+        OrderingDataAgent basketAgent = OrderingDataAgent.getInstance( BasketActivity.this );
+
+        basketAgent.decrementOrderQuantity( mBasketItem.getId() );
+
+        loadAndDisplayBasket();
+        }
+      }
+
+
     }
+
 
   }
 

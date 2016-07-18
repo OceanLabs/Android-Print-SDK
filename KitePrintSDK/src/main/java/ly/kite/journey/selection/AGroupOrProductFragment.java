@@ -77,9 +77,9 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements I
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  public  static final String  TAG                    = "AGroupOrProductFragment";
+  static private final String  LOG_TAG                = "AGroupOrProductFragment";
 
-  private static final String  BUNDLE_KEY_PRODUCT_IDS = "productIds";
+  static private final String  BUNDLE_KEY_PRODUCT_IDS = "productIds";
 
 
   ////////// Static Variable(s) //////////

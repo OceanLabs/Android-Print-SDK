@@ -72,7 +72,7 @@ public class ImageSourceFragment extends AProductCreationFragment implements Ada
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String      LOG_TAG                                   = "ImageSourceFragment";
+  static public final String      TAG  = "ImageSourceFragment";
 
 
   ////////// Static Variable(s) //////////

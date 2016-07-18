@@ -4,50 +4,31 @@
     <style name="Theme.KiteSDK" parent="android:Theme.DeviceDefault.Light">
         <item name="android:homeAsUpIndicator">@drawable/ic_arrow_back</item>
         <item name="android:actionModeCloseDrawable">@drawable/ic_action_remove</item>
+        <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar.Opaque</item>
     </style>
 
 
     <!-- SDK Activities may be re-styled as required -->
 
-    <style name="Theme.KiteSDK.ProductSelection">
-        <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar.Opaque</item>
-    </style>
+    <style name="Theme.KiteSDK.ProductSelection"/>
 
-    <style name="Theme.KiteSDK.ProductCreation">
-        <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar.Opaque</item>
-    </style>
+    <style name="Theme.KiteSDK.ProductCreation"/>
 
-    <style name="Theme.KiteSDK.Basket">
-        <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar.Opaque</item>
-    </style>
+    <style name="Theme.KiteSDK.Basket"/>
 
-    <style name="Theme.KiteSDK.Checkout">
-        <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar.Opaque</item>
-    </style>
+    <style name="Theme.KiteSDK.Checkout"/>
 
-    <style name="Theme.KiteSDK.AddressBook">
-        <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar.Opaque</item>
-    </style>
+    <style name="Theme.KiteSDK.AddressBook"/>
 
-    <style name="Theme.KiteSDK.AddressSearch">
-        <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar.Opaque</item>
-    </style>
+    <style name="Theme.KiteSDK.AddressSearch"/>
 
-    <style name="Theme.KiteSDK.AddressEdit">
-        <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar.Opaque</item>
-    </style>
+    <style name="Theme.KiteSDK.AddressEdit"/>
 
-    <style name="Theme.KiteSDK.Payment">
-        <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar.Opaque</item>
-    </style>
+    <style name="Theme.KiteSDK.Payment"/>
 
-    <style name="Theme.KiteSDK.OrderReceipt">
-        <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar.Opaque</item>
-    </style>
+    <style name="Theme.KiteSDK.OrderReceipt"/>
 
-    <style name="Theme.KiteSDK.OrderHistory">
-        <item name="android:actionBarStyle">@style/Theme.KiteSDK.ActionBar.Opaque</item>
-    </style>
+    <style name="Theme.KiteSDK.OrderHistory"/>
 
     <!--  -->
 

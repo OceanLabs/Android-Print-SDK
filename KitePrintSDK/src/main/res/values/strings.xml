@@ -102,6 +102,12 @@
     <string name="alert_dialog_title_end_customer_session">End Session</string>
     <string name="alert_dialog_message_end_customer_session">Are you sure you want to end your session?</string>
 
+    <string name="alert_dialog_title_remove_item">Remove Item</string>
+    <string name="alert_dialog_message_remove_item">Please confirm that you wish to remove this item from your basket.</string>
+
+    <string name="alert_dialog_title_empty_basket">Empty Basket</string>
+    <string name="alert_dialog_message_empty_basket">Your basket is currently empty. Please add an item before you proceed to the checkout.</string>
+
     <string name="alert_dialog_message_uploading_images">Uploading images</string>
 
     <string name="alert_dialog_message_no_payment_id">No payment id found in proof of payment</string>
@@ -137,6 +143,7 @@
     <string name="Flip">Flip</string>
     <string name="Free">Free</string>
     <string name="ITEM">ITEM</string>
+    <string name="Keep">Keep</string>
     <string name="Loading">Loading</string>
     <string name="Log_Out">Log Out</string>
     <string name="Next">Next</string>
@@ -153,6 +160,7 @@
     <string name="print_these">Print these</string>
     <string name="Processing_">Processing…</string>
     <string name="Promotional_Discount">Promotional Discount</string>
+    <string name="Remove">Remove</string>
     <string name="Rotate">Rotate</string>
     <string name="Quantity">Quantity</string>
     <string name="QUANTITY">QUANTITY</string>

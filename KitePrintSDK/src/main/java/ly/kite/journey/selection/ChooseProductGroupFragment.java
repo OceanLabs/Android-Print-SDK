@@ -70,7 +70,7 @@ public class ChooseProductGroupFragment extends AGroupOrProductFragment
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  public static final String  TAG = "ChooseProductGroupFragment";
+  static public final String  TAG = "ChooseProductGroupFragment";
 
 
   ////////// Static Variable(s) //////////
