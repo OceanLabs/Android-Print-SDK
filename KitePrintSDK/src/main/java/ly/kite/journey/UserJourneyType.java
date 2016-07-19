@@ -105,8 +105,19 @@ public enum UserJourneyType
 
               for ( ImageSpec imageSpec : imageSpecList )
                 {
-                AssetFragment assetFragment = imageSpec.getAssetFragment();
-                int           quantity      = imageSpec.getQuantity();
+                AssetFragment assetFragment;
+                int           quantity;
+
+                if ( imageSpec != null )
+                  {
+                  assetFragment = imageSpec.getAssetFragment();
+                  quantity      = imageSpec.getQuantity();
+                  }
+                else
+                  {
+                  assetFragment = null;
+                  quantity      = 1;
+                  }
 
                 if ( pageIndex == 0 )
                   {
@@ -121,9 +132,9 @@ public enum UserJourneyType
                   }
 
                 pageIndex ++;
-
-                order.addJob( Job.createPhotobookJob( product, orderQuantity, optionsMap, frontCoverAssetFragment, contentAssetFragmentList ) );
                 }
+
+              order.addJob( Job.createPhotobookJob( product, orderQuantity, optionsMap, frontCoverAssetFragment, contentAssetFragmentList ) );
               }
             },
 

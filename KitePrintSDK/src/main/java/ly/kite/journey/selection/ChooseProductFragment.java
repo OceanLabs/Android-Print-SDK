@@ -71,9 +71,9 @@ public class ChooseProductFragment extends AGroupOrProductFragment
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  public  static final String TAG                      = "ChooseProductFragment";
+  static public  final String TAG                      = "ChooseProductFragment";
 
-  private static final String BUNDLE_KEY_PRODUCT_GROUP = "productGroup";
+  static private final String BUNDLE_KEY_PRODUCT_GROUP = "productGroup";
 
   ////////// Static Variable(s) //////////
 

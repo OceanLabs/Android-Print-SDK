@@ -70,7 +70,7 @@ public class ChooseProductGroupFragment extends AGroupOrProductFragment
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  public static final String  TAG = "ChooseProductGroupFragment";
+  static public final String  TAG = "ChooseProductGroupFragment";
 
 
   ////////// Static Variable(s) //////////
@@ -212,16 +212,27 @@ public class ChooseProductGroupFragment extends AGroupOrProductFragment
     onSaveManagedAdaptorViewPosition( position );
 
 
-    // Get the product group. Remember to ignore any clicks on placeholder images.
-
+    // Convert the position into an adaptor index
     int adaptorIndex = mGridView.adaptorIndexFromPosition( position );
 
-    if ( adaptorIndex < 0 || adaptorIndex >= mProductGroupList.size() ) return;
+
+    // If a header / footer image is clicked - call back to the activity
+
+    if ( adaptorIndex < 0 || adaptorIndex >= mProductGroupList.size() )
+      {
+      if ( mKiteActivity instanceof ICallback )
+        {
+        ( (ICallback)mKiteActivity ).pgOnHeaderOrFooterClicked( position, adaptorIndex );
+        }
+
+      return;
+      }
+
+
+    // Get the product group and call back to the activity with it
 
     ProductGroup chosenProductGroup = mProductGroupList.get( adaptorIndex );
 
-
-    // Call back to the activity
     if ( mKiteActivity instanceof ICallback )
       {
       ( (ICallback)mKiteActivity ).pgOnProductGroupChosen( chosenProductGroup );
@@ -239,6 +250,7 @@ public class ChooseProductGroupFragment extends AGroupOrProductFragment
   public interface ICallback
     {
     public void pgOnPrePopulateProductGroupGrid( Catalogue catalogue, HeaderFooterGridView headerFooterGridView );
+    public void pgOnHeaderOrFooterClicked( int position, int adaptorIndex );
     public void pgOnProductGroupChosen( ProductGroup productGroup );
     }
 

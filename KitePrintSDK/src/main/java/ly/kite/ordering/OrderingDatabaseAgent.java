@@ -1526,7 +1526,9 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
 
       for ( ImageSpec imageSpec : imageSpecList )
         {
-        imageSpec.setCroppedForProductId( productId );
+        // Don't forget that some image specs may be null, for example: if representing blank pages in
+        // a photobook.
+        if ( imageSpec != null ) imageSpec.setCroppedForProductId( productId );
         }
 
 

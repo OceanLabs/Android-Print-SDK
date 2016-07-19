@@ -44,6 +44,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
@@ -304,6 +305,14 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
     {
     if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "setMask( resourceId = " + resourceId + ", aspectRatio = " + aspectRatio + " )" );
 
+    // Note that currently if the mask is from a resource, we don't save its details, but
+    // just pass it straight through to the editable masked image view. This is OK because
+    // any containing fragment will always be top most (so will never have its onNotTop method
+    // called, and so we won't be expected to unload the mask.
+
+    // If this ever changes, then we'll need to remember where the mask came from, so we can
+    // re-load it when the fragment is top-most again.
+
     mEditableMaskedImageView.setMask( resourceId, aspectRatio );
 
     return ( this );
@@ -435,6 +444,8 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
    *****************************************************/
   private void loadImage()
     {
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "loadImage()" );
+
     mExpectedImageKey = mImageAsset;
 
     ImageAgent.with( getContext() )
@@ -453,6 +464,8 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
    *****************************************************/
   public void loadAllImages()
     {
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "loadAllImages()" );
+
     mExpectedImageCount = 0;
 
 
@@ -620,8 +633,12 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
 
     // See if everything we were expected has finished loading
 
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "Expected image count = " + mExpectedImageCount );
+
     if ( mExpectedImageCount <= 0 && mCallback != null )
       {
+      if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "All expected images loaded" );
+
       // Hide any progress spinner
       if ( mProgressSpinner != null )
         {
@@ -631,8 +648,16 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
       // The result depends on whether the image and mask loaded OK. we check with the
       // container, because it may have been supplied a mask from a resource.
 
-      if ( mEditableMaskedImageView.getImageBitmap()  != null &&
-           mEditableMaskedImageView.getMaskDrawable() != null )
+      Bitmap   imageBitmap  = mEditableMaskedImageView.getImageBitmap();
+      Drawable maskDrawable = mEditableMaskedImageView.getMaskDrawable();
+
+      if ( DEBUGGING_ENABLED )
+        {
+        Log.d( LOG_TAG, "Image bitmap  = " + imageBitmap  );
+        Log.d( LOG_TAG, "Mask drawable = " + maskDrawable );
+        }
+
+      if ( imageBitmap != null && maskDrawable != null )
         {
         mCallback.onLoadComplete();
         }

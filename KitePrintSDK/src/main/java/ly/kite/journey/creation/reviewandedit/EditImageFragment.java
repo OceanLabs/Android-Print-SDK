@@ -69,7 +69,7 @@ public class EditImageFragment extends AEditImageFragment
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String      LOG_TAG                     = "EditImageFragment";
+  static public final String TAG = "EditImageFragment";
 
 
   ////////// Static Variable(s) //////////

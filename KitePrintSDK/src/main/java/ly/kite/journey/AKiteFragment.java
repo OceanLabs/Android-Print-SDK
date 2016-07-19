@@ -72,10 +72,10 @@ abstract public class AKiteFragment extends Fragment
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  public    static final String  TAG                                          = "AKiteFragment";
+  static private   final String  LOG_TAG                                      = "AKiteFragment";
 
-  private   static final String  BUNDLE_KEY_MANAGED_ADAPTOR_VIEW_POSITION     = "managedAdaptorViewPosition";
-  protected static final String  BUNDLE_KEY_PRODUCT                           = "product";
+  static private   final String  BUNDLE_KEY_MANAGED_ADAPTOR_VIEW_POSITION     = "managedAdaptorViewPosition";
+  static protected final String  BUNDLE_KEY_PRODUCT                           = "product";
 
 
   ////////// Static Variable(s) //////////

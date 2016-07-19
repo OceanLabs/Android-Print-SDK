@@ -81,8 +81,6 @@ abstract public class AHomeActivity extends ProductSelectionActivity
   private   boolean                mShowMenuOnce;
   private   Handler                mHandler;
 
-  private   ActionBarDrawerToggle  mDrawerToggle;
-
 
   ////////// Static Initialiser(s) //////////
 
@@ -111,9 +109,6 @@ abstract public class AHomeActivity extends ProductSelectionActivity
     mDrawerLayout             = (DrawerLayout)findViewById( R.id.drawer_layout );
     mNavigationDrawerListView = (ListView)findViewById( R.id.navigation_drawer_list_view );
 
-    mDrawerToggle = new ActionBarDrawerToggle( this, mDrawerLayout, R.string.drawer_open, R.string.drawer_closed );
-    mDrawerLayout.setDrawerListener( mDrawerToggle );
-
 
     // On devices running older versions of Android, there is no menu icon, so the user may not
     // know there's a menu. We want to let them know by showing a hint of the menu.
@@ -124,113 +119,6 @@ abstract public class AHomeActivity extends ProductSelectionActivity
 
       mShowMenuOnce = true;
       }
-    }
-
-
-  /*****************************************************
-   *
-   * Called after the activity has been created.
-   *
-   *****************************************************/
-  @Override
-  protected void onPostCreate( Bundle savedInstanceState )
-    {
-    super.onPostCreate( savedInstanceState );
-
-    // Sync the toggle state after onRestoreInstanceState has occurred.
-    mDrawerToggle.syncState();
-    }
-
-
-  /*****************************************************
-   *
-   * Called after the configuration changes.
-   *
-   *****************************************************/
-  @Override
-  public void onConfigurationChanged( Configuration newConfig )
-    {
-    super.onConfigurationChanged( newConfig );
-
-    mDrawerToggle.onConfigurationChanged( newConfig );
-    }
-
-
-  /*****************************************************
-   *
-   * Called when an action bar item is selected.
-   *
-   *****************************************************/
-  @Override
-  public boolean onOptionsItemSelected( MenuItem item )
-    {
-    // Pass the event to ActionBarDrawerToggle, if it returns
-    // true, then it has handled the app icon touch event.
-
-    if ( mDrawerToggle.onOptionsItemSelected( item ) )
-      {
-      return ( true );
-      }
-
-
-    return ( super.onOptionsItemSelected( item ) );
-    }
-
-
-  /*****************************************************
-   *
-   * Called with the current top-most fragment.
-   *
-   *****************************************************/
-  protected void onNotifyTop( AKiteFragment topFragment )
-    {
-    ActionBar actionBar = getActionBar();
-
-
-    // Determine which fragment is top-most
-
-    String tag = topFragment.getTag();
-
-    if ( tag != null && tag.equals( ChooseProductGroupFragment.TAG ) )
-      {
-      ///// Home page /////
-
-      // We only enable the menu on the home page
-      mDrawerToggle.setDrawerIndicatorEnabled( true );
-      mDrawerLayout.setDrawerLockMode( DrawerLayout.LOCK_MODE_UNLOCKED );
-
-      // We display the logo on the home page
-      actionBar.setDisplayShowTitleEnabled( false );
-      actionBar.setDisplayShowCustomEnabled( true );
-
-
-      // If we need to show the menu on this devices - start the process now
-
-      if ( mShowMenuOnce )
-        {
-        mShowMenuOnce = false;
-
-
-        // Open and close the menu
-
-        mHandler = new Handler();
-
-        mHandler.postDelayed( new OpenMenuRunnable(), OPEN_MENU_DELAY_MILLIS );
-        }
-
-      }
-    else
-      {
-      mDrawerToggle.setDrawerIndicatorEnabled( false );
-      mDrawerLayout.setDrawerLockMode( DrawerLayout.LOCK_MODE_LOCKED_CLOSED );
-
-      // On other pages we show a title
-      actionBar.setDisplayShowTitleEnabled( true );
-      actionBar.setDisplayShowCustomEnabled( false );
-      }
-
-
-    super.onNotifyTop( topFragment );
     }
 
 
@@ -259,6 +147,26 @@ abstract public class AHomeActivity extends ProductSelectionActivity
 
 
     super.onActivityResult( requestCode, resultCode, data );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the back key is pressed.
+   *
+   *****************************************************/
+  @Override
+  public void onBackPressed()
+    {
+    // If the drawer is open - close it
+    if ( mDrawerLayout.isDrawerOpen( Gravity.LEFT ) )
+      {
+      mDrawerLayout.closeDrawer( Gravity.LEFT );
+
+      return;
+      }
+
+    super.onBackPressed();
     }
 
 

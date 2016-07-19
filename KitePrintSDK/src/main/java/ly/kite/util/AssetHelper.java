@@ -611,9 +611,19 @@ public class AssetHelper
 
     for ( ImageSpec imageSpec : sessionImageSpecList )
       {
-      Asset basketAsset = createAsBasketAsset( context, basketId, imageSpec.getAsset() );
+      // Some of the image specs may be null. For example, photobooks use null placeholders
+      // for blank pages.
 
-      basketImageSpecList.add( new ImageSpec( basketAsset, imageSpec.getAssetFragment().getProportionalRectangle(), imageSpec.getQuantity() ) );
+      if ( imageSpec != null )
+        {
+        Asset basketAsset = createAsBasketAsset( context, basketId, imageSpec.getAsset() );
+
+        basketImageSpecList.add( new ImageSpec( basketAsset, imageSpec.getAssetFragment().getProportionalRectangle(), imageSpec.getQuantity() ) );
+        }
+      else
+        {
+        basketImageSpecList.add( null );
+        }
       }
 
     return ( basketImageSpecList );

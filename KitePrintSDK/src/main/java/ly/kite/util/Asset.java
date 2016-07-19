@@ -535,6 +535,34 @@ public class Asset implements Parcelable
 
   /*****************************************************
    *
+   * Returns a string representation of this asset.
+   *
+   *****************************************************/
+  @Override
+  public String toString()
+    {
+    StringBuilder stringBuilder = new StringBuilder();
+
+    stringBuilder.append( "{ " );
+
+    if ( mType != null )
+      {
+      stringBuilder.append( "type = " ).append( mType ).append( ", " );
+      stringBuilder.append( mType.describeSource( this ) );
+      }
+    else
+      {
+      stringBuilder.append( "type = null" );
+      }
+
+    stringBuilder.append( " }" );
+
+    return ( stringBuilder.toString() );
+    }
+
+
+  /*****************************************************
+   *
    * Returns true, if the supplied object is an asset and
    * is the same as this one, false otherwise.
    *
@@ -724,12 +752,55 @@ public class Asset implements Parcelable
    *****************************************************/
   public enum Type
     {
-    IMAGE_URI          ( true ),
-    BITMAP_RESOURCE_ID ( true ),
-    BITMAP             ( false ),
-    IMAGE_BYTES        ( false ),
-    IMAGE_FILE         ( true ),
-    REMOTE_URL         ( true );
+    IMAGE_URI          ( true )
+              {
+              @Override
+              public String describeSource( Asset asset )
+                {
+                return ( "URI = " + asset.getImageURI() );
+                }
+              },
+    BITMAP_RESOURCE_ID ( true )
+              {
+              @Override
+              public String describeSource( Asset asset )
+                {
+                return ( "bitmap resource id = " + asset.getBitmapResourceId() );
+                }
+              },
+    BITMAP             ( false )
+              {
+              @Override
+              public String describeSource( Asset asset )
+                {
+                return ( "[bitmap]" );
+                }
+              },
+    IMAGE_BYTES        ( false )
+              {
+              @Override
+              public String describeSource( Asset asset )
+                {
+                return ( "[image bytes]" );
+                }
+              },
+    IMAGE_FILE         ( true )
+              {
+              @Override
+              public String describeSource( Asset asset )
+                {
+                return ( "image file = " + asset.getImageFile().getAbsolutePath() );
+                }
+              },
+      REMOTE_URL         ( true )
+                {
+                @Override
+                public String describeSource( Asset asset )
+                  {
+                  return ( "remote URL = " + asset.getRemoteURL() );
+                  }
+                }
+      ;
 
 
     private boolean mIsParcelable;
@@ -750,6 +821,15 @@ public class Asset implements Parcelable
       {
       return ( mIsParcelable );
       }
+
+
+    /*****************************************************
+     *
+     * Returns a string description of the source of the asset.
+     *
+     *****************************************************/
+    abstract public String describeSource( Asset asset );
+
     }
 
 
