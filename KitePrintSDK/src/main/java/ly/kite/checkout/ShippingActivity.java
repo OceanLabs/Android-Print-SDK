@@ -107,6 +107,7 @@ public class ShippingActivity extends AShippingActivity implements View.OnClickL
 
   private Button    mAddressPickerButton;
   private EditText  mEmailEditText;
+  private View      mPhoneView;
   private EditText  mPhoneEditText;
   private Button    mForwardsButton;
 
@@ -186,6 +187,7 @@ public class ShippingActivity extends AShippingActivity implements View.OnClickL
 
     mAddressPickerButton          = (Button)findViewById( R.id.address_picker_button );
     mEmailEditText                = (EditText)findViewById( R.id.email_edit_text );
+    mPhoneView                    = findViewById( R.id.phone_view );
     mPhoneEditText                = (EditText)findViewById( R.id.phone_edit_text );
     TextView requirePhoneTextView = (TextView)findViewById( R.id.phone_require_reason );
 
@@ -209,15 +211,17 @@ public class ShippingActivity extends AShippingActivity implements View.OnClickL
 
     if ( KiteSDK.getInstance( this ).getRequestPhoneNumber() )
       {
-      mPhoneEditText.setVisibility( View.VISIBLE );
-      requirePhoneTextView.setVisibility( View.VISIBLE );
+      setViewVisibilitySafely( mPhoneView, View.VISIBLE );
+      setViewVisibilitySafely( mPhoneEditText, View.VISIBLE );
+      setViewVisibilitySafely( requirePhoneTextView, View.VISIBLE );
 
       if ( mInitialPhone != null ) mPhoneEditText.setText( mInitialPhone );
       }
     else
       {
-      mPhoneEditText.setVisibility( View.GONE );
-      requirePhoneTextView.setVisibility( View.GONE );
+      setViewVisibilitySafely( mPhoneView, View.GONE );
+      setViewVisibilitySafely( mPhoneEditText, View.GONE );
+      setViewVisibilitySafely( requirePhoneTextView, View.GONE );
       }
 
 

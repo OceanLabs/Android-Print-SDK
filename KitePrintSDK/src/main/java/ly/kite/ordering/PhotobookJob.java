@@ -187,8 +187,16 @@ public class PhotobookJob extends ImagesJob
     assetsJSONObject.put( "cover_pdf",  JSONObject.NULL );
 
 
-    // Add the front cover
-    assetsJSONObject.put( "front_cover", getPageJSONObject( mFrontCoverUploadableImage ) );
+    // Add any front cover
+
+    if ( mFrontCoverUploadableImage != null )
+      {
+      assetsJSONObject.put( "front_cover", String.valueOf( mFrontCoverUploadableImage.getUploadedAssetId() ) );
+      }
+    else
+      {
+      assetsJSONObject.put( "front_cover", JSONObject.NULL );
+      }
 
 
     // Add the content pages

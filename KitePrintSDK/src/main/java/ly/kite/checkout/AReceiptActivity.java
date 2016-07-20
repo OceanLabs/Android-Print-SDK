@@ -94,8 +94,8 @@ abstract public class AReceiptActivity extends AOrderSubmissionActivity implemen
   protected ListView      mOrderSummaryListView;
   protected LinearLayout  mOrderSummaryLinearLayout;
 
-  protected Button        mNextButton;
-  protected Button        mRetryPrintButton;
+  protected View          mNextView;
+  protected View          mRetryPrintView;
 
 
   ////////// Static Initialiser(s) //////////
@@ -180,8 +180,8 @@ abstract public class AReceiptActivity extends AOrderSubmissionActivity implemen
     mOrderSummaryListView             = (ListView)findViewById( R.id.order_summary_list_view );
     mOrderSummaryLinearLayout         = (LinearLayout)findViewById( R.id.order_summary_linear_layout );
 
-    mNextButton                       = (Button)findViewById( R.id.next_button );
-    mRetryPrintButton                 = (Button)findViewById( R.id.retry_print_button );
+    mNextView                         = findViewById( R.id.next_view );
+    mRetryPrintView                   = findViewById( R.id.retry_print_view );
 
 
     // Populate any fields that were found
@@ -214,14 +214,14 @@ abstract public class AReceiptActivity extends AOrderSubmissionActivity implemen
 
     // Set listeners for any buttons found
 
-    if ( mNextButton != null )
+    if ( mNextView != null )
       {
-      mNextButton.setOnClickListener( this );
+      mNextView.setOnClickListener( this );
       }
 
-    if ( mRetryPrintButton != null )
+    if ( mRetryPrintView != null )
       {
-      mRetryPrintButton.setOnClickListener( this );
+      mRetryPrintView.setOnClickListener( this );
       }
     }
 
@@ -304,7 +304,7 @@ abstract public class AReceiptActivity extends AOrderSubmissionActivity implemen
   @Override
   public void onClick( View view )
     {
-    if ( view == mNextButton )
+    if ( view == mNextView )
       {
       ///// Next /////
 
@@ -313,7 +313,7 @@ abstract public class AReceiptActivity extends AOrderSubmissionActivity implemen
       return;
       }
 
-    if ( view == mRetryPrintButton )
+    if ( view == mRetryPrintView )
       {
       ///// Retry print /////
 
@@ -344,7 +344,7 @@ abstract public class AReceiptActivity extends AOrderSubmissionActivity implemen
 
       if ( mHideSuccessfulNextButton )
         {
-        if ( mNextButton != null ) mNextButton.setVisibility( View.GONE );
+        if ( mNextView != null ) mNextView.setVisibility( View.GONE );
         }
       }
     else

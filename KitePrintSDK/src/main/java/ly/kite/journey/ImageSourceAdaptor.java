@@ -73,11 +73,11 @@ public class ImageSourceAdaptor extends BaseAdapter
 
   ////////// Member Variable(s) //////////
 
-  private Context             mContext;
-  private List<AImageSource>  mImageSourceList;
-  private int                 mItemLayoutResourceId;
+  private Context                  mContext;
+  private List<AImageSource>       mImageSourceList;
+  private AImageSource.LayoutType  mLayoutType;
 
-  private LayoutInflater      mLayoutInflator;
+  private LayoutInflater           mLayoutInflator;
 
 
   ////////// Static Initialiser(s) //////////
@@ -88,26 +88,26 @@ public class ImageSourceAdaptor extends BaseAdapter
 
   ////////// Constructor(s) //////////
 
-  public ImageSourceAdaptor( Context context, int itemLayoutResourceId )
+  public ImageSourceAdaptor( Context context, AImageSource.LayoutType layoutType )
     {
-    mContext              = context;
-    mItemLayoutResourceId = itemLayoutResourceId;
+    mContext        = context;
+    mLayoutType     = layoutType;
 
-    mLayoutInflator       = LayoutInflater.from( context );
+    mLayoutInflator = LayoutInflater.from( context );
     }
 
 
-  public ImageSourceAdaptor( Context context, int itemLayoutResourceId, List<AImageSource> imageSourceList )
+  public ImageSourceAdaptor( Context context, AImageSource.LayoutType layoutType, List<AImageSource> imageSourceList )
     {
-    this( context, itemLayoutResourceId );
+    this( context, layoutType );
 
     mImageSourceList = imageSourceList;
     }
 
 
-  public ImageSourceAdaptor( Context context, int itemLayoutResourceId, AImageSource... imageSources )
+  public ImageSourceAdaptor( Context context, AImageSource.LayoutType layoutType, AImageSource... imageSources )
     {
-    this( context, itemLayoutResourceId );
+    this( context, layoutType );
 
     mImageSourceList = new ArrayList<>();
 
@@ -166,37 +166,32 @@ public class ImageSourceAdaptor extends BaseAdapter
   @Override
   public View getView( int position, View convertView, ViewGroup parent )
     {
+    AImageSource imageSource = (AImageSource)getItem( position );
+
+
     // Either re-use the convert view, or create a new one.
 
     Object          tagObject;
     View            view;
-    ViewReferences  viewReferences;
+    ViewHolder viewHolder;
 
     if ( convertView != null &&
             ( tagObject = convertView.getTag() ) != null &&
-            ( tagObject instanceof ViewReferences ) )
+            ( tagObject instanceof ViewHolder ) )
       {
-      view           = convertView;
-      viewReferences = (ViewReferences)tagObject;
+      view       = convertView;
+      viewHolder = (ViewHolder)tagObject;
       }
     else
       {
-      view = mLayoutInflator.inflate( mItemLayoutResourceId, null );
+      view       = mLayoutInflator.inflate( imageSource.getLayoutResource( mLayoutType ), parent, false );
+      viewHolder = new ViewHolder( view );
 
-      viewReferences                = new ViewReferences();
-      viewReferences.backgroundView = view.findViewById( R.id.background_view );
-      viewReferences.iconImageView  = (ImageView)view.findViewById( R.id.icon_image_view );
-      viewReferences.labelTextView  = (TextView)view.findViewById( R.id.label_text_view );
-
-      view.setTag( viewReferences );
+      view.setTag( viewHolder );
       }
 
 
-    AImageSource imageSource = (AImageSource)getItem( position );
-
-    viewReferences.backgroundView.setBackgroundColor( mContext.getResources().getColor( imageSource.getBackgroundColourResourceId() ) );
-    viewReferences.iconImageView.setImageResource( imageSource.getIconResourceId() );
-    viewReferences.labelTextView.setText( imageSource.getLabelResourceId() );
+    viewHolder.bind( imageSource );
 
 
     return ( view );
@@ -210,11 +205,29 @@ public class ImageSourceAdaptor extends BaseAdapter
    * References to views within the layout.
    *
    *****************************************************/
-  private class ViewReferences
+  private class ViewHolder
     {
+    View       view;
     View       backgroundView;
     ImageView  iconImageView;
     TextView   labelTextView;
+
+
+    ViewHolder( View view )
+      {
+      this.view           = view;
+      this.backgroundView = view.findViewById( R.id.background_view );
+      this.iconImageView  = (ImageView)view.findViewById( R.id.icon_image_view );
+      this.labelTextView  = (TextView)view.findViewById( R.id.label_text_view );
+      }
+
+
+    void bind( AImageSource imageSource )
+      {
+      if ( this.backgroundView != null ) this.backgroundView.setBackgroundColor( mContext.getResources().getColor( imageSource.getBackgroundColourResourceId() ) );
+      if ( this.iconImageView  != null ) this.iconImageView.setImageResource( imageSource.getIconResourceId() );
+      if ( this.labelTextView  != null ) this.labelTextView.setText( imageSource.getLabelResourceId() );
+      }
     }
 
   }

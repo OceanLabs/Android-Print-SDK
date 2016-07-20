@@ -47,6 +47,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.Menu;
 
+import ly.kite.R;
 import ly.kite.util.Asset;
 
 
@@ -190,6 +191,29 @@ abstract public class AImageSource
 
   /*****************************************************
    *
+   * Returns the layout resource id to be used to display
+   * this image source for the supplied layout type.
+   *
+   *****************************************************/
+  public int getLayoutResource( LayoutType layoutType )
+    {
+    switch ( layoutType )
+      {
+      case HORIZONTAL:
+
+        return ( R.layout.grid_item_image_source_horizontal );
+
+      case VERTICAL:
+
+        return ( R.layout.grid_item_image_source_vertical );
+      }
+
+    return ( 0 );
+    }
+
+
+  /*****************************************************
+   *
    * Called when this image source is clicked.
    *
    *****************************************************/
@@ -271,6 +295,20 @@ abstract public class AImageSource
 
 
   ///// Inner class(es) /////
+
+  /*****************************************************
+   *
+   * Images sources can be displayed in various different
+   * screens. This enum defines the type of layout that
+   * may be required.
+   *
+   *****************************************************/
+  public enum LayoutType
+    {
+    VERTICAL,
+    HORIZONTAL
+    }
+
 
   /*****************************************************
    *
