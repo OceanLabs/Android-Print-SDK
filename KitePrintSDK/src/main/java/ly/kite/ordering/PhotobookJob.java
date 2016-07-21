@@ -238,6 +238,32 @@ public class PhotobookJob extends ImagesJob
     }
 
 
+  /*****************************************************
+   *
+   * Returns the number of photos that are part of this job.
+   * This quantity is a pain in the arse, because its meaning
+   * varies.
+   *
+   * For photobooks, we need to consider the front cover as
+   * well as the content images:
+   *   - If all pages are full, we don't want to include the front
+   *   cover because the server will think we have another book.
+   *   - If just the front cover is occupied we need to add it in,
+   *   otherwise the quanity will be 0 and the server will think
+   *   there are no photos at all.
+   *
+   *****************************************************/
+  @Override
+  public int getQuantity()
+    {
+    int quantity = super.getQuantity();
+
+    if ( quantity < 1 ) return ( mFrontCoverUploadableImage != null ? 1 : 0 );
+
+    return ( quantity );
+    }
+
+
   ////////// Method(s) //////////
 
   /*****************************************************
