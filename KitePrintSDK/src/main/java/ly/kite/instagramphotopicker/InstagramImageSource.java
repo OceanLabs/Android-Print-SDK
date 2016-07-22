@@ -110,6 +110,30 @@ public class InstagramImageSource extends AImageSource
 
   /*****************************************************
    *
+   * Returns the layout resource id to be used to display
+   * this image source for the supplied layout type.
+   *
+   *****************************************************/
+  @Override
+  public int getLayoutResource( LayoutType layoutType )
+    {
+    switch ( layoutType )
+      {
+      case HORIZONTAL:
+
+        return ( R.layout.grid_item_image_source_instagram_horizontal );
+
+      case VERTICAL:
+
+        return ( R.layout.grid_item_image_source_instagram_vertical );
+      }
+
+    return ( 0 );
+    }
+
+
+  /*****************************************************
+   *
    * Called when the image source is picked to select
    * images.
    *

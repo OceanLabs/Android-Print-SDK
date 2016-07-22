@@ -59,13 +59,13 @@ import com.paypal.android.sdk.payments.ProofOfPayment;
 import io.card.payment.CardIOActivity;
 import io.card.payment.CreditCard;
 import ly.kite.KiteSDK;
-import ly.kite.R;
 import ly.kite.analytics.Analytics;
 import ly.kite.catalogue.MultipleCurrencyAmount;
 import ly.kite.catalogue.SingleCurrencyAmount;
 import ly.kite.payment.PayPalCard;
 import ly.kite.payment.PayPalCardChargeListener;
 import ly.kite.payment.PayPalCardVaultStorageListener;
+import ly.kite.R;
 
 
 ///// Class Declaration /////
@@ -146,14 +146,14 @@ public class DefaultPaymentFragment extends APaymentFragment
     View view = layoutInflater.inflate( R.layout.fragment_default_payment, container, false );
 
 
-    mPayPalButton = (Button)view.findViewById( R.id.cta_bar_left_button );
+    mPayPalButton = (Button)view.findViewById( R.id.paypal_button );
 
-    if ( mPayPalButton == null ) mPayPalButton = (Button)view.findViewById( R.id.paypal_button );
+    if ( mPayPalButton == null ) mPayPalButton = (Button)view.findViewById( R.id.cta_bar_left_button );
 
 
-    mCreditCardButton = (Button)view.findViewById( R.id.cta_bar_right_button );
+    mCreditCardButton = (Button)view.findViewById( R.id.credit_card_button );
 
-    if ( mCreditCardButton == null ) mCreditCardButton = (Button)view.findViewById( R.id.credit_card_button );
+    if ( mCreditCardButton == null ) mCreditCardButton = (Button)view.findViewById( R.id.cta_bar_right_button );
 
 
     // Set up the buttons

@@ -101,9 +101,34 @@ public class DeviceImageSource extends AImageSource
    * available.
    *
    *****************************************************/
+  @Override
   public boolean isAvailable( Context context )
     {
     return ( true );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the layout resource id to be used to display
+   * this image source for the supplied layout type.
+   *
+   *****************************************************/
+  @Override
+  public int getLayoutResource( LayoutType layoutType )
+    {
+    switch ( layoutType )
+      {
+      case HORIZONTAL:
+
+        return ( R.layout.grid_item_image_source_device_horizontal );
+
+      case VERTICAL:
+
+        return ( R.layout.grid_item_image_source_device_vertical );
+      }
+
+    return ( 0 );
     }
 
 
@@ -113,6 +138,7 @@ public class DeviceImageSource extends AImageSource
    * images.
    *
    *****************************************************/
+  @Override
   public void onPick( Fragment fragment, int maxImageCount )
     {
     requestPermission( Manifest.permission.READ_EXTERNAL_STORAGE, new StartPickerRunnable( fragment, maxImageCount ) );

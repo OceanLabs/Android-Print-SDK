@@ -66,13 +66,13 @@ import android.view.View;
  * {@link android.support.v7.appcompat.R.styleable#DrawerArrowToggle drawerArrowStyle} in your
  * ActionBar theme.
  */
-public class ActionBarDrawerToggle implements DrawerLayout.DrawerListener
+public class CustomActionBarDrawerToggle implements DrawerLayout.DrawerListener
   {
-  static private final String  LOG_TAG           = "ActionBarDrawerTogger";
+  static private final String  LOG_TAG           = "CustomActionBarDrawerT";
   static private final boolean DEBUGGING_ENABLED = true;
 
   /**
-   * Allows an implementing Activity to return an {@link ActionBarDrawerToggle.Delegate} to use
+   * Allows an implementing Activity to return an {@link CustomActionBarDrawerToggle.Delegate} to use
    * with ActionBarDrawerToggle.
    */
   public interface DelegateProvider
@@ -154,13 +154,13 @@ public class ActionBarDrawerToggle implements DrawerLayout.DrawerListener
    * @param closeDrawerContentDescRes A String resource to describe the "close drawer" action
    *                                  for accessibility
    */
-  public ActionBarDrawerToggle( Activity activity, DrawerLayout drawerLayout,
-                                @StringRes int openDrawerContentDescRes,
-                                @StringRes int closeDrawerContentDescRes )
-    {
-    this( activity, null, drawerLayout, null, openDrawerContentDescRes,
-            closeDrawerContentDescRes );
-    }
+//  public CustomActionBarDrawerToggle( Activity activity, DrawerLayout drawerLayout,
+//                                      @StringRes int openDrawerContentDescRes,
+//                                      @StringRes int closeDrawerContentDescRes )
+//    {
+//    this( activity, null, drawerLayout, null, openDrawerContentDescRes,
+//            closeDrawerContentDescRes );
+//    }
 
 
   /**
@@ -182,13 +182,14 @@ public class ActionBarDrawerToggle implements DrawerLayout.DrawerListener
    * @param closeDrawerContentDescRes A String resource to describe the "close drawer" action
    *                                  for accessibility
    */
-  public <T extends Drawable & DrawerToggle> ActionBarDrawerToggle( Activity activity,
-                                                                    DrawerLayout drawerLayout,
-                                                                    T slider,
-                                                                    @StringRes int openDrawerContentDescRes,
-                                                                    @StringRes int closeDrawerContentDescRes )
+  public <T extends Drawable & DrawerToggle> CustomActionBarDrawerToggle( Activity activity,
+                                                                          DrawerLayout drawerLayout,
+                                                                          int backArrowResourceId,
+                                                                          T slider,
+                                                                          @StringRes int openDrawerContentDescRes,
+                                                                          @StringRes int closeDrawerContentDescRes )
     {
-    this( activity, null, drawerLayout, slider, openDrawerContentDescRes,
+    this( activity, null, drawerLayout, backArrowResourceId, slider, openDrawerContentDescRes,
             closeDrawerContentDescRes );
     }
 
@@ -206,7 +207,7 @@ public class ActionBarDrawerToggle implements DrawerLayout.DrawerListener
    * String resources must be provided to describe the open/close drawer actions for
    * accessibility services.
    * <p>
-   * Please use {@link #ActionBarDrawerToggle(Activity, DrawerLayout, int, int)} if you are
+   * Please use {@link #CustomActionBarDrawerToggle(Activity, DrawerLayout, int, int)} if you are
    * setting the Toolbar as the ActionBar of your activity.
    *
    * @param activity                  The Activity hosting the drawer.
@@ -217,25 +218,26 @@ public class ActionBarDrawerToggle implements DrawerLayout.DrawerListener
    * @param closeDrawerContentDescRes A String resource to describe the "close drawer" action
    *                                  for accessibility
    */
-  public ActionBarDrawerToggle( Activity activity, DrawerLayout drawerLayout,
-                                Toolbar toolbar, @StringRes int openDrawerContentDescRes,
-                                @StringRes int closeDrawerContentDescRes )
-    {
-    this( activity, toolbar, drawerLayout, null, openDrawerContentDescRes,
-            closeDrawerContentDescRes );
-    }
+//  public CustomActionBarDrawerToggle( Activity activity, DrawerLayout drawerLayout,
+//                                      Toolbar toolbar, @StringRes int openDrawerContentDescRes,
+//                                      @StringRes int closeDrawerContentDescRes )
+//    {
+//    this( activity, toolbar, drawerLayout, null, openDrawerContentDescRes,
+//            closeDrawerContentDescRes );
+//    }
 
   /**
    * In the future, we can make this constructor public if we want to let developers customize
    * the
    * animation.
    */
-  <T extends Drawable & DrawerToggle> ActionBarDrawerToggle( Activity activity,
-                                                             Toolbar toolbar,
-                                                             DrawerLayout drawerLayout,
-                                                             T slider,
-                                                             @StringRes int openDrawerContentDescRes,
-                                                             @StringRes int closeDrawerContentDescRes )
+  <T extends Drawable & DrawerToggle> CustomActionBarDrawerToggle( Activity activity,
+                                                                   Toolbar toolbar,
+                                                                   DrawerLayout drawerLayout,
+                                                                   int backArrowResourceId,
+                                                                   T slider,
+                                                                   @StringRes int openDrawerContentDescRes,
+                                                                   @StringRes int closeDrawerContentDescRes )
     {
     if ( toolbar != null )
       {
@@ -288,7 +290,7 @@ public class ActionBarDrawerToggle implements DrawerLayout.DrawerListener
 
     if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "mSlider = " + mSlider );
 
-    mHomeAsUpIndicator = getThemeUpIndicator();
+    setHomeAsUpIndicator( backArrowResourceId );
     }
 
   /**
@@ -336,10 +338,10 @@ public class ActionBarDrawerToggle implements DrawerLayout.DrawerListener
   public void onConfigurationChanged( Configuration newConfig )
     {
 // Reload drawables that can change with configuration
-    if ( !mHasCustomUpIndicator )
-      {
-      mHomeAsUpIndicator = getThemeUpIndicator();
-      }
+//    if ( !mHasCustomUpIndicator )
+//      {
+//      mHomeAsUpIndicator = getThemeUpIndicator();
+//      }
     syncState();
     }
 
@@ -626,7 +628,7 @@ public class ActionBarDrawerToggle implements DrawerLayout.DrawerListener
     }
 
 
-  static public class CustomDrawerIndicatorToggle extends DrawerIndicator implements DrawerToggle
+  static public class CustomDrawerIndicatorToggle extends CustomDrawerIndicator implements DrawerToggle
     {
     public CustomDrawerIndicatorToggle( Context context, int showDrawableResourceId, int hideDrawableResourceId )
       {
@@ -670,7 +672,7 @@ public class ActionBarDrawerToggle implements DrawerLayout.DrawerListener
     {
 
     final Activity mActivity;
-    ActionBarDrawerToggleHoneycomb.SetIndicatorInfo mSetIndicatorInfo;
+    CustomActionBarDrawerToggleHoneycomb.SetIndicatorInfo mSetIndicatorInfo;
 
     private HoneycombDelegate( Activity activity )
       {
@@ -680,7 +682,7 @@ public class ActionBarDrawerToggle implements DrawerLayout.DrawerListener
     @Override
     public Drawable getThemeUpIndicator()
       {
-      return ActionBarDrawerToggleHoneycomb.getThemeUpIndicator( mActivity );
+      return CustomActionBarDrawerToggleHoneycomb.getThemeUpIndicator( mActivity );
       }
 
     @Override
@@ -711,7 +713,7 @@ public class ActionBarDrawerToggle implements DrawerLayout.DrawerListener
     public void setActionBarUpIndicator( Drawable themeImage, int contentDescRes )
       {
       mActivity.getActionBar().setDisplayShowHomeEnabled( true );
-      mSetIndicatorInfo = ActionBarDrawerToggleHoneycomb.setActionBarUpIndicator(
+      mSetIndicatorInfo = CustomActionBarDrawerToggleHoneycomb.setActionBarUpIndicator(
               mSetIndicatorInfo, mActivity, themeImage, contentDescRes );
       mActivity.getActionBar().setDisplayShowHomeEnabled( false );
       }
@@ -719,7 +721,7 @@ public class ActionBarDrawerToggle implements DrawerLayout.DrawerListener
     @Override
     public void setActionBarDescription( int contentDescRes )
       {
-      mSetIndicatorInfo = ActionBarDrawerToggleHoneycomb.setActionBarDescription(
+      mSetIndicatorInfo = CustomActionBarDrawerToggleHoneycomb.setActionBarDescription(
               mSetIndicatorInfo, mActivity, contentDescRes );
       }
     }

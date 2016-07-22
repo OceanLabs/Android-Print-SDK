@@ -130,7 +130,7 @@ public class ImageSourceFragment extends AProductCreationFragment implements Ada
 
     // Set up the image source grid
 
-    ImageSourceAdaptor imageSourceAdaptor = new ImageSourceAdaptor( mKiteActivity, R.layout.grid_item_image_source_vertical, imageSourceList );
+    ImageSourceAdaptor imageSourceAdaptor = new ImageSourceAdaptor( mKiteActivity, AImageSource.LayoutType.VERTICAL, imageSourceList );
 
     mImageSourceGridView.setAdapter( imageSourceAdaptor );
 

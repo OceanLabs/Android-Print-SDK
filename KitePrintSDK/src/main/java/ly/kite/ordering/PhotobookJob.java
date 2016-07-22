@@ -187,8 +187,16 @@ public class PhotobookJob extends ImagesJob
     assetsJSONObject.put( "cover_pdf",  JSONObject.NULL );
 
 
-    // Add the front cover
-    assetsJSONObject.put( "front_cover", getPageJSONObject( mFrontCoverUploadableImage ) );
+    // Add any front cover
+
+    if ( mFrontCoverUploadableImage != null )
+      {
+      assetsJSONObject.put( "front_cover", String.valueOf( mFrontCoverUploadableImage.getUploadedAssetId() ) );
+      }
+    else
+      {
+      assetsJSONObject.put( "front_cover", JSONObject.NULL );
+      }
 
 
     // Add the content pages
@@ -227,6 +235,32 @@ public class PhotobookJob extends ImagesJob
       }
 
     return ( pageJSONObject );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the number of photos that are part of this job.
+   * This quantity is a pain in the arse, because its meaning
+   * varies.
+   *
+   * For photobooks, we need to consider the front cover as
+   * well as the content images:
+   *   - If all pages are full, we don't want to include the front
+   *   cover because the server will think we have another book.
+   *   - If just the front cover is occupied we need to add it in,
+   *   otherwise the quanity will be 0 and the server will think
+   *   there are no photos at all.
+   *
+   *****************************************************/
+  @Override
+  public int getQuantity()
+    {
+    int quantity = super.getQuantity();
+
+    if ( quantity < 1 ) return ( mFrontCoverUploadableImage != null ? 1 : 0 );
+
+    return ( quantity );
     }
 
 

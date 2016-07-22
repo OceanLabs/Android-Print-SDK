@@ -814,8 +814,8 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
       private ImageView   mProductImageView;
       private TextView    mQuantityTextView;
 
-      private Button      mDecrementButton;
-      private Button      mIncrementButton;
+      private View        mDecrementButton;
+      private View        mIncrementButton;
 
       private View        mEditTouchFrame;
       private TextView    mEditLabelTextView;
@@ -829,8 +829,8 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
         mProductImageView    = (ImageView)view.findViewById( R.id.product_image_view );
         mQuantityTextView    = (TextView)view.findViewById( R.id.quantity_text_view );
 
-        mDecrementButton     = (Button)view.findViewById( R.id.decrement_button );
-        mIncrementButton     = (Button)view.findViewById( R.id.increment_button );
+        mDecrementButton     = view.findViewById( R.id.decrement_button );
+        mIncrementButton     = view.findViewById( R.id.increment_button );
 
         mEditTouchFrame      = view.findViewById( R.id.edit_touch_frame );
         mEditLabelTextView   = (TextView)findViewById( R.id.edit_label_text_view );

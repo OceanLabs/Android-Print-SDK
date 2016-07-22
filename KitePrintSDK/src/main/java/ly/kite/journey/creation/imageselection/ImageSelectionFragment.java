@@ -182,7 +182,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
     ArrayList<AImageSource> imageSourceList = KiteSDK.getInstance( mKiteActivity ).getAvailableImageSources();
 
-    mImageSourceAdaptor = new ImageSourceAdaptor( mKiteActivity, R.layout.grid_item_image_source_horizontal, imageSourceList );
+    mImageSourceAdaptor = new ImageSourceAdaptor( mKiteActivity, AImageSource.LayoutType.HORIZONTAL, imageSourceList );
     mImageSourceGridView.setNumColumns( mImageSourceAdaptor.getCount() );
     mImageSourceGridView.setAdapter( mImageSourceAdaptor );
 

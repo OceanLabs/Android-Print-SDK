@@ -71,7 +71,7 @@ public class PricingAgent extends ACache<String,OrderPricing,PricingAgent.Consum
   @SuppressWarnings( "unused" )
   static private final String  LOG_TAG                        = "PricingAgent";
 
-  static private final boolean DEBUGGING_ENABLED              = true;
+  static private final boolean DEBUGGING_ENABLED              = false;
 
   static private final String  PRICING_ENDPOINT_FORMAT_STRING = "%s/price/";
 
@@ -129,7 +129,11 @@ public class PricingAgent extends ACache<String,OrderPricing,PricingAgent.Consum
   public OrderPricing requestPricing( Context context, Order order, String promoCode, IPricingConsumer consumer, int requestId )
     {
     // Get the request body first, because we also use it as the caching key
+
     String requestBodyString = getRequestBody( context, order, promoCode );
+
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "Request body:\n" + requestBodyString );
+
 
     // Construct the request URL first, because we also use it as the caching key.
     //String requestURLString = getRequestURLString( context, order, promoCode );

@@ -3,14 +3,14 @@
 
     <string name="app_name">Kite SDK</string>
 
-    <string name="action_bar_typeface_asset_name"></string>
+    <string name="action_bar_typeface_asset_name" translatable="false"></string>
 
-    <string name="analytics_event_callback_class_name">ly.kite.analytics.NullAnalyticsEventCallback</string>
-    <string name="custom_image_editor_agent_class_name"></string>
+    <string name="analytics_event_callback_class_name" translatable="false">ly.kite.analytics.NullAnalyticsEventCallback</string>
+    <string name="custom_image_editor_agent_class_name" translatable="false"></string>
 
-    <string name="credit_card_fragment_class_name">""</string>
+    <string name="credit_card_fragment_class_name" translatable="false">""</string>
 
-    <string name="custom_typeface_file_name">""</string>
+    <string name="custom_typeface_file_name" translatable="false">""</string>
 
     <string name="unit_centimeters">centimeters</string>
     <string name="unit_inches">inches</string>
@@ -301,14 +301,6 @@
     <string name="scan_qr_code">Scan QR Code</string>
     <string name="scan_qr_code_instructions">Please scan the QR code using a\nQR reader app on your device.</string>
     <string name="scan_qr_code_alternate_instructions">Alternatively type the following URL into your mobile browser\'s address bar:</string>
-
-    <!--
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="title_activity_template_sync">TemplateSyncActivity</string>
-    -->
 
     <string name="action_settings">Settings</string>
     <string name="title_activity_checkout">Shipping Details</string>
