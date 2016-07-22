@@ -597,22 +597,27 @@ public class Order implements Parcelable /* , Serializable */
       if ( submissionListener != null ) submissionListener.onProgress( this, 0, 0 );
 
 
-      // Crop any non-full-size images
 
+      // Get a list of all the images that need uploading. This list will exclude any
+      // blank images.
       mImagesToUpload = getImagesToUpload();
+
+
+      // Crop any images where the the asset fragment is a sub-section of the original
+      // asset.
 
       mImagesToCropCount = 0;
 
       for ( UploadableImage uploadableImage : mImagesToUpload )
         {
         AssetFragment assetFragment = uploadableImage.getAssetFragment();
-        Asset         asset         = uploadableImage.getAsset();
+        Asset          asset        = uploadableImage.getAsset();
 
 
         // If this asset fragment is not full size then it needs to be cropped before
         // it can be uploaded.
 
-        if ( ! assetFragment.isFullSize() )
+        if ( !assetFragment.isFullSize() )
           {
           mImagesToCropCount++;
 

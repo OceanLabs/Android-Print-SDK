@@ -46,6 +46,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -100,7 +101,7 @@ public class PhotobookJob extends ImagesJob
 
   public PhotobookJob( long jobId, Product product, int orderQuantity, HashMap<String,String> optionsMap, Object frontCoverImage, List<?> contentObjectList )
     {
-    super( jobId, product, orderQuantity, optionsMap, contentObjectList );
+    super( jobId, product, orderQuantity, optionsMap, contentObjectList, true );
 
     mFrontCoverUploadableImage = singleUploadableImageFrom( frontCoverImage );
     }
@@ -139,15 +140,17 @@ public class PhotobookJob extends ImagesJob
   @Override
   public List<UploadableImage> getImagesForUploading()
     {
-    // Start with the content pages asset fragments, then add
-    // the front cover.
+    // Create a new list, and add the front cover to it
 
-    List<UploadableImage> uploadableImageList = super.getImagesForUploading();
+    ArrayList<UploadableImage> uploadableImageArrayList = new ArrayList<>();
 
-    uploadableImageList.add( mFrontCoverUploadableImage );
+    if ( mFrontCoverUploadableImage != null ) uploadableImageArrayList.add( mFrontCoverUploadableImage );
 
 
-    return ( uploadableImageList );
+    // Add any content images
+    super.addImagesForUploading( uploadableImageArrayList );
+
+    return ( uploadableImageArrayList );
     }
 
 
