@@ -2,6 +2,7 @@ package ly.kite.ordering;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,15 +33,23 @@ import ly.kite.util.UploadableImage;
  *****************************************************/
 public class ImagesJob extends Job
   {
+  static private final String LOG_TAG = "ImagesJob";
+
+
   private List<UploadableImage> mUploadableImageList;
 
 
-  public ImagesJob( long jobId, Product product, int orderQuantity, HashMap<String,String> optionMap, List<?> objectList )
+  public ImagesJob( long jobId, Product product, int orderQuantity, HashMap<String,String> optionMap, List<?> objectList, boolean nullObjectsAreBlankPages )
     {
     super( jobId, product, orderQuantity, optionMap );
 
 
-    // The image list can be UploadableImages, ImageSpecs, AssetFragments, or Assets
+    // The image list can consist of the following objects:
+    //   - null
+    //   - UploadableImages
+    //   - ImageSpecs
+    //   - AssetFragments
+    //   - Assets
 
     mUploadableImageList = new ArrayList<>();
 
@@ -48,7 +57,7 @@ public class ImagesJob extends Job
       {
       for ( Object object : objectList )
         {
-        addUploadableImages( object, mUploadableImageList );
+        addUploadableImages( object, mUploadableImageList, nullObjectsAreBlankPages );
         }
       }
     }
@@ -56,7 +65,7 @@ public class ImagesJob extends Job
 
   public ImagesJob( Product product, int orderQuantity, HashMap<String,String> optionsMap, List<?> objectList )
     {
-    this( 0, product, orderQuantity, optionsMap, objectList );
+    this( 0, product, orderQuantity, optionsMap, objectList, false );
     }
 
 
@@ -91,17 +100,30 @@ public class ImagesJob extends Job
         return ( mUploadableImageList.size() );
     }
 
+
     @Override
-    List<UploadableImage> getImagesForUploading()
+    protected List<UploadableImage> getImagesForUploading()
       {
-      return ( mUploadableImageList );
+      // Copy only non-null uploadable images
+
+      ArrayList<UploadableImage> uploadableImageArrayList = new ArrayList<>();
+
+      addImagesForUploading( uploadableImageArrayList );
+
+      return ( uploadableImageArrayList );
       }
 
 
-//  public List<Asset> getAssets()
-//    {
-//    return ( mAssetList );
-//    }
+  protected void addImagesForUploading( List<UploadableImage> uploadableImageList )
+    {
+    if ( mUploadableImageList != null )
+      {
+      for ( UploadableImage uploadableImage : mUploadableImageList )
+        {
+        if ( uploadableImage != null ) uploadableImageList.add( uploadableImage );
+        }
+      }
+    }
 
 
   @Override

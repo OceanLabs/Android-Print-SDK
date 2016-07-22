@@ -34,8 +34,9 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.google.android.gms:play-services-gcm:8.1.0'
-    //compile 'ly.kite:kite-print-sdk:5.2.0'
+    //compile 'ly.kite:kite-print-sdk:5.2.5'
     compile project(':KitePrintSDK')
 }
 
-apply from: 'https://raw.github.com/shamanland/gradle-mvn-push/cc18d56549cdea03f744b6fff27911569394073e/gradle-mvn-push.gradle'
+// Uncomment before uploading archives
+//apply from: 'https://raw.github.com/shamanland/gradle-mvn-push/cc18d56549cdea03f744b6fff27911569394073e/gradle-mvn-push.gradle'

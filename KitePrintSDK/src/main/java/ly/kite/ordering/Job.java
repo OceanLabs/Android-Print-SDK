@@ -178,14 +178,20 @@ public abstract class Job implements Parcelable
    * Adds uploadable images to a list.
    *
    *****************************************************/
-  static protected void addUploadableImages( Object object, List<UploadableImage> uploadableImageList )
+  static protected void addUploadableImages( Object object, List<UploadableImage> uploadableImageList, boolean nullObjectsAreBlankPages )
     {
-    if ( object == null ) return;
+    if ( object == null )
+      {
+      if ( nullObjectsAreBlankPages )
+        {
+        uploadableImageList.add( null );
+        }
+      }
 
 
     // For ImageSpecs, we need to add as many images as the quantity
 
-    if ( object instanceof ImageSpec )
+    else if ( object instanceof ImageSpec )
       {
       ImageSpec imageSpec = (ImageSpec)object;
 
