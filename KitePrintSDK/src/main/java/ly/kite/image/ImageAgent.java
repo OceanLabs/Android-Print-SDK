@@ -80,11 +80,13 @@ public class ImageAgent
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String  LOG_TAG                     = "ImageAgent";
+  static private final String         LOG_TAG                     = "ImageAgent";
 
-  static public  final RectF   FULL_PROPORTIONAL_RECTANGLE = new RectF( 0.0f, 0.0f, 1.0f, 1.0f );
+  static public  final RectF          FULL_PROPORTIONAL_RECTANGLE = new RectF( 0.0f, 0.0f, 1.0f, 1.0f );
 
-  static private final int     CROPPED_IMAGE_FILLER_COLOUR = 0xffffffff;
+  static private final int            CROPPED_IMAGE_FILLER_COLOUR = 0xffffffff;
+
+  static private final Bitmap.Config  DEFAULT_BITMAP_CONFIG       = Bitmap.Config.RGB_565;
 
 
   ////////// Static Variable(s) //////////
@@ -279,7 +281,16 @@ public class ImageAgent
     int croppedWidth  = right - left;
     int croppedHeight = bottom - top;
 
-    Bitmap croppedBitmap = Bitmap.createBitmap( croppedWidth, croppedHeight, originalBitmap.getConfig() );
+
+    // The bitmap config can sometimes be null (if the actual config doesn't match one of
+    // the standard types), so use a default config if this happens.
+
+    Bitmap.Config bitmapConfig = originalBitmap.getConfig();
+
+    if ( bitmapConfig == null ) bitmapConfig = DEFAULT_BITMAP_CONFIG;
+
+
+    Bitmap croppedBitmap = Bitmap.createBitmap( croppedWidth, croppedHeight, bitmapConfig );
 
     Canvas croppedBitmapCanvas = new Canvas( croppedBitmap );
 

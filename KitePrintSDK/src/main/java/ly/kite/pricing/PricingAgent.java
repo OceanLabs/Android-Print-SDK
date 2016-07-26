@@ -71,7 +71,7 @@ public class PricingAgent extends ACache<String,OrderPricing,PricingAgent.Consum
   @SuppressWarnings( "unused" )
   static private final String  LOG_TAG                        = "PricingAgent";
 
-  static private final boolean DEBUGGING_ENABLED              = false;
+  static private final boolean DEBUGGING_ENABLED              = true;
 
   static private final String  PRICING_ENDPOINT_FORMAT_STRING = "%s/price/";
 

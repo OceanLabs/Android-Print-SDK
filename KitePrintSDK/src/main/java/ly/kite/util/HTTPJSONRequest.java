@@ -48,6 +48,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import android.content.Context;
+import android.util.Log;
 
 
 ///// Class Declaration /////
@@ -146,6 +147,8 @@ public class HTTPJSONRequest extends HTTPRequest
    *****************************************************/
   protected void onResponseSuccess( int httpStatusCode )
     {
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "onResponseSuccess( httpStatusCode = " + httpStatusCode + " ) JSON = " + mJSONResponse.toString() );
+
     if ( mJSONResponseListener != null ) mJSONResponseListener.onSuccess( httpStatusCode, mJSONResponse );
     }
 
@@ -158,6 +161,8 @@ public class HTTPJSONRequest extends HTTPRequest
    *****************************************************/
   protected void onResponseError( Exception exception )
     {
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "onResponseError( exception = " + exception + " )" );
+
     if ( mJSONResponseListener != null ) mJSONResponseListener.onError( exception );
     }
 

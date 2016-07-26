@@ -43,6 +43,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -68,7 +69,9 @@ public class HTTPRequest
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String  LOG_TAG = "HTTPRequest";
+  static private   final String   LOG_TAG           = "HTTPRequest";
+
+  static protected final boolean  DEBUGGING_ENABLED = true;
 
 
   ////////// Static Variable(s) //////////
@@ -291,6 +294,8 @@ public class HTTPRequest
 
         postReq.setHeader( "Content-Type", "application/json; charset=utf-8" );
 
+        if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "Request body: " + mRequestBodyString );
+
         try
           {
           postReq.setEntity( new StringEntity( mRequestBodyString, "utf-8" ) );
@@ -310,6 +315,19 @@ public class HTTPRequest
         for ( Map.Entry<String, String> entry : mHeaderMap.entrySet() )
           {
           request.setHeader( entry.getKey(), entry.getValue() );
+          }
+        }
+
+
+      if ( DEBUGGING_ENABLED )
+        {
+        Log.d( LOG_TAG, "URI: " + request.getURI() );
+
+        Header[] headerArray = request.getAllHeaders();
+
+        for ( Header header : headerArray )
+          {
+          Log.d( LOG_TAG, header.getName() + " : " + header.getValue() );
           }
         }
 

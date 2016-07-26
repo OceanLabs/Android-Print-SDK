@@ -83,7 +83,7 @@ public class ImageLoadRequest
   @SuppressWarnings( "unused" )
   static private final String  LOG_TAG              = "ImageLoadRequest";
 
-  static private final boolean DEBUGGING_IS_ENABLED = false;
+  static private final boolean DEBUGGING_ENABLED    = false;
 
   static private final boolean FORCE_FILE_DOWNLOAD  = false;
 
@@ -225,7 +225,7 @@ public class ImageLoadRequest
    *****************************************************/
   static public int getRotationForImage( Context context, Uri uri )
     {
-    if ( DEBUGGING_IS_ENABLED )
+    if ( DEBUGGING_ENABLED )
       {
       Log.d( LOG_TAG, "getRotationForImage( context, uri = " + ( uri != null ? uri.toString() : "null" ) + " )" );
       }
@@ -234,7 +234,7 @@ public class ImageLoadRequest
 
     try
       {
-      if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "  URI scheme = " + uri.getScheme() );
+      if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "  URI scheme = " + uri.getScheme() );
 
       if ( uri.getScheme().equals( "content" ) )
         {
@@ -248,7 +248,7 @@ public class ImageLoadRequest
           {
           int rotation = cursor.getInt( 0 );
 
-          if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "  Rotation = " + rotation );
+          if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "  Rotation = " + rotation );
 
           return ( rotation );
           }
@@ -257,13 +257,13 @@ public class ImageLoadRequest
         {
         ///// File /////
 
-        if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "  URI path = " + uri.getPath() );
+        if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "  URI path = " + uri.getPath() );
 
         ExifInterface exif = new ExifInterface( uri.getPath() );
 
         int rotation = degreesFromEXIFOrientation( exif.getAttributeInt( ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL ) );
 
-        if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "  Rotation = " + rotation );
+        if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "  Rotation = " + rotation );
 
         return ( rotation );
         }
@@ -288,7 +288,7 @@ public class ImageLoadRequest
    *****************************************************/
   static int degreesFromEXIFOrientation( int exifOrientation )
     {
-    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "degreesFromEXIFOrientation( exifOrientation = " + exifOrientation + " )" );
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "degreesFromEXIFOrientation( exifOrientation = " + exifOrientation + " )" );
 
     if ( exifOrientation == ExifInterface.ORIENTATION_ROTATE_90 )
       {
@@ -411,6 +411,8 @@ public class ImageLoadRequest
       mOriginalWidth  = bitmapFactoryOptions.outWidth;
       mOriginalHeight = bitmapFactoryOptions.outHeight;
 
+      if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "Original bitmap size = " + mOriginalWidth + " x " + mOriginalHeight );
+
 
       // If we only need to get the size, return now
       if ( mOnlyLoadBounds ) return ( true );
@@ -420,6 +422,8 @@ public class ImageLoadRequest
       // than the resize dimensions.
 
       int sampleSize = sampleSizeForResize( mOriginalWidth, mOriginalHeight, mResizeWidth, mResizeHeight );
+
+      if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "Initial sample size = " + sampleSize );
 
 
       // Image loading *must* work. So even if colour space reduction or resizing hasn't
@@ -438,6 +442,8 @@ public class ImageLoadRequest
         }
       catch ( OutOfMemoryError oome )
         {
+        if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "Got out of memory error" );
+
         // Fall through
         }
 
@@ -447,6 +453,8 @@ public class ImageLoadRequest
 
       if ( mBitmapConfig != Bitmap.Config.RGB_565 )
         {
+        if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "Dropping bitmap config -> RGB 565" );
+
         mBitmapConfig = Bitmap.Config.RGB_565;
 
         try
@@ -462,6 +470,8 @@ public class ImageLoadRequest
           }
         catch ( OutOfMemoryError oome )
           {
+          if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "Got out of memory error" );
+
           // Fall through
           }
         }
@@ -473,6 +483,8 @@ public class ImageLoadRequest
       while ( sampleSize >= 1 && sampleSize < MAX_SUB_SAMPLE_SIZE )
         {
         sampleSize <<= 1;  // * 2
+
+        if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "Increased sample size -> " + sampleSize );
 
         try
           {
@@ -487,6 +499,8 @@ public class ImageLoadRequest
           }
         catch ( OutOfMemoryError oome )
           {
+          if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "Got out of memory error" );
+
           // Fall through
           }
         }
@@ -494,6 +508,8 @@ public class ImageLoadRequest
       }
     catch ( Exception exception )
       {
+      Log.d( LOG_TAG, "Unable to load image", exception );
+
       mException = exception;
       }
 
@@ -509,17 +525,24 @@ public class ImageLoadRequest
    *****************************************************/
   private Bitmap getBitmap( Bitmap.Config bitmapConfig, int sampleSize ) throws Exception
     {
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "getBitmap( bitmapConfig = " + bitmapConfig + ", sampleSize = " + sampleSize );
+
+
     // Load the image, sub-sampling if specified
 
     BitmapFactory.Options bitmapFactoryOptions = getFullBitmapOptions( bitmapConfig, sampleSize );
 
     Bitmap bitmap = mSource.load( mApplicationContext, bitmapFactoryOptions );
 
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "Bitmap loaded: " + bitmap + ", config = " + bitmap.getConfig() );
+
 
     // Apply any pre-resize transformation
 
     if ( mPreResizeTransformer != null )
       {
+      if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "Applying pre-resize transformer: " + mPreResizeTransformer );
+
       bitmap = mPreResizeTransformer.getTransformedBitmap( bitmap );
       }
 
@@ -936,6 +959,11 @@ public class ImageLoadRequest
     @Override
     void onImageAvailable( Bitmap bitmap )
       {
+      if ( DEBUGGING_ENABLED )
+        {
+        Log.d( LOG_TAG, "Delivering bitmap + " + bitmap + ( bitmap != null ? " ( " + bitmap.getWidth() + " x " + bitmap.getHeight() + " )" : "" ) + " -> " + mImageView );
+        }
+
       mImageView.setImageBitmap( bitmap );
       }
 
@@ -972,6 +1000,11 @@ public class ImageLoadRequest
     @Override
     void onImageAvailable( Bitmap bitmap )
       {
+      if ( DEBUGGING_ENABLED )
+        {
+        Log.d( LOG_TAG, "Delivering bitmap + " + bitmap + ( bitmap != null ? " ( " + bitmap.getWidth() + " x " + bitmap.getHeight() + " )" : "" ) + " -> " + mMenuItem );
+        }
+
       mMenuItem.setIcon( new BitmapDrawable( bitmap ) );
       }
 
@@ -1010,6 +1043,11 @@ public class ImageLoadRequest
     @Override
     void onImageAvailable( Bitmap bitmap )
       {
+      if ( DEBUGGING_ENABLED )
+        {
+        Log.d( LOG_TAG, "Delivering bitmap + " + bitmap + ( bitmap != null ? " ( " + bitmap.getWidth() + " x " + bitmap.getHeight() + " )" : "" ) + " -> " + mImageConsumer );
+        }
+
       mImageConsumer.onImageAvailable( mKey, bitmap );
       }
 

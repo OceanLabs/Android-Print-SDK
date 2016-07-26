@@ -571,8 +571,8 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
           }
         else
           {
-          if ( productActive ) Log.i( LOG_TAG, "-- Product discarded: no user journey --" );
-          else                 Log.i( LOG_TAG, "-- Product discarded: inactive --" );
+          if ( productActive ) Log.i( LOG_TAG, "-- Product discarded: no user journey for type " + userJourneyType + " --" );
+          else                 Log.i( LOG_TAG, "-- Product discarded: product id " + productId + " inactive --" );
 
           catalogue.addDiscardedProduct( product );
           }

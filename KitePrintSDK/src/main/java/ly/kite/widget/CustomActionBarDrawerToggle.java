@@ -69,7 +69,7 @@ import android.view.View;
 public class CustomActionBarDrawerToggle implements DrawerLayout.DrawerListener
   {
   static private final String  LOG_TAG           = "CustomActionBarDrawerT";
-  static private final boolean DEBUGGING_ENABLED = true;
+  static private final boolean DEBUGGING_ENABLED = false;
 
   /**
    * Allows an implementing Activity to return an {@link CustomActionBarDrawerToggle.Delegate} to use

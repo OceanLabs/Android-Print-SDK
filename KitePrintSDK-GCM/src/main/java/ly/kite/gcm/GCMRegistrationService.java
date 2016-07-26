@@ -52,6 +52,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import ly.kite.KiteSDK;
+import ly.kite.api.KiteAPIRequest;
 import ly.kite.util.HTTPJSONRequest;
 
 
@@ -184,9 +185,17 @@ public class GCMRegistrationService extends IntentService implements HTTPJSONReq
   @Override
   public void onSuccess( int httpStatusCode, JSONObject json )
     {
-    Log.i( TAG, "Registered GCM token OK" );
+    if ( httpStatusCode >= 200 && httpStatusCode <= 299 )
+      {
+      Log.i( TAG, "Registered GCM token: status code = " + httpStatusCode + ", json = " + json.toString() );
 
-    saveRegistrationRequired( false );
+      saveRegistrationRequired( false );
+      }
+    else
+      {
+      Log.i( TAG, "Error registering GCM token: status code = " + httpStatusCode + ", json = " + json.toString() );
+      }
+
 
     mHTTPJSONRequest = null;
     }
@@ -252,7 +261,7 @@ public class GCMRegistrationService extends IntentService implements HTTPJSONReq
 
     String requestURLString = String.format( USER_REQUEST_FORMAT_STRING, KiteSDK.getInstance( this ).getAPIEndpoint() );
 
-    mHTTPJSONRequest = new HTTPJSONRequest( this, HTTPJSONRequest.HttpMethod.POST, requestURLString, null, jsonBodyObject.toString() );
+    mHTTPJSONRequest = new KiteAPIRequest( this, HTTPJSONRequest.HttpMethod.POST, requestURLString, null, jsonBodyObject.toString() );
 
     mHTTPJSONRequest.start( this );
     }

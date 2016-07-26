@@ -1249,7 +1249,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
         {
         mTopFragment = (AKiteFragment)mFragmentManager.findFragmentByTag( entry.getName() );
 
-        Log.d( LOG_TAG, "  Fragment # " + entryIndex + " : " + mTopFragment );
+        if ( DEBUG_FRAGMENT_NOTIFICATION ) Log.d( LOG_TAG, "  Fragment # " + entryIndex + " : " + mTopFragment );
 
         if ( mTopFragment != null ) onNotifyTop( mTopFragment );
         }
@@ -1265,7 +1265,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
         {
         entry = mFragmentManager.getBackStackEntryAt( entryIndex );
 
-        Log.d( LOG_TAG, "  Fragment # " + entryIndex + " : " + entry );
+        if ( DEBUG_FRAGMENT_NOTIFICATION ) Log.d( LOG_TAG, "  Fragment # " + entryIndex + " : " + entry );
 
         if ( entry != null )
           {
