@@ -290,7 +290,7 @@ public class OrderHistoryFragment extends AKiteFragment implements AdapterView.O
         }
       else
         {
-        view       = LayoutInflater.from( getContext() ).inflate( R.layout.list_item_order_history, parent, false );
+        view       = LayoutInflater.from( getActivity() ).inflate( R.layout.list_item_order_history, parent, false );
         viewHolder = new ViewHolder( view );
 
         view.setTag( viewHolder );

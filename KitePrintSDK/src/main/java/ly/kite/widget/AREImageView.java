@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * AddressActivity.java
+ * AREImageView.java
  *
  *
  * Modified MIT License
@@ -34,34 +34,32 @@
 
 ///// Package Declaration /////
 
-package ly.kite.address;
+package ly.kite.widget;
 
 
 ///// Import(s) /////
 
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.os.Build;
+import android.util.AttributeSet;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+
 
 ///// Class Declaration /////
 
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Parcelable;
-
-import ly.kite.journey.AKiteActivity;
-
 /*****************************************************
  *
- * This class is the parent class of address activities.
+ * This class is an aspect ratio enforced frame layout.
  *
  *****************************************************/
-abstract public class AAddressActivity extends AKiteActivity
+public class AREImageView extends ImageView
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String  LOG_TAG           = "AddressActivity";
-
-  static public  final String  KEY_ADDRESS       = "ly.kite.address";
-  static public  final String  KEY_EMAIL_ADDRESS = "ly.kite.emailaddress";
+  static private final String  LOG_TAG = "AREImageView";
 
 
   ////////// Static Variable(s) //////////
@@ -69,89 +67,73 @@ abstract public class AAddressActivity extends AKiteActivity
 
   ////////// Member Variable(s) //////////
 
+  private AspectRatioEnforcer  mAspectRatioEnforcer;
+
 
   ////////// Static Initialiser(s) //////////
 
 
   ////////// Static Method(s) //////////
 
-  /*****************************************************
-   *
-   * Returns an address bundled as an extra within an intent.
-   *
-   *****************************************************/
-  static public Address getAddress( Intent data )
-    {
-    if ( data == null ) return ( null );
-
-    return ( data.getParcelableExtra( KEY_ADDRESS ) );
-    }
-
-
-  /*****************************************************
-   *
-   * Returns an email address bundled as an extra within an intent.
-   *
-   *****************************************************/
-  static public String getEmailAddress( Intent data )
-    {
-    if ( data == null ) return ( null );
-
-    return ( data.getStringExtra( KEY_EMAIL_ADDRESS ) );
-    }
-
-
-  /*****************************************************
-   *
-   * Adds an address to an intent.
-   *
-   *****************************************************/
-  static public void addAddressIfNotNull( Address address, Intent intent )
-    {
-    if ( address != null ) intent.putExtra( KEY_ADDRESS, (Parcelable)address );
-    }
-
-
-  /*****************************************************
-   *
-   * Adds an email address to an intent.
-   *
-   *****************************************************/
-  static public void addEmailAddressIfNotNull( String emailAddress, Intent intent )
-    {
-    if ( emailAddress != null ) intent.putExtra( KEY_EMAIL_ADDRESS, emailAddress );
-    }
-
 
   ////////// Constructor(s) //////////
+
+  public AREImageView( Context context )
+    {
+    super( context );
+
+    initialise( context, null, 0 );
+    }
+
+  public AREImageView( Context context, AttributeSet attrs )
+    {
+    super( context, attrs );
+
+    initialise( context, attrs, 0 );
+    }
+
+  public AREImageView( Context context, AttributeSet attrs, int defStyleAttr )
+    {
+    super( context, attrs, defStyleAttr );
+
+    initialise( context, attrs, defStyleAttr );
+    }
+
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+  public AREImageView( Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes )
+    {
+    super( context, attrs, defStyleAttr, defStyleRes );
+
+    initialise( context, attrs, defStyleAttr );
+    }
+
+
+  ////////// View Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called to measure the view.
+   *
+   *****************************************************/
+  @Override
+  protected void onMeasure( int widthMeasureSpec, int heightMeasureSpec )
+    {
+    mAspectRatioEnforcer.onMeasure( this, widthMeasureSpec, heightMeasureSpec );
+
+    super.onMeasure( mAspectRatioEnforcer.getWidthMeasureSpec(), mAspectRatioEnforcer.getHeightMeasureSpec() );
+    }
 
 
   ////////// Method(s) //////////
 
   /*****************************************************
    *
-   * Returns an address result.
+   * Initialises this view.
    *
    *****************************************************/
-  public void returnResult( Address address, String emailAddress )
+  private void initialise( Context context, AttributeSet attrs, int defStyleAttr )
     {
-    Intent data = new Intent();
-
-    addAddressIfNotNull( address, data );
-    addEmailAddressIfNotNull( emailAddress, data );
-
-    setResult( Activity.RESULT_OK, data );
-    }
-
-
-  /*****************************************************
-   *
-   * Returns an address result.
-   *
-   *****************************************************/
-  public void returnResult( Address address )
-    {
-    returnResult( address, null );
+    mAspectRatioEnforcer = new AspectRatioEnforcer( context, attrs, defStyleAttr );
     }
 
 

@@ -308,30 +308,25 @@
     <string name="title_activity_payment">Payment</string>
     <string name="title_activity_address_book">Address Book</string>
     <string name="add_address">Add Address</string>
-    <string name="search_for_address">Lookup New Address</string>
-    <string name="manual_add_address">Create New Address</string>
     <string name="title_activity_address_edit">Edit Address</string>
-    <string name="title_activity_address_search">Lookup Address</string>
     <string name="action_save_address">Save Address</string>
-    <string name="search_title">Search</string>
-    <string name="country_search_hint">Search Addresses</string>
 
     <plurals name="Photo_plurals">
-        <item quantity="zero">Photos</item>
-        <item quantity="one">Photo</item>
-        <item quantity="two">Photos</item>
-        <item quantity="few">Photos</item>
-        <item quantity="many">Photos</item>
-        <item quantity="other">Photos</item>
+        <item quantity="zero">%d Photos</item>
+        <item quantity="one">%d Photo</item>
+        <item quantity="two">%d Photos</item>
+        <item quantity="few">%d Photos</item>
+        <item quantity="many">%d Photos</item>
+        <item quantity="other">%d Photos</item>
     </plurals>
 
     <plurals name="photo_plurals">
-        <item quantity="zero">photos</item>
-        <item quantity="one">photo</item>
-        <item quantity="two">photos</item>
-        <item quantity="few">photos</item>
-        <item quantity="many">photos</item>
-        <item quantity="other">photos</item>
+        <item quantity="zero">%d photos</item>
+        <item quantity="one">%d photo</item>
+        <item quantity="two">%d photos</item>
+        <item quantity="few">%d photos</item>
+        <item quantity="many">%d photos</item>
+        <item quantity="other">%d photos</item>
     </plurals>
 
 </resources>

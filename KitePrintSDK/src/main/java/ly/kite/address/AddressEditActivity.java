@@ -51,14 +51,13 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
     Intent intent = new Intent( activity, AddressEditActivity.class );
 
 
-    addAddress( address, intent );
+    addAddressIfNotNull( address, intent );
 
     intent.putExtra( KEY_ADDRESS_READ_ONLY,     addressReadOnly );
 
-
     intent.putExtra( KEY_REQUEST_EMAIL_ADDRESS, requestEmailAddress );
 
-    addEmailAddress( emailAddress, intent );
+    addEmailAddressIfNotNull( emailAddress, intent );
 
 
     activity.startActivityForResult( intent, requestCode );
