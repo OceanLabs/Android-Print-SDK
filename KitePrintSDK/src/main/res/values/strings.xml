@@ -34,7 +34,7 @@
     <string name="drawer_open">Drawer open</string>
     <string name="drawer_closed">Drawer closed</string>
 
-    <string name="alert_dialog_title_pack_not_full_format_string">You have selected %1$d %2$s</string>
+    <string name="alert_dialog_title_pack_not_full_format_string">You have selected %s</string>
     <string name="alert_dialog_message_pack_not_full_format_string" tools:ignore="PluralsCandidate">You can add %d more for the same price</string>
 
     <string name="alert_dialog_title_oops">Oops!</string>
@@ -213,7 +213,7 @@
     <string name="image_selection_title_format_string">%1$s - %2$d / %3$d</string>
     <string name="image_selection_pack_title_format_string" tools:ignore="PluralsCandidate">#%1$d Pack of %2$d %3$s</string>
 
-    <string name="image_selection_clear_photos_format_string">Clear %1$d %2$s</string>
+    <string name="image_selection_clear_photos_format_string">Clear %s</string>
 
     <string name="edit_image_prompt_text">Reposition the photo</string>
 
@@ -307,7 +307,8 @@
     <string name="title_activity_order_receipt">Order Receipt</string>
     <string name="title_activity_payment">Payment</string>
     <string name="title_activity_address_book">Address Book</string>
-    <string name="add_address">Add Address</string>
+    <string name="add_address">Add address</string>
+    <string name="title_activity_address_add">Enter Address</string>
     <string name="title_activity_address_edit">Edit Address</string>
     <string name="action_save_address">Save Address</string>
 

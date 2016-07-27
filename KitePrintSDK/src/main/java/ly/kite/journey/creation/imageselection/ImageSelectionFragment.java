@@ -600,7 +600,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
    *****************************************************/
   private void setClearPhotosButtonText()
     {
-    String buttonText = getString( R.string.image_selection_clear_photos_format_string, mUncheckedImagesCount, getResources().getQuantityString( R.plurals.Photo_plurals, mUncheckedImagesCount ) );
+    String buttonText = getString( R.string.image_selection_clear_photos_format_string, getResources().getQuantityString( R.plurals.Photo_plurals, mUncheckedImagesCount, mUncheckedImagesCount ) );
 
     mClearPhotosButton.setText( buttonText );
     }

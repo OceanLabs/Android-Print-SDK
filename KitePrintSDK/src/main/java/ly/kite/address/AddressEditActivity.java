@@ -109,13 +109,15 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
     mProceedButton           = (Button)findViewById( R.id.proceed_overlay_button );
 
 
+    setTitle( R.string.title_activity_address_edit );
+
     if ( mAddress != null )
       {
       setTitle( R.string.title_activity_address_edit );
       }
     else
       {
-      setTitle( R.string.manual_add_address );
+      setTitle( R.string.title_activity_address_add );
 
       mAddress = new Address();
       mAddress.setCountry( Country.getInstance( Locale.getDefault() ) );

@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <string name="unit_centimeters">centimeter</string>
+    <string name="unit_inches">tommer</string>
+
+    <string name="title_choose_product_group">Trykkeri</string>
+    <string name="title_create_phone_case">Lav mobiletui</string>
+    <string name="title_image_source">Vælg billeder</string>
+    <string name="title_photobook">Fotobog</string>
+    <string name="title_basket">Kurv</string>
+    <string name="title_payment_sandbox">Betaling (Snadbox))</string>
+    <string name="title_payment">Betaling</string>
+    <string name="title_payment_source_sandbox">Betalingskilde (Sandbox)</string>
+    <string name="title_payment_source">Betalingskilde</string>
+    <string name="title_order_history">Ordrehistorik</string>
+
+    <string name="drawer_open">Skuffe åben</string>
+    <string name="drawer_closed">Skuffe lukket</string>
+
+    <string name="alert_dialog_title_pack_not_full_format_string">Du har valgt %s</string>
+    <string name="alert_dialog_message_pack_not_full_format_string" tools:ignore="PluralsCandidate">Du kan tilføje %d mere til den samme pris</string>
+
+    <string name="alert_dialog_title_oops">Ups!</string>
+    <string name="alert_dialog_message_pricing_format_string">Der opstod et problem med nedhentingen af priser fra serveren:\n%1$s</string>
+
+    <string name="alert_dialog_title_no_intent">Intern fejl</string>
+    <string name="alert_dialog_message_no_intent">Der opstod en fejl: ingen intent blev fundet. Tjek venligst loggen for flere detaljer.</string>
+
+    <string name="alert_dialog_title_no_arguments">Intern fejl</string>
+    <string name="alert_dialog_message_no_arguments">Der opstod en fejl: ingen parametre blev fundet. Tjek venligst loggen for flere detaljer.</string>
+
+    <string name="alert_dialog_title_no_asset_list">Intern fejl</string>
+    <string name="alert_dialog_message_no_asset_list">Der opstod en fejl: ingen aktiverliste blev fundet. Tjek venligst loggen for flere detaljer.</string>
+
+    <string name="alert_dialog_title_no_asset">Intern fejl</string>
+    <string name="alert_dialog_message_no_asset">Der opstod en fejl: ingen aktiver blev fundet. Tjek venligst loggen for flere detaljer.</string>
+
+    <string name="alert_dialog_title_no_mask">Intern fejl</string>
+    <string name="alert_dialog_message_no_mask">Der opstod en fejl: ingen maske blev fundet. Tjek venligst loggen for flere detaljer.</string>
+
+    <string name="alert_dialog_title_no_product">Intern fejl</string>
+    <string name="alert_dialog_message_no_product">Der opstod en fejl: produktet blev ikke fundet. Tjek venligst loggen for flere detaljer.</string>
+
+    <string name="alert_dialog_title_error_retrieving_products">Fejl under henting af produkter</string>
+    <string name="alert_dialog_message_error_retrieving_products">Der opstod en fejl under hentning af produkterne. Tjek venligst internetforbindelsen eller loggen for flere detaljer.</string>
+
+    <string name="alert_dialog_title_no_product_group_label">Ingen produktgruppe</string>
+    <string name="alert_dialog_message_no_product_group_label">Der opstod en fejl: ingen produktgruppe blev fundet. Tjek venligst loggen for flere detaljer.</string>
+
+    <string name="alert_dialog_title_product_not_found">Produktet blev ikke fundet</string>
+    <string name="alert_dialog_message_product_not_found">Intet produkt blev fundet. Tjek venligst loggen for flere detaljer.</string>
+
+    <string name="alert_dialog_title_create_order">Opret ordre</string>
+    <string name="alert_dialog_message_no_cropped_image_asset">Der opstod en fejl: det beskårne billede blev ikke opret.</string>
+
+    <string name="alert_dialog_title_load_image">Kunne ikke indlæse billede</string>
+    <string name="alert_dialog_message_could_not_load_image">Billedet kunne ikke indlæses. Tjek venligst internetforbindelsen eller loggen for flere detaljer.</string>
+
+    <string name="alert_dialog_title_delete_photo">Slet billede?</string>
+    <string name="alert_dialog_message_delete_photo">Er du sikker på, at du vil slette dette billede?</string>
+    <string name="alert_dialog_delete_photo_cancel_text">Behold</string>
+    <string name="alert_dialog_delete_photo_confirm_text">Slet</string>
+
+    <string name="alert_dialog_message_no_images_selected">Slet venligst nogle billeder først.</string>
+
+    <string name="alert_dialog_message_no_recipient">Indtast venligst en modtagers navn</string>
+    <string name="alert_dialog_message_no_line1">Udfyld venligst linje 1 i adressen</string>
+    <string name="alert_dialog_message_no_postal_code">Udfyld venligst dit postnummer / ZIP kode</string>
+    <string name="alert_dialog_message_no_email_address">Indtast venligst en e-mail adresse</string>
+
+    <string name="alert_dialog_title_invalid_delivery_address">Ugyldig leveringsadresse</string>
+    <string name="alert_dialog_message_invalid_delivery_address">Vælg venligst en leveringsadresse</string>
+
+    <string name="alert_dialog_title_invalid_email_address">Ugyldig e-mail adresse</string>
+    <string name="alert_dialog_message_invalid_email_address">Indtast veligst en gyldig e-mail adresse</string>
+
+    <string name="alert_dialog_title_invalid_phone_number">Ugyldigt telefonnummer</string>
+    <string name="alert_dialog_message_invalid_phone_number">Indtast venligst et gyldigt telefonnummer</string>
+
+    <string name="alert_dialog_message_connectivity">Tjek venligst internetforbindelsen og prøv igen</string>
+
+    <string name="alert_dialog_title_processing">@string/Processing_</string>
+    <string name="alert_dialog_message_processing">Et øjeblik…</string>
+
+    <string name="alert_dialog_title_end_customer_session">Afslut session</string>
+    <string name="alert_dialog_message_end_customer_session">Er du sikker på, at du vil afslutte sessionen?</string>
+
+    <string name="alert_dialog_title_remove_item">Fjern vare</string>
+    <string name="alert_dialog_message_remove_item">Bekræft venligst at du ønsker at fjerne denne vare fra kurven.</string>
+
+    <string name="alert_dialog_title_empty_basket">Tom kurv</string>
+    <string name="alert_dialog_message_empty_basket">Din kurv er i øjeblikket tom. Tilføj venligst en vare før du går videre til kassen.</string>
+
+    <string name="alert_dialog_message_uploading_images">Overførsel af billeder.</string>
+
+    <string name="alert_dialog_message_no_payment_id">Der blev ikke fundet noget id til bevis af betaling</string>
+    <string name="alert_dialog_message_no_proof_of_payment">Der blev ikke fundet noget bevis for betaling i betalingsbekræftelsen</string>
+    <string name="alert_dialog_message_no_paypal_confirmation">Ingen betalingsbekræftelse er modtaget fra PayPal</string>
+    <string name="alert_dialog_message_card_expired">Beklager, det ser ud som om, at kortet er udløbet. Prøv venligst igen.</string>
+    <string name="alert_dialog_message_card_not_recognised">Beklager, vi kunne ikke genkende dit kort. Prøv venligst igen manuelt, hvis det er nødvendigt.</string>
+
+    <string name="alert_dialog_item_pay_with_new_card">Betal med nyt kort</string>
+    <string name="alert_dialog_item_pay_with_existing_card_format_string">Betal med kort der ender på %1$s</string>
+
+    <string name="log_out_warning">Du vil blive logget ud automatisk om</string>
+    <string name="time_remaining_format_string" translatable="false">%1$s</string>
+
+    <string name="progress_dialog_title_add_to_basket">Tilføjer til kurv</string>
+    <string name="progress_dialog_title_updating_basket">Opdaterer kurv</string>
+
+    <string name="button_symbol_increment">+</string>
+    <string name="button_symbol_decrement">-</string>
+
+    <string name="add_more">Tilføj mere</string>
+    <string name="Cancel">Fortryd</string>
+    <string name="Choose_Delivery_Address">Vælg leveringsadresse</string>
+    <string name="Continue_Shopping">Fortsæt indkøb</string>
+    <string name="Next_Customer">Næste kunde</string>
+    <string name="Country">Land</string>
+    <string name="Description">Beskrivelse</string>
+    <string name="Details">Detaljer</string>
+    <string name="Done">Færdig</string>
+    <string name="Edit">Rediger</string>
+    <string name="Email">E-mail</string>
+    <string name="End_Session">Afslut session</string>
+    <string name="Flip">Vend</string>
+    <string name="Free">Gratis</string>
+    <string name="ITEM">VARE</string>
+    <string name="Keep">Behold</string>
+    <string name="Loading">Loading</string>
+    <string name="Log_Out">Log ud</string>
+    <string name="Next">Næste</string>
+    <string name="No_Results">Ingen resultater</string>
+    <string name="OK">OK</string>
+    <string name="Order_Id">Ordre Id</string>
+    <string name="ORDER_ID">ORDRE ID</string>
+    <string name="Order_Summary">Ordre opsumering</string>
+    <string name="ORDER_SUMMARY">ORDRE OPSUMERING</string>
+    <string name="Pay">Betal</string>
+    <string name="Payment_Id">Betalings Id</string>
+    <string name="PAYMENT_ID">BETALINGS ID</string>
+    <string name="PRICE">PRIS</string>
+    <string name="print_these">Print disse</string>
+    <string name="Processing_">Arbejder…</string>
+    <string name="Promotional_Discount">Promotions rabat</string>
+    <string name="Remove">Fjern</string>
+    <string name="Rotate">Roter</string>
+    <string name="Quantity">Antal</string>
+    <string name="QUANTITY">ANTAL</string>
+    <string name="Retry">Forsøg igen</string>
+    <string name="Save">Gem</string>
+    <string name="Select_Image">Vælg billede</string>
+    <string name="Shipping">Forsendelse</string>
+    <string name="Size">Størrelse</string>
+    <string name="Total">Total</string>
+
+    <string name="image_source_device">Kamera</string>
+    <string name="image_source_instagram">Instagram</string>
+    <string name="image_source_facebook">Facebook</string>
+    <string name="image_source_from_phone">Upload fra telefon</string>
+
+    <string name="select_photo_from_device">Vælg foto fra kamera</string>
+    <string name="select_photo_from_instagram">Vælg foto fra Instagram</string>
+    <string name="select_photo_from_facebook">Vælg foto fra Facebook</string>
+    <string name="upload_photo_from_phone">Upload foto fra telefon</string>
+
+    <string name="destination_description_gbr">UK</string>
+    <string name="destination_description_europe">Europa</string>
+    <string name="destination_description_rest_of_world">Resten af verden</string>
+
+    <string name="group_or_product_placeholder_image_url">https://s3.amazonaws.com/sdk-static/product_photography/placeholder.png</string>
+
+    <string name="product_quantity_format_string">Pakke med %d</string>
+    <string name="product_size_format_string_float">%1$.1f x %2$.1f %3$s</string>
+    <string name="product_size_format_string_int">%1$.0f x %2$.0f %3$s</string>
+
+    <string name="product_shipping_format_string">%1$s: %2$s</string>
+    <string name="product_free_shipping">gratis</string>
+    <string name="product_shipping_summary_format_string">Forsendelse: %s</string>
+
+    <string name="product_free_worldwide_shipping">Fri forsendelse til hele verden</string>
+
+    <string name="product_overview_guarantee_title">Kviltetsgaranti</string>
+
+    <string name="product_overview_start_button_text">Begynd at skabe</string>
+
+    <string name="phone_case_proceed_button_text">Næste</string>
+
+    <string name="photobook_instructions"><b>Klik</b> på billedet for at redigere,\n<b>Hold</b> for at genbestille.</string>
+
+    <string name="address_book_empty">Adressebogen er tom</string>
+
+    <string name="image_source_prompt">Tilføj billeder ved at klikke på en af mulighederne</string>
+
+    <string name="image_selection_title_format_string">%1$s - %2$d / %3$d</string>
+    <string name="image_selection_pack_title_format_string" tools:ignore="PluralsCandidate">#%1$d Pakke med %2$d %3$s</string>
+
+    <string name="image_selection_clear_photos_format_string">Fjern %s</string>
+
+    <string name="edit_image_prompt_text">Flyt billedet</string>
+
+    <string name="image_selection_proceed_button_text">Gennemgang &amp; redigere</string>
+
+    <string name="review_and_edit_title_format_string">%1$d / %2$d</string>
+    <string name="review_and_edit_proceed_button_text">Bekræft</string>
+
+    <string name="edit_image_title">Rediger billede</string>
+
+    <string name="basket_empty">Kurven er tom</string>
+    <string name="basket_left_button_text">Fortsæt indkøb</string>
+    <string name="basket_right_button_text">Tjek ud</string>
+
+    <string name="address_hint_text_recipient">Navn</string>
+    <string name="address_hint_text_line_1">Linje 1</string>
+    <string name="address_hint_text_line_2">Linje 2</string>
+    <string name="address_hint_text_city">By</string>
+    <string name="address_hint_text_county_or_state">Region</string>
+    <string name="address_hint_text_postcode_or_zip">Postnummer</string>
+    <string name="address_hint_text_email" translatable="false">@string/Email</string>
+
+    <string name="shipping_delivery_address_button_text">Vælg leveringsadresse</string>
+    <string name="shipping_email_hint_text" translatable="false">@string/Email</string>
+    <string name="shipping_phone_hint_text">Telefonnummer</string>
+    <string name="shipping_email_reason">Din e-mail er påkrævet, så vi kan sende dig ordrebekræftelses opdateringer.</string>
+    <string name="shipping_phone_reason">Dit telefonnummer er påkrævet i tilfælde af, at der skulle opstå problemer med leveringen.</string>
+    <string name="shipping_proceed_button_text">@string/Done</string>
+
+    <string name="address_search_prompt">Søg efter ovenstående adresse</string>
+
+    <string name="address_search_hint_format_string">Søg %1$s</string>
+    <string name="address_search_empty_results">Søg efter ovenstående adresse</string>
+    <string name="address_search_dialog_title">Henter detaljer</string>
+    <string name="address_search_dialog_message">Henter adressedetaljer</string>
+    <string name="address_search_no_results">Ingen resultater fundet</string>
+
+    <string name="button_text_edit_address">Rediger adresse</string>
+    <string name="button_text_delete_address">Slet adresses</string>
+
+    <string name="address_edit_proceed_button_text">Gem</string>
+
+    <string name="powered_by">drevet af Kite.ly</string>
+
+    <string name="payment_promo_hint">Tilbudskode</string>
+    <string name="payment_promo_button_text_apply">Tilføj</string>
+    <string name="payment_promo_button_text_clear">Slet</string>
+    <string name="payment_credit_card_button_text">Kreditkort</string>
+    <string name="payment_credit_card_button_text_free">Bestil gratis!</string>
+    <string name="payment_paypal_button_text">PayPal</string>
+
+
+    <string name="send_email_chooser_title">Send e-maill</string>
+
+    <string name="feedback_email_recipient">info@kite.ly</string>
+    <string name="feedback_email_subject">Kite Android App Support</string>
+    <string name="feedback_email_text">Please tell us your full name:\n\nPlease provide any voucher code used in your transaction:\n\nWhat is your phone number (in case we need to call and discuss your issue)?\n\nWhat is the issue you are having with the Kite Sample app?\n\nWhich Android device (phone/tablet) are you using?\n\n================================\n\nThanks a lot.\nWe’ll be sure to get back to you just as soon as we can.\nKite Team</string>
+
+    <string name="order_failure_message">Noget gik galt.\nPrøv venligst igen.</string>
+
+    <string name="Card_Number">Kortnummer</string>
+    <string name="Expires">Udløber</string>
+    <string name="CVV">CVV</string>
+
+    <string name="card_error_invalid_number">Ugyldigt kortnummer</string>
+    <string name="card_error_invalid_expiry_date">Ugyldig udløbsdato</string>
+    <string name="card_error_invalid_cvv">Ugyldig CVV</string>
+
+    <string name="order_submission_message_uploading">Uploader billeder</string>
+    <string name="order_submission_message_posted">Uploadet</string>
+    <string name="order_submission_message_received">Modtaget</string>
+    <string name="order_submission_message_accepted">Accepteret</string>
+    <string name="order_submission_message_validated">Valideret</string>
+    <string name="order_submission_message_processed">Forarbejdet</string>
+
+    <string name="alert_dialog_title_order_submission_error">Ordreindsendelses fejl</string>
+    <string name="alert_dialog_title_order_timeout">Timeout i ordreindsendelse</string>
+    <string name="alert_dialog_message_order_timeout">Din ordre fremstår ikke som bearbejdet endnu. Det kan skyldes at serverne er travle og at betalingen derfor tager lang tid. Vil du vente lidt længere eller give op og gøre noget andet?</string>
+    <string name="order_timeout_button_wait">Vent</string>
+    <string name="order_timeout_button_give_up">Giv op</string>
+
+    <string name="alert_dialog_title_order_cancelled">Ordren er annulleret</string>
+    <string name="alert_dialog_message_order_cancelled">Noget gik galt - din ordre ser ud til at være blevet annulleret under indsendelsen.</string>
+
+    <string name="action_settings">Indstillinger</string>
+    <string name="title_activity_checkout">Forsendelses detaljer</string>
+    <string name="title_activity_order_receipt">Ordremodtagelse</string>
+    <string name="title_activity_payment">Betaling</string>
+    <string name="title_activity_address_book">Adressebog</string>
+    <string name="add_address">Tilføj adresse</string>
+    <string name="title_activity_address_add">Opret adresse</string>
+    <string name="title_activity_address_edit">Rediger adresse</string>
+    <string name="action_save_address">Gem adresse</string>
+
+    <plurals name="Photo_plurals">
+        <item quantity="zero">%d Billeder</item>
+        <item quantity="one">%d Billede</item>
+        <item quantity="two">%d Billeder</item>
+        <item quantity="few">%d Billeder</item>
+        <item quantity="many">%d Billeder</item>
+        <item quantity="other">%d Billeder</item>
+    </plurals>
+
+    <plurals name="photo_plurals">
+        <item quantity="zero">%d billeder</item>
+        <item quantity="one">%d billede</item>
+        <item quantity="two">%d billeder</item>
+        <item quantity="few">%d billeder</item>
+        <item quantity="many">%d billeder</item>
+        <item quantity="other">%d billeder</item>
+    </plurals>
+
+</resources>

@@ -737,7 +737,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
   protected void displayNotFullDialog( int expectedImageCount, int actualImageCount, Runnable proceedRunnable )
     {
     mKiteActivity.displayModalDialog(
-      getString( R.string.alert_dialog_title_pack_not_full_format_string, actualImageCount, getResources().getQuantityString( R.plurals.photo_plurals, actualImageCount ) ),
+      getString( R.string.alert_dialog_title_pack_not_full_format_string, getResources().getQuantityString( R.plurals.photo_plurals, actualImageCount, actualImageCount ) ),
       getString( R.string.alert_dialog_message_pack_not_full_format_string, expectedImageCount - actualImageCount ),
       R.string.print_these,
       proceedRunnable,

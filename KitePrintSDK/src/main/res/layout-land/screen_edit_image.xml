@@ -50,6 +50,13 @@
 
     </LinearLayout>
 
+    <ProgressBar
+        android:id="@+id/progress_spinner"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
     <ly.kite.widget.PromptTextFrame
         android:id="@+id/prompt_text_frame"
         android:layout_width="fill_parent"

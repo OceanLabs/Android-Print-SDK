@@ -1,0 +1,6 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <string name="Loading_">Uploader…</string>
+    <string name="Done">Færdig</string>
+
+</resources>
