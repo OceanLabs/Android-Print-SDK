@@ -55,7 +55,7 @@
         android:layout_weight="1.0">
         <LinearLayout
             android:layout_gravity="left|center_vertical"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
             <ly.kite.widget.CustomTypefaceTextView

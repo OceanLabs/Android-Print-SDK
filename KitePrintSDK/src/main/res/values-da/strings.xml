@@ -104,7 +104,6 @@
     <string name="alert_dialog_item_pay_with_existing_card_format_string">Betal med kort der ender på %1$s</string>
 
     <string name="log_out_warning">Du vil blive logget ud automatisk om</string>
-    <string name="time_remaining_format_string" translatable="false">%1$s</string>
 
     <string name="progress_dialog_title_add_to_basket">Tilføjer til kurv</string>
     <string name="progress_dialog_title_updating_basket">Opdaterer kurv</string>
@@ -217,10 +216,8 @@
     <string name="address_hint_text_city">By</string>
     <string name="address_hint_text_county_or_state">Region</string>
     <string name="address_hint_text_postcode_or_zip">Postnummer</string>
-    <string name="address_hint_text_email" translatable="false">@string/Email</string>
 
     <string name="shipping_delivery_address_button_text">Vælg leveringsadresse</string>
-    <string name="shipping_email_hint_text" translatable="false">@string/Email</string>
     <string name="shipping_phone_hint_text">Telefonnummer</string>
     <string name="shipping_email_reason">Din e-mail er påkrævet, så vi kan sende dig ordrebekræftelses opdateringer.</string>
     <string name="shipping_phone_reason">Dit telefonnummer er påkrævet i tilfælde af, at der skulle opstå problemer med leveringen.</string>
