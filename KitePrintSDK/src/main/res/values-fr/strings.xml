@@ -202,7 +202,6 @@
     <string name="search_for_address">Rechercher nouvelle adresse</string>
     <string name="title_activity_address_add">Créer une nouvelle adresse</string>
     <string name="title_activity_address_edit">Modifier l\'adresse</string>
-    <string name="title_activity_address_search">Rechercher une adresse</string>
     <string name="action_save_address">Enregistrer adresse</string>
     <string name="search_title">Rechercher</string>
     <string name="country_search_hint">Recherche des adresses</string>

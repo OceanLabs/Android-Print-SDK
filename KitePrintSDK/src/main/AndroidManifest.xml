@@ -66,11 +66,6 @@
             android:theme="@style/Theme.KiteSDK.AddressEdit"
             android:windowSoftInputMode="adjustResize"/>
 
-        <activity
-            android:name=".address.AddressSearchActivity"
-            android:label="@string/title_activity_address_search"
-            android:theme="@style/Theme.KiteSDK.AddressSearch"/>
-
 
         <!-- Kite SDK services -->
 
