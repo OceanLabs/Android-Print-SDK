@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import ly.kite.KiteSDK;
 import ly.kite.address.Address;
 import ly.kite.api.AssetUploadRequest;
 import ly.kite.api.SubmitOrderRequest;
@@ -305,6 +306,13 @@ public class Order implements Parcelable /* , Serializable */
         return userData;
     }
 
+
+    /*****************************************************
+     *
+     * Returns the JSON representation of this order for
+     * submission to the print request endpoint.
+     *
+     *****************************************************/
     public JSONObject getJSONRepresentation()
       {
       try
@@ -360,7 +368,9 @@ public class Order implements Parcelable /* , Serializable */
           {
           for ( String parameterName : mAdditionalParametersMap.keySet() )
             {
-            json.put( parameterName, mAdditionalParametersMap.get( parameterName ) );
+            String parameterValue = mAdditionalParametersMap.get( parameterName );
+
+            json.put( parameterName, parameterValue );
             }
           }
 
@@ -394,6 +404,12 @@ public class Order implements Parcelable /* , Serializable */
           sajson.put( "postcode", shippingAddress.getZipOrPostalCode() );
           sajson.put( "country_code", shippingAddress.getCountry().iso3Code() );
           json.put( "shipping_address", sajson );
+          }
+
+
+        if ( KiteSDK.DEBUG_PAYMENT_KEYS )
+          {
+          Log.d( LOG_TAG, "Create order JSON:\n" + json.toString() );
           }
 
         return json;

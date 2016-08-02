@@ -222,7 +222,7 @@ public class StripeCreditCardFragment extends ACreditCardDialogFragment implemen
 
           if ( mActivity instanceof PaymentActivity )
             {
-            ( (PaymentActivity)mActivity ).submitOrderForPrinting( token.getId(), Analytics.PAYMENT_METHOD_CREDIT_CARD );
+            ( (PaymentActivity)mActivity ).submitOrderForPrinting( token.getId(), KiteSDK.getInstance( getActivity() ).getStripeAccountId(), Analytics.PAYMENT_METHOD_CREDIT_CARD );
             }
           }
 

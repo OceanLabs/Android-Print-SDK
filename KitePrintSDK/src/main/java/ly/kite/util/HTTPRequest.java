@@ -71,7 +71,7 @@ public class HTTPRequest
   @SuppressWarnings( "unused" )
   static private   final String   LOG_TAG           = "HTTPRequest";
 
-  static protected final boolean  DEBUGGING_ENABLED = true;
+  static protected final boolean  DEBUGGING_ENABLED = false;
 
 
   ////////// Static Variable(s) //////////

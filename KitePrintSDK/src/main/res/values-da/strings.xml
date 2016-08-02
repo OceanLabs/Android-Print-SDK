@@ -22,7 +22,7 @@
     <string name="alert_dialog_message_pack_not_full_format_string" tools:ignore="PluralsCandidate">Du kan tilføje %d mere til den samme pris</string>
 
     <string name="alert_dialog_title_oops">Ups!</string>
-    <string name="alert_dialog_message_pricing_format_string">Der opstod et problem med nedhentingen af priser fra serveren:\n%1$s</string>
+    <string name="alert_dialog_message_pricing_format_string">Der opstod et problem med nedhentingen af priser fra serveren:\n%s</string>
 
     <string name="alert_dialog_title_no_intent">Intern fejl</string>
     <string name="alert_dialog_message_no_intent">Der opstod en fejl: ingen intent blev fundet. Tjek venligst loggen for flere detaljer.</string>

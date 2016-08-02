@@ -89,7 +89,9 @@ public class KiteSDK
 
   static private final String LOG_TAG                                              = "KiteSDK";
 
-  static public  final String SDK_VERSION                                          = "5.2.7";
+  static public  final boolean DEBUG_PAYMENT_KEYS                                  = true;
+
+  static public  final String SDK_VERSION                                          = "5.2.8";
 
   static public  final String IMAGE_CATEGORY_APP                                   = "app";
   static public  final String IMAGE_CATEGORY_PRODUCT_ITEM                          = "product_item";
@@ -116,9 +118,10 @@ public class KiteSDK
   static private final String PARAMETER_NAME_PAYPAL_ENVIRONMENT                    = "paypal_environment";
   static private final String PARAMETER_NAME_PAYPAL_API_ENDPOINT                   = "paypal_api_endpoint";
   static private final String PARAMETER_NAME_PAYPAL_CLIENT_ID                      = "paypay_client_id";
-  static private final String PARAMETER_NAME_PAYPAL_PASSWORD                       = "paypal_password";
+  static private final String PARAMETER_NAME_PAYPAL_ACCOUNT_ID                     = "paypay_account_id";
 
   static private final String PARAMETER_NAME_STRIPE_PUBLIC_KEY                     = "stripe_public_key";
+  static private final String PARAMETER_NAME_STRIPE_ACCOUNT_ID                     = "stripe_account_id";
 
   static private final String PARAMETER_NAME_INSTAGRAM_CLIENT_ID                   = "instagram_client_id";
   static private final String PARAMETER_NAME_INSTAGRAM_REDIRECT_URI                = "instagram_redirect_uri";
@@ -148,11 +151,11 @@ public class KiteSDK
 
   static public  final String PAYPAL_LIVE_API_ENDPOINT                             = "api.paypal.com";
   static public  final String PAYPAL_LIVE_CLIENT_ID                                = "ASYVBBCHF_KwVUstugKy4qvpQaPlUeE_5beKRJHpIP2d3SA_jZrsaUDTmLQY";
-  static public  final String PAYPAL_LIVE_PASSWORD                                 = "";
 
   static public  final String PAYPAL_SANDBOX_API_ENDPOINT                          = "api.sandbox.paypal.com";
   static public  final String PAYPAL_SANDBOX_CLIENT_ID                             = "AcEcBRDxqcCKiikjm05FyD4Sfi4pkNP98AYN67sr3_yZdBe23xEk0qhdhZLM";
-  static public  final String PAYPAL_SANDBOX_PASSWORD                              = "";
+
+  static public  final String PAYPAL_PASSWORD                                      = "";
 
   static public  final String CLASS_NAMES_SEPARATOR                                = ",";
 
@@ -562,6 +565,17 @@ public class KiteSDK
 
   /*****************************************************
    *
+   * Returns the environment name.
+   *
+   *****************************************************/
+  public String getEnvironmentName()
+    {
+    return ( mEnvironment.getName() );
+    }
+
+
+  /*****************************************************
+   *
    * Ends the customer session.
    *
    *****************************************************/
@@ -663,15 +677,15 @@ public class KiteSDK
     }
 
 
-  /*****************************************************
-   *
-   * Returns the environment.
-   *
-   *****************************************************/
-  public Environment getEnvironment()
-    {
-    return ( mEnvironment );
-    }
+//  /*****************************************************
+//   *
+//   * Returns the environment.
+//   *
+//   *****************************************************/
+//  public Environment getEnvironment()
+//    {
+//    return ( mEnvironment );
+//    }
 
 
   /*****************************************************
@@ -968,11 +982,42 @@ public class KiteSDK
 
   /*****************************************************
    *
-   * Sets the Stripe public key.
+   * Sets the permanent Stripe public key.
    *
    *****************************************************/
-  public KiteSDK setStripePublicKey( String stripePublicKey )
+  public KiteSDK setPermanentStripeKey( String publicKey, String accountId )
     {
+    if ( DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "setPermanentStripeKey( publicKey = " + publicKey + ", accountId = " + accountId + " )" );
+
+    setSDKParameter( Scope.PERMANENT, PARAMETER_NAME_STRIPE_PUBLIC_KEY, publicKey );
+    setSDKParameter( Scope.PERMANENT, PARAMETER_NAME_STRIPE_ACCOUNT_ID, accountId );
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Removes the permanent Stripe client id / account.
+   *
+   *****************************************************/
+  public void removePermanentStripeKey()
+    {
+    if ( DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "removePermanentStripeKey()" );
+
+    setPermanentStripeKey( null, null );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the session Stripe public key.
+   *
+   *****************************************************/
+  public KiteSDK setSessionStripePublicKey( String stripePublicKey )
+    {
+    if ( DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "setSessionStripePublicKey( stripePublicKey = " + stripePublicKey + " )" );
+
     setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_STRIPE_PUBLIC_KEY, stripePublicKey );
 
     return ( this );
@@ -981,12 +1026,169 @@ public class KiteSDK
 
   /*****************************************************
    *
+   * Sets the Stripe public key.
+   *
+   *****************************************************/
+  @Deprecated
+  public KiteSDK setStripePublicKey( String stripePublicKey )
+    {
+    if ( DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "getStripePublicKey( stripePublicKey = " + stripePublicKey + " )" );
+
+    return ( setSessionStripePublicKey( stripePublicKey ) );
+    }
+
+
+  /*****************************************************
+   *
    * Returns the Stripe public key.
+   *
+   * We first check for a permanent key, before falling back
+   * to a session one.
    *
    *****************************************************/
   public String getStripePublicKey()
     {
-    return ( getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_STRIPE_PUBLIC_KEY, null ) );
+    if ( DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "getStripePublicKey()" );
+
+    String permanentKey = getStringSDKParameter( Scope.PERMANENT, PARAMETER_NAME_STRIPE_PUBLIC_KEY, null );
+
+    if ( DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "  permanent key = " + permanentKey );
+
+    if ( permanentKey != null && ! permanentKey.trim().equals( "" ) )
+      {
+      return ( permanentKey );
+      }
+
+    String sessionKey = getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_STRIPE_PUBLIC_KEY, null );
+
+    if ( DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "  session key = " + sessionKey );
+
+    return ( sessionKey );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns any Stripe account id.
+   *
+   *****************************************************/
+  public String getStripeAccountId()
+    {
+    if ( DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "getStripeAccountId()" );
+
+    String accountId = getStringSDKParameter( Scope.PERMANENT, PARAMETER_NAME_STRIPE_ACCOUNT_ID, null );
+
+    if ( DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "  account id = " + accountId );
+
+    return ( accountId );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the permanent PayPal client id / account.
+   *
+   *****************************************************/
+  public KiteSDK setPermanentPayPalKey( String clientId, String accountId )
+    {
+    if ( DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "setPermanentPayPalKey( clientId = " + clientId + ", accountId = " + accountId + " )" );
+
+    setSDKParameter( Scope.PERMANENT, PARAMETER_NAME_PAYPAL_CLIENT_ID,  clientId );
+    setSDKParameter( Scope.PERMANENT, PARAMETER_NAME_PAYPAL_ACCOUNT_ID, accountId );
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Removes the permanent PayPal client id / account.
+   *
+   *****************************************************/
+  public void removePermanentPayPalKey()
+    {
+    if ( DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "removePermanentPayPalKey()" );
+
+    setPermanentPayPalKey( null, null );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the PayPal environment.
+   *
+   *****************************************************/
+  public String getPayPalEnvironment()
+    {
+    return ( mEnvironment.getPayPalEnvironment() );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the PayPal API endpoint.
+   *
+   *****************************************************/
+  public String getPayPalAPIEndpoint()
+    {
+    return ( mEnvironment.getAPIEndpoint() );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the PayPal client id.
+   *
+   * We first check for a permanent key, before falling back
+   * to a session one.
+   *
+   *****************************************************/
+  public String getPayPalClientId()
+    {
+    if ( DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "getPayPalClientId()" );
+
+    String permanentId = getStringSDKParameter( Scope.PERMANENT, PARAMETER_NAME_PAYPAL_CLIENT_ID, null );
+
+    if ( DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "  permanent id = " + permanentId );
+
+    if ( permanentId != null && ! permanentId.trim().equals( "" ) )
+      {
+      return ( permanentId );
+      }
+
+    String sessionId = getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYPAL_CLIENT_ID, null );
+
+    if ( DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "  session id = " + sessionId );
+
+    return ( sessionId );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns any PayPal account id.
+   *
+   *****************************************************/
+  public String getPayPalAccountId()
+    {
+    if ( DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "getPayPalAccountId()" );
+
+    String accountId = getStringSDKParameter( Scope.PERMANENT, PARAMETER_NAME_PAYPAL_ACCOUNT_ID, null );
+
+    if ( DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "  account id = " + accountId );
+
+    return ( accountId );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the PayPal auth token.
+   *
+   *****************************************************/
+  public String getPayPalAuthToken()
+    {
+    return ( Base64.encodeToString( ( getPayPalClientId() + ":" + PAYPAL_PASSWORD ).getBytes(), Base64.NO_WRAP ) );
     }
 
 
@@ -1328,7 +1530,6 @@ public class KiteSDK
     public String getPayPalEnvironment();
     public String getPayPalAPIEndpoint();
     public String getPayPalClientId();
-    public String getPayPalPassword();
     }
 
 
@@ -1345,7 +1546,6 @@ public class KiteSDK
     private final String  mPayPalEnvironment;
     private final String  mPayPalAPIEndpoint;
     private final String  mPayPalClientId;
-    private final String  mPayPalPassword;
 
 
     public static final Parcelable.Creator<Environment> CREATOR =
@@ -1372,7 +1572,7 @@ public class KiteSDK
       }
 
 
-    Environment( String name, String apiEndpoint, String paymentActivityEnvironment, String payPalEnvironment, String payPalAPIEndpoint, String payPalClientId, String payPalPassword )
+    Environment( String name, String apiEndpoint, String paymentActivityEnvironment, String payPalEnvironment, String payPalAPIEndpoint, String payPalClientId )
       {
       mName                       = name;
       mAPIEndpoint                = apiEndpoint;
@@ -1380,7 +1580,6 @@ public class KiteSDK
       mPayPalEnvironment          = payPalEnvironment;
       mPayPalAPIEndpoint          = payPalAPIEndpoint;
       mPayPalClientId             = payPalClientId;
-      mPayPalPassword             = payPalPassword;
       }
 
 
@@ -1392,7 +1591,6 @@ public class KiteSDK
       mPayPalEnvironment          = templateEnvironment.getPayPalEnvironment();
       mPayPalAPIEndpoint          = templateEnvironment.getPayPalAPIEndpoint();
       mPayPalClientId             = payPalClientId;
-      mPayPalPassword             = templateEnvironment.getPayPalPassword();
       }
 
 
@@ -1404,7 +1602,6 @@ public class KiteSDK
       mPayPalEnvironment          = templateEnvironment.getPayPalEnvironment();
       mPayPalAPIEndpoint          = templateEnvironment.getPayPalAPIEndpoint();
       mPayPalClientId             = templateEnvironment.getPayPalClientId();
-      mPayPalPassword             = templateEnvironment.getPayPalPassword();
       }
 
 
@@ -1416,7 +1613,6 @@ public class KiteSDK
       mPayPalEnvironment          = kiteSDK.getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYPAL_ENVIRONMENT,           null );
       mPayPalAPIEndpoint          = kiteSDK.getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYPAL_API_ENDPOINT,          null );
       mPayPalClientId             = kiteSDK.getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYPAL_CLIENT_ID,             null );
-      mPayPalPassword             = kiteSDK.getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYPAL_PASSWORD,              null );
       }
 
 
@@ -1428,7 +1624,6 @@ public class KiteSDK
       mPayPalEnvironment          = parcel.readString();
       mPayPalAPIEndpoint          = parcel.readString();
       mPayPalClientId             = parcel.readString();
-      mPayPalPassword             = parcel.readString();
       }
 
 
@@ -1445,7 +1640,6 @@ public class KiteSDK
       parcel.writeString( mPayPalEnvironment );
       parcel.writeString( mPayPalAPIEndpoint );
       parcel.writeString( mPayPalClientId );
-      parcel.writeString( mPayPalPassword );
       }
 
 
@@ -1479,11 +1673,6 @@ public class KiteSDK
       return ( mPayPalClientId );
       }
 
-    public String getPayPalPassword()
-      {
-      return ( mPayPalPassword );
-      }
-
     void saveTo( KiteSDK kiteSDK )
       {
       kiteSDK.setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_ENVIRONMENT_NAME,             mName );
@@ -1492,14 +1681,8 @@ public class KiteSDK
       kiteSDK.setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYPAL_ENVIRONMENT,           mPayPalEnvironment );
       kiteSDK.setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYPAL_API_ENDPOINT,          mPayPalAPIEndpoint );
       kiteSDK.setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYPAL_CLIENT_ID,             mPayPalClientId );
-      kiteSDK.setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYPAL_PASSWORD,              mPayPalPassword );
       }
 
-
-    public String getPayPalAuthToken()
-      {
-      return ( Base64.encodeToString( ( mPayPalClientId + ":" + mPayPalPassword ).getBytes(), Base64.NO_WRAP ) );
-      }
     }
 
 
@@ -1549,17 +1732,17 @@ public class KiteSDK
    *****************************************************/
   public static enum DefaultEnvironment implements IEnvironment
     {
-    LIVE    ( "Live",    "https://api.kite.ly/v2.2",     ENVIRONMENT_LIVE,    PayPalConfiguration.ENVIRONMENT_PRODUCTION, PAYPAL_LIVE_API_ENDPOINT,    PAYPAL_LIVE_CLIENT_ID,    PAYPAL_LIVE_PASSWORD    ),
-    TEST    ( "Test",    "https://api.kite.ly/v2.2",     ENVIRONMENT_TEST,    PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_ENDPOINT, PAYPAL_SANDBOX_CLIENT_ID, PAYPAL_SANDBOX_PASSWORD ),
-    STAGING ( "Staging", "https://staging.kite.ly/v2.2", ENVIRONMENT_STAGING, PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_ENDPOINT, PAYPAL_SANDBOX_CLIENT_ID, PAYPAL_SANDBOX_PASSWORD ); /* private environment intended only for Ocean Labs use, hands off :) */
+    LIVE    ( "Live",    "https://api.kite.ly/v3.0",     ENVIRONMENT_LIVE,    PayPalConfiguration.ENVIRONMENT_PRODUCTION, PAYPAL_LIVE_API_ENDPOINT,    PAYPAL_LIVE_CLIENT_ID    ),
+    TEST    ( "Test",    "https://api.kite.ly/v3.0",     ENVIRONMENT_TEST,    PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_ENDPOINT, PAYPAL_SANDBOX_CLIENT_ID ),
+    STAGING ( "Staging", "https://staging.kite.ly/v3.0", ENVIRONMENT_STAGING, PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_ENDPOINT, PAYPAL_SANDBOX_CLIENT_ID ); /* private environment intended only for Ocean Labs use, hands off :) */
 
 
     private Environment  mEnvironment;
 
 
-    private DefaultEnvironment( String name, String apiEndpoint, String paymentActivityEnvironment, String payPalEnvironment, String payPalAPIEndpoint, String payPalClientId, String payPalPassword )
+    private DefaultEnvironment( String name, String apiEndpoint, String paymentActivityEnvironment, String payPalEnvironment, String payPalAPIEndpoint, String payPalClientId )
       {
-      mEnvironment = new Environment( name, apiEndpoint, paymentActivityEnvironment, payPalEnvironment, payPalAPIEndpoint, payPalClientId, payPalPassword );
+      mEnvironment = new Environment( name, apiEndpoint, paymentActivityEnvironment, payPalEnvironment, payPalAPIEndpoint, payPalClientId );
       }
 
 
@@ -1593,10 +1776,6 @@ public class KiteSDK
       return ( mEnvironment.getPayPalClientId() );
       }
 
-    public String getPayPalPassword()
-      {
-      return ( mEnvironment.getPayPalPassword() );
-      }
     }
 
   }

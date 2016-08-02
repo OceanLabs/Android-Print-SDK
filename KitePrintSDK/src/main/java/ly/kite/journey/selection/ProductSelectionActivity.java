@@ -43,6 +43,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +52,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,6 +71,7 @@ import ly.kite.ordering.ImageSpec;
 import ly.kite.util.Asset;
 import ly.kite.catalogue.Product;
 import ly.kite.catalogue.ProductGroup;
+import ly.kite.util.StringUtils;
 import ly.kite.widget.HeaderFooterGridView;
 
 
@@ -91,12 +95,18 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                         = "ProductSelectionAct.";  // Can't be more than 23 characters ... who knew?!
+  static private final String  LOG_TAG                         = "ProductSelectionAct.";  // Can't be more than 23 characters ... who knew?!
 
-  private static final String  INTENT_EXTRA_NAME_ASSET_LIST    = KiteSDK.INTENT_PREFIX + ".assetList";
-  private static final String  INTENT_EXTRA_NAME_PRODUCT_IDS   = KiteSDK.INTENT_PREFIX + ".productIds";
+  static private final String  INTENT_EXTRA_NAME_ASSET_LIST    = KiteSDK.INTENT_PREFIX + ".assetList";
+  static private final String  INTENT_EXTRA_NAME_PRODUCT_IDS   = KiteSDK.INTENT_PREFIX + ".productIds";
 
-  private static final String  BUNDLE_KEY_OPTION_MAP           = "optionMap";
+  static private final String  BUNDLE_KEY_OPTION_MAP           = "optionMap";
+
+  static private final String  JSON_NAME_PAYMENT_KEYS          = "payment_keys";
+  static private final String  JSON_NAME_PAYPAL                = "paypal";
+  static private final String  JSON_NAME_STRIPE                = "stripe";
+  static private final String  JSON_NAME_PUBLIC_KEY            = "public_key";
+  static private final String  JSON_NAME_ACCOUNT_ID            = "account_id";
 
 
   ////////// Static Variable(s) //////////
@@ -338,6 +348,10 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
       }
     else
       {
+      // We request a catalogue immediately the activity is created, so if we don't yet
+      // have a catalogue - we assume the request is still in progress. So all we need to
+      // do here is save the consumer. We'll deliver the catalogue to it when we get it.
+
       mCatalogueConsumer = consumer;
       }
     }
@@ -356,7 +370,79 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
     // Some apps may wish to amend the catalogue
     mCatalogue = getAdjustedCatalogue( catalogue );
 
-    // Hide the progress spinner
+
+    // See if there are any PayPay / Stripe keys in the catalogue custom data
+    //
+    //  "payment_keys":
+    //    {
+    //    "paypal":
+    //      {
+    //      "public_key": "AUxpFaaJlAcWZ92UNGsxGYTGwblzI1upclHVIOv5NZGcM-LY-dMEhH66KNrtSfrUlGSXqLhdpPrlhezl",
+    //      "account_id": "P-3"
+    //      },
+    //    "stripe":
+    //      {
+    //      "public_key": "pk_test_FxzXniUJWigFysP0bowWbuy3",
+    //      "account_id": null
+    //      }
+    //    }
+
+    JSONObject paymentKeysJSONObject = catalogue.getCustomObject( JSON_NAME_PAYMENT_KEYS );
+
+    if ( KiteSDK.DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "  Payment keys = " + paymentKeysJSONObject );
+
+    if ( paymentKeysJSONObject != null )
+      {
+      // Check for PayPal keys
+
+      KiteSDK kiteSDK = KiteSDK.getInstance( this );
+
+      JSONObject payPalJSONObject = paymentKeysJSONObject.optJSONObject( JSON_NAME_PAYPAL );
+
+      if ( KiteSDK.DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "  PayPal payment key = " + payPalJSONObject );
+
+      if ( payPalJSONObject != null )
+        {
+        String publicKey = ( ! payPalJSONObject.isNull( JSON_NAME_PUBLIC_KEY ) ? payPalJSONObject.optString( JSON_NAME_PUBLIC_KEY ) : null );
+        String accountId = ( ! payPalJSONObject.isNull( JSON_NAME_ACCOUNT_ID ) ? payPalJSONObject.optString( JSON_NAME_ACCOUNT_ID ) : null );
+
+        if ( KiteSDK.DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "  PayPal client id = " + publicKey + ", account id = " + accountId );
+
+        kiteSDK.setPermanentPayPalKey( publicKey, accountId );
+        }
+      else
+        {
+        if ( KiteSDK.DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "  Removing permanent PayPal key" );
+
+        kiteSDK.removePermanentPayPalKey();
+        }
+
+
+      // Check for Stripe keys
+
+      JSONObject stripeJSONObject = paymentKeysJSONObject.optJSONObject( JSON_NAME_STRIPE );
+
+      if ( KiteSDK.DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "  Stripe payment key = " + stripeJSONObject );
+
+      if ( stripeJSONObject != null )
+        {
+        String publicKey = ( ! stripeJSONObject.isNull( JSON_NAME_PUBLIC_KEY ) ? stripeJSONObject.optString( JSON_NAME_PUBLIC_KEY ) : null );
+        String accountId = ( ! stripeJSONObject.isNull( JSON_NAME_ACCOUNT_ID ) ? stripeJSONObject.optString( JSON_NAME_ACCOUNT_ID ) : null );
+
+        if ( KiteSDK.DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "  Stripe public key = " + publicKey + ", account id = " + accountId );
+
+        kiteSDK.setPermanentStripeKey( publicKey, accountId );
+        }
+      else
+        {
+        if ( KiteSDK.DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "  Removing permanent Stripe key" );
+
+        kiteSDK.removePermanentStripeKey();
+        }
+      }
+
+
+    // Hide any progress spinner
     if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.GONE );
 
 
@@ -398,7 +484,8 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
       }
 
 
-    // Pass the result on to any consumer
+    // Deliver the catalogue to any waiting consumer
+
     if ( mCatalogueConsumer != null )
       {
       mCatalogueConsumer.onCatalogueSuccess( mCatalogue );

@@ -330,7 +330,7 @@ public class DefaultPaymentFragment extends APaymentFragment
         dialog.setTitle( R.string.alert_dialog_title_processing );
         dialog.setMessage( getString( R.string.alert_dialog_message_processing ) );
         dialog.show();
-        card.storeCard( getKiteSDKEnvironment(), new PayPalCardVaultStorageListener()
+        card.storeCard( KiteSDK.getInstance( getActivity() ), new PayPalCardVaultStorageListener()
           {
           @Override
           public void onStoreSuccess( PayPalCard card )
@@ -388,7 +388,7 @@ public class DefaultPaymentFragment extends APaymentFragment
       {
       AlertDialog.Builder builder = new AlertDialog.Builder( getActivity() );
 
-      if ( getKiteSDKEnvironment().getPayPalEnvironment().equals( PayPalConfiguration.ENVIRONMENT_SANDBOX ) )
+      if ( KiteSDK.getInstance( getActivity() ).getPayPalEnvironment().equals( PayPalConfiguration.ENVIRONMENT_SANDBOX ) )
         {
         builder.setTitle( R.string.title_payment_source_sandbox );
         }
@@ -472,7 +472,7 @@ public class DefaultPaymentFragment extends APaymentFragment
 
     SingleCurrencyAmount totalCost = mOrderPricing.getTotalCost().getDefaultAmountWithFallback();
 
-    card.authoriseCard( getKiteSDKEnvironment(),
+    card.authoriseCard( KiteSDK.getInstance( getActivity() ),
             totalCost.getAmount(),
             totalCost.getCurrencyCode(),
             "",
@@ -533,12 +533,16 @@ public class DefaultPaymentFragment extends APaymentFragment
 
   /*****************************************************
    *
-   * Submits the order for printing.
+   * Submits the order for printing. This should only be
+   * called from this fragment (an external credit card
+   * fragment should call the payment activity directly),
+   * and only for PayPal payments (since we assume the
+   * PayPal account id).
    *
    *****************************************************/
-  public void submitOrderForPrinting( String paymentId, String analyticsPaymentMethod )
+  private void submitOrderForPrinting( String paymentId, String analyticsPaymentMethod )
     {
-    getPaymentActivity().submitOrderForPrinting( authorisationProofOfPaymentFrom( paymentId ), analyticsPaymentMethod );
+    getPaymentActivity().submitOrderForPrinting( authorisationProofOfPaymentFrom( paymentId ), KiteSDK.getInstance( getActivity() ).getPayPalAccountId(), analyticsPaymentMethod );
     }
 
 

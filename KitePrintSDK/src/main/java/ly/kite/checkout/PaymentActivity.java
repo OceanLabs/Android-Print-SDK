@@ -47,6 +47,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
@@ -84,9 +85,10 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings("unused")
-  private static final String LOG_TAG = "PaymentActivity";
+  static private final String LOG_TAG                           = "PaymentActivity";
 
-  public static final String KEY_ORDER = "ly.kite.ORDER";
+  static public  final String KEY_ORDER                         = "ly.kite.ORDER";
+  static private final String PARAMETER_NAME_PAYMENT_ACCOUNT_ID = "payment_account_id";
 
 
   ////////// Static Variable(s) //////////
@@ -96,7 +98,7 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
 
   private Order                mOrder;
   private String               mAPIKey;
-  private KiteSDK.Environment  mKiteSDKEnvironment;
+  //private KiteSDK.Environment  mKiteSDKEnvironment;
 
   private APaymentFragment     mPaymentFragment;
 
@@ -181,7 +183,7 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
       }
 
 
-    mKiteSDKEnvironment = KiteSDK.getInstance( this ).getEnvironment();
+    KiteSDK kiteSDK = KiteSDK.getInstance( this );
 
 
         /*
@@ -189,8 +191,8 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
          */
 
     PayPalConfiguration payPalConfiguration = new PayPalConfiguration()
-            .clientId( mKiteSDKEnvironment.getPayPalClientId() )
-            .environment( mKiteSDKEnvironment.getPayPalEnvironment() )
+            .clientId( kiteSDK.getPayPalClientId() )
+            .environment( kiteSDK.getPayPalEnvironment() )
             .acceptCreditCards( false );
 
     Intent intent = new Intent( this, PayPalService.class );
@@ -217,8 +219,6 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
 
       if ( paymentFragmentContainer != null )
         {
-        KiteSDK kiteSDK = KiteSDK.getInstance( this );
-
         mPaymentFragment = kiteSDK.getPaymentFragment();
 
         getFragmentManager()
@@ -236,7 +236,7 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
     hideKeyboard();
 
 
-    if ( mKiteSDKEnvironment.getPayPalEnvironment().equals( PayPalConfiguration.ENVIRONMENT_SANDBOX ) )
+    if ( kiteSDK.getPayPalEnvironment().equals( PayPalConfiguration.ENVIRONMENT_SANDBOX ) )
       {
       setTitle( R.string.title_payment_sandbox );
       }
@@ -640,12 +640,24 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
    *
    * Submits the order for printing.
    *
+   * @param proofOfPayment A string containing the proof of
+   *                       payment.
+   * @param accountId The account id to be added to the order,
+   *                  or null if no account id should be added.
+   *
    *****************************************************/
-  public void submitOrderForPrinting( String proofOfPayment, String analyticsPaymentMethod )
+  public void submitOrderForPrinting( String proofOfPayment, String accountId, String analyticsPaymentMethod )
     {
+    if ( KiteSDK.DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "submitOrderForPrinting( proofOfPayment = " + proofOfPayment + ", accountId = " + accountId + ", analyticsPaymentMethod = " + analyticsPaymentMethod + " )" );
+
     if ( proofOfPayment != null )
       {
       mOrder.setProofOfPayment( proofOfPayment );
+      }
+
+    if ( accountId != null )
+      {
+      mOrder.setAdditionalParameter( PARAMETER_NAME_PAYMENT_ACCOUNT_ID, accountId );
       }
 
     Analytics.getInstance( this ).trackPaymentCompleted( mOrder, analyticsPaymentMethod );
@@ -654,6 +666,17 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
 
     submitOrder( mOrder );
     }
+
+
+  /*****************************************************
+   *
+   * Submits the order for printing.
+   *
+   *****************************************************/
+//  private void submitOrderForPrinting( String proofOfPayment, String analyticsPaymentMethod )
+//    {
+//    submitOrderForPrinting( proofOfPayment, null, analyticsPaymentMethod );
+//    }
 
 
   ////////// Inner Class(es) //////////

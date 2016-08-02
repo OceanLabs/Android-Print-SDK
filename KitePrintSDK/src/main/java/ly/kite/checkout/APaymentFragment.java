@@ -95,24 +95,6 @@ abstract public class APaymentFragment extends AKiteFragment implements View.OnC
 
   /*****************************************************
    *
-   * Returns the Kite SDK environment.
-   *
-   *****************************************************/
-  protected KiteSDK.Environment getKiteSDKEnvironment()
-    {
-    Activity activity = getActivity();
-
-    if ( activity != null )
-      {
-      return ( KiteSDK.getInstance( activity ).getEnvironment() );
-      }
-
-    return ( null );
-    }
-
-
-  /*****************************************************
-   *
    * Called to enable / disable buttons.
    *
    *****************************************************/

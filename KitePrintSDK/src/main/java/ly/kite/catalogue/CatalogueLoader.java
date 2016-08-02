@@ -99,6 +99,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
   private static final String  JSON_NAME_CURRENCY                    = "currency";
   private static final String  JSON_NAME_CENTIMETERS                 = "cm";
   private static final String  JSON_NAME_COST                        = "cost";
+  private static final String  JSON_NAME_COVER_PHOTO_VARIANTS        = "cover_photo_variants";
   private static final String  JSON_NAME_DESCRIPTION                 = "description";
   private static final String  JSON_NAME_FORMATTED_AMOUNT            = "formatted";
   private static final String  JSON_NAME_GROUP_IMAGE                 = "ios_sdk_class_photo";
@@ -122,7 +123,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
   private static final String  JSON_NAME_PRODUCT_ARRAY               = "objects";
   private static final String  JSON_NAME_PRODUCT_CODE                = "product_code";
   private static final String  JSON_NAME_PRODUCT_DETAIL              = "product";
-  private static final String  JSON_NAME_PRODUCT_HERO_IMAGE          = "ios_sdk_cover_photo";
+  //private static final String  JSON_NAME_PRODUCT_HERO_IMAGE          = "ios_sdk_cover_photo";
   private static final String  JSON_NAME_PRODUCT_ID                  = "template_id";
   private static final String  JSON_NAME_PRODUCT_NAME                = "name";
   private static final String  JSON_NAME_PRODUCT_SHOTS               = "ios_sdk_product_shots";
@@ -134,12 +135,16 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
   private static final String  JSON_NAME_SHIPPING_COSTS              = "shipping_costs";
   private static final String  JSON_NAME_SUPPORTED_OPTIONS           = "supported_options";
   private static final String  JSON_NAME_TOP                         = "top";
+  static private final String  JSON_NAME_URL                         = "url";
   private static final String  JSON_NAME_USER_CONFIG                 = "user_config";
   private static final String  JSON_NAME_VALUE_NAME                  = "name";
   private static final String  JSON_NAME_VALUE_CODE                  = "code";
+  static private final String  JSON_NAME_VARIANT_ID                  = "variant_id";
   private static final String  JSON_NAME_WIDTH                       = "width";
 
   private static final int     DEFAULT_IMAGES_PER_PAGE               = 1;
+
+  static private final String  COVER_PHOTO_VARIANT_ID_DEFAULT        = "default";
 
 
   ////////// Static Variable(s) //////////
@@ -166,6 +171,37 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
 
 
   ////////// Static Method(s) //////////
+
+  /****************************************************
+   *
+   * Returns the URL for a specific cover photo variant.
+   *
+   ****************************************************/
+  static private URL getCoverPhotoURL( JSONArray variantsJSONArray, String variantId ) throws Exception
+    {
+    if ( variantsJSONArray == null ) throw ( new IllegalArgumentException( "No cover photos variant array supplied" ) );
+
+    String defaultVariantURLString = null;
+
+    for ( int index = 0; index < variantsJSONArray.length(); index ++ )
+      {
+      JSONObject variantJSONObject = variantsJSONArray.getJSONObject( index );
+
+      String variant = variantJSONObject.getString( JSON_NAME_VARIANT_ID );
+      String urlString = variantJSONObject.getString( JSON_NAME_URL );
+
+      if ( variant.equals( variantId ) )
+        {
+        return ( new URL( urlString ) );
+        }
+
+      if ( variant.equals( COVER_PHOTO_VARIANT_ID_DEFAULT ) )  defaultVariantURLString = urlString;
+      }
+
+    // If we couldn't find the request variant - return the default
+    return ( new URL( defaultVariantURLString ) );
+    }
+
 
   /****************************************************
    *
@@ -481,7 +517,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
         JSONObject productDetailJSONObject = productJSONObject.getJSONObject( JSON_NAME_PRODUCT_DETAIL );
 
         URL                    groupImageURL       = new URL( productDetailJSONObject.getString( JSON_NAME_GROUP_IMAGE ) );
-        URL                    heroImageURL        = new URL( productDetailJSONObject.getString( JSON_NAME_PRODUCT_HERO_IMAGE ) );
+        //URL                    heroImageURL        = new URL( productDetailJSONObject.getString( JSON_NAME_PRODUCT_HERO_IMAGE ) );
         int                    labelColour         = parseColour( productDetailJSONObject.getJSONArray( JSON_NAME_LABEL_COLOUR ) );
         String                 groupLabel          = productDetailJSONObject.getString( JSON_NAME_GROUP_LABEL );
         ArrayList<URL>         imageURLList        = parseProductShots( productDetailJSONObject.getJSONArray( JSON_NAME_PRODUCT_SHOTS ) );
@@ -491,6 +527,13 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
         String                 productCode         = productDetailJSONObject.getString( JSON_NAME_PRODUCT_CODE );
         MultipleUnitSize       size                = parseProductSize( productDetailJSONObject.getJSONObject( JSON_NAME_PRODUCT_SIZE ) );
         float                  imageAspectRatio    = (float)productDetailJSONObject.optDouble( JSON_NAME_IMAGE_ASPECT_RATIO, Product.DEFAULT_IMAGE_ASPECT_RATIO );
+
+
+        // Get the cover photo
+
+        JSONArray coverPhotoVariantsJSONArray = productDetailJSONObject.getJSONArray( JSON_NAME_COVER_PHOTO_VARIANTS );
+
+        URL coverPhotoURL = getCoverPhotoURL( coverPhotoVariantsJSONArray, COVER_PHOTO_VARIANT_ID_DEFAULT );
 
 
         URL     maskURL     = null;
@@ -536,7 +579,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
                 .setCost( cost )
                 .setDescription( productDescription )
                 .setShippingCosts( shippingCosts )
-                .setImageURLs( heroImageURL, imageURLList )
+                .setImageURLs( coverPhotoURL, imageURLList )
                 .setLabelColour( labelColour )
                 .setMask( maskURL, maskBleed )
                 .setSize( size )
@@ -565,21 +608,34 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
         // Add the product to the catalogue. If it doesn't have a supported
         // user journey, then we add it has a discarded product.
 
-        if ( active && productActive && ProductCreationActivity.isSupported( userJourneyType ) )
+        if ( ! active )
           {
-          catalogue.addProduct( groupLabel, groupImageURL, product );
+          Log.i( LOG_TAG, "-- Product ( " + groupLabel + " / " + productName + " ) discarded: inactive --" );
+
+          catalogue.addDiscardedProduct( product );
+          }
+        else if ( ! productActive )
+          {
+          Log.i( LOG_TAG, "-- Product ( " + groupLabel + " / " + productName + " ) discarded: product inactive --" );
+
+          catalogue.addDiscardedProduct( product );
+          }
+        else if ( ! ProductCreationActivity.isSupported( userJourneyType ) )
+          {
+          Log.i( LOG_TAG, "-- Product ( " + groupLabel + " / " + productName + " ) discarded: user journey type not supported: " + userJourneyType + " --" );
+
+          catalogue.addDiscardedProduct( product );
           }
         else
           {
-          if ( productActive ) Log.i( LOG_TAG, "-- Product discarded: no user journey for type " + userJourneyType + " --" );
-          else                 Log.i( LOG_TAG, "-- Product discarded: product id " + productId + " inactive --" );
-
-          catalogue.addDiscardedProduct( product );
+          catalogue.addProduct( groupLabel, groupImageURL, product );
           }
         }
       catch ( Exception exception )
         {
-        Log.e( LOG_TAG, "Unable to parse JSON product: " + productJSONObject, exception );
+        // The product JSON is getting massive now, so display the exception separately
+        Log.e( LOG_TAG, "Unable to parse JSON product: " + productJSONObject );
+        Log.e( LOG_TAG, "Exception:", exception );
 
         // Ignore individual errors - try and get as many products as possible
         }
@@ -794,11 +850,11 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
           {
           ///// Product data /////
 
-            // Try to get a set of products, then parse them.
+          // Try to get a set of products, then parse them.
 
-            JSONArray productsJSONArray = jsonData.getJSONArray( JSON_NAME_PRODUCT_ARRAY );
+          JSONArray productsJSONArray = jsonData.getJSONArray( JSON_NAME_PRODUCT_ARRAY );
 
-            parseProducts( productsJSONArray, catalogue );
+          parseProducts( productsJSONArray, catalogue );
           }
 
         else
@@ -811,15 +867,17 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
 
           if ( customData instanceof JSONObject )
             {
+            Log.i( LOG_TAG, "Storing custom object: " + topLevelKey + " = " + customData.toString() );
+
             catalogue.setCustomObject( topLevelKey, jsonData.getJSONObject( topLevelKey ) );
             }
           else if ( customData instanceof JSONArray )
             {
-            Log.i( LOG_TAG, "Unable to use custom array " + topLevelKey + " : " + customData.toString() );
+            Log.i( LOG_TAG, "Discarding custom array: " + topLevelKey + " = " + customData.toString() );
             }
           else
             {
-            Log.i( LOG_TAG, "Unable to use custom data " + topLevelKey + " : " + customData.toString() );
+            Log.i( LOG_TAG, "Discarding custom data: " + topLevelKey + " = " + customData.toString() );
             }
           }
 

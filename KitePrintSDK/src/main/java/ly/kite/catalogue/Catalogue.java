@@ -137,6 +137,17 @@ public class Catalogue
 
   /*****************************************************
    *
+   * Returns a user config object.
+   *
+   *****************************************************/
+  public JSONObject getUserConfigObject( String name )
+    {
+    return ( mUserConfigJSONObject.optJSONObject( name ) );
+    }
+
+
+  /*****************************************************
+   *
    * Sets the custom data table.
    *
    *****************************************************/
