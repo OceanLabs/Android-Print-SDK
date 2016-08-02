@@ -52,11 +52,11 @@ import android.widget.AdapterView;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import ly.kite.R;
 import ly.kite.analytics.Analytics;
 import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.Product;
 import ly.kite.catalogue.ProductGroup;
+import ly.kite.R;
 
 
 ///// Class Declaration /////
@@ -151,7 +151,7 @@ public class ChooseProductFragment extends AGroupOrProductFragment
   public View onCreateView( LayoutInflater layoutInflator, ViewGroup container, Bundle savedInstanceState )
     {
     // Get the parent grid view
-    View view = super.onCreateView( layoutInflator, container, savedInstanceState );
+    View view = super.onCreateView( layoutInflator, R.layout.screen_choose_product, container, savedInstanceState );
 
     if ( savedInstanceState == null )
       {

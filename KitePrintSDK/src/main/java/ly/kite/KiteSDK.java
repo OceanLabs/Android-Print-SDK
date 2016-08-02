@@ -89,7 +89,8 @@ public class KiteSDK
 
   static private final String LOG_TAG                                              = "KiteSDK";
 
-  static public  final boolean DEBUG_PAYMENT_KEYS                                  = true;
+  static public  final boolean DEBUG_PAYMENT_KEYS                                  = false;
+  static public  final boolean DISPLAY_PRODUCT_JSON                                = true;
 
   static public  final String SDK_VERSION                                          = "5.2.8";
 

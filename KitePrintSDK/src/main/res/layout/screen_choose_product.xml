@@ -4,8 +4,6 @@
     android:layout_height="fill_parent"
     android:background="@android:color/white">
 
-    <!-- This layout is used for both choosing the product group and the product. -->
-
     <ly.kite.widget.HeaderFooterGridView
         android:id="@+id/grid_view"
         android:layout_width="fill_parent"

@@ -83,7 +83,6 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
   @SuppressWarnings("unused")
   private static final String  LOG_TAG                               = "CatalogueLoader";
 
-  private static final boolean DISPLAY_PRODUCT_JSON                  = false;
   private static final boolean DISPLAY_PRODUCTS                      = false;
   private static final boolean DISPLAY_DEBUGGING                     = false;
   private static final boolean DISPLAY_PRE_CACHING_INFO              = false;
@@ -119,6 +118,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
   private static final String  JSON_NAME_OPTION_CODE                 = "code";
   private static final String  JSON_NAME_HIGHLIGHTS_URL              = "product_highlights_url";
   private static final String  JSON_NAME_PIXELS                      = "px";
+  private static final String  JSON_NAME_PRINT_IN_STORE              = "print_in_store";
   private static final String  JSON_NAME_PRODUCT_ACTIVE              = "product_active";
   private static final String  JSON_NAME_PRODUCT_ARRAY               = "objects";
   private static final String  JSON_NAME_PRODUCT_CODE                = "product_code";
@@ -496,7 +496,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
 
         productJSONObject = productJSONArray.getJSONObject( productIndex );
 
-        if ( DISPLAY_PRODUCT_JSON )
+        if ( KiteSDK.DISPLAY_PRODUCT_JSON )
           {
           Log.d( LOG_TAG, "Product JSON:\n" + productJSONObject.toString() );
           }
@@ -509,6 +509,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
         String                           productDescription = productJSONObject.getString( JSON_NAME_DESCRIPTION );
         int                              imagesPerPage      = productJSONObject.optInt( JSON_NAME_IMAGES_PER_PAGE, DEFAULT_IMAGES_PER_PAGE );
         MultipleCurrencyAmount           cost               = parseCost( productJSONObject.getJSONArray( JSON_NAME_COST ) );
+        boolean                          printInStore       = productJSONObject.optBoolean( JSON_NAME_PRINT_IN_STORE, false );
         MultipleDestinationShippingCosts shippingCosts      = parseShippingCosts( productJSONObject.getJSONObject( JSON_NAME_SHIPPING_COSTS ) );
 
 
@@ -584,7 +585,8 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
                 .setMask( maskURL, maskBleed )
                 .setSize( size )
                 .setCreationImage( imageAspectRatio, imageBorder )
-                .setProductOptions( productOptionList );
+                .setProductOptions( productOptionList )
+                .setFlag( Product.Flag.PRINT_IN_STORE, printInStore );
 
 
         if ( backgroundImageURLString != null )

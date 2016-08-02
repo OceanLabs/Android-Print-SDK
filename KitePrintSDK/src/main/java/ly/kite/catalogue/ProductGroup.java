@@ -189,6 +189,19 @@ public class ProductGroup implements Parcelable, IGroupOrProduct
 
   /*****************************************************
    *
+   * Returns true or false according to whether a flag is
+   * set.
+   *
+   *****************************************************/
+  @Override
+  public boolean flagIsSet( String tag )
+    {
+    return ( false );
+    }
+
+
+  /*****************************************************
+   *
    * Returns true if this group contains more than one
    * product, false otherwise.
    *

@@ -96,5 +96,14 @@ public interface IGroupOrProduct
   public String getDisplayPrice();
 
 
+  /*****************************************************
+   *
+   * Returns true or false according to whether a flag is
+   * set.
+   *
+   *****************************************************/
+  public boolean flagIsSet( String tag );
+
+
   }
 

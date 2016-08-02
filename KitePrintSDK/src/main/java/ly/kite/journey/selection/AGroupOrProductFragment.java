@@ -151,12 +151,11 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements I
    * Returns the content view for this fragment
    *
    *****************************************************/
-  @Override
-  public View onCreateView( LayoutInflater layoutInflator, ViewGroup container, Bundle savedInstanceState )
+  public View onCreateView( LayoutInflater layoutInflator, int layoutResourceId, ViewGroup container, Bundle savedInstanceState )
     {
-    View view = layoutInflator.inflate( R.layout.screen_choose_group_or_product, container, false );
+    View view = layoutInflator.inflate( layoutResourceId, container, false );
 
-    mGridView    = (HeaderFooterGridView)view.findViewById( R.id.grid_view );
+    mGridView = (HeaderFooterGridView)view.findViewById( R.id.grid_view );
 
 
     setManagedAdaptorView( mGridView );
@@ -371,13 +370,8 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements I
         }
       else
         {
-        view = mLayoutInflator.inflate( mLayoutResourceId, null );
-
-        viewReferences                   = new ViewReferences();
-        viewReferences.productImageView  = (LabelledImageView)view.findViewById( R.id.labelled_image_view );
-        viewReferences.priceOverlayFrame = (FrameLayout)view.findViewById( R.id.price_overlay_frame );
-        viewReferences.fromTextView      = (TextView)view.findViewById( R.id.from_text_view );
-        viewReferences.priceTextView     = (TextView)view.findViewById( R.id.price_text_view );
+        view           = mLayoutInflator.inflate( mLayoutResourceId, null );
+        viewReferences = new ViewReferences( view );
 
         view.setTag( viewReferences );
         }
@@ -389,82 +383,7 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements I
       IGroupOrProduct groupOrProduct = (IGroupOrProduct)getItem( position );
 
 
-      // If there are only two items - set the aspect ratio so that the images
-      // fill the screen, in either orientation.
-
-      float aspectRatio;
-
-      if ( getCount() == 2 )
-        {
-        int orientation = mContext.getResources().getConfiguration().orientation;
-
-        if ( orientation == Configuration.ORIENTATION_LANDSCAPE )
-          {
-          aspectRatio = parent.getWidth() * 0.5f / parent.getHeight();
-          }
-        else
-          {
-          aspectRatio = parent.getWidth() / ( parent.getHeight() * 0.5f );
-          }
-
-        // Make sure we only expand the height
-        //if ( aspectRatio > DEFAULT_ASPECT_RATIO ) aspectRatio = DEFAULT_ASPECT_RATIO;
-
-        viewReferences.productImageView.setImageAspectRatio( aspectRatio );
-        }
-
-
-
-      URL imageURL;
-
-      if ( groupOrProduct != null )
-        {
-        ///// Group / Product image /////
-
-        viewReferences.productImageView.setLabel( groupOrProduct.getDisplayLabel(), groupOrProduct.getDisplayLabelColour() );
-
-        // Populate any price overlay
-
-        String displayPrice = groupOrProduct.getDisplayPrice();
-
-
-        // We only display the price overlay if there's a display price. In the case of a product group
-        // this will be if there is a common currency.
-
-        if ( displayPrice != null )
-          {
-          if ( viewReferences.priceOverlayFrame != null ) viewReferences.priceOverlayFrame.setVisibility( View.VISIBLE );
-          if ( viewReferences.fromTextView      != null ) viewReferences.fromTextView.setVisibility( groupOrProduct.containsMultiplePrices() ? View.VISIBLE : View.GONE );
-          if ( viewReferences.priceTextView     != null )
-            {
-            viewReferences.priceTextView.setVisibility( View.VISIBLE );
-            viewReferences.priceTextView.setText( displayPrice );
-            }
-          }
-        else
-          {
-          if ( viewReferences.priceOverlayFrame != null ) viewReferences.priceOverlayFrame.setVisibility( View.GONE );
-          if ( viewReferences.fromTextView      != null ) viewReferences.fromTextView.setVisibility( View.GONE );
-          if ( viewReferences.priceTextView     != null ) viewReferences.priceTextView.setVisibility( View.GONE );
-          }
-
-        imageURL = groupOrProduct.getDisplayImageURL();
-        }
-      else
-        {
-        ///// Placeholder image /////
-
-        viewReferences.productImageView.setLabel( null );
-
-        // Any price overlay should not be visible for a placeholder image
-        if ( viewReferences.priceOverlayFrame != null ) viewReferences.priceOverlayFrame.setVisibility( View.GONE );
-
-        imageURL = mPlaceholderImageURL;
-        }
-
-
-      viewReferences.productImageView.requestScaledImageOnceSized( KiteSDK.IMAGE_CATEGORY_PRODUCT_ITEM, imageURL );
-
+      viewReferences.bind( groupOrProduct, parent );
 
       return ( view );
       }
@@ -483,6 +402,119 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements I
       FrameLayout        priceOverlayFrame;
       TextView           fromTextView;
       TextView           priceTextView;
+      View               overlayIndicatorView;
+
+
+      ViewReferences( View view )
+        {
+        this.productImageView     = (LabelledImageView) view.findViewById( R.id.labelled_image_view );
+        this.priceOverlayFrame    = (FrameLayout) view.findViewById( R.id.price_overlay_frame );
+        this.fromTextView         = (TextView) view.findViewById( R.id.from_text_view );
+        this.priceTextView        = (TextView) view.findViewById( R.id.price_text_view );
+        this.overlayIndicatorView = view.findViewById( R.id.overlay_indicator_view );
+        }
+
+
+      void bind( IGroupOrProduct groupOrProduct, ViewGroup parent )
+        {
+        // If there are only two items - set the aspect ratio so that the images
+        // fill the screen, in either orientation.
+
+        float aspectRatio;
+
+        if ( getCount() == 2 )
+          {
+          int orientation = mContext.getResources().getConfiguration().orientation;
+
+          if ( orientation == Configuration.ORIENTATION_LANDSCAPE )
+            {
+            aspectRatio = parent.getWidth() * 0.5f / parent.getHeight();
+            }
+          else
+            {
+            aspectRatio = parent.getWidth() / ( parent.getHeight() * 0.5f );
+            }
+
+          // Make sure we only expand the height
+          //if ( aspectRatio > DEFAULT_ASPECT_RATIO ) aspectRatio = DEFAULT_ASPECT_RATIO;
+
+          this.productImageView.setImageAspectRatio( aspectRatio );
+          }
+
+
+
+        URL imageURL;
+
+        if ( groupOrProduct != null )
+          {
+          ///// Group / Product image /////
+
+          this.productImageView.setLabel( groupOrProduct.getDisplayLabel(), groupOrProduct.getDisplayLabelColour() );
+
+          // Populate any price overlay
+
+          String displayPrice = groupOrProduct.getDisplayPrice();
+
+
+          // We only display the price overlay if there's a display price. In the case of a product group
+          // this will be if there is a common currency.
+
+          if ( displayPrice != null )
+            {
+            if ( this.priceOverlayFrame != null ) this.priceOverlayFrame.setVisibility( View.VISIBLE );
+            if ( this.fromTextView      != null ) this.fromTextView.setVisibility( groupOrProduct.containsMultiplePrices() ? View.VISIBLE : View.GONE );
+            if ( this.priceTextView     != null )
+              {
+              this.priceTextView.setVisibility( View.VISIBLE );
+              this.priceTextView.setText( displayPrice );
+              }
+            }
+          else
+            {
+            if ( this.priceOverlayFrame != null ) this.priceOverlayFrame.setVisibility( View.GONE );
+            if ( this.fromTextView      != null ) this.fromTextView.setVisibility( View.GONE );
+            if ( this.priceTextView     != null ) this.priceTextView.setVisibility( View.GONE );
+            }
+
+          imageURL = groupOrProduct.getDisplayImageURL();
+          }
+        else
+          {
+          ///// Placeholder image /////
+
+          this.productImageView.setLabel( null );
+
+          // Any price overlay should not be visible for a placeholder image
+          if ( this.priceOverlayFrame != null ) this.priceOverlayFrame.setVisibility( View.GONE );
+
+          imageURL = mPlaceholderImageURL;
+          }
+
+
+        this.productImageView.requestScaledImageOnceSized( KiteSDK.IMAGE_CATEGORY_PRODUCT_ITEM, imageURL );
+
+
+        // If there is an overlay indicator view, set its visibility according to any
+        // product flag.
+
+        if ( this.overlayIndicatorView != null )
+          {
+          Object tagObject = this.overlayIndicatorView.getTag();
+
+          if ( tagObject != null &&
+               tagObject instanceof String &&
+               groupOrProduct != null &&
+               groupOrProduct.flagIsSet( tagObject.toString() ) )
+            {
+            this.overlayIndicatorView.setVisibility(  View.VISIBLE );
+            }
+          else
+            {
+            this.overlayIndicatorView.setVisibility(  View.GONE );
+            }
+          }
+        }
+
       }
 
     }
