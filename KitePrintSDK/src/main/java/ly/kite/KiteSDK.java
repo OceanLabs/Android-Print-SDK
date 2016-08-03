@@ -124,6 +124,8 @@ public class KiteSDK
   static private final String PARAMETER_NAME_STRIPE_PUBLIC_KEY                     = "stripe_public_key";
   static private final String PARAMETER_NAME_STRIPE_ACCOUNT_ID                     = "stripe_account_id";
 
+  static private final String PARAMETER_NAME_SDK_CUSTOMISER_CLASS_NAME             = "sdk_customiser_class_name";
+
   static private final String PARAMETER_NAME_INSTAGRAM_CLIENT_ID                   = "instagram_client_id";
   static private final String PARAMETER_NAME_INSTAGRAM_REDIRECT_URI                = "instagram_redirect_uri";
 
@@ -182,6 +184,8 @@ public class KiteSDK
   private String          mUniqueUserId;
 
   private AImageSource[]  mImageSources;
+
+  private SDKCustomiser   mCustomiser;
 
 
   ////////// Static Initialiser(s) //////////
@@ -631,6 +635,54 @@ public class KiteSDK
 
   /*****************************************************
    *
+   * Sets an SDK customiser.
+   *
+   *****************************************************/
+  public KiteSDK setCustomiser( Class<? extends SDKCustomiser> customiserClass )
+    {
+    // Clear any old cached customiser. A new one will get instantiated the first
+    // time it is requested.
+    mCustomiser = null;
+
+    return ( setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_SDK_CUSTOMISER_CLASS_NAME, customiserClass.getName() ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the SDK customiser.
+   *
+   *****************************************************/
+  public SDKCustomiser getCustomiser()
+    {
+    if ( mCustomiser == null )
+      {
+      String customiserClassName = getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_SDK_CUSTOMISER_CLASS_NAME, null );
+
+      if ( customiserClassName != null )
+        {
+        try
+          {
+          Class<? extends SDKCustomiser> customiserClass = (Class<? extends SDKCustomiser>)Class.forName( customiserClassName );
+
+          mCustomiser = customiserClass.newInstance();
+          }
+        catch ( Exception e )
+          {
+          Log.e( LOG_TAG, "Unable to instantiate customiser " + customiserClassName, e );
+          }
+        }
+
+      // If there was no customiser, or we couldn't instantiate one, fall back to the default.
+      if ( mCustomiser == null ) mCustomiser = new SDKCustomiser();
+      }
+
+    return ( mCustomiser );
+    }
+
+
+  /*****************************************************
+   *
    * Sets the Instagram developer credentials. Doing
    * this enables Instagram as an image source
    *
@@ -676,17 +728,6 @@ public class KiteSDK
     {
     return ( mAPIKey );
     }
-
-
-//  /*****************************************************
-//   *
-//   * Returns the environment.
-//   *
-//   *****************************************************/
-//  public Environment getEnvironment()
-//    {
-//    return ( mEnvironment );
-//    }
 
 
   /*****************************************************
