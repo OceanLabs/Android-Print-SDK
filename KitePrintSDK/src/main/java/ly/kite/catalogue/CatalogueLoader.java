@@ -81,75 +81,76 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings("unused")
-  private static final String  LOG_TAG                               = "CatalogueLoader";
+  static private final String  LOG_TAG                               = "CatalogueLoader";
 
-  private static final boolean DISPLAY_PRODUCTS                      = false;
-  private static final boolean DISPLAY_DEBUGGING                     = false;
-  private static final boolean DISPLAY_PRE_CACHING_INFO              = false;
+  static private final boolean DISPLAY_PRODUCTS                      = false;
+  static private final boolean DISPLAY_DEBUGGING                     = false;
+  static private final boolean DISPLAY_PRE_CACHING_INFO              = false;
 
-  public  static final long    ANY_AGE_OK                            = -1;
+  static public  final long    ANY_AGE_OK                            = -1;
 
-  private static final String TEMPLATE_REQUEST_FORMAT_STRING         = "%s/template/?limit=100";
+  static private final String TEMPLATE_REQUEST_FORMAT_STRING         = "%s/template/?limit=100";
 
-  private static final String  JSON_NAME_ACTIVE                      = "active";
-  private static final String  JSON_NAME_AMOUNT                      = "amount";
-  private static final String  JSON_NAME_BACKGROUND_IMAGE_URL        = "product_background_image_url";
-  private static final String  JSON_NAME_BOTTOM                      = "bottom";
-  private static final String  JSON_NAME_CURRENCY                    = "currency";
-  private static final String  JSON_NAME_CENTIMETERS                 = "cm";
-  private static final String  JSON_NAME_COST                        = "cost";
-  private static final String  JSON_NAME_COVER_PHOTO_VARIANTS        = "cover_photo_variants";
-  private static final String  JSON_NAME_DESCRIPTION                 = "description";
-  private static final String  JSON_NAME_FORMATTED_AMOUNT            = "formatted";
-  private static final String  JSON_NAME_GROUP_IMAGE                 = "ios_sdk_class_photo";
-  private static final String  JSON_NAME_GROUP_LABEL                 = "ios_sdk_product_class";
-  private static final String  JSON_NAME_HEIGHT                      = "height";
-  private static final String  JSON_NAME_IMAGE_ASPECT_RATIO          = "image_aspect_ratio";
-  private static final String  JSON_NAME_IMAGE_BORDER                = "image_border";
-  private static final String  JSON_NAME_IMAGES_PER_PAGE             = "images_per_page";
-  private static final String  JSON_NAME_INCH                        = "inch";
-  private static final String  JSON_NAME_LABEL_COLOUR                = "ios_sdk_label_color";
-  private static final String  JSON_NAME_LEFT                        = "left";
-  private static final String  JSON_NAME_MASK_BLEED                  = "mask_bleed";
-  private static final String  JSON_NAME_BORDER                      = "ios_image_border";
-  private static final String  JSON_NAME_MASK_URL                    = "mask_url";
-  private static final String  JSON_NAME_OPTIONS                     = "options";
-  private static final String  JSON_NAME_OPTION_NAME                 = "name";
-  private static final String  JSON_NAME_OPTION_CODE                 = "code";
-  private static final String  JSON_NAME_HIGHLIGHTS_URL              = "product_highlights_url";
-  private static final String  JSON_NAME_PIXELS                      = "px";
-  private static final String  JSON_NAME_PRINT_IN_STORE              = "print_in_store";
-  private static final String  JSON_NAME_PRODUCT_ACTIVE              = "product_active";
-  private static final String  JSON_NAME_PRODUCT_ARRAY               = "objects";
-  private static final String  JSON_NAME_PRODUCT_CODE                = "product_code";
-  private static final String  JSON_NAME_PRODUCT_DETAIL              = "product";
-  //private static final String  JSON_NAME_PRODUCT_HERO_IMAGE          = "ios_sdk_cover_photo";
-  private static final String  JSON_NAME_PRODUCT_ID                  = "template_id";
-  private static final String  JSON_NAME_PRODUCT_NAME                = "name";
-  private static final String  JSON_NAME_PRODUCT_SHOTS               = "ios_sdk_product_shots";
-  private static final String  JSON_NAME_PRODUCT_SIZE                = "size";
-  private static final String  JSON_NAME_PRODUCT_SUBCLASS            = "ios_sdk_product_subclass";
-  private static final String  JSON_NAME_PRODUCT_TYPE                = "ios_sdk_product_type";
-  private static final String  JSON_NAME_PRODUCT_UI_CLASS            = "ios_sdk_ui_class";
-  private static final String  JSON_NAME_RIGHT                       = "right";
-  private static final String  JSON_NAME_SHIPPING_COSTS              = "shipping_costs";
-  private static final String  JSON_NAME_SUPPORTED_OPTIONS           = "supported_options";
-  private static final String  JSON_NAME_TOP                         = "top";
+  static private final String  JSON_NAME_ACTIVE                      = "active";
+  static private final String  JSON_NAME_AMOUNT                      = "amount";
+  static private final String  JSON_NAME_BACKGROUND_IMAGE_URL        = "product_background_image_url";
+  static private final String  JSON_NAME_BOTTOM                      = "bottom";
+  static private final String  JSON_NAME_CURRENCY                    = "currency";
+  static private final String  JSON_NAME_CENTIMETERS                 = "cm";
+  static private final String  JSON_NAME_COST                        = "cost";
+  static private final String  JSON_NAME_COVER_PHOTO_VARIANTS        = "cover_photo_variants";
+  static private final String  JSON_NAME_DESCRIPTION                 = "description";
+  static private final String  JSON_NAME_FORMATTED_AMOUNT            = "formatted";
+  static private final String  JSON_NAME_GROUP_IMAGE                 = "ios_sdk_class_photo";
+  static private final String  JSON_NAME_GROUP_LABEL                 = "ios_sdk_product_class";
+  static private final String  JSON_NAME_HEIGHT                      = "height";
+  static private final String  JSON_NAME_IMAGE_ASPECT_RATIO          = "image_aspect_ratio";
+  static private final String  JSON_NAME_IMAGE_BORDER                = "image_border";
+  static private final String  JSON_NAME_IMAGES_PER_PAGE             = "images_per_page";
+  static private final String  JSON_NAME_INCH                        = "inch";
+  static private final String  JSON_NAME_LABEL_COLOUR                = "ios_sdk_label_color";
+  static private final String  JSON_NAME_LEFT                        = "left";
+  static private final String  JSON_NAME_MASK_BLEED                  = "mask_bleed";
+  static private final String  JSON_NAME_BORDER                      = "ios_image_border";
+  static private final String  JSON_NAME_MASK_URL                    = "mask_url";
+  static private final String  JSON_NAME_OPTIONS                     = "options";
+  static private final String  JSON_NAME_OPTION_NAME                 = "name";
+  static private final String  JSON_NAME_OPTION_CODE                 = "code";
+  static private final String  JSON_NAME_HIGHLIGHTS_URL              = "product_highlights_url";
+  static private final String  JSON_NAME_PAYPAL_SUPPORTED_CURRENCIES = "paypal_supported_currencies";
+  static private final String  JSON_NAME_PIXELS                      = "px";
+  static private final String  JSON_NAME_PRINT_IN_STORE              = "print_in_store";
+  static private final String  JSON_NAME_PRODUCT_ACTIVE              = "product_active";
+  static private final String  JSON_NAME_PRODUCT_ARRAY               = "objects";
+  static private final String  JSON_NAME_PRODUCT_CODE                = "product_code";
+  static private final String  JSON_NAME_PRODUCT_DETAIL              = "product";
+  //static private final String  JSON_NAME_PRODUCT_HERO_IMAGE          = "ios_sdk_cover_photo";
+  static private final String  JSON_NAME_PRODUCT_ID                  = "template_id";
+  static private final String  JSON_NAME_PRODUCT_NAME                = "name";
+  static private final String  JSON_NAME_PRODUCT_SHOTS               = "ios_sdk_product_shots";
+  static private final String  JSON_NAME_PRODUCT_SIZE                = "size";
+  static private final String  JSON_NAME_PRODUCT_SUBCLASS            = "ios_sdk_product_subclass";
+  static private final String  JSON_NAME_PRODUCT_TYPE                = "ios_sdk_product_type";
+  static private final String  JSON_NAME_PRODUCT_UI_CLASS            = "ios_sdk_ui_class";
+  static private final String  JSON_NAME_RIGHT                       = "right";
+  static private final String  JSON_NAME_SHIPPING_COSTS              = "shipping_costs";
+  static private final String  JSON_NAME_SUPPORTED_OPTIONS           = "supported_options";
+  static private final String  JSON_NAME_TOP                         = "top";
   static private final String  JSON_NAME_URL                         = "url";
-  private static final String  JSON_NAME_USER_CONFIG                 = "user_config";
-  private static final String  JSON_NAME_VALUE_NAME                  = "name";
-  private static final String  JSON_NAME_VALUE_CODE                  = "code";
+  static private final String  JSON_NAME_USER_CONFIG                 = "user_config";
+  static private final String  JSON_NAME_VALUE_NAME                  = "name";
+  static private final String  JSON_NAME_VALUE_CODE                  = "code";
   static private final String  JSON_NAME_VARIANT_ID                  = "variant_id";
-  private static final String  JSON_NAME_WIDTH                       = "width";
+  static private final String  JSON_NAME_WIDTH                       = "width";
 
-  private static final int     DEFAULT_IMAGES_PER_PAGE               = 1;
+  static private final int     DEFAULT_IMAGES_PER_PAGE               = 1;
 
   static private final String  COVER_PHOTO_VARIANT_ID_DEFAULT        = "default";
 
 
   ////////// Static Variable(s) //////////
 
-  private static CatalogueLoader sProductCache;
+  static private CatalogueLoader sProductCache;
 
 
   ////////// Member Variable(s) //////////
@@ -158,7 +159,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
 
   private Handler                        mHandler;
 
-  private KiteAPIRequest mHTTPJSONRequest;
+  private KiteAPIRequest                 mHTTPJSONRequest;
   private LinkedList<ICatalogueConsumer> mConsumerList;
   private String                         mRequestAPIKey;
 
@@ -859,6 +860,22 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
           parseProducts( productsJSONArray, catalogue );
           }
 
+        else if ( topLevelKey.equals( JSON_NAME_PAYPAL_SUPPORTED_CURRENCIES ) )
+          {
+          ///// PayPal supported currencies /////
+
+          JSONArray payPalSupportedCurrenciesJSONArray = jsonData.getJSONArray( JSON_NAME_PAYPAL_SUPPORTED_CURRENCIES );
+
+          for ( int index = 0; index < payPalSupportedCurrenciesJSONArray.length(); index ++ )
+            {
+            String   currencyCode = payPalSupportedCurrenciesJSONArray.getString( index );
+            Currency currency     = Currency.getInstance( currencyCode );
+
+            if ( currency != null ) catalogue.addPayPalSupportedCurrency( currencyCode );
+            else                    Log.e( LOG_TAG, "Unknown currency code: " + currencyCode );
+            }
+          }
+
         else
           {
           ///// Custom data /////
@@ -890,6 +907,8 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
       mLastRetrievedCatalogue             = catalogue;
       mLastRetrievedEnvironmentAPIKey     = mRequestAPIKey;
       mLastRetrievedElapsedRealtimeMillis = SystemClock.elapsedRealtime();
+
+      KiteSDK.getInstance( mContext ).chooseAndLockCurrency( catalogue );
 
       postCatalogueToConsumers( catalogue );
       }

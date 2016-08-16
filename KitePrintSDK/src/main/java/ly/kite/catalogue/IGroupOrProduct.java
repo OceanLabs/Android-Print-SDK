@@ -93,7 +93,7 @@ public interface IGroupOrProduct
    * Returns a display price.
    *
    *****************************************************/
-  public String getDisplayPrice();
+  public String getDisplayPrice( String preferredCurrency );
 
 
   /*****************************************************

@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * ICreditCardFragment.java
+ * ICreditCardAgent.java
  *
  *
  * Modified MIT License
@@ -39,8 +39,11 @@ package ly.kite.checkout;
 
 ///// Import(s) /////
 
-import android.app.Activity;
+import android.app.Fragment;
+import android.content.Context;
+import android.content.Intent;
 
+import ly.kite.catalogue.SingleCurrencyAmount;
 import ly.kite.ordering.Order;
 
 
@@ -52,17 +55,33 @@ import ly.kite.ordering.Order;
  * collect and process credit cards for payment.
  *
  *****************************************************/
-public interface ICreditCardFragment
+public interface ICreditCardAgent
   {
   ////////// Method(s) //////////
 
   /*****************************************************
    *
-   * Displays the fragment.
+   * Returns true if the agent uses PayPal to process
+   * credit card payments.
    *
    *****************************************************/
-  public void display( Activity activity, Order order );
+  public boolean usesPayPal();
 
+
+  /*****************************************************
+   *
+   * Notifies the agent that the user has clicked on the
+   * credit card payment button.
+   *
+   *****************************************************/
+  public void onPayClicked( Context context, DefaultPaymentFragment paymentFragment, Order order, SingleCurrencyAmount singleCurrencyAmount );
+
+
+  /*****************************************************
+   *
+   * Passes an activity result to the agent.
+   *
+   *****************************************************/
+  public void onActivityResult( int requestCode, int resultCode, Intent data );
 
   }
-

@@ -31,7 +31,7 @@ public class SubmitOrderRequest
     public void submitForPrinting(Context context, final IProgressListener listener) {
         assert req == null : "you can only submit a request once";
 
-        JSONObject json = printOrder.getJSONRepresentation();
+        JSONObject json = printOrder.getJSONRepresentation( context );
 
     if ( DISPLAY_PRINT_ORDER_JSON ) Log.d( LOG_TAG, "Print Order JSON:\n" + json.toString() );
 

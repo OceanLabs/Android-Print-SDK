@@ -39,16 +39,20 @@ package ly.kite.catalogue;
 
 ///// Import(s) /////
 
-
-///// Class Declaration /////
-
 import android.util.Log;
 
 import org.json.JSONObject;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Currency;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
+
+///// Class Declaration /////
 
 /*****************************************************
  *
@@ -76,6 +80,7 @@ public class Catalogue
 
   private JSONObject                    mUserConfigJSONObject;
   private HashMap<String,JSONObject>    mCustomDataTable;
+  private ArrayList<String>             mPayPalSupportedCurrencyCodes;
 
   private HashMap<String,ProductGroup>  mNameGroupTable;
   private ArrayList<ProductGroup>       mGroupList;
@@ -95,7 +100,8 @@ public class Catalogue
 
   Catalogue()
     {
-    mCustomDataTable         = new HashMap<>();
+    mCustomDataTable              = new HashMap<>();
+    mPayPalSupportedCurrencyCodes = new ArrayList<>();
 
     setUserConfigData( null );
 
@@ -181,6 +187,28 @@ public class Catalogue
 
   /*****************************************************
    *
+   * Adds a PayPal supported currency.
+   *
+   *****************************************************/
+  public void addPayPalSupportedCurrency( String currencyCode )
+    {
+    if ( currencyCode != null ) mPayPalSupportedCurrencyCodes.add( currencyCode );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the list of PayPal supported currencies.
+   *
+   *****************************************************/
+  public ArrayList<String> getPayPalSupportedCurrencyCodes()
+    {
+    return ( mPayPalSupportedCurrencyCodes );
+    }
+
+
+  /*****************************************************
+   *
    * Adds a product to the catalogue.
    *
    *****************************************************/
@@ -236,6 +264,41 @@ public class Catalogue
   public int getProductCount()
     {
     return ( mIdProductTable.size() );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a list of products.
+   *
+   *****************************************************/
+  public Collection<Product> getProducts()
+    {
+    return ( mIdProductTable.values() );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a product based on its index.
+   *
+   *****************************************************/
+  public Product getProduct( int soughtProductIndex )
+    {
+    Collection<Product> productCollection = getProducts();
+
+    if ( productCollection == null || soughtProductIndex >= productCollection.size() ) return ( null );
+
+    int productIndex = 0;
+
+    for ( Product product : productCollection )
+      {
+      if ( productIndex == soughtProductIndex ) return ( product );
+
+      productIndex ++;
+      }
+
+    return ( null );
     }
 
 

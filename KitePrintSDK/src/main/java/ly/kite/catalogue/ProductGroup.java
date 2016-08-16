@@ -48,7 +48,6 @@ import android.util.Log;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.Locale;
 
 /*****************************************************
@@ -220,14 +219,15 @@ public class ProductGroup implements Parcelable, IGroupOrProduct
    * Thus it may be used as a "from" price.
    *
    *****************************************************/
-  public String getDisplayPrice()
+  @Override
+  public String getDisplayPrice( String preferredCurrency )
     {
     // We don't want to mess around with trying to compare prices in different
     // currencies, so we first need to find a currency that all prices are listed
     // in.
 
     Locale locale       = Locale.getDefault();
-    String currencyCode = getPreferredCurrency( Currency.getInstance( locale ).getCurrencyCode() );
+    String currencyCode = chooseBestCurrency( preferredCurrency );
 
     if ( currencyCode == null )
       {
@@ -268,7 +268,7 @@ public class ProductGroup implements Parcelable, IGroupOrProduct
    * currency).
    *
    *****************************************************/
-  public String getPreferredCurrency( String preferredCurrencyCode )
+  public String chooseBestCurrency( String preferredCurrencyCode )
     {
     // Check if the preferred currency is supported
 

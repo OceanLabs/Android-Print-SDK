@@ -47,6 +47,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.List;
 
 import ly.kite.KiteSDK;
 import ly.kite.address.Address;
@@ -70,8 +71,6 @@ public class PricingAgent extends ACache<String,OrderPricing,PricingAgent.Consum
 
   @SuppressWarnings( "unused" )
   static private final String  LOG_TAG                        = "PricingAgent";
-
-  static private final boolean DEBUGGING_ENABLED              = true;
 
   static private final String  PRICING_ENDPOINT_FORMAT_STRING = "%s/price/";
 
@@ -126,13 +125,13 @@ public class PricingAgent extends ACache<String,OrderPricing,PricingAgent.Consum
    * store it in the order until we know it's valid.
    *
    *****************************************************/
-  public OrderPricing requestPricing( Context context, Order order, String promoCode, IPricingConsumer consumer, int requestId )
+  public OrderPricing requestPricing( Context context, Order order, String promoCode, List<String> payPalSupportedCurrencyCodeList, IPricingConsumer consumer, int requestId )
     {
     // Get the request body first, because we also use it as the caching key
 
     String requestBodyString = getRequestBody( context, order, promoCode );
 
-    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "Request body:\n" + requestBodyString );
+    if ( KiteSDK.DEBUG_PRICING ) Log.d( LOG_TAG, "Request body:\n" + requestBodyString );
 
 
     // Construct the request URL first, because we also use it as the caching key.
@@ -158,7 +157,7 @@ public class PricingAgent extends ACache<String,OrderPricing,PricingAgent.Consum
 
       KiteAPIRequest request = new KiteAPIRequest( context, KiteAPIRequest.HttpMethod.POST, requestURLString, null, requestBodyString );
 
-      request.start( new PriceRequestListener( requestBodyString ) );
+      request.start( new PriceRequestListener( context, requestBodyString, payPalSupportedCurrencyCodeList ) );
       }
 
 
@@ -251,9 +250,9 @@ public class PricingAgent extends ACache<String,OrderPricing,PricingAgent.Consum
    * store it in the order until we know it's valid.
    *
    *****************************************************/
-  public OrderPricing requestPricing( Context context, Order order, String promoCode, IPricingConsumer consumer )
+  public OrderPricing requestPricing( Context context, Order order, String promoCode, List<String> payPalSupportedCurrencyCodeList, IPricingConsumer consumer )
     {
-    return ( requestPricing( context, order, promoCode, consumer, 0 ) );
+    return ( requestPricing( context, order, promoCode, payPalSupportedCurrencyCodeList, consumer, 0 ) );
     }
 
 
@@ -314,12 +313,16 @@ public class PricingAgent extends ACache<String,OrderPricing,PricingAgent.Consum
    *****************************************************/
   private class PriceRequestListener implements HTTPJSONRequest.IJSONResponseListener
     {
-    private String  mRequestBodyString;
+    private Context       mContext;
+    private String        mRequestBodyString;
+    private List<String>  mPayPalSupportedCurrencyCodeList;
 
 
-    PriceRequestListener( String requestBodyString )
+    PriceRequestListener( Context context, String requestBodyString, List<String> payPalSupportedCurrencyCodeList )
       {
-      mRequestBodyString = requestBodyString;
+      mContext                         = context;
+      mRequestBodyString               = requestBodyString;
+      mPayPalSupportedCurrencyCodeList = payPalSupportedCurrencyCodeList;
       }
 
 
@@ -331,13 +334,13 @@ public class PricingAgent extends ACache<String,OrderPricing,PricingAgent.Consum
     @Override
     public void onSuccess( int httpStatusCode, JSONObject jsonObject )
       {
-      if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "Request body: " + mRequestBodyString + "\nReturned JSON: " + jsonObject.toString() );
+      if ( KiteSDK.DEBUG_PRICING ) Log.d( LOG_TAG, "Request body: " + mRequestBodyString + "\nReturned JSON: " + jsonObject.toString() );
 
       try
         {
-        OrderPricing pricing = new OrderPricing( jsonObject );
+        OrderPricing orderPricing = new OrderPricing( jsonObject );
 
-        PricingAgent.this.saveAndDistributeValue( mRequestBodyString, pricing );
+        PricingAgent.this.saveAndDistributeValue( mRequestBodyString, orderPricing );
         }
       catch ( Exception exception )
         {
@@ -358,7 +361,7 @@ public class PricingAgent extends ACache<String,OrderPricing,PricingAgent.Consum
       {
       PricingAgent.this.onError( mRequestBodyString, exception );
       }
-    }
 
+    }
 
   }

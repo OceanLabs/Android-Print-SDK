@@ -452,8 +452,7 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements I
           this.productImageView.setLabel( groupOrProduct.getDisplayLabel(), groupOrProduct.getDisplayLabelColour() );
 
           // Populate any price overlay
-
-          String displayPrice = groupOrProduct.getDisplayPrice();
+          String displayPrice = groupOrProduct.getDisplayPrice( KiteSDK.getInstance( getActivity() ).getLockedCurrencyCode() );
 
 
           // We only display the price overlay if there's a display price. In the case of a product group

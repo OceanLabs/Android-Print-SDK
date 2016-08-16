@@ -313,7 +313,7 @@ public class Order implements Parcelable /* , Serializable */
      * submission to the print request endpoint.
      *
      *****************************************************/
-    public JSONObject getJSONRepresentation()
+    public JSONObject getJSONRepresentation( Context context )
       {
       try
         {
@@ -381,7 +381,10 @@ public class Order implements Parcelable /* , Serializable */
 
         if ( orderPricing != null )
           {
-          SingleCurrencyAmount orderTotalCost = orderPricing.getTotalCost().getDefaultAmountWithFallback();
+          String preferredCurrencyCode = KiteSDK.getInstance( context ).getLockedCurrencyCode();
+
+          SingleCurrencyAmount orderTotalCost = orderPricing.getTotalCost().getAmountWithFallback( preferredCurrencyCode );
+
           // construct customer payment object in a round about manner to guarantee 2dp amount value
           StringBuilder builder = new StringBuilder();
           builder.append( "{" );

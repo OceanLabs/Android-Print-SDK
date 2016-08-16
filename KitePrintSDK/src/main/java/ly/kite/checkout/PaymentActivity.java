@@ -40,6 +40,7 @@ package ly.kite.checkout;
 ///// Import(s) /////
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -63,6 +64,7 @@ import com.paypal.android.sdk.payments.PayPalConfiguration;
 import com.paypal.android.sdk.payments.PayPalService;
 
 import ly.kite.analytics.Analytics;
+import ly.kite.catalogue.SingleCurrencyAmount;
 import ly.kite.pricing.OrderPricing;
 import ly.kite.pricing.PricingAgent;
 import ly.kite.KiteSDK;
@@ -87,7 +89,9 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
   @SuppressWarnings("unused")
   static private final String LOG_TAG                           = "PaymentActivity";
 
-  static public  final String KEY_ORDER                         = "ly.kite.ORDER";
+  static public  final String KEY_ORDER                         = "ly.kite.Order";
+  static public  final String KEY_PAYPAL_SUPPORTED_CURRENCY_CODES = "ly.kite.PayPalAcceptedCurrencies";
+
   static private final String PARAMETER_NAME_PAYMENT_ACCOUNT_ID = "payment_account_id";
 
 
@@ -97,8 +101,7 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
   ////////// Member Variable(s) //////////
 
   private Order                mOrder;
-  private String               mAPIKey;
-  //private KiteSDK.Environment  mKiteSDKEnvironment;
+  private ArrayList<String>    mPayPalSupportedCurrencyCodes;
 
   private APaymentFragment     mPaymentFragment;
 
@@ -127,13 +130,26 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
    * Convenience method for starting this activity.
    *
    *****************************************************/
-  static public void startForResult( Activity activity, Order printOrder, int requestCode )
+  static public void startForResult( Activity activity, Order order, ArrayList<String> payPalSupportedCurrencyCodes, int requestCode )
     {
     Intent intent = new Intent( activity, PaymentActivity.class );
 
-    intent.putExtra( KEY_ORDER, printOrder );
+    intent.putExtra( KEY_ORDER, order );
+
+    if ( payPalSupportedCurrencyCodes != null ) intent.putStringArrayListExtra( KEY_PAYPAL_SUPPORTED_CURRENCY_CODES, payPalSupportedCurrencyCodes );
 
     activity.startActivityForResult( intent, requestCode );
+    }
+
+
+  /*****************************************************
+   *
+   * Convenience method for starting this activity.
+   *
+   *****************************************************/
+  static public void startForResult( Activity activity, Order order, int requestCode )
+    {
+    startForResult( activity, order, null, requestCode );
     }
 
 
@@ -167,19 +183,23 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
       mWaitingForInstanceStateRestore = false;
       }
 
-    if ( mOrder == null )
-      {
-      Intent intent = getIntent();
 
-      if ( intent != null )
+    Intent intent = getIntent();
+
+    if ( intent != null )
+      {
+      if ( mOrder == null )
         {
         mOrder = intent.getParcelableExtra( KEY_ORDER );
         }
+
+      mPayPalSupportedCurrencyCodes = intent.getStringArrayListExtra( KEY_PAYPAL_SUPPORTED_CURRENCY_CODES );
       }
+
 
     if ( mOrder == null )
       {
-      throw new IllegalArgumentException( "There must either be a saved Print Order, or one supplied in the intent used to start the Payment Activity" );
+      throw new IllegalArgumentException( "There must either be a saved Order, or one supplied in the intent used to start the Payment Activity" );
       }
 
 
@@ -195,10 +215,11 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
             .environment( kiteSDK.getPayPalEnvironment() )
             .acceptCreditCards( false );
 
-    Intent intent = new Intent( this, PayPalService.class );
-    intent.putExtra( PayPalService.EXTRA_PAYPAL_CONFIGURATION, payPalConfiguration );
+    Intent payPalServiceIntent = new Intent( this, PayPalService.class );
 
-    startService( intent );
+    payPalServiceIntent.putExtra( PayPalService.EXTRA_PAYPAL_CONFIGURATION, payPalConfiguration );
+
+    startService( payPalServiceIntent );
 
 
     // Set up the screen
@@ -250,7 +271,6 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
 
 
     // The prices are requested once the payment fragment has had its view created
-
 
     if ( savedInstanceState == null )
       {
@@ -324,13 +344,11 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
    *
    *****************************************************/
   @Override
-  public void paOnSuccess( int requestId, OrderPricing pricing )
+  public void paOnSuccess( int requestId, OrderPricing orderPricing )
     {
-    mOrderPricing = pricing;
+    mOrderPricing = orderPricing;
 
     mPromoButton.setEnabled( true );
-
-    if ( mPaymentFragment != null ) mPaymentFragment.onEnableButtons( true );
 
     mProgressBar.setVisibility( View.GONE );
 
@@ -451,7 +469,7 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
 
     if ( promoCode != null && promoCode.trim().equals( "" ) ) promoCode = null;
 
-    mOrderPricing = PricingAgent.getInstance().requestPricing( this, mOrder, mLastSubmittedPromoCode = promoCode, this );
+    mOrderPricing = PricingAgent.getInstance().requestPricing( this, mOrder, mLastSubmittedPromoCode = promoCode, mPayPalSupportedCurrencyCodes, this );
 
 
     // If the pricing wasn't cached - disable the buttons, and show the progress spinner, whilst
@@ -543,21 +561,31 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
       }
 
 
-    // Get the total cost, and save it in the order
-
-    MultipleCurrencyAmount totalCost = mOrderPricing.getTotalCost();
-
+    // Save the pricing in the order
     mOrder.setOrderPricing( mOrderPricing );
 
 
+    // Get the total cost in the most appropriate currency
+
+    String                 preferredCurrencyCode = KiteSDK.getInstance( this ).getLockedCurrencyCode();
+    MultipleCurrencyAmount totalCostMultiple     = mOrderPricing.getTotalCost();
+    SingleCurrencyAmount   totalCostSingle       = totalCostMultiple.getAmountWithFallback( preferredCurrencyCode );
+
+
     // If the cost is zero, we change the button text
-    if ( totalCost.getDefaultAmountWithFallback().getAmount().compareTo( BigDecimal.ZERO ) <= 0 )
+    if ( totalCostSingle.getAmount().compareTo( BigDecimal.ZERO ) <= 0 )
       {
       if ( mPaymentFragment != null ) mPaymentFragment.onCheckoutFree( true );
       }
     else
       {
       if ( mPaymentFragment != null ) mPaymentFragment.onCheckoutFree( false );
+      }
+
+
+    if ( mPaymentFragment != null )
+      {
+      mPaymentFragment.onEnableButtons( true );
       }
 
 
@@ -666,17 +694,6 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
 
     submitOrder( mOrder );
     }
-
-
-  /*****************************************************
-   *
-   * Submits the order for printing.
-   *
-   *****************************************************/
-//  private void submitOrderForPrinting( String proofOfPayment, String analyticsPaymentMethod )
-//    {
-//    submitOrderForPrinting( proofOfPayment, null, analyticsPaymentMethod );
-//    }
 
 
   ////////// Inner Class(es) //////////

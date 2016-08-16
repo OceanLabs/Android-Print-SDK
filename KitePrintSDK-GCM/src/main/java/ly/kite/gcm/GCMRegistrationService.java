@@ -250,7 +250,7 @@ public class GCMRegistrationService extends IntentService implements HTTPJSONReq
     JSONObject jsonSetObject = new JSONObject();
     jsonSetObject.put( JSON_NAME_PUSH_TOKEN,  jsonPushTokenObject );
     jsonSetObject.put( JSON_NAME_PLATFORM,    JSON_VALUE_ANDROID );
-    jsonSetObject.put( JSON_NAME_ENVIRONMENT, KiteSDK.getInstance( this ).getEnvironment().toString() );
+    jsonSetObject.put( JSON_NAME_ENVIRONMENT, KiteSDK.getInstance( this ).getEnvironmentName() );
 
     JSONObject jsonBodyObject = new JSONObject();
     jsonBodyObject.put( JSON_NAME_UUID, KiteSDK.getInstance( this ).getUniqueUserId() );

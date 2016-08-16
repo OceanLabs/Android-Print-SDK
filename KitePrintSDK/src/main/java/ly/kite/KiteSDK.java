@@ -40,7 +40,10 @@ package ly.kite;
 ///// Import(s) /////
 
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
 
 import android.app.Activity;
@@ -56,6 +59,9 @@ import com.paypal.android.sdk.payments.PayPalConfiguration;
 
 import ly.kite.address.Address;
 import ly.kite.address.Country;
+import ly.kite.catalogue.Catalogue;
+import ly.kite.catalogue.MultipleCurrencyAmount;
+import ly.kite.catalogue.Product;
 import ly.kite.ordering.OrderingDataAgent;
 import ly.kite.catalogue.CatalogueLoader;
 import ly.kite.checkout.AShippingActivity;
@@ -90,9 +96,10 @@ public class KiteSDK
   static private final String LOG_TAG                                              = "KiteSDK";
 
   static public  final boolean DEBUG_PAYMENT_KEYS                                  = false;
-  static public  final boolean DISPLAY_PRODUCT_JSON                                = true;
+  static public  final boolean DEBUG_PRICING                                       = false;
+  static public  final boolean DISPLAY_PRODUCT_JSON                                = false;
 
-  static public  final String SDK_VERSION                                          = "5.2.8";
+  static public  final String SDK_VERSION                                          = "5.3.0";
 
   static public  final String IMAGE_CATEGORY_APP                                   = "app";
   static public  final String IMAGE_CATEGORY_PRODUCT_ITEM                          = "product_item";
@@ -124,10 +131,13 @@ public class KiteSDK
   static private final String PARAMETER_NAME_STRIPE_PUBLIC_KEY                     = "stripe_public_key";
   static private final String PARAMETER_NAME_STRIPE_ACCOUNT_ID                     = "stripe_account_id";
 
-  static private final String PARAMETER_NAME_SDK_CUSTOMISER_CLASS_NAME             = "sdk_customiser_class_name";
+  static private final String PARAMETER_NAME_LOCKED_CURRENCY_CODE                  = "locked_currency_code";
+  static private final String PARAMETER_NAME_PAYPAL_PAYMENTS_AVAILABLE             = "paypal_payments_available";
 
   static private final String PARAMETER_NAME_INSTAGRAM_CLIENT_ID                   = "instagram_client_id";
   static private final String PARAMETER_NAME_INSTAGRAM_REDIRECT_URI                = "instagram_redirect_uri";
+
+  static private final String PARAMETER_NAME_SDK_CUSTOMISER_CLASS_NAME             = "sdk_customiser_class_name";
 
   static private final String PARAMETER_NAME_REQUEST_PHONE_NUMBER                  = "request_phone_number";
 
@@ -1249,6 +1259,110 @@ public class KiteSDK
 
   /*****************************************************
    *
+   * Chooses and locks a currency.
+   *
+   *****************************************************/
+  public void chooseAndLockCurrency( Catalogue catalogue )
+    {
+    // Determine the local currency
+    Locale   defaultLocale = Locale.getDefault();
+    Currency localCurrency = ( defaultLocale != null ? Currency.getInstance( defaultLocale ) : null );
+
+    // Get the PayPal supported currencies
+    List<String> payPalSupportedCurrencyCodeList = catalogue.getPayPalSupportedCurrencyCodes();
+
+
+    // Get the available prices, by looking at the prices given for one of the products
+
+    Product someProduct = catalogue.getProduct( 0 );
+
+    if ( someProduct != null )
+      {
+      MultipleCurrencyAmount cost = someProduct.getCost();
+
+      Set<String> availableCurrencyCodeSet = cost.getAllCurrencyCodes();
+
+
+      // 1. Template response, look at paypal_supported_currencies = …
+      // 2. Do I have Paypal or Stripe as CC processor. If Stripe no currency lockdown, if paypal I exclude displaying in a currency that is not supported
+      // 3. If Stripe : Display in local currency  , If Paypal : Display in local currency unless not paypal supported then USD / Fallback
+      // 4. In payment screen, show Pay by Paypal if currency being displayed is in paypal_supported_currencies
+
+
+      // Work out what currency we are going to lock to
+
+      String lockedCurrencyCode;
+
+      if ( getCustomiser().getCreditCardAgent().usesPayPal() )
+        {
+        ///// PayPal /////
+
+        // Pick the best currency
+        lockedCurrencyCode = chooseBestCurrency( localCurrency.getCurrencyCode(), MultipleCurrencyAmount.FALLBACK_CURRENCY_CODES, payPalSupportedCurrencyCodeList );
+
+        setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYPAL_PAYMENTS_AVAILABLE, true );
+        }
+      else
+        {
+        ///// Stripe /////
+
+        lockedCurrencyCode = localCurrency.getCurrencyCode();
+
+        // PayPal payments are only available if the locked currency code is a PayPal supported currency.
+        setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYPAL_PAYMENTS_AVAILABLE, payPalSupportedCurrencyCodeList.contains( lockedCurrencyCode ) );
+        }
+
+
+      setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_LOCKED_CURRENCY_CODE, lockedCurrencyCode );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Picks the best currency that is supported.
+   *
+   *****************************************************/
+  private String chooseBestCurrency( String preferredCurrencyCode, String[] fallbackCurrencyCodes, List<String> supportedCurrencyCodeList )
+    {
+    if ( preferredCurrencyCode != null )
+      {
+      if ( supportedCurrencyCodeList.contains( preferredCurrencyCode ) ) return ( preferredCurrencyCode );
+
+      for ( String fallbackCurrencyCode : fallbackCurrencyCodes )
+        {
+        if ( supportedCurrencyCodeList.contains( fallbackCurrencyCode ) ) return ( fallbackCurrencyCode );
+        }
+      }
+
+    return ( supportedCurrencyCodeList.get( 0 ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the locked currency code.
+   *
+   *****************************************************/
+  public String getLockedCurrencyCode()
+    {
+    return ( getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_LOCKED_CURRENCY_CODE, null ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns true if PayPal payments are available.
+   *
+   *****************************************************/
+  public boolean getPayPalPaymentsAvailable()
+    {
+    return ( getBooleanSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYPAL_PAYMENTS_AVAILABLE, true ) );
+    }
+
+
+  /*****************************************************
+   *
    * Returns the end customer session icon URL.
    *
    *****************************************************/
@@ -1464,6 +1578,17 @@ public class KiteSDK
   public void startCheckout( Activity activity, Order order, int requestCode )
     {
     startCheckoutForResult( activity, order, requestCode );
+    }
+
+
+  /*****************************************************
+   *
+   * Launches the payment screen, and returns the result.
+   *
+   *****************************************************/
+  public void startPaymentForResult( Activity activity, Order order, ArrayList<String> payPalSupportedCurrencyCodes, int requestCode )
+    {
+    PaymentActivity.startForResult( activity, order, payPalSupportedCurrencyCodes, requestCode );
     }
 
 

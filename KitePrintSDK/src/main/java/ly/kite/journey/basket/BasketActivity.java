@@ -47,7 +47,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -60,6 +59,8 @@ import java.util.List;
 
 import ly.kite.KiteSDK;
 import ly.kite.address.Address;
+import ly.kite.catalogue.MultipleCurrencyAmount;
+import ly.kite.catalogue.SingleCurrencyAmount;
 import ly.kite.ordering.OrderingDataAgent;
 import ly.kite.ordering.BasketItem;
 import ly.kite.catalogue.Catalogue;
@@ -442,7 +443,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
     Order order = getOrder();
 
     // Start the payment
-    KiteSDK.getInstance( this ).startPaymentForResult( this, order, ACTIVITY_REQUEST_CODE_CHECKOUT );
+    KiteSDK.getInstance( this ).startPaymentForResult( this, order, mCatalogue.getPayPalSupportedCurrencyCodes(), ACTIVITY_REQUEST_CODE_CHECKOUT );
     }
 
 
@@ -701,7 +702,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
       // Re-request the pricing if the shipping address changes, as the shipping price may
       // have changed.
 
-      OrderPricing pricing = PricingAgent.getInstance().requestPricing( this, getOrder(), NO_PROMO_CODE_YET, this, ++mPricingRequestId );
+      OrderPricing pricing = PricingAgent.getInstance().requestPricing( this, getOrder(), NO_PROMO_CODE_YET, mCatalogue.getPayPalSupportedCurrencyCodes(), this, ++ mPricingRequestId );
 
       if ( pricing != null )
         {
@@ -716,13 +717,13 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
    * Sets the order pricing.
    *
    *****************************************************/
-  private void setOrderPricing( OrderPricing pricing )
+  private void setOrderPricing( OrderPricing orderPricing )
     {
     // Display the shipping & total prices
 
-    mTotalShippingPriceTextView.setText( pricing.getTotalShippingCost().getDefaultDisplayAmountWithFallback() );
+    mTotalShippingPriceTextView.setText( orderPricing.getTotalShippingCost().getDefaultDisplayAmountWithFallback() );
 
-    mTotalPriceTextView.setText( getString( R.string.Total ) + " " + pricing.getTotalCost().getDefaultDisplayAmountWithFallback() );
+    mTotalPriceTextView.setText( getString( R.string.Total ) + " " + orderPricing.getTotalCost().getDefaultDisplayAmountWithFallback() );
     }
 
 
@@ -940,14 +941,14 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
 
         if ( mAllowBasketEditing )
           {
-          setViewVisibilitySafely( mDecrementButton, View.VISIBLE );
-          setViewVisibilitySafely( mIncrementButton, View.VISIBLE );
+          setViewVisibilitySafely( mDecrementButton,   View.VISIBLE );
+          setViewVisibilitySafely( mIncrementButton,   View.VISIBLE );
           setViewVisibilitySafely( mEditLabelTextView, View.VISIBLE );
           }
         else
           {
-          setViewVisibilitySafely( mDecrementButton, View.INVISIBLE );
-          setViewVisibilitySafely( mIncrementButton, View.INVISIBLE );
+          setViewVisibilitySafely( mDecrementButton,   View.INVISIBLE );
+          setViewVisibilitySafely( mIncrementButton,   View.INVISIBLE );
           setViewVisibilitySafely( mEditLabelTextView, View.INVISIBLE );
           }
         }
@@ -956,7 +957,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
       private void setQuantityDependentText()
         {
         mQuantityTextView.setText( String.valueOf( mBasketItem.getOrderQuantity() ) );
-        mPriceTextView.setText( mProduct.getDisplayPriceMultipliedBy( mBasketItem.getOrderQuantity() ) );
+        mPriceTextView.setText( mProduct.getDisplayPriceMultipliedBy( KiteSDK.getInstance( BasketActivity.this ).getLockedCurrencyCode(), mBasketItem.getOrderQuantity() ) );
         }
       }
 

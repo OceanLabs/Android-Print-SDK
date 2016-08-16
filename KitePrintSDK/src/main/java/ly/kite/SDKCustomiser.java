@@ -42,6 +42,9 @@ package ly.kite;
 
 ///// Class Declaration /////
 
+import ly.kite.checkout.ICreditCardAgent;
+import ly.kite.checkout.StripeCreditCardAgent;
+
 /*****************************************************
  *
  * This class is used to customise various aspects of
@@ -96,6 +99,18 @@ public class SDKCustomiser
   public int getChooseProductGridFooterLayoutResourceId()
     {
     return ( 0 );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the credit card agent. The default is now
+   * the Stripe credit card agent.
+   *
+   *****************************************************/
+  public ICreditCardAgent getCreditCardAgent()
+    {
+    return ( new StripeCreditCardAgent() );
     }
 
 

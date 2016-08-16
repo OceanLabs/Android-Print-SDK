@@ -52,6 +52,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.pricing.OrderPricing;
 import ly.kite.catalogue.MultipleCurrencyAmount;
@@ -120,7 +121,8 @@ public class OrderPricingAdaptor extends BaseAdapter
     if ( pricing == null ) return;
 
 
-    Locale defaultLocale = Locale.getDefault();
+    Locale defaultLocale         = Locale.getDefault();
+    String preferredCurrencyCode = KiteSDK.getInstance( mContext ).getLockedCurrencyCode();
 
 
     ///// Line items
@@ -146,7 +148,7 @@ public class OrderPricingAdaptor extends BaseAdapter
     String                 shippingCostString;
 
     if ( shippingCost != null &&
-         ( shippingCostInSingleCurrency = shippingCost.getAmountWithFallback( defaultLocale )) != null &&
+         ( shippingCostInSingleCurrency = shippingCost.getAmountWithFallback( preferredCurrencyCode ) ) != null &&
          shippingCostInSingleCurrency.getAmount().compareTo( BigDecimal.ZERO ) > 0 )
       {
       shippingCostString = shippingCostInSingleCurrency.getDisplayAmountForLocale( defaultLocale );
@@ -165,7 +167,7 @@ public class OrderPricingAdaptor extends BaseAdapter
 
     if ( promoDiscount != null )
       {
-      SingleCurrencyAmount promoDiscountInSingleCurrency = promoDiscount.getAmountWithFallback( defaultLocale );
+      SingleCurrencyAmount promoDiscountInSingleCurrency = promoDiscount.getAmountWithFallback( preferredCurrencyCode );
 
       if ( promoDiscountInSingleCurrency != null &&
            promoDiscountInSingleCurrency.getAmount().compareTo( BigDecimal.ZERO ) > 0 )
@@ -181,11 +183,10 @@ public class OrderPricingAdaptor extends BaseAdapter
 
     if ( totalCost != null )
       {
-      SingleCurrencyAmount totalCostInSingleCurrency = totalCost.getAmountWithFallback( defaultLocale );
+      SingleCurrencyAmount totalCostInSingleCurrency = totalCost.getAmountWithFallback( preferredCurrencyCode );
 
       mItemList.add( new Item( mContext.getString( R.string.Total ), totalCostInSingleCurrency.getDisplayAmountForLocale( defaultLocale ), true ) );
       }
-
 
     }
 

@@ -475,9 +475,10 @@ public class Product implements Parcelable, IGroupOrProduct
    * Returns a display price.
    *
    *****************************************************/
-  public String getDisplayPrice()
+  @Override
+  public String getDisplayPrice( String preferredCurrency )
     {
-    return ( mCost.getDefaultDisplayAmountWithFallback() );
+    return ( mCost.getDefaultDisplayAmountWithFallback( preferredCurrency ) );
     }
 
 
@@ -486,9 +487,9 @@ public class Product implements Parcelable, IGroupOrProduct
    * Returns a display price.
    *
    *****************************************************/
-  public String getDisplayPriceMultipliedBy( int quantity )
+  public String getDisplayPriceMultipliedBy( String preferredCurrency, int quantity )
     {
-    return ( mCost.getDefaultDisplayAmountWithFallbackMultipliedBy( quantity ) );
+    return ( mCost.getDisplayAmountWithFallbackMultipliedBy( preferredCurrency, quantity ) );
     }
 
 
