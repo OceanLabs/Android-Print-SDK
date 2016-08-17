@@ -87,9 +87,13 @@ public class LabelledImageView extends AAREImageContainerFrame implements IImage
   ////////// Member Variable(s) //////////
 
   private ImageView            mEmptyFrameImageView;
+  private ImageView            mImageView;
   private OverlayLabel         mOverlayLabel;
 
   private int                  mForcedLabelColour;
+
+  private ImageView.ScaleType  mImageViewScaleType;
+  private int                  mImageViewAnchorGravity;
 
 
   ////////// Static Initialiser(s) //////////
@@ -141,8 +145,14 @@ public class LabelledImageView extends AAREImageContainerFrame implements IImage
 
     // Save references to the child views
     mEmptyFrameImageView = (ImageView)view.findViewById( R.id.empty_frame_image_view );
-    ImageView imageView  = (ImageView)view.findViewById( R.id.image_view );
+    mImageView           = (ImageView)view.findViewById( R.id.image_view );
     mOverlayLabel        = (OverlayLabel)view.findViewById( R.id.overlay_label );
+
+    // Apply any scale type
+    if ( mImageViewScaleType != null && mImageView != null )
+      {
+      mImageView.setScaleType( mImageViewScaleType );
+      }
 
 
     // Set up the overlay label
@@ -163,21 +173,36 @@ public class LabelledImageView extends AAREImageContainerFrame implements IImage
       TypedArray typedArray = context.obtainStyledAttributes( attributeSet, R.styleable.LabelledImageView, defaultStyle, defaultStyle );
 
 
-      if ( imageView != null && imageView instanceof AnchorableImageView )
+      if ( mImageView != null && mImageView instanceof AnchorableImageView )
         {
-        AnchorableImageView anchorableImageView = (AnchorableImageView)imageView;
+        AnchorableImageView anchorableImageView = (AnchorableImageView)mImageView;
 
 
-        // See if there is an image anchor gravity
+        // See if there is an image anchor gravity. The SDK customiser overrides any XML defined value.
 
-        int imageAnchorGravity = typedArray.getInt( R.styleable.LabelledImageView_imageAnchorGravity, IMAGE_ANCHOR_GRAVITY_NONE );
-
-        switch ( imageAnchorGravity )
+        if ( mImageViewAnchorGravity != Gravity.NO_GRAVITY )
           {
-          case IMAGE_ANCHOR_GRAVITY_LEFT:   anchorableImageView.setAnchorGravity( Gravity.LEFT );   break;
-          case IMAGE_ANCHOR_GRAVITY_TOP:    anchorableImageView.setAnchorGravity( Gravity.TOP );    break;
-          case IMAGE_ANCHOR_GRAVITY_RIGHT:  anchorableImageView.setAnchorGravity( Gravity.RIGHT );  break;
-          case IMAGE_ANCHOR_GRAVITY_BOTTOM: anchorableImageView.setAnchorGravity( Gravity.BOTTOM ); break;
+          anchorableImageView.setAnchorGravity( mImageViewAnchorGravity );
+          }
+        else
+          {
+          int imageAnchorGravity = typedArray.getInt( R.styleable.LabelledImageView_imageAnchorGravity, IMAGE_ANCHOR_GRAVITY_NONE );
+
+          switch ( imageAnchorGravity )
+            {
+            case IMAGE_ANCHOR_GRAVITY_LEFT:
+              anchorableImageView.setAnchorGravity( Gravity.LEFT );
+              break;
+            case IMAGE_ANCHOR_GRAVITY_TOP:
+              anchorableImageView.setAnchorGravity( Gravity.TOP );
+              break;
+            case IMAGE_ANCHOR_GRAVITY_RIGHT:
+              anchorableImageView.setAnchorGravity( Gravity.RIGHT );
+              break;
+            case IMAGE_ANCHOR_GRAVITY_BOTTOM:
+              anchorableImageView.setAnchorGravity( Gravity.BOTTOM );
+              break;
+            }
           }
 
 
@@ -247,6 +272,35 @@ public class LabelledImageView extends AAREImageContainerFrame implements IImage
 
 
   ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Sets the scale type of the image view.
+   *
+   *****************************************************/
+  public void setImageScaleType( ImageView.ScaleType scaleType )
+    {
+    mImageViewScaleType = scaleType;
+
+    if ( scaleType != null && mImageView != null ) mImageView.setScaleType( scaleType );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the anchor point of the image view.
+   *
+   *****************************************************/
+  public void setImageAnchorGravity( int gravity )
+    {
+    mImageViewAnchorGravity = gravity;
+
+    if ( gravity != Gravity.NO_GRAVITY && mImageView != null && mImageView instanceof AnchorableImageView )
+      {
+      ( (AnchorableImageView)mImageView ).setAnchorGravity( gravity );
+      }
+    }
+
 
   /*****************************************************
    *

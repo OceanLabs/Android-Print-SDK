@@ -362,8 +362,8 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements I
       ViewReferences  viewReferences;
 
       if ( convertView != null &&
-              ( tagObject = convertView.getTag() ) != null &&
-              ( tagObject instanceof ViewReferences ) )
+           ( tagObject = convertView.getTag() ) != null &&
+           ( tagObject instanceof ViewReferences ) )
         {
         view           = convertView;
         viewReferences = (ViewReferences)tagObject;
@@ -382,8 +382,8 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements I
 
       IGroupOrProduct groupOrProduct = (IGroupOrProduct)getItem( position );
 
-
       viewReferences.bind( groupOrProduct, parent );
+
 
       return ( view );
       }
@@ -449,6 +449,7 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements I
           {
           ///// Group / Product image /////
 
+          this.productImageView.setImageAnchorGravity( groupOrProduct.getDisplayImageAnchorGravity( mContext ) );
           this.productImageView.setLabel( groupOrProduct.getDisplayLabel(), groupOrProduct.getDisplayLabelColour() );
 
           // Populate any price overlay

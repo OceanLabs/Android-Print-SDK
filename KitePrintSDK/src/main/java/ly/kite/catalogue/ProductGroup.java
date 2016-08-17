@@ -42,9 +42,12 @@ package ly.kite.catalogue;
 
 ///// Class Declaration /////
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
+import android.view.Gravity;
+import android.widget.ImageView;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -159,6 +162,18 @@ public class ProductGroup implements Parcelable, IGroupOrProduct
   public URL getDisplayImageURL()
     {
     return ( mImageURL );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the gravity for the display image.
+   *
+   *****************************************************/
+  @Override
+  public int getDisplayImageAnchorGravity( Context context )
+    {
+    return ( Gravity.NO_GRAVITY );
     }
 
 

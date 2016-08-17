@@ -42,6 +42,9 @@ package ly.kite;
 
 ///// Class Declaration /////
 
+import android.view.Gravity;
+import android.widget.ImageView;
+
 import ly.kite.checkout.ICreditCardAgent;
 import ly.kite.checkout.StripeCreditCardAgent;
 
@@ -77,6 +80,17 @@ public class SDKCustomiser
 
 
   ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Returns the scale type to be used for product images.
+   *
+   *****************************************************/
+  public int getChooseProductImageAnchorGravity( String productId )
+    {
+    return ( Gravity.NO_GRAVITY );
+    }
+
 
   /*****************************************************
    *

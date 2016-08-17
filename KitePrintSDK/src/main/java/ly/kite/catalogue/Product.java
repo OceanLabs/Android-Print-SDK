@@ -39,9 +39,11 @@ package ly.kite.catalogue;
 
 ///// Import(s) /////
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
+import android.widget.ImageView;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -352,6 +354,18 @@ public class Product implements Parcelable, IGroupOrProduct
   public URL getDisplayImageURL()
     {
     return ( mHeroImageURL );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the gravity for the display image.
+   *
+   *****************************************************/
+  @Override
+  public int getDisplayImageAnchorGravity( Context context )
+    {
+    return ( KiteSDK.getInstance( context ).getCustomiser().getChooseProductImageAnchorGravity( mId ) );
     }
 
 
