@@ -41,14 +41,14 @@ package ly.kite.checkout;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.DialogFragment;
-import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 
 import ly.kite.R;
 import ly.kite.api.OrderState;
+import ly.kite.app.ARetainedDialogFragment;
+import ly.kite.app.ARetainedFragment;
 import ly.kite.ordering.Order;
 
 
@@ -60,7 +60,7 @@ import ly.kite.ordering.Order;
  * order.
  *
  *****************************************************/
-public class OrderSubmissionFragment extends DialogFragment implements IOrderSubmissionProgressListener
+public class OrderSubmissionFragment extends ARetainedDialogFragment<IOrderSubmissionResultListener> implements IOrderSubmissionProgressListener
   {
   ////////// Static Constant(s) //////////
 
@@ -74,8 +74,6 @@ public class OrderSubmissionFragment extends DialogFragment implements IOrderSub
   ////////// Member Variable(s) //////////
 
   private OrderSubmitter  mOrderSubmitter;
-
-  private Runnable        mLastEventRunnable;
 
   private ProgressDialog  mProgressDialog;
 
@@ -95,7 +93,7 @@ public class OrderSubmissionFragment extends DialogFragment implements IOrderSub
     {
     OrderSubmissionFragment orderSubmissionFragment = new OrderSubmissionFragment();
 
-    orderSubmissionFragment.show( activity.getFragmentManager(), OrderSubmissionFragment.TAG );
+    orderSubmissionFragment.show( activity.getFragmentManager(), TAG );
 
     orderSubmissionFragment.submit( activity, order );
 
@@ -103,26 +101,21 @@ public class OrderSubmissionFragment extends DialogFragment implements IOrderSub
     }
 
 
+  /*****************************************************
+   *
+   * Tries to find this fragment, and returns it.
+   *
+   *****************************************************/
+  static public OrderSubmissionFragment findFragment( Activity activity )
+    {
+    return ( (OrderSubmissionFragment) findFragment( activity, TAG, OrderSubmissionFragment.class ) );
+    }
+
+
   ////////// Constructor(s) //////////
 
 
   ////////// DialogFragment Method(s) //////////
-
-  /*****************************************************
-   *
-   * Called when the fragment is created.
-   *
-   *****************************************************/
-  @Override
-  public void onCreate( Bundle savedInstanceState )
-    {
-    super.onCreate( savedInstanceState );
-
-    // Make sure we are retained even if the activity is destroyed, e.g. during
-    // orientation changes.
-    setRetainInstance( true );
-    }
-
 
   /*****************************************************
    *
@@ -147,37 +140,8 @@ public class OrderSubmissionFragment extends DialogFragment implements IOrderSub
       mProgressDialog.setMax( 100 );
       }
 
-    //if ( ! mProgressDialog.isShowing() ) mProgressDialog.show();
 
     return ( mProgressDialog );
-    }
-
-
-  /*****************************************************
-   *
-   * Called when the fragment is attached to an activity.
-   *
-   *****************************************************/
-  @Override
-  public void onAttach( Activity activity )
-    {
-    super.onAttach( activity );
-
-    checkLastEvent();
-    }
-
-
-  /*****************************************************
-   *
-   * Called when a target fragment is set.
-   *
-   *****************************************************/
-  @Override
-  public void setTargetFragment( Fragment fragment, int requestCode )
-    {
-    super.setTargetFragment( fragment, requestCode );
-    
-    checkLastEvent();
     }
 
 
@@ -201,7 +165,6 @@ public class OrderSubmissionFragment extends DialogFragment implements IOrderSub
       {
       case UPLOADING:
         progressDialog.setIndeterminate( false );
-        //mProgressDialog.setProgressPercentFormat( NumberFormat.getPercentInstance() );
         progressDialog.setProgress( primaryProgressPercent );
         progressDialog.setSecondaryProgress( secondaryProgressPercent );
         progressDialog.setMessage( getString( R.string.order_submission_message_uploading ) );
@@ -246,23 +209,17 @@ public class OrderSubmissionFragment extends DialogFragment implements IOrderSub
   public void onOrderComplete( final Order order, final OrderState state )
     {
     // The call-back might get called when we are not attached to an activity,
-    // and there is no target fragment. The runnable will therefore get re-run
+    // and there is no target fragment. The callback will therefore get re-notified
     // when we are attached or a target fragment is set.
 
-    mLastEventRunnable = new Runnable()
+    setState( mRetainedFragmentHelper.new AStateNotifier()
       {
       @Override
-      public void run()
+      public void notify( IOrderSubmissionResultListener callback )
         {
-        IOrderSubmissionResultListener activityListener = getActivityListener();
-        if ( activityListener != null ) activityListener.onOrderComplete( order, state );
-
-        IOrderSubmissionResultListener fragmentListener = getFragmentListener();
-        if ( fragmentListener != null ) fragmentListener.onOrderComplete( order, state );
+        callback.onOrderComplete( order, state );
         }
-      };
-
-    mLastEventRunnable.run();
+      } );
     }
 
 
@@ -275,23 +232,17 @@ public class OrderSubmissionFragment extends DialogFragment implements IOrderSub
   public void onOrderTimeout( final Order order )
     {
     // The call-back might get called when we are not attached to an activity,
-    // and there is no target fragment. The runnable will therefore get re-run
+    // and there is no target fragment. The callback will therefore get re-notified
     // when we are attached or a target fragment is set.
 
-    mLastEventRunnable = new Runnable()
+    setState( mRetainedFragmentHelper.new AStateNotifier()
       {
       @Override
-      public void run()
+      public void notify( IOrderSubmissionResultListener callback )
         {
-        IOrderSubmissionResultListener activityListener = getActivityListener();
-        if ( activityListener != null ) activityListener.onOrderTimeout( order );
-
-        IOrderSubmissionResultListener fragmentListener = getFragmentListener();
-        if ( fragmentListener != null ) fragmentListener.onOrderTimeout( order );
+        callback.onOrderTimeout( order );
         }
-      };
-
-    mLastEventRunnable.run();
+      } );
     }
 
 
@@ -304,23 +255,17 @@ public class OrderSubmissionFragment extends DialogFragment implements IOrderSub
   public void onOrderError( final Order order, final Exception exception )
     {
     // The call-back might get called when we are not attached to an activity,
-    // and there is no target fragment. The runnable will therefore get re-run
+    // and there is no target fragment. The callback will therefore get re-notified
     // when we are attached or a target fragment is set.
 
-    mLastEventRunnable = new Runnable()
+    setState( mRetainedFragmentHelper.new AStateNotifier()
       {
       @Override
-      public void run()
+      public void notify( IOrderSubmissionResultListener callback )
         {
-        IOrderSubmissionResultListener activityListener = getActivityListener();
-        if ( activityListener != null ) activityListener.onOrderError( order, exception );
-
-        IOrderSubmissionResultListener fragmentListener = getFragmentListener();
-        if ( fragmentListener != null ) fragmentListener.onOrderError( order, exception );
+        callback.onOrderError( order, exception );
         }
-      };
-
-    mLastEventRunnable.run();
+      } );
     }
 
 
@@ -333,23 +278,17 @@ public class OrderSubmissionFragment extends DialogFragment implements IOrderSub
   public void onOrderDuplicate( final Order order, final String originalOrderId )
     {
     // The call-back might get called when we are not attached to an activity,
-    // and there is no target fragment. The runnable will therefore get re-run
+    // and there is no target fragment. The callback will therefore get re-notified
     // when we are attached or a target fragment is set.
 
-    mLastEventRunnable = new Runnable()
+    setState( mRetainedFragmentHelper.new AStateNotifier()
       {
       @Override
-      public void run()
+      public void notify( IOrderSubmissionResultListener callback )
         {
-        IOrderSubmissionResultListener activityListener = getActivityListener();
-        if ( activityListener != null ) activityListener.onOrderDuplicate( order, originalOrderId );
-
-        IOrderSubmissionResultListener fragmentListener = getFragmentListener();
-        if ( fragmentListener != null ) fragmentListener.onOrderDuplicate( order, originalOrderId );
+        callback.onOrderDuplicate( order, originalOrderId );
         }
-      };
-
-    mLastEventRunnable.run();
+      } );
     }
 
 
@@ -365,55 +304,6 @@ public class OrderSubmissionFragment extends DialogFragment implements IOrderSub
     mOrderSubmitter = new OrderSubmitter( context, order, this );
 
     mOrderSubmitter.submit();
-    }
-
-
-  /*****************************************************
-   *
-   * Checks for a last event.
-   *
-   *****************************************************/
-  private void checkLastEvent()
-    {
-    if ( mLastEventRunnable != null ) mLastEventRunnable.run();
-    }
-
-
-  /*****************************************************
-   *
-   * Returns the activity cast to a listener.
-   *
-   *****************************************************/
-  private IOrderSubmissionResultListener getActivityListener()
-    {
-    Activity activity;
-
-    if ( ( activity = getActivity() ) != null &&
-           activity instanceof IOrderSubmissionResultListener )
-      {
-      return ( (IOrderSubmissionResultListener)activity );
-      }
-
-    return ( null );
-    }
-
-
-  /*****************************************************
-   *
-   * Returns the target fragment cast to a listener.
-   *
-   *****************************************************/
-  private IOrderSubmissionResultListener getFragmentListener()
-    {
-    Fragment fragment;
-
-    if ( ( fragment = getTargetFragment() ) != null &&
-            fragment instanceof IOrderSubmissionResultListener )
-      {
-      return ( (IOrderSubmissionResultListener)fragment );
-      }
-
-    return ( null );
     }
 
 

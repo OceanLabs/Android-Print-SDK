@@ -97,6 +97,7 @@ public class KiteSDK
 
   static public  final boolean DEBUG_PAYMENT_KEYS                                  = false;
   static public  final boolean DEBUG_PRICING                                       = false;
+  static public  final boolean DEBUG_RETAINED_FRAGMENT                             = true;
   static public  final boolean DISPLAY_PRODUCT_JSON                                = false;
 
   static public  final String SDK_VERSION                                          = "5.3.0";
