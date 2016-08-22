@@ -702,7 +702,13 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
       if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.GONE );
       }
 
-    if ( mCatalogueLoaderFragment != null ) mCatalogueLoaderFragment.removeFrom( this );
+    // Remove the loader fragment
+    if ( mCatalogueLoaderFragment != null )
+      {
+      mCatalogueLoaderFragment.removeFrom( this );
+
+      mCatalogueLoaderFragment = null;
+      }
     }
 
 

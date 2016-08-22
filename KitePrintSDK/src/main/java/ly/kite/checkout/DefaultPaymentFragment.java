@@ -55,10 +55,12 @@ import com.paypal.android.sdk.payments.PayPalConfiguration;
 import com.paypal.android.sdk.payments.PayPalPayment;
 import com.paypal.android.sdk.payments.PaymentConfirmation;
 import com.paypal.android.sdk.payments.ProofOfPayment;
+import com.paypal.android.sdk.payments.ShippingAddress;
 
 import io.card.payment.CardIOActivity;
 import io.card.payment.CreditCard;
 import ly.kite.KiteSDK;
+import ly.kite.address.Address;
 import ly.kite.analytics.Analytics;
 import ly.kite.catalogue.MultipleCurrencyAmount;
 import ly.kite.catalogue.SingleCurrencyAmount;
@@ -356,6 +358,33 @@ public class DefaultPaymentFragment extends APaymentFragment
 
   /*****************************************************
    *
+   * Returns a PayPal shipping address.
+   *
+   *****************************************************/
+  protected ShippingAddress getShippingAddress()
+    {
+    Address shippingAddress = mOrder.getShippingAddress();
+
+    if ( shippingAddress != null )
+      {
+      return (
+              new ShippingAddress()
+                      .recipientName( shippingAddress.getRecipientName() )
+                      .line1( shippingAddress.getLine1() )
+                      .line2( shippingAddress.getLine2() )
+                      .city( shippingAddress.getCity() )
+                      .state( shippingAddress.getStateOrCounty() )
+                      .postalCode( shippingAddress.getZipOrPostalCode() )
+                      .countryCode( shippingAddress.getCountry().iso2Code().toUpperCase() ) );
+      }
+
+
+    return ( null );
+    }
+
+
+  /*****************************************************
+   *
    * Called when the pay by PayPal button is clicked.
    *
    *****************************************************/
@@ -365,12 +394,22 @@ public class DefaultPaymentFragment extends APaymentFragment
 
     if ( totalCost != null )
       {
-      // TODO: See if we can remove the credit card payment option
+      // Authorise the payment. Payment is actually taken on the server
+
+      // TODO: Remove the credit card payment option
       PayPalPayment payment = new PayPalPayment(
               totalCost.getAmount(),
               totalCost.getCurrencyCode(),
               "Product",
-              PayPalPayment.PAYMENT_INTENT_AUTHORIZE );  // The payment is actually taken on the server
+              PayPalPayment.PAYMENT_INTENT_AUTHORIZE );
+
+
+      // Add any shipping address
+
+      ShippingAddress shippingAddress = getShippingAddress();
+
+      if ( shippingAddress != null ) payment.providedShippingAddress( getShippingAddress() );
+
 
       Intent intent = new Intent( getActivity(), com.paypal.android.sdk.payments.PaymentActivity.class );
 

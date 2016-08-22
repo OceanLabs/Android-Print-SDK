@@ -355,7 +355,7 @@ public class PayPalCard implements Serializable {
       if ( city            != null ) shippingAddressJSONObject.put( "city",           city );
       if ( stateOrCounty   != null ) shippingAddressJSONObject.put( "state",          stateOrCounty );
       if ( zipOrPostalCode != null ) shippingAddressJSONObject.put( "postal_code",    zipOrPostalCode );
-      if ( country         != null ) shippingAddressJSONObject.put( "country_code",   country.iso2Code() );
+      if ( country         != null ) shippingAddressJSONObject.put( "country_code",   country.iso2Code().toUpperCase() );
 
       JSONObject itemListJSONObject = new JSONObject();
 
