@@ -41,6 +41,7 @@ package ly.kite;
 
 import java.util.ArrayList;
 import java.util.Currency;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -100,7 +101,7 @@ public class KiteSDK
   static public  final boolean DEBUG_RETAINED_FRAGMENT                             = true;
   static public  final boolean DISPLAY_PRODUCT_JSON                                = false;
 
-  static public  final String SDK_VERSION                                          = "5.3.1";
+  static public  final String SDK_VERSION                                          = "5.3.2";
 
   static public  final String IMAGE_CATEGORY_APP                                   = "app";
   static public  final String IMAGE_CATEGORY_PRODUCT_ITEM                          = "product_item";
@@ -237,6 +238,28 @@ public class KiteSDK
 
   /*****************************************************
    *
+   * Clears a parameter for a particular scope.
+   *
+   *****************************************************/
+  static private void clearAddressParameter( Context context, Scope scope, String prefix, String name )
+    {
+    String key = getParameterKey( prefix, name );
+
+    scope.sharedPreferences( context )
+            .edit()
+            .remove( key + SHARED_PREFERENCES_KEY_SUFFIX_RECIPIENT )
+            .remove( key + SHARED_PREFERENCES_KEY_SUFFIX_LINE1 )
+            .remove( key + SHARED_PREFERENCES_KEY_SUFFIX_LINE2 )
+            .remove( key + SHARED_PREFERENCES_KEY_SUFFIX_CITY )
+            .remove( key + SHARED_PREFERENCES_KEY_SUFFIX_STATE_OR_COUNTY )
+            .remove( key + SHARED_PREFERENCES_KEY_SUFFIX_ZIP_OR_POSTAL_CODE )
+            .remove( key + SHARED_PREFERENCES_KEY_SUFFIX_COUNTRY_CODE )
+            .apply();
+    }
+
+
+  /*****************************************************
+   *
    * Sets a string parameter.
    *
    *****************************************************/
@@ -337,6 +360,52 @@ public class KiteSDK
     if ( recipient == null && line1 == null && line2 == null && city == null && stateOrCounty == null && zipOrPostalCode == null && country == null ) return ( null );
 
     return ( new Address( recipient, line1, line2, city, stateOrCounty, zipOrPostalCode, country ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets a string set parameter.
+   *
+   *****************************************************/
+  static private void setParameter( Context context, Scope scope, String prefix, String name, Set<String> stringSet )
+    {
+    String key = getParameterKey( prefix, name );
+
+    scope.sharedPreferences( context )
+            .edit()
+            .putStringSet( key, stringSet )
+            .apply();
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a string set parameter.
+   *
+   *****************************************************/
+  static private Set<String> getStringSetParameter( Context context, Scope scope, String prefix, String name )
+    {
+    String key = getParameterKey( prefix, name );
+
+    HashSet<String> returnedStringSet = new HashSet<>();
+
+    Set<String> loadedStringSet = scope.sharedPreferences( context ).getStringSet( key, null );
+
+
+    // We want to copy the strings into a new set, so they can be modified
+    // if necessary.
+
+    if ( loadedStringSet != null )
+      {
+      for ( String string : loadedStringSet )
+        {
+        returnedStringSet.add( string );
+        }
+      }
+
+
+    return ( returnedStringSet );
     }
 
 
@@ -597,6 +666,7 @@ public class KiteSDK
    *****************************************************/
   public void endCustomerSession()
     {
+    // Clear all customer session parameters
     clearAllParameters( Scope.CUSTOMER_SESSION );
 
 
@@ -620,10 +690,6 @@ public class KiteSDK
         Log.e( LOG_TAG, "Unable to end customer session for image source: " + imageSource, e );
         }
       }
-
-
-    // Empty address book
-    Address.deleteAddressBook( mApplicationContext );
 
 
     // Clear credit card
@@ -1388,6 +1454,19 @@ public class KiteSDK
 
   /*****************************************************
    *
+   * Sets an address SDK parameter.
+   *
+   *****************************************************/
+  public KiteSDK setSDKParameter( Scope scope, String name, Address address )
+    {
+    setParameter( mApplicationContext, scope, SHARED_PREFERENCES_KEY_PREFIX_SDK, name, address );
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
    * Sets a string app parameter.
    *
    *****************************************************/
@@ -1407,6 +1486,32 @@ public class KiteSDK
   public KiteSDK setSDKParameter( Scope scope, String name, boolean booleanValue )
     {
     setParameter( mApplicationContext, scope, SHARED_PREFERENCES_KEY_PREFIX_SDK, name, booleanValue );
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets a string set SDK parameter.
+   *
+   *****************************************************/
+  public KiteSDK setSDKParameter( Scope scope, String name, Set<String> stringSet )
+    {
+    setParameter( mApplicationContext, scope, SHARED_PREFERENCES_KEY_PREFIX_SDK, name, stringSet );
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Clears an SDK address parameter.
+   *
+   *****************************************************/
+  public KiteSDK clearAddressSDKParameter( Scope scope, String name )
+    {
+    clearAddressParameter( mApplicationContext, scope, SHARED_PREFERENCES_KEY_PREFIX_SDK, name );
 
     return ( this );
     }
@@ -1468,6 +1573,28 @@ public class KiteSDK
   public boolean getBooleanSDKParameter( Scope scope, String name, boolean defaultValue )
     {
     return ( getBooleanParameter( mApplicationContext, scope, SHARED_PREFERENCES_KEY_PREFIX_SDK, name, defaultValue ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the value of an SDK string set parameter.
+   *
+   *****************************************************/
+  public Set<String> getStringSetSDKParameter( Scope scope, String name )
+    {
+    return ( getStringSetParameter( mApplicationContext, scope, SHARED_PREFERENCES_KEY_PREFIX_SDK, name ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the value of an SDK address parameter.
+   *
+   *****************************************************/
+  public Address getAddressSDKParameter( Scope scope, String name )
+    {
+    return ( getAddressParameter( mApplicationContext, scope, SHARED_PREFERENCES_KEY_PREFIX_SDK, name ) );
     }
 
 

@@ -14,7 +14,6 @@ import java.util.Set;
 
 import ly.kite.address.Address;
 import ly.kite.catalogue.Product;
-import ly.kite.util.Asset;
 import ly.kite.util.AssetFragment;
 import ly.kite.util.StringUtils;
 import ly.kite.util.UploadableImage;

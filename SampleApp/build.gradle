@@ -2,6 +2,7 @@ buildscript {
     repositories {
 
         mavenCentral()
+        jcenter()
 
         // Uncomment to include Crashlytics (Fabric) crash reporting
         //maven { url 'https://maven.fabric.io/public' }

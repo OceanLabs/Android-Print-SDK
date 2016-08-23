@@ -1,50 +1,104 @@
+/*****************************************************
+ *
+ * Address.java
+ *
+ *
+ * Modified MIT License
+ *
+ * Copyright (c) 2010-2016 Kite Tech Ltd. https://www.kite.ly
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The software MAY ONLY be used with the Kite Tech Ltd platform and MAY NOT be modified
+ * to be used with any competitor platforms. This means the software MAY NOT be modified 
+ * to place orders with any competitors to Kite Tech Ltd, all orders MUST go through the
+ * Kite Tech Ltd platform servers. 
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ *****************************************************/
+
+///// Package Declaration /////
+
 package ly.kite.address;
 
-import android.content.Context;
-import android.os.Parcel;
-import android.os.Parcelable;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+///// Import(s) /////
+
+import android.os.Parcelable;
+import android.os.Parcel;
 
 import ly.kite.util.StringUtils;
 
-/**
- * Created by deonbotha on 29/01/2014.
- */
-public class Address implements Parcelable, Serializable
+
+///// Class Declaration /////
+
+/*****************************************************
+ *
+ * This class holds an address
+ *
+ *****************************************************/
+public class Address implements Parcelable
   {
+  ////////// Static Constant(s) //////////
 
-  private static final String PERSISTED_ADDRESS_BOOK_FILENAME = "address_book";
-  private static final int NOT_PERSITED = -1;
-
-  private static final long serialVersionUID = 0L;
-
-  private String recipientName;
-  private String line1;
-  private String line2;
-  private String city;
-  private String stateOrCounty;
-  private String zipOrPostalCode;
-  private Country country;
-
-  private int storageIdentifier = NOT_PERSITED;
-
-  // Partial address fields
-  private String addressId;
-  private String displayName;
-  private boolean searchRequiredForFullDetails;
+  @SuppressWarnings( "unused" )
+  static private final String  LOG_TAG = "Address";
 
 
+  ////////// Static Variable(s) //////////
 
+  public static final Parcelable.Creator<Address> CREATOR = new Parcelable.Creator<Address>()
+    {
+    public Address createFromParcel( Parcel in )
+      {
+      return new Address( in );
+      }
+
+    public Address[] newArray( int size )
+      {
+      return new Address[ size ];
+      }
+    };
+
+
+  ////////// Member Variable(s) //////////
+
+  private String  mId;
+  private String  mRecipientName;
+  private String  mLine1;
+  private String  mLine2;
+  private String  mCity;
+  private String  mStateOrCounty;
+  private String  mZIPOrPostalCode;
+  private Country mCountry;
+
+
+  ////////// Static Initialiser(s) //////////
+
+
+  ////////// Static Method(s) //////////
+
+  /*****************************************************
+   *
+   * Returns true if the supplied string is non null and
+   * contains non-white space character(s).
+   *
+   *****************************************************/
   private static boolean isPopulated( String testString )
     {
     return ( testString != null && testString.trim().length() > 0 );
@@ -65,121 +119,163 @@ public class Address implements Parcelable, Serializable
     }
 
 
+  /*****************************************************
+   *
+   * Returns Kite's address.
+   *
+   *****************************************************/
+  public static Address getKiteTeamAddress()
+    {
+    return ( new Address(
+            "Kite Tech Ltd.",
+            "6-8 Bonhill Street",
+            null,
+            "London",
+            null,
+            "EC2A 4BX",
+            Country.getInstance( "GBR" ) ) );
+    }
+
+
+  ////////// Constructor(s) //////////
+
   public Address()
     {
-
     }
 
   public Address( String recipientName, String line1, String line2, String city, String stateOrCounty, String zipOrPostalCode, Country country )
     {
-    this.recipientName = recipientName;
-    this.line1 = line1;
-    this.line2 = line2;
-    this.city = city;
-    this.stateOrCounty = stateOrCounty;
-    this.zipOrPostalCode = zipOrPostalCode;
-    this.country = country;
+    mRecipientName   = recipientName;
+    mLine1           = line1;
+    mLine2           = line2;
+    mCity            = city;
+    mStateOrCounty   = stateOrCounty;
+    mZIPOrPostalCode = zipOrPostalCode;
+    mCountry         = country;
     }
 
-  public static Address getKiteTeamAddress()
+  private Address( Parcel parcel )
     {
-    Address addr = new Address();
-    addr.recipientName = "Kite Team";
-    addr.line1 = "Eastcastle House";
-    addr.line2 = "27-28 Eastcastle St";
-    addr.city = "London";
-    addr.zipOrPostalCode = "W1W 8DH";
-    addr.country = Country.getInstance( "GBR" );
-    return addr;
+    mId              = parcel.readString();
+    mRecipientName   = parcel.readString();
+    mLine1           = parcel.readString();
+    mLine2           = parcel.readString();
+    mCity            = parcel.readString();
+    mStateOrCounty   = parcel.readString();
+    mZIPOrPostalCode = parcel.readString();
+    mCountry         = Country.getInstance( parcel.readString() );
     }
+
+
+  ////////// Parcelable Method(s) //////////
+
+  @Override
+  public int describeContents()
+    {
+    return ( 0 );
+    }
+
+  @Override
+  public void writeToParcel( Parcel parcel, int flags )
+    {
+    parcel.writeString( mId );
+    parcel.writeString( mRecipientName );
+    parcel.writeString( mLine1 );
+    parcel.writeString( mLine2 );
+    parcel.writeString( mCity );
+    parcel.writeString( mStateOrCounty );
+    parcel.writeString( mZIPOrPostalCode );
+    parcel.writeString( mCountry.iso2Code() );
+    }
+
+
+  ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * ...
+   *
+   *****************************************************/
+  void setId( String id )
+    {
+    mId = id;
+    }
+
+
+  String getId()
+    {
+    return ( mId );
+    }
+
 
   public String getRecipientName()
     {
-    return recipientName;
+    return ( mRecipientName );
     }
 
   public String getLine1()
     {
-    return line1;
+    return ( mLine1 );
     }
 
   public String getLine2()
     {
-    return line2;
+    return ( mLine2 );
     }
 
   public String getCity()
     {
-    return city;
+    return ( mCity );
     }
 
   public String getStateOrCounty()
     {
-    return stateOrCounty;
+    return ( mStateOrCounty );
     }
 
   public String getZipOrPostalCode()
     {
-    return zipOrPostalCode;
+    return ( mZIPOrPostalCode );
     }
 
   public Country getCountry()
     {
-    return country;
+    return ( mCountry );
     }
 
-  public void setRecipientName( String recipientName )
+  public void setRecipientName( String mRecipientName )
     {
-    this.recipientName = recipientName;
+    this.mRecipientName = mRecipientName;
     }
 
   public void setLine1( String line1 )
     {
-    this.line1 = line1;
+    mLine1 = line1;
     }
 
   public void setLine2( String line2 )
     {
-    this.line2 = line2;
+    mLine2 = line2;
     }
 
   public void setCity( String city )
     {
-    this.city = city;
+    mCity = city;
     }
 
   public void setStateOrCounty( String stateOrCounty )
     {
-    this.stateOrCounty = stateOrCounty;
+    mStateOrCounty = stateOrCounty;
     }
 
   public void setZipOrPostalCode( String zipOrPostalCode )
     {
-    this.zipOrPostalCode = zipOrPostalCode;
+    mZIPOrPostalCode = zipOrPostalCode;
     }
 
   public void setCountry( Country country )
     {
-    this.country = country;
-    }
-
-  @Override
-  public String toString()
-    {
-//    if ( displayName != null )
-//      {
-//      return displayName;
-//      }
-
-    StringBuilder strBuilder = new StringBuilder();
-
-    if ( recipientName != null && recipientName.trim().length() > 0 )
-      strBuilder.append( recipientName );
-    String addressWithoutRecipient = getDisplayAddressWithoutRecipient();
-    if ( addressWithoutRecipient != null && addressWithoutRecipient.trim().length() > 0 )
-      strBuilder.append( strBuilder.length() > 0 ? ", " : "" ).append( addressWithoutRecipient );
-
-    return strBuilder.toString();
+    mCountry = country;
     }
 
 
@@ -201,54 +297,54 @@ public class Address implements Parcelable, Serializable
 
     String separator = "";
 
-    if ( isPopulated( recipientName ) )
+    if ( isPopulated( mRecipientName ) )
       {
-      stringBuilder.append( recipientName );
+      stringBuilder.append( mRecipientName );
 
       separator = newlineString;
       }
 
-    if ( isPopulated( line1 ) )
+    if ( isPopulated( mLine1 ) )
       {
       stringBuilder
-        .append( separator )
-        .append( line1 );
+              .append( separator )
+              .append( mLine1 );
 
       separator = ", ";
       }
 
-    if ( isPopulated( line2 ) )
+    if ( isPopulated( mLine2 ) )
       {
       stringBuilder
               .append( separator )
-              .append( line2 );
+              .append( mLine2 );
 
       separator = ", ";
       }
 
-    if ( isPopulated( city ) )
+    if ( isPopulated( mCity ) )
       {
       stringBuilder
               .append( separator )
-              .append( city );
+              .append( mCity );
 
       separator = ", ";
       }
 
-    if ( isPopulated( stateOrCounty ) )
+    if ( isPopulated( mStateOrCounty ) )
       {
       stringBuilder
               .append( separator )
-              .append( stateOrCounty );
+              .append( mStateOrCounty );
 
       separator = ", ";
       }
 
-    if ( isPopulated( zipOrPostalCode ) )
+    if ( isPopulated( mZIPOrPostalCode ) )
       {
       stringBuilder
               .append( separator )
-              .append( zipOrPostalCode );
+              .append( mZIPOrPostalCode );
 
       separator = newlineString;
       }
@@ -256,7 +352,7 @@ public class Address implements Parcelable, Serializable
 
     String countryDisplayName;
 
-    if ( country != null && isPopulated( countryDisplayName = country.displayName() ) )
+    if ( mCountry != null && isPopulated( countryDisplayName = mCountry.displayName() ) )
       {
       stringBuilder
               .append( separator )
@@ -272,227 +368,35 @@ public class Address implements Parcelable, Serializable
     {
     StringBuilder strBuilder = new StringBuilder();
 
-    if ( line1 != null && line1.trim().length() > 0 )
-      strBuilder.append( strBuilder.length() > 0 ? ", " : "" ).append( line1 );
-    if ( line2 != null && line2.trim().length() > 0 )
-      strBuilder.append( strBuilder.length() > 0 ? ", " : "" ).append( line2 );
-    if ( city != null && city.trim().length() > 0 )
-      strBuilder.append( strBuilder.length() > 0 ? ", " : "" ).append( city );
-    if ( stateOrCounty != null && stateOrCounty.trim().length() > 0 )
-      strBuilder.append( strBuilder.length() > 0 ? ", " : "" ).append( stateOrCounty );
-    if ( zipOrPostalCode != null && zipOrPostalCode.trim().length() > 0 )
-      strBuilder.append( strBuilder.length() > 0 ? ", " : "" ).append( zipOrPostalCode );
-    if ( country != null && country.displayName().trim().length() > 0 )
-      strBuilder.append( strBuilder.length() > 0 ? ", " : "" ).append( country.displayName() );
+    if ( mLine1 != null && mLine1.trim().length() > 0 )
+      strBuilder.append( strBuilder.length() > 0 ? ", " : "" ).append( mLine1 );
+    if ( mLine2 != null && mLine2.trim().length() > 0 )
+      strBuilder.append( strBuilder.length() > 0 ? ", " : "" ).append( mLine2 );
+    if ( mCity != null && mCity.trim().length() > 0 )
+      strBuilder.append( strBuilder.length() > 0 ? ", " : "" ).append( mCity );
+    if ( mStateOrCounty != null && mStateOrCounty.trim().length() > 0 )
+      strBuilder.append( strBuilder.length() > 0 ? ", " : "" ).append( mStateOrCounty );
+    if ( mZIPOrPostalCode != null && mZIPOrPostalCode.trim().length() > 0 )
+      strBuilder.append( strBuilder.length() > 0 ? ", " : "" ).append( mZIPOrPostalCode );
+    if ( mCountry != null && mCountry.displayName().trim().length() > 0 )
+      strBuilder.append( strBuilder.length() > 0 ? ", " : "" ).append( mCountry.displayName() );
 
     return strBuilder.toString();
     }
 
-  @Override
-  public int describeContents()
-    {
-    return 0;
-    }
 
   @Override
-  public void writeToParcel( Parcel parcel, int flags )
+  public String toString()
     {
-    parcel.writeString( recipientName );
-    parcel.writeString( line1 );
-    parcel.writeString( line2 );
-    parcel.writeString( city );
-    parcel.writeString( stateOrCounty );
-    parcel.writeString( zipOrPostalCode );
-    parcel.writeString( country.iso2Code() );
-    parcel.writeString( addressId );
-    parcel.writeString( displayName );
-    parcel.writeInt( storageIdentifier );
-    parcel.writeInt( searchRequiredForFullDetails ? 1 : 0 );
-    }
+    StringBuilder strBuilder = new StringBuilder();
 
-  private Address( Parcel p )
-    {
-    this.recipientName = p.readString();
-    this.line1 = p.readString();
-    this.line2 = p.readString();
-    this.city = p.readString();
-    this.stateOrCounty = p.readString();
-    this.zipOrPostalCode = p.readString();
-    this.country = Country.getInstance( p.readString() );
-    this.addressId = p.readString();
-    this.displayName = p.readString();
-    this.storageIdentifier = p.readInt();
-    this.searchRequiredForFullDetails = p.readInt() == 1;
-    }
+    if ( mRecipientName != null && mRecipientName.trim().length() > 0 )
+      strBuilder.append( mRecipientName );
+    String addressWithoutRecipient = getDisplayAddressWithoutRecipient();
+    if ( addressWithoutRecipient != null && addressWithoutRecipient.trim().length() > 0 )
+      strBuilder.append( strBuilder.length() > 0 ? ", " : "" ).append( addressWithoutRecipient );
 
-  public static final Parcelable.Creator<Address> CREATOR
-          = new Parcelable.Creator<Address>()
-  {
-  public Address createFromParcel( Parcel in )
-    {
-    return new Address( in );
-    }
-
-  public Address[] newArray( int size )
-    {
-    return new Address[ size ];
-    }
-  };
-
-  private void writeObject( java.io.ObjectOutputStream out ) throws IOException
-    {
-    out.writeObject( recipientName );
-    out.writeObject( line1 );
-    out.writeObject( line2 );
-    out.writeObject( city );
-    out.writeObject( stateOrCounty );
-    out.writeObject( zipOrPostalCode );
-    out.writeObject( country.iso2Code() );
-    out.writeObject( addressId );
-    out.writeObject( displayName );
-    out.writeInt( storageIdentifier );
-    out.writeInt( searchRequiredForFullDetails ? 1 : 0 );
-    }
-
-  private void readObject( java.io.ObjectInputStream in ) throws IOException, ClassNotFoundException
-    {
-    this.recipientName = (String) in.readObject();
-    this.line1 = (String) in.readObject();
-    this.line2 = (String) in.readObject();
-    this.city = (String) in.readObject();
-    this.stateOrCounty = (String) in.readObject();
-    this.zipOrPostalCode = (String) in.readObject();
-    this.country = Country.getInstance( (String) in.readObject() );
-    this.addressId = (String) in.readObject();
-    this.displayName = (String) in.readObject();
-    this.storageIdentifier = in.readInt();
-    this.searchRequiredForFullDetails = in.readInt() == 1;
-    }
-
-    /*
-     * AddressBook persisting methods
-     */
-
-  public void saveToAddressBook( Context c )
-    {
-    List<Address> currentAddresses = getAddressBook( c );
-    if ( !isSavedInAddressBook() )
-      {
-      storageIdentifier = getNextStorageIdentifier( currentAddresses );
-      }
-
-    ArrayList<Address> updatedAddresses = new ArrayList<Address>();
-    updatedAddresses.add( this );
-    for ( Address a : currentAddresses )
-      {
-      if ( a.storageIdentifier != storageIdentifier )
-        {
-        updatedAddresses.add( a );
-        }
-      }
-
-    persistAddressesToDisk( c, updatedAddresses );
-    }
-
-  public void deleteFromAddressBook( Context c )
-    {
-    if ( !isSavedInAddressBook() )
-      {
-      return;
-      }
-
-    List<Address> addresses = getAddressBook( c );
-    Iterator<Address> iter = addresses.iterator();
-    while ( iter.hasNext() )
-      {
-      Address o = iter.next();
-      if ( o.storageIdentifier == storageIdentifier )
-        {
-        iter.remove();
-        break;
-        }
-      }
-
-    persistAddressesToDisk( c, addresses );
-    }
-
-  static public void deleteAddressBook( Context context )
-    {
-    context.deleteFile( PERSISTED_ADDRESS_BOOK_FILENAME );
-    }
-
-  private static void persistAddressesToDisk( Context c, List<Address> addresses )
-    {
-    ObjectOutputStream os = null;
-    try
-      {
-      os = new ObjectOutputStream( new BufferedOutputStream( c.openFileOutput( PERSISTED_ADDRESS_BOOK_FILENAME, Context.MODE_PRIVATE ) ) );
-      os.writeObject( addresses );
-      }
-    catch ( Exception ex )
-      {
-      // ignore, we'll just lose this order from the history now
-      }
-    finally
-      {
-      try
-        {
-        os.close();
-        }
-      catch ( Exception ex )
-        {/* ignore */}
-      }
-    }
-
-  public boolean isSavedInAddressBook()
-    {
-    return storageIdentifier != NOT_PERSITED;
-    }
-
-  public static int getNextStorageIdentifier( List<Address> addresses )
-    {
-    int nextIdentifier = 0;
-    for ( int i = 0; i < addresses.size(); ++i )
-      {
-      Address o = addresses.get( i );
-      if ( nextIdentifier <= o.storageIdentifier )
-        {
-        nextIdentifier = o.storageIdentifier + 1;
-        }
-      }
-    return nextIdentifier;
-    }
-
-  public static List<Address> getAddressBook( Context c )
-    {
-    ObjectInputStream is = null;
-    try
-      {
-      is = new ObjectInputStream( new BufferedInputStream( c.openFileInput( PERSISTED_ADDRESS_BOOK_FILENAME ) ) );
-      ArrayList<Address> addresses = (ArrayList<Address>) is.readObject();
-      return addresses;
-      }
-    catch ( FileNotFoundException ex )
-      {
-      // create a brand new address book
-      ArrayList<Address> addrs = new ArrayList<Address>();
-      persistAddressesToDisk( c, addrs );
-
-      return addrs;
-      }
-    catch ( Exception ex )
-      {
-      throw new RuntimeException( ex );
-      }
-    finally
-      {
-      try
-        {
-        is.close();
-        }
-      catch ( Exception ex )
-        { /* ignore */ }
-      }
+    return strBuilder.toString();
     }
 
 
@@ -503,13 +407,22 @@ public class Address implements Parcelable, Serializable
 
     Address otherAddress = (Address)otherObject;
 
-    return ( StringUtils.areBothNullOrEqual( this.recipientName, otherAddress.recipientName ) &&
-             StringUtils.areBothNullOrEqual( this.line1, otherAddress.line1 ) &&
-             StringUtils.areBothNullOrEqual( this.line2, otherAddress.line2 ) &&
-             StringUtils.areBothNullOrEqual( this.city, otherAddress.city ) &&
-             StringUtils.areBothNullOrEqual( this.stateOrCounty, otherAddress.stateOrCounty ) &&
-             StringUtils.areBothNullOrEqual( this.zipOrPostalCode, otherAddress.zipOrPostalCode ) &&
-             Country.areBothNullOrEqual( this.country, otherAddress.country ) );
+    return ( StringUtils.areBothNullOrEqual( mRecipientName, otherAddress.mRecipientName ) &&
+             StringUtils.areBothNullOrEqual( mLine1, otherAddress.mLine1 ) &&
+             StringUtils.areBothNullOrEqual( mLine2, otherAddress.mLine2 ) &&
+             StringUtils.areBothNullOrEqual( mCity, otherAddress.mCity ) &&
+             StringUtils.areBothNullOrEqual( mStateOrCounty, otherAddress.mStateOrCounty ) &&
+             StringUtils.areBothNullOrEqual( mZIPOrPostalCode, otherAddress.mZIPOrPostalCode ) &&
+             Country.areBothNullOrEqual( mCountry, otherAddress.mCountry ) );
     }
+
+
+  ////////// Inner Class(es) //////////
+
+  /*****************************************************
+   *
+   * ...
+   *
+   *****************************************************/
 
   }
