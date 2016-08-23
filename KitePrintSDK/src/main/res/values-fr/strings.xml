@@ -16,10 +16,10 @@
     <string name="title_payment_source">Paiement Source</string>
     <string name="drawer_open">Tiroir ouvert</string>
     <string name="drawer_closed">Tiroir fermé</string>
-    <string name="alert_dialog_title_pack_not_full_format_string">Vous avez sélectionné %1$d %2$s</string>
+    <string name="alert_dialog_title_pack_not_full_format_string">Vous avez sélectionné %s</string>
     <string name="alert_dialog_message_pack_not_full_format_string">Vous pouvez ajouter %d de plus pour le m&#234;me prix</string>
     <string name="alert_dialog_title_oops">Oups!</string>
-    <string name="alert_dialog_message_pricing_format_string">Un probl&#232;me est survenu, nous n\'avons pas pu r&#233;cup&#233;rer le tarif &#224; partir du serveur</string>
+    <string name="alert_dialog_message_pricing_format_string">Un probl&#232;me est survenu, nous n\'avons pas pu r&#233;cup&#233;rer le tarif &#224; partir du serveur: %s</string>
     <string name="alert_dialog_title_no_intent">Erreur interne</string>
     <string name="alert_dialog_message_no_intent">Un problème est survenu. Veuillez vérifier vos identifiants d\'accès.</string>
     <string name="alert_dialog_title_no_arguments">Erreur interne</string>
@@ -138,7 +138,7 @@
     <string name="image_source_prompt">Ajouter des photos en appuyant sur ​​l\'une des options</string>
 
     <string name="image_selection_pack_title_format_string">#%1$d Paquet de %2$d %3$s</string>
-    <string name="image_selection_clear_photos_format_string">Effacer %1$d %2$s</string>
+    <string name="image_selection_clear_photos_format_string">Effacer %s</string>
 
     <string name="edit_image_prompt_text">Repositionner la photo</string>
     <string name="image_selection_proceed_button_text">Consulter et modifier</string>
@@ -200,9 +200,8 @@
     <string name="title_activity_address_book">Carnet d\'adresses</string>
     <string name="add_address">Ajouter une adresse</string>
     <string name="search_for_address">Rechercher nouvelle adresse</string>
-    <string name="manual_add_address">Créer une nouvelle adresse</string>
+    <string name="title_activity_address_add">Créer une nouvelle adresse</string>
     <string name="title_activity_address_edit">Modifier l\'adresse</string>
-    <string name="title_activity_address_search">Rechercher une adresse</string>
     <string name="action_save_address">Enregistrer adresse</string>
     <string name="search_title">Rechercher</string>
     <string name="country_search_hint">Recherche des adresses</string>

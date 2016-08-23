@@ -161,12 +161,12 @@ public class PayPalCard implements Serializable {
         this.cvv2 = cvv2;
     }
 
-    private void getAccessToken(final KiteSDK.Environment environment, final AccessTokenListener listener) {
+    private void getAccessToken( final KiteSDK kiteSDK, final AccessTokenListener listener) {
         AsyncTask<Void, Void, Object> requestTask = new AsyncTask<Void, Void, Object>() {
             @Override
             protected Object doInBackground(Void... voids) {
                 HttpClient httpclient = new DefaultHttpClient();
-                HttpPost req = new HttpPost(String.format("https://%s/v1/oauth2/token", environment.getPayPalAPIEndpoint() ));
+                HttpPost req = new HttpPost(String.format("https://%s/v1/oauth2/token", kiteSDK.getPayPalAPIEndpoint() ));
                 req.setHeader("Content-Type", "application/x-www-form-urlencoded");
                 try {
                     req.setEntity(new StringEntity("grant_type=client_credentials"));
@@ -174,7 +174,7 @@ public class PayPalCard implements Serializable {
                     return e;
                 }
 
-                req.setHeader("Authorization", "Basic " + environment.getPayPalAuthToken() );
+                req.setHeader("Authorization", "Basic " + kiteSDK.getPayPalAuthToken() );
 
                 try {
                     HttpResponse response = httpclient.execute(req);
@@ -206,8 +206,8 @@ public class PayPalCard implements Serializable {
         requestTask.execute();
     }
 
-    public void storeCard(final KiteSDK.Environment environment, final PayPalCardVaultStorageListener listener) {
-        getAccessToken(environment, new AccessTokenListener() {
+    public void storeCard( final KiteSDK kiteSDK, final PayPalCardVaultStorageListener listener) {
+        getAccessToken( kiteSDK, new AccessTokenListener() {
             @Override
             public void onAccessToken(final String accessToken) {
                 final JSONObject storeJSON = new JSONObject();
@@ -227,7 +227,7 @@ public class PayPalCard implements Serializable {
                     @Override
                     protected Object doInBackground(Void... voids) {
                         HttpClient httpclient = new DefaultHttpClient();
-                        HttpPost req = new HttpPost(String.format("https://%s/v1/vault/credit-card", environment.getPayPalAPIEndpoint() ));
+                        HttpPost req = new HttpPost(String.format("https://%s/v1/vault/credit-card", kiteSDK.getPayPalAPIEndpoint() ));
                         req.setHeader("Content-Type", "application/json");
                         req.setHeader("Accept-Language", "en");
                         try {
@@ -355,7 +355,7 @@ public class PayPalCard implements Serializable {
       if ( city            != null ) shippingAddressJSONObject.put( "city",           city );
       if ( stateOrCounty   != null ) shippingAddressJSONObject.put( "state",          stateOrCounty );
       if ( zipOrPostalCode != null ) shippingAddressJSONObject.put( "postal_code",    zipOrPostalCode );
-      if ( country         != null ) shippingAddressJSONObject.put( "country_code",   country.iso2Code() );
+      if ( country         != null ) shippingAddressJSONObject.put( "country_code",   country.iso2Code().toUpperCase() );
 
       JSONObject itemListJSONObject = new JSONObject();
 
@@ -373,9 +373,9 @@ public class PayPalCard implements Serializable {
     }
 
 
-  public void authoriseCard( final KiteSDK.Environment environment, final BigDecimal amount, final String currencyCode, final String description, final Address shippingAddress, final PayPalCardChargeListener listener )
+  public void authoriseCard( final KiteSDK kiteSDK, final BigDecimal amount, final String currencyCode, final String description, final Address shippingAddress, final PayPalCardChargeListener listener )
     {
-    getAccessToken( environment, new AccessTokenListener()
+    getAccessToken( kiteSDK, new AccessTokenListener()
       {
       @Override
       public void onAccessToken( final String accessToken )
@@ -399,7 +399,7 @@ public class PayPalCard implements Serializable {
             JSONObject paymentJSON = jsons[ 0 ];
 
             HttpClient httpclient = new DefaultHttpClient();
-            HttpPost req = new HttpPost( String.format( "https://%s/v1/payments/payment", environment.getPayPalAPIEndpoint() ) );
+            HttpPost req = new HttpPost( String.format( "https://%s/v1/payments/payment", kiteSDK.getPayPalAPIEndpoint() ) );
             req.setHeader( "Content-Type", "application/json" );
             req.setHeader( "Accept-Language", "en" );
             try
@@ -483,9 +483,9 @@ public class PayPalCard implements Serializable {
 
 
 
-  public void authoriseCard( final KiteSDK.Environment environment, final BigDecimal amount, final String currencyCode, final String description, final PayPalCardChargeListener listener )
+  public void authoriseCard( final KiteSDK kiteSDK, final BigDecimal amount, final String currencyCode, final String description, final PayPalCardChargeListener listener )
     {
-    authoriseCard( environment, amount, currencyCode, description, null, listener );
+    authoriseCard( kiteSDK, amount, currencyCode, description, null, listener );
     }
 
 

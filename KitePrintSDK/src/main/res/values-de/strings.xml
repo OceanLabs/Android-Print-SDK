@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <string name="app_name">Kite SDK</string>
+
+    <string name="action_bar_typeface_asset_name" translatable="false"></string>
+
+    <string name="analytics_event_callback_class_name" translatable="false">ly.kite.analytics.NullAnalyticsEventCallback</string>
+    <string name="custom_image_editor_agent_class_name" translatable="false"></string>
+
+    <string name="custom_typeface_file_name" translatable="false">""</string>
+
+    <string name="unit_centimeters">Zentimeter</string>
+    <string name="unit_inches">Inches</string>
+    <string name="unit_pixels">Pixel</string>
+
+    <string name="unit_centimeters_short">cm</string>
+    <string name="unit_inches_short">Inches</string>
+    <string name="unit_pixels_short">px</string>
+
+    <string name="title_choose_product_group">Druck</string>
+    <string name="title_create_phone_case">Gestalte Dein Phone Case</string>
+    <string name="title_image_source">Wähle Photos aus</string>
+    <string name="title_photobook">Photobuch</string>
+    <string name="title_basket">Korb</string>
+    <string name="title_payment_sandbox">Zahlung (Sandbox)</string>
+    <string name="title_payment">Zahlung</string>
+    <string name="title_payment_source_sandbox">Zahlung Source (Sandbox)</string>
+    <string name="title_payment_source">Zahlung Source</string>
+    <string name="title_order_history">Bestellablauf</string>
+
+    <string name="drawer_open">Zeichner geöffnet</string>
+    <string name="drawer_closed">Zeichner geschlossen</string>
+
+    <string name="alert_dialog_title_pack_not_full_format_string">Du hast %s ausgesucht</string>
+    <string name="alert_dialog_message_pack_not_full_format_string" tools:ignore="PluralsCandidate">Du kannst für diesen Preis noch %s hinzufügen</string>
+
+    <string name="alert_dialog_title_oops">Oops!</string>
+    <string name="alert_dialog_message_pricing_format_string">Es gab ein Problem bei der Preisabfrage von Server:\n%s</string>
+
+    <string name="alert_dialog_title_no_intent">Interner Fehler</string>
+    <string name="alert_dialog_message_no_intent">Es gab einen Fehler.</string>
+
+    <string name="alert_dialog_title_no_arguments">Interner Fehler</string>
+    <string name="alert_dialog_message_no_arguments">Es gab einen Fehler.</string>
+
+    <string name="alert_dialog_title_no_asset_list">Interner Fehler</string>
+    <string name="alert_dialog_message_no_asset_list">Es gab einen Fehler.</string>
+
+    <string name="alert_dialog_title_no_asset">Interner Fehler</string>
+    <string name="alert_dialog_message_no_asset">Es gab einen Fehler.</string>
+
+    <string name="alert_dialog_title_no_mask">Interner Fehler</string>
+    <string name="alert_dialog_message_no_mask">Es gab einen Fehler.</string>
+
+    <string name="alert_dialog_title_no_product">Interner Fehler</string>
+    <string name="alert_dialog_message_no_product">Es gab einen Fehler: Kein Produkt gefunden.  Für weitere Details überprüfe bitte Deine Anmeldung.</string>
+
+    <string name="alert_dialog_title_error_retrieving_products">Fehler bei der Produktbeschaffung</string>
+    <string name="alert_dialog_message_error_retrieving_products">Es gab einen Fehler bei der Produktbeschaffung. Bitte überprüfe Deine Internetverbindung, oder Deine Anmeldung.</string>
+
+    <string name="alert_dialog_title_no_product_group_label">Keine Produktgruppe</string>
+    <string name="alert_dialog_message_no_product_group_label">Es gab einen Fehler: Es konnte keine Produktgruppe gefunden werden. Für weitere Details überprüfe bitte Deine Anmeldung.</string>
+
+    <string name="alert_dialog_title_product_not_found">Produkt nicht gefunden</string>
+    <string name="alert_dialog_message_product_not_found">Es konnte kein Produkt gefunden werden. Für weitere Details überprüfe bitte Deine Anmeldung.</string>
+
+    <string name="alert_dialog_title_create_order">Erstelle die Order</string>
+    <string name="alert_dialog_message_no_cropped_image_asset">Es gab einen Fehler.</string>
+
+    <string name="alert_dialog_title_load_image">Bild konnte nicht geladen werden</string>
+    <string name="alert_dialog_message_could_not_load_image">Ein Bild konnte nicht geladen werden. Bitte überprüfe Deine Internetverbindung, oder Deine Anmeldung.</string>
+
+    <string name="alert_dialog_title_delete_photo">Photo löschen?</string>
+    <string name="alert_dialog_message_delete_photo">Bist Du sicher, daß Du diese Photo löschen willst?</string>
+    <string name="alert_dialog_delete_photo_cancel_text">Behalten</string>
+    <string name="alert_dialog_delete_photo_confirm_text">Löschen</string>
+
+    <string name="alert_dialog_message_no_images_selected">Bitte suche zuerst einige Motive aus.</string>
+
+    <string name="alert_dialog_message_no_recipient">Bitte gib den Empfägernamen ein</string>
+    <string name="alert_dialog_message_no_line1">Bitte fülle Adresszeile 1 aus</string>
+    <string name="alert_dialog_message_no_postal_code">Bitte gib die Postleitzahl ein</string>
+    <string name="alert_dialog_message_no_email_address">Bitte gib die E-Mail Adresse ein</string>
+
+    <string name="alert_dialog_title_invalid_delivery_address">Ungültige Lieferadresse</string>
+    <string name="alert_dialog_message_invalid_delivery_address">Bitte wähle eine Lieferadresse aus</string>
+
+    <string name="alert_dialog_title_invalid_email_address">Ungültige E-Mail Adresse</string>
+    <string name="alert_dialog_message_invalid_email_address">Bitte gib eine gültige E-Mail Adresse ein</string>
+
+    <string name="alert_dialog_title_invalid_phone_number">Ungültige Telephonnummer</string>
+    <string name="alert_dialog_message_invalid_phone_number">Bitte gib eine gültige Telephonnummer ein</string>
+
+    <string name="alert_dialog_message_connectivity">Bitte überprüfe Deinen Internetanschluß und versuche es noch einmal</string>
+
+    <string name="alert_dialog_title_processing">@string/Processing_</string>
+    <string name="alert_dialog_message_processing">Einen Moment…</string>
+
+    <string name="alert_dialog_title_end_customer_session">Vorgang beenden</string>
+    <string name="alert_dialog_message_end_customer_session">Bist Du sicher, dass Du den Vorgang beenden willst?</string>
+
+    <string name="alert_dialog_title_remove_item">Artikel entfernen</string>
+    <string name="alert_dialog_message_remove_item">Bitte bestätige, dass Du diesen Artikel aus Deinem Korb entfernen möchtest.</string>
+
+    <string name="alert_dialog_title_empty_basket">Leerer Korb</string>
+    <string name="alert_dialog_message_empty_basket">Dein Korb ist momentan leer. Bitte nimm einen Artikel hinein, bevor Du weiter zum check out gehst.</string>
+
+    <string name="alert_dialog_message_uploading_images">Motive werden geladen</string>
+
+    <string name="alert_dialog_message_no_payment_id">Keine Zahlung ID in Zahlungsnachweis gefunden</string>
+    <string name="alert_dialog_message_no_proof_of_payment">Kein Nachweis der Zahlung in der Zahlungsbestätigung</string>
+    <string name="alert_dialog_message_no_paypal_confirmation">Keine Zahlungsbestätigung von PayPal erhalten</string>
+    <string name="alert_dialog_message_card_expired">Entschuldigung, aber die Karte scheint abgelaufen zu sein. Bitte versuche es noch einmal.</string>
+    <string name="alert_dialog_message_card_not_recognised">Entschuldigung, wir können Deine Karte nicht erkennen. Bitte versuche Deine Kartendaten manuell einzugeben, falls erforderlich.</string>
+
+    <string name="alert_dialog_item_pay_with_new_card">Bitte mit neuer Karte bezahlen</string>
+    <string name="alert_dialog_item_pay_with_existing_card_format_string">Bitte mit der Karte mit der Endnummer %1$s bezahlen</string>
+
+    <string name="log_out_warning">Automatische\nAn-und Abmeldung</string>
+    <string name="time_remaining_format_string">%1$s</string>
+
+    <string name="progress_dialog_title_add_to_basket">dem Korb hinzufügen</string>
+    <string name="progress_dialog_title_updating_basket">Korb updaten</string>
+
+    <string name="button_symbol_increment">+</string>
+    <string name="button_symbol_decrement">-</string>
+
+    <string name="add_more">Füge mehr hinzu</string>
+    <string name="Cancel">anullieren</string>
+    <string name="Choose_Delivery_Address">Lieferadresse wählen</string>
+    <string name="Continue_Shopping">Einkauf fortsetzen</string>
+    <string name="Next_Customer">neuer Kunde</string>
+    <string name="Country">Land</string>
+    <string name="Description">Beschreibung</string>
+    <string name="Details">Details</string>
+    <string name="Done">ausgeführt</string>
+    <string name="Edit">bearbeiten</string>
+    <string name="Email">E-Mail</string>
+    <string name="End_Session">Vorgang beenden</string>
+    <string name="Flip">Flip</string>
+    <string name="Free">Kostenlos</string>
+    <string name="ITEM">Gegenstand/Artikel</string>
+    <string name="Keep">behalten</string>
+    <string name="Loading">Laden</string>
+    <string name="Log_Out">abmelden</string>
+    <string name="Next">nächster</string>
+    <string name="No_Results">keine Ergebnisse</string>
+    <string name="OK">OK</string>
+    <string name="Order_Id">Bestellnummer</string>
+    <string name="ORDER_ID">Bestellnummer</string>
+    <string name="Order_Summary">Bestell-Zusammenfassung</string>
+    <string name="ORDER_SUMMARY">Bestell-Zusammenfassung</string>
+    <string name="Pay">bezahlen</string>
+    <string name="Payment_Id">Zahlungsnummer</string>
+    <string name="PAYMENT_ID">Zahlungsnummer</string>
+    <string name="PRICE">Preis</string>
+    <string name="print_these">diese drucken</string>
+    <string name="Processing_">ausführen…</string>
+    <string name="Promotional_Discount">Aktionspreis</string>
+    <string name="Remove">entfernen</string>
+    <string name="Rotate">drehen</string>
+    <string name="Quantity">Menge</string>
+    <string name="QUANTITY">Menge</string>
+    <string name="Retry">noch einmal versuchen</string>
+    <string name="Save">sichern</string>
+    <string name="Select_Image">Motiv auswählen</string>
+    <string name="Shipping">versenden</string>
+    <string name="Size">Größe</string>
+    <string name="Total">Total</string>
+
+    <string name="image_source_device">Kamera</string>
+    <string name="image_source_instagram">Instagram</string>
+    <string name="image_source_facebook">Facebook</string>
+    <string name="image_source_from_phone">vom Smart Phone hochladen</string>
+
+    <string name="select_photo_from_device">Wähle ein Foto von deinem Smart Phone</string>
+    <string name="select_photo_from_instagram">Wähle ein Foto von Instagram</string>
+    <string name="select_photo_from_facebook">Wähle ein Foto von Facebook</string>
+    <string name="upload_photo_from_phone">lade ein Foto von deinem Smart Phone</string>
+
+    <string name="destination_description_gbr">United Kingdom</string>
+    <string name="destination_description_europe">Europa</string>
+    <string name="destination_description_rest_of_world">der rest der Welt</string>
+
+    <string name="group_or_product_placeholder_image_url">https://s3.amazonaws.com/sdk-static/product_photography/placeholder.png</string>
+
+    <string name="product_quantity_format_string">Packung mit %d</string>
+    <string name="product_size_format_string_float">%1$.1f x %2$.1f %3$s</string>
+    <string name="product_size_format_string_int">%1$.0f x %2$.0f %3$s</string>
+
+    <string name="product_shipping_format_string">%1$s: %2$s</string>
+    <string name="product_free_shipping">Kostenlos</string>
+    <string name="product_shipping_summary_format_string">Versand: %s</string>
+
+    <string name="product_free_worldwide_shipping">Weltweit Versandkostenfrei</string>
+
+    <string name="product_overview_guarantee_title">Qualitätsgarantie</string>
+    <string name="product_overview_guarantee_text" formatted="false">Wir sind sicher du mit unseren Produkten zufrieden bist. In dem Fall das es nicht so ist, bieten wir eine 100% ige Rückerstattung an.</string>
+
+    <string name="product_overview_start_button_text">jetzt gestalten</string>
+
+    <string name="phone_case_proceed_button_text">nächster Schritt</string>
+
+    <string name="photobook_instructions"><b>Tippen</b> Sie Bild zu bearbeiten,\n<b>Halten</b> Sie neu zu ordnen.</string>
+
+    <string name="address_book_empty">Adressbuch leer</string>
+
+    <string name="image_source_prompt">füge Fotos hinzu iondem du auf folgende Optionen tippst</string>
+
+    <string name="image_selection_title_format_string">%1$s - %2$d / %3$d</string>
+    <string name="image_selection_pack_title_format_string" tools:ignore="PluralsCandidate">#%1$d Pack of %2$d %3$s</string>
+
+    <string name="image_selection_clear_photos_format_string">Leeren %s</string>
+
+    <string name="edit_image_prompt_text">positioniere das Foto neu</string>
+
+    <string name="image_selection_proceed_button_text">überprüfe &amp; bearbeite</string>
+
+    <string name="review_and_edit_title_format_string">%1$d / %2$d</string>
+    <string name="review_and_edit_proceed_button_text">bestätigen</string>
+
+    <string name="edit_image_title">Bild bearbeiten</string>
+
+    <string name="basket_empty">Einkaufskorb ist leer</string>
+    <string name="basket_left_button_text">weiter einkaufen</string>
+    <string name="basket_right_button_text">Kasse</string>
+
+    <string name="address_hint_text_recipient">Name</string>
+    <string name="address_hint_text_line_1">Linie 1</string>
+    <string name="address_hint_text_line_2">Linie 2</string>
+    <string name="address_hint_text_city">Stadt</string>
+    <string name="address_hint_text_county_or_state">Bundesland</string>
+    <string name="address_hint_text_postcode_or_zip">Postleitzahl</string>
+    <string name="address_hint_text_email" translatable="false">@string/Email</string>
+
+    <string name="shipping_delivery_address_button_text">wähle die Lieferanschrift</string>
+    <string name="shipping_email_hint_text" translatable="false">@string/Email</string>
+    <string name="shipping_phone_hint_text">Telefonnummer</string>
+    <string name="shipping_email_reason">Deine E-Mailadresse wird benötigt um dir updates und Lieferbestätigung zu scheicken.</string>
+    <string name="shipping_phone_reason">Wir benötigen deine Telefonnummer für den Fall das es Probleme mit der Lieferung gibt.</string>
+    <string name="shipping_proceed_button_text">@string/Done</string>
+
+    <string name="address_search_prompt">Bitte oben nach der Adresse suchen</string>
+
+    <string name="address_search_hint_format_string">Suche %1$s</string>
+    <string name="address_search_empty_results">Bitte oben nach der Adresse suchen</string>
+    <string name="address_search_dialog_title">Erste Informationen</string>
+    <string name="address_search_dialog_message">Suche nach Adressdaten</string>
+    <string name="address_search_no_results">kein Ergebnis gefunden</string>
+
+    <string name="button_text_edit_address">Adresse bearbeiten</string>
+    <string name="button_text_delete_address">Adresse löschen</string>
+
+    <string name="address_edit_proceed_button_text">sichern</string>
+
+    <string name="powered_by">Powered by Kite.ly</string>
+
+    <string name="payment_promo_hint">Aktionscode</string>
+    <string name="payment_promo_button_text_apply">hinzufügen</string>
+    <string name="payment_promo_button_text_clear">hinzufügen</string>
+    <string name="payment_credit_card_button_text">Kreditkarte</string>
+    <string name="payment_credit_card_button_text_free">Kasse kostenlos!</string>
+    <string name="payment_paypal_button_text">PayPal</string>
+
+
+    <string name="send_email_chooser_title">E-Mail senden</string>
+
+    <string name="feedback_email_recipient">info@kite.ly</string>
+    <string name="feedback_email_subject">Kite Android App Support</string>
+    <string name="feedback_email_text">Bitte teile uns dein Vor-und Nachnamen mit.\n\nBitte teile uns den Code mit den du bei deiner Bestellung angegeben hast.\n\nWie ist deine Telefonnummer, für den Fall das wir dich anrufen.\n\nWas ist das Problem das du mit dem Kite App hast.\n\nWelches Android Gerät (Phone/Tablet) benutzt du?\n\nVielen Dank\n\nWir werden so schnell wie möglich Kontakt mit dir aufnehmen.</string>
+
+    <string name="order_failure_message">Etwas ist schief gegangen.\nVersuche es noch einmal.</string>
+
+    <string name="Card_Number">Kartennummer</string>
+    <string name="Expires">Ablaufdatum</string>
+    <string name="CVV">Sicherheitsnummer (CCV)</string>
+
+    <string name="card_error_invalid_number">ungültige Kartennummer</string>
+    <string name="card_error_invalid_expiry_date">ungültiges Ablaufdatum</string>
+    <string name="card_error_invalid_cvv">ungültiges Karten Verifiziernummer</string>
+
+    <string name="order_submission_message_uploading">Bilder hochladen</string>
+    <string name="order_submission_message_posted">abschicken</string>
+    <string name="order_submission_message_received">erhalten</string>
+    <string name="order_submission_message_accepted">akzeptiert</string>
+    <string name="order_submission_message_validated">bestätigt</string>
+    <string name="order_submission_message_processed">bearbeitet</string>
+
+    <string name="alert_dialog_title_order_submission_error">Übermittlungsfehler</string>
+    <string name="alert_dialog_title_order_timeout">zeit überschritten</string>
+    <string name="alert_dialog_message_order_timeout">Ihre Bestellung scheint noch nicht bearbeitet zu sein. Es kann sein das die server überlastet sind und die Zahlung noch ein wenig Zeit braucht.\n\nMöchtest du noch ein wenig warten, etwas anders tun oder möchtest du beenden?</string>
+    <string name="order_timeout_button_wait">warte</string>
+    <string name="order_timeout_button_give_up">beenden</string>
+
+    <string name="alert_dialog_title_order_cancelled">Bestellung storniert</string>
+    <string name="alert_dialog_message_order_cancelled">Fehler - deine Bestellung wurde während der Übermittlung storniert.</string>
+
+    <string name="scan_qr_code">QR Code scannen</string>
+    <string name="scan_qr_code_instructions">Bitte den QR Code mit QR Coder Scanner\nvon deinem Geraät aus scannen.</string>
+    <string name="scan_qr_code_alternate_instructions">alternativ gebe bitte folgende URL in deinen Browser ein:</string>
+
+    <string name="action_settings">Einstellungen</string>
+    <string name="title_activity_checkout">Versanddetails</string>
+    <string name="title_activity_order_receipt">Bestellung erhalten</string>
+    <string name="title_activity_payment">Zahlung</string>
+    <string name="title_activity_address_book">Adressbuch</string>
+    <string name="add_address">Adresse hinzufügen</string>
+    <string name="title_activity_address_add">Adresse einfügen</string>
+    <string name="title_activity_address_edit">Adresse bearbeiten</string>
+    <string name="action_save_address">Adresse sichern</string>
+
+    <plurals name="Photo_plurals">
+        <item quantity="zero">%d Fotos</item>
+        <item quantity="one">%d Foto</item>
+        <item quantity="two">%d Fotos</item>
+        <item quantity="few">%d Fotos</item>
+        <item quantity="many">%d Fotos</item>
+        <item quantity="other">%d Fotos</item>
+    </plurals>
+
+    <plurals name="photo_plurals">
+        <item quantity="zero">%d Fotos</item>
+        <item quantity="one">%d Foto</item>
+        <item quantity="two">%d Fotos</item>
+        <item quantity="few">%d Fotos</item>
+        <item quantity="many">%d Fotos</item>
+        <item quantity="other">%d Fotos</item>
+    </plurals>
+
+</resources>

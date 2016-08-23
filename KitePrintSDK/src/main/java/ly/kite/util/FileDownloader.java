@@ -68,11 +68,13 @@ public class FileDownloader
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                  = "FileDownloader";
+  static private final String  LOG_TAG                  = "FileDownloader";
 
-  private static final int     BUFFER_SIZE_IN_BYTES     = 8192;  // 8 KB
+  static private final boolean DEBUGGING_ENABLED        = false;
 
-  private static final int     MAX_CONCURRENT_DOWNLOADS = 5;
+  static private final int     BUFFER_SIZE_IN_BYTES     = 8192;  // 8 KB
+
+  static private final int     MAX_CONCURRENT_DOWNLOADS = 5;
 
 
   ////////// Static Variable(s) //////////
@@ -148,12 +150,20 @@ public class FileDownloader
       byte[] downloadBuffer = new byte[ BUFFER_SIZE_IN_BYTES ];
 
       int numberOfBytesRead;
+      int totalBytesRead = 0;
 
       while ( ( numberOfBytesRead = inputStream.read( downloadBuffer ) ) >= 0 )
         {
         fileOutputStream.write( downloadBuffer, 0, numberOfBytesRead );
+
+        totalBytesRead += numberOfBytesRead;
         }
 
+      if ( DEBUGGING_ENABLED )
+        {
+        Log.d( LOG_TAG, "Downloaded " + totalBytesRead + " bytes" );
+        Log.d( LOG_TAG, "Renaming " + tempTargetFile.getAbsolutePath() + " -> " + targetFile.getAbsolutePath() );
+        }
 
       tempTargetFile.renameTo( targetFile );
 

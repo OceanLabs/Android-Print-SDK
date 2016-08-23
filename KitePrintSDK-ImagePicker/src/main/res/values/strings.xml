@@ -1,6 +1,5 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <string name="Loading_">Loading…</string>
-    <string name="Done">Done</string>
 
 </resources>

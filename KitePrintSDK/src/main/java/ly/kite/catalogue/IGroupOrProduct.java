@@ -42,6 +42,9 @@ package ly.kite.catalogue;
 
 ///// Class Declaration /////
 
+import android.content.Context;
+import android.widget.ImageView;
+
 import java.net.URL;
 
 /*****************************************************
@@ -60,6 +63,14 @@ public interface IGroupOrProduct
    *
    *****************************************************/
   public URL getDisplayImageURL();
+
+
+  /*****************************************************
+   *
+   * Returns the gravity for the display image.
+   *
+   *****************************************************/
+  public int getDisplayImageAnchorGravity( Context context );
 
 
   /*****************************************************
@@ -93,7 +104,16 @@ public interface IGroupOrProduct
    * Returns a display price.
    *
    *****************************************************/
-  public String getDisplayPrice();
+  public String getDisplayPrice( String preferredCurrency );
+
+
+  /*****************************************************
+   *
+   * Returns true or false according to whether a flag is
+   * set.
+   *
+   *****************************************************/
+  public boolean flagIsSet( String tag );
 
 
   }

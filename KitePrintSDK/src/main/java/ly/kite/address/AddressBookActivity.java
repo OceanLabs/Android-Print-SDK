@@ -177,15 +177,9 @@ public class AddressBookActivity extends AAddressActivity
 
       return ( true );
       }
-    else if ( id == R.id.search_for_address )
+    else if ( id == R.id.add_address )
       {
-      startActivityForResult( new Intent( this, AddressSearchActivity.class ), REQUEST_CODE_ADD_ADDRESS );
-
-      return ( true );
-      }
-    else if ( id == R.id.manual_add_address )
-      {
-      startActivityForResult( new Intent( this, AddressEditActivity.class ), REQUEST_CODE_ADD_ADDRESS );
+      AddressEditActivity.startForResult( this, null, REQUEST_CODE_ADD_ADDRESS );
 
       return ( true );
       }

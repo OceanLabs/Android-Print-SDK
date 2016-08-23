@@ -202,6 +202,7 @@ public class ImagePickerGridViewAdaptor extends RecyclerView.Adapter<ImagePicker
     Picasso.with( mContext )
             .load( holder.item.getThumbnailImageURLString() )
             .resizeDimen( R.dimen.ip_image_default_resize_width, R.dimen.ip_image_default_resize_height )
+            .centerCrop()
             .onlyScaleDown()
             .into( holder.imageView );
 

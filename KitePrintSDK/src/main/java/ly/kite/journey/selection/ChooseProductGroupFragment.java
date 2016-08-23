@@ -129,7 +129,7 @@ public class ChooseProductGroupFragment extends AGroupOrProductFragment
   public View onCreateView( LayoutInflater layoutInflator, ViewGroup container, Bundle savedInstanceState )
     {
     // Get the parent grid view
-    View view = super.onCreateView( layoutInflator, container, savedInstanceState );
+    View view = super.onCreateView( layoutInflator, R.layout.screen_choose_product_group, container, savedInstanceState );
 
     if ( savedInstanceState == null )
       {

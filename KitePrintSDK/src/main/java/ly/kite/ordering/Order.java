@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import ly.kite.KiteSDK;
 import ly.kite.address.Address;
 import ly.kite.api.AssetUploadRequest;
 import ly.kite.api.SubmitOrderRequest;
@@ -305,7 +306,14 @@ public class Order implements Parcelable /* , Serializable */
         return userData;
     }
 
-    public JSONObject getJSONRepresentation()
+
+    /*****************************************************
+     *
+     * Returns the JSON representation of this order for
+     * submission to the print request endpoint.
+     *
+     *****************************************************/
+    public JSONObject getJSONRepresentation( Context context )
       {
       try
         {
@@ -360,7 +368,9 @@ public class Order implements Parcelable /* , Serializable */
           {
           for ( String parameterName : mAdditionalParametersMap.keySet() )
             {
-            json.put( parameterName, mAdditionalParametersMap.get( parameterName ) );
+            String parameterValue = mAdditionalParametersMap.get( parameterName );
+
+            json.put( parameterName, parameterValue );
             }
           }
 
@@ -371,7 +381,10 @@ public class Order implements Parcelable /* , Serializable */
 
         if ( orderPricing != null )
           {
-          SingleCurrencyAmount orderTotalCost = orderPricing.getTotalCost().getDefaultAmountWithFallback();
+          String preferredCurrencyCode = KiteSDK.getInstance( context ).getLockedCurrencyCode();
+
+          SingleCurrencyAmount orderTotalCost = orderPricing.getTotalCost().getAmountWithFallback( preferredCurrencyCode );
+
           // construct customer payment object in a round about manner to guarantee 2dp amount value
           StringBuilder builder = new StringBuilder();
           builder.append( "{" );
@@ -394,6 +407,12 @@ public class Order implements Parcelable /* , Serializable */
           sajson.put( "postcode", shippingAddress.getZipOrPostalCode() );
           sajson.put( "country_code", shippingAddress.getCountry().iso3Code() );
           json.put( "shipping_address", sajson );
+          }
+
+
+        if ( KiteSDK.DEBUG_PAYMENT_KEYS )
+          {
+          Log.d( LOG_TAG, "Create order JSON:\n" + json.toString() );
           }
 
         return json;
@@ -645,56 +664,86 @@ public class Order implements Parcelable /* , Serializable */
       }
 
 
-      public void submitForPrinting(Context context, ISubmissionProgressListener listener) {
-        if (userSubmittedForPrinting) throw new AssertionError("A PrintOrder can only be submitted once unless you cancel the previous submission");
-        //if (proofOfPayment == null) throw new AssertionError("You must provide a proofOfPayment before you can submit a print order");
-        if (printOrderReq != null) throw new AssertionError("A PrintOrder request should not already be in progress");
+    public void submitForPrinting( Context context, ISubmissionProgressListener listener )
+      {
+      this.submissionListener = listener;
 
-        lastPrintSubmissionDate = new Date();
-        userSubmittedForPrinting = true;
+      if ( userSubmittedForPrinting )
+        {
+        notifyIllegalStateError( "An order has already been submitted for printing. An order submission must be cancelled before it can be submitted again." );
 
-        this.submissionListener = listener;
-        if (assetUploadComplete) {
-            submitForPrinting( context );
-        } else if (!isAssetUploadInProgress()) {
-            startAssetUpload(context);
+        return;
         }
-    }
 
-    private void submitForPrinting( Context context ) {
-        if (!userSubmittedForPrinting) throw new IllegalStateException("oops");
-        if (!assetUploadComplete || isAssetUploadInProgress()) throw new IllegalStateException("Oops asset upload should be complete by now");
 
-        // Step 2: Submit print order to the server. Print Job JSON can now reference real asset ids.
-        printOrderReq = new SubmitOrderRequest(this);
-        printOrderReq.submitForPrinting( context, new SubmitOrderRequest.IProgressListener()
+      if ( printOrderReq != null )
+        {
+        notifyIllegalStateError( "A print order request is already in progress." );
+
+        return;
+        }
+
+      lastPrintSubmissionDate = new Date();
+      userSubmittedForPrinting = true;
+
+      if ( assetUploadComplete )
+        {
+        submitForPrinting( context );
+        }
+      else if ( !isAssetUploadInProgress() )
+        {
+        startAssetUpload( context );
+        }
+      }
+
+
+    private void submitForPrinting( Context context )
+      {
+      if ( ! userSubmittedForPrinting )
+        {
+        notifyIllegalStateError( "The order cannot be submitted for printing if it has not been marked as submitted" );
+
+        return;
+        }
+
+      if ( ! assetUploadComplete || isAssetUploadInProgress() )
+        {
+        notifyIllegalStateError( "The order should not be submitted for priting until the asset upload has completed." );
+
+        return;
+        }
+
+      // Step 2: Submit print order to the server. Print Job JSON can now reference real asset ids.
+      printOrderReq = new SubmitOrderRequest( this );
+      printOrderReq.submitForPrinting( context, new SubmitOrderRequest.IProgressListener()
         {
         @Override
         public void onSubmissionComplete( SubmitOrderRequest req, String orderId )
-            {
-            // The initial submission was successful, but note that this doesn't mean the order will
-            // pass validation. It may fail subsequently when we are polling the order status. So remember
-            // to clear the receipt / set the error if we find a problem later.
+          {
+          // The initial submission was successful, but note that this doesn't mean the order will
+          // pass validation. It may fail subsequently when we are polling the order status. So remember
+          // to clear the receipt / set the error if we find a problem later.
 
-            setReceipt( orderId );
+          setReceipt( orderId );
 
-            printOrderReq = null;
+          printOrderReq = null;
 
-            submissionListener.onSubmissionComplete( Order.this, orderId );
-            }
+          submissionListener.onSubmissionComplete( Order.this, orderId );
+          }
 
         @Override
         public void onError( SubmitOrderRequest req, Exception error )
-            {
-            userSubmittedForPrinting = false;
-            lastPrintSubmissionError = error;
+          {
+          userSubmittedForPrinting = false;
+          lastPrintSubmissionError = error;
 
-            printOrderReq = null;
+          printOrderReq = null;
 
-            submissionListener.onError( Order.this, error );
-            }
+          notifyError( error );
+          }
         } );
-    }
+      }
+
 
     public void cancelSubmissionOrPreemptedAssetUpload() {
         if (assetUploadReq != null) {
@@ -866,6 +915,31 @@ public class Order implements Parcelable /* , Serializable */
 
     /*****************************************************
      *
+     * Notifies any listener of an error.
+     *
+     *****************************************************/
+    private void notifyError( Exception exception )
+      {
+      if ( submissionListener != null )
+        {
+        submissionListener.onError( this, exception );
+        }
+      }
+
+
+    /*****************************************************
+     *
+     * Notifies any listener of an illegal state error.
+     *
+     *****************************************************/
+    private void notifyIllegalStateError( String message )
+      {
+      notifyError( new IllegalStateException( message ) );
+      }
+
+
+    /*****************************************************
+     *
      * Resets the order state with an error. This is likely
      * to have been returned from polling the order status.
      *
@@ -912,11 +986,15 @@ public class Order implements Parcelable /* , Serializable */
 
         // Check that all the assets scheduled to be uploaded, were
 
-        for ( UploadableImage uploadedAsset : uploadedImages )
+        for ( UploadableImage uploadedImage : uploadedImages )
           {
-          if ( ! mImagesToUpload.contains( uploadedAsset ) )
+          if ( ! mImagesToUpload.contains( uploadedImage ) )
             {
-            throw new AssertionError( "Oops - found an asset not in the upload list" );
+            Log.e( LOG_TAG, "Found image not in upload list: " + uploadedImage );
+
+            notifyIllegalStateError( "An image has been uploaded that shouldn't have been" );
+
+            return;
             }
           }
 
@@ -948,7 +1026,11 @@ public class Order implements Parcelable /* , Serializable */
             {
             if ( uploadableImage != null && ! uploadableImage.hasBeenUploaded() )
               {
-              throw new AssertionError( "Oops ... all assets should have been uploaded" );
+              Log.e( LOG_TAG, "An image that should have been uploaded, hasn't been." );
+
+              notifyIllegalStateError( "An image that should have been uploaded, hasn't been." );
+
+              return;
               }
             }
           }

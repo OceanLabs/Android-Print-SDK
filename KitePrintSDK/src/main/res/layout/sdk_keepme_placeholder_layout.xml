@@ -82,4 +82,10 @@
         android:layout_height="wrap_content"
         android:visibility="gone"/>
 
+    <View
+        android:id="@+id/overlay_indicator_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
 </FrameLayout>

@@ -42,13 +42,15 @@ package ly.kite.catalogue;
 
 ///// Class Declaration /////
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
+import android.view.Gravity;
+import android.widget.ImageView;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.Locale;
 
 /*****************************************************
@@ -165,6 +167,18 @@ public class ProductGroup implements Parcelable, IGroupOrProduct
 
   /*****************************************************
    *
+   * Returns the gravity for the display image.
+   *
+   *****************************************************/
+  @Override
+  public int getDisplayImageAnchorGravity( Context context )
+    {
+    return ( Gravity.NO_GRAVITY );
+    }
+
+
+  /*****************************************************
+   *
    * Returns the display label.
    *
    *****************************************************/
@@ -189,6 +203,19 @@ public class ProductGroup implements Parcelable, IGroupOrProduct
 
   /*****************************************************
    *
+   * Returns true or false according to whether a flag is
+   * set.
+   *
+   *****************************************************/
+  @Override
+  public boolean flagIsSet( String tag )
+    {
+    return ( false );
+    }
+
+
+  /*****************************************************
+   *
    * Returns true if this group contains more than one
    * product, false otherwise.
    *
@@ -207,14 +234,15 @@ public class ProductGroup implements Parcelable, IGroupOrProduct
    * Thus it may be used as a "from" price.
    *
    *****************************************************/
-  public String getDisplayPrice()
+  @Override
+  public String getDisplayPrice( String preferredCurrency )
     {
     // We don't want to mess around with trying to compare prices in different
     // currencies, so we first need to find a currency that all prices are listed
     // in.
 
     Locale locale       = Locale.getDefault();
-    String currencyCode = getPreferredCurrency( Currency.getInstance( locale ).getCurrencyCode() );
+    String currencyCode = chooseBestCurrency( preferredCurrency );
 
     if ( currencyCode == null )
       {
@@ -255,7 +283,7 @@ public class ProductGroup implements Parcelable, IGroupOrProduct
    * currency).
    *
    *****************************************************/
-  public String getPreferredCurrency( String preferredCurrencyCode )
+  public String chooseBestCurrency( String preferredCurrencyCode )
     {
     // Check if the preferred currency is supported
 

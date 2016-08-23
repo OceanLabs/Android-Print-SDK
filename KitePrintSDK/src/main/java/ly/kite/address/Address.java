@@ -51,16 +51,6 @@ public class Address implements Parcelable, Serializable
     }
 
 
-  static Address createPartialAddress( String addressId, String displayName )
-    {
-    Address addr = new Address();
-    addr.addressId = addressId;
-    addr.displayName = displayName;
-    addr.searchRequiredForFullDetails = true;
-    return addr;
-    }
-
-
   /*****************************************************
    *
    * Returns true if both the addresses are null, or equal.
@@ -91,20 +81,6 @@ public class Address implements Parcelable, Serializable
     this.country = country;
     }
 
-  public static AddressSearchRequest search( Context context, String query, Country country, AddressSearchRequestListener listener )
-    {
-    AddressSearchRequest req = new AddressSearchRequest();
-    req.search( context, query, country, listener );
-    return req;
-    }
-
-  public static AddressSearchRequest search( Context context, Address address, AddressSearchRequestListener listener )
-    {
-    AddressSearchRequest req = new AddressSearchRequest();
-    req.search( context, address, listener );
-    return req;
-    }
-
   public static Address getKiteTeamAddress()
     {
     Address addr = new Address();
@@ -115,16 +91,6 @@ public class Address implements Parcelable, Serializable
     addr.zipOrPostalCode = "W1W 8DH";
     addr.country = Country.getInstance( "GBR" );
     return addr;
-    }
-
-  public boolean isSearchRequiredForFullDetails()
-    {
-    return searchRequiredForFullDetails;
-    }
-
-  String getId()
-    {
-    return addressId;
     }
 
   public String getRecipientName()
@@ -200,10 +166,10 @@ public class Address implements Parcelable, Serializable
   @Override
   public String toString()
     {
-    if ( displayName != null )
-      {
-      return displayName;
-      }
+//    if ( displayName != null )
+//      {
+//      return displayName;
+//      }
 
     StringBuilder strBuilder = new StringBuilder();
 
@@ -229,7 +195,7 @@ public class Address implements Parcelable, Serializable
 
   public String toDisplayText( String newlineString )
     {
-    if ( displayName != null ) return ( displayName );
+    //if ( displayName != null ) return ( displayName );
 
     StringBuilder stringBuilder = new StringBuilder();
 

@@ -106,7 +106,7 @@ abstract public class AAddressActivity extends AKiteActivity
    * Adds an address to an intent.
    *
    *****************************************************/
-  static public void addAddress( Address address, Intent intent )
+  static public void addAddressIfNotNull( Address address, Intent intent )
     {
     if ( address != null ) intent.putExtra( KEY_ADDRESS, (Parcelable)address );
     }
@@ -117,7 +117,7 @@ abstract public class AAddressActivity extends AKiteActivity
    * Adds an email address to an intent.
    *
    *****************************************************/
-  static public void addEmailAddress( String emailAddress, Intent intent )
+  static public void addEmailAddressIfNotNull( String emailAddress, Intent intent )
     {
     if ( emailAddress != null ) intent.putExtra( KEY_EMAIL_ADDRESS, emailAddress );
     }
@@ -137,8 +137,8 @@ abstract public class AAddressActivity extends AKiteActivity
     {
     Intent data = new Intent();
 
-    addAddress( address, data );
-    addEmailAddress( emailAddress, data );
+    addAddressIfNotNull( address, data );
+    addEmailAddressIfNotNull( emailAddress, data );
 
     setResult( Activity.RESULT_OK, data );
     }

@@ -46,6 +46,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import java.util.List;
 
@@ -93,9 +94,11 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
   protected Asset                        mImageAsset;
 
   protected EditableImageContainerFrame  mEditableImageContainerFrame;
+  private   ProgressBar                  mProgressSpinner;
   private   PromptTextFrame              mPromptTextFrame;
 
   protected boolean                      mShowPromptText;
+  private   boolean                      mEditOperationInProgress;
 
   protected Asset                        mLastEditedAsset;
 
@@ -230,6 +233,7 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
     super.onViewCreated( view );
 
     mEditableImageContainerFrame = (EditableImageContainerFrame)view.findViewById( R.id.editable_image_container_frame );
+    mProgressSpinner             = (ProgressBar)view.findViewById( R.id.progress_spinner );
     mPromptTextFrame             = (PromptTextFrame)view.findViewById( R.id.prompt_text_frame );
 
 
@@ -481,63 +485,97 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
     int itemId = item.getItemId();
 
 
-    if ( itemId == R.id.rotate_anticlockwise_menu_item )
+    if ( ! mEditOperationInProgress )
       {
-      ///// Rotate /////
-
-      if ( mEditableImageContainerFrame != null )
+      if ( itemId == R.id.rotate_anticlockwise_menu_item )
         {
-        ImageProcessingRequest.Builder builder;
+        ///// Rotate /////
 
-        if ( mLastEditedAsset != null )
+        if ( mEditableImageContainerFrame != null )
           {
-          builder = ImageAgent.with( mKiteActivity )
-                  .transform( mLastEditedAsset );
-          }
-        else
-          {
-          builder = ImageAgent.with( mKiteActivity )
-                  .transform( mImageAsset )
-                  .intoNewAsset();
+          ImageProcessingRequest.Builder builder;
+
+          if ( mLastEditedAsset != null )
+            {
+            builder = ImageAgent.with( mKiteActivity )
+                    .transform( mLastEditedAsset );
+            }
+          else
+            {
+            builder = ImageAgent.with( mKiteActivity )
+                    .transform( mImageAsset )
+                    .intoNewAsset();
+            }
+
+          onEditOperationStarted();
+
+          builder
+                  .byRotatingAnticlockwise()
+                  .thenNotify( new ProcessedImageLoader() );
+
           }
 
-        builder
-                .byRotatingAnticlockwise()
-                .thenNotify( new ProcessedImageLoader() );
+        return ( true );
         }
-
-      return ( true );
-      }
-    else if ( itemId == R.id.flip_horizontally_menu_item )
-      {
-      ///// Flip /////
-
-      if ( mEditableImageContainerFrame != null )
+      else if ( itemId == R.id.flip_horizontally_menu_item )
         {
-        ImageProcessingRequest.Builder builder;
+        ///// Flip /////
 
-        if ( mLastEditedAsset != null )
+        if ( mEditableImageContainerFrame != null )
           {
-          builder = ImageAgent.with( mKiteActivity )
-                  .transform( mLastEditedAsset );
-          }
-        else
-          {
-          builder = ImageAgent.with( mKiteActivity )
-                  .transform( mImageAsset )
-                  .intoNewAsset();
+          ImageProcessingRequest.Builder builder;
+
+          if ( mLastEditedAsset != null )
+            {
+            builder = ImageAgent.with( mKiteActivity )
+                    .transform( mLastEditedAsset );
+            }
+          else
+            {
+            builder = ImageAgent.with( mKiteActivity )
+                    .transform( mImageAsset )
+                    .intoNewAsset();
+            }
+
+          onEditOperationStarted();
+
+          builder
+                  .byFlippingHorizontally()
+                  .thenNotify( new ProcessedImageLoader() );
           }
 
-        builder
-                .byFlippingHorizontally()
-                .thenNotify( new ProcessedImageLoader() );
+        return ( true );
         }
-
-      return ( true );
       }
 
 
     return ( false );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when an edit operation starts.
+   *
+   *****************************************************/
+  protected void onEditOperationStarted()
+    {
+    mEditOperationInProgress = true;
+
+    if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.VISIBLE );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when an edit operation finishes.
+   *
+   *****************************************************/
+  protected void onEditOperationEnded()
+    {
+    mEditOperationInProgress = false;
+
+    if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.GONE );
     }
 
 
@@ -629,6 +667,8 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
     @Override
     public void ipcOnImageAvailable( Asset processedAsset )
       {
+      onEditOperationEnded();
+
       mLastEditedAsset = processedAsset;
 
       if ( mEditableImageContainerFrame != null ) mEditableImageContainerFrame.setAndLoadImage( processedAsset );
@@ -637,7 +677,7 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
     @Override
     public void ipcOnImageUnavailable()
       {
-      // Ignore
+      onEditOperationEnded();
       }
     }
 

@@ -41,6 +41,7 @@ package ly.kite.journey;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -344,15 +345,22 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     super.onPostCreate( savedInstanceState );
 
 
+    // We need to apply any custom font to the action bar title.
+
     // The label from the manifest appears to be applied as the title somewhere
-    // between onCreate and onPostCreate, so make sure the title uses the correct
-    // font here.
+    // between onCreate and onPostCreate, so re-apply the title (which will then
+    // pick up the custom font) here.
 
-    CharSequence title = getActionBar().getTitle();
+    ActionBar actionBar = getActionBar();
 
-    if ( title != null )
+    if ( actionBar != null )
       {
-      setTitle( title );
+      CharSequence title = actionBar.getTitle();
+
+      if ( title != null )
+        {
+        setTitle( title );
+        }
       }
 
 
@@ -1249,7 +1257,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
         {
         mTopFragment = (AKiteFragment)mFragmentManager.findFragmentByTag( entry.getName() );
 
-        Log.d( LOG_TAG, "  Fragment # " + entryIndex + " : " + mTopFragment );
+        if ( DEBUG_FRAGMENT_NOTIFICATION ) Log.d( LOG_TAG, "  Fragment # " + entryIndex + " : " + mTopFragment );
 
         if ( mTopFragment != null ) onNotifyTop( mTopFragment );
         }
@@ -1265,7 +1273,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
         {
         entry = mFragmentManager.getBackStackEntryAt( entryIndex );
 
-        Log.d( LOG_TAG, "  Fragment # " + entryIndex + " : " + entry );
+        if ( DEBUG_FRAGMENT_NOTIFICATION ) Log.d( LOG_TAG, "  Fragment # " + entryIndex + " : " + entry );
 
         if ( entry != null )
           {

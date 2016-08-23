@@ -112,6 +112,28 @@ public class MultipleCurrencyAmount implements Parcelable
 
   ////////// Static Method(s) //////////
 
+  /*****************************************************
+   *
+   * Creates a new multiple currency amount containing just
+   * the supplied currency, or the supplied source amount
+   * if the currency is null.
+   *
+   *****************************************************/
+  static public MultipleCurrencyAmount newFilteredInstance( MultipleCurrencyAmount originalMultipleCurrencyAmount, String currencyCode )
+    {
+    if ( originalMultipleCurrencyAmount == null ) return ( null );
+
+    if ( currencyCode == null ) return ( originalMultipleCurrencyAmount );
+
+    MultipleCurrencyAmount newMultipleCurrencyAmount = new MultipleCurrencyAmount();
+
+    SingleCurrencyAmount singleCurrencyAmount = originalMultipleCurrencyAmount.get( currencyCode );
+
+    if ( singleCurrencyAmount != null ) newMultipleCurrencyAmount.add( singleCurrencyAmount );
+
+    return ( newMultipleCurrencyAmount );
+    }
+
 
   ////////// Constructor(s) //////////
 
@@ -251,6 +273,17 @@ public class MultipleCurrencyAmount implements Parcelable
 
   /*****************************************************
    *
+   * Returns true if the currency code is available.
+   *
+   *****************************************************/
+  public boolean contains( String currencyCode )
+    {
+    return ( mCurrencyCodeAmountTable.containsKey( currencyCode ) );
+    }
+
+
+  /*****************************************************
+   *
    * Returns the cost at a position.
    *
    *****************************************************/
@@ -370,7 +403,31 @@ public class MultipleCurrencyAmount implements Parcelable
    *****************************************************/
   public String getDefaultDisplayAmountWithFallback()
     {
-    return ( getDisplayAmountWithFallback( Locale.getDefault() ) );
+    return ( getDisplayAmountWithFallbackMultipliedBy( null, 1, Locale.getDefault() ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the amount as a formatted string. Tries to use
+   * the default currency, but will fall back to other
+   * currencies if the preferred is not available.
+   *
+   * If the currency that we found matches the main currency
+   * for the default locale, then we use the number formatter
+   * to format the amount.
+   *
+   * If the currency that we found is different, then we format
+   * the amount with the full currency code. We do this to
+   * avoid any ambiguity. For example, if we were to live in
+   * Sweden but found a cost in Danish Krone, then having an
+   * amount such as 4.00 kr would be ambiguous (because we
+   * would believe we were being quoted in Swedish Kroner).
+   *
+   *****************************************************/
+  public String getDefaultDisplayAmountWithFallback( String preferredCurrency )
+    {
+    return ( getDisplayAmountWithFallbackMultipliedBy( preferredCurrency, 1, Locale.getDefault() ) );
     }
 
 
@@ -394,7 +451,7 @@ public class MultipleCurrencyAmount implements Parcelable
    *****************************************************/
   public String getDefaultDisplayAmountWithFallbackMultipliedBy( int quantity )
     {
-    return ( getDisplayAmountWithFallbackMultipliedBy( quantity, Locale.getDefault() ) );
+    return ( getDisplayAmountWithFallbackMultipliedBy( null, quantity, Locale.getDefault() ) );
     }
 
 
@@ -418,7 +475,7 @@ public class MultipleCurrencyAmount implements Parcelable
    *****************************************************/
   public String getDisplayAmountWithFallback( Locale locale )
     {
-    return ( getDisplayAmountWithFallbackMultipliedBy( 1, locale ) );
+    return ( getDisplayAmountWithFallbackMultipliedBy( null, 1, locale ) );
     }
 
 
@@ -440,14 +497,23 @@ public class MultipleCurrencyAmount implements Parcelable
    * would believe we were being quoted in Swedish Kroner).
    *
    *****************************************************/
-  public String getDisplayAmountWithFallbackMultipliedBy( int quantity, Locale locale )
+  public String getDisplayAmountWithFallbackMultipliedBy( String preferredCurrencyCode, int quantity, Locale locale )
     {
-    Currency defaultCurrency = Currency.getInstance( locale );
+    Currency currency;
+
+    if ( preferredCurrencyCode != null )
+      {
+      currency = Currency.getInstance( preferredCurrencyCode );
+      }
+    else
+      {
+      currency = Currency.getInstance( locale );
+      }
 
 
     // Get the single currency amount
 
-    SingleCurrencyAmount amount = getAmountWithFallback( defaultCurrency.getCurrencyCode() ).multipliedBy( quantity );
+    SingleCurrencyAmount amount = getAmountWithFallback( currency.getCurrencyCode() ).multipliedBy( quantity );
 
     if ( amount == null ) return ( null );
 
@@ -455,6 +521,30 @@ public class MultipleCurrencyAmount implements Parcelable
     // Format the amount we found for the default locale. It may not be the same currency
     // we asked for.
     return ( amount.getDisplayAmountForLocale( locale ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the amount as a formatted string. Tries to use
+   * the default currency, but will fall back to other
+   * currencies if the preferred is not available.
+   *
+   * If the currency that we found matches the main currency
+   * for the default locale, then we use the number formatter
+   * to format the amount.
+   *
+   * If the currency that we found is different, then we format
+   * the amount with the full currency code. We do this to
+   * avoid any ambiguity. For example, if we were to live in
+   * Sweden but found a cost in Danish Krone, then having an
+   * amount such as 4.00 kr would be ambiguous (because we
+   * would believe we were being quoted in Swedish Kroner).
+   *
+   *****************************************************/
+  public String getDisplayAmountWithFallbackMultipliedBy( String preferredCurrencyCode, int quantity )
+    {
+    return ( getDisplayAmountWithFallbackMultipliedBy( preferredCurrencyCode, quantity, Locale.getDefault() ) );
     }
 
 

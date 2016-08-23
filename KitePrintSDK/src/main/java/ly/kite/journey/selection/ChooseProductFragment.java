@@ -39,6 +39,7 @@ package ly.kite.journey.selection;
 
 ///// Import(s) /////
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -52,11 +53,12 @@ import android.widget.AdapterView;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import ly.kite.R;
+import ly.kite.KiteSDK;
 import ly.kite.analytics.Analytics;
 import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.Product;
 import ly.kite.catalogue.ProductGroup;
+import ly.kite.R;
 
 
 ///// Class Declaration /////
@@ -150,8 +152,23 @@ public class ChooseProductFragment extends AGroupOrProductFragment
   @Override
   public View onCreateView( LayoutInflater layoutInflator, ViewGroup container, Bundle savedInstanceState )
     {
+    KiteSDK kiteSDK = KiteSDK.getInstance( mKiteActivity );
+
     // Get the parent grid view
-    View view = super.onCreateView( layoutInflator, container, savedInstanceState );
+    View view = super.onCreateView( layoutInflator, kiteSDK.getCustomiser().getChooseProductLayoutResourceId(), container, savedInstanceState );
+
+
+    // Add any footer view to the grid before setting the adaptor
+
+    int footerViewLayoutResourceId = KiteSDK.getInstance( mKiteActivity ).getCustomiser().getChooseProductGridFooterLayoutResourceId();
+
+    if ( footerViewLayoutResourceId != 0 )
+      {
+      View footerView = LayoutInflater.from( mKiteActivity ).inflate( footerViewLayoutResourceId, mGridView, false );
+
+      if ( footerView != null ) mGridView.addFooterView( footerView );
+      }
+
 
     if ( savedInstanceState == null )
       {

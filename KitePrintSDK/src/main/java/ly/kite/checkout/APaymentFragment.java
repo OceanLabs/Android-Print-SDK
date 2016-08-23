@@ -43,8 +43,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 
+import java.util.ArrayList;
+
 import ly.kite.KiteSDK;
 import ly.kite.R;
+import ly.kite.catalogue.Catalogue;
+import ly.kite.catalogue.SingleCurrencyAmount;
 import ly.kite.journey.AKiteFragment;
 import ly.kite.ordering.Order;
 import ly.kite.pricing.OrderPricing;
@@ -69,6 +73,8 @@ abstract public class APaymentFragment extends AKiteFragment implements View.OnC
   protected Order         mOrder;
   protected OrderPricing  mOrderPricing;
 
+  protected boolean       mPayPalAvailable;
+
 
   ////////// Static Method(s) //////////
 
@@ -87,24 +93,6 @@ abstract public class APaymentFragment extends AKiteFragment implements View.OnC
     if ( activity != null && activity instanceof PaymentActivity )
       {
       return ( (PaymentActivity)activity );
-      }
-
-    return ( null );
-    }
-
-
-  /*****************************************************
-   *
-   * Returns the Kite SDK environment.
-   *
-   *****************************************************/
-  protected KiteSDK.Environment getKiteSDKEnvironment()
-    {
-    Activity activity = getActivity();
-
-    if ( activity != null )
-      {
-      return ( KiteSDK.getInstance( activity ).getEnvironment() );
       }
 
     return ( null );

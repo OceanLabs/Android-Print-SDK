@@ -40,7 +40,6 @@ package ly.kite.checkout;
 ///// Import(s) /////
 
 import android.app.FragmentManager;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -130,7 +129,7 @@ abstract public class AOrderSubmissionActivity extends AKiteActivity implements 
 
     FragmentManager fragmentManager = getFragmentManager();
 
-    mOrderSubmissionFragment = (OrderSubmissionFragment)fragmentManager.findFragmentByTag( OrderSubmissionFragment.TAG );
+    mOrderSubmissionFragment = OrderSubmissionFragment.findFragment( this );
     }
 
 
@@ -186,8 +185,7 @@ abstract public class AOrderSubmissionActivity extends AKiteActivity implements 
 
 
   /*****************************************************
-   *      mHideSuccessfulNextButton = intent.getBooleanExtra( INTENT_EXTRA_NAME_HIDE_SUCCESSFUL_NEXT_BUTTON );
-
+   *
    * Called when there is an error submitting the order.
    *
    *****************************************************/

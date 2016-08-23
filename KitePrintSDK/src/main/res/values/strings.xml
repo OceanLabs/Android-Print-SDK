@@ -8,8 +8,6 @@
     <string name="analytics_event_callback_class_name" translatable="false">ly.kite.analytics.NullAnalyticsEventCallback</string>
     <string name="custom_image_editor_agent_class_name" translatable="false"></string>
 
-    <string name="credit_card_fragment_class_name" translatable="false">""</string>
-
     <string name="custom_typeface_file_name" translatable="false">""</string>
 
     <string name="unit_centimeters">centimeters</string>
@@ -34,11 +32,11 @@
     <string name="drawer_open">Drawer open</string>
     <string name="drawer_closed">Drawer closed</string>
 
-    <string name="alert_dialog_title_pack_not_full_format_string">You have selected %1$d %2$s</string>
+    <string name="alert_dialog_title_pack_not_full_format_string">You have selected %s</string>
     <string name="alert_dialog_message_pack_not_full_format_string" tools:ignore="PluralsCandidate">You can add %d more for the same price</string>
 
     <string name="alert_dialog_title_oops">Oops!</string>
-    <string name="alert_dialog_message_pricing_format_string">There was a problem retrieving pricing from the server:\n%1$s</string>
+    <string name="alert_dialog_message_pricing_format_string">There was a problem retrieving pricing from the server:\n%s</string>
 
     <string name="alert_dialog_title_no_intent">Internal Error</string>
     <string name="alert_dialog_message_no_intent">There was an error: no intent was passed to the fragment. Please check the log for more details.</string>
@@ -213,7 +211,7 @@
     <string name="image_selection_title_format_string">%1$s - %2$d / %3$d</string>
     <string name="image_selection_pack_title_format_string" tools:ignore="PluralsCandidate">#%1$d Pack of %2$d %3$s</string>
 
-    <string name="image_selection_clear_photos_format_string">Clear %1$d %2$s</string>
+    <string name="image_selection_clear_photos_format_string">Clear %s</string>
 
     <string name="edit_image_prompt_text">Reposition the photo</string>
 
@@ -307,31 +305,27 @@
     <string name="title_activity_order_receipt">Order Receipt</string>
     <string name="title_activity_payment">Payment</string>
     <string name="title_activity_address_book">Address Book</string>
-    <string name="add_address">Add Address</string>
-    <string name="search_for_address">Lookup New Address</string>
-    <string name="manual_add_address">Create New Address</string>
+    <string name="add_address">Add address</string>
+    <string name="title_activity_address_add">Enter Address</string>
     <string name="title_activity_address_edit">Edit Address</string>
-    <string name="title_activity_address_search">Lookup Address</string>
     <string name="action_save_address">Save Address</string>
-    <string name="search_title">Search</string>
-    <string name="country_search_hint">Search Addresses</string>
 
     <plurals name="Photo_plurals">
-        <item quantity="zero">Photos</item>
-        <item quantity="one">Photo</item>
-        <item quantity="two">Photos</item>
-        <item quantity="few">Photos</item>
-        <item quantity="many">Photos</item>
-        <item quantity="other">Photos</item>
+        <item quantity="zero">%d Photos</item>
+        <item quantity="one">%d Photo</item>
+        <item quantity="two">%d Photos</item>
+        <item quantity="few">%d Photos</item>
+        <item quantity="many">%d Photos</item>
+        <item quantity="other">%d Photos</item>
     </plurals>
 
     <plurals name="photo_plurals">
-        <item quantity="zero">photos</item>
-        <item quantity="one">photo</item>
-        <item quantity="two">photos</item>
-        <item quantity="few">photos</item>
-        <item quantity="many">photos</item>
-        <item quantity="other">photos</item>
+        <item quantity="zero">%d photos</item>
+        <item quantity="one">%d photo</item>
+        <item quantity="two">%d photos</item>
+        <item quantity="few">%d photos</item>
+        <item quantity="many">%d photos</item>
+        <item quantity="other">%d photos</item>
     </plurals>
 
 </resources>

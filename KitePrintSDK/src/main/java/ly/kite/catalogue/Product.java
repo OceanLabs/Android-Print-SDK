@@ -39,9 +39,11 @@ package ly.kite.catalogue;
 
 ///// Import(s) /////
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
+import android.widget.ImageView;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -130,6 +132,8 @@ public class Product implements Parcelable, IGroupOrProduct
   private ArrayList<URL>                    mOverImageURLList;
 
   private List<ProductOption>               mOptionList;
+
+  private int                               mFlags;
 
 
   ////////// Static Initialiser(s) //////////
@@ -277,11 +281,13 @@ public class Product implements Parcelable, IGroupOrProduct
     mImageAspectRatio = sourceParcel.readFloat();
     mImageBorderF     = (BorderF)sourceParcel.readParcelable( BorderF.class.getClassLoader() );
 
+    mUnderImageURLList = readURLList( sourceParcel );
+    mOverImageURLList  = readURLList( sourceParcel );
+
     mOptionList = new ArrayList<>();
     sourceParcel.readList( mOptionList, ProductOption.class.getClassLoader() );
 
-    mUnderImageURLList = readURLList( sourceParcel );
-    mOverImageURLList  = readURLList( sourceParcel );
+    mFlags = sourceParcel.readInt();
     }
 
 
@@ -328,10 +334,12 @@ public class Product implements Parcelable, IGroupOrProduct
     targetParcel.writeFloat( mImageAspectRatio );
     targetParcel.writeParcelable( mImageBorderF, flags );
 
-    targetParcel.writeList( mOptionList );
-
     writeToParcel( mUnderImageURLList, targetParcel );
     writeToParcel( mOverImageURLList,  targetParcel );
+
+    targetParcel.writeList( mOptionList );
+
+    targetParcel.writeInt( mFlags );
     }
 
 
@@ -346,6 +354,18 @@ public class Product implements Parcelable, IGroupOrProduct
   public URL getDisplayImageURL()
     {
     return ( mHeroImageURL );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the gravity for the display image.
+   *
+   *****************************************************/
+  @Override
+  public int getDisplayImageAnchorGravity( Context context )
+    {
+    return ( KiteSDK.getInstance( context ).getCustomiser().getChooseProductImageAnchorGravity( mId ) );
     }
 
 
@@ -370,6 +390,26 @@ public class Product implements Parcelable, IGroupOrProduct
   public int getDisplayLabelColour()
     {
     return ( mLabelColour );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns true or false according to whether a flag is
+   * set.
+   *
+   *****************************************************/
+  @Override
+  public boolean flagIsSet( String tag )
+    {
+    Flag flag = Flag.fromTag( tag );
+
+    if ( flag != null )
+      {
+      return ( flag.isSet( mFlags ) );
+      }
+
+    return ( false );
     }
 
 
@@ -449,9 +489,10 @@ public class Product implements Parcelable, IGroupOrProduct
    * Returns a display price.
    *
    *****************************************************/
-  public String getDisplayPrice()
+  @Override
+  public String getDisplayPrice( String preferredCurrency )
     {
-    return ( mCost.getDefaultDisplayAmountWithFallback() );
+    return ( mCost.getDefaultDisplayAmountWithFallback( preferredCurrency ) );
     }
 
 
@@ -460,9 +501,9 @@ public class Product implements Parcelable, IGroupOrProduct
    * Returns a display price.
    *
    *****************************************************/
-  public String getDisplayPriceMultipliedBy( int quantity )
+  public String getDisplayPriceMultipliedBy( String preferredCurrency, int quantity )
     {
-    return ( mCost.getDefaultDisplayAmountWithFallbackMultipliedBy( quantity ) );
+    return ( mCost.getDisplayAmountWithFallbackMultipliedBy( preferredCurrency, quantity ) );
     }
 
 
@@ -741,6 +782,20 @@ public class Product implements Parcelable, IGroupOrProduct
 
   /*****************************************************
    *
+   * Sets a flag.
+   *
+   *****************************************************/
+  public Product setFlag( Flag flag, boolean set )
+    {
+    if ( set ) mFlags = flag.set( mFlags );
+    else       mFlags = flag.clear( mFlags );
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
    * Returns the image creation border for this product.
    *
    *****************************************************/
@@ -952,6 +1007,58 @@ public class Product implements Parcelable, IGroupOrProduct
 
 
   ////////// Inner Class(es) //////////
+
+  /*****************************************************
+   *
+   * An enum of the different flags that may be set for
+   * this product.
+   *
+   *****************************************************/
+  public enum Flag
+    {
+    PRINT_IN_STORE ( "print_in_store", 0x0001 );
+
+
+    public String  tag;
+    public int     bit;
+
+
+    static Flag fromTag( String searchTag )
+      {
+      for ( Flag candidateFlag : values() )
+        {
+        if ( candidateFlag.tag.equalsIgnoreCase( searchTag ) ) return ( candidateFlag );
+        }
+
+      return ( null );
+      }
+
+
+    private Flag ( String tag, int bit )
+      {
+      this.tag = tag;
+      this.bit = bit;
+      }
+
+
+    int set( int flags )
+      {
+      return ( flags | this.bit );
+      }
+
+
+    int clear( int flags )
+      {
+      return ( flags & ~ this.bit );
+      }
+
+
+    boolean isSet( int flags )
+      {
+      return ( ( flags & this.bit ) != 0 );
+      }
+    }
+
 
   /*****************************************************
    *

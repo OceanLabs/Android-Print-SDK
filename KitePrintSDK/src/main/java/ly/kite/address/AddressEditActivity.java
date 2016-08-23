@@ -51,14 +51,13 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
     Intent intent = new Intent( activity, AddressEditActivity.class );
 
 
-    addAddress( address, intent );
+    addAddressIfNotNull( address, intent );
 
     intent.putExtra( KEY_ADDRESS_READ_ONLY,     addressReadOnly );
 
-
     intent.putExtra( KEY_REQUEST_EMAIL_ADDRESS, requestEmailAddress );
 
-    addEmailAddress( emailAddress, intent );
+    addEmailAddressIfNotNull( emailAddress, intent );
 
 
     activity.startActivityForResult( intent, requestCode );
@@ -110,13 +109,15 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
     mProceedButton           = (Button)findViewById( R.id.proceed_overlay_button );
 
 
+    setTitle( R.string.title_activity_address_edit );
+
     if ( mAddress != null )
       {
       setTitle( R.string.title_activity_address_edit );
       }
     else
       {
-      setTitle( R.string.manual_add_address );
+      setTitle( R.string.title_activity_address_add );
 
       mAddress = new Address();
       mAddress.setCountry( Country.getInstance( Locale.getDefault() ) );

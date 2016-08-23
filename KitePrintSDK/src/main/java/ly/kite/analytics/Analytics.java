@@ -418,14 +418,11 @@ public class Analytics
       mCachedPropertiesMap.put( JSON_PROPERTY_NAME_SCREEN_HEIGHT,    displayMetrics.heightPixels );
 
 
-      KiteSDK              kiteSDK     = KiteSDK.getInstance( mContext );
-      KiteSDK.Environment  environment = kiteSDK.getEnvironment();
+      KiteSDK kiteSDK = KiteSDK.getInstance( mContext );
 
-      mCachedPropertiesMap.put( JSON_PROPERTY_NAME_ENVIRONMENT,      environment.getName() );
-
+      mCachedPropertiesMap.put( JSON_PROPERTY_NAME_ENVIRONMENT,      kiteSDK.getEnvironmentName() );
 
       mCachedPropertiesMap.put( JSON_PROPERTY_NAME_API_KEY,          kiteSDK.getAPIKey() );
-
 
       mCachedPropertiesMap.put( JSON_PROPERTY_NAME_KITE_SDK_VERSION, KiteSDK.SDK_VERSION );
 

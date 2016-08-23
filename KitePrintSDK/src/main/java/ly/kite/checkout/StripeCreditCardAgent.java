@@ -40,8 +40,9 @@ package ly.kite.checkout;
 ///// Import(s) /////
 
 import android.app.Activity;
-import android.app.AlertDialog;
+import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -51,17 +52,11 @@ import com.stripe.android.model.Card;
 import com.stripe.android.model.Token;
 import com.stripe.exception.AuthenticationException;
 
-import org.json.JSONObject;
-
 import ly.kite.KiteSDK;
-import ly.kite.address.Address;
-import ly.kite.address.Country;
 import ly.kite.analytics.Analytics;
 import ly.kite.app.IndeterminateProgressDialogFragment;
-import ly.kite.checkout.ACreditCardDialogFragment;
-import ly.kite.checkout.ICreditCardFragment;
-import ly.kite.checkout.PaymentActivity;
 import ly.kite.R;
+import ly.kite.catalogue.SingleCurrencyAmount;
 import ly.kite.ordering.Order;
 
 
@@ -73,7 +68,7 @@ import ly.kite.ordering.Order;
  * collect credit card details.
  *
  *****************************************************/
-public class StripeCreditCardFragment extends ACreditCardDialogFragment implements ICreditCardFragment
+public class StripeCreditCardAgent extends ACreditCardDialogFragment implements ICreditCardAgent
   {
   ////////// Static Constant(s) //////////
 
@@ -86,8 +81,10 @@ public class StripeCreditCardFragment extends ACreditCardDialogFragment implemen
 
   ////////// Member Variable(s) //////////
 
-  private Activity  mActivity;
-  private Order     mOrder;
+  private Context                 mContext;
+  private DefaultPaymentFragment  mPaymentFragment;
+  private Order                   mOrder;
+  private SingleCurrencyAmount    mSingleCurrencyAmount;
 
 
   ////////// Static Initialiser(s) //////////
@@ -103,18 +100,45 @@ public class StripeCreditCardFragment extends ACreditCardDialogFragment implemen
 
   /*****************************************************
    *
-   * Displays this fragment.
+   * Returns true if the agent uses PayPal to process
+   * credit card payments.
+   *
+   *****************************************************/
+  public boolean usesPayPal()
+    {
+    return ( false );
+    }
+
+
+  /*****************************************************
+   *
+   * Notifies the agent that the user has clicked on the
+   * credit card payment button.
    *
    *****************************************************/
   @Override
-  public void display( Activity activity, Order order )
+  public void onPayClicked( Context context, DefaultPaymentFragment paymentFragment, Order order, SingleCurrencyAmount singleCurrencyAmount )
     {
-    mActivity = activity;
-    mOrder    = order;
+    mContext              = context;
+    mPaymentFragment      = paymentFragment;
+    mOrder                = order;
+    mSingleCurrencyAmount = singleCurrencyAmount;
 
     // Since we are a subclass of a dialog fragment, display us
     // as a dialog.
-    show( activity.getFragmentManager(), TAG );
+    show( paymentFragment.getFragmentManager(), TAG );
+    }
+
+
+  /*****************************************************
+   *
+   * Passes an activity result to the agent.
+   *
+   *****************************************************/
+  @Override
+  public void onActivityResult( int requestCode, int resultCode, Intent data )
+    {
+    // We aren't expecting an activity result
     }
 
 
@@ -180,7 +204,7 @@ public class StripeCreditCardFragment extends ACreditCardDialogFragment implemen
     // we need to do the processing ourselves, and then return the token as the payment id to the
     // Payment Activity.
 
-    String stripePublicKey = KiteSDK.getInstance( mActivity ).getStripePublicKey();
+    String stripePublicKey = KiteSDK.getInstance( mContext ).getStripePublicKey();
 
     Stripe stripe = null;
 
@@ -193,7 +217,7 @@ public class StripeCreditCardFragment extends ACreditCardDialogFragment implemen
       Log.e( TAG, "Unable to create Stripe object", e );
 
       // TODO: Display an error dialog
-      Toast.makeText( mActivity, "Unable to create Stripe object", Toast.LENGTH_LONG ).show();
+      Toast.makeText( mContext, "Unable to create Stripe object", Toast.LENGTH_LONG ).show();
 
       return;
       }
@@ -220,9 +244,9 @@ public class StripeCreditCardFragment extends ACreditCardDialogFragment implemen
 
           // Return the token to the activity
 
-          if ( mActivity instanceof PaymentActivity )
+          if ( mContext instanceof PaymentActivity )
             {
-            ( (PaymentActivity)mActivity ).submitOrderForPrinting( token.getId(), Analytics.PAYMENT_METHOD_CREDIT_CARD );
+            mPaymentFragment.submitOrderForPrinting( token.getId(), KiteSDK.getInstance( getActivity() ).getStripeAccountId(), Analytics.PAYMENT_METHOD_CREDIT_CARD );
             }
           }
 
@@ -232,7 +256,7 @@ public class StripeCreditCardFragment extends ACreditCardDialogFragment implemen
 
           // TODO: Display error dialog
           // Show localised error message
-          Toast.makeText( mActivity, exception.getMessage(), Toast.LENGTH_LONG ).show();
+          Toast.makeText( mContext, exception.getMessage(), Toast.LENGTH_LONG ).show();
           }
         }
       );

@@ -43,6 +43,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,6 +53,8 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -60,6 +63,7 @@ import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.CatalogueLoader;
+import ly.kite.catalogue.CatalogueLoaderFragment;
 import ly.kite.catalogue.ICatalogueConsumer;
 import ly.kite.catalogue.ProductOption;
 import ly.kite.journey.AKiteActivity;
@@ -68,6 +72,7 @@ import ly.kite.ordering.ImageSpec;
 import ly.kite.util.Asset;
 import ly.kite.catalogue.Product;
 import ly.kite.catalogue.ProductGroup;
+import ly.kite.util.StringUtils;
 import ly.kite.widget.HeaderFooterGridView;
 
 
@@ -91,12 +96,19 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                         = "ProductSelectionAct.";  // Can't be more than 23 characters ... who knew?!
+  static private final String  LOG_TAG                                     = "ProductSelectionAct.";  // Can't be more than 23 characters ... who knew?!
 
-  private static final String  INTENT_EXTRA_NAME_ASSET_LIST    = KiteSDK.INTENT_PREFIX + ".assetList";
-  private static final String  INTENT_EXTRA_NAME_PRODUCT_IDS   = KiteSDK.INTENT_PREFIX + ".productIds";
+  static private final String  INTENT_EXTRA_NAME_ASSET_LIST                = KiteSDK.INTENT_PREFIX + ".assetList";
+  static private final String  INTENT_EXTRA_NAME_PRODUCT_IDS               = KiteSDK.INTENT_PREFIX + ".productIds";
 
-  private static final String  BUNDLE_KEY_OPTION_MAP           = "optionMap";
+  static private final String  BUNDLE_KEY_OPTION_MAP                       = "optionMap";
+  static private final String  BUNDLE_KEY_ADD_FRAGMENT_ON_CATALOGUE        = "addFragmentOnCatalogue";
+
+  static private final String  JSON_NAME_PAYMENT_KEYS                      = "payment_keys";
+  static private final String  JSON_NAME_PAYPAL                            = "paypal";
+  static private final String  JSON_NAME_STRIPE                            = "stripe";
+  static private final String  JSON_NAME_PUBLIC_KEY                        = "public_key";
+  static private final String  JSON_NAME_ACCOUNT_ID                        = "account_id";
 
 
   ////////// Static Variable(s) //////////
@@ -112,7 +124,8 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
   private ChooseProductFragment         mProductFragment;
   private ProductOverviewFragment       mProductOverviewFragment;
 
-  private CatalogueLoader               mCatalogueLoader;
+  //private CatalogueLoader               mCatalogueLoader;
+  private CatalogueLoaderFragment       mCatalogueLoaderFragment;
   private Catalogue                     mCatalogue;
   private ICatalogueConsumer            mCatalogueConsumer;
   private boolean                       mAddFragmentOnCatalogue;
@@ -243,20 +256,18 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
     if ( savedInstanceState == null )
       {
       mAddFragmentOnCatalogue = true;
-
-      mProductOptionValueMap = new HashMap<>();
+      mProductOptionValueMap  = new HashMap<>();
       }
     else
       {
-      mProductOptionValueMap = (HashMap<String,String>)savedInstanceState.getSerializable( BUNDLE_KEY_OPTION_MAP );
+      mAddFragmentOnCatalogue = savedInstanceState.getBoolean( BUNDLE_KEY_ADD_FRAGMENT_ON_CATALOGUE );
+      mProductOptionValueMap  = (HashMap<String,String>)savedInstanceState.getSerializable( BUNDLE_KEY_OPTION_MAP );
       }
 
 
-    mCatalogueLoader = CatalogueLoader.getInstance( this );
+    mCatalogueLoaderFragment = CatalogueLoaderFragment.findFragment( this );
 
-    if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.VISIBLE );
-
-    mCatalogueLoader.requestCatalogue( KiteSDK.MAX_ACCEPTED_PRODUCT_AGE_MILLIS, mProductIds, this );
+    requestCatalogue();
     }
 
 
@@ -304,7 +315,11 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
     super.onSaveInstanceState( outState );
 
     // Save the selected product options, so we can restore them later
-    if ( outState != null ) outState.putSerializable( BUNDLE_KEY_OPTION_MAP, mProductOptionValueMap );
+    if ( outState != null )
+      {
+      outState.putSerializable( BUNDLE_KEY_OPTION_MAP, mProductOptionValueMap );
+      outState.putBoolean( BUNDLE_KEY_ADD_FRAGMENT_ON_CATALOGUE, mAddFragmentOnCatalogue );
+      }
     }
 
 
@@ -318,7 +333,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
     {
     super.onStop();
 
-    if ( mCatalogueLoader != null ) mCatalogueLoader.cancelRequests();
+    if ( mCatalogueLoaderFragment != null ) mCatalogueLoaderFragment.cancelRequests();
     }
 
 
@@ -338,6 +353,10 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
       }
     else
       {
+      // We request a catalogue immediately the activity is created, so if we don't yet
+      // have a catalogue - we assume the request is still in progress. So all we need to
+      // do here is save the consumer. We'll deliver the catalogue to it when we get it.
+
       mCatalogueConsumer = consumer;
       }
     }
@@ -353,16 +372,89 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
   @Override
   public void onCatalogueSuccess( Catalogue catalogue )
     {
+    onCatalogueRequestComplete();
+
     // Some apps may wish to amend the catalogue
     mCatalogue = getAdjustedCatalogue( catalogue );
 
-    // Hide the progress spinner
-    if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.GONE );
+
+    // See if there are any PayPay / Stripe keys in the catalogue custom data
+    //
+    //  "payment_keys":
+    //    {
+    //    "paypal":
+    //      {
+    //      "public_key": "AUxpFaaJlAcWZ92UNGsxGYTGwblzI1upclHVIOv5NZGcM-LY-dMEhH66KNrtSfrUlGSXqLhdpPrlhezl",
+    //      "account_id": "P-3"
+    //      },
+    //    "stripe":
+    //      {
+    //      "public_key": "pk_test_FxzXniUJWigFysP0bowWbuy3",
+    //      "account_id": null
+    //      }
+    //    }
+
+    JSONObject paymentKeysJSONObject = catalogue.getCustomObject( JSON_NAME_PAYMENT_KEYS );
+
+    if ( KiteSDK.DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "  Payment keys = " + paymentKeysJSONObject );
+
+    if ( paymentKeysJSONObject != null )
+      {
+      // Check for PayPal keys
+
+      KiteSDK kiteSDK = KiteSDK.getInstance( this );
+
+      JSONObject payPalJSONObject = paymentKeysJSONObject.optJSONObject( JSON_NAME_PAYPAL );
+
+      if ( KiteSDK.DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "  PayPal payment key = " + payPalJSONObject );
+
+      if ( payPalJSONObject != null )
+        {
+        String publicKey = ( ! payPalJSONObject.isNull( JSON_NAME_PUBLIC_KEY ) ? payPalJSONObject.optString( JSON_NAME_PUBLIC_KEY ) : null );
+        String accountId = ( ! payPalJSONObject.isNull( JSON_NAME_ACCOUNT_ID ) ? payPalJSONObject.optString( JSON_NAME_ACCOUNT_ID ) : null );
+
+        if ( KiteSDK.DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "  PayPal client id = " + publicKey + ", account id = " + accountId );
+
+        kiteSDK.setPermanentPayPalKey( publicKey, accountId );
+        }
+      else
+        {
+        if ( KiteSDK.DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "  Removing permanent PayPal key" );
+
+        kiteSDK.removePermanentPayPalKey();
+        }
+
+
+      // Check for Stripe keys
+
+      JSONObject stripeJSONObject = paymentKeysJSONObject.optJSONObject( JSON_NAME_STRIPE );
+
+      if ( KiteSDK.DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "  Stripe payment key = " + stripeJSONObject );
+
+      if ( stripeJSONObject != null )
+        {
+        String publicKey = ( ! stripeJSONObject.isNull( JSON_NAME_PUBLIC_KEY ) ? stripeJSONObject.optString( JSON_NAME_PUBLIC_KEY ) : null );
+        String accountId = ( ! stripeJSONObject.isNull( JSON_NAME_ACCOUNT_ID ) ? stripeJSONObject.optString( JSON_NAME_ACCOUNT_ID ) : null );
+
+        if ( KiteSDK.DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "  Stripe public key = " + publicKey + ", account id = " + accountId );
+
+        kiteSDK.setPermanentStripeKey( publicKey, accountId );
+        }
+      else
+        {
+        if ( KiteSDK.DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "  Removing permanent Stripe key" );
+
+        kiteSDK.removePermanentStripeKey();
+        }
+      }
 
 
     // If this is the first time we have been created - start the first fragment
     if ( mAddFragmentOnCatalogue )
       {
+      mAddFragmentOnCatalogue = false;
+
+
       // Determine which fragment we need to start with
 
       ArrayList<ProductGroup> productGroupList = mCatalogue.getProductGroupList();
@@ -398,7 +490,8 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
       }
 
 
-    // Pass the result on to any consumer
+    // Deliver the catalogue to any waiting consumer
+
     if ( mCatalogueConsumer != null )
       {
       mCatalogueConsumer.onCatalogueSuccess( mCatalogue );
@@ -416,13 +509,12 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
   @Override
   public void onCatalogueError( Exception exception )
     {
+    onCatalogueRequestComplete();
+
     mCatalogue = null;
 
     if ( isVisible() )
       {
-      // Hide the progress spinner
-      if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.GONE );
-
       // Display an error dialog
       displayModalDialog
               (
@@ -580,6 +672,45 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
 
 
   ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Requests the catalogue.
+   *
+   *****************************************************/
+  void requestCatalogue()
+    {
+    if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.VISIBLE );
+
+    if ( mCatalogueLoaderFragment == null )
+      {
+      mCatalogueLoaderFragment = CatalogueLoaderFragment.start( this, mProductIds );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the catalogue load completes.
+   *
+   *****************************************************/
+  private void onCatalogueRequestComplete()
+    {
+    if ( isVisible() )
+      {
+      // Hide any progress spinner
+      if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.GONE );
+      }
+
+    // Remove the loader fragment
+    if ( mCatalogueLoaderFragment != null )
+      {
+      mCatalogueLoaderFragment.removeFrom( this );
+
+      mCatalogueLoaderFragment = null;
+      }
+    }
+
 
   /*****************************************************
    *
@@ -753,12 +884,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
     @Override
     public void run()
       {
-      if ( mCatalogueLoader != null )
-        {
-        if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.VISIBLE );
-
-        mCatalogueLoader.requestCatalogue( KiteSDK.MAX_ACCEPTED_PRODUCT_AGE_MILLIS, mProductIds, ProductSelectionActivity.this );
-        }
+      requestCatalogue();
       }
     }
 

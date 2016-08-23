@@ -62,6 +62,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.address.Country;
 import ly.kite.analytics.Analytics;
@@ -487,7 +488,7 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
 
         // Get the cost in the default currency for the locale, and format the amount.
 
-        singleCurrencyCost = singleDestinationShippingCost.getCost().getDefaultAmountWithFallback();
+        singleCurrencyCost = singleDestinationShippingCost.getCost().getAmountWithFallback( KiteSDK.getInstance( getActivity() ).getLockedCurrencyCode() );
 
         if ( singleCurrencyCost != null )
           {
