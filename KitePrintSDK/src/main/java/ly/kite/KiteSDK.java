@@ -100,7 +100,7 @@ public class KiteSDK
   static public  final boolean DEBUG_RETAINED_FRAGMENT                             = true;
   static public  final boolean DISPLAY_PRODUCT_JSON                                = false;
 
-  static public  final String SDK_VERSION                                          = "5.3.0";
+  static public  final String SDK_VERSION                                          = "5.3.1";
 
   static public  final String IMAGE_CATEGORY_APP                                   = "app";
   static public  final String IMAGE_CATEGORY_PRODUCT_ITEM                          = "product_item";
