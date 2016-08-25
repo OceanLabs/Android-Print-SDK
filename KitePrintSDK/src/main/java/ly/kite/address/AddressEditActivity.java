@@ -316,7 +316,7 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
 
 
     // Update the address
-    mAddress.setRecipientName  ( recipient );
+    mAddress.setRecipientName( recipient );
     mAddress.setLine1          ( line1 );
     mAddress.setLine2          ( mAddressLine2EditText.getText().toString() );
     mAddress.setCity           ( mAddressCityEditText.getText().toString() );

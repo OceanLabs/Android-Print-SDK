@@ -3,13 +3,6 @@
 
     <string name="app_name">Kite SDK</string>
 
-    <string name="action_bar_typeface_asset_name" translatable="false"></string>
-
-    <string name="analytics_event_callback_class_name" translatable="false">ly.kite.analytics.NullAnalyticsEventCallback</string>
-    <string name="custom_image_editor_agent_class_name" translatable="false"></string>
-
-    <string name="custom_typeface_file_name" translatable="false">""</string>
-
     <string name="unit_centimeters">Zentimeter</string>
     <string name="unit_inches">Inches</string>
     <string name="unit_pixels">Pixel</string>
@@ -232,10 +225,8 @@
     <string name="address_hint_text_city">Stadt</string>
     <string name="address_hint_text_county_or_state">Bundesland</string>
     <string name="address_hint_text_postcode_or_zip">Postleitzahl</string>
-    <string name="address_hint_text_email" translatable="false">@string/Email</string>
 
     <string name="shipping_delivery_address_button_text">wähle die Lieferanschrift</string>
-    <string name="shipping_email_hint_text" translatable="false">@string/Email</string>
     <string name="shipping_phone_hint_text">Telefonnummer</string>
     <string name="shipping_email_reason">Deine E-Mailadresse wird benötigt um dir updates und Lieferbestätigung zu scheicken.</string>
     <string name="shipping_phone_reason">Wir benötigen deine Telefonnummer für den Fall das es Probleme mit der Lieferung gibt.</string>

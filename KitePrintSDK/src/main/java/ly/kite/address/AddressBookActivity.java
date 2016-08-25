@@ -201,7 +201,7 @@ public class AddressBookActivity extends AAddressActivity
       {
       Address address = getAddress( data );
 
-      address.saveToAddressBook( this );
+      AddressBook.save( this, address );
 
       updateScreen();
       }
@@ -210,7 +210,7 @@ public class AddressBookActivity extends AAddressActivity
 
   ////////// Method(s) //////////
 
-  /*****************************************************
+   /*****************************************************
    *
    * Updates the screen.
    *
@@ -243,7 +243,7 @@ public class AddressBookActivity extends AAddressActivity
                     }
                   else if ( i == 1 )
                     {
-                    address.deleteFromAddressBook( AddressBookActivity.this );
+                    AddressBook.delete( AddressBookActivity.this, address );
 
                     updateScreen();
                     }
@@ -287,7 +287,7 @@ public class AddressBookActivity extends AAddressActivity
 
     AddressBookListAdaptor( Context context )
       {
-      mAddressList = Address.getAddressBook( context );
+      mAddressList = AddressBook.selectAll( context );
       }
 
     @Override

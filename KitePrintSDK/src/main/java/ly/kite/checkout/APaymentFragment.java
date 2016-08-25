@@ -132,6 +132,19 @@ abstract public class APaymentFragment extends AKiteFragment implements View.OnC
    * Displays an error dialog.
    *
    *****************************************************/
+  protected void showErrorDialog( int titleResourceId, String message )
+    {
+    PaymentActivity paymentActivity = getPaymentActivity();
+
+    if ( paymentActivity != null ) paymentActivity.showErrorDialog( titleResourceId, message );
+    }
+
+
+  /*****************************************************
+   *
+   * Displays an error dialog.
+   *
+   *****************************************************/
   protected void showErrorDialog( String message )
     {
     PaymentActivity paymentActivity = getPaymentActivity();

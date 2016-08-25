@@ -225,7 +225,7 @@ public class PayPalCreditCardAgent implements ICreditCardAgent
             {
             if ( dialog.isShowing() ) dialog.dismiss();
 
-            mPaymentFragment.showErrorDialog( ex.getMessage() );
+            mPaymentFragment.showErrorDialog( R.string.alert_dialog_message_unable_to_store_card, ex.getMessage() );
             }
           } );
 
