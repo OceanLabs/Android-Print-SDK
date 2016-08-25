@@ -101,7 +101,7 @@ public class KiteSDK
   static public  final boolean DEBUG_RETAINED_FRAGMENT                             = true;
   static public  final boolean DISPLAY_PRODUCT_JSON                                = false;
 
-  static public  final String SDK_VERSION                                          = "5.3.2";
+  static public  final String SDK_VERSION                                          = "5.3.3";
 
   static public  final String IMAGE_CATEGORY_APP                                   = "app";
   static public  final String IMAGE_CATEGORY_PRODUCT_ITEM                          = "product_item";
@@ -126,7 +126,7 @@ public class KiteSDK
 
   static private final String PARAMETER_NAME_PAYMENT_ACTIVITY_ENVIRONMENT          = "payment_activity_environment";
   static private final String PARAMETER_NAME_PAYPAL_ENVIRONMENT                    = "paypal_environment";
-  static private final String PARAMETER_NAME_PAYPAL_API_ENDPOINT                   = "paypal_api_endpoint";
+  static private final String PARAMETER_NAME_PAYPAL_API_HOST                       = "paypal_api_host";
   static private final String PARAMETER_NAME_PAYPAL_CLIENT_ID                      = "paypay_client_id";
   static private final String PARAMETER_NAME_PAYPAL_ACCOUNT_ID                     = "paypay_account_id";
 
@@ -164,10 +164,10 @@ public class KiteSDK
   static private final String ENVIRONMENT_STAGING                                  = "ly.kite.ENVIRONMENT_STAGING";
   static private final String ENVIRONMENT_LIVE                                     = "ly.kite.ENVIRONMENT_LIVE";
 
-  static public  final String PAYPAL_LIVE_API_ENDPOINT                             = "api.paypal.com";
+  static public  final String PAYPAL_LIVE_API_HOST                                 = "api.paypal.com";
   static public  final String PAYPAL_LIVE_CLIENT_ID                                = "ASYVBBCHF_KwVUstugKy4qvpQaPlUeE_5beKRJHpIP2d3SA_jZrsaUDTmLQY";
 
-  static public  final String PAYPAL_SANDBOX_API_ENDPOINT                          = "api.sandbox.paypal.com";
+  static public  final String PAYPAL_SANDBOX_API_HOST                              = "api.sandbox.paypal.com";
   static public  final String PAYPAL_SANDBOX_CLIENT_ID                             = "AcEcBRDxqcCKiikjm05FyD4Sfi4pkNP98AYN67sr3_yZdBe23xEk0qhdhZLM";
 
   static public  final String PAYPAL_PASSWORD                                      = "";
@@ -1245,12 +1245,12 @@ public class KiteSDK
 
   /*****************************************************
    *
-   * Returns the PayPal API endpoint.
+   * Returns the PayPal API host.
    *
    *****************************************************/
-  public String getPayPalAPIEndpoint()
+  public String getPayPalAPIHost()
     {
-    return ( mEnvironment.getAPIEndpoint() );
+    return ( mEnvironment.getPayPalAPIHost() );
     }
 
 
@@ -1823,7 +1823,7 @@ public class KiteSDK
     public String getAPIEndpoint();
     public String getPaymentActivityEnvironment();
     public String getPayPalEnvironment();
-    public String getPayPalAPIEndpoint();
+    public String getPayPalAPIHost();
     public String getPayPalClientId();
     }
 
@@ -1839,7 +1839,7 @@ public class KiteSDK
     private final String  mAPIEndpoint;
     private final String  mPaymentActivityEnvironment;
     private final String  mPayPalEnvironment;
-    private final String  mPayPalAPIEndpoint;
+    private final String  mPayPalAPIHost;
     private final String  mPayPalClientId;
 
 
@@ -1867,13 +1867,13 @@ public class KiteSDK
       }
 
 
-    Environment( String name, String apiEndpoint, String paymentActivityEnvironment, String payPalEnvironment, String payPalAPIEndpoint, String payPalClientId )
+    Environment( String name, String apiEndpoint, String paymentActivityEnvironment, String payPalEnvironment, String payPalAPIHost, String payPalClientId )
       {
       mName                       = name;
       mAPIEndpoint                = apiEndpoint;
       mPaymentActivityEnvironment = paymentActivityEnvironment;
       mPayPalEnvironment          = payPalEnvironment;
-      mPayPalAPIEndpoint          = payPalAPIEndpoint;
+      mPayPalAPIHost              = payPalAPIHost;
       mPayPalClientId             = payPalClientId;
       }
 
@@ -1884,7 +1884,7 @@ public class KiteSDK
       mAPIEndpoint                = templateEnvironment.getAPIEndpoint();
       mPaymentActivityEnvironment = templateEnvironment.getPaymentActivityEnvironment();
       mPayPalEnvironment          = templateEnvironment.getPayPalEnvironment();
-      mPayPalAPIEndpoint          = templateEnvironment.getPayPalAPIEndpoint();
+      mPayPalAPIHost              = templateEnvironment.getPayPalAPIHost();
       mPayPalClientId             = payPalClientId;
       }
 
@@ -1895,7 +1895,7 @@ public class KiteSDK
       mAPIEndpoint                = templateEnvironment.getAPIEndpoint();
       mPaymentActivityEnvironment = templateEnvironment.getPaymentActivityEnvironment();
       mPayPalEnvironment          = templateEnvironment.getPayPalEnvironment();
-      mPayPalAPIEndpoint          = templateEnvironment.getPayPalAPIEndpoint();
+      mPayPalAPIHost              = templateEnvironment.getPayPalAPIHost();
       mPayPalClientId             = templateEnvironment.getPayPalClientId();
       }
 
@@ -1906,7 +1906,7 @@ public class KiteSDK
       mAPIEndpoint                = kiteSDK.getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_API_ENDPOINT,                 null );
       mPaymentActivityEnvironment = kiteSDK.getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYMENT_ACTIVITY_ENVIRONMENT, null );
       mPayPalEnvironment          = kiteSDK.getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYPAL_ENVIRONMENT,           null );
-      mPayPalAPIEndpoint          = kiteSDK.getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYPAL_API_ENDPOINT,          null );
+      mPayPalAPIHost              = kiteSDK.getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYPAL_API_HOST,              null );
       mPayPalClientId             = kiteSDK.getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYPAL_CLIENT_ID,             null );
       }
 
@@ -1917,7 +1917,7 @@ public class KiteSDK
       mAPIEndpoint                = parcel.readString();
       mPaymentActivityEnvironment = parcel.readString();
       mPayPalEnvironment          = parcel.readString();
-      mPayPalAPIEndpoint          = parcel.readString();
+      mPayPalAPIHost              = parcel.readString();
       mPayPalClientId             = parcel.readString();
       }
 
@@ -1933,7 +1933,7 @@ public class KiteSDK
       parcel.writeString( mAPIEndpoint );
       parcel.writeString( mPaymentActivityEnvironment );
       parcel.writeString( mPayPalEnvironment );
-      parcel.writeString( mPayPalAPIEndpoint );
+      parcel.writeString( mPayPalAPIHost );
       parcel.writeString( mPayPalClientId );
       }
 
@@ -1958,9 +1958,9 @@ public class KiteSDK
       return ( mPayPalEnvironment );
       }
 
-    public String getPayPalAPIEndpoint()
+    public String getPayPalAPIHost()
       {
-      return ( mPayPalAPIEndpoint );
+      return ( mPayPalAPIHost );
       }
 
     public String getPayPalClientId()
@@ -1974,7 +1974,7 @@ public class KiteSDK
       kiteSDK.setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_API_ENDPOINT,                 mAPIEndpoint );
       kiteSDK.setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYMENT_ACTIVITY_ENVIRONMENT, mPaymentActivityEnvironment );
       kiteSDK.setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYPAL_ENVIRONMENT,           mPayPalEnvironment );
-      kiteSDK.setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYPAL_API_ENDPOINT,          mPayPalAPIEndpoint );
+      kiteSDK.setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYPAL_API_HOST,              mPayPalAPIHost );
       kiteSDK.setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYPAL_CLIENT_ID,             mPayPalClientId );
       }
 
@@ -2027,9 +2027,9 @@ public class KiteSDK
    *****************************************************/
   public static enum DefaultEnvironment implements IEnvironment
     {
-    LIVE    ( "Live",    "https://api.kite.ly/v3.0",     ENVIRONMENT_LIVE,    PayPalConfiguration.ENVIRONMENT_PRODUCTION, PAYPAL_LIVE_API_ENDPOINT,    PAYPAL_LIVE_CLIENT_ID    ),
-    TEST    ( "Test",    "https://api.kite.ly/v3.0",     ENVIRONMENT_TEST,    PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_ENDPOINT, PAYPAL_SANDBOX_CLIENT_ID ),
-    STAGING ( "Staging", "https://staging.kite.ly/v3.0", ENVIRONMENT_STAGING, PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_ENDPOINT, PAYPAL_SANDBOX_CLIENT_ID ); /* private environment intended only for Ocean Labs use, hands off :) */
+    LIVE    ( "Live",    "https://api.kite.ly/v3.0",     ENVIRONMENT_LIVE,    PayPalConfiguration.ENVIRONMENT_PRODUCTION, PAYPAL_LIVE_API_HOST,    PAYPAL_LIVE_CLIENT_ID    ),
+    TEST    ( "Test",    "https://api.kite.ly/v3.0",     ENVIRONMENT_TEST,    PayPalConfiguration.ENVIRONMENT_SANDBOX, PAYPAL_SANDBOX_API_HOST, PAYPAL_SANDBOX_CLIENT_ID ),
+    STAGING ( "Staging", "https://staging.kite.ly/v3.0", ENVIRONMENT_STAGING, PayPalConfiguration.ENVIRONMENT_SANDBOX, PAYPAL_SANDBOX_API_HOST, PAYPAL_SANDBOX_CLIENT_ID ); /* private environment intended only for Ocean Labs use, hands off :) */
 
 
     private Environment  mEnvironment;
@@ -2061,9 +2061,9 @@ public class KiteSDK
       return ( mEnvironment.getPayPalEnvironment() );
       }
 
-    public String getPayPalAPIEndpoint()
+    public String getPayPalAPIHost()
       {
-      return ( mEnvironment.getPayPalAPIEndpoint() );
+      return ( mEnvironment.getPayPalAPIHost() );
       }
 
     public String getPayPalClientId()

@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * AHomeActivity.java
+ * AStandardHomeActivity.java
  *
  *
  * Copyright (c) 2015 Kite Tech Ltd. https://www.kite.ly
@@ -31,9 +31,7 @@ package ly.kite.journey;
 ///// Import(s) /////
 
 import android.app.ActionBar;
-import android.content.Intent;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.DrawerLayout;
@@ -41,33 +39,25 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ListView;
 
-import ly.kite.R;
 import ly.kite.journey.selection.ChooseProductGroupFragment;
-import ly.kite.journey.selection.ProductSelectionActivity;
-import ly.kite.util.AssetHelper;
+import ly.kite.R;
 
 
 ///// Class Declaration /////
 
 /*****************************************************
  *
- * This class is the activity for thw Kite SDK sample app.
- * It demonstrates how to create some image assets for
- * personalisation, and then how to start the SDK product
- * selection / shopping journey.
+ * This class is the home activity for apps that use a
+ * standard menu indicator.
  *
  *****************************************************/
-abstract public class AHomeActivity extends ProductSelectionActivity
+abstract public class AStandardHomeActivity extends AHomeActivity
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private   final String LOG_TAG                      = "AHomeActivity";
-
-  static protected final long   OPEN_MENU_DELAY_MILLIS       = 500L;
-  static protected final long   CLOSE_MENU_DELAY_MILLIS      = 100L;
+  private static final String LOG_TAG             = "AStandardHomeActivity";
 
 
   ////////// Static Variable(s) //////////
@@ -75,11 +65,7 @@ abstract public class AHomeActivity extends ProductSelectionActivity
 
   ////////// Member Variable(s) //////////
 
-  protected DrawerLayout           mDrawerLayout;
-  protected ListView               mNavigationDrawerListView;
-
-  protected boolean                mShowMenuOnce;
-  protected Handler                mHandler;
+  private ActionBarDrawerToggle  mDrawerToggle;
 
 
   ////////// Static Initialiser(s) //////////
@@ -104,50 +90,121 @@ abstract public class AHomeActivity extends ProductSelectionActivity
     super.onCreate( savedInstanceState );
 
 
-    // Set up the navigation drawer
+    // Set up the drawer toggle
+    mDrawerToggle = new ActionBarDrawerToggle( this, mDrawerLayout, R.string.drawer_open, R.string.drawer_closed );
+    mDrawerLayout.setDrawerListener( mDrawerToggle );
 
-    mDrawerLayout             = (DrawerLayout)findViewById( R.id.drawer_layout );
-    mNavigationDrawerListView = (ListView)findViewById( R.id.navigation_drawer_list_view );
 
+    // Set up the action bar
 
-    // On devices running older versions of Android, there is no menu icon, so the user may not
-    // know there's a menu. We want to let them know by showing a hint of the menu.
+    ActionBar actionBar = getActionBar();
 
-    if ( savedInstanceState == null && Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2 )
+    if ( actionBar != null )
       {
-      mHandler = new Handler();
-
-      mShowMenuOnce = true;
+      actionBar.setDisplayHomeAsUpEnabled( true );
+      actionBar.setHomeButtonEnabled( true );
       }
-
     }
 
 
   /*****************************************************
    *
-   * Called when an activity result is received.
+   * Called after the activity has been created.
    *
    *****************************************************/
   @Override
-  protected void onActivityResult( int requestCode, int resultCode, Intent data )
+  protected void onPostCreate( Bundle savedInstanceState )
     {
-    // For the custom apps, we don't want to exit the activity once check-out is
-    // complete - we want to go back to the landing page - the choose product group
-    // fragment.
+    super.onPostCreate( savedInstanceState );
 
-    if ( resultCode == ACTIVITY_RESULT_CODE_CHECKED_OUT )
+    // Sync the toggle state after onRestoreInstanceState has occurred.
+    mDrawerToggle.syncState();
+    }
+
+
+  /*****************************************************
+   *
+   * Called after the configuration changes.
+   *
+   *****************************************************/
+  @Override
+  public void onConfigurationChanged( Configuration newConfig )
+    {
+    super.onConfigurationChanged( newConfig );
+
+    mDrawerToggle.onConfigurationChanged( newConfig );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when an action bar item is selected.
+   *
+   *****************************************************/
+  @Override
+  public boolean onOptionsItemSelected( MenuItem item )
+    {
+    // Pass the event to ActionBarDrawerToggle, if it returns
+    // true, then it has handled the app icon touch event
+    if ( mDrawerToggle.onOptionsItemSelected( item ) )
       {
-      mFragmentManager.popBackStackImmediate( ChooseProductGroupFragment.TAG, 0 );
+      return ( true );
+      }
 
-      // If we have successfully completed a check-out, then also clear out any cached
-      // assets. (This won't clear any product images).
-      AssetHelper.clearSessionAssets( this );
+    return super.onOptionsItemSelected( item );
+    }
 
-      return;
+
+  /*****************************************************
+   *
+   * Called with the current top-most fragment.
+   *
+   *****************************************************/
+  protected void onNotifyTop( AKiteFragment topFragment )
+    {
+    ActionBar actionBar = getActionBar();
+
+
+    // Determine which fragment is top-most
+
+    String tag = topFragment.getTag();
+
+    if ( tag != null && tag.equals( ChooseProductGroupFragment.TAG ) )
+      {
+      ///// Home page /////
+
+      // We only enable the menu on the home page
+      mDrawerToggle.setDrawerIndicatorEnabled( true );
+      mDrawerLayout.setDrawerLockMode( DrawerLayout.LOCK_MODE_UNLOCKED );
+
+      if ( mShowMenuOnce )
+        {
+        mShowMenuOnce = false;
+
+
+        // Open and close the menu
+
+        mHandler = new Handler();
+
+        mHandler.postDelayed( new OpenMenuRunnable(), OPEN_MENU_DELAY_MILLIS );
+        }
+
+      // We display the logo on the home page
+      actionBar.setDisplayShowTitleEnabled( false );
+      actionBar.setDisplayShowCustomEnabled( true );
+      }
+    else
+      {
+      mDrawerToggle.setDrawerIndicatorEnabled( false );
+      mDrawerLayout.setDrawerLockMode( DrawerLayout.LOCK_MODE_LOCKED_CLOSED );
+
+      // On other pages we show a title
+      actionBar.setDisplayShowTitleEnabled( true );
+      actionBar.setDisplayShowCustomEnabled( false );
       }
 
 
-    super.onActivityResult( requestCode, resultCode, data );
+    super.onNotifyTop( topFragment );
     }
 
 
@@ -172,12 +229,6 @@ abstract public class AHomeActivity extends ProductSelectionActivity
 
 
   ////////// Method(s) //////////
-
-  /*****************************************************
-   *
-   * ...
-   *
-   *****************************************************/
 
 
   ////////// Inner Class(es) //////////

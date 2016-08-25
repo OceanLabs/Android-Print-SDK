@@ -166,7 +166,7 @@ public class PayPalCard implements Serializable {
             @Override
             protected Object doInBackground(Void... voids) {
                 HttpClient httpclient = new DefaultHttpClient();
-                HttpPost req = new HttpPost(String.format("https://%s/v1/oauth2/token", kiteSDK.getPayPalAPIEndpoint() ));
+                HttpPost req = new HttpPost(String.format("https://%s/v1/oauth2/token", kiteSDK.getPayPalAPIHost() ));
                 req.setHeader("Content-Type", "application/x-www-form-urlencoded");
                 try {
                     req.setEntity(new StringEntity("grant_type=client_credentials"));
@@ -227,7 +227,7 @@ public class PayPalCard implements Serializable {
                     @Override
                     protected Object doInBackground(Void... voids) {
                         HttpClient httpclient = new DefaultHttpClient();
-                        HttpPost req = new HttpPost(String.format("https://%s/v1/vault/credit-card", kiteSDK.getPayPalAPIEndpoint() ));
+                        HttpPost req = new HttpPost(String.format("https://%s/v1/vault/credit-card", kiteSDK.getPayPalAPIHost() ));
                         req.setHeader("Content-Type", "application/json");
                         req.setHeader("Accept-Language", "en");
                         try {
@@ -399,7 +399,7 @@ public class PayPalCard implements Serializable {
             JSONObject paymentJSON = jsons[ 0 ];
 
             HttpClient httpclient = new DefaultHttpClient();
-            HttpPost req = new HttpPost( String.format( "https://%s/v1/payments/payment", kiteSDK.getPayPalAPIEndpoint() ) );
+            HttpPost req = new HttpPost( String.format( "https://%s/v1/payments/payment", kiteSDK.getPayPalAPIHost() ) );
             req.setHeader( "Content-Type", "application/json" );
             req.setHeader( "Accept-Language", "en" );
             try

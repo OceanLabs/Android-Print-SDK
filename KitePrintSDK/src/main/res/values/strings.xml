@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <string name="app_name">Kite SDK</string>
+    <string name="title_kite_sdk">Kite SDK</string>
 
     <string name="action_bar_typeface_asset_name" translatable="false"></string>
 
@@ -108,6 +108,7 @@
 
     <string name="alert_dialog_message_uploading_images">Uploading images</string>
 
+    <string name="alert_dialog_message_unable_to_store_card">Unable to store card</string>
     <string name="alert_dialog_message_no_payment_id">No payment id found in proof of payment</string>
     <string name="alert_dialog_message_no_proof_of_payment">No proof of payment found in payment confirmation</string>
     <string name="alert_dialog_message_no_paypal_confirmation">No payment confirmation received from PayPal</string>
