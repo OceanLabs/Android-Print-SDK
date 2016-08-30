@@ -615,48 +615,26 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
 
 
     // Get the asset we want to edit
-
     ImageSpec imageSpec = mImageSpecArrayList.get( imageIndex );
-
-    //AssetFragment assetFragment = imageSpec.getAssetFragment();
 
 
     // Start the edit fragment. By default we use the edit image fragment, but this can be
-    // overridden within an app to use a custom editor. If we get any errors, revert to the
-    // default editor.
+    // overridden within an app to use a custom editor.
 
-    String customImageEditorAgentClassName = getString( R.string.custom_image_editor_agent_class_name );
+    ICustomImageEditorAgent customImageEditorAgent = mSDKCustomiser.getCustomImageEditorAgent();
 
-    if ( customImageEditorAgentClassName != null && ( ! customImageEditorAgentClassName.trim().equals( "" ) ) )
+    if ( customImageEditorAgent != null )
       {
-      try
-        {
-        Class<?> clazz = Class.forName( customImageEditorAgentClassName );
+      mCustomImageEditorAgent = customImageEditorAgent;
 
-        mCustomImageEditorAgent = (ICustomImageEditorAgent)clazz.newInstance();
-
-        mCustomImageEditorAgent.onStartEditor( this, imageSpec.getAsset(), AKiteActivity.ACTIVITY_REQUEST_CODE_EDIT_IMAGE );
-
-        return;
-        }
-      catch ( ClassNotFoundException cnfe )
-        {
-        Log.e( LOG_TAG, "Could not find custom image editor agent: " + customImageEditorAgentClassName + ". Reverting to default editor.", cnfe );
-        }
-      catch ( ClassCastException cce )
-        {
-        Log.e( LOG_TAG, "Could not cast custom image editor agent: " + customImageEditorAgentClassName + " - did you implement the ICustomImageEditorAgent interface? Reverting to default editor.", cce );
-        }
-      catch ( Exception exception )
-        {
-        Log.e( LOG_TAG, "Could not start custom image editor agent: " + customImageEditorAgentClassName + ". Reverting to default editor.", exception );
-        }
+      mCustomImageEditorAgent.onStartEditor( this, imageSpec.getAsset(), AKiteActivity.ACTIVITY_REQUEST_CODE_EDIT_IMAGE );
       }
+    else
+      {
+      EditImageFragment editImageFragment = EditImageFragment.newInstance( mProduct, imageSpec.getAsset() );
 
-
-    EditImageFragment editImageFragment = EditImageFragment.newInstance( mProduct, imageSpec.getAsset() );
-
-    addFragment( editImageFragment, EditImageFragment.TAG );
+      addFragment( editImageFragment, EditImageFragment.TAG );
+      }
     }
 
 

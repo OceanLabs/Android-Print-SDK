@@ -5,9 +5,6 @@
 
     <string name="action_bar_typeface_asset_name" translatable="false"></string>
 
-    <string name="analytics_event_callback_class_name" translatable="false">ly.kite.analytics.NullAnalyticsEventCallback</string>
-    <string name="custom_image_editor_agent_class_name" translatable="false"></string>
-
     <string name="custom_typeface_file_name" translatable="false">""</string>
 
     <string name="unit_centimeters">centimeters</string>

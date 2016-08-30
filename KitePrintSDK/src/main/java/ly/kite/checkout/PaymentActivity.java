@@ -240,7 +240,7 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
 
       if ( paymentFragmentContainer != null )
         {
-        mPaymentFragment = kiteSDK.getPaymentFragment();
+        mPaymentFragment = mSDKCustomiser.getPaymentFragment();
 
         getFragmentManager()
           .beginTransaction()
