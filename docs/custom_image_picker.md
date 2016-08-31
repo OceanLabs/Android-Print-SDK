@@ -78,7 +78,7 @@ When the `getAssetsFromPickerResult` method is called, it is supplied the intent
 
 ## Include your new image source when returning all available image sources from an SDK customiser.
 
-An SDK customiser should be used to include your new image source with the full set of images sources. Note that the full documentation for SDK customisation can be found [here](docs/sdk_customisation.md).
+An SDK customiser should be used to include your new image source with the full set of images sources. Note that the full documentation for SDK customisation can be found [here](sdk_customisation.md).
 
 If you do not already have an SDK customiser, create one as follows:
 
