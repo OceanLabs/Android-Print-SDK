@@ -7,7 +7,7 @@ This guide demonstrates how to use this feature in your apps.
 
 ## Overview
 
-The Kite SDK uses a *customiser* to alter various aspects of its behaviour. For instance, when the SDK needs to know what image sources are available (e.g. Facebook, Instagram etc.), it makes a request to the customiser, which returns a list.
+The Kite SDK uses a **customiser** to alter various aspects of its behaviour. For instance, when the SDK needs to know what image sources are available (e.g. Facebook, Instagram etc.), it makes a request to the customiser, which returns a list.
 
 The SDK has a default customiser - `SDKCustomiser` which returns values that provide default behavious. For example, the `getImageSources` method returns the default image sources (the device camera and Instagram) available within the SDK screens :
 
