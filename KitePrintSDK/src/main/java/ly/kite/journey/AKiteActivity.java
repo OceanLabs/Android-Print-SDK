@@ -82,6 +82,7 @@ import java.util.Random;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
+import ly.kite.SDKCustomiser;
 import ly.kite.catalogue.CatalogueLoader;
 import ly.kite.image.ImageAgent;
 import ly.kite.journey.creation.imagesource.ImageSourceFragment;
@@ -139,6 +140,9 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
 
   ////////// Member Variable(s) //////////
+
+  protected KiteSDK               mKiteSDK;
+  protected SDKCustomiser         mSDKCustomiser;
 
   private   boolean               mActivityIsVisible;
   private   boolean               mCanAddFragment;
@@ -228,13 +232,17 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     super.onCreate( savedInstanceState );
 
 
+    mKiteSDK       = KiteSDK.getInstance( this );
+    mSDKCustomiser = mKiteSDK.getCustomiser();
+
+
     // TODO: Check that we can now delete this line
     CatalogueLoader.getInstance( this );
 
 
     // Check if the inactivity timer is enabled
 
-    mInactivityTimerEnabled = KiteSDK.getInstance( this ).inactivityTimerIsEnabled();
+    mInactivityTimerEnabled = mSDKCustomiser.inactivityTimerEnabled();
 
     setInactivityTimerEnabledForThisActivity( mInactivityTimerEnabled );
 
@@ -440,7 +448,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     // If we have been supplied an end customer session icon - inflate the menu
     // and set the icon.
 
-    String endCustomerSessionIconURL = KiteSDK.getInstance( this ).getEndCustomerSessionIconURL();
+    String endCustomerSessionIconURL = mKiteSDK.getEndCustomerSessionIconURL();
 
     if ( StringUtils.isNeitherNullNorBlank( endCustomerSessionIconURL ) )
       {

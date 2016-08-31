@@ -202,7 +202,7 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
     // We only add actions if the address book is enabled. At the moment the only
     // action is to save the address (which we won't want to do).
 
-    if ( KiteSDK.getInstance( this ).addressBookIsEnabled() )
+    if ( mSDKCustomiser.addressBookEnabled() )
       {
       // Inflate the menu; this adds items to the action bar if it is present.
       getMenuInflater().inflate( R.menu.address_edit, menu );

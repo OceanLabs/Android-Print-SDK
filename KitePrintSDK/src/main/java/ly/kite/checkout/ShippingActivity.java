@@ -39,11 +39,7 @@ package ly.kite.checkout;
 
 ///// Import(s) /////
 
-import org.json.JSONObject;
-
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Intent;
 import android.os.Parcelable;
 import android.os.Bundle;
@@ -58,7 +54,6 @@ import ly.kite.KiteSDK;
 import ly.kite.address.AAddressActivity;
 import ly.kite.address.AddressEditActivity;
 import ly.kite.analytics.Analytics;
-import ly.kite.journey.AKiteActivity;
 import ly.kite.pricing.PricingAgent;
 import ly.kite.ordering.Order;
 import ly.kite.R;
@@ -100,6 +95,8 @@ public class ShippingActivity extends AShippingActivity implements View.OnClickL
 
 
   ////////// Member Variable(s) //////////
+
+  private boolean   mRequestPhoneNumber;
 
   private Address   mShippingAddress;
   private String    mInitialEmail;
@@ -146,6 +143,9 @@ public class ShippingActivity extends AShippingActivity implements View.OnClickL
   protected void onCreate( Bundle savedInstanceState )
     {
     super.onCreate( savedInstanceState );
+
+
+    mRequestPhoneNumber = mSDKCustomiser.requestPhoneNumber();
 
 
     // See if we have saved a shipping address, email, and phone number
@@ -209,7 +209,7 @@ public class ShippingActivity extends AShippingActivity implements View.OnClickL
     if ( mShippingAddress != null ) onShippingAddress( mShippingAddress );
     if ( mInitialEmail    != null ) mEmailEditText.setText( mInitialEmail );
 
-    if ( KiteSDK.getInstance( this ).getRequestPhoneNumber() )
+    if ( mRequestPhoneNumber )
       {
       setViewVisibilitySafely( mPhoneView, View.VISIBLE );
       setViewVisibilitySafely( mPhoneEditText, View.VISIBLE );
@@ -331,7 +331,7 @@ public class ShippingActivity extends AShippingActivity implements View.OnClickL
     // If the address book is enabled - go to the address book activity. Otherwise
     // go direct to the new address activity.
 
-    if ( KiteSDK.getInstance( this ).addressBookIsEnabled() )
+    if ( mSDKCustomiser.addressBookEnabled() )
       {
       AddressBookActivity.startForResult( this, REQUEST_CODE_ADDRESS_BOOK );
       }
@@ -381,7 +381,7 @@ public class ShippingActivity extends AShippingActivity implements View.OnClickL
 
     // Check that we need and have a valid phone number
 
-    if ( KiteSDK.getInstance( this ).getRequestPhoneNumber() )
+    if ( mRequestPhoneNumber )
       {
       String phone = getPopulatedStringOrNull( mPhoneEditText );
 

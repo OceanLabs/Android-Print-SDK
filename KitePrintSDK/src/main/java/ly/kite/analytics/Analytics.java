@@ -362,20 +362,10 @@ public class Analytics
     {
     if ( mCachedEventCallback == null )
       {
-      // Load registered analytics event callback (if any) via reflection
-      String callbackClassName = mContext.getString(R.string.analytics_event_callback_class_name);
-      try
-        {
-        Class<?> clazz = Class.forName( callbackClassName );
-        Constructor<?> ctor = clazz.getConstructor( Context.class );
-        mCachedEventCallback = (IAnalyticsEventCallback) ctor.newInstance( new Object[] { mContext } );
-      } catch ( Exception ex )
-        {
-        mCachedEventCallback = new NullAnalyticsEventCallback(mContext);
-        }
+      mCachedEventCallback = KiteSDK.getInstance( mContext ).getCustomiser().getAnalyticsEventCallback( mContext );
       }
 
-    return mCachedEventCallback;
+    return ( mCachedEventCallback );
     }
 
   /*****************************************************

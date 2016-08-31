@@ -501,24 +501,15 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
       Order order = getOrder();
 
 
-      // We want to start the shipping activity, but we need to check if a custom one has been
-      // set first.
+      // Start the appropriate shipping activity
 
-      Class<? extends AShippingActivity> shippingActivityClass = KiteSDK.getInstance( this ).getShippingActivityClass();
+      Class<? extends AShippingActivity> shippingActivityClass = mSDKCustomiser.getShippingActivityClass();
 
-      if ( shippingActivityClass != null )
-        {
-        Intent intent = new Intent( this, shippingActivityClass );
+      Intent intent = new Intent( this, shippingActivityClass );
 
-        AShippingActivity.addExtras( order, intent );
+      AShippingActivity.addExtras( order, intent );
 
-        startActivityForResult( intent, ACTIVITY_REQUEST_CODE_GET_CONTACT_DETAILS );
-        }
-      else
-        {
-        // Start the default shipping activity
-        ShippingActivity.startForResult( this, order, ACTIVITY_REQUEST_CODE_GET_CONTACT_DETAILS );
-        }
+      startActivityForResult( intent, ACTIVITY_REQUEST_CODE_GET_CONTACT_DETAILS );
 
       return;
       }

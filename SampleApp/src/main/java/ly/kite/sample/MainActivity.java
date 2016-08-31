@@ -58,6 +58,7 @@ import android.widget.Toast;
 import ly.kite.address.Address;
 import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.ICatalogueConsumer;
+import ly.kite.catalogue.Product;
 import ly.kite.checkout.ShippingActivity;
 import ly.kite.ordering.Job;
 import ly.kite.ordering.Order;
@@ -78,7 +79,7 @@ import ly.kite.KiteSDK;
  *
  *****************************************************/
 public class MainActivity extends Activity
-{
+  {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
@@ -103,6 +104,11 @@ public class MainActivity extends Activity
 
   private static final int    REQUEST_CODE_SELECT_PICTURE = 1;
   private static final int    REQUEST_CODE_CHECKOUT       = 2;
+
+
+
+
+  static private final String PRODUCT_ID_POSTCARD         = "postcard";
 
 
   ////////// Static Variable(s) //////////
@@ -277,8 +283,14 @@ public class MainActivity extends Activity
       }
 
 
-    return ( KiteSDK.getInstance( this, apiKey, environment )
-               .setRequestPhoneNumber( false ) );
+    // Create an instance of the SDK, and set a customiser
+
+    KiteSDK kiteSDK = KiteSDK.getInstance( this, apiKey, environment );
+
+    kiteSDK.setCustomiser( SampleSDKCustomiser.class );
+
+
+    return ( kiteSDK );
     }
 
 
@@ -298,11 +310,6 @@ public class MainActivity extends Activity
     // Launch the SDK shopping journey
 
     kiteSDK
-
-      // Uncomment this if you want all image sources, and you have defined all the credentials. The
-      // default is for the device image source, and the Instagram image source (assuming you have
-      // also defined the instagram credentials).
-      //.setImageSources( new DeviceImageSource(), new InstagramImageSource(), new FacebookImageSource() )
 
       // Uncomment this if you have defined Instagram credentials
       //.setInstagramCredentials( INSTAGRAM_API_KEY, INSTAGRAM_REDIRECT_URI )
@@ -332,6 +339,15 @@ public class MainActivity extends Activity
       @Override
       public void onCatalogueSuccess( Catalogue catalogue )
         {
+        Product product = catalogue.getProductById( PRODUCT_ID_POSTCARD );
+
+        if ( product == null )
+          {
+          showError( "Invalid Product Id", "No product could be found for product id: " + PRODUCT_ID_POSTCARD );
+
+          return;
+          }
+
         try
           {
           // Create Postcard Job & Add to Order
@@ -340,7 +356,7 @@ public class MainActivity extends Activity
           Asset backImage  = new Asset( new URL( "http://psps.s3.amazonaws.com/sdk_static/2.jpg" ) );
 
           Job postcard = Job.createPostcardJob(
-                  catalogue.getProductById( "postcard" ),
+                  product,
                   frontImage,
                   backImage,
                   "Message to go on the back of the postcard",
@@ -352,7 +368,7 @@ public class MainActivity extends Activity
 
 
           // Start managed check-out
-          KiteSDK.getInstance( MainActivity.this ).startCheckout( MainActivity.this, order, REQUEST_CODE_CHECKOUT );
+          KiteSDK.getInstance( MainActivity.this ).startCheckoutForResult( MainActivity.this, order, REQUEST_CODE_CHECKOUT );
           }
         catch ( MalformedURLException ex )
           {

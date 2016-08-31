@@ -101,7 +101,7 @@ public class KiteSDK
   static public  final boolean DEBUG_RETAINED_FRAGMENT                             = true;
   static public  final boolean DISPLAY_PRODUCT_JSON                                = false;
 
-  static public  final String SDK_VERSION                                          = "5.3.3";
+  static public  final String SDK_VERSION                                          = "5.4.0";
 
   static public  final String IMAGE_CATEGORY_APP                                   = "app";
   static public  final String IMAGE_CATEGORY_PRODUCT_ITEM                          = "product_item";
@@ -122,7 +122,6 @@ public class KiteSDK
   static private final String PARAMETER_NAME_UNIQUE_USER_ID                        = "unique_user_id";
   static private final String PARAMETER_NAME_ENVIRONMENT_NAME                      = "environment_name";
   static private final String PARAMETER_NAME_API_ENDPOINT                          = "api_endpoint";
-  static private final String PARAMETER_NAME_IMAGE_SOURCES                         = "image_sources";
 
   static private final String PARAMETER_NAME_PAYMENT_ACTIVITY_ENVIRONMENT          = "payment_activity_environment";
   static private final String PARAMETER_NAME_PAYPAL_ENVIRONMENT                    = "paypal_environment";
@@ -141,16 +140,7 @@ public class KiteSDK
 
   static private final String PARAMETER_NAME_SDK_CUSTOMISER_CLASS_NAME             = "sdk_customiser_class_name";
 
-  static private final String PARAMETER_NAME_REQUEST_PHONE_NUMBER                  = "request_phone_number";
-
   static private final String PARAMETER_NAME_END_CUSTOMER_SESSION_ICON_URL         = "end_customer_session_icon_url";
-
-  static private final String PARAMETER_NAME_SHIPPING_ACTIVITY_CLASS_NAME          = "shipping_activity_class_name";
-  static private final String PARAMETER_NAME_ADDRESS_BOOK_ENABLED                  = "address_book_enabled";
-
-  static private final String PARAMETER_NAME_INACTIVITY_TIMER_ENABLED              = "inactivity_timer_enabled";
-
-  static private final String PARAMETER_NAME_PAYMENT_FRAGMENT_CLASS_NAME           = "payment_fragment_class_name";
 
   static private final String SHARED_PREFERENCES_KEY_SUFFIX_RECIPIENT              = "_recipient";
   static private final String SHARED_PREFERENCES_KEY_SUFFIX_LINE1                  = "_line1";
@@ -194,8 +184,6 @@ public class KiteSDK
   private String          mAPIKey;
   private Environment     mEnvironment;
   private String          mUniqueUserId;
-
-  private AImageSource[]  mImageSources;
 
   private SDKCustomiser   mCustomiser;
 
@@ -579,11 +567,6 @@ public class KiteSDK
 
     // Set the environment but don't bother saving it out again
     setEnvironment( apiKey, environment, false );
-
-
-    String imageSourceClassNames = getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_IMAGE_SOURCES, null );
-
-    restoreImageSourcesByClassNames( imageSourceClassNames );
     }
 
 
@@ -602,9 +585,6 @@ public class KiteSDK
     //clearAllParameters( Scope.CUSTOMER_SESSION );
 
     setEnvironment( apiKey, environment );
-
-    // Set default image sources
-    setImageSources( new DeviceImageSource(), new InstagramImageSource() );
 
     // Clear any temporary assets
     AssetHelper.clearSessionAssets( context );
@@ -786,18 +766,6 @@ public class KiteSDK
 
   /*****************************************************
    *
-   * Sets the display of phone number entry field in checkout
-   * journey. If false then phone number will not be requested
-   *
-   *****************************************************/
-  public KiteSDK setRequestPhoneNumber( boolean requestPhoneNumber )
-    {
-    return ( setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_REQUEST_PHONE_NUMBER, requestPhoneNumber ) );
-    }
-
-
-  /*****************************************************
-   *
    * Returns the API key.
    *
    *****************************************************/
@@ -839,135 +807,6 @@ public class KiteSDK
 
   /*****************************************************
    *
-   * Sets the enabled state of the inactivity timer.
-   *
-   *****************************************************/
-  public KiteSDK setInactivityTimerEnabled( boolean enabled )
-    {
-    setSDKParameter( Scope.PERMANENT, PARAMETER_NAME_INACTIVITY_TIMER_ENABLED, enabled );
-
-    return ( this );
-    }
-
-
-
-  /*****************************************************
-   *
-   * Returns the enabled state of the inactivity timer.
-   * If the parameter has not been explicitly set, it defaults
-   * to false.
-   *
-   *****************************************************/
-  public boolean inactivityTimerIsEnabled()
-    {
-    return ( getBooleanSDKParameter( Scope.PERMANENT, PARAMETER_NAME_INACTIVITY_TIMER_ENABLED, false ) );
-    }
-
-
-  /*****************************************************
-   *
-   * Sets the shipping activity.
-   *
-   *****************************************************/
-  public KiteSDK setShippingActivity( Class<? extends AShippingActivity> shippingActivity )
-    {
-    return ( setSDKParameter( Scope.PERMANENT, PARAMETER_NAME_SHIPPING_ACTIVITY_CLASS_NAME, shippingActivity.getName() ) );
-    }
-
-
-  /*****************************************************
-   *
-   * Returns the shipping activity.
-   *
-   *****************************************************/
-  public Class<? extends AShippingActivity> getShippingActivityClass()
-    {
-    String shippingActivityClassName = getStringSDKParameter( Scope.PERMANENT, PARAMETER_NAME_SHIPPING_ACTIVITY_CLASS_NAME, null );
-
-    if ( shippingActivityClassName != null )
-      {
-      try
-        {
-        return ( (Class<? extends AShippingActivity>)Class.forName( shippingActivityClassName ) );
-        }
-      catch ( Exception e )
-        {
-        Log.e( LOG_TAG, "Unable to get shipping activity " + shippingActivityClassName, e );
-        }
-      }
-
-    return ( null );
-    }
-
-
-  /*****************************************************
-   *
-   * Sets the enabled state of the address book.
-   *
-   *****************************************************/
-  public KiteSDK setAddressBookEnabled( boolean enabled )
-    {
-    setSDKParameter( Scope.PERMANENT, PARAMETER_NAME_ADDRESS_BOOK_ENABLED, enabled );
-
-    return ( this );
-    }
-
-
-  /*****************************************************
-   *
-   * Returns the enabled state of the address book. If the
-   * parameter has not been explicitly set, it defaults
-   * to true.
-   *
-   *****************************************************/
-  public boolean addressBookIsEnabled()
-    {
-    return ( getBooleanSDKParameter( Scope.PERMANENT, PARAMETER_NAME_ADDRESS_BOOK_ENABLED, true ) );
-    }
-
-
-  /*****************************************************
-   *
-   * Sets the payment fragment. The payment fragment displays
-   * the payment option buttons and processes them.
-   *
-   *****************************************************/
-  public KiteSDK setPaymentFragment( Class<? extends APaymentFragment> paymentFragment )
-    {
-    return ( setSDKParameter( Scope.PERMANENT, PARAMETER_NAME_PAYMENT_FRAGMENT_CLASS_NAME, paymentFragment.getName() ) );
-    }
-
-
-  /*****************************************************
-   *
-   * Returns the payment fragment.
-   *
-   *****************************************************/
-  public APaymentFragment getPaymentFragment()
-    {
-    String paymentFragmentClassName = getStringSDKParameter( Scope.PERMANENT, PARAMETER_NAME_PAYMENT_FRAGMENT_CLASS_NAME, null );
-
-    if ( paymentFragmentClassName != null )
-      {
-      try
-        {
-        Class<?> paymentFragmentClass = Class.forName( paymentFragmentClassName );
-
-        return ( (APaymentFragment)paymentFragmentClass.newInstance() );
-        }
-      catch ( Exception e )
-        {
-        Log.e( LOG_TAG, "Unable to get payment fragment " + paymentFragmentClassName, e );
-        }
-      }
-
-    // If anything goes wrong - return the default payment agent
-    return ( new DefaultPaymentFragment() );
-    }
-
-
-  /*****************************************************
-   *
    * Returns the instagram client id or null if one has
    * not been set.
    *
@@ -987,115 +826,6 @@ public class KiteSDK
   public String getInstagramRedirectURI()
     {
     return ( getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_INSTAGRAM_REDIRECT_URI, null ) );
-    }
-
-
-  /*****************************************************
-   *
-   * Returns whether the users phone number should be
-   * requested in the checkout journey
-   *
-   *****************************************************/
-  public boolean getRequestPhoneNumber()
-    {
-    return ( getBooleanSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_REQUEST_PHONE_NUMBER, true ) );
-    }
-
-
-  /*****************************************************
-   *
-   * Sets image sources.
-   *
-   *****************************************************/
-  private void restoreImageSourcesByClassNames( String classNamesString )
-    {
-    List<AImageSource> imageSourceList = new ArrayList<>();
-
-
-    if ( classNamesString != null )
-      {
-      String[] classNameArray = classNamesString.split( CLASS_NAMES_SEPARATOR );
-
-
-      // Try to dynamically load each of the image sources
-
-      for ( String className : classNameArray )
-        {
-        try
-          {
-          Class<?>       imageSourceClass            = Class.forName( className );
-          AImageSource   imageSource                 = (AImageSource)imageSourceClass.newInstance();
-
-          imageSourceList.add( imageSource );
-          }
-        catch ( Exception e )
-          {
-          Log.e( LOG_TAG, "Unable to load image source " + className, e );
-          }
-        }
-      }
-
-
-    // Convert the image source list to an array
-
-    AImageSource[] imageSourceArray = new AImageSource[ imageSourceList.size() ];
-
-    imageSourceList.toArray( imageSourceArray );
-
-
-    setImageSources( false, imageSourceArray );
-    }
-
-
-  /*****************************************************
-   *
-   * Sets image sources.
-   *
-   *****************************************************/
-  public KiteSDK setImageSources( AImageSource... imageSources )
-    {
-    return ( setImageSources( true, imageSources ) );
-    }
-
-
-  /*****************************************************
-   *
-   * Sets image sources.
-   *
-   *****************************************************/
-  private KiteSDK setImageSources( boolean saveSources, AImageSource... imageSources)
-    {
-    mImageSources = imageSources;
-
-    DelimitedStringBuilder classNamesStringBuilder = new DelimitedStringBuilder( CLASS_NAMES_SEPARATOR );
-
-    if ( imageSources != null )
-      {
-      // Iterate through every image source. For each one, set its activity
-      // request code, and get its class name.
-
-      String[] classNamesArray = new String[ imageSources.length ];
-
-      int requestCode = ACTIVITY_REQUEST_CODE_FIRST;
-
-      for ( AImageSource imageSource : imageSources )
-        {
-        imageSource.setActivityRequestCode( requestCode ++ );
-
-        classNamesStringBuilder.append( imageSource.getClass().getName() );
-        }
-      }
-
-
-    // Save the class names. This may be an empty list.
-
-    if ( saveSources )
-      {
-      setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_IMAGE_SOURCES, classNamesStringBuilder.toString() );
-      }
-
-
-    return ( this );
     }
 
 
@@ -1744,6 +1474,31 @@ public class KiteSDK
 
   /*****************************************************
    *
+   * Returns an array of image sources.
+   *
+   *****************************************************/
+  private AImageSource[] getImageSources()
+    {
+    // Get the image sources from the customiser
+    AImageSource[] imageSources = getCustomiser().getImageSources();
+
+    // Assign request codes to each image source
+    if ( imageSources != null )
+      {
+      int requestCode = ACTIVITY_REQUEST_CODE_FIRST;
+
+      for ( AImageSource imageSource : imageSources )
+        {
+        imageSource.setActivityRequestCode( requestCode ++ );
+        }
+      }
+
+    return ( imageSources );
+    }
+
+
+  /*****************************************************
+   *
    * Returns a list of available image sources.
    *
    *****************************************************/
@@ -1751,9 +1506,11 @@ public class KiteSDK
     {
     ArrayList<AImageSource> imageSourceList = new ArrayList<>();
 
-    if ( mImageSources != null )
+    AImageSource[] imageSources = getImageSources();
+
+    if ( imageSources != null )
       {
-      for ( AImageSource imageSource : mImageSources )
+      for ( AImageSource imageSource : imageSources )
         {
         if ( imageSource.isAvailable( mApplicationContext ) ) imageSourceList.add( imageSource );
         }
@@ -1771,9 +1528,11 @@ public class KiteSDK
    *****************************************************/
   public AImageSource getImageSourceByMenuItemId( int itemId )
     {
-    if ( mImageSources != null )
+    AImageSource[] imageSources = getImageSources();
+
+    if ( imageSources != null )
       {
-      for ( AImageSource candidateImageSource : mImageSources )
+      for ( AImageSource candidateImageSource : imageSources )
         {
         if ( candidateImageSource.getMenuItemId() == itemId ) return ( candidateImageSource );
         }
@@ -1794,9 +1553,11 @@ public class KiteSDK
       {
       // Go through the image sources, and find the one with the matching request code
 
-      if ( mImageSources != null )
+      AImageSource[] imageSources = getImageSources();
+
+      if ( imageSources != null )
         {
-        for ( AImageSource imageSource : mImageSources )
+        for ( AImageSource imageSource : imageSources )
           {
           if ( imageSource.getActivityRequestCode() == requestCode )
             {
@@ -2028,8 +1789,8 @@ public class KiteSDK
   public static enum DefaultEnvironment implements IEnvironment
     {
     LIVE    ( "Live",    "https://api.kite.ly/v3.0",     ENVIRONMENT_LIVE,    PayPalConfiguration.ENVIRONMENT_PRODUCTION, PAYPAL_LIVE_API_HOST,    PAYPAL_LIVE_CLIENT_ID    ),
-    TEST    ( "Test",    "https://api.kite.ly/v3.0",     ENVIRONMENT_TEST,    PayPalConfiguration.ENVIRONMENT_SANDBOX, PAYPAL_SANDBOX_API_HOST, PAYPAL_SANDBOX_CLIENT_ID ),
-    STAGING ( "Staging", "https://staging.kite.ly/v3.0", ENVIRONMENT_STAGING, PayPalConfiguration.ENVIRONMENT_SANDBOX, PAYPAL_SANDBOX_API_HOST, PAYPAL_SANDBOX_CLIENT_ID ); /* private environment intended only for Ocean Labs use, hands off :) */
+    TEST    ( "Test",    "https://api.kite.ly/v3.0",     ENVIRONMENT_TEST,    PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_HOST, PAYPAL_SANDBOX_CLIENT_ID ),
+    STAGING ( "Staging", "https://staging.kite.ly/v3.0", ENVIRONMENT_STAGING, PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_HOST, PAYPAL_SANDBOX_CLIENT_ID ); /* private environment intended only for Ocean Labs use, hands off :) */
 
 
     private Environment  mEnvironment;

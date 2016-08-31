@@ -160,8 +160,9 @@ abstract public class AImageSource
 
   /*****************************************************
    *
-   * Sets the activity request code. Should not normally
-   * need to be set, as the Kite SDK does this automatically.
+   * Sets the activity request code. This should not be used
+   * by the app; the the Kite SDK assigns request codes to the
+   * image sources automatically.
    *
    *****************************************************/
   public void setActivityRequestCode( int requestCode )

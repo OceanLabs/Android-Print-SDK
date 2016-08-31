@@ -39,14 +39,24 @@ package ly.kite;
 
 ///// Import(s) /////
 
+import android.content.Context;
+import android.view.Gravity;
+
+import ly.kite.analytics.IAnalyticsEventCallback;
+import ly.kite.analytics.NullAnalyticsEventCallback;
+import ly.kite.checkout.APaymentFragment;
+import ly.kite.checkout.AShippingActivity;
+import ly.kite.checkout.DefaultPaymentFragment;
+import ly.kite.checkout.ICreditCardAgent;
+import ly.kite.checkout.ShippingActivity;
+import ly.kite.checkout.StripeCreditCardAgent;
+import ly.kite.instagramphotopicker.InstagramImageSource;
+import ly.kite.journey.AImageSource;
+import ly.kite.journey.DeviceImageSource;
+import ly.kite.journey.creation.ICustomImageEditorAgent;
+
 
 ///// Class Declaration /////
-
-import android.view.Gravity;
-import android.widget.ImageView;
-
-import ly.kite.checkout.ICreditCardAgent;
-import ly.kite.checkout.StripeCreditCardAgent;
 
 /*****************************************************
  *
@@ -83,6 +93,29 @@ public class SDKCustomiser
 
   /*****************************************************
    *
+   * Returns the analytics event callback.
+   *
+   *****************************************************/
+  public IAnalyticsEventCallback getAnalyticsEventCallback( Context context )
+    {
+    return ( new NullAnalyticsEventCallback( context ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns true if the inactivity timer is enabled,
+   * false otherwise.
+   *
+   *****************************************************/
+  public boolean inactivityTimerEnabled()
+    {
+    return ( false );
+    }
+
+
+  /*****************************************************
+   *
    * Returns the scale type to be used for product images.
    *
    *****************************************************/
@@ -113,6 +146,73 @@ public class SDKCustomiser
   public int getChooseProductGridFooterLayoutResourceId()
     {
     return ( 0 );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the image sources.
+   *
+   *****************************************************/
+  public AImageSource[] getImageSources()
+    {
+    return ( new AImageSource[] { new DeviceImageSource(), new InstagramImageSource() } );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the custom image editor agent.
+   *
+   *****************************************************/
+  public ICustomImageEditorAgent getCustomImageEditorAgent()
+    {
+    return ( null );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the class that implements the shipping activity.
+   *
+   *****************************************************/
+  public Class<? extends AShippingActivity> getShippingActivityClass()
+    {
+    return ( ShippingActivity.class );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns true if the user's phone number should be
+   * entered on the shipping screen.
+   *
+   *****************************************************/
+  public boolean requestPhoneNumber()
+    {
+    return ( true );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns true if the address book is enabled.
+   *
+   *****************************************************/
+  public boolean addressBookEnabled()
+    {
+    return ( true );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the payment fragment.
+   *
+   *****************************************************/
+  public APaymentFragment getPaymentFragment()
+    {
+    return ( new DefaultPaymentFragment() );
     }
 
 
