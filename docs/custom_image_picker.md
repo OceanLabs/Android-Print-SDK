@@ -10,7 +10,7 @@ Additionally, however, developers may create their own custom image pickers, whi
 In order to create a custom image picker, you will need to perform the following steps:
 
 1. Create an image source for the custom picker.
-2. Include the new image source when configuring the Kite SDK.
+2. Include your new image source when returning all available image sources from an SDK customiser.
 
 
 ## Create an image source for the custom picker
@@ -76,22 +76,44 @@ finish();
 When the `getAssetsFromPickerResult` method is called, it is supplied the intent that you returned with the `setResult` method. You should then create Assets for the chosen images, and return them to the `IAssetConsumer`. Note that the `getAssetsFromPickerResult` method may return the assets immediately (from within the method itself) or asynchronously according to your particular implementation.
 
 
-## Include the new image source when configuring the Kite SDK.
+## Include your new image source when returning all available image sources from an SDK customiser.
 
-When you first initialise the SDK, you can set various configuration parameters. Your code may look something like this:
+An SDK customiser should be used to include your new image source with the full set of images sources. Note that the full documentation for SDK customisation can be found [here](docs/sdk_customisation.md).
+
+If you do not already have an SDK customiser, create one as follows:
+
+```
+    ...
+
+    import ly.kite.SDKCustomiser;
+
+    ...
+
+    public class MySDKCustomiser extends SDKCustomiser
+      {
+
+      ...
+
+      @Override
+      public AImageSource[] getImageSources()
+        {
+        return ( new AImageSource[] { new DeviceImageSource(), new InstagramImageSource(), new MyImageSource() } );
+        }
+
+      ...
+
+      }
+```
+
+The method `getImageSources` must return *all* the image sources that you wish to make available in your app, including any default ones.
+
+If you have not already done so, your customiser must be set when you initialise the Kite SDK:
 
 ```
     KiteSDK.getInstance( this, apiKey, environment )
-      .setRequestPhoneNumber( false ) );
       .setInstagramCredentials( INSTAGRAM_API_KEY, INSTAGRAM_REDIRECT_URI )
+      .setCustomiser( MySDKCustomiser.class )
       .startShopping( this, assets );
 ```
 
-By default, both the **DeviceImageSource** and **InstagramImageSource** are enabled. You may, however, manually set the available image sources, including your custom image source:
-
-```
-.setImageSources( new DeviceImageSource(), new InstagramImageSource(), new FacebookImageSource(), new MyImageSource() )
-```
-
-Note that the order in which you specify the image sources in this method call corresponds to the order in which they are shown on image selection screens, and within menus. You should also remember that `setImageSources` replaces the current image sources with those that you supply. You must include *all* the sources (including the device and Instagram image sources) that you wish to use.
-
+Note that the order in which you specify the image sources in this method call corresponds to the order in which they are shown on image selection screens, and within menus.

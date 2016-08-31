@@ -39,12 +39,8 @@ package ly.kite;
 
 ///// Import(s) /////
 
-
-///// Class Declaration /////
-
 import android.content.Context;
 import android.view.Gravity;
-import android.widget.ImageView;
 
 import ly.kite.analytics.IAnalyticsEventCallback;
 import ly.kite.analytics.NullAnalyticsEventCallback;
@@ -58,6 +54,9 @@ import ly.kite.instagramphotopicker.InstagramImageSource;
 import ly.kite.journey.AImageSource;
 import ly.kite.journey.DeviceImageSource;
 import ly.kite.journey.creation.ICustomImageEditorAgent;
+
+
+///// Class Declaration /////
 
 /*****************************************************
  *

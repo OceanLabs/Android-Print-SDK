@@ -50,7 +50,7 @@ Once you've updated your build.gradle file, you can force Android Studio to sync
 This should download the aar dependency at which point you'll have access to the Kite Print SDK API calls. If it cannot find the dependency, you should make sure you've specified mavenCentral() as a repository in your build.gradle
 ## Quick Integration
 
-If you don't want to build your own shopping journey user experience you can integrated the SDK in a matter of minutes: 
+If you don't want to build your own shopping journey user experience you can integrate the SDK in a matter of minutes: 
 
 ```java 
 private final boolean PRODUCTION_RELEASE = false;
