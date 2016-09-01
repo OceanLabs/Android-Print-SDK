@@ -152,7 +152,7 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
     final Country[] countries = Country.values();
     int selected = mAddress.getCountry().ordinal();
     Spinner spinner = (Spinner)findViewById( R.id.spinner_country );
-    spinner.setAdapter( new ArrayAdapter<Country>( this, android.R.layout.simple_spinner_dropdown_item, countries ) );
+    spinner.setAdapter( new ArrayAdapter<Country>( this, R.layout.spinner_item_simple, countries ) );
     spinner.setOnItemSelectedListener( new AdapterView.OnItemSelectedListener()
     {
     @Override

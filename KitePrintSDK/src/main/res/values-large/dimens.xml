@@ -10,6 +10,7 @@
     <dimen name="explanation_text_size">18sp</dimen>
     <dimen name="prompt_text_size">25sp</dimen>
     <dimen name="empty_text_size">18sp</dimen>
+    <dimen name="spinner_text_size">23sp</dimen>
 
     <dimen name="checkable_image_highlight_border_size">6dp</dimen>
 
