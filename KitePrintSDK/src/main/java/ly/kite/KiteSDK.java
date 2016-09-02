@@ -98,10 +98,11 @@ public class KiteSDK
 
   static public  final boolean DEBUG_PAYMENT_KEYS                                  = false;
   static public  final boolean DEBUG_PRICING                                       = false;
-  static public  final boolean DEBUG_RETAINED_FRAGMENT                             = true;
+  static public  final boolean DEBUG_RETAINED_FRAGMENT                             = false;
+  static public  final boolean DEBUG_PRODUCT_ASSET_EXPIRY                          = false;
   static public  final boolean DISPLAY_PRODUCT_JSON                                = false;
 
-  static public  final String SDK_VERSION                                          = "5.4.0";
+  static public  final String SDK_VERSION                                          = "5.4.1";
 
   static public  final String IMAGE_CATEGORY_APP                                   = "app";
   static public  final String IMAGE_CATEGORY_PRODUCT_ITEM                          = "product_item";

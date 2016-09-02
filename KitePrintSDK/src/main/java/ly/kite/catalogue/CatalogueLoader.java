@@ -61,6 +61,7 @@ import ly.kite.KiteSDKException;
 import ly.kite.KiteSDK;
 import ly.kite.journey.creation.ProductCreationActivity;
 import ly.kite.journey.UserJourneyType;
+import ly.kite.util.AssetHelper;
 import ly.kite.util.HTTPJSONRequest;
 import ly.kite.api.KiteAPIRequest;
 
@@ -908,7 +909,11 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
       mLastRetrievedEnvironmentAPIKey     = mRequestAPIKey;
       mLastRetrievedElapsedRealtimeMillis = SystemClock.elapsedRealtime();
 
+      // Choose and lock the currency
       KiteSDK.getInstance( mContext ).chooseAndLockCurrency( catalogue );
+
+      // Expire old cached product images
+      AssetHelper.clearProductAssets( mContext, catalogue.getAllProductImageURLs() );
 
       postCatalogueToConsumers( catalogue );
       }

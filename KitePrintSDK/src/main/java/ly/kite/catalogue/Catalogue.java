@@ -48,8 +48,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Currency;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 
 ///// Class Declaration /////
@@ -89,6 +91,8 @@ public class Catalogue
 
   private HashMap<String,Product>       mIdDiscardedProductTable;
 
+  private List<URL>                     mAllImagesURLList;
+
 
   ////////// Static Initialiser(s) //////////
 
@@ -112,6 +116,8 @@ public class Catalogue
     mProductIdGroupTable     = new HashMap<>();
 
     mIdDiscardedProductTable = new HashMap<>();
+
+    mAllImagesURLList        = new ArrayList<>();
     }
 
 
@@ -230,6 +236,8 @@ public class Catalogue
 
       mGroupList.add( productGroup );
       mNameGroupTable.put( groupLabel, productGroup );
+
+      productGroup.appendAllImages( mAllImagesURLList );
       }
 
 
@@ -237,6 +245,8 @@ public class Catalogue
 
     mIdProductTable.put( product.getId(), product );
     mProductIdGroupTable.put( product.getId(), productGroup );
+
+    product.appendAllImages( mAllImagesURLList );
 
     return ( this );
     }
@@ -253,6 +263,8 @@ public class Catalogue
   void addDiscardedProduct( Product product )
     {
     mIdDiscardedProductTable.put( product.getId(), product );
+
+    product.appendAllImages( mAllImagesURLList );
     }
 
 
@@ -373,6 +385,17 @@ public class Catalogue
       {
       throw ( new IllegalStateException( "Product id " + productId + " not found in catalogue" ) );
       }
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a list of all product images.
+   *
+   *****************************************************/
+  public List<URL> getAllProductImageURLs()
+    {
+    return ( mAllImagesURLList );
     }
 
 

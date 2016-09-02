@@ -229,6 +229,33 @@ public class Product implements Parcelable, IGroupOrProduct
     }
 
 
+  /*****************************************************
+   *
+   * Appends a URL to a list if it is not null.
+   *
+   *****************************************************/
+  static private void appendIfNotNull( URL url, List<URL> targetURLList )
+    {
+    if ( url != null ) targetURLList.add( url );
+    }
+
+  /*****************************************************
+   *
+   * Appends any non-null URLs to a list.
+   *
+   *****************************************************/
+  static private void appendNonNull( List<URL> sourceURLList, List<URL> targetURLList )
+    {
+    if ( sourceURLList != null )
+      {
+      for ( URL sourceURL : sourceURLList )
+        {
+        if ( sourceURL != null ) targetURLList.add( sourceURL );
+        }
+      }
+    }
+
+
   ////////// Constructor(s) //////////
 
   private Product()
@@ -791,6 +818,22 @@ public class Product implements Parcelable, IGroupOrProduct
     else       mFlags = flag.clear( mFlags );
 
     return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Appends all the product images used by this product,
+   * to the supplied list.
+   *
+   *****************************************************/
+  public void appendAllImages( List<URL> targetURLList )
+    {
+    appendIfNotNull( mHeroImageURL,    targetURLList );
+    appendNonNull( mImageURLList,      targetURLList );
+    appendIfNotNull( mMaskURL,         targetURLList );
+    appendNonNull( mUnderImageURLList, targetURLList );
+    appendNonNull( mOverImageURLList,  targetURLList );
     }
 
 

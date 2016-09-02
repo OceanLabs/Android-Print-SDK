@@ -51,6 +51,7 @@ import android.widget.ImageView;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /*****************************************************
@@ -152,6 +153,18 @@ public class ProductGroup implements Parcelable, IGroupOrProduct
 
 
   ////////// IGroupOrProduct Method(s) //////////
+
+  /*****************************************************
+   *
+   * Appends all the product images used by this product,
+   * to the supplied list.
+   *
+   *****************************************************/
+  public void appendAllImages( List<URL> targetURLList )
+    {
+    if ( mImageURL != null ) targetURLList.add( mImageURL );
+    }
+
 
   /*****************************************************
    *
