@@ -58,9 +58,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
 
 import ly.kite.KiteSDK;
@@ -145,6 +148,88 @@ public class AssetHelper
     String imageCacheDirectoryPath = ImageAgent.getInstance( context ).getImageCacheDirectoryForCategory( imageCategory );
 
     removeDirectory( imageCacheDirectoryPath );
+    }
+
+
+  /*****************************************************
+   *
+   * Clears any asset image files for a particular image
+   * category, excluding those supplied.
+   *
+   * Used mostly to clear any cached product images
+   *
+   *
+   *****************************************************/
+  static private void clearCacheAssetsForCategory( Context context, String imageCategory, List<URL> keepImageURLList )
+    {
+    // Convert all the URL strings into cache file names, and store them in a set
+
+    HashSet<String> keepImageFileNameSet = new HashSet<>();
+
+    ImageAgent imageAgent = ImageAgent.getInstance( context );
+
+    for ( URL keepImageURL : keepImageURLList )
+      {
+      if ( keepImageURL != null )
+        {
+        String keepImageFileName = imageAgent.getImageCacheFileName( keepImageURL );
+
+        if ( KiteSDK.DEBUG_PRODUCT_ASSET_EXPIRY ) Log.d( LOG_TAG, "Keeping image file: " + keepImageFileName );
+
+        keepImageFileNameSet.add( keepImageFileName );
+        }
+      }
+
+
+    // Go through all the files in the cache directory, and remove anything that's not in the set
+    // we just created.
+
+    String imageCacheDirectoryPath = imageAgent.getImageCacheDirectoryForCategory( imageCategory );
+
+    File imageCacheDirectory = new File( imageCacheDirectoryPath );
+
+    for ( File file : imageCacheDirectory.listFiles() )
+      {
+      // Skip anything starting with '.'
+
+      String fileName = file.getName();
+
+      if ( fileName == null || ( fileName.length() > 0 && fileName.charAt( 0 ) == '.' ) )
+        {
+        if ( KiteSDK.DEBUG_PRODUCT_ASSET_EXPIRY ) Log.d( LOG_TAG, "Ignoring file: " + fileName );
+
+        continue;
+        }
+
+      if ( KiteSDK.DEBUG_PRODUCT_ASSET_EXPIRY ) Log.d( LOG_TAG, "Checking file: " + fileName );
+
+
+      // If this file is not in the keep set - delete it
+
+      if ( keepImageFileNameSet.contains( fileName ) )
+        {
+        if ( KiteSDK.DEBUG_PRODUCT_ASSET_EXPIRY ) Log.d( LOG_TAG, "Keeping file: " + fileName );
+        }
+      else
+        {
+        if ( KiteSDK.DEBUG_PRODUCT_ASSET_EXPIRY ) Log.d( LOG_TAG, "Deleting file: " + fileName );
+
+        file.delete();
+        }
+      }
+
+    }
+
+
+  /*****************************************************
+   *
+   * Clears any cached product image files, excluding those
+   * supplied.
+   *
+   *****************************************************/
+  static public void clearProductAssets( Context context, List<URL> keepImageURLList )
+    {
+    clearCacheAssetsForCategory( context, KiteSDK.IMAGE_CATEGORY_PRODUCT_ITEM, keepImageURLList );
     }
 
 
@@ -937,6 +1022,9 @@ public class AssetHelper
    *****************************************************/
   static public ArrayList<Asset> toParcelableList( Context context, ArrayList<Asset> assetArrayList )
     {
+    if ( assetArrayList == null ) assetArrayList = new ArrayList<>( 0 );
+
+
     // Scan through the list
 
     for ( int assetIndex = 0; assetIndex < assetArrayList.size(); assetIndex ++ )

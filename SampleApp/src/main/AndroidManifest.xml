@@ -25,10 +25,28 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" >
+
+            <!-- Standard launcher intent filter -->
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+
+            <!-- URI-based intent filter -->
+
+            <!-- Used for deep linking directly to product groups / products. Change the
+                 scheme to one appropriate for your app.
+              -->
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:scheme="kite-sample-app"/>
+            </intent-filter>
+
         </activity>
 
 

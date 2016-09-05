@@ -614,9 +614,42 @@ public class ImageAgent
     // Construct the directory and file paths. The file path is: "<cache-directory>/<image-class-string>/<image-url-string>"
     // The image class string and image URL string are first converted into 'safe' strings.
     String imageDirectoryPath = getImageCacheDirectoryForCategory( imageCategory );
-    String imageFilePath      = imageDirectoryPath + File.separator + toSafeString( imageIdentifier );
+    String imageFilePath      = imageDirectoryPath + File.separator + getImageCacheFileName( imageIdentifier );
 
     return ( new Pair<String,String>( imageDirectoryPath, imageFilePath ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns an image directory path and file path.
+   *
+   *****************************************************/
+  public Pair<String,String> getImageCacheDirectoryAndFilePath( String imageCategory, URL imageURL )
+    {
+    return ( getImageCacheDirectoryAndFilePath( imageCategory, imageURL.toString() ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the file name for an image URL.
+   *
+   *****************************************************/
+  public String getImageCacheFileName( String imageIdentifier )
+    {
+    return ( toSafeString( imageIdentifier ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the file name for an image URL.
+   *
+   *****************************************************/
+  public String getImageCacheFileName( URL imageURL )
+    {
+    return ( getImageCacheFileName( imageURL.toString() ) );
     }
 
 

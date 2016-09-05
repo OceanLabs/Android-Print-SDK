@@ -782,7 +782,7 @@ public class ImageLoadRequest
 
       // Generate the directory and file that the image would be downloaded to
 
-      Pair<String, String> directoryAndFilePath = ImageAgent.getInstance( mApplicationContext ).getImageCacheDirectoryAndFilePath( mImageCategory, mSourceURL.toString() );
+      Pair<String, String> directoryAndFilePath = ImageAgent.getInstance( mApplicationContext ).getImageCacheDirectoryAndFilePath( mImageCategory, mSourceURL );
 
       String imageDirectoryPath = directoryAndFilePath.first;
       String imageFilePath      = directoryAndFilePath.second;
