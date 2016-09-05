@@ -56,10 +56,10 @@ import android.widget.Toast;
 //import io.fabric.sdk.android.Fabric;
 
 import ly.kite.address.Address;
+import ly.kite.app.ADeepLinkableActivity;
 import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.ICatalogueConsumer;
 import ly.kite.catalogue.Product;
-import ly.kite.checkout.ShippingActivity;
 import ly.kite.ordering.Job;
 import ly.kite.ordering.Order;
 import ly.kite.photopicker.Photo;
@@ -78,7 +78,7 @@ import ly.kite.KiteSDK;
  * selection / shopping journey.
  *
  *****************************************************/
-public class MainActivity extends Activity
+public class MainActivity extends ADeepLinkableActivity
   {
   ////////// Static Constant(s) //////////
 
@@ -107,6 +107,8 @@ public class MainActivity extends Activity
 
 
 
+
+  static private final String DEEP_LINK_URI_SCHEMA        = "kite-sample-app";
 
   static private final String PRODUCT_ID_POSTCARD         = "postcard";
 
@@ -150,6 +152,12 @@ public class MainActivity extends Activity
     setContentView( R.layout.screen_main );
 
     mEnvironmentSwitch = (Switch) findViewById( R.id.environment_switch );
+
+
+    // Check for any deep linking, i.e. if the start intent contains
+    // a product group label or product id that we should go to directly.
+
+    findDeepLink( DEEP_LINK_URI_SCHEMA );
     }
 
 
@@ -262,7 +270,7 @@ public class MainActivity extends Activity
     // Determine the API and environment based on the position
     // of the on-screen switch.
 
-    if ( mEnvironmentSwitch.isChecked() )
+    if ( mEnvironmentSwitch != null && mEnvironmentSwitch.isChecked() )
       {
       apiKey      = API_KEY_LIVE;
       environment = KiteSDK.DefaultEnvironment.LIVE;
@@ -300,25 +308,52 @@ public class MainActivity extends Activity
    * assets.
    *
    *****************************************************/
-  private void fullJourney( ArrayList<Asset> assets )
+  private void fullJourney( ArrayList<Asset> assetList )
     {
     KiteSDK kiteSDK = configureSDK();
 
-    if ( kiteSDK == null ) return;
+    if ( kiteSDK != null )
+      {
+      kiteSDK
+
+        // Uncomment this if you have defined Instagram credentials
+        //.setInstagramCredentials( INSTAGRAM_API_KEY, INSTAGRAM_REDIRECT_URI )
+
+        // Uncomment this if you are using Stripe
+        //.setStripePublicKey( STRIPE_PUBLIC_KEY );
+
+        .startShopping( this, assetList );  // Use this to shop all products in catalogue
+        //.startShoppingByProductId( this, assets, "pbx_squares_5x5", "pbx_squares_8x8" );  // Use this to shop specific products by id
+      }
+    }
 
 
-    // Launch the SDK shopping journey
+  /*****************************************************
+   *
+   * Called when the intent URI contains a product group
+   * label.
+   *
+   *****************************************************/
+  @Override
+  protected void onDeepLinkProductGroup( String productGroupLabel )
+    {
+    KiteSDK kiteSDK = configureSDK();
 
-    kiteSDK
+    if ( kiteSDK != null ) kiteSDK.startShoppingForProductGroup( this, null, productGroupLabel );
+    }
 
-      // Uncomment this if you have defined Instagram credentials
-      //.setInstagramCredentials( INSTAGRAM_API_KEY, INSTAGRAM_REDIRECT_URI )
 
-      // Uncomment this if you are using Stripe
-      //.setStripePublicKey( STRIPE_PUBLIC_KEY );
+  /*****************************************************
+   *
+   * Called when the intent URI contains a product id.
+   *
+   *****************************************************/
+  @Override
+  protected void onDeepLinkProductId( String productId )
+    {
+    KiteSDK kiteSDK = configureSDK();
 
-      .startShopping( this, assets );  // Use this to shop all products in catalogue
-      //.startShoppingByProductId( this, assets, "pbx_squares_5x5", "pbx_squares_8x8" );  // Use this to shop specific products by id
+    if ( kiteSDK != null ) kiteSDK.startShoppingForProduct( this, null, productId );
     }
 
 

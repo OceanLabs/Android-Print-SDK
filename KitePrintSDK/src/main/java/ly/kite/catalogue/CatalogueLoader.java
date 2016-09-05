@@ -84,7 +84,6 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
   @SuppressWarnings("unused")
   static private final String  LOG_TAG                               = "CatalogueLoader";
 
-  static private final boolean DISPLAY_PRODUCTS                      = false;
   static private final boolean DISPLAY_DEBUGGING                     = false;
   static private final boolean DISPLAY_PRE_CACHING_INFO              = false;
 
@@ -602,7 +601,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
           }
 
 
-        if ( DISPLAY_PRODUCTS )
+        if ( KiteSDK.DISPLAY_PRODUCTS )
           {
           Log.i( LOG_TAG, "-- Found product --" );
           Log.i( LOG_TAG, product.toLogString( groupLabel ) );
@@ -785,7 +784,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
    * ids. If there are no products ids, or the product ids don't
    * match any actual products - the full catalogue is returned.
    *
-   * @param productIds       A string array of product ids for filtering.
+   * @param filterProductIds       A string array of product ids for filtering.
    *
    * @param maximumAgeMillis The maximum permitted time in milliseconds
    *                         since the last retrieval. If the value supplied
@@ -793,11 +792,11 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
    * @param consumer         The sync listener for the result.
    *
    ****************************************************/
-  public void requestCatalogue( long maximumAgeMillis, String[] productIds, ICatalogueConsumer consumer )
+  public void requestCatalogue( long maximumAgeMillis, String[] filterProductIds, ICatalogueConsumer consumer )
     {
-    if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "getCatalogue( productIds = " + productIds + ", maximumAgeMillis = " + maximumAgeMillis + ", consumer = " + consumer + " )" );
+    if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "getCatalogue( filterProductIds = " + filterProductIds + ", maximumAgeMillis = " + maximumAgeMillis + ", consumer = " + consumer + " )" );
 
-    requestCatalogue( maximumAgeMillis, new CatalogueFilterConsumer( productIds, consumer ) );
+    requestCatalogue( maximumAgeMillis, new CatalogueFilterConsumer( filterProductIds, consumer ) );
     }
 
 

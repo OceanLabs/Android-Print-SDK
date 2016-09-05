@@ -1022,6 +1022,9 @@ public class AssetHelper
    *****************************************************/
   static public ArrayList<Asset> toParcelableList( Context context, ArrayList<Asset> assetArrayList )
     {
+    if ( assetArrayList == null ) assetArrayList = new ArrayList<>( 0 );
+
+
     // Scan through the list
 
     for ( int assetIndex = 0; assetIndex < assetArrayList.size(); assetIndex ++ )

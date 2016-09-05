@@ -62,7 +62,6 @@ import java.util.List;
 import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.catalogue.Catalogue;
-import ly.kite.catalogue.CatalogueLoader;
 import ly.kite.catalogue.CatalogueLoaderFragment;
 import ly.kite.catalogue.ICatalogueConsumer;
 import ly.kite.catalogue.ProductOption;
@@ -72,7 +71,6 @@ import ly.kite.ordering.ImageSpec;
 import ly.kite.util.Asset;
 import ly.kite.catalogue.Product;
 import ly.kite.catalogue.ProductGroup;
-import ly.kite.util.StringUtils;
 import ly.kite.widget.HeaderFooterGridView;
 
 
@@ -99,7 +97,9 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
   static private final String  LOG_TAG                                     = "ProductSelectionAct.";  // Can't be more than 23 characters ... who knew?!
 
   static private final String  INTENT_EXTRA_NAME_ASSET_LIST                = KiteSDK.INTENT_PREFIX + ".assetList";
-  static private final String  INTENT_EXTRA_NAME_PRODUCT_IDS               = KiteSDK.INTENT_PREFIX + ".productIds";
+  static private final String  INTENT_EXTRA_NAME_FILTER_PRODUCT_IDS        = KiteSDK.INTENT_PREFIX + ".filterProductIds";
+  static private final String  INTENT_EXTRA_NAME_GOTO_PRODUCT_GROUP_LABEL  = KiteSDK.INTENT_PREFIX + ".gotoProductGroupLabel";
+  static private final String  INTENT_EXTRA_NAME_GOTO_PRODUCT_ID           = KiteSDK.INTENT_PREFIX + ".gotoProductId";
 
   static private final String  BUNDLE_KEY_OPTION_MAP                       = "optionMap";
   static private final String  BUNDLE_KEY_ADD_FRAGMENT_ON_CATALOGUE        = "addFragmentOnCatalogue";
@@ -117,14 +117,15 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
   ////////// Member Variable(s) //////////
 
   private ArrayList<ImageSpec>          mImageSpecArrayList;
-  private String[]                      mProductIds;
+  private String[]                      mFilterProductIds;
+  private String                        mGotoProductGroupLabel;
+  private String                        mGotoProductId;
 
   private ProgressBar                   mProgressSpinner;
-  private ChooseProductGroupFragment    mProductGroupFragment;
-  private ChooseProductFragment         mProductFragment;
+  private ChooseProductGroupFragment    mChooseProductGroupFragment;
+  private ChooseProductFragment         mChooseProductFragment;
   private ProductOverviewFragment       mProductOverviewFragment;
 
-  //private CatalogueLoader               mCatalogueLoader;
   private CatalogueLoaderFragment       mCatalogueLoaderFragment;
   private Catalogue                     mCatalogue;
   private ICatalogueConsumer            mCatalogueConsumer;
@@ -143,15 +144,64 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
    * Convenience method for starting this activity.
    *
    *****************************************************/
-  public static void start( Context context, ArrayList<Asset> assetArrayList, String... productIds )
+  private static Intent getIntent( Context context, ArrayList<Asset> assetArrayList )
     {
     Intent intent = new Intent( context, ProductSelectionActivity.class );
 
     intent.putParcelableArrayListExtra( INTENT_EXTRA_NAME_ASSET_LIST, assetArrayList );
 
-    if ( productIds != null && productIds.length > 0 )
+    return ( intent );
+    }
+
+
+  /*****************************************************
+   *
+   * Convenience method for starting this activity.
+   *
+   *****************************************************/
+  public static void start( Context context, ArrayList<Asset> assetArrayList, String... filterProductIds )
+    {
+    Intent intent = getIntent( context, assetArrayList );
+
+    if ( filterProductIds != null && filterProductIds.length > 0 )
       {
-      intent.putExtra( INTENT_EXTRA_NAME_PRODUCT_IDS, productIds );
+      intent.putExtra( INTENT_EXTRA_NAME_FILTER_PRODUCT_IDS, filterProductIds );
+      }
+
+    context.startActivity( intent );
+    }
+
+
+  /*****************************************************
+   *
+   * Convenience method for starting this activity.
+   *
+   *****************************************************/
+  public static void startInProductGroup( Context context, ArrayList<Asset> assetArrayList, String productGroupLabel )
+    {
+    Intent intent = getIntent( context, assetArrayList );
+
+    if ( productGroupLabel != null )
+      {
+      intent.putExtra( INTENT_EXTRA_NAME_GOTO_PRODUCT_GROUP_LABEL, productGroupLabel );
+      }
+
+    context.startActivity( intent );
+    }
+
+
+  /*****************************************************
+   *
+   * Convenience method for starting this activity.
+   *
+   *****************************************************/
+  public static void startInProduct( Context context, ArrayList<Asset> assetArrayList, String productId )
+    {
+    Intent intent = getIntent( context, assetArrayList );
+
+    if ( productId != null )
+      {
+      intent.putExtra( INTENT_EXTRA_NAME_GOTO_PRODUCT_ID, productId );
       }
 
     context.startActivity( intent );
@@ -228,8 +278,10 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
 
     if ( intent != null )
       {
-      assetArrayList = intent.getParcelableArrayListExtra( INTENT_EXTRA_NAME_ASSET_LIST );
-      mProductIds    = intent.getStringArrayExtra( INTENT_EXTRA_NAME_PRODUCT_IDS );
+      assetArrayList         = intent.getParcelableArrayListExtra( INTENT_EXTRA_NAME_ASSET_LIST );
+      mFilterProductIds      = intent.getStringArrayExtra( INTENT_EXTRA_NAME_FILTER_PRODUCT_IDS );
+      mGotoProductGroupLabel = intent.getStringExtra( INTENT_EXTRA_NAME_GOTO_PRODUCT_GROUP_LABEL );
+      mGotoProductId         = intent.getStringExtra( INTENT_EXTRA_NAME_GOTO_PRODUCT_ID );
       }
 
     if ( assetArrayList == null ) assetArrayList = new ArrayList<Asset>();
@@ -454,39 +506,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
       {
       mAddFragmentOnCatalogue = false;
 
-
-      // Determine which fragment we need to start with
-
-      ArrayList<ProductGroup> productGroupList = mCatalogue.getProductGroupList();
-
-      if ( productGroupList != null && productGroupList.size() > 0 )
-        {
-        // If there is more than one group - start the choose group fragment
-        if ( productGroupList.size() > 1 )
-          {
-          addFragment( mProductGroupFragment = ChooseProductGroupFragment.newInstance(), ChooseProductGroupFragment.TAG );
-          }
-        else
-          {
-          ProductGroup       productGroup = productGroupList.get( 0 );
-          ArrayList<Product> productList  = productGroup.getProductList();
-
-          if ( productList != null && productList.size() > 0 )
-            {
-            // If there is more than one product - start the choose product fragment
-            if ( productList.size() > 1 )
-              {
-              addFragment( mProductFragment = ChooseProductFragment.newInstance( productGroup ), ChooseProductFragment.TAG );
-              }
-            else
-              {
-              // There is just one product - go straight to the product overview screen
-              onDisplayProductOverview( productList.get( 0 ) );
-              }
-            }
-          }
-        }
-
+      onDisplayFirstFragment();
       }
 
 
@@ -575,9 +595,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
 
     if ( productList == null || productList.size() > 1 )
       {
-      mProductFragment = ChooseProductFragment.newInstance( productGroup );
-
-      addFragment( mProductFragment, ChooseProductFragment.TAG );
+      onDisplayChooseProduct( productGroup );
 
       return;
       }
@@ -684,7 +702,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
 
     if ( mCatalogueLoaderFragment == null )
       {
-      mCatalogueLoaderFragment = CatalogueLoaderFragment.start( this, mProductIds );
+      mCatalogueLoaderFragment = CatalogueLoaderFragment.start( this, mFilterProductIds );
       }
     }
 
@@ -723,6 +741,117 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
     {
     // The default implementation is to do nothing
     return ( catalogue );
+    }
+
+
+  /*****************************************************
+   *
+   * Displays the first fragment.
+   *
+   *****************************************************/
+  private void onDisplayFirstFragment()
+    {
+    // Determine which fragment we need to start with. This is decided in the
+    // following manner:
+    //   - If a goto product group was supplied, and it exists, go straight to
+    //     the choose product screen for that group
+    //   - If a goto product id was supplied, and it exists, go straight to
+    //     the product overview screen
+    //   - If there is just one product group, go straight to the choose product screen
+    //     for that group
+    //   - If there is just one product, go straight to its product overview screen
+    //   - Otherwise show the the choose product group screen
+
+    ArrayList<ProductGroup> productGroupList = mCatalogue.getProductGroupList();
+
+    if ( productGroupList != null )
+      {
+      // Check for a goto product group
+
+      if ( mGotoProductGroupLabel != null )
+        {
+        for ( ProductGroup candidateProductGroup : productGroupList )
+          {
+          if ( mGotoProductGroupLabel.equalsIgnoreCase( candidateProductGroup.getDisplayLabel() ) )
+            {
+            onDisplayChooseProduct( candidateProductGroup );
+
+            return;
+            }
+          }
+        }
+
+
+      // Check for a goto product
+
+      if ( mGotoProductId != null )
+        {
+        Product gotoProduct = mCatalogue.getProductById( mGotoProductId );
+
+        if ( gotoProduct != null )
+          {
+          onDisplayProductOverview( gotoProduct );
+
+          return;
+          }
+        }
+
+
+      // Check for just one product group
+
+      if ( productGroupList.size() == 1 )
+        {
+        ProductGroup       productGroup = productGroupList.get( 0 );
+        ArrayList<Product> productList  = productGroup.getProductList();
+
+        if ( productList != null )
+          {
+          // Check for just one product
+          if ( productList.size() == 1 )
+            {
+            onDisplayProductOverview( productList.get( 0 ) );
+            }
+          else
+            {
+            onDisplayChooseProduct( productGroup );
+            }
+
+          return;
+          }
+        }
+      }
+
+
+    // Display the choose product group screen, even if its blank (because there are no
+    // products).
+    onDisplayChooseProductGroup();
+    }
+
+
+  /*****************************************************
+   *
+   * Displays the choose product group fragment.
+   *
+   *****************************************************/
+  private void onDisplayChooseProductGroup()
+    {
+    mChooseProductGroupFragment = ChooseProductGroupFragment.newInstance();
+
+    addFragment( mChooseProductGroupFragment, ChooseProductGroupFragment.TAG );
+    }
+
+
+  /*****************************************************
+   *
+   * Displays the choose product fragment for the supplied
+   * product group.
+   *
+   *****************************************************/
+  private void onDisplayChooseProduct( ProductGroup productGroup )
+    {
+    mChooseProductFragment = ChooseProductFragment.newInstance( productGroup );
+
+    addFragment( mChooseProductFragment, ChooseProductFragment.TAG );
     }
 
 

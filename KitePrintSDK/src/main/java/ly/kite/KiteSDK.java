@@ -100,9 +100,12 @@ public class KiteSDK
   static public  final boolean DEBUG_PRICING                                       = false;
   static public  final boolean DEBUG_RETAINED_FRAGMENT                             = false;
   static public  final boolean DEBUG_PRODUCT_ASSET_EXPIRY                          = false;
-  static public  final boolean DISPLAY_PRODUCT_JSON                                = false;
 
-  static public  final String SDK_VERSION                                          = "5.4.1";
+  static public  final boolean DISPLAY_PRODUCT_JSON                                = false;
+  static public  final boolean DISPLAY_PRODUCTS                                    = false;
+
+
+  static public  final String SDK_VERSION                                          = "5.4.2";
 
   static public  final String IMAGE_CATEGORY_APP                                   = "app";
   static public  final String IMAGE_CATEGORY_PRODUCT_ITEM                          = "product_item";
@@ -1375,12 +1378,32 @@ public class KiteSDK
 
   /*****************************************************
    *
+   * Prepares to start shopping.
+   *
+   *****************************************************/
+  private ArrayList<Asset> prepareToStartShopping( Context context, ArrayList<Asset> assetArrayList )
+    {
+    // Clear any temporary assets
+    AssetHelper.clearSessionAssets( context );
+
+    // Make sure all the assets are parcelable (this may create some new cached
+    // assets). Note that from here on in the SDK is responsible for ensuring
+    // that all new assets are parcelable.
+    return ( AssetHelper.toParcelableList( context, assetArrayList ) );
+    }
+
+
+  /*****************************************************
+   *
    * Launches the shopping experience for all products.
    *
    *****************************************************/
   public void startShopping( Context context, ArrayList<Asset> assetArrayList )
     {
-    startShoppingByProductId( context, assetArrayList );
+    assetArrayList = prepareToStartShopping( context, assetArrayList );
+
+    // We use the activity context here, not the application context
+    ProductSelectionActivity.start( context, assetArrayList );
     }
 
 
@@ -1391,18 +1414,78 @@ public class KiteSDK
    * wish to filter by something else in the future.
    *
    *****************************************************/
-  public void startShoppingByProductId( Context context, ArrayList<Asset> assetArrayList, String... productIds )
+  public void startShoppingForProducts( Context context, ArrayList<Asset> assetArrayList, String... filterProductIds )
     {
-    // Clear any temporary assets
-    AssetHelper.clearSessionAssets( context );
-
-    // Make sure all the assets are parcelable (this may create some new cached
-    // assets). Note that from here on in the SDK is responsible for ensuring
-    // that all new assets are parcelable.
-    assetArrayList = AssetHelper.toParcelableList( context, assetArrayList );
+    assetArrayList = prepareToStartShopping( context, assetArrayList );
 
     // We use the activity context here, not the application context
-    ProductSelectionActivity.start( context, assetArrayList, productIds );
+    ProductSelectionActivity.start( context, assetArrayList, filterProductIds );
+    }
+
+
+  /*****************************************************
+   *
+   * Launches the shopping experience for a single product
+   * group.
+   *
+   *****************************************************/
+  public void startShoppingForProductGroup( Context context, ArrayList<Asset> assetArrayList, String gotoProductGroupLabel )
+    {
+    assetArrayList = prepareToStartShopping( context, assetArrayList );
+
+    // We use the activity context here, not the application context
+    ProductSelectionActivity.startInProductGroup( context, assetArrayList, gotoProductGroupLabel );
+    }
+
+
+  /*****************************************************
+   *
+   * Launches the shopping experience for a single product
+   * group.
+   *
+   *****************************************************/
+  public void startShoppingForProductGroup( Context context, String gotoProductGroupLabel )
+    {
+    startShoppingForProductGroup( context, null, gotoProductGroupLabel );
+    }
+
+
+  /*****************************************************
+   *
+   * Launches the shopping experience for a single product.
+   *
+   *****************************************************/
+  public void startShoppingForProduct( Context context, ArrayList<Asset> assetArrayList, String gotoProductId )
+    {
+    assetArrayList = prepareToStartShopping( context, assetArrayList );
+
+    // We use the activity context here, not the application context
+    ProductSelectionActivity.startInProduct( context, assetArrayList, gotoProductId );
+    }
+
+
+  /*****************************************************
+   *
+   * Launches the shopping experience for a single product.
+   *
+   *****************************************************/
+  public void startShoppingForProduct( Context context, String gotoProductId )
+    {
+    startShoppingForProduct( context, null, gotoProductId );
+    }
+
+
+  /*****************************************************
+   *
+   * Launches the shopping experience for selected products.
+   * We have used a different method name because we may
+   * wish to filter by something else in the future.
+   *
+   *****************************************************/
+  @Deprecated
+  public void startShoppingByProductId( Context context, ArrayList<Asset> assetArrayList, String... filterProductIds )
+    {
+    startShoppingForProducts( context, assetArrayList, filterProductIds );
     }
 
 

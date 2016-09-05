@@ -96,13 +96,13 @@ public class CatalogueLoaderFragment extends ARetainedFragment<ICatalogueConsume
    * submits the order.
    *
    *****************************************************/
-  static public CatalogueLoaderFragment start( Activity activity, String[] productIds )
+  static public CatalogueLoaderFragment start( Activity activity, String[] filterProductIds )
     {
     CatalogueLoaderFragment catalogueLoaderFragment = new CatalogueLoaderFragment();
 
     catalogueLoaderFragment.addTo( activity, TAG );
 
-    catalogueLoaderFragment.loadCatalogue( activity, productIds );
+    catalogueLoaderFragment.loadCatalogue( activity, filterProductIds );
 
     return ( catalogueLoaderFragment );
     }
@@ -176,14 +176,14 @@ public class CatalogueLoaderFragment extends ARetainedFragment<ICatalogueConsume
    * Requests the catalogue load.
    *
    *****************************************************/
-  private void loadCatalogue( Context context, String[] productIds )
+  private void loadCatalogue( Context context, String[] filterProductIds )
     {
     if ( mCatalogueLoader == null )
       {
       mCatalogueLoader = KiteSDK.getInstance( context ).getCatalogueLoader();
       }
 
-    mCatalogueLoader.requestCatalogue( KiteSDK.MAX_ACCEPTED_PRODUCT_AGE_MILLIS, productIds, this );
+    mCatalogueLoader.requestCatalogue( KiteSDK.MAX_ACCEPTED_PRODUCT_AGE_MILLIS, filterProductIds, this );
     }
 
 
