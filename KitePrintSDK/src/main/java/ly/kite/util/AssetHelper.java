@@ -188,33 +188,38 @@ public class AssetHelper
 
     File imageCacheDirectory = new File( imageCacheDirectoryPath );
 
-    for ( File file : imageCacheDirectory.listFiles() )
+    File[] fileList = imageCacheDirectory.listFiles();
+
+    if ( fileList != null )
       {
-      // Skip anything starting with '.'
-
-      String fileName = file.getName();
-
-      if ( fileName == null || ( fileName.length() > 0 && fileName.charAt( 0 ) == '.' ) )
+      for ( File file : fileList )
         {
-        if ( KiteSDK.DEBUG_PRODUCT_ASSET_EXPIRY ) Log.d( LOG_TAG, "Ignoring file: " + fileName );
+        // Skip anything starting with '.'
 
-        continue;
-        }
+        String fileName = file.getName();
 
-      if ( KiteSDK.DEBUG_PRODUCT_ASSET_EXPIRY ) Log.d( LOG_TAG, "Checking file: " + fileName );
+        if ( fileName == null || ( fileName.length() > 0 && fileName.charAt( 0 ) == '.' ) )
+          {
+          if ( KiteSDK.DEBUG_PRODUCT_ASSET_EXPIRY ) Log.d( LOG_TAG, "Ignoring file: " + fileName );
+
+          continue;
+          }
+
+        if ( KiteSDK.DEBUG_PRODUCT_ASSET_EXPIRY ) Log.d( LOG_TAG, "Checking file: " + fileName );
 
 
-      // If this file is not in the keep set - delete it
+        // If this file is not in the keep set - delete it
 
-      if ( keepImageFileNameSet.contains( fileName ) )
-        {
-        if ( KiteSDK.DEBUG_PRODUCT_ASSET_EXPIRY ) Log.d( LOG_TAG, "Keeping file: " + fileName );
-        }
-      else
-        {
-        if ( KiteSDK.DEBUG_PRODUCT_ASSET_EXPIRY ) Log.d( LOG_TAG, "Deleting file: " + fileName );
+        if ( keepImageFileNameSet.contains( fileName ) )
+          {
+          if ( KiteSDK.DEBUG_PRODUCT_ASSET_EXPIRY ) Log.d( LOG_TAG, "Keeping file: " + fileName );
+          }
+        else
+          {
+          if ( KiteSDK.DEBUG_PRODUCT_ASSET_EXPIRY ) Log.d( LOG_TAG, "Deleting file: " + fileName );
 
-        file.delete();
+          file.delete();
+          }
         }
       }
 
