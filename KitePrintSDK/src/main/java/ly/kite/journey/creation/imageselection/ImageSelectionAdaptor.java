@@ -43,6 +43,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +52,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import ly.kite.KiteSDK;
 import ly.kite.journey.UserJourneyType;
 import ly.kite.ordering.ImageSpec;
 import ly.kite.util.Asset;
@@ -74,11 +76,11 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "ImageSelectionAdaptor";
+  static private final String   LOG_TAG               = "ImageSelectionAdaptor";
 
-  private static final int     VIEW_TYPE_IMAGE               = 0x00;
-  private static final int     VIEW_TYPE_TITLE               = 0x01;
-  private static final int     VIEW_TYPE_SPACER              = 0x02;
+  static private final int      VIEW_TYPE_IMAGE       = 0x00;
+  static private final int      VIEW_TYPE_TITLE       = 0x01;
+  static private final int      VIEW_TYPE_SPACER      = 0x02;
 
 
   ////////// Static Variable(s) //////////
@@ -111,6 +113,18 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
 
 
   ////////// Static Method(s) //////////
+
+  static private String viewTypeStringFromInt( int viewTypeInt )
+    {
+    switch ( viewTypeInt )
+      {
+      case VIEW_TYPE_IMAGE:  return ( "VIEW_TYPE_IMAGE" );
+      case VIEW_TYPE_TITLE:  return ( "VIEW_TYPE_TITLE" );
+      case VIEW_TYPE_SPACER: return ( "VIEW_TYPE_SPACER" );
+      }
+
+    return ( String.valueOf( viewTypeInt ) );
+    }
 
 
   ////////// Constructor(s) //////////
@@ -203,6 +217,12 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
   @Override
   public ViewHolder onCreateViewHolder( ViewGroup parent, int viewType )
     {
+    if ( KiteSDK.DEBUG_IMAGE_SELECTION_SCREEN )
+      {
+      Log.d( LOG_TAG, "onCreateViewHolder( parent = " + parent + ", viewType = " + viewTypeStringFromInt( viewType ) );
+      }
+
+
     // Inflate the correct layout
 
     View view;
@@ -237,13 +257,22 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
   @Override
   public void onBindViewHolder( ViewHolder viewHolder, int position )
     {
+    if ( KiteSDK.DEBUG_IMAGE_SELECTION_SCREEN )
+      {
+      Log.d( LOG_TAG, "onBindViewHolder( viewHolder = " + viewHolder + ", position = " + position );
+      }
+
+
     // Get the item at this position
     Item item = mItemList.get( position );
 
+    // Attach the view holder to the item
     item.viewHolder = viewHolder;
 
 
     // Determine what type of item it is
+
+    if ( KiteSDK.DEBUG_IMAGE_SELECTION_SCREEN ) Log.d( LOG_TAG, "  item.itemType = " + item.itemType );
 
     switch ( item.itemType )
       {
@@ -257,6 +286,8 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
       case IMAGE:
 
         AssetFragment assetFragment = item.imageSpec.getAssetFragment();
+
+        if ( KiteSDK.DEBUG_IMAGE_SELECTION_SCREEN ) Log.d( LOG_TAG, "  assetFragment = " + assetFragment );
 
 
         // If have got an edited asset - request the image once the view
@@ -555,16 +586,16 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
    *****************************************************/
   class ViewHolder extends RecyclerView.ViewHolder
     {
-    TextView           titleTextView;
-    CheckableImageContainerFrame checkableImageView;
+    TextView                      titleTextView;
+    CheckableImageContainerFrame  checkableImageView;
 
 
     public ViewHolder( View itemView )
       {
       super( itemView );
 
-      titleTextView      = (TextView)itemView.findViewById( R.id.title_text_view );
-      checkableImageView = (CheckableImageContainerFrame)itemView.findViewById( R.id.checkable_image_view );
+      this.titleTextView      = (TextView)itemView.findViewById( R.id.title_text_view );
+      this.checkableImageView = (CheckableImageContainerFrame)itemView.findViewById( R.id.checkable_image_view );
       }
     }
 

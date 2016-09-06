@@ -111,26 +111,6 @@ public class AssetFragment implements Parcelable
     }
 
 
-//  /*****************************************************
-//   *
-//   * Returns an asset fragment list from an asset list.
-//   *
-//   *****************************************************/
-//  static public List<AssetFragment> getSafeListFrom( List<Asset> assetList )
-//    {
-//    if ( assetList == null ) return ( new ArrayList<>( 0 ) );
-//
-//    List<AssetFragment> assetFragmentList = new ArrayList<>( assetList.size() );
-//
-//    for ( Asset asset : assetList )
-//      {
-//      assetFragmentList.add( new AssetFragment( asset ) );
-//      }
-//
-//    return ( assetFragmentList );
-//    }
-
-
   ////////// Constructor(s) //////////
 
   public AssetFragment( Asset asset, RectF proportionalRectangle )
@@ -217,6 +197,29 @@ public class AssetFragment implements Parcelable
              mProportionalRectangle.top    <= 0.0f &&
              mProportionalRectangle.right  >= 1.0f &&
              mProportionalRectangle.bottom >= 1.0f );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a string representation of this asset fragment.
+   *
+   *****************************************************/
+  @Override
+  public String toString()
+    {
+    StringBuilder stringBuilder = new StringBuilder();
+
+    stringBuilder
+            .append( mAsset.toString() )
+            .append( " ( " )
+            .append( String.valueOf( mProportionalRectangle.left   ) ).append( ", " )
+            .append( String.valueOf( mProportionalRectangle.top    ) ).append( ", " )
+            .append( String.valueOf( mProportionalRectangle.right  ) ).append( ", " )
+            .append( String.valueOf( mProportionalRectangle.bottom ) )
+            .append( " )" );
+
+    return ( stringBuilder.toString() );
     }
 
 

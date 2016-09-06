@@ -286,42 +286,18 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
     if ( mContactPhone    == null ) mContactPhone    = kiteSDK.getStringAppParameter( KiteSDK.Scope.CUSTOMER_SESSION, PARAMETER_NAME_CONTACT_PHONE, null );
 
 
-    // See what mode we're in
-
-    if ( mIsManagedCheckout )
-      {
-      ///// Managed check-out /////
-
-      // Create a list of basket items for the job
-
-      List<Job> jobList = mManagedOrder.getJobs();
-
-      mBasketItemList = new ArrayList<>( jobList.size() );
-
-      for ( Job job : jobList )
-        {
-        mBasketItemList.add( new BasketItem( 0L, job.getProduct(), job.getOrderQuantity(), null, null ) );
-        }
 
 
-      setLeftButtonVisible( false );
+    // Set up the buttons and Load the catalogue
 
-      onGotBasket();
-      }
-    else
-      {
-      ///// Full shopping experience /////
+    if ( mIsManagedCheckout ) setLeftButtonVisible( false );
+    else                      setLeftButtonEnabled( false );
 
-      // Load the catalogue
+    setRightButtonEnabled( false );
 
-      setLeftButtonEnabled( false );
-      setRightButtonEnabled( false );
+    if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.VISIBLE );
 
-      if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.VISIBLE );
-
-      KiteSDK.getInstance( this ).getCatalogueLoader().requestCatalogue( this );
-      }
-
+    KiteSDK.getInstance( this ).getCatalogueLoader().requestCatalogue( this );
     }
 
 
@@ -459,16 +435,43 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
     {
     mCatalogue = catalogue;
 
-
-    // Clear the progress spinner and enable the buttons
-
+    // Clear the progress spinner
     if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.INVISIBLE );
 
-    setLeftButtonEnabled( true );
+    // The right button is always re-enabled, regardless of the mode
     setRightButtonEnabled( true );
 
 
-    loadAndDisplayBasket();
+    // See what mode we're in
+
+    if ( mIsManagedCheckout )
+      {
+      ///// Managed check-out /////
+
+      // Create a list of basket items for the job
+
+      List<Job> jobList = mManagedOrder.getJobs();
+
+      mBasketItemList = new ArrayList<>( jobList.size() );
+
+      for ( Job job : jobList )
+        {
+        mBasketItemList.add( new BasketItem( 0L, job.getProduct(), job.getOrderQuantity(), null, null ) );
+        }
+
+
+      setLeftButtonVisible( false );
+
+      onGotBasket();
+      }
+    else
+      {
+      ///// Full shopping journey /////
+
+      setLeftButtonEnabled( true );
+
+      loadAndDisplayBasket();
+      }
     }
 
 
