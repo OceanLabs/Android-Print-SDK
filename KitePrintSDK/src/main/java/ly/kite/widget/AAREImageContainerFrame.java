@@ -59,7 +59,6 @@ import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.util.Asset;
 import ly.kite.util.AssetFragment;
-import ly.kite.util.AssetHelper;
 import ly.kite.image.IImageConsumer;
 import ly.kite.image.ImageAgent;
 
@@ -81,8 +80,6 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
 
   @SuppressWarnings( "unused" )
   static private final String  LOG_TAG                           = "AAREImageContainerFrame";
-
-  static private final boolean DEBUGGING_IS_ENABLED              = false;
 
   static private final Object  ANY_KEY                           = new Object();
 
@@ -106,8 +103,8 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
 
   private   boolean              mShowProgressSpinnerOnDownload;
 
-  private   String               mRequestImageClass;
-  private   Object               mRequestImageSource;
+  private   String               mPendingImageCategory;
+  private   Object               mPendingImageSource;
 
   private   Object               mExpectedKey;
 
@@ -195,7 +192,7 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
   @Override
   public void onImageDownloading( Object key )
     {
-    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "onImageDownloading( key = " + key + " )" );
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "onImageDownloading( key = " + key + " )" );
 
     if ( mShowProgressSpinnerOnDownload ) showProgressSpinner();
     }
@@ -209,10 +206,12 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
   @Override
   public void onImageAvailable( Object key, Bitmap bitmap )
     {
-    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "onImageAvailable( key = " + key + ", bitmap = " + bitmap + " )" );
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "onImageAvailable( key = " + key + ", bitmap = " + bitmap + " )" );
 
     if ( keyIsOK( key ) )
       {
+      clearPendingImage();
+
       // Make sure we don't do anything if we get the bitmap delivered
       // more than once.
       mExpectedKey = null;
@@ -232,7 +231,9 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
   @Override
   public void onImageUnavailable( Object key, Exception exception )
     {
-    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "onImageUnavailable( key = " + key + ", exception = " + exception + " )" );
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "onImageUnavailable( key = " + key + ", exception = " + exception + " )" );
+
+    clearPendingImage();
 
     // TODO
     }
@@ -357,7 +358,7 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
    *****************************************************/
   public void setImageBitmap( Bitmap bitmap )
     {
-    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "setImageBitmap( bitmap = " + bitmap + " )" );
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "setImageBitmap( bitmap = " + bitmap + " )" );
 
     mImageView.setVisibility( View.VISIBLE );
     mImageView.setImageBitmap( bitmap );
@@ -374,7 +375,7 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
    *****************************************************/
   public void showProgressSpinner()
     {
-    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "showProgressSpinner()" );
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "showProgressSpinner()" );
 
     if ( mProgressSpinner != null )
       {
@@ -382,7 +383,7 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
       }
     else
       {
-      if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "  mProgressSpinner = null" );
+      if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "  mProgressSpinner = null" );
       }
     }
 
@@ -394,7 +395,7 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
    *****************************************************/
   public void hideProgressSpinner()
     {
-    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "hideProgressSpinner()" );
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "hideProgressSpinner()" );
 
     if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.INVISIBLE );
     }
@@ -408,7 +409,7 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
    *****************************************************/
   public void setShowProgressSpinnerOnDownload( boolean showProgressSpinnerOnDownload )
     {
-    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "setShowProgressSpinnerOnDownload( showProgressSpinnerOnDownload = " + showProgressSpinnerOnDownload + " )" );
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "setShowProgressSpinnerOnDownload( showProgressSpinnerOnDownload = " + showProgressSpinnerOnDownload + " )" );
 
     mShowProgressSpinnerOnDownload = showProgressSpinnerOnDownload;
     }
@@ -420,18 +421,22 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
    * correct size.
    *
    *****************************************************/
-  public void requestScaledImageOnceSized( String imageClass, Object imageSource )
+  public void requestScaledImageOnceSized( String imageCategory, Object imageSource )
     {
-    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "requestScaledImageOnceSized( imageClass = " + imageClass + ", imageSource = " + imageSource + " )" );
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "requestScaledImageOnceSized( imageCategory = " + imageCategory + ", imageSource = " + imageSource + " )" );
 
     // Don't do anything if we're already waiting for the image
-    if ( imageClass.equals( mRequestImageClass ) && imageSource.equals( mRequestImageSource ) ) return;
+    if ( imageCategory.equals( mPendingImageCategory ) && imageSource.equals( mPendingImageSource ) )
+      {
+      if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "  Requested image already pending - doing nothing" );
+
+      return;
+      }
 
 
     clear();
 
-    mRequestImageClass  = imageClass;
-    mRequestImageSource = imageSource;
+    setPendingImage( imageCategory, imageSource );
 
     checkRequestImage();
     }
@@ -445,7 +450,7 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
    *****************************************************/
   public void requestScaledImageOnceSized( AssetFragment assetFragment )
     {
-    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "requestScaledImageOnceSized( assetFragment = " + assetFragment + " )" );
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "requestScaledImageOnceSized( assetFragment = " + assetFragment + " )" );
 
     requestScaledImageOnceSized( KiteSDK.IMAGE_CATEGORY_SESSION_ASSET, assetFragment );
     }
@@ -459,7 +464,7 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
    *****************************************************/
   public void requestScaledImageOnceSized( Asset asset )
     {
-    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "requestScaledImageOnceSized( asset = " + asset + " )" );
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "requestScaledImageOnceSized( asset = " + asset + " )" );
 
     requestScaledImageOnceSized( KiteSDK.IMAGE_CATEGORY_SESSION_ASSET, asset );
     }
@@ -473,50 +478,77 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
    *****************************************************/
   private void checkRequestImage()
     {
-    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "checkRequestImage()" );
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "checkRequestImage()" );
 
-    if ( mWidth > 0 && mHeight > 0 && mRequestImageSource != null )
+    if ( mWidth > 0 && mHeight > 0 && mPendingImageSource != null )
       {
-      if ( mRequestImageSource instanceof AssetFragment )
+      if ( mPendingImageSource instanceof AssetFragment )
         {
-        setExpectedKey( mRequestImageSource );
+        setExpectedKey( mPendingImageSource );
 
-        AssetFragment requestAssetFragment = (AssetFragment)mRequestImageSource;
+        AssetFragment requestAssetFragment = (AssetFragment) mPendingImageSource;
 
         ImageAgent.with( getContext() )
                 .load( requestAssetFragment )
                 .reduceColourSpace()
                 .resize( mWidth, mHeight )
                 .onlyScaleDown()
-                .into( this, mRequestImageSource );
+                .into( this, mPendingImageSource );
         }
-      if ( mRequestImageSource instanceof Asset )
+      if ( mPendingImageSource instanceof Asset )
         {
-        setExpectedKey( mRequestImageSource );
+        setExpectedKey( mPendingImageSource );
 
-        Asset requestAsset = (Asset)mRequestImageSource;
+        Asset requestAsset = (Asset) mPendingImageSource;
 
         ImageAgent.with( getContext() )
                 .load( requestAsset )
                 .reduceColourSpace()
                 .resize( mWidth, mHeight )
                 .onlyScaleDown()
-                .into( this, mRequestImageSource );
+                .into( this, mPendingImageSource );
         }
-      else if ( mRequestImageSource instanceof URL )
+      else if ( mPendingImageSource instanceof URL )
         {
-        setExpectedKey( mRequestImageSource );
+        setExpectedKey( mPendingImageSource );
 
-        URL requestURL = (URL)mRequestImageSource;
+        URL requestURL = (URL) mPendingImageSource;
 
         ImageAgent.with( getContext() )
-                .load( requestURL, mRequestImageClass )
+                .load( requestURL, mPendingImageCategory )
                 .reduceColourSpace()
                 .resize( mWidth, mHeight )
                 .onlyScaleDown()
-                .into( this, mRequestImageSource );
+                .into( this, mPendingImageSource );
         }
       }
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the pending image.
+   *
+   *****************************************************/
+  private void setPendingImage( String imageCategory, Object imageSource )
+    {
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "setPendingImage( imageCategory = " + imageCategory + ", imageSource = " + imageSource  + " )" );
+
+    mPendingImageCategory = imageCategory;
+    mPendingImageSource   = imageSource;
+    }
+
+
+  /*****************************************************
+   *
+   * Clears the pending image.
+   *
+   *****************************************************/
+  private void clearPendingImage()
+    {
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "clearPendingImage()" );
+
+    setPendingImage( null, null );
     }
 
 
@@ -528,7 +560,9 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
    *****************************************************/
   public void clearForNewImage( Object expectedKey )
     {
-    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "clearForNewImage( expectedKey = " + expectedKey + " )" );
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "clearForNewImage( expectedKey = " + expectedKey + " )" );
+
+    clearPendingImage();
 
     setExpectedKey( expectedKey );
 
@@ -544,7 +578,9 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
    *****************************************************/
   public void clearForAnyImage()
     {
-    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "clearForAnyImage()" );
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "clearForAnyImage()" );
+
+    clearPendingImage();
 
     setExpectedKey( ANY_KEY );
 
@@ -559,7 +595,7 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
    *****************************************************/
   public void clear()
     {
-    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "clear()" );
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "clear()" );
 
     clearForNewImage( null );
     }
@@ -572,7 +608,7 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
    *****************************************************/
   public void setExpectedKey( Object key )
     {
-    if ( DEBUGGING_IS_ENABLED ) Log.d( LOG_TAG, "setExpectedKey( key = " + key + " )" );
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "setExpectedKey( key = " + key + " )" );
 
     mExpectedKey = key;
     }
