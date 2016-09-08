@@ -104,7 +104,7 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
 
   ////////// Static Variable(s) //////////
 
-  static private ProductCreationActivity sUserJourneyCoordinator;
+  //static private ProductCreationActivity sUserJourneyCoordinator;
 
 
   ////////// Member Variable(s) //////////
@@ -329,6 +329,8 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
   @Override
   public void onSaveInstanceState( Bundle outState )
     {
+    if ( KiteSDK.DEBUG_SAVE_INSTANCE_STATE ) Log.d( LOG_TAG, "--> onSaveInstanceState( outState = " + outState + " )" );
+
     super.onSaveInstanceState( outState );
 
 
@@ -341,6 +343,8 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
     // Save the last edited index. Otherwise if we change the orientation when editing an image, the
     // updated image gets associated with the wrong asset when coming back.
     outState.putInt( BUNDLE_KEY_LAST_EDITED_IMAGE_INDEX, mLastEditedImageIndex );
+
+    if ( KiteSDK.DEBUG_SAVE_INSTANCE_STATE ) Log.d( LOG_TAG, "<-- onSaveInstanceState( outState = " + outState + " )" );
     }
 
 

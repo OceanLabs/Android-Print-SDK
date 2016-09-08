@@ -364,6 +364,8 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
   @Override
   protected void onSaveInstanceState( Bundle outState )
     {
+    if ( KiteSDK.DEBUG_SAVE_INSTANCE_STATE ) Log.d( LOG_TAG, "--> onSaveInstanceState( outState = " + outState + " )" );
+
     super.onSaveInstanceState( outState );
 
     // Save the selected product options, so we can restore them later
@@ -371,6 +373,13 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
       {
       outState.putSerializable( BUNDLE_KEY_OPTION_MAP, mProductOptionValueMap );
       outState.putBoolean( BUNDLE_KEY_ADD_FRAGMENT_ON_CATALOGUE, mAddFragmentOnCatalogue );
+      }
+
+    if ( KiteSDK.DEBUG_SAVE_INSTANCE_STATE )
+      {
+      logFragments();
+
+      Log.d( LOG_TAG, "<-- onSaveInstanceState( outState = " + outState + " ) size = " + parcelFromBundle( outState ).dataSize() );
       }
     }
 
@@ -385,7 +394,14 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
     {
     super.onStop();
 
-    if ( mCatalogueLoaderFragment != null ) mCatalogueLoaderFragment.cancelRequests();
+    if ( mCatalogueLoaderFragment != null )
+      {
+      mCatalogueLoaderFragment.cancelRequests();
+
+      mCatalogueLoaderFragment.removeFrom( this );
+
+      mCatalogueLoaderFragment = null;
+      }
     }
 
 
@@ -397,7 +413,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
    *
    *****************************************************/
   @Override
-  public void getCatalogue( ICatalogueConsumer consumer )
+  public void requestCatalogue( ICatalogueConsumer consumer )
     {
     if ( mCatalogue != null )
       {

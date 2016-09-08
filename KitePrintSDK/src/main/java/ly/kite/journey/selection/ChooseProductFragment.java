@@ -73,15 +73,16 @@ public class ChooseProductFragment extends AGroupOrProductFragment
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static public  final String TAG                      = "ChooseProductFragment";
+  static public  final String TAG                            = "ChooseProductFragment";
 
-  static private final String BUNDLE_KEY_PRODUCT_GROUP = "productGroup";
+  static private final String BUNDLE_KEY_PRODUCT_GROUP_LABEL = "productGroupLabel";
 
   ////////// Static Variable(s) //////////
 
 
   ////////// Member Variable(s) //////////
 
+  private String              mProductGroupLabel;
   private ProductGroup        mProductGroup;
 
   private ArrayList<Product>  mProductList;
@@ -103,7 +104,7 @@ public class ChooseProductFragment extends AGroupOrProductFragment
 
     Bundle argumentBundle = addCommonArguments( fragment, productIds );
 
-    argumentBundle.putParcelable( BUNDLE_KEY_PRODUCT_GROUP, productGroup );
+    argumentBundle.putString( BUNDLE_KEY_PRODUCT_GROUP_LABEL, productGroup.getDisplayLabel() );
 
     return ( fragment );
     }
@@ -131,11 +132,11 @@ public class ChooseProductFragment extends AGroupOrProductFragment
 
     if ( arguments != null )
       {
-      mProductGroup = (ProductGroup)arguments.getParcelable( BUNDLE_KEY_PRODUCT_GROUP );
+      mProductGroupLabel = arguments.getString( BUNDLE_KEY_PRODUCT_GROUP_LABEL, null );
 
-      if ( mProductGroup == null )
+      if ( mProductGroupLabel == null )
         {
-        Log.e( TAG, "No product group found in arguments" );
+        Log.e( TAG, "No product group label found in arguments" );
         }
       }
 
@@ -175,7 +176,7 @@ public class ChooseProductFragment extends AGroupOrProductFragment
       Analytics.getInstance( mKiteActivity ).trackProductSelectionScreenViewed();
       }
 
-    if ( mProductGroup != null ) mKiteActivity.setTitle( mProductGroup.getDisplayLabel() );
+    if ( mProductGroupLabel != null ) mKiteActivity.setTitle( mProductGroupLabel );
 
     return ( view );
     }
@@ -191,7 +192,7 @@ public class ChooseProductFragment extends AGroupOrProductFragment
     {
     super.onTop();
 
-    if ( mProductGroup != null ) mKiteActivity.setTitle( mProductGroup.getDisplayLabel() );
+    if ( mProductGroupLabel != null ) mKiteActivity.setTitle( mProductGroupLabel );
     }
 
 
@@ -207,7 +208,7 @@ public class ChooseProductFragment extends AGroupOrProductFragment
     }
 
 
-  ////////// ProductManager.SyncListener Method(s) //////////
+  ////////// ICatalogueConsumer Method(s) //////////
 
   /*****************************************************
    *
@@ -219,7 +220,7 @@ public class ChooseProductFragment extends AGroupOrProductFragment
     {
     // Try and find a product list
 
-    mProductList = catalogue.getProductsForGroup( mProductGroup.getDisplayLabel() );
+    mProductList = catalogue.getProductsForGroup( mProductGroupLabel );
 
     if ( mProductList != null )
       {

@@ -96,6 +96,7 @@ public class KiteSDK
 
   static private final String LOG_TAG                                              = "KiteSDK";
 
+  static public  final boolean DEBUG_SAVE_INSTANCE_STATE                           = false;
   static public  final boolean DEBUG_IMAGE_LOADING                                 = false;
   static public  final boolean DEBUG_IMAGE_CONTAINERS                              = false;
   static public  final boolean DEBUG_PAYMENT_KEYS                                  = false;
@@ -108,7 +109,7 @@ public class KiteSDK
   static public  final boolean DISPLAY_PRODUCTS                                    = false;
 
 
-  static public  final String SDK_VERSION                                          = "5.4.4";
+  static public  final String SDK_VERSION                                          = "5.4.5";
 
   static public  final String IMAGE_CATEGORY_APP                                   = "app";
   static public  final String IMAGE_CATEGORY_PRODUCT_ITEM                          = "product_item";

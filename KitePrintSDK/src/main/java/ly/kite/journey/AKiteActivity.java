@@ -45,6 +45,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -53,14 +54,17 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcel;
 import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.util.LogWriter;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.TypefaceSpan;
 import android.util.Log;
+import android.util.LogPrinter;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -75,6 +79,7 @@ import android.widget.Toast;
 
 import org.json.JSONObject;
 
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -84,6 +89,7 @@ import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.SDKCustomiser;
 import ly.kite.catalogue.CatalogueLoader;
+import ly.kite.catalogue.CatalogueLoaderFragment;
 import ly.kite.image.ImageAgent;
 import ly.kite.journey.creation.imagesource.ImageSourceFragment;
 import ly.kite.util.StringUtils;
@@ -213,6 +219,21 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
       {
       view.setVisibility( visibility );
       }
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a parcel containing the contents of a bundle.
+   *
+   *****************************************************/
+  static public Parcel parcelFromBundle( Bundle bundle )
+    {
+    Parcel parcel = Parcel.obtain();
+
+    bundle.writeToParcel( parcel, 0 );
+
+    return ( parcel );
     }
 
 
@@ -634,9 +655,13 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   @Override
   protected void onSaveInstanceState( Bundle outState )
     {
+    if ( KiteSDK.DEBUG_SAVE_INSTANCE_STATE ) Log.d( LOG_TAG, "--> onSaveInstanceState( outState = " + outState + " )" );
+
     super.onSaveInstanceState( outState );
 
     mCanAddFragment = false;
+
+    if ( KiteSDK.DEBUG_SAVE_INSTANCE_STATE ) Log.d( LOG_TAG, "<-- onSaveInstanceState( outState = " + outState + " )" );
     }
 
 
@@ -1379,6 +1404,17 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
     // Restore the back stack listener
     mFragmentManager.addOnBackStackChangedListener( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Logs the back stack, for debugging.
+   *
+   *****************************************************/
+  protected void logFragments()
+    {
+    mFragmentManager.dump( "", null, new PrintWriter( new LogWriter( "" ) ), new String[] {} );
     }
 
 

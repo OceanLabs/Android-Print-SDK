@@ -50,12 +50,15 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 
+import ly.kite.KiteSDK;
 import ly.kite.R;
+import ly.kite.journey.selection.ICatalogueHolder;
 import ly.kite.ordering.OrderingDataAgent;
 import ly.kite.journey.basket.BasketActivity;
 
@@ -179,13 +182,15 @@ abstract public class AKiteFragment extends Fragment
   @Override
   public void onSaveInstanceState( Bundle outState )
     {
-    super.onSaveInstanceState( outState );
+    if ( KiteSDK.DEBUG_SAVE_INSTANCE_STATE ) Log.d( LOG_TAG, "--> onSaveInstanceState( outState = " + outState + " )" );
 
     // If we are managing an adaptor view - save its state in the bundle
     if ( mManagedAdaptorView != null )
       {
       outState.putInt( BUNDLE_KEY_MANAGED_ADAPTOR_VIEW_POSITION, mManagedAdaptorView.getFirstVisiblePosition() );
       }
+
+    if ( KiteSDK.DEBUG_SAVE_INSTANCE_STATE ) Log.d( LOG_TAG, "<-- onSaveInstanceState( outState = " + outState + " )" );
     }
 
 

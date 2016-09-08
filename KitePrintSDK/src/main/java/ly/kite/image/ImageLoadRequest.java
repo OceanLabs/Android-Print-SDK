@@ -960,7 +960,7 @@ public class ImageLoadRequest
       {
       if ( KiteSDK.DEBUG_IMAGE_LOADING )
         {
-        Log.d( LOG_TAG, "Delivering bitmap + " + bitmap + ( bitmap != null ? " ( " + bitmap.getWidth() + " x " + bitmap.getHeight() + " )" : "" ) + " -> " + mImageView );
+        Log.d( LOG_TAG, "Delivering bitmap : " + bitmap + ( bitmap != null ? " ( " + bitmap.getWidth() + " x " + bitmap.getHeight() + " )" : "" ) + " -> " + mImageView );
         }
 
       mImageView.setImageBitmap( bitmap );
@@ -1001,7 +1001,7 @@ public class ImageLoadRequest
       {
       if ( KiteSDK.DEBUG_IMAGE_LOADING )
         {
-        Log.d( LOG_TAG, "Delivering bitmap + " + bitmap + ( bitmap != null ? " ( " + bitmap.getWidth() + " x " + bitmap.getHeight() + " )" : "" ) + " -> " + mMenuItem );
+        Log.d( LOG_TAG, "Delivering bitmap : " + bitmap + ( bitmap != null ? " ( " + bitmap.getWidth() + " x " + bitmap.getHeight() + " )" : "" ) + " -> " + mMenuItem );
         }
 
       mMenuItem.setIcon( new BitmapDrawable( bitmap ) );
@@ -1044,7 +1044,7 @@ public class ImageLoadRequest
       {
       if ( KiteSDK.DEBUG_IMAGE_LOADING )
         {
-        Log.d( LOG_TAG, "Delivering bitmap + " + bitmap + ( bitmap != null ? " ( " + bitmap.getWidth() + " x " + bitmap.getHeight() + " )" : "" ) + " -> " + mImageConsumer );
+        Log.d( LOG_TAG, "Delivering bitmap : " + bitmap + ( bitmap != null ? " ( " + bitmap.getWidth() + " x " + bitmap.getHeight() + " )" : "" ) + " -> " + mImageConsumer );
         }
 
       mImageConsumer.onImageAvailable( mKey, bitmap );

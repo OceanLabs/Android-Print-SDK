@@ -57,8 +57,6 @@ import java.util.List;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
-import ly.kite.catalogue.ICatalogueConsumer;
-import ly.kite.journey.AKiteFragment;
 import ly.kite.catalogue.IGroupOrProduct;
 import ly.kite.widget.HeaderFooterGridView;
 import ly.kite.widget.LabelledImageView;
@@ -72,7 +70,7 @@ import ly.kite.widget.LabelledImageView;
  * Product fragments.
  *
  *****************************************************/
-abstract public class AGroupOrProductFragment extends AKiteFragment implements ICatalogueConsumer, AdapterView.OnItemClickListener
+abstract public class AGroupOrProductFragment extends AProductSelectionFragment implements AdapterView.OnItemClickListener
   {
   ////////// Static Constant(s) //////////
 
@@ -175,7 +173,7 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements I
     {
     super.onTop();
 
-    getProducts();
+    requestCatalogue();
     }
 
 
@@ -195,35 +193,7 @@ abstract public class AGroupOrProductFragment extends AKiteFragment implements I
     }
 
 
-  ////////// CatalogueLoader.ICatalogueConsumer Method(s) //////////
-
-  /*****************************************************
-   *
-   * Called when the sync completes successfully.
-   *
-   *****************************************************/
-  @Override
-  public void onCatalogueError( Exception exception )
-    {
-    // Don't do anything. Catalogue load errors are dealt with
-    // by the activity.
-    }
-
-
   ////////// Method(s) //////////
-
-  /*****************************************************
-   *
-   * Gets the products.
-   *
-   *****************************************************/
-  protected void getProducts()
-    {
-    if ( mKiteActivity instanceof ICatalogueHolder )
-      {
-      ( (ICatalogueHolder)mKiteActivity ).getCatalogue( this );
-      }
-    }
 
 
   ////////// Inner Class(es) //////////

@@ -50,6 +50,7 @@ import android.widget.ProgressBar;
 
 import java.util.List;
 
+import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.image.ImageAgent;
 import ly.kite.image.ImageProcessingRequest;
@@ -78,7 +79,7 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static public final String       TAG                    = "AEditImageFragment";
+  static private final String      LOG_TAG                = "AEditImageFragment";
 
   static public  final String      BUNDLE_KEY_PRODUCT     = "product";
   static private final String      BUNDLE_KEY_IMAGE_ASSET = "imageAsset";
@@ -168,7 +169,7 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
 
     if ( arguments == null )
       {
-      Log.e( TAG, "No arguments found" );
+      Log.e( LOG_TAG, "No arguments found" );
 
       mKiteActivity.displayModalDialog(
               R.string.alert_dialog_title_no_arguments,
@@ -189,7 +190,7 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
 
     if ( mProduct == null )
       {
-      Log.e( TAG, "No product found" );
+      Log.e( LOG_TAG, "No product found" );
 
       mKiteActivity.displayModalDialog(
               R.string.alert_dialog_title_product_not_found,
@@ -389,6 +390,8 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
   @Override
   public void onLoadComplete()
     {
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "onLoadComplete()" );
+
     // Once both the image and the mask have been loaded -
     // display any prompt text.
 
@@ -604,7 +607,7 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
    * method is called with the asset fragment.
    *
    *****************************************************/
-  protected void requestEditedAsset()
+  protected void returnEditedAsset()
     {
     if ( mEditableImageContainerFrame == null ) return;
 
@@ -617,7 +620,7 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
 
     if ( imageProportionalCropRectangle == null )
       {
-      Log.w( TAG, "Cropped image not yet available" );
+      Log.w( LOG_TAG, "Cropped image not yet available" );
 
       return;
       }

@@ -66,9 +66,9 @@ import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.address.Country;
 import ly.kite.analytics.Analytics;
+import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.ProductOption;
 import ly.kite.journey.AKiteActivity;
-import ly.kite.journey.AKiteFragment;
 import ly.kite.catalogue.MultipleCurrencyAmount;
 import ly.kite.catalogue.MultipleDestinationShippingCosts;
 import ly.kite.catalogue.Product;
@@ -88,14 +88,14 @@ import ly.kite.widget.SlidingOverlayFrame;
  * This fragment displays a product overview.
  *
  *****************************************************/
-public class ProductOverviewFragment extends AKiteFragment implements View.OnClickListener
+public class ProductOverviewFragment extends AProductSelectionFragment implements View.OnClickListener
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings("unused")
   static public final String      TAG                                       = "ProductOverviewFragment";
 
-  static public final String      BUNDLE_KEY_PRODUCT                        = "product";
+  static public final String      BUNDLE_KEY_PRODUCT_ID                     = "productId";
 
   static private final long       PAGING_DOT_ANIMATION_DURATION_MILLIS      = 300L;
   static private final float      PAGING_DOT_ANIMATION_OPAQUE               = 1.0f;
@@ -109,7 +109,7 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
   static private final float      OPEN_CLOSE_ICON_ROTATION_UP               = -180f;
   static private final float      OPEN_CLOSE_ICON_ROTATION_DOWN             = 0f;
 
-  static private final String     BUNDLE_KEY_SLIDING_DRAWER_IS_EXPANDED     = "slidingDrawerIsExpanded";
+  static private final String     BUNDLE_KEY_EXPAND_SLIDING_DRAWER          = "expandSlidingDrawer";
 
 
   ////////// Static Variable(s) //////////
@@ -117,8 +117,13 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
 
   ////////// Member Variable(s) //////////
 
+  private String                   mProductId;
+  private boolean                  mExpandSlidingDrawerAtStart;
+  private boolean                  mTrackAnalytics;
+
   private Product                  mProduct;
 
+  private View                     mContentView;
   private View                     mOverlaidComponents;
   private ViewPager                mProductImageViewPager;
   private PagingDots               mPagingDots;
@@ -147,7 +152,7 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
 
     Bundle arguments = new Bundle();
 
-    arguments.putParcelable( BUNDLE_KEY_PRODUCT, product );
+    arguments.putString( BUNDLE_KEY_PRODUCT_ID, product.getId() );
 
     fragment.setArguments( arguments );
 
@@ -171,7 +176,7 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
     super.onCreate( savedInstanceState );
 
 
-    // Get the product
+    // Get the product from the arguments
 
     Bundle arguments = getArguments();
 
@@ -192,11 +197,11 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
       }
 
 
-    mProduct = (Product)arguments.getParcelable( BUNDLE_KEY_PRODUCT );
+    mProductId = arguments.getString( BUNDLE_KEY_PRODUCT_ID, null );
 
-    if ( mProduct == null )
+    if ( mProductId == null )
       {
-      Log.e( TAG, "No product found" );
+      Log.e( TAG, "No product id found" );
 
       mKiteActivity.displayModalDialog(
               R.string.alert_dialog_title_product_not_found,
@@ -211,7 +216,23 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
       }
 
 
+    // Get the sliding drawer state from any saved instance state
+
+    if ( savedInstanceState != null )
+      {
+      mExpandSlidingDrawerAtStart = savedInstanceState.getBoolean( BUNDLE_KEY_EXPAND_SLIDING_DRAWER, false );
+      }
+    else
+      {
+      mTrackAnalytics = true;
+      }
+
+
     setHasOptionsMenu( true );
+
+
+    // Get the catalogue from the activity
+    requestCatalogue();
     }
 
 
@@ -223,44 +244,200 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
   @Override
   public View onCreateView( LayoutInflater layoutInflator, ViewGroup container, Bundle savedInstanceState )
     {
-    boolean slidingDrawerIsExpanded = false;
-
-    // Get any saved instance state
-
-    if ( savedInstanceState != null )
-      {
-      slidingDrawerIsExpanded = savedInstanceState.getBoolean( BUNDLE_KEY_SLIDING_DRAWER_IS_EXPANDED, false );
-      }
-    else
-      {
-      Analytics.getInstance( mKiteActivity ).trackProductOverviewScreenViewed( mProduct );
-      }
-
-
     // Set up the screen. Note that the SDK allows for different layouts to be used in place of the standard
     // one, so some of these views are optional and may not actually exist in the current layout.
 
-    View view = layoutInflator.inflate( R.layout.screen_product_overview, container, false );
+    mContentView = layoutInflator.inflate( R.layout.screen_product_overview, container, false );
 
-    mProductImageViewPager              = (ViewPager) view.findViewById( R.id.view_pager );
-    mOverlaidComponents                 = view.findViewById( R.id.overlaid_components );
-    mPagingDots                         = (PagingDots) view.findViewById( R.id.paging_dots );
-    mOverlaidStartButton                = (Button)view.findViewById( R.id.overlaid_start_button );
-    mSlidingOverlayFrame                = (SlidingOverlayFrame) view.findViewById( R.id.sliding_overlay_frame );
-    mDrawerControlLayout                = view.findViewById( R.id.drawer_control_layout );
-    //mProductOptionsLayout               = (ViewGroup)view.findViewById( R.id.product_options_layout );
-    mOpenCloseDrawerIconImageView       = (ImageView) view.findViewById( R.id.open_close_drawer_icon_image_view );
-    mProceedOverlayButton               = (Button)view.findViewById( R.id.proceed_overlay_button );
-    TextView priceTextView              = (TextView) view.findViewById( R.id.price_text_view );
-    TextView summaryDescriptionTextView = (TextView)view.findViewById( R.id.summary_description_text_view );
-    TextView summaryShippingTextView    = (TextView)view.findViewById( R.id.summary_shipping_text_view );
-    View     descriptionLayout          = view.findViewById( R.id.description_layout );
-    TextView descriptionTextView        = (TextView)view.findViewById( R.id.description_text_view );
-    View     sizeLayout                 = view.findViewById( R.id.size_layout );
-    TextView sizeTextView               = (TextView) view.findViewById( R.id.size_text_view );
-    View     quantityLayout             = view.findViewById( R.id.quantity_layout );
-    TextView quantityTextView           = (TextView) view.findViewById( R.id.quantity_text_view );
-    TextView shippingTextView           = (TextView) view.findViewById( R.id.shipping_text_view );
+    mProductImageViewPager              = (ViewPager)mContentView.findViewById( R.id.view_pager );
+    mOverlaidComponents                 = mContentView.findViewById( R.id.overlaid_components );
+    mPagingDots                         = (PagingDots)mContentView.findViewById( R.id.paging_dots );
+    mOverlaidStartButton                = (Button)mContentView.findViewById( R.id.overlaid_start_button );
+    mSlidingOverlayFrame                = (SlidingOverlayFrame)mContentView.findViewById( R.id.sliding_overlay_frame );
+    mDrawerControlLayout                = mContentView.findViewById( R.id.drawer_control_layout );
+    mOpenCloseDrawerIconImageView       = (ImageView)mContentView.findViewById( R.id.open_close_drawer_icon_image_view );
+    mProceedOverlayButton               = (Button)mContentView.findViewById( R.id.proceed_overlay_button );
+
+
+    // Check if we can set up the the screen yet
+    onCheckSetUpScreen();
+
+
+    return ( mContentView );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the back key is pressed. The fragment
+   * can either intercept it, or ignore it - in which case
+   * the default behaviour is performed.
+   *
+   *****************************************************/
+  @Override
+  public boolean onBackPressIntercepted()
+    {
+    // If the slider is open - close it
+    if ( mSlidingOverlayFrame != null && mSlidingOverlayFrame.sliderIsExpanded() )
+      {
+      toggleSliderState();
+
+      return ( true );
+      }
+
+    return ( false );
+    }
+
+
+  /*****************************************************
+   *
+   * Called to save the state of the instance when (e.g.)
+   * changing orientation.
+   *
+   *****************************************************/
+  @Override
+  public void onSaveInstanceState( Bundle outState )
+    {
+    if ( KiteSDK.DEBUG_SAVE_INSTANCE_STATE ) Log.d( TAG, "--> onSaveInstanceState( outState = " + outState + " )" );
+
+    super.onSaveInstanceState( outState );
+
+    // Save the state of the sliding drawer
+    if ( mSlidingOverlayFrame != null )
+      {
+      outState.putBoolean( BUNDLE_KEY_EXPAND_SLIDING_DRAWER, mSlidingOverlayFrame.sliderIsExpanded() );
+      }
+
+    if ( KiteSDK.DEBUG_SAVE_INSTANCE_STATE ) Log.d( TAG, "<-- onSaveInstanceState( outState = " + outState + " )" );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the fragment is top-most.
+   *
+   *****************************************************/
+  @Override
+  public void onTop()
+    {
+    super.onTop();
+
+    if ( mProduct != null )
+      {
+      mKiteActivity.setTitle( mProduct.getName() );
+
+      setUpProductImageGallery();
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the fragment is not on top.
+   *
+   *****************************************************/
+  @Override
+  public void onNotTop()
+    {
+    super.onNotTop();
+
+
+    // Clear out the stored images to reduce memory usage
+    // when not on this screen.
+
+    if ( mProductImageViewPager != null ) mProductImageViewPager.setAdapter( null );
+
+    mProductImageAdaptor = null;
+    }
+
+
+  /*****************************************************
+   *
+   * Called to create the menu.
+   *
+   *****************************************************/
+  @Override
+  public void onCreateOptionsMenu( Menu menu, MenuInflater menuInflator )
+    {
+    menuInflator.inflate( R.menu.product_overview, menu );
+    }
+
+
+  ////////// ICatalogueConsumer Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when the sync completes successfully.
+   *
+   *****************************************************/
+  @Override
+  public void onCatalogueSuccess( Catalogue catalogue )
+    {
+    // Now we have the catalogue, we can get try and get the
+    // product from its id.
+
+    mProduct = catalogue.getProductById( mProductId );
+
+    if ( mProduct != null )
+      {
+      onCheckSetUpScreen();
+
+      if ( mTrackAnalytics )
+        {
+        mTrackAnalytics = false;
+
+        Analytics.getInstance( mKiteActivity ).trackProductOverviewScreenViewed( mProduct );
+        }
+      }
+    }
+
+
+  ////////// View.OnClickListener Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when a view is clicked.
+   *
+   *****************************************************/
+  @Override
+  public void onClick( View view )
+    {
+    // Anything that's not the drawer control is assumed to be
+    // one of the start buttons.
+
+    if ( view == mDrawerControlLayout )
+      {
+      toggleSliderState();
+      }
+    else
+      {
+      onCreateProduct( mProduct );
+      }
+    }
+
+
+  ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Checks that we have both the view and the product,
+   * and populates the screen.
+   *
+   *****************************************************/
+  private void onCheckSetUpScreen()
+    {
+    if ( mProduct == null || mContentView == null ) return;
+
+    TextView priceTextView              = (TextView)mContentView.findViewById( R.id.price_text_view );
+    TextView summaryDescriptionTextView = (TextView)mContentView.findViewById( R.id.summary_description_text_view );
+    TextView summaryShippingTextView    = (TextView)mContentView.findViewById( R.id.summary_shipping_text_view );
+    View     descriptionLayout          = mContentView.findViewById( R.id.description_layout );
+    TextView descriptionTextView        = (TextView)mContentView.findViewById( R.id.description_text_view );
+    View     sizeLayout                 = mContentView.findViewById( R.id.size_layout );
+    TextView sizeTextView               = (TextView)mContentView.findViewById( R.id.size_text_view );
+    View     quantityLayout             = mContentView.findViewById( R.id.quantity_layout );
+    TextView quantityTextView           = (TextView)mContentView.findViewById( R.id.quantity_text_view );
+    TextView shippingTextView           = (TextView)mContentView.findViewById( R.id.shipping_text_view );
 
 
     // Paging dots
@@ -312,22 +489,26 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
     pagingDotInAnimation.addAnimation( pagingDotInScaleAnimation );
     pagingDotInAnimation.setFillAfter( true );
 
-
     mPagingDots.setProperties( mProduct.getImageURLList().size(), R.drawable.paging_dot_unselected, R.drawable.paging_dot_selected );
     mPagingDots.setOutAnimation( pagingDotOutAlphaAnimation );
     mPagingDots.setInAnimation( pagingDotInAnimation );
 
 
+    // Product images
+
+    setUpProductImageGallery();
+
     mProductImageViewPager.setOnPageChangeListener( mPagingDots );
 
-    if ( mOverlaidComponents != null ) mOverlaidComponents.setAlpha( slidingDrawerIsExpanded ? 0f : 1f );  // If the drawer starts open, these components need to be invisible
+
+    if ( mOverlaidComponents != null ) mOverlaidComponents.setAlpha( mExpandSlidingDrawerAtStart ? 0f : 1f );  // If the drawer starts open, these components need to be invisible
 
 
     if ( mSlidingOverlayFrame != null )
       {
-      mSlidingOverlayFrame.snapToExpandedState( slidingDrawerIsExpanded );
+      mSlidingOverlayFrame.snapToExpandedState( mExpandSlidingDrawerAtStart );
       mSlidingOverlayFrame.setSlideAnimationDuration( SLIDE_ANIMATION_DURATION_MILLIS );
-      mOpenCloseDrawerIconImageView.setRotation( slidingDrawerIsExpanded ? OPEN_CLOSE_ICON_ROTATION_DOWN : OPEN_CLOSE_ICON_ROTATION_UP );
+      mOpenCloseDrawerIconImageView.setRotation( mExpandSlidingDrawerAtStart ? OPEN_CLOSE_ICON_ROTATION_DOWN : OPEN_CLOSE_ICON_ROTATION_UP );
       }
 
 
@@ -335,7 +516,7 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
     // will want to do their own thing.
     if ( mKiteActivity instanceof ICallback )
       {
-      ( (ICallback)mKiteActivity ).poOnPopulateOptions( mProduct, view );
+      ( (ICallback)mKiteActivity ).poOnPopulateOptions( mProduct, mContentView );
       }
 
 
@@ -370,9 +551,9 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
       {
       String summaryDescription =
               String.valueOf( quantityPerSheet )
-              + " "
-              + mProduct.getName()
-              + ( Product.isSensibleSize( size ) ? " (" + sizeString + ")" : "" );
+                      + " "
+                      + mProduct.getName()
+                      + ( Product.isSensibleSize( size ) ? " (" + sizeString + ")" : "" );
 
       summaryDescriptionTextView.setText( summaryDescription );
       }
@@ -385,8 +566,8 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
     boolean haveDescription = ( description != null && ( ! description.trim().equals( "" ) ) );
 
     if ( haveDescription             &&
-         descriptionLayout   != null &&
-         descriptionTextView != null )
+            descriptionLayout   != null &&
+            descriptionTextView != null )
       {
       descriptionLayout.setVisibility( View.VISIBLE );
       descriptionTextView.setVisibility( View.VISIBLE );
@@ -499,7 +680,7 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
                   : getString( R.string.product_free_shipping ) );
 
           shippingCostsStringBuilder
-                  .append( String.format( formatString, singleDestinationShippingCost.getDestinationDescription( mKiteActivity ), costString ) );
+                  .append( String.format( formatString, singleDestinationShippingCost.getDestinationDescription( getActivity() ), costString ) );
           }
 
         shippingTextView.setText( shippingCostsStringBuilder.toString() );
@@ -520,163 +701,19 @@ public class ProductOverviewFragment extends AKiteFragment implements View.OnCli
     if ( mDrawerControlLayout != null ) mDrawerControlLayout.setOnClickListener( this );
 
     if ( mOverlaidStartButton != null ) mOverlaidStartButton.setOnClickListener( this );
-
-
-    return ( view );
     }
 
 
   /*****************************************************
    *
-   * Called when the back key is pressed. The fragment
-   * can either intercept it, or ignore it - in which case
-   * the default behaviour is performed.
+   * Sets up the product image gallery.
    *
    *****************************************************/
-  @Override
-  public boolean onBackPressIntercepted()
+  private void setUpProductImageGallery()
     {
-    // If the slider is open - close it
-    if ( mSlidingOverlayFrame != null && mSlidingOverlayFrame.sliderIsExpanded() )
-      {
-      toggleSliderState();
-
-      return ( true );
-      }
-
-    return ( false );
-    }
-
-
-  /*****************************************************
-   *
-   * Called to save the state of the instance when (e.g.)
-   * changing orientation.
-   *
-   *****************************************************/
-  @Override
-  public void onSaveInstanceState( Bundle outState )
-    {
-    super.onSaveInstanceState( outState );
-
-    // Save the state of the sliding drawer
-    if ( mSlidingOverlayFrame != null )
-      {
-      outState.putBoolean( BUNDLE_KEY_SLIDING_DRAWER_IS_EXPANDED, mSlidingOverlayFrame.sliderIsExpanded() );
-      }
-    }
-
-
-  /*****************************************************
-   *
-   * Called when the fragment is top-most.
-   *
-   *****************************************************/
-  @Override
-  public void onTop()
-    {
-    super.onTop();
-
-    if ( mProduct != null ) mKiteActivity.setTitle( mProduct.getName() );
-
-    // Set up the product image gallery
     mProductImageAdaptor = new ProductImagePagerAdaptor( mKiteActivity, mProduct.getImageURLList(), this );
     mProductImageViewPager.setAdapter( mProductImageAdaptor );
     }
-
-
-  /*****************************************************
-   *
-   * Called when the fragment is not on top.
-   *
-   *****************************************************/
-  @Override
-  public void onNotTop()
-    {
-    super.onNotTop();
-
-
-    // Clear out the stored images to reduce memory usage
-    // when not on this screen.
-
-    if ( mProductImageViewPager != null ) mProductImageViewPager.setAdapter( null );
-
-    mProductImageAdaptor = null;
-    }
-
-
-  /*****************************************************
-   *
-   * Called to create the menu.
-   *
-   *****************************************************/
-  @Override
-  public void onCreateOptionsMenu( Menu menu, MenuInflater menuInflator )
-    {
-    menuInflator.inflate( R.menu.product_overview, menu );
-    }
-
-
-  ////////// View.OnClickListener Method(s) //////////
-
-  /*****************************************************
-   *
-   * Called when a view is clicked.
-   *
-   *****************************************************/
-  @Override
-  public void onClick( View view )
-    {
-    // Anything that's not the drawer control is assumed to be
-    // one of the start buttons.
-
-    if ( view == mDrawerControlLayout )
-      {
-      toggleSliderState();
-      }
-    else
-      {
-      onCreateProduct( mProduct );
-      }
-    }
-
-
-  ////////// Method(s) //////////
-
-  /*****************************************************
-   *
-   * Populates the product options layout.
-   *
-   *****************************************************/
-//  protected void populateProductOptions( ViewGroup productOptionsLayout, Product product )
-//    {
-//    LayoutInflater layoutInflater = LayoutInflater.from( mKiteActivity );
-//
-//
-//    // Go through each of the options. Create a view for each one, and a spinner adaptor
-//    // for the option values. We also need to save a reference to the spinner so we can
-//    // get the chosen options when we move on.
-//
-//    for ( ProductOption option : product.getOptionList() )
-//      {
-//      View     optionView    = layoutInflater.inflate( R.layout.product_option, null );
-//
-//      TextView nameTextView  = (TextView)optionView.findViewById( R.id.option_name_text_view );
-//      Spinner  valuesSpinner = (Spinner)optionView.findViewById( R.id.option_values_spinner );
-//
-//      nameTextView.setText( option.getName() );
-//
-//      ArrayAdapter<ProductOption.Value> valueArrayAdaptor = new ArrayAdapter<>( mKiteActivity, R.layout.list_item_product_option_value, R.id.value_text_view, option.getValueList() );
-//
-//      valuesSpinner.setAdapter( valueArrayAdaptor );
-//
-//      productOptionsLayout.addView( optionView );
-//
-//
-//      // Save the spinner for the option code
-//      mOptionCodeSpinnerMap.put( option.getCode(), valuesSpinner );
-//      }
-//    }
 
 
   /*****************************************************
