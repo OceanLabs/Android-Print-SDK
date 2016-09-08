@@ -34,8 +34,8 @@ android {
         applicationId "ly.kite.sample"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 203
-        versionName '2.3'
+        versionCode 204
+        versionName '2.4'
     }
 
     sourceSets {
@@ -82,3 +82,6 @@ dependencies {
     //    transitive = true;
     //}
 }
+
+// Exclude PayPal card scanning libs from package
+apply from: "${project(':KitePrintSDK').projectDir}/exclude_paypal_libs.gradle"

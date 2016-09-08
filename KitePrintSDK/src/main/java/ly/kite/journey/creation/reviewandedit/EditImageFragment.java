@@ -242,7 +242,7 @@ public class EditImageFragment extends AEditImageFragment
    *****************************************************/
   protected void onConfirm()
     {
-    requestEditedAsset();
+    returnEditedAsset();
     }
 
 

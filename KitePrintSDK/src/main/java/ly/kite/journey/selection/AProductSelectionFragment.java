@@ -1,11 +1,11 @@
 /*****************************************************
  *
- * ICatalogueHolder.java
+ * AProductSelectionFragment.java
  *
  *
  * Modified MIT License
  *
- * Copyright (c) 2010-2015 Kite Tech Ltd. https://www.kite.ly
+ * Copyright (c) 2010-2016 Kite Tech Ltd. https://www.kite.ly
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,32 +39,74 @@ package ly.kite.journey.selection;
 
 ///// Import(s) /////
 
-import java.util.ArrayList;
+import android.app.Activity;
 
-import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.ICatalogueConsumer;
+import ly.kite.journey.AKiteFragment;
 
 
 ///// Class Declaration /////
 
 /*****************************************************
  *
- * This interface defines a holder for a catalogue.
+ * This class is the parent of all product selection
+ * fragments.
  *
  *****************************************************/
-public interface ICatalogueHolder
+abstract public class AProductSelectionFragment extends AKiteFragment implements ICatalogueConsumer
   {
   ////////// Static Constant(s) //////////
+
+  @SuppressWarnings( "unused" )
+  static private final String  LOG_TAG = "AProductSelectionFragment";
+
+
+  ////////// Static Variable(s) //////////
+
+
+  ////////// Member Variable(s) //////////
+
+
+  ////////// Static Initialiser(s) //////////
+
+
+  ////////// Static Method(s) //////////
+
+
+  ////////// Constructor(s) //////////
+
+
+  ////////// CatalogueLoader.ICatalogueConsumer Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when the sync completes successfully.
+   *
+   *****************************************************/
+  @Override
+  public void onCatalogueError( Exception exception )
+    {
+    // Don't do anything. Catalogue load errors are dealt with
+    // by the activity.
+    }
 
 
   ////////// Method(s) //////////
 
   /*****************************************************
    *
-   * Returns a catalogue to the supplied consumer.
+   * Requests the catalogue.
    *
    *****************************************************/
-  public void requestCatalogue( ICatalogueConsumer consumer );
+  protected void requestCatalogue()
+    {
+    Activity activity = getActivity();
+
+    if ( activity != null && activity instanceof ICatalogueHolder )
+      {
+      ( (ICatalogueHolder)activity ).requestCatalogue( this );
+      }
+    }
 
 
   ////////// Inner Class(es) //////////

@@ -80,8 +80,6 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
   @SuppressWarnings( "unused" )
   private static final String  LOG_TAG           = "EditableImageContain...";
 
-  private static final boolean DEBUGGING_ENABLED = false;
-
 
   ////////// Static Variable(s) //////////
 
@@ -157,7 +155,7 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
   @Override
   public void onImageDownloading( Object key )
     {
-    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "onImageDownloading( key = " + key + " )" );
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "onImageDownloading( key = " + key + " )" );
 
     if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.VISIBLE );
     }
@@ -171,7 +169,7 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
   @Override
   public void onImageAvailable( Object key, Bitmap bitmap )
     {
-    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "onImageAvailable( key = " + key + ", bitmap = " + bitmap + " )" );
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "onImageAvailable( key = " + key + ", bitmap = " + bitmap + " )" );
 
     onLoadResult( key, bitmap );
     }
@@ -185,7 +183,7 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
   @Override
   public void onImageUnavailable( Object key, Exception exception )
     {
-    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "onImageUnavailable( key = " + key + ", exception = " + exception + " )" );
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "onImageUnavailable( key = " + key + ", exception = " + exception + " )" );
 
     onLoadResult( key, null );
     }
@@ -227,7 +225,7 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
    *****************************************************/
   public void unloadAllImages()
     {
-    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "unloadAllImages()" );
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "unloadAllImages()" );
 
     mEditableMaskedImageView.clearImage();
 
@@ -244,7 +242,7 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
    *****************************************************/
   public EditableImageContainerFrame setImage( Asset imageAsset )
     {
-    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "setImage( imageAsset = " + imageAsset + " )" );
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "setImage( imageAsset = " + imageAsset + " )" );
 
     mImageAsset = imageAsset;
 
@@ -260,7 +258,7 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
    *****************************************************/
   public void setAndLoadImage( Asset imageAsset )
     {
-    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "setAndLoadImage( imageAsset = " + imageAsset + " )" );
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "setAndLoadImage( imageAsset = " + imageAsset + " )" );
 
     // Unload the current image
     mEditableMaskedImageView.clearImage();
@@ -287,7 +285,7 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
    *****************************************************/
   public EditableImageContainerFrame setMask( URL maskURL, Bleed maskBleed )
     {
-    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "setMask( maskURL = " + maskURL + ", maskBleed = " + maskBleed + " )" );
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "setMask( maskURL = " + maskURL + ", maskBleed = " + maskBleed + " )" );
 
     mMaskURL   = maskURL;
     mMaskBleed = maskBleed;
@@ -303,7 +301,7 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
    *****************************************************/
   public EditableImageContainerFrame setMask( int resourceId, float aspectRatio )
     {
-    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "setMask( resourceId = " + resourceId + ", aspectRatio = " + aspectRatio + " )" );
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "setMask( resourceId = " + resourceId + ", aspectRatio = " + aspectRatio + " )" );
 
     // Note that currently if the mask is from a resource, we don't save its details, but
     // just pass it straight through to the editable masked image view. This is OK because
@@ -326,7 +324,7 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
    *****************************************************/
   public EditableImageContainerFrame setUnderImages( ArrayList<URL> underImageURLList )
     {
-    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "setUnderImages( underImageURLList )" );
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "setUnderImages( underImageURLList )" );
 
     mUnderImageURLList = underImageURLList;
 
@@ -343,7 +341,7 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
    *****************************************************/
   public EditableImageContainerFrame setOverImages( ArrayList<URL> overImageURLList )
     {
-    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "setOverImages( overImageURLList )" );
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "setOverImages( overImageURLList )" );
 
     mOverImageURLList = overImageURLList;
 
@@ -444,7 +442,7 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
    *****************************************************/
   private void loadImage()
     {
-    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "loadImage()" );
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "loadImage()" );
 
     mExpectedImageKey = mImageAsset;
 
@@ -464,7 +462,7 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
    *****************************************************/
   public void loadAllImages()
     {
-    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "loadAllImages()" );
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "loadAllImages()" );
 
     mExpectedImageCount = 0;
 
@@ -571,10 +569,15 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
    *****************************************************/
   private void onLoadResult( Object key, Bitmap bitmap )
     {
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "onLoadResult( key = " + key + ", bitmap = " + bitmap + " )" );
+
+
     // Check for the image
 
     if ( key == mExpectedImageKey )
       {
+      if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "  Key matches image" );
+
       mExpectedImageCount --;
 
       mExpectedImageKey = null;
@@ -587,6 +590,8 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
 
     if ( key == mExpectedMaskKey )
       {
+      if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "  Key matches mask" );
+
       mExpectedImageCount --;
 
       mExpectedMaskKey = null;
@@ -603,6 +608,8 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
         {
         if ( key == mExpectedUnderImageKeys[ underImageIndex ] )
           {
+          if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "  Key matches under image #" + underImageIndex );
+
           mExpectedImageCount --;
 
           mExpectedUnderImageKeys[ underImageIndex ] = null;
@@ -621,6 +628,8 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
         {
         if ( key == mExpectedOverImageKeys[ overImageIndex ] )
           {
+          if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "  Key matches over image #" + overImageIndex );
+
           mExpectedImageCount --;
 
           mExpectedOverImageKeys[ overImageIndex ] = null;
@@ -633,11 +642,11 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
 
     // See if everything we were expected has finished loading
 
-    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "Expected image count = " + mExpectedImageCount );
+    if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "Expected image count = " + mExpectedImageCount );
 
     if ( mExpectedImageCount <= 0 && mCallback != null )
       {
-      if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "All expected images loaded" );
+      if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "All expected images loaded" );
 
       // Hide any progress spinner
       if ( mProgressSpinner != null )
@@ -651,7 +660,7 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
       Bitmap   imageBitmap  = mEditableMaskedImageView.getImageBitmap();
       Drawable maskDrawable = mEditableMaskedImageView.getMaskDrawable();
 
-      if ( DEBUGGING_ENABLED )
+      if ( KiteSDK.DEBUG_IMAGE_CONTAINERS )
         {
         Log.d( LOG_TAG, "Image bitmap  = " + imageBitmap  );
         Log.d( LOG_TAG, "Mask drawable = " + maskDrawable );
@@ -659,10 +668,14 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
 
       if ( imageBitmap != null && maskDrawable != null )
         {
+        if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "  Calling " + mCallback + ".onLoadComplete()" );
+
         mCallback.onLoadComplete();
         }
       else
         {
+        if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "  Calling " + mCallback + ".onLoadError()" );
+
         mCallback.onLoadError();
         }
       }

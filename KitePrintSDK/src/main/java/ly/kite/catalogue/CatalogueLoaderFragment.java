@@ -74,7 +74,7 @@ public class CatalogueLoaderFragment extends ARetainedFragment<ICatalogueConsume
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String  TAG = "CatalogueLoaderFragment";
+  static public final String  TAG = "CatalogueLoaderFragment";
 
 
   ////////// Static Variable(s) //////////

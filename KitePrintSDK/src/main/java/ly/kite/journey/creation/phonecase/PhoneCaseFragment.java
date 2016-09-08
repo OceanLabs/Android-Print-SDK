@@ -236,7 +236,7 @@ public class PhoneCaseFragment extends AEditImageFragment
   @Override
   protected void onConfirm()
     {
-    requestEditedAsset();
+    returnEditedAsset();
     }
 
 
