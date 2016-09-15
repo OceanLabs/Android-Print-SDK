@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Switch;
@@ -104,7 +105,6 @@ public class MainActivity extends ADeepLinkableActivity
 
   private static final int    REQUEST_CODE_SELECT_PICTURE = 1;
   private static final int    REQUEST_CODE_CHECKOUT       = 2;
-
 
 
 
@@ -319,9 +319,6 @@ public class MainActivity extends ADeepLinkableActivity
         // Uncomment this if you have defined Instagram credentials
         //.setInstagramCredentials( INSTAGRAM_API_KEY, INSTAGRAM_REDIRECT_URI )
 
-        // Uncomment this if you are using Stripe
-        //.setStripePublicKey( STRIPE_PUBLIC_KEY );
-
         .startShopping( this, assetList );  // Use this to shop all products in catalogue
         //.startShoppingByProductId( this, assets, "pbx_squares_5x5", "pbx_squares_8x8" );  // Use this to shop specific products by id
       }
@@ -365,7 +362,7 @@ public class MainActivity extends ADeepLinkableActivity
    *****************************************************/
   private void postcardJourney()
     {
-    KiteSDK kiteSDK = configureSDK();
+    final KiteSDK kiteSDK = configureSDK();
 
     if ( kiteSDK == null ) return;
 
@@ -403,7 +400,7 @@ public class MainActivity extends ADeepLinkableActivity
 
 
           // Start managed check-out
-          KiteSDK.getInstance( MainActivity.this ).startCheckoutForResult( MainActivity.this, order, REQUEST_CODE_CHECKOUT );
+          kiteSDK.startCheckoutForResult( MainActivity.this, order, REQUEST_CODE_CHECKOUT );
           }
         catch ( MalformedURLException ex )
           {
