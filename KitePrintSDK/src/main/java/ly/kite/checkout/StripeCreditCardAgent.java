@@ -246,7 +246,7 @@ public class StripeCreditCardAgent extends ACreditCardDialogFragment implements 
 
           if ( mContext instanceof PaymentActivity )
             {
-            mPaymentFragment.submitOrderForPrinting( token.getId(), KiteSDK.getInstance( getActivity() ).getStripeAccountId(), Analytics.PAYMENT_METHOD_CREDIT_CARD );
+            mPaymentFragment.submitOrderForPrinting( token.getId(), KiteSDK.getInstance( getActivity() ).getStripeAccountId(), PaymentMethod.CREDIT_CARD );
             }
           }
 

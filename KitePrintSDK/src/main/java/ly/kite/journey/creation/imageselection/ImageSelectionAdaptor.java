@@ -415,6 +415,17 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
 
   /*****************************************************
    *
+   * Returns the number of assets.
+   *
+   *****************************************************/
+  public int getAssetCount()
+    {
+    return ( mAssetCount );
+    }
+
+
+  /*****************************************************
+   *
    * Adds a pack.
    *
    *****************************************************/

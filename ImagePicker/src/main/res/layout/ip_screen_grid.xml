@@ -1,0 +1,19 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <ly.kite.imagepicker.ImagePickerGridView
+        android:id="@+id/image_picker_grid_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"/>
+
+    <ProgressBar
+        android:id="@+id/progress_spinner"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="?android:indeterminateProgressStyle"
+        android:visibility="gone"/>
+
+</FrameLayout>

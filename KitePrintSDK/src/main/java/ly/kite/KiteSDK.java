@@ -65,20 +65,14 @@ import ly.kite.catalogue.MultipleCurrencyAmount;
 import ly.kite.catalogue.Product;
 import ly.kite.ordering.OrderingDataAgent;
 import ly.kite.catalogue.CatalogueLoader;
-import ly.kite.checkout.AShippingActivity;
-import ly.kite.checkout.DefaultPaymentFragment;
-import ly.kite.checkout.APaymentFragment;
 import ly.kite.checkout.PaymentActivity;
 import ly.kite.journey.basket.BasketActivity;
 import ly.kite.ordering.Order;
 import ly.kite.payment.PayPalCard;
 import ly.kite.util.Asset;
 import ly.kite.journey.AImageSource;
-import ly.kite.journey.DeviceImageSource;
-import ly.kite.instagramphotopicker.InstagramImageSource;
 import ly.kite.journey.selection.ProductSelectionActivity;
 import ly.kite.util.AssetHelper;
-import ly.kite.util.DelimitedStringBuilder;
 import ly.kite.image.ImageAgent;
 
 
@@ -109,7 +103,7 @@ public class KiteSDK
   static public  final boolean DISPLAY_PRODUCTS                                    = false;
 
 
-  static public  final String SDK_VERSION                                          = "5.4.6";
+  static public  final String SDK_VERSION                                          = "5.4.7";
 
   static public  final String IMAGE_CATEGORY_APP                                   = "app";
   static public  final String IMAGE_CATEGORY_PRODUCT_ITEM                          = "product_item";

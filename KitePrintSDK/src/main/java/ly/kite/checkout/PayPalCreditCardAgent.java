@@ -273,8 +273,10 @@ public class PayPalCreditCardAgent implements ICreditCardAgent
               public void onChargeSuccess( PayPalCard card, String proofOfPayment )
                 {
                 dialog.dismiss();
-                mPaymentFragment.submitOrderForPrinting( proofOfPayment, KiteSDK.getInstance( mContext ).getPayPalAccountId(), Analytics.PAYMENT_METHOD_CREDIT_CARD );
+
                 card.saveAsLastUsedCard( mContext );
+
+                mPaymentFragment.submitOrderForPrinting( proofOfPayment, KiteSDK.getInstance( mContext ).getPayPalAccountId(), PaymentMethod.CREDIT_CARD );
                 }
 
               @Override

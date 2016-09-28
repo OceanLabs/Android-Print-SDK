@@ -1,0 +1,12 @@
+<resources>
+
+    <dimen name="ip_item_margin">1dp</dimen>
+
+    <dimen name="ip_check_margin">7dp</dimen>
+    <dimen name="ip_label_text_size">14sp</dimen>
+    <dimen name="ip_label_padding">5dp</dimen>
+
+    <dimen name="ip_image_default_resize_width">100px</dimen>
+    <dimen name="ip_image_default_resize_height">100px</dimen>
+
+</resources>
