@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
+import java.util.Vector;
 
 import android.app.Activity;
 import android.content.Context;
@@ -514,13 +515,27 @@ public class KiteSDK
    * on their ids.
    *
    *****************************************************/
-  static public KiteSDK startShoppingByProductId( Context context, String apiKey, IEnvironment environment, ArrayList<Asset> assetArrayList, String... productIds )
+  static public KiteSDK startShoppingForProducts( Context context, String apiKey, IEnvironment environment, ArrayList<Asset> assetArrayList, String... productIds )
     {
     KiteSDK kiteSDK = getInstance( context, apiKey, environment );
 
-    kiteSDK.startShoppingByProductId( context, assetArrayList, productIds );
+    kiteSDK.startShoppingForProducts( context, assetArrayList, productIds );
 
     return ( kiteSDK );
+    }
+
+
+  /*****************************************************
+   *
+   * Convenience method for initialising and Launching the
+   * shopping experience for a selected set of products, based
+   * on their ids.
+   *
+   *****************************************************/
+  @Deprecated
+  static public KiteSDK startShoppingByProductId( Context context, String apiKey, IEnvironment environment, ArrayList<Asset> assetArrayList, String... productIds )
+    {
+    return ( startShoppingForProducts( context, apiKey, environment, assetArrayList, productIds ) );
     }
 
 
@@ -1489,6 +1504,18 @@ public class KiteSDK
   public void startShoppingByProductId( Context context, ArrayList<Asset> assetArrayList, String... filterProductIds )
     {
     startShoppingForProducts( context, assetArrayList, filterProductIds );
+    }
+
+
+  /*****************************************************
+   *
+   * Launches into the basket, displaying its current
+   * contents. This is <em>not</em> managed check-out.
+   *
+   *****************************************************/
+  public void startBasketForResult( Activity activity, int requestCode )
+    {
+    BasketActivity.startForResult( activity, requestCode );
     }
 
 

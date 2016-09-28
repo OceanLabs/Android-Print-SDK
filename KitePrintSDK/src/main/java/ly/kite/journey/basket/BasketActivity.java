@@ -175,7 +175,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
   /*****************************************************
    *
    * Starts this activity as part of a shopping experience,
-   * where the basket items are already assumed to be populated/
+   * where the basket items are already assumed to be populated.
    *
    *****************************************************/
   static public void startForResult( Activity activity, int requestCode )
