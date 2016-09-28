@@ -214,7 +214,7 @@ public class DefaultPaymentFragment extends APaymentFragment
         @Override
         public void onClick( View view )
           {
-          submitOrderForPrinting( null, null, Analytics.PAYMENT_METHOD_FREE );
+          submitOrderForPrinting( null, null, PaymentMethod.FREE );
           }
         } );
       }
@@ -278,7 +278,7 @@ public class DefaultPaymentFragment extends APaymentFragment
 
               if ( paymentId != null )
                 {
-                submitOrderForPrinting( paymentId, KiteSDK.getInstance( getActivity() ).getPayPalAccountId(), Analytics.PAYMENT_METHOD_PAYPAL );
+                submitOrderForPrinting( paymentId, KiteSDK.getInstance( getActivity() ).getPayPalAccountId(), PaymentMethod.PAYPAL );
                 }
               else
                 {
@@ -419,9 +419,9 @@ public class DefaultPaymentFragment extends APaymentFragment
    * PayPal account id).
    *
    *****************************************************/
-  public void submitOrderForPrinting( String paymentId, String accountId, String analyticsPaymentMethod )
+  public void submitOrderForPrinting( String paymentId, String accountId, PaymentMethod paymentMethod )
     {
-    getPaymentActivity().submitOrderForPrinting( authorisationProofOfPaymentFrom( paymentId ), accountId, analyticsPaymentMethod );
+    getPaymentActivity().submitOrderForPrinting( authorisationProofOfPaymentFrom( paymentId ), accountId, paymentMethod );
     }
 
 

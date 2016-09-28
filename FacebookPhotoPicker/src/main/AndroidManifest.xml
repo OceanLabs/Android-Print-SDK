@@ -1,0 +1,22 @@
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="ly.kite.facebookphotopicker">
+
+    <application>
+
+        <activity
+            android:name="ly.kite.facebookphotopicker.FacebookPhotoPickerActivity"
+            android:label="@string/title_facebook_photo_picker"
+            android:theme="@style/Theme.FacebookPhotoPicker"/>
+
+        <activity
+            android:name="com.facebook.FacebookActivity"
+            android:label="@string/title_facebook_photo_picker"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"/>
+
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+
+    </application>
+
+</manifest>

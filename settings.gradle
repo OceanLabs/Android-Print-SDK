@@ -1,3 +1,5 @@
 include 'SampleApp'
+include 'ImagePicker'
+include 'FacebookPhotoPicker'
 include 'KitePrintSDK'
 include 'KitePrintSDK-GCM'

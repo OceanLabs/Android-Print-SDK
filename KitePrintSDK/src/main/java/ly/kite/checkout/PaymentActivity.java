@@ -93,6 +93,7 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
   static public  final String KEY_PAYPAL_SUPPORTED_CURRENCY_CODES = "ly.kite.PayPalAcceptedCurrencies";
 
   static private final String PARAMETER_NAME_PAYMENT_ACCOUNT_ID = "payment_account_id";
+  static private final String PARAMETER_NAME_PAYMENT_GATEWAY    = "payment_gateway";
 
 
   ////////// Static Variable(s) //////////
@@ -674,9 +675,9 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
    *                  or null if no account id should be added.
    *
    *****************************************************/
-  public void submitOrderForPrinting( String proofOfPayment, String accountId, String analyticsPaymentMethod )
+  public void submitOrderForPrinting( String proofOfPayment, String accountId, PaymentMethod paymentMethod )
     {
-    if ( KiteSDK.DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "submitOrderForPrinting( proofOfPayment = " + proofOfPayment + ", accountId = " + accountId + ", analyticsPaymentMethod = " + analyticsPaymentMethod + " )" );
+    if ( KiteSDK.DEBUG_PAYMENT_KEYS ) Log.d( LOG_TAG, "submitOrderForPrinting( proofOfPayment = " + proofOfPayment + ", accountId = " + accountId + ", paymentMethod = " + paymentMethod + " )" );
 
     if ( proofOfPayment != null )
       {
@@ -688,7 +689,9 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
       mOrder.setAdditionalParameter( PARAMETER_NAME_PAYMENT_ACCOUNT_ID, accountId );
       }
 
-    Analytics.getInstance( this ).trackPaymentCompleted( mOrder, analyticsPaymentMethod );
+    mOrder.setAdditionalParameter( PARAMETER_NAME_PAYMENT_GATEWAY, paymentMethod.orderPaymentGateway() );
+
+    Analytics.getInstance( this ).trackPaymentCompleted( mOrder, paymentMethod.analyticsPaymentMethod() );
 
     if ( mPaymentFragment != null ) mPaymentFragment.onPreSubmission( mOrder );
 

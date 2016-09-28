@@ -148,11 +148,6 @@ public class Analytics
 
   public  static final String  VARIANT_JSON_PROPERTY_VALUE_CLASSIC_PLUS_ADDRESS_SEARCH = "Classic + Address Search";
 
-  public  static final String  PAYMENT_METHOD_PAYPAL                       = "PayPal";
-  public  static final String  PAYMENT_METHOD_CREDIT_CARD                  = "Credit Card";
-  public  static final String  PAYMENT_METHOD_FREE                         = "Free";
-  public  static final String  PAYMENT_METHOD_PAY_AT_TILL                  = "Pay At Till";
-
   private static final String  JSON_PROPERTY_VALUE_YES                     = "Yes";
   private static final String  JSON_PROPERTY_VALUE_NO                      = "No";
 
