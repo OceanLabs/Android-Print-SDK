@@ -93,6 +93,7 @@ public class KiteSDK
 
   static public  final boolean DEBUG_SAVE_INSTANCE_STATE                           = false;
   static public  final boolean DEBUG_IMAGE_LOADING                                 = false;
+  static public  final boolean DEBUG_IMAGE_PROCESSING                              = false;
   static public  final boolean DEBUG_IMAGE_CONTAINERS                              = false;
   static public  final boolean DEBUG_PAYMENT_KEYS                                  = false;
   static public  final boolean DEBUG_PRICING                                       = false;
@@ -104,7 +105,7 @@ public class KiteSDK
   static public  final boolean DISPLAY_PRODUCTS                                    = false;
 
 
-  static public  final String SDK_VERSION                                          = "5.4.7";
+  static public  final String SDK_VERSION                                          = "5.5.0";
 
   static public  final String IMAGE_CATEGORY_APP                                   = "app";
   static public  final String IMAGE_CATEGORY_PRODUCT_ITEM                          = "product_item";
@@ -515,11 +516,11 @@ public class KiteSDK
    * on their ids.
    *
    *****************************************************/
-  static public KiteSDK startShoppingForProducts( Context context, String apiKey, IEnvironment environment, ArrayList<Asset> assetArrayList, String... productIds )
+  static public KiteSDK startShoppingForProducts( Activity activity, String apiKey, IEnvironment environment, ArrayList<Asset> assetArrayList, String... productIds )
     {
-    KiteSDK kiteSDK = getInstance( context, apiKey, environment );
+    KiteSDK kiteSDK = getInstance( activity, apiKey, environment );
 
-    kiteSDK.startShoppingForProducts( context, assetArrayList, productIds );
+    kiteSDK.startShoppingForProducts( activity, assetArrayList, productIds );
 
     return ( kiteSDK );
     }
@@ -533,9 +534,9 @@ public class KiteSDK
    *
    *****************************************************/
   @Deprecated
-  static public KiteSDK startShoppingByProductId( Context context, String apiKey, IEnvironment environment, ArrayList<Asset> assetArrayList, String... productIds )
+  static public KiteSDK startShoppingByProductId( Activity activity, String apiKey, IEnvironment environment, ArrayList<Asset> assetArrayList, String... productIds )
     {
-    return ( startShoppingForProducts( context, apiKey, environment, assetArrayList, productIds ) );
+    return ( startShoppingForProducts( activity, apiKey, environment, assetArrayList, productIds ) );
     }
 
 
@@ -545,14 +546,14 @@ public class KiteSDK
    * shopping experience, without any assets.
    *
    *****************************************************/
-  static public void startShopping( Context context, String apiKey, IEnvironment environment )
+  static public void startShopping( Activity activity, String apiKey, IEnvironment environment )
     {
-    KiteSDK kiteSDK = getInstance( context, apiKey, environment );
+    KiteSDK kiteSDK = getInstance( activity, apiKey, environment );
 
     // Create an empty asset array list
     ArrayList<Asset> assetArrayList = new ArrayList<>( 0 );
 
-    kiteSDK.startShopping( context, assetArrayList );
+    kiteSDK.startShopping( activity, assetArrayList );
     }
 
 
@@ -606,8 +607,9 @@ public class KiteSDK
 
     setEnvironment( apiKey, environment );
 
-    // Clear any temporary assets
-    AssetHelper.clearSessionAssets( context );
+    // *Don't* clear session assets here, because we can get reinitialised between creating the
+    // session asset directory and saving images in it - especially when cropping images prior
+    // to upload!
     }
 
 
@@ -1401,7 +1403,7 @@ public class KiteSDK
    *****************************************************/
   private ArrayList<Asset> prepareToStartShopping( Context context, ArrayList<Asset> assetArrayList )
     {
-    // Clear any temporary assets
+    // Clear any session assets
     AssetHelper.clearSessionAssets( context );
 
     // Make sure all the assets are parcelable (this may create some new cached
@@ -1416,12 +1418,12 @@ public class KiteSDK
    * Launches the shopping experience for all products.
    *
    *****************************************************/
-  public void startShopping( Context context, ArrayList<Asset> assetArrayList )
+  public void startShopping( Activity activity, ArrayList<Asset> assetArrayList )
     {
-    assetArrayList = prepareToStartShopping( context, assetArrayList );
+    assetArrayList = prepareToStartShopping( activity, assetArrayList );
 
     // We use the activity context here, not the application context
-    ProductSelectionActivity.start( context, assetArrayList );
+    ProductSelectionActivity.start( activity, assetArrayList );
     }
 
 
@@ -1432,12 +1434,12 @@ public class KiteSDK
    * wish to filter by something else in the future.
    *
    *****************************************************/
-  public void startShoppingForProducts( Context context, ArrayList<Asset> assetArrayList, String... filterProductIds )
+  public void startShoppingForProducts( Activity activity, ArrayList<Asset> assetArrayList, String... filterProductIds )
     {
-    assetArrayList = prepareToStartShopping( context, assetArrayList );
+    assetArrayList = prepareToStartShopping( activity, assetArrayList );
 
     // We use the activity context here, not the application context
-    ProductSelectionActivity.start( context, assetArrayList, filterProductIds );
+    ProductSelectionActivity.start( activity, assetArrayList, filterProductIds );
     }
 
 
@@ -1447,12 +1449,12 @@ public class KiteSDK
    * group.
    *
    *****************************************************/
-  public void startShoppingForProductGroup( Context context, ArrayList<Asset> assetArrayList, String gotoProductGroupLabel )
+  public void startShoppingForProductGroup( Activity activity, ArrayList<Asset> assetArrayList, String gotoProductGroupLabel )
     {
-    assetArrayList = prepareToStartShopping( context, assetArrayList );
+    assetArrayList = prepareToStartShopping( activity, assetArrayList );
 
     // We use the activity context here, not the application context
-    ProductSelectionActivity.startInProductGroup( context, assetArrayList, gotoProductGroupLabel );
+    ProductSelectionActivity.startInProductGroup( activity, assetArrayList, gotoProductGroupLabel );
     }
 
 
@@ -1462,9 +1464,9 @@ public class KiteSDK
    * group.
    *
    *****************************************************/
-  public void startShoppingForProductGroup( Context context, String gotoProductGroupLabel )
+  public void startShoppingForProductGroup( Activity activity, String gotoProductGroupLabel )
     {
-    startShoppingForProductGroup( context, null, gotoProductGroupLabel );
+    startShoppingForProductGroup( activity, null, gotoProductGroupLabel );
     }
 
 
@@ -1473,12 +1475,12 @@ public class KiteSDK
    * Launches the shopping experience for a single product.
    *
    *****************************************************/
-  public void startShoppingForProduct( Context context, ArrayList<Asset> assetArrayList, String gotoProductId )
+  public void startShoppingForProduct( Activity activity, ArrayList<Asset> assetArrayList, String gotoProductId )
     {
-    assetArrayList = prepareToStartShopping( context, assetArrayList );
+    assetArrayList = prepareToStartShopping( activity, assetArrayList );
 
     // We use the activity context here, not the application context
-    ProductSelectionActivity.startInProduct( context, assetArrayList, gotoProductId );
+    ProductSelectionActivity.startInProduct( activity, assetArrayList, gotoProductId );
     }
 
 
@@ -1487,9 +1489,9 @@ public class KiteSDK
    * Launches the shopping experience for a single product.
    *
    *****************************************************/
-  public void startShoppingForProduct( Context context, String gotoProductId )
+  public void startShoppingForProduct( Activity activity, String gotoProductId )
     {
-    startShoppingForProduct( context, null, gotoProductId );
+    startShoppingForProduct( activity, null, gotoProductId );
     }
 
 
@@ -1501,9 +1503,9 @@ public class KiteSDK
    *
    *****************************************************/
   @Deprecated
-  public void startShoppingByProductId( Context context, ArrayList<Asset> assetArrayList, String... filterProductIds )
+  public void startShoppingByProductId( Activity activity, ArrayList<Asset> assetArrayList, String... filterProductIds )
     {
-    startShoppingForProducts( context, assetArrayList, filterProductIds );
+    startShoppingForProducts( activity, assetArrayList, filterProductIds );
     }
 
 
@@ -1524,9 +1526,9 @@ public class KiteSDK
    * Launches managed checkout.
    *
    *****************************************************/
-  public void startCheckout( Context context, Order order )
+  public void startCheckout( Activity activity, Order order )
     {
-    BasketActivity.start( context, order );
+    BasketActivity.start( activity, order );
     }
 
 

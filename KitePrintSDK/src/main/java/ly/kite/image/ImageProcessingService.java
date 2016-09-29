@@ -54,6 +54,7 @@ import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import ly.kite.KiteSDK;
 import ly.kite.util.Asset;
 import ly.kite.util.AssetHelper;
 
@@ -78,9 +79,6 @@ public class ImageProcessingService extends Service
 
   @SuppressWarnings( "unused" )
   static private final String  LOG_TAG                   = "ImageProcessingService";
-
-  static private final boolean DEBUGGING_ENABLED         = true;
-
 
   static public  final int     WHAT_CROP_TO_ASPECT_RATIO = 23;
   static public  final int     WHAT_FLIP_HORIZONTALLY    = 27;
@@ -191,7 +189,7 @@ public class ImageProcessingService extends Service
 
           float aspectRatio = messageData.getFloat( BUNDLE_KEY_ASPECT_RATIO, DEFAULT_ASPECT_RATIO );
 
-          if ( DEBUGGING_ENABLED ) Log.i( LOG_TAG, "Received CROP_TO_ASPECT_RATIO message: responseMessenger = " + responseMessenger + ", sourceAsset = " + sourceAsset + ", targetAsset = " + targetAsset );
+          if ( KiteSDK.DEBUG_IMAGE_PROCESSING ) Log.i( LOG_TAG, "Received CROP_TO_ASPECT_RATIO message: responseMessenger = " + responseMessenger + ", sourceAsset = " + sourceAsset + ", targetAsset = " + targetAsset );
 
           transformer = new CropToAspectRatioTransformer( aspectRatio );
 
@@ -201,7 +199,7 @@ public class ImageProcessingService extends Service
 
           ///// Flip horizontally /////
 
-          if ( DEBUGGING_ENABLED ) Log.i( LOG_TAG, "Received FLIP_HORIZONTALLY message: responseMessenger = " + responseMessenger + ", sourceAsset = " + sourceAsset + ", targetAsset = " + targetAsset );
+          if ( KiteSDK.DEBUG_IMAGE_PROCESSING ) Log.i( LOG_TAG, "Received FLIP_HORIZONTALLY message: responseMessenger = " + responseMessenger + ", sourceAsset = " + sourceAsset + ", targetAsset = " + targetAsset );
 
           transformer = new FlipHorizontallyTransformer();
 
@@ -211,7 +209,7 @@ public class ImageProcessingService extends Service
 
           ///// Rotate anticlockwise /////
 
-          if ( DEBUGGING_ENABLED ) Log.i( LOG_TAG, "Received ROTATE_ANTICLOCKWISE message: responseMessenger = " + responseMessenger + ", sourceAsset = " + sourceAsset + ", targetAsset = " + targetAsset );
+          if ( KiteSDK.DEBUG_IMAGE_PROCESSING ) Log.i( LOG_TAG, "Received ROTATE_ANTICLOCKWISE message: responseMessenger = " + responseMessenger + ", sourceAsset = " + sourceAsset + ", targetAsset = " + targetAsset );
 
           transformer = new RotateAnticlockwiseTransformer();
 
@@ -224,7 +222,7 @@ public class ImageProcessingService extends Service
           messageData.setClassLoader( RectF.class.getClassLoader() );
           RectF cropBounds = messageData.getParcelable( BUNDLE_KEY_CROP_BOUNDS );
 
-          if ( DEBUGGING_ENABLED ) Log.i( LOG_TAG, "Received CROP_TO_BOUNDS message: responseMessenger = " + responseMessenger + ", sourceAsset = " + sourceAsset + ", targetAsset = " + targetAsset );
+          if ( KiteSDK.DEBUG_IMAGE_PROCESSING ) Log.i( LOG_TAG, "Received CROP_TO_BOUNDS message: responseMessenger = " + responseMessenger + ", sourceAsset = " + sourceAsset + ", targetAsset = " + targetAsset );
 
           transformer = new CropToBoundsTransformer( cropBounds );
 
@@ -385,7 +383,7 @@ public class ImageProcessingService extends Service
     @Override
     public void onImageAvailable( Object key, Bitmap bitmap )
       {
-      if ( DEBUGGING_ENABLED ) Log.i( LOG_TAG, "onImageAvailable( key = " + key + ", bitmap = " + bitmap + " )" );
+      if ( KiteSDK.DEBUG_IMAGE_PROCESSING ) Log.i( LOG_TAG, "onImageAvailable( key = " + key + ", bitmap = " + bitmap + " )" );
 
       // Save the the transformed image to the target
       AssetHelper.replaceAsset( bitmap, mTargetAsset );
@@ -408,7 +406,7 @@ public class ImageProcessingService extends Service
 
       try
         {
-        if ( DEBUGGING_ENABLED ) Log.i( LOG_TAG, "Sending response message: what = " + what );
+        if ( KiteSDK.DEBUG_IMAGE_PROCESSING ) Log.i( LOG_TAG, "Sending response message: what = " + what );
 
         mResponseMessenger.send( responseMessage );
         }
