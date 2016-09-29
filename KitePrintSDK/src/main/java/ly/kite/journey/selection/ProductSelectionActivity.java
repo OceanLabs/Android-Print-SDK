@@ -39,6 +39,7 @@ package ly.kite.journey.selection;
 
 ///// Import(s) /////
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -159,16 +160,16 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
    * Convenience method for starting this activity.
    *
    *****************************************************/
-  public static void start( Context context, ArrayList<Asset> assetArrayList, String... filterProductIds )
+  public static void start( Activity activity, ArrayList<Asset> assetArrayList, String... filterProductIds )
     {
-    Intent intent = getIntent( context, assetArrayList );
+    Intent intent = getIntent( activity, assetArrayList );
 
     if ( filterProductIds != null && filterProductIds.length > 0 )
       {
       intent.putExtra( INTENT_EXTRA_NAME_FILTER_PRODUCT_IDS, filterProductIds );
       }
 
-    context.startActivity( intent );
+    activity.startActivity( intent );
     }
 
 
@@ -177,16 +178,16 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
    * Convenience method for starting this activity.
    *
    *****************************************************/
-  public static void startInProductGroup( Context context, ArrayList<Asset> assetArrayList, String productGroupLabel )
+  public static void startInProductGroup( Activity activity, ArrayList<Asset> assetArrayList, String productGroupLabel )
     {
-    Intent intent = getIntent( context, assetArrayList );
+    Intent intent = getIntent( activity, assetArrayList );
 
     if ( productGroupLabel != null )
       {
       intent.putExtra( INTENT_EXTRA_NAME_GOTO_PRODUCT_GROUP_LABEL, productGroupLabel );
       }
 
-    context.startActivity( intent );
+    activity.startActivity( intent );
     }
 
 
@@ -195,16 +196,16 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
    * Convenience method for starting this activity.
    *
    *****************************************************/
-  public static void startInProduct( Context context, ArrayList<Asset> assetArrayList, String productId )
+  public static void startInProduct( Activity activity, ArrayList<Asset> assetArrayList, String productId )
     {
-    Intent intent = getIntent( context, assetArrayList );
+    Intent intent = getIntent( activity, assetArrayList );
 
     if ( productId != null )
       {
       intent.putExtra( INTENT_EXTRA_NAME_GOTO_PRODUCT_ID, productId );
       }
 
-    context.startActivity( intent );
+    activity.startActivity( intent );
     }
 
 

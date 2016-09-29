@@ -39,27 +39,27 @@ package ly.kite.catalogue;
 
 ///// Import(s) /////
 
-
-///// Class Declaration /////
-
 import android.content.Context;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.Gravity;
-import android.widget.ImageView;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+
+///// Class Declaration /////
+
 /*****************************************************
  *
  * This class represents a product group.
  *
+ * Do not make this class parcelable, as some product groups
+ * are too big and cause transaction errors.
+ *
  *****************************************************/
-public class ProductGroup implements Parcelable, IGroupOrProduct
+public class ProductGroup implements IGroupOrProduct
   {
   ////////// Static Constant(s) //////////
 
@@ -68,20 +68,6 @@ public class ProductGroup implements Parcelable, IGroupOrProduct
 
 
   ////////// Static Variable(s) //////////
-
-  public static final Parcelable.Creator<ProductGroup> CREATOR =
-    new Parcelable.Creator<ProductGroup>()
-      {
-      public ProductGroup createFromParcel( Parcel sourceParcel )
-        {
-        return ( new ProductGroup( sourceParcel ) );
-        }
-
-      public ProductGroup[] newArray( int size )
-        {
-        return ( new ProductGroup[ size ] );
-        }
-      };
 
 
   ////////// Member Variable(s) //////////
@@ -108,47 +94,6 @@ public class ProductGroup implements Parcelable, IGroupOrProduct
     mImageURL    = imageURL;
 
     mProductList = new ArrayList<>();
-    }
-
-
-  // Constructor used by parcelable interface
-  private ProductGroup( Parcel sourceParcel )
-    {
-    mLabel       = sourceParcel.readString();
-    mLabelColour = sourceParcel.readInt();
-    mImageURL    = (URL)sourceParcel.readSerializable();
-
-    mProductList = new ArrayList<>();
-    sourceParcel.readTypedList( mProductList, Product.CREATOR );
-    }
-
-
-  ////////// Parcelable Method(s) //////////
-
-  /*****************************************************
-   *
-   * Describes the contents of this parcelable.
-   *
-   *****************************************************/
-  @Override
-  public int describeContents()
-    {
-    return ( 0 );
-    }
-
-
-  /*****************************************************
-   *
-   * Write the contents of this product to a parcel.
-   *
-   *****************************************************/
-  @Override
-  public void writeToParcel( Parcel targetParcel, int flags )
-    {
-    targetParcel.writeString( mLabel );
-    targetParcel.writeInt( mLabelColour );
-    targetParcel.writeSerializable( mImageURL );
-    targetParcel.writeTypedList( mProductList );
     }
 
 

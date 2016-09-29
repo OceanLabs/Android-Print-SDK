@@ -287,6 +287,26 @@ public class AssetHelper
 
   /*****************************************************
    *
+   * Ensures that the directory exists for the supplied
+   * file path.
+   *
+   *****************************************************/
+  static public void ensureDirectoryExists( String filePath )
+    {
+    // Determine the directory
+
+    File file = new File( filePath );
+
+    File directory = file.getParentFile();
+
+
+    // Make sure the directory exists
+    directory.mkdirs();
+    }
+
+
+  /*****************************************************
+   *
    * Generates the file path of an asset file, and
    * ensures that the directory exists.
    *
@@ -297,9 +317,7 @@ public class AssetHelper
 
     directory.mkdirs();
 
-
     String filePath = directoryPath + File.separator + ImageAgent.toSafeString( UUID.randomUUID().toString() ) + ( mimeType != null ? mimeType.primaryFileSuffix() : "" );
-
 
     return ( filePath );
     }
@@ -318,7 +336,7 @@ public class AssetHelper
 
     File imageDirectory = new File( imageDirectoryAndFilePath.first );
 
-    imageDirectory.mkdirs();
+    boolean directoryCreated = imageDirectory.mkdirs();
 
     return ( imageDirectoryAndFilePath.second + ( mimeType != null ? mimeType.primaryFileSuffix() : "" ) );
     }
@@ -461,6 +479,9 @@ public class AssetHelper
       {
       throw ( new IllegalArgumentException( "Can only replace a file asset" ) );
       }
+
+    // Make sure the directory exists
+    ensureDirectoryExists( targetAsset.getImageFilePath() );
 
     saveToFile( bitmap, targetAsset.getImageFilePath() );
     }

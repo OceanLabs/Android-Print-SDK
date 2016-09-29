@@ -146,13 +146,13 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
    * supplied order.
    *
    *****************************************************/
-  static public void start( Context context, Order order )
+  static public void start( Activity activity, Order order )
     {
-    Intent intent = new Intent( context, BasketActivity.class );
+    Intent intent = new Intent( activity, BasketActivity.class );
 
     intent.putExtra( KEY_MANAGED_ORDER, order );
 
-    context.startActivity( intent );
+    activity.startActivity( intent );
     }
 
 
@@ -175,7 +175,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
   /*****************************************************
    *
    * Starts this activity as part of a shopping experience,
-   * where the basket items are already assumed to be populated/
+   * where the basket items are already assumed to be populated.
    *
    *****************************************************/
   static public void startForResult( Activity activity, int requestCode )

@@ -44,6 +44,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import ly.kite.journey.AKiteActivity;
+
 
 ///// Class Declaration /////
 
@@ -53,7 +55,7 @@ import android.os.Bundle;
  * implement deep linking into the SDK journey.
  *
  *****************************************************/
-abstract public class ADeepLinkableActivity extends Activity
+abstract public class ADeepLinkableActivity extends AKiteActivity
   {
   ////////// Static Constant(s) //////////
 

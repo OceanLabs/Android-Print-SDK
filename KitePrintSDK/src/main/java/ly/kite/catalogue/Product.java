@@ -43,7 +43,6 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
-import android.widget.ImageView;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -67,7 +66,7 @@ import ly.kite.journey.UserJourneyType;
  * This class represents a print product.
  *
  *****************************************************/
-public class Product implements Parcelable, IGroupOrProduct
+public class Product implements IGroupOrProduct, Parcelable
   {
   ////////// Static Constant(s) //////////
 
@@ -265,6 +264,7 @@ public class Product implements Parcelable, IGroupOrProduct
 
     mOptionList = new ArrayList<>( 0 );
     }
+
 
   Product( String productId, String productCode, String productName, String productType, int labelColour, UserJourneyType userJourneyType, int quantityPerSheet )
     {
