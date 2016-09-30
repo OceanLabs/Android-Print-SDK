@@ -131,7 +131,6 @@ public class OrderSubmissionFragment extends ARetainedDialogFragment<IOrderSubmi
       {
       mProgressDialog = new ProgressDialog( getActivity() );
 
-      mProgressDialog.setCancelable( false );
       mProgressDialog.setIndeterminate( false );
       mProgressDialog.setProgressStyle( ProgressDialog.STYLE_HORIZONTAL );
       mProgressDialog.setProgressNumberFormat( null );   // Don't display the "N/100" text
@@ -140,6 +139,7 @@ public class OrderSubmissionFragment extends ARetainedDialogFragment<IOrderSubmi
       mProgressDialog.setMax( 100 );
       }
 
+    setCancelable( false );
 
     return ( mProgressDialog );
     }
