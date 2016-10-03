@@ -39,13 +39,10 @@ package ly.kite.journey;
 
 ///// Import(s) /////
 
-import android.Manifest;
-import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -60,11 +57,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.LogWriter;
 import android.text.Editable;
-import android.text.Spannable;
 import android.text.SpannableString;
-import android.text.style.TypefaceSpan;
 import android.util.Log;
-import android.util.LogPrinter;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -75,7 +69,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -89,7 +82,6 @@ import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.SDKCustomiser;
 import ly.kite.catalogue.CatalogueLoader;
-import ly.kite.catalogue.CatalogueLoaderFragment;
 import ly.kite.image.ImageAgent;
 import ly.kite.journey.creation.imagesource.ImageSourceFragment;
 import ly.kite.util.StringUtils;
@@ -151,7 +143,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   protected SDKCustomiser         mSDKCustomiser;
 
   private   boolean               mActivityIsVisible;
-  private   boolean               mCanAddFragment;
+  private   boolean               mCanAddAndRemoveFragments;
 
   private   boolean               mInactivityTimerEnabled;
   private   Handler               mInactivityHandler;
@@ -426,7 +418,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     {
     super.onPostResume();
 
-    mCanAddFragment = true;
+    mCanAddAndRemoveFragments = true;
 
 
     // If we are waiting to add a fragment - do so now
@@ -659,7 +651,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
 
     super.onSaveInstanceState( outState );
 
-    mCanAddFragment = false;
+    mCanAddAndRemoveFragments = false;
 
     if ( KiteSDK.DEBUG_SAVE_INSTANCE_STATE ) Log.d( LOG_TAG, "<-- onSaveInstanceState( outState = " + outState + " )" );
     }
@@ -675,7 +667,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     {
     super.onPause();
 
-    mCanAddFragment = false;
+    mCanAddAndRemoveFragments = false;
 
     ensureLogOutWarningGone();;
     ensureInactivityTimerStopped();
@@ -690,7 +682,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   @Override
   protected void onStop()
     {
-    mCanAddFragment    = false;
+    mCanAddAndRemoveFragments = false;
     mActivityIsVisible = false;
 
     mPendingDialog     = null;
@@ -710,7 +702,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
   @Override
   protected void onDestroy()
     {
-    mCanAddFragment    = false;
+    mCanAddAndRemoveFragments = false;
     mActivityIsVisible = false;
 
     mPendingDialog     = null;
@@ -1242,7 +1234,7 @@ public abstract class AKiteActivity extends Activity implements FragmentManager.
     // However, we need to remember what was requested so that after any state
     // has been restored, we can then add the fragment.
 
-    if ( mCanAddFragment )
+    if ( mCanAddAndRemoveFragments )
       {
       mFragmentManager
         .beginTransaction()
