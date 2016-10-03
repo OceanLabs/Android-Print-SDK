@@ -51,6 +51,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Locale;
 
 import ly.kite.KiteSDK;
 import ly.kite.util.Asset;
@@ -88,6 +89,8 @@ public class ImageAgent
 
   static private final Bitmap.Config  DEFAULT_BITMAP_CONFIG       = Bitmap.Config.RGB_565;
 
+  static private final int            MAX_FILE_NAME_LENGTH        = 200;
+
 
   ////////// Static Variable(s) //////////
 
@@ -101,7 +104,7 @@ public class ImageAgent
 
   private HashMap<String,Integer>  mURLResourceIdTable;
 
-  private FileDownloader mFileDownloader;
+  private FileDownloader           mFileDownloader;
   private ImageRequestProcessor    mImageRequestProcessor;
 
 
@@ -134,6 +137,29 @@ public class ImageAgent
   static public ImageAgent with( Context context )
     {
     return ( getInstance( context ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns true if the extension of the supplied file name
+   * corresponds to an image type.
+   *
+   *****************************************************/
+  static public boolean hasImageFileExtension( String filePath )
+    {
+    if ( filePath == null ) return ( false );
+
+    filePath = filePath.toLowerCase();
+
+    if ( filePath.endsWith( ".jpg" ) ||
+         filePath.endsWith( ".jpeg" ) ||
+         filePath.endsWith( ".png" ) )
+      {
+      return ( true );
+      }
+
+    return ( false );
     }
 
 
@@ -622,12 +648,36 @@ public class ImageAgent
 
   /*****************************************************
    *
-   * Returns an image directory path and file path.
+   * Returns the directory and file path for an image file
+   * used to download an image from a URL.
    *
    *****************************************************/
   public Pair<String,String> getImageCacheDirectoryAndFilePath( String imageCategory, URL imageURL )
     {
-    return ( getImageCacheDirectoryAndFilePath( imageCategory, imageURL.toString() ) );
+    // Some customers are hitting the file name length limit, and getting an ENAMETOOLONG
+    // error. This can happen when the query string is long.
+    // If the URL path is the exact file (i.e. ends in an image file extension such as JPG, JPEG,
+    // PNG etc.) then we can miss off the query string because that won't change the file that
+    // is downloaded. Otherwise we use the whole URL file (including query), truncate the length,
+    // and then hope for the best.
+
+    String imageIdentifier;
+
+    String urlPath = imageURL.getPath();
+
+    if ( urlPath != null && hasImageFileExtension( urlPath ) )
+      {
+      imageIdentifier = imageURL.getProtocol() + "://" + imageURL.getAuthority() + imageURL.getPath();
+      }
+    else
+      {
+      imageIdentifier = imageURL.toString();
+      }
+
+    // Truncate the identifier length if it is too long
+    if ( imageIdentifier.length() > MAX_FILE_NAME_LENGTH ) imageIdentifier = imageIdentifier.substring( 0, MAX_FILE_NAME_LENGTH );
+
+    return ( getImageCacheDirectoryAndFilePath( imageCategory, imageIdentifier ) );
     }
 
 

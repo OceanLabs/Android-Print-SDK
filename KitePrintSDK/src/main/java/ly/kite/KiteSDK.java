@@ -105,7 +105,7 @@ public class KiteSDK
   static public  final boolean DISPLAY_PRODUCTS                                    = false;
 
 
-  static public  final String SDK_VERSION                                          = "5.5.0";
+  static public  final String SDK_VERSION                                          = "5.5.2";
 
   static public  final String IMAGE_CATEGORY_APP                                   = "app";
   static public  final String IMAGE_CATEGORY_PRODUCT_ITEM                          = "product_item";
@@ -117,7 +117,7 @@ public class KiteSDK
 
 
   // Shared preference keys are formed by:
-  //   shared preferences key prefix + parameter name + [ shared preferences key suffix ]
+  //   shared preferences key prefix + parameter name [ + shared preferences key suffix ]
 
   static private final String SHARED_PREFERENCES_KEY_PREFIX_SDK                    = "sdk_";
   static private final String SHARED_PREFERENCES_KEY_PREFIX_APP                    = "app_";

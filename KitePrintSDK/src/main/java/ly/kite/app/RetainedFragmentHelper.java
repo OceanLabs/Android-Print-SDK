@@ -267,7 +267,7 @@ public class RetainedFragmentHelper<C>
       fragmentManager
         .beginTransaction()
           .remove( mFragment )
-        .commit();
+        .commitAllowingStateLoss();
       }
     }
 
