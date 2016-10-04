@@ -41,12 +41,8 @@ android {
     sourceSets {
         main {
             java {
-
-                // Comment the next line if you are including Facebook as an image source
-                //exclude '**/FacebookImageSource.java'
-
                 // Comment the next line if you are including push messaging
-                //exclude '**/GCMListenerService.java'
+                exclude '**/GCMListenerService.java'
             }
         }
     }
