@@ -18,12 +18,14 @@ android {
     compileSdkVersion 24
     buildToolsVersion '24.0.2'
     useLibrary 'org.apache.http.legacy'
+
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 24
         versionName '1.0'
         versionCode 100
     }
+
     sourceSets {
         main {
             manifest { srcFile 'src/main/AndroidManifest.xml' }
@@ -31,6 +33,7 @@ android {
             res { srcDir 'src/main/res' }
         }
     }
+
     productFlavors {
     }
 }
@@ -42,10 +45,9 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'ly.kite:photo-picker:1.1.4'
     compile 'ly.kite:instagram-photo-picker:1.2.3'
-    compile project(':FacebookPhotoPicker')
-    //compile files('libs/PayPalAndroidSDK-2.9.10.jar')
     compile 'com.paypal.sdk:paypal-android-sdk:2.13.3'
     compile 'com.stripe:stripe-android:1.0.4'
+    compile project(':FacebookPhotoPicker')
 }
 
 // Exclude PayPal card scanning libs from package
