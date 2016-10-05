@@ -3,8 +3,6 @@
 
     <string name="title_facebook_photo_picker">Facebook Foto Picker</string>
 
-    <string name="app_name">@string/title_facebook_photo_picker</string>
-
     <string name="title_facebook_alert_dialog">Facebook error</string>
     <string name="message_facebook_alert_dialog">Es gab ein Problem beim Laden Deiner Facebook Photos:\n%1$s</string>
 
