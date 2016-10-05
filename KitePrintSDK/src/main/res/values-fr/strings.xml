@@ -199,12 +199,9 @@
     <string name="title_activity_payment">Paiement</string>
     <string name="title_activity_address_book">Carnet d\'adresses</string>
     <string name="add_address">Ajouter une adresse</string>
-    <string name="search_for_address">Rechercher nouvelle adresse</string>
     <string name="title_activity_address_add">Créer une nouvelle adresse</string>
     <string name="title_activity_address_edit">Modifier l\'adresse</string>
     <string name="action_save_address">Enregistrer adresse</string>
-    <string name="search_title">Rechercher</string>
-    <string name="country_search_hint">Recherche des adresses</string>
 
     <string name="scan_qr_code">Scannez le code QR</string>
     <string name="scan_qr_code_instructions">S\'il vous plaît scanner le code QR en utilisant un lecteur app QR sur votre appareil.</string>
