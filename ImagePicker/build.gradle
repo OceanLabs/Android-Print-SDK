@@ -20,6 +20,15 @@ android {
         versionCode 1
         versionName "1.0"
     }
+
+    sourceSets {
+        main {
+            manifest { srcFile 'src/main/AndroidManifest.xml' }
+            java { srcDir 'src/main/java' }
+            res { srcDir 'src/main/res' }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -29,7 +38,10 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:recyclerview-v7:24.2.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
 }
+
+// Uncomment before uploading archives
+//apply from: 'https://raw.github.com/shamanland/gradle-mvn-push/cc18d56549cdea03f744b6fff27911569394073e/gradle-mvn-push.gradle'
