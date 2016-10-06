@@ -40,8 +40,8 @@ package ly.kite.journey.basket;
 ///// Import(s) /////
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -59,15 +59,12 @@ import java.util.List;
 
 import ly.kite.KiteSDK;
 import ly.kite.address.Address;
-import ly.kite.catalogue.MultipleCurrencyAmount;
-import ly.kite.catalogue.SingleCurrencyAmount;
 import ly.kite.ordering.OrderingDataAgent;
 import ly.kite.ordering.BasketItem;
 import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.ICatalogueConsumer;
 import ly.kite.catalogue.Product;
 import ly.kite.checkout.AShippingActivity;
-import ly.kite.checkout.ShippingActivity;
 import ly.kite.image.ImageAgent;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.R;
@@ -816,23 +813,25 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
       private TextView    mEditLabelTextView;
 
       private TextView    mProductNameTextView;
+      private TextView    mOriginalPriceTextView;
       private TextView    mPriceTextView;
 
 
       ViewHolder( View view )
         {
-        mProductImageView    = (ImageView)view.findViewById( R.id.product_image_view );
-        mQuantityTextView    = (TextView)view.findViewById( R.id.quantity_text_view );
+        mProductImageView      = (ImageView)view.findViewById( R.id.product_image_view );
+        mQuantityTextView      = (TextView)view.findViewById( R.id.quantity_text_view );
 
-        mDecrementButton     = view.findViewById( R.id.decrement_button );
-        mIncrementButton     = view.findViewById( R.id.increment_button );
+        mDecrementButton       = view.findViewById( R.id.decrement_button );
+        mIncrementButton       = view.findViewById( R.id.increment_button );
 
-        mEditTouchFrame      = view.findViewById( R.id.edit_touch_frame );
-        mEditLabelTextView   = (TextView)findViewById( R.id.edit_label_text_view );
+        mEditTouchFrame        = view.findViewById( R.id.edit_touch_frame );
+        mEditLabelTextView     = (TextView)findViewById( R.id.edit_label_text_view );
 
-        mProductNameTextView = (TextView)view.findViewById( R.id.product_name_text_view );
+        mProductNameTextView   = (TextView)view.findViewById( R.id.product_name_text_view );
 
-        mPriceTextView       = (TextView)view.findViewById( R.id.price_text_view );
+        mOriginalPriceTextView = (TextView)view.findViewById( R.id.original_price_text_view );
+        mPriceTextView         = (TextView)view.findViewById( R.id.price_text_view );
 
         if ( mAllowBasketEditing )
           {
@@ -951,7 +950,29 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
       private void setQuantityDependentText()
         {
         mQuantityTextView.setText( String.valueOf( mBasketItem.getOrderQuantity() ) );
-        mPriceTextView.setText( mProduct.getDisplayPriceMultipliedBy( KiteSDK.getInstance( BasketActivity.this ).getLockedCurrencyCode(), mBasketItem.getOrderQuantity() ) );
+
+        String lockedCurrencyCode = KiteSDK.getInstance( BasketActivity.this ).getLockedCurrencyCode();
+        int    orderQuantity      = mBasketItem.getOrderQuantity();
+
+        mPriceTextView.setText( mProduct.getDisplayPriceMultipliedBy( lockedCurrencyCode, orderQuantity ) );
+
+        if ( mOriginalPriceTextView != null )
+          {
+          String originalPriceString = mProduct.getDisplayOriginalPriceMultipliedBy( lockedCurrencyCode, orderQuantity );
+
+          if ( originalPriceString != null )
+            {
+            mOriginalPriceTextView.setVisibility( View.VISIBLE );
+
+            mOriginalPriceTextView.setText( originalPriceString );
+
+            mOriginalPriceTextView.setPaintFlags( mOriginalPriceTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG );
+            }
+          }
+        else
+          {
+          mOriginalPriceTextView.setVisibility( View.GONE );
+          }
         }
       }
 

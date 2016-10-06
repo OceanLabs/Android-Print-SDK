@@ -39,9 +39,14 @@ package ly.kite.journey.selection;
 
 ///// Import(s) /////
 
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.StrikethroughSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -69,12 +74,12 @@ import ly.kite.analytics.Analytics;
 import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.ProductOption;
 import ly.kite.journey.AKiteActivity;
-import ly.kite.catalogue.MultipleCurrencyAmount;
+import ly.kite.catalogue.MultipleCurrencyAmounts;
 import ly.kite.catalogue.MultipleDestinationShippingCosts;
 import ly.kite.catalogue.Product;
 import ly.kite.catalogue.SingleUnitSize;
 import ly.kite.catalogue.UnitOfLength;
-import ly.kite.catalogue.SingleCurrencyAmount;
+import ly.kite.catalogue.SingleCurrencyAmounts;
 import ly.kite.catalogue.SingleDestinationShippingCost;
 import ly.kite.animation.BellInterpolator;
 import ly.kite.widget.PagingDots;
@@ -428,6 +433,7 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
     {
     if ( mProduct == null || mContentView == null ) return;
 
+    TextView originalPriceTextView      = (TextView)mContentView.findViewById( R.id.original_price_text_view );
     TextView priceTextView              = (TextView)mContentView.findViewById( R.id.price_text_view );
     TextView summaryDescriptionTextView = (TextView)mContentView.findViewById( R.id.summary_description_text_view );
     TextView summaryShippingTextView    = (TextView)mContentView.findViewById( R.id.summary_shipping_text_view );
@@ -532,16 +538,29 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
     Country                          country          = Country.getInstance( locale );
 
 
-    SingleCurrencyAmount singleCurrencyCost;
+    SingleCurrencyAmounts singleCurrencyCost = mProduct.getCostWithFallback( locale );
 
-
-    // Price
-
-    if ( isVisible( priceTextView ) )
+    if ( singleCurrencyCost != null )
       {
-      singleCurrencyCost = mProduct.getCostWithFallback( locale );
+      // Original price
 
-      if ( singleCurrencyCost != null ) priceTextView.setText( singleCurrencyCost.getDisplayAmountForLocale( locale ) );
+      if ( singleCurrencyCost.hasOriginalAmount() && isVisible( originalPriceTextView ) )
+        {
+        originalPriceTextView.setText( singleCurrencyCost.getDisplayOriginalAmountForLocale( locale ) );
+        originalPriceTextView.setPaintFlags( originalPriceTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG );
+        }
+
+
+      // Price
+
+      if ( isVisible( priceTextView ) )
+        {
+        priceTextView.setText( singleCurrencyCost.getDisplayAmountForLocale( locale ) );
+        }
+      }
+    else
+      {
+      Log.e( TAG, "No cost found" );
       }
 
 
@@ -626,9 +645,9 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
 
       for ( SingleDestinationShippingCost singleDestinationShippingCosts : multipleDestinationShippingCosts.asList() )
         {
-        MultipleCurrencyAmount multipleCurrencyShippingCost = singleDestinationShippingCosts.getCost();
+        MultipleCurrencyAmounts multipleCurrencyShippingCost = singleDestinationShippingCosts.getCost();
 
-        for ( SingleCurrencyAmount singleCurrencyShippingCost : multipleCurrencyShippingCost.asCollection() )
+        for ( SingleCurrencyAmounts singleCurrencyShippingCost : multipleCurrencyShippingCost.asCollection() )
           {
           if ( singleCurrencyShippingCost.isNonZero() )
             {
@@ -654,7 +673,7 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
       {
       List<SingleDestinationShippingCost> sortedShippingCostList = mProduct.getSortedShippingCosts( country );
 
-      StringBuilder shippingCostsStringBuilder = new StringBuilder();
+      SpannableStringBuilder shippingCostsStringBuilder = new SpannableStringBuilder();
 
       String newlineString = "";
 
@@ -669,21 +688,41 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
 
         // Get the cost in the default currency for the locale, and format the amount.
 
-        singleCurrencyCost = singleDestinationShippingCost.getCost().getAmountWithFallback( KiteSDK.getInstance( getActivity() ).getLockedCurrencyCode() );
+        singleCurrencyCost = singleDestinationShippingCost.getCost().getAmountsWithFallback( KiteSDK.getInstance( getActivity() ).getLockedCurrencyCode() );
 
         if ( singleCurrencyCost != null )
           {
-          String formatString = getString( R.string.product_shipping_format_string );
+          // Add the shipping destination
+
+          String formatString = getString( R.string.product_shipping_destination_format_string );
+
+          shippingCostsStringBuilder
+                  .append( String.format( formatString, singleDestinationShippingCost.getDestinationDescription( getActivity() ) ) )
+                  .append( "  " );
+
+
+          // Add any original price
+
+          if ( singleCurrencyCost.hasOriginalAmount() )
+            {
+            SpannableString originalCostString = new SpannableString( singleCurrencyCost.getDisplayOriginalAmountForLocale( locale ) );
+
+            originalCostString.setSpan( new StrikethroughSpan(), 0, originalCostString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE );
+
+            shippingCostsStringBuilder
+                    .append( originalCostString )
+                    .append( "  " );
+            }
+
 
           String costString = ( singleCurrencyCost.isNonZero()
                   ? singleCurrencyCost.getDisplayAmountForLocale( locale )
                   : getString( R.string.product_free_shipping ) );
 
-          shippingCostsStringBuilder
-                  .append( String.format( formatString, singleDestinationShippingCost.getDestinationDescription( getActivity() ), costString ) );
+          shippingCostsStringBuilder.append( costString );
           }
 
-        shippingTextView.setText( shippingCostsStringBuilder.toString() );
+        shippingTextView.setText( shippingCostsStringBuilder, TextView.BufferType.SPANNABLE );
         }
       }
 

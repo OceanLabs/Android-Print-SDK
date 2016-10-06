@@ -55,7 +55,7 @@ import ly.kite.journey.AKiteActivity;
  * implement deep linking into the SDK journey.
  *
  *****************************************************/
-abstract public class ADeepLinkableActivity extends AKiteActivity
+abstract public class ADeepLinkableActivity extends APermissionsRequestingActivity
   {
   ////////// Static Constant(s) //////////
 

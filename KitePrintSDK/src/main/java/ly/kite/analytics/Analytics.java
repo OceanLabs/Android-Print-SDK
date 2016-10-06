@@ -48,22 +48,20 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
 import ly.kite.BuildConfig;
 import ly.kite.KiteSDK;
-import ly.kite.R;
 import ly.kite.address.Address;
 import ly.kite.address.Country;
 import ly.kite.pricing.OrderPricing;
-import ly.kite.catalogue.MultipleCurrencyAmount;
+import ly.kite.catalogue.MultipleCurrencyAmounts;
 import ly.kite.ordering.Job;
 import ly.kite.ordering.Order;
 import ly.kite.catalogue.Product;
-import ly.kite.catalogue.SingleCurrencyAmount;
+import ly.kite.catalogue.SingleCurrencyAmounts;
 
 
 ///// Class Declaration /////
@@ -311,8 +309,8 @@ public class Analytics
       ///// Cost /////
 
       OrderPricing           orderPricing = printOrder.getOrderPricing();
-      MultipleCurrencyAmount totalCost;
-      SingleCurrencyAmount   totalCostInGBP;
+      MultipleCurrencyAmounts totalCost;
+      SingleCurrencyAmounts totalCostInGBP;
 
       if (   orderPricing                                   != null &&
            ( totalCost      = orderPricing.getTotalCost() ) != null &&

@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * MultipleCurrencyAmount.java
+ * MultipleCurrencyAmounts.java
  *
  *
  * Modified MIT License
@@ -50,7 +50,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
-import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Currency;
 import java.util.HashMap;
@@ -63,14 +62,15 @@ import java.util.Set;
  * This class represents an amount in multiple currencies.
  *
  *****************************************************/
-public class MultipleCurrencyAmount implements Parcelable
+public class MultipleCurrencyAmounts implements Parcelable
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String  LOG_TAG                     = "MultipleCurrencyAmount";
+  static private final String  LOG_TAG                     = "MultipleCurrencyAmounts";
 
   static private final String  JSON_NAME_AMOUNT            = "amount";
+  static private final String  JSON_NAME_ORIGINAL_AMOUNT   = "original_amount";
 
   static private final String  FALLBACK_CURRENCY_CODE_1    = "USD";
   static private final String  FALLBACK_CURRENCY_CODE_2    = "GBP";
@@ -86,25 +86,25 @@ public class MultipleCurrencyAmount implements Parcelable
 
   ////////// Static Variable(s) //////////
 
-  public static final Parcelable.Creator<MultipleCurrencyAmount> CREATOR =
-    new Parcelable.Creator<MultipleCurrencyAmount>()
+  public static final Parcelable.Creator<MultipleCurrencyAmounts> CREATOR =
+    new Parcelable.Creator<MultipleCurrencyAmounts>()
       {
-      public MultipleCurrencyAmount createFromParcel( Parcel sourceParcel )
+      public MultipleCurrencyAmounts createFromParcel( Parcel sourceParcel )
         {
-        return ( new MultipleCurrencyAmount( sourceParcel ) );
+        return ( new MultipleCurrencyAmounts( sourceParcel ) );
         }
 
-      public MultipleCurrencyAmount[] newArray( int size )
+      public MultipleCurrencyAmounts[] newArray( int size )
         {
-        return ( new MultipleCurrencyAmount[ size ] );
+        return ( new MultipleCurrencyAmounts[ size ] );
         }
       };
 
 
   ////////// Member Variable(s) //////////
 
-  private HashMap<Currency,SingleCurrencyAmount> mCurrencyAmountTable;
-  private HashMap<String,SingleCurrencyAmount>   mCurrencyCodeAmountTable;
+  private HashMap<Currency,SingleCurrencyAmounts> mCurrencyAmountTable;
+  private HashMap<String,SingleCurrencyAmounts>   mCurrencyCodeAmountTable;
 
 
   ////////// Static Initialiser(s) //////////
@@ -119,15 +119,15 @@ public class MultipleCurrencyAmount implements Parcelable
    * if the currency is null.
    *
    *****************************************************/
-  static public MultipleCurrencyAmount newFilteredInstance( MultipleCurrencyAmount originalMultipleCurrencyAmount, String currencyCode )
+  static public MultipleCurrencyAmounts newFilteredInstance( MultipleCurrencyAmounts originalMultipleCurrencyAmount, String currencyCode )
     {
     if ( originalMultipleCurrencyAmount == null ) return ( null );
 
     if ( currencyCode == null ) return ( originalMultipleCurrencyAmount );
 
-    MultipleCurrencyAmount newMultipleCurrencyAmount = new MultipleCurrencyAmount();
+    MultipleCurrencyAmounts newMultipleCurrencyAmount = new MultipleCurrencyAmounts();
 
-    SingleCurrencyAmount singleCurrencyAmount = originalMultipleCurrencyAmount.get( currencyCode );
+    SingleCurrencyAmounts singleCurrencyAmount = originalMultipleCurrencyAmount.get( currencyCode );
 
     if ( singleCurrencyAmount != null ) newMultipleCurrencyAmount.add( singleCurrencyAmount );
 
@@ -137,10 +137,10 @@ public class MultipleCurrencyAmount implements Parcelable
 
   ////////// Constructor(s) //////////
 
-  public MultipleCurrencyAmount()
+  public MultipleCurrencyAmounts()
     {
-    mCurrencyAmountTable     = new HashMap<Currency,SingleCurrencyAmount>();
-    mCurrencyCodeAmountTable = new HashMap<String,SingleCurrencyAmount>();
+    mCurrencyAmountTable     = new HashMap<Currency,SingleCurrencyAmounts>();
+    mCurrencyCodeAmountTable = new HashMap<String,SingleCurrencyAmounts>();
     }
 
 
@@ -149,7 +149,7 @@ public class MultipleCurrencyAmount implements Parcelable
    * Creates a multiple currency amount from a JSON object.
    *
    *****************************************************/
-  public MultipleCurrencyAmount( JSONObject jsonObject )
+  public MultipleCurrencyAmounts( JSONObject jsonObject )
     {
     this();
 
@@ -169,6 +169,7 @@ public class MultipleCurrencyAmount implements Parcelable
         //   {"amount":"0.00000"}
 
         BigDecimal amountBigDecimal;
+        BigDecimal originalAmountBigDecimal = null;
 
         try
           {
@@ -179,10 +180,17 @@ public class MultipleCurrencyAmount implements Parcelable
           JSONObject amountJSONObject = jsonObject.getJSONObject( currencyCode );
 
           amountBigDecimal = new BigDecimal( amountJSONObject.getString( JSON_NAME_AMOUNT ) );
+
+
+          // Check for an original amount
+
+          String originalAmountString = amountJSONObject.optString( JSON_NAME_ORIGINAL_AMOUNT, null );
+
+          originalAmountBigDecimal = ( originalAmountString != null ? new BigDecimal( originalAmountString ) : null );
           }
 
 
-        add( new SingleCurrencyAmount( Currency.getInstance( currencyCode ), amountBigDecimal ) );
+        add( new SingleCurrencyAmounts( Currency.getInstance( currencyCode ), amountBigDecimal, originalAmountBigDecimal ) );
         }
       catch ( JSONException je )
         {
@@ -197,7 +205,7 @@ public class MultipleCurrencyAmount implements Parcelable
    * Creates a multiple currency amount from a parcel.
    *
    *****************************************************/
-  private MultipleCurrencyAmount( Parcel parcel )
+  private MultipleCurrencyAmounts( Parcel parcel )
     {
     this();
 
@@ -208,7 +216,7 @@ public class MultipleCurrencyAmount implements Parcelable
 
     for ( int index = 0; index < count; index ++ )
       {
-      add( (SingleCurrencyAmount)parcel.readParcelable( SingleCurrencyAmount.class.getClassLoader() ) );
+      add( (SingleCurrencyAmounts)parcel.readParcelable( SingleCurrencyAmounts.class.getClassLoader() ) );
       }
     }
 
@@ -239,7 +247,7 @@ public class MultipleCurrencyAmount implements Parcelable
 
     targetParcel.writeInt( mCurrencyAmountTable.size() );
 
-    for ( SingleCurrencyAmount singleCurrencyCost : mCurrencyCodeAmountTable.values() )
+    for ( SingleCurrencyAmounts singleCurrencyCost : mCurrencyCodeAmountTable.values() )
       {
       targetParcel.writeParcelable( singleCurrencyCost, flags );
       }
@@ -253,7 +261,7 @@ public class MultipleCurrencyAmount implements Parcelable
    * Adds a cost in a single currency.
    *
    *****************************************************/
-  public void add( SingleCurrencyAmount singleCurrencyAmount )
+  public void add( SingleCurrencyAmounts singleCurrencyAmount )
     {
     mCurrencyAmountTable.put( singleCurrencyAmount.getCurrency(), singleCurrencyAmount );
     mCurrencyCodeAmountTable.put( singleCurrencyAmount.getCurrency().getCurrencyCode(), singleCurrencyAmount );
@@ -265,7 +273,7 @@ public class MultipleCurrencyAmount implements Parcelable
    * Returns a the cost for a currency code.
    *
    *****************************************************/
-  public SingleCurrencyAmount get( String currencyCode )
+  public SingleCurrencyAmounts get( String currencyCode )
     {
     return ( mCurrencyCodeAmountTable.get( currencyCode ) );
     }
@@ -287,7 +295,7 @@ public class MultipleCurrencyAmount implements Parcelable
    * Returns the cost at a position.
    *
    *****************************************************/
-  public SingleCurrencyAmount get( int position )
+  public SingleCurrencyAmounts get( int position )
     {
     return ( mCurrencyCodeAmountTable.get( position ) );
     }
@@ -310,9 +318,9 @@ public class MultipleCurrencyAmount implements Parcelable
    * if the amount is not known in the requested currency.
    *
    *****************************************************/
-  public SingleCurrencyAmount getAmountWithFallback( String preferredCurrencyCode )
+  public SingleCurrencyAmounts getAmountsWithFallback( String preferredCurrencyCode )
     {
-    SingleCurrencyAmount amount;
+    SingleCurrencyAmounts amount;
 
     // First try the requested currency code
     if ( ( amount = get( preferredCurrencyCode ) ) != null ) return ( amount );
@@ -336,9 +344,9 @@ public class MultipleCurrencyAmount implements Parcelable
    * if the amount is not known in the requested currency.
    *
    *****************************************************/
-  public SingleCurrencyAmount getAmountWithFallback( Currency preferredCurrency )
+  public SingleCurrencyAmounts getAmountWithFallback( Currency preferredCurrency )
     {
-    return ( getAmountWithFallback( preferredCurrency.getCurrencyCode() ) );
+    return ( getAmountsWithFallback( preferredCurrency.getCurrencyCode() ) );
     }
 
 
@@ -348,9 +356,9 @@ public class MultipleCurrencyAmount implements Parcelable
    * if the amount is not known in the requested currency.
    *
    *****************************************************/
-  public SingleCurrencyAmount getAmountWithFallbackMultipliedBy( int quantity, Currency preferredCurrency )
+  public SingleCurrencyAmounts getAmountWithFallbackMultipliedBy( int quantity, Currency preferredCurrency )
     {
-    return ( getAmountWithFallback( preferredCurrency.getCurrencyCode() ).multipliedBy( quantity ) );
+    return ( getAmountsWithFallback( preferredCurrency.getCurrencyCode() ).multipliedBy( quantity ) );
     }
 
 
@@ -360,7 +368,7 @@ public class MultipleCurrencyAmount implements Parcelable
    * if the amount is not known in the requested currency.
    *
    *****************************************************/
-  public SingleCurrencyAmount getAmountWithFallback( Locale locale )
+  public SingleCurrencyAmounts getAmountWithFallback( Locale locale )
     {
     return ( getAmountWithFallback( Currency.getInstance( locale ) ) );
     }
@@ -373,12 +381,12 @@ public class MultipleCurrencyAmount implements Parcelable
    * requested currency.
    *
    *****************************************************/
-  public SingleCurrencyAmount getDefaultAmountWithFallback()
+  public SingleCurrencyAmounts getDefaultAmountWithFallback()
     {
     Locale   defaultLocale   = Locale.getDefault();
     Currency defaultCurrency = Currency.getInstance( defaultLocale );
 
-    return ( getAmountWithFallback( defaultCurrency.getCurrencyCode() ) );
+    return ( getAmountsWithFallback( defaultCurrency.getCurrencyCode() ) );
     }
 
 
@@ -511,16 +519,61 @@ public class MultipleCurrencyAmount implements Parcelable
       }
 
 
-    // Get the single currency amount
+    // Get the single currency amounts
 
-    SingleCurrencyAmount amount = getAmountWithFallback( currency.getCurrencyCode() ).multipliedBy( quantity );
+    SingleCurrencyAmounts multipliedAmount = getAmountsWithFallback( currency.getCurrencyCode() ).multipliedBy( quantity );
 
-    if ( amount == null ) return ( null );
+    if ( multipliedAmount == null ) return ( null );
 
 
     // Format the amount we found for the default locale. It may not be the same currency
     // we asked for.
-    return ( amount.getDisplayAmountForLocale( locale ) );
+    return ( multipliedAmount.getDisplayAmountForLocale( locale ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the original amount as a formatted string. Tries to use
+   * the default currency, but will fall back to other
+   * currencies if the preferred is not available.
+   *
+   * If the currency that we found matches the main currency
+   * for the default locale, then we use the number formatter
+   * to format the amount.
+   *
+   * If the currency that we found is different, then we format
+   * the amount with the full currency code. We do this to
+   * avoid any ambiguity. For example, if we were to live in
+   * Sweden but found a cost in Danish Krone, then having an
+   * amount such as 4.00 kr would be ambiguous (because we
+   * would believe we were being quoted in Swedish Kroner).
+   *
+   *****************************************************/
+  public String getDisplayOriginalAmountWithFallbackMultipliedBy( String preferredCurrencyCode, int quantity, Locale locale )
+    {
+    Currency currency;
+
+    if ( preferredCurrencyCode != null )
+      {
+      currency = Currency.getInstance( preferredCurrencyCode );
+      }
+    else
+      {
+      currency = Currency.getInstance( locale );
+      }
+
+
+    // Get the single currency amounts
+
+    SingleCurrencyAmounts multipliedAmount = getAmountsWithFallback( currency.getCurrencyCode() ).multipliedBy( quantity );
+
+    if ( multipliedAmount == null ) return ( null );
+
+
+    // Format the amount we found for the default locale. It may not be the same currency
+    // we asked for.
+    return ( multipliedAmount.getDisplayOriginalAmountForLocale( locale ) );
     }
 
 
@@ -550,10 +603,34 @@ public class MultipleCurrencyAmount implements Parcelable
 
   /*****************************************************
    *
+   * Returns the original amount as a formatted string. Tries to use
+   * the default currency, but will fall back to other
+   * currencies if the preferred is not available.
+   *
+   * If the currency that we found matches the main currency
+   * for the default locale, then we use the number formatter
+   * to format the amount.
+   *
+   * If the currency that we found is different, then we format
+   * the amount with the full currency code. We do this to
+   * avoid any ambiguity. For example, if we were to live in
+   * Sweden but found a cost in Danish Krone, then having an
+   * amount such as 4.00 kr would be ambiguous (because we
+   * would believe we were being quoted in Swedish Kroner).
+   *
+   *****************************************************/
+  public String getDisplayOriginalAmountWithFallbackMultipliedBy( String preferredCurrencyCode, int quantity )
+    {
+    return ( getDisplayOriginalAmountWithFallbackMultipliedBy( preferredCurrencyCode, quantity, Locale.getDefault() ) );
+    }
+
+
+  /*****************************************************
+   *
    * Returns the amounts as a list.
    *
    *****************************************************/
-  public Collection<SingleCurrencyAmount> asCollection()
+  public Collection<SingleCurrencyAmounts> asCollection()
     {
     return ( mCurrencyAmountTable.values() );
     }
@@ -569,7 +646,7 @@ public class MultipleCurrencyAmount implements Parcelable
     {
     StringBuilder stringBuilder = new StringBuilder();
 
-    for ( SingleCurrencyAmount singleCurrencyAmount : mCurrencyAmountTable.values() )
+    for ( SingleCurrencyAmounts singleCurrencyAmount : mCurrencyAmountTable.values() )
       {
       stringBuilder
               .append( "  " )

@@ -187,7 +187,7 @@
     <string name="product_size_format_string_float">%1$.1f x %2$.1f %3$s</string>
     <string name="product_size_format_string_int">%1$.0f x %2$.0f %3$s</string>
 
-    <string name="product_shipping_format_string">%1$s: %2$s</string>
+    <string name="product_shipping_destination_format_string" translatable="false">%1$s:</string>
     <string name="product_free_shipping">free</string>
     <string name="product_shipping_summary_format_string">Shipping: %s</string>
 

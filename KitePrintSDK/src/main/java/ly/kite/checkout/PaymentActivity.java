@@ -64,11 +64,11 @@ import com.paypal.android.sdk.payments.PayPalConfiguration;
 import com.paypal.android.sdk.payments.PayPalService;
 
 import ly.kite.analytics.Analytics;
-import ly.kite.catalogue.SingleCurrencyAmount;
+import ly.kite.catalogue.SingleCurrencyAmounts;
 import ly.kite.pricing.OrderPricing;
 import ly.kite.pricing.PricingAgent;
 import ly.kite.KiteSDK;
-import ly.kite.catalogue.MultipleCurrencyAmount;
+import ly.kite.catalogue.MultipleCurrencyAmounts;
 import ly.kite.ordering.Order;
 import ly.kite.R;
 
@@ -569,8 +569,8 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
     // Get the total cost in the most appropriate currency
 
     String                 preferredCurrencyCode = KiteSDK.getInstance( this ).getLockedCurrencyCode();
-    MultipleCurrencyAmount totalCostMultiple     = mOrderPricing.getTotalCost();
-    SingleCurrencyAmount   totalCostSingle       = totalCostMultiple.getAmountWithFallback( preferredCurrencyCode );
+    MultipleCurrencyAmounts totalCostMultiple     = mOrderPricing.getTotalCost();
+    SingleCurrencyAmounts totalCostSingle       = totalCostMultiple.getAmountsWithFallback( preferredCurrencyCode );
 
 
     // If the cost is zero, we change the button text

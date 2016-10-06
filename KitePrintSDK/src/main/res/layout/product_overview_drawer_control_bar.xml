@@ -34,15 +34,38 @@
         </LinearLayout>
     </FrameLayout>
 
-    <ly.kite.widget.CustomTypefaceTextView
-        android:id="@+id/price_text_view"
+    <FrameLayout
         android:layout_width="0dp"
         android:layout_weight="0.5"
         android:layout_height="fill_parent"
-        android:background="@color/product_overview_price_background"
-        android:gravity="center"
-        android:textSize="@dimen/product_overview_price_text"
-        android:textColor="@android:color/white"
-        style="@style/KiteSDKShadowedText"/>
+        android:background="@color/product_overview_price_background">
+
+        <LinearLayout
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ly.kite.widget.CustomTypefaceTextView
+                android:id="@+id/original_price_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:paddingRight="10dp"
+                android:gravity="center"
+                android:textSize="@dimen/product_overview_price_text"
+                android:textColor="@color/product_overview_original_price_text"/>
+
+            <ly.kite.widget.CustomTypefaceTextView
+                android:id="@+id/price_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:gravity="center"
+                android:textSize="@dimen/product_overview_price_text"
+                android:textColor="@color/product_overview_price_text"
+                style="@style/KiteSDKShadowedText"/>
+
+        </LinearLayout>
+
+    </FrameLayout>
 
 </LinearLayout>

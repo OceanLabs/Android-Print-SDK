@@ -86,7 +86,7 @@ public class SingleDestinationShippingCost implements Parcelable
   ////////// Member Variable(s) //////////
 
   private String                mDestinationCode;
-  private MultipleCurrencyAmount mCost;
+  private MultipleCurrencyAmounts mCost;
 
 
   ////////// Static Initialiser(s) //////////
@@ -97,7 +97,7 @@ public class SingleDestinationShippingCost implements Parcelable
 
   ////////// Constructor(s) //////////
 
-  SingleDestinationShippingCost( String destinationCode, MultipleCurrencyAmount cost )
+  SingleDestinationShippingCost( String destinationCode, MultipleCurrencyAmounts cost )
     {
     mDestinationCode = destinationCode;
     mCost            = cost;
@@ -108,7 +108,7 @@ public class SingleDestinationShippingCost implements Parcelable
   private SingleDestinationShippingCost( Parcel sourceParcel )
     {
     mDestinationCode = sourceParcel.readString();
-    mCost            = (MultipleCurrencyAmount)sourceParcel.readParcelable( MultipleCurrencyAmount.class.getClassLoader() );
+    mCost            = (MultipleCurrencyAmounts)sourceParcel.readParcelable( MultipleCurrencyAmounts.class.getClassLoader() );
     }
 
 
@@ -172,7 +172,7 @@ public class SingleDestinationShippingCost implements Parcelable
    * Returns the cost.
    *
    *****************************************************/
-  public MultipleCurrencyAmount getCost()
+  public MultipleCurrencyAmounts getCost()
     {
     return ( mCost );
     }
@@ -183,7 +183,7 @@ public class SingleDestinationShippingCost implements Parcelable
    * Returns the cost in a currency.
    *
    *****************************************************/
-  public SingleCurrencyAmount getCost( String currencyCode )
+  public SingleCurrencyAmounts getCost( String currencyCode )
     {
     return ( mCost.get( currencyCode ) );
     }

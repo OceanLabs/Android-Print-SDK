@@ -22,7 +22,7 @@ import ly.kite.address.Address;
 import ly.kite.api.AssetUploadRequest;
 import ly.kite.api.SubmitOrderRequest;
 import ly.kite.catalogue.Product;
-import ly.kite.catalogue.SingleCurrencyAmount;
+import ly.kite.catalogue.SingleCurrencyAmounts;
 import ly.kite.image.ImageAgent;
 import ly.kite.image.ImageProcessingRequest;
 import ly.kite.pricing.OrderPricing;
@@ -383,7 +383,7 @@ public class Order implements Parcelable /* , Serializable */
           {
           String preferredCurrencyCode = KiteSDK.getInstance( context ).getLockedCurrencyCode();
 
-          SingleCurrencyAmount orderTotalCost = orderPricing.getTotalCost().getAmountWithFallback( preferredCurrencyCode );
+          SingleCurrencyAmounts orderTotalCost = orderPricing.getTotalCost().getAmountsWithFallback( preferredCurrencyCode );
 
           // construct customer payment object in a round about manner to guarantee 2dp amount value
           StringBuilder builder = new StringBuilder();

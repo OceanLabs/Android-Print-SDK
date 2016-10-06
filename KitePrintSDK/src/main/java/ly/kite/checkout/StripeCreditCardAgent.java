@@ -39,8 +39,6 @@ package ly.kite.checkout;
 
 ///// Import(s) /////
 
-import android.app.Activity;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -53,10 +51,9 @@ import com.stripe.android.model.Token;
 import com.stripe.exception.AuthenticationException;
 
 import ly.kite.KiteSDK;
-import ly.kite.analytics.Analytics;
 import ly.kite.app.IndeterminateProgressDialogFragment;
 import ly.kite.R;
-import ly.kite.catalogue.SingleCurrencyAmount;
+import ly.kite.catalogue.SingleCurrencyAmounts;
 import ly.kite.ordering.Order;
 
 
@@ -84,7 +81,7 @@ public class StripeCreditCardAgent extends ACreditCardDialogFragment implements 
   private Context                 mContext;
   private DefaultPaymentFragment  mPaymentFragment;
   private Order                   mOrder;
-  private SingleCurrencyAmount    mSingleCurrencyAmount;
+  private SingleCurrencyAmounts mSingleCurrencyAmount;
 
 
   ////////// Static Initialiser(s) //////////
@@ -117,7 +114,7 @@ public class StripeCreditCardAgent extends ACreditCardDialogFragment implements 
    *
    *****************************************************/
   @Override
-  public void onPayClicked( Context context, DefaultPaymentFragment paymentFragment, Order order, SingleCurrencyAmount singleCurrencyAmount )
+  public void onPayClicked( Context context, DefaultPaymentFragment paymentFragment, Order order, SingleCurrencyAmounts singleCurrencyAmount )
     {
     mContext              = context;
     mPaymentFragment      = paymentFragment;

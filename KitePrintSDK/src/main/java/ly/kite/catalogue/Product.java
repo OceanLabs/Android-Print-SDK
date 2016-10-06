@@ -116,7 +116,7 @@ public class Product implements IGroupOrProduct, Parcelable
   private UserJourneyType                   mUserJourneyType;
   private int                               mQuantityPerSheet;
 
-  private MultipleCurrencyAmount            mCost;
+  private MultipleCurrencyAmounts mCost;
   private MultipleDestinationShippingCosts  mShippingCosts;
   private URL                               mHeroImageURL;
   private int                               mLabelColour;
@@ -295,7 +295,7 @@ public class Product implements IGroupOrProduct, Parcelable
     mUserJourneyType  = (userJourneyString != null ? UserJourneyType.valueOf( userJourneyString ) : null);
 
     mQuantityPerSheet = sourceParcel.readInt();
-    mCost             = (MultipleCurrencyAmount) sourceParcel.readParcelable( MultipleCurrencyAmount.class.getClassLoader() );
+    mCost             = (MultipleCurrencyAmounts) sourceParcel.readParcelable( MultipleCurrencyAmounts.class.getClassLoader() );
     mShippingCosts    = (MultipleDestinationShippingCosts) sourceParcel.readParcelable( MultipleDestinationShippingCosts.class.getClassLoader() );
     mHeroImageURL     = (URL) sourceParcel.readSerializable();
     mLabelColour      = sourceParcel.readInt();
@@ -534,6 +534,17 @@ public class Product implements IGroupOrProduct, Parcelable
     }
 
 
+  /*****************************************************
+   *
+   * Returns a display price.
+   *
+   *****************************************************/
+  public String getDisplayOriginalPriceMultipliedBy( String preferredCurrency, int quantity )
+    {
+    return ( mCost.getDisplayOriginalAmountWithFallbackMultipliedBy( preferredCurrency, quantity ) );
+    }
+
+
   ////////// Method(s) //////////
 
   /*****************************************************
@@ -563,7 +574,7 @@ public class Product implements IGroupOrProduct, Parcelable
    * Sets the cost.
    *
    *****************************************************/
-  Product setCost( MultipleCurrencyAmount cost )
+  Product setCost( MultipleCurrencyAmounts cost )
     {
     mCost = cost;
 
@@ -854,9 +865,9 @@ public class Product implements IGroupOrProduct, Parcelable
    * if the cost is not known in the requested currency.
    *
    *****************************************************/
-  public SingleCurrencyAmount getCostWithFallback( String preferredCurrencyCode )
+  public SingleCurrencyAmounts getCostWithFallback( String preferredCurrencyCode )
     {
-    return ( mCost.getAmountWithFallback( preferredCurrencyCode ) );
+    return ( mCost.getAmountsWithFallback( preferredCurrencyCode ) );
     }
 
 
@@ -865,7 +876,7 @@ public class Product implements IGroupOrProduct, Parcelable
    * Returns the cost in the currency for the supplied locale,
    *
    *****************************************************/
-  public SingleCurrencyAmount getCostWithFallback( Locale locale )
+  public SingleCurrencyAmounts getCostWithFallback( Locale locale )
     {
     return ( mCost.getAmountWithFallback( Currency.getInstance( locale ) ) );
     }
@@ -876,7 +887,7 @@ public class Product implements IGroupOrProduct, Parcelable
    * Returns the cost in multiple currencies.
    *
    *****************************************************/
-  public MultipleCurrencyAmount getCost()
+  public MultipleCurrencyAmounts getCost()
     {
     return ( mCost );
     }
@@ -889,7 +900,7 @@ public class Product implements IGroupOrProduct, Parcelable
    *****************************************************/
   public BigDecimal getCost( String currencyCode )
     {
-    SingleCurrencyAmount cost = mCost.get( currencyCode );
+    SingleCurrencyAmounts cost = mCost.get( currencyCode );
 
     if ( cost == null )
       {
@@ -916,7 +927,7 @@ public class Product implements IGroupOrProduct, Parcelable
    * Returns the shipping cost to a destination country.
    *
    *****************************************************/
-  public MultipleCurrencyAmount getShippingCost( Country country )
+  public MultipleCurrencyAmounts getShippingCost( Country country )
     {
     SingleDestinationShippingCost shippingCost = mShippingCosts.getCost( country );
 

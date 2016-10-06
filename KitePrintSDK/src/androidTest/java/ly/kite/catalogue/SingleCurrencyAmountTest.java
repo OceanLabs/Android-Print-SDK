@@ -40,7 +40,6 @@ package ly.kite.catalogue;
 ///// Import(s) /////
 
 import android.os.Parcel;
-import android.util.Log;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
@@ -92,7 +91,7 @@ public class SingleCurrencyAmountTest extends TestCase
     {
     try
       {
-      SingleCurrencyAmount amount = new SingleCurrencyAmount( null, BigDecimal.valueOf( 23.20 ) );
+      SingleCurrencyAmounts amount = new SingleCurrencyAmounts( null, BigDecimal.valueOf( 23.20 ) );
 
       Assert.fail();
       }
@@ -105,7 +104,7 @@ public class SingleCurrencyAmountTest extends TestCase
     {
     try
       {
-      SingleCurrencyAmount amount = new SingleCurrencyAmount( Currency.getInstance( "GBP" ), null );
+      SingleCurrencyAmounts amount = new SingleCurrencyAmounts( Currency.getInstance( "GBP" ), null );
 
       Assert.fail();
       }
@@ -116,7 +115,7 @@ public class SingleCurrencyAmountTest extends TestCase
 
   public void testConstructor3()
     {
-    SingleCurrencyAmount amount = new SingleCurrencyAmount( Currency.getInstance( "GBP" ), BigDecimal.valueOf( 23.20 ), null );
+    SingleCurrencyAmounts amount = new SingleCurrencyAmounts( Currency.getInstance( "GBP" ), BigDecimal.valueOf( 23.20 ), null, null );
 
     Assert.assertEquals( "GBP", amount.getCurrencyCode() );
     Assert.assertEquals( 23.20, amount.getAmountAsDouble() );
@@ -125,7 +124,7 @@ public class SingleCurrencyAmountTest extends TestCase
 
   public void testConstructor4()
     {
-    SingleCurrencyAmount amount = new SingleCurrencyAmount( Currency.getInstance( "GBP" ), BigDecimal.valueOf( 23.20 ), "$23.40" );
+    SingleCurrencyAmounts amount = new SingleCurrencyAmounts( Currency.getInstance( "GBP" ), BigDecimal.valueOf( 23.20 ), "$23.40" );
 
     Assert.assertEquals( "GBP", amount.getCurrencyCode() );
     Assert.assertEquals( 23.20, amount.getAmountAsDouble() );
@@ -142,14 +141,14 @@ public class SingleCurrencyAmountTest extends TestCase
 
   public void testParcel1()
     {
-    SingleCurrencyAmount writeAmount = new SingleCurrencyAmount( Currency.getInstance( "USD" ), BigDecimal.valueOf( 4.99 ) );
+    SingleCurrencyAmounts writeAmount = new SingleCurrencyAmounts( Currency.getInstance( "USD" ), BigDecimal.valueOf( 4.99 ) );
 
     Parcel parcel = Parcel.obtain();
 
     writeAmount.writeToParcel( parcel, 0 );
 
     parcel.setDataPosition( 0 );
-    SingleCurrencyAmount readAmount = new SingleCurrencyAmount( parcel );
+    SingleCurrencyAmounts readAmount = new SingleCurrencyAmounts( parcel );
 
     Assert.assertEquals( "USD", readAmount.getCurrencyCode() );
     Assert.assertEquals( 4.99,  readAmount.getAmountAsDouble() );
@@ -160,14 +159,14 @@ public class SingleCurrencyAmountTest extends TestCase
 
   public void testParcel2()
     {
-    SingleCurrencyAmount writeAmount = new SingleCurrencyAmount( Currency.getInstance( "USD" ), BigDecimal.valueOf( 4.99 ), "£12.99" );
+    SingleCurrencyAmounts writeAmount = new SingleCurrencyAmounts( Currency.getInstance( "USD" ), BigDecimal.valueOf( 4.99 ), "£12.99" );
 
     Parcel parcel = Parcel.obtain();
 
     writeAmount.writeToParcel( parcel, 0 );
 
     parcel.setDataPosition( 0 );
-    SingleCurrencyAmount readAmount = new SingleCurrencyAmount( parcel );
+    SingleCurrencyAmounts readAmount = new SingleCurrencyAmounts( parcel );
 
     Assert.assertEquals( "USD",    readAmount.getCurrencyCode() );
     Assert.assertEquals( 4.99,     readAmount.getAmountAsDouble() );
@@ -185,7 +184,7 @@ public class SingleCurrencyAmountTest extends TestCase
 
   public void testZero1()
     {
-    SingleCurrencyAmount amount = new SingleCurrencyAmount( Currency.getInstance( "AUD" ), BigDecimal.valueOf( 12.49 ) );
+    SingleCurrencyAmounts amount = new SingleCurrencyAmounts( Currency.getInstance( "AUD" ), BigDecimal.valueOf( 12.49 ) );
 
     Assert.assertFalse( amount.isZero() );
     Assert.assertTrue( amount.isNonZero() );
@@ -193,7 +192,7 @@ public class SingleCurrencyAmountTest extends TestCase
 
   public void testZero2()
     {
-    SingleCurrencyAmount amount = new SingleCurrencyAmount( Currency.getInstance( "AUD" ), BigDecimal.valueOf( 0.00 ) );
+    SingleCurrencyAmounts amount = new SingleCurrencyAmounts( Currency.getInstance( "AUD" ), BigDecimal.valueOf( 0.00 ) );
 
     Assert.assertTrue( amount.isZero() );
     Assert.assertFalse( amount.isNonZero() );
@@ -208,14 +207,14 @@ public class SingleCurrencyAmountTest extends TestCase
 
   public void testDisplayAmount1()
     {
-    SingleCurrencyAmount amount = new SingleCurrencyAmount( Currency.getInstance( "AUD" ), BigDecimal.valueOf( 12.49 ) );
+    SingleCurrencyAmounts amount = new SingleCurrencyAmounts( Currency.getInstance( "AUD" ), BigDecimal.valueOf( 12.49 ) );
 
     Assert.assertEquals( "AUD 12.49", amount.getDisplayAmountForLocale( null ) );
     }
 
   public void testDisplayAmount2()
     {
-    SingleCurrencyAmount amount = new SingleCurrencyAmount( Currency.getInstance( "AUD" ), BigDecimal.valueOf( 12.49 ) );
+    SingleCurrencyAmounts amount = new SingleCurrencyAmounts( Currency.getInstance( "AUD" ), BigDecimal.valueOf( 12.49 ) );
 
     Locale locale = new Locale( "en", "AU" );
 
@@ -224,7 +223,7 @@ public class SingleCurrencyAmountTest extends TestCase
 
   public void testDisplayAmount3()
     {
-    SingleCurrencyAmount amount = new SingleCurrencyAmount( Currency.getInstance( "SEK" ), BigDecimal.valueOf( 4.79 ) );
+    SingleCurrencyAmounts amount = new SingleCurrencyAmounts( Currency.getInstance( "SEK" ), BigDecimal.valueOf( 4.79 ) );
 
     Locale locale = new Locale( "sv", "SE" );
 
@@ -234,7 +233,7 @@ public class SingleCurrencyAmountTest extends TestCase
 
   public void testDisplayAmount4()
     {
-    SingleCurrencyAmount amount = new SingleCurrencyAmount( Currency.getInstance( "SEK" ), BigDecimal.valueOf( 4.79 ) );
+    SingleCurrencyAmounts amount = new SingleCurrencyAmounts( Currency.getInstance( "SEK" ), BigDecimal.valueOf( 4.79 ) );
 
     Locale locale = new Locale( "no", "NO" );
 
@@ -243,7 +242,7 @@ public class SingleCurrencyAmountTest extends TestCase
 
   public void testDisplayAmount5()
     {
-    SingleCurrencyAmount amount = new SingleCurrencyAmount( Currency.getInstance( "GBP" ), BigDecimal.valueOf( 2.99 ) );
+    SingleCurrencyAmounts amount = new SingleCurrencyAmounts( Currency.getInstance( "GBP" ), BigDecimal.valueOf( 2.99 ) );
 
     Locale locale = new Locale( "en", "GB" );
 
@@ -252,7 +251,7 @@ public class SingleCurrencyAmountTest extends TestCase
 
   public void testDisplayAmount6()
     {
-    SingleCurrencyAmount amount = new SingleCurrencyAmount( Currency.getInstance( "GBP" ), BigDecimal.valueOf( 2.99 ) );
+    SingleCurrencyAmounts amount = new SingleCurrencyAmounts( Currency.getInstance( "GBP" ), BigDecimal.valueOf( 2.99 ) );
 
     Locale locale = new Locale( "en", "US" );
 
@@ -262,7 +261,7 @@ public class SingleCurrencyAmountTest extends TestCase
   // Unsupported locale
   public void testDisplayAmount7()
     {
-    SingleCurrencyAmount amount = new SingleCurrencyAmount( Currency.getInstance( "GBP" ), BigDecimal.valueOf( 2.99 ) );
+    SingleCurrencyAmounts amount = new SingleCurrencyAmounts( Currency.getInstance( "GBP" ), BigDecimal.valueOf( 2.99 ) );
 
     Locale locale = new Locale( "en", "ZZ" );
 
