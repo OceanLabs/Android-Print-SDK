@@ -218,6 +218,9 @@ public class ChooseProductFragment extends AGroupOrProductFragment
   @Override
   public void onCatalogueSuccess( Catalogue catalogue )
     {
+    super.onCatalogueSuccess( catalogue );
+
+
     // Try and find a product list
 
     mProductList = catalogue.getProductsForGroup( mProductGroupLabel );

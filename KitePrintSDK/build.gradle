@@ -4,7 +4,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.0'
+        classpath 'com.android.tools.build:gradle:2.2.1'
     }
 }
 
@@ -20,7 +20,7 @@ android {
     useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
-        minSdkVersion 15
+        minSdkVersion 14
         targetSdkVersion 24
         versionName '1.0'
         versionCode 100
@@ -47,8 +47,6 @@ dependencies {
     compile 'com.stripe:stripe-android:1.0.4'
     compile 'ly.kite:photo-picker:1.1.4'
     compile 'ly.kite:instagram-photo-picker:1.2.3'
-    //compile project(':FacebookPhotoPicker')
-    compile 'ly.kite:facebook-photo-picker:5.5.4'
 }
 
 // Exclude PayPal card scanning libs from package

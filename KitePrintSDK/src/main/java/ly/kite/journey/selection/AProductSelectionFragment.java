@@ -41,6 +41,7 @@ package ly.kite.journey.selection;
 
 import android.app.Activity;
 
+import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.ICatalogueConsumer;
 import ly.kite.journey.AKiteFragment;
 
@@ -66,6 +67,8 @@ abstract public class AProductSelectionFragment extends AKiteFragment implements
 
   ////////// Member Variable(s) //////////
 
+  protected Catalogue  mCatalogue;
+
 
   ////////// Static Initialiser(s) //////////
 
@@ -77,6 +80,20 @@ abstract public class AProductSelectionFragment extends AKiteFragment implements
 
 
   ////////// CatalogueLoader.ICatalogueConsumer Method(s) //////////
+
+  ////////// ICatalogueConsumer Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when the sync completes successfully.
+   *
+   *****************************************************/
+  @Override
+  public void onCatalogueSuccess( Catalogue catalogue )
+    {
+    mCatalogue = catalogue;
+    }
+
 
   /*****************************************************
    *

@@ -54,13 +54,17 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.AdapterView;
+import android.widget.TextView;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
+import ly.kite.catalogue.Catalogue;
 import ly.kite.journey.selection.ICatalogueHolder;
 import ly.kite.ordering.OrderingDataAgent;
 import ly.kite.journey.basket.BasketActivity;
+import ly.kite.widget.LabelledImageView;
 
 
 ///// Class Declaration /////
@@ -371,6 +375,50 @@ abstract public class AKiteFragment extends Fragment
 
 
     return ( new BitmapDrawable( resources, targetBitmap ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets a theme colour.
+   *
+   *****************************************************/
+  protected void setThemeColour( int themeColour, LabelledImageView labelledImageView )
+    {
+    if ( themeColour != Catalogue.NO_THEME_COLOUR && labelledImageView != null )
+      {
+      labelledImageView.setForcedLabelColour( themeColour );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Sets a theme colour.
+   *
+   *****************************************************/
+  protected void setThemeColour( int themeColour, View view )
+    {
+    if ( themeColour != Catalogue.NO_THEME_COLOUR && view != null )
+      {
+      view.setBackgroundColor( themeColour );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Sets a theme colour.
+   *
+   *****************************************************/
+  protected void setThemeColour( int themeColour, View contentView, int viewId )
+    {
+    if ( contentView != null )
+      {
+      View view = contentView.findViewById( viewId );
+
+      setThemeColour( themeColour, view );
+      }
     }
 
 

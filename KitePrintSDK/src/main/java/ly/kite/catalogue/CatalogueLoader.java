@@ -855,7 +855,11 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
           {
           ///// User config data /////
 
-          catalogue.setUserConfigData( jsonData.getJSONObject( topLevelKey ) );
+          JSONObject userConfigData = jsonData.getJSONObject( topLevelKey );
+
+          Log.i( LOG_TAG, "Storing user config data: " + userConfigData.toString() );
+
+          catalogue.setUserConfigData( userConfigData );
           }
 
         else if ( topLevelKey.equals( JSON_NAME_PRODUCT_ARRAY ) )

@@ -378,6 +378,9 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
   @Override
   public void onCatalogueSuccess( Catalogue catalogue )
     {
+    super.onCatalogueSuccess( catalogue );
+
+
     // Now we have the catalogue, we can get try and get the
     // product from its id.
 
@@ -727,9 +730,15 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
       }
 
 
+    // Buttons
+
+
     if ( mProceedOverlayButton != null )
       {
       mProceedOverlayButton.setText( R.string.product_overview_start_button_text );
+
+      // Set any theme colour
+      setThemeColour( mCatalogue.getPrimaryThemeColour(), mProceedOverlayButton );
 
       mProceedOverlayButton.setOnClickListener( this );
       }
@@ -737,9 +746,24 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
 
     mProductImageViewPager.setOnClickListener( this );
 
-    if ( mDrawerControlLayout != null ) mDrawerControlLayout.setOnClickListener( this );
 
-    if ( mOverlaidStartButton != null ) mOverlaidStartButton.setOnClickListener( this );
+    // Set any theme colour
+    setThemeColour( mCatalogue.getSecondaryThemeColour(), mContentView, R.id.drawer_control_themable_view );
+
+
+    if ( mDrawerControlLayout != null )
+      {
+      mDrawerControlLayout.setOnClickListener( this );
+      }
+
+
+    if ( mOverlaidStartButton != null )
+      {
+      // Set any theme colour
+      setThemeColour( mCatalogue.getPrimaryThemeColour(), mOverlaidStartButton );
+
+      mOverlaidStartButton.setOnClickListener( this );
+      }
     }
 
 

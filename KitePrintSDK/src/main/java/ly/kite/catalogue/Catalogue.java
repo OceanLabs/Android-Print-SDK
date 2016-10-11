@@ -74,6 +74,8 @@ public class Catalogue
 
   static private final boolean   DISPLAY_PRODUCT_GROUPS = false;
 
+  static public  final int       NO_THEME_COLOUR        = 0x000000;
+
 
   ////////// Static Variable(s) //////////
 
@@ -188,6 +190,30 @@ public class Catalogue
   public JSONObject getCustomObject( String name )
     {
     return ( mCustomDataTable.get( name ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the primary theme colour.
+   *
+   *****************************************************/
+  public int getPrimaryThemeColour()
+    {
+    // TODO: Extract theme colour from user config
+    return ( NO_THEME_COLOUR );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the secondary theme colour.
+   *
+   *****************************************************/
+  public int getSecondaryThemeColour()
+    {
+    // TODO: Extract theme colour from user config
+    return ( NO_THEME_COLOUR );
     }
 
 

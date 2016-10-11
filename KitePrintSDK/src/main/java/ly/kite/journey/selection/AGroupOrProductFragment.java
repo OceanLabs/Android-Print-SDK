@@ -57,6 +57,7 @@ import java.util.List;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
+import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.IGroupOrProduct;
 import ly.kite.widget.HeaderFooterGridView;
 import ly.kite.widget.LabelledImageView;
@@ -418,6 +419,9 @@ abstract public class AGroupOrProductFragment extends AProductSelectionFragment 
         if ( groupOrProduct != null )
           {
           ///// Group / Product image /////
+
+          // Set any theme colour
+          setThemeColour( mCatalogue.getPrimaryThemeColour(), this.productImageView );
 
           this.productImageView.setImageAnchorGravity( groupOrProduct.getDisplayImageAnchorGravity( mContext ) );
           this.productImageView.setLabel( groupOrProduct.getDisplayLabel(), groupOrProduct.getDisplayLabelColour() );

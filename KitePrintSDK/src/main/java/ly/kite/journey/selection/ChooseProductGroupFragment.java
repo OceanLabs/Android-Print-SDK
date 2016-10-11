@@ -176,6 +176,9 @@ public class ChooseProductGroupFragment extends AGroupOrProductFragment
   @Override
   public void onCatalogueSuccess( Catalogue catalogue )
     {
+    super.onCatalogueSuccess( catalogue );
+
+
     mProductGroupList = catalogue.getProductGroupList();
 
 
