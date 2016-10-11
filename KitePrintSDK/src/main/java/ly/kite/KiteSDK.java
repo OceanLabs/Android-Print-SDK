@@ -46,7 +46,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
-import java.util.Vector;
 
 import android.app.Activity;
 import android.content.Context;
@@ -62,7 +61,7 @@ import com.paypal.android.sdk.payments.PayPalConfiguration;
 import ly.kite.address.Address;
 import ly.kite.address.Country;
 import ly.kite.catalogue.Catalogue;
-import ly.kite.catalogue.MultipleCurrencyAmount;
+import ly.kite.catalogue.MultipleCurrencyAmounts;
 import ly.kite.catalogue.Product;
 import ly.kite.ordering.OrderingDataAgent;
 import ly.kite.catalogue.CatalogueLoader;
@@ -1099,7 +1098,7 @@ public class KiteSDK
 
     if ( someProduct != null )
       {
-      MultipleCurrencyAmount cost = someProduct.getCost();
+      MultipleCurrencyAmounts cost = someProduct.getCost();
 
       Set<String> availableCurrencyCodeSet = cost.getAllCurrencyCodes();
 
@@ -1119,7 +1118,7 @@ public class KiteSDK
         ///// PayPal /////
 
         // Pick the best currency
-        lockedCurrencyCode = chooseBestCurrency( localCurrency.getCurrencyCode(), MultipleCurrencyAmount.FALLBACK_CURRENCY_CODES, payPalSupportedCurrencyCodeList );
+        lockedCurrencyCode = chooseBestCurrency( localCurrency.getCurrencyCode(), MultipleCurrencyAmounts.FALLBACK_CURRENCY_CODES, payPalSupportedCurrencyCodeList );
 
         setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_PAYPAL_PAYMENTS_AVAILABLE, true );
         }

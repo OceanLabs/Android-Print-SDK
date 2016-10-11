@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.journey;
+package ly.kite.sample;
 
 
 ///// Import(s) /////

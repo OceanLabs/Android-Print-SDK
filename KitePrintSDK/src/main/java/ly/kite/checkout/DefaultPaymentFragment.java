@@ -54,9 +54,8 @@ import com.paypal.android.sdk.payments.ShippingAddress;
 
 import ly.kite.KiteSDK;
 import ly.kite.address.Address;
-import ly.kite.analytics.Analytics;
-import ly.kite.catalogue.MultipleCurrencyAmount;
-import ly.kite.catalogue.SingleCurrencyAmount;
+import ly.kite.catalogue.MultipleCurrencyAmounts;
+import ly.kite.catalogue.SingleCurrencyAmounts;
 import ly.kite.R;
 
 
@@ -336,13 +335,13 @@ public class DefaultPaymentFragment extends APaymentFragment
    * Returns the total cost in the locked currency.
    *
    *****************************************************/
-  private SingleCurrencyAmount getTotalCost()
+  private SingleCurrencyAmounts getTotalCost()
     {
-    MultipleCurrencyAmount totalCostMultiple = mOrderPricing.getTotalCost();
+    MultipleCurrencyAmounts totalCostMultiple = mOrderPricing.getTotalCost();
 
     if ( totalCostMultiple == null ) return ( null );
 
-    return ( totalCostMultiple.getAmountWithFallback( KiteSDK.getInstance( getActivity() ).getLockedCurrencyCode() ) );
+    return ( totalCostMultiple.getAmountsWithFallback( KiteSDK.getInstance( getActivity() ).getLockedCurrencyCode() ) );
     }
 
 
@@ -380,7 +379,7 @@ public class DefaultPaymentFragment extends APaymentFragment
    *****************************************************/
   public void onPayPalButtonClicked( View view )
     {
-    SingleCurrencyAmount totalCost = getTotalCost();
+    SingleCurrencyAmounts totalCost = getTotalCost();
 
     if ( totalCost != null )
       {

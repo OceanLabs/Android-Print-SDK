@@ -210,12 +210,12 @@ public class ProductGroup implements IGroupOrProduct
       }
 
 
-    SingleCurrencyAmount lowestSingleCurrencyCost = null;
+    SingleCurrencyAmounts lowestSingleCurrencyCost = null;
 
     for ( Product product : mProductList )
       {
-      MultipleCurrencyAmount candidateCost               = product.getCost();
-      SingleCurrencyAmount   candidateSingleCurrencyCost = candidateCost.get( currencyCode );
+      MultipleCurrencyAmounts candidateCost               = product.getCost();
+      SingleCurrencyAmounts candidateSingleCurrencyCost = candidateCost.get( currencyCode );
 
       // See if this is the lowest cost
       if ( candidateSingleCurrencyCost != null &&
@@ -254,7 +254,7 @@ public class ProductGroup implements IGroupOrProduct
 
     // Try the fallback currencies
 
-    for ( String fallbackCurrencyCode : MultipleCurrencyAmount.FALLBACK_CURRENCY_CODES )
+    for ( String fallbackCurrencyCode : MultipleCurrencyAmounts.FALLBACK_CURRENCY_CODES )
       {
       if ( currencyIsSupportedByAllProducts( fallbackCurrencyCode ) ) return ( fallbackCurrencyCode );
       }
@@ -276,7 +276,7 @@ public class ProductGroup implements IGroupOrProduct
 
     for ( Product product : mProductList )
       {
-      MultipleCurrencyAmount multipleCurrencyCost = product.getCost();
+      MultipleCurrencyAmounts multipleCurrencyCost = product.getCost();
 
       if ( multipleCurrencyCost.get( currencyCode ) == null ) return ( false );
       }

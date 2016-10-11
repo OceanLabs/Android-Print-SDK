@@ -55,8 +55,8 @@ import java.util.Locale;
 import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.pricing.OrderPricing;
-import ly.kite.catalogue.MultipleCurrencyAmount;
-import ly.kite.catalogue.SingleCurrencyAmount;
+import ly.kite.catalogue.MultipleCurrencyAmounts;
+import ly.kite.catalogue.SingleCurrencyAmounts;
 
 
 ///// Class Declaration /////
@@ -133,7 +133,7 @@ public class OrderPricingAdaptor extends BaseAdapter
       {
       String description = lineItem.getDescription();
 
-      MultipleCurrencyAmount itemCost = lineItem.getProductCost();
+      MultipleCurrencyAmounts itemCost = lineItem.getProductCost();
 
       String itemCostString = itemCost.getDefaultDisplayAmountWithFallback();
 
@@ -143,12 +143,12 @@ public class OrderPricingAdaptor extends BaseAdapter
 
     ///// Shipping
 
-    MultipleCurrencyAmount shippingCost = pricing.getTotalShippingCost();
-    SingleCurrencyAmount   shippingCostInSingleCurrency;
+    MultipleCurrencyAmounts shippingCost = pricing.getTotalShippingCost();
+    SingleCurrencyAmounts shippingCostInSingleCurrency;
     String                 shippingCostString;
 
     if ( shippingCost != null &&
-         ( shippingCostInSingleCurrency = shippingCost.getAmountWithFallback( preferredCurrencyCode ) ) != null &&
+         ( shippingCostInSingleCurrency = shippingCost.getAmountsWithFallback( preferredCurrencyCode ) ) != null &&
          shippingCostInSingleCurrency.getAmount().compareTo( BigDecimal.ZERO ) > 0 )
       {
       shippingCostString = shippingCostInSingleCurrency.getDisplayAmountForLocale( defaultLocale );
@@ -163,11 +163,11 @@ public class OrderPricingAdaptor extends BaseAdapter
 
     ///// Promo code
 
-    MultipleCurrencyAmount promoDiscount = pricing.getPromoCodeDiscount();
+    MultipleCurrencyAmounts promoDiscount = pricing.getPromoCodeDiscount();
 
     if ( promoDiscount != null )
       {
-      SingleCurrencyAmount promoDiscountInSingleCurrency = promoDiscount.getAmountWithFallback( preferredCurrencyCode );
+      SingleCurrencyAmounts promoDiscountInSingleCurrency = promoDiscount.getAmountsWithFallback( preferredCurrencyCode );
 
       if ( promoDiscountInSingleCurrency != null &&
            promoDiscountInSingleCurrency.getAmount().compareTo( BigDecimal.ZERO ) > 0 )
@@ -179,11 +179,11 @@ public class OrderPricingAdaptor extends BaseAdapter
 
     ///// Total
 
-    MultipleCurrencyAmount totalCost = pricing.getTotalCost();
+    MultipleCurrencyAmounts totalCost = pricing.getTotalCost();
 
     if ( totalCost != null )
       {
-      SingleCurrencyAmount totalCostInSingleCurrency = totalCost.getAmountWithFallback( preferredCurrencyCode );
+      SingleCurrencyAmounts totalCostInSingleCurrency = totalCost.getAmountsWithFallback( preferredCurrencyCode );
 
       mItemList.add( new Item( mContext.getString( R.string.Total ), totalCostInSingleCurrency.getDisplayAmountForLocale( defaultLocale ), true ) );
       }

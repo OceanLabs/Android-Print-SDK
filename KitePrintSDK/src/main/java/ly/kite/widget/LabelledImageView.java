@@ -304,6 +304,19 @@ public class LabelledImageView extends AAREImageContainerFrame implements IImage
 
   /*****************************************************
    *
+   * Forces the label background colour.
+   *
+   *****************************************************/
+  public void setForcedLabelColour( int colour )
+    {
+    mForcedLabelColour = colour;
+
+    mOverlayLabel.setBackgroundColor( colour );
+    }
+
+
+  /*****************************************************
+   *
    * Sets the label text.
    *
    *****************************************************/

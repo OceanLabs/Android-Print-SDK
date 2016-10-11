@@ -234,7 +234,6 @@
     <string name="basket_right_button_text">Check-out</string>
     <string name="feedback_email_recipient"></string>
     <string name="photobook_instructions"><b>Tap</b> image pour modifier,\n<b>Maintenez</b> de commander à nouveau.</string>
-    <string name="product_shipping_format_string"></string>
     <string name="progress_dialog_title_add_to_basket">Ajout au panier</string>
     <string name="progress_dialog_title_updating_basket">Mise à jour panier</string>
     <string name="review_and_edit_title_format_string"></string>

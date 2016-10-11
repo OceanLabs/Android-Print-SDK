@@ -79,15 +79,27 @@
         android:layout_width="@dimen/basket_price_column_width"
         android:layout_height="fill_parent">
 
-        <ly.kite.widget.CustomTypefaceTextView
-            android:id="@+id/price_text_view"
-            android:layout_marginRight="@dimen/basket_order_frame_padding"
+        <LinearLayout
             android:layout_gravity="right|center_vertical"
+            android:layout_marginRight="@dimen/basket_order_frame_padding"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="@dimen/basket_item_price_size"
-            android:textColor="@color/basket_item_price_text"/>
+            android:orientation="vertical">
+            <ly.kite.widget.CustomTypefaceTextView
+                android:id="@+id/original_price_text_view"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="@dimen/basket_item_price_size"
+                android:textColor="@color/basket_item_original_price_text"/>
+            <ly.kite.widget.CustomTypefaceTextView
+                android:id="@+id/price_text_view"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="@dimen/basket_item_price_size"
+                android:textColor="@color/basket_item_price_text"/>
+        </LinearLayout>
 
     </FrameLayout>
 

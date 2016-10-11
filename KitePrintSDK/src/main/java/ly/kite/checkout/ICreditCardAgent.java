@@ -39,11 +39,10 @@ package ly.kite.checkout;
 
 ///// Import(s) /////
 
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 
-import ly.kite.catalogue.SingleCurrencyAmount;
+import ly.kite.catalogue.SingleCurrencyAmounts;
 import ly.kite.ordering.Order;
 
 
@@ -74,7 +73,7 @@ public interface ICreditCardAgent
    * credit card payment button.
    *
    *****************************************************/
-  public void onPayClicked( Context context, DefaultPaymentFragment paymentFragment, Order order, SingleCurrencyAmount singleCurrencyAmount );
+  public void onPayClicked( Context context, DefaultPaymentFragment paymentFragment, Order order, SingleCurrencyAmounts singleCurrencyAmount );
 
 
   /*****************************************************

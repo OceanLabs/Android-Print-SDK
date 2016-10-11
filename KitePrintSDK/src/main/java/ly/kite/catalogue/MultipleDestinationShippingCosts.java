@@ -169,7 +169,7 @@ public class MultipleDestinationShippingCosts implements Parcelable
    * currencies.
    *
    *****************************************************/
-  public void add( String destinationCode, MultipleCurrencyAmount cost )
+  public void add( String destinationCode, MultipleCurrencyAmounts cost )
     {
     add( new SingleDestinationShippingCost( destinationCode, cost ) );
     }
@@ -234,7 +234,7 @@ public class MultipleDestinationShippingCosts implements Parcelable
    * Returns the shipping cost for a destination.
    *
    *****************************************************/
-  public MultipleCurrencyAmount getCost( String destinationCode )
+  public MultipleCurrencyAmounts getCost( String destinationCode )
     {
     return ( mDestinationCostTable.get( destinationCode ).getCost() );
     }

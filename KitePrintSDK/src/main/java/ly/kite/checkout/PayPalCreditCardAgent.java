@@ -42,9 +42,7 @@ package ly.kite.checkout;
 
 ///// Class Declaration /////
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -57,8 +55,7 @@ import io.card.payment.CardIOActivity;
 import io.card.payment.CreditCard;
 import ly.kite.KiteSDK;
 import ly.kite.R;
-import ly.kite.analytics.Analytics;
-import ly.kite.catalogue.SingleCurrencyAmount;
+import ly.kite.catalogue.SingleCurrencyAmounts;
 import ly.kite.ordering.Order;
 import ly.kite.payment.PayPalCard;
 import ly.kite.payment.PayPalCardChargeListener;
@@ -87,7 +84,7 @@ public class PayPalCreditCardAgent implements ICreditCardAgent
   private Context                 mContext;
   private DefaultPaymentFragment  mPaymentFragment;
   private Order                   mOrder;
-  private SingleCurrencyAmount    mSingleCurrencyAmount;
+  private SingleCurrencyAmounts mSingleCurrencyAmount;
 
 
   ////////// Static Initialiser(s) //////////
@@ -120,7 +117,7 @@ public class PayPalCreditCardAgent implements ICreditCardAgent
    *
    *****************************************************/
   @Override
-  public void onPayClicked( Context context, DefaultPaymentFragment paymentFragment, Order order, SingleCurrencyAmount singleCurrencyAmount )
+  public void onPayClicked( Context context, DefaultPaymentFragment paymentFragment, Order order, SingleCurrencyAmounts singleCurrencyAmount )
     {
     mContext              = context;
     mPaymentFragment      = paymentFragment;

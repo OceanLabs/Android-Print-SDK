@@ -50,7 +50,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import ly.kite.catalogue.MultipleCurrencyAmount;
+import ly.kite.catalogue.MultipleCurrencyAmounts;
 
 
 ///// Class Declaration /////
@@ -105,12 +105,12 @@ public class OrderPricing implements Parcelable
   private JSONObject              mOrderPricingJSONObject;
 
   private String                  mPromoCodeInvalidMessage;
-  private MultipleCurrencyAmount  mPromoCodeDiscount;
+  private MultipleCurrencyAmounts mPromoCodeDiscount;
 
   private ArrayList<LineItem>     mLineItemArrayList;
-  private MultipleCurrencyAmount  mTotalProductCost;
-  private MultipleCurrencyAmount  mTotalCost;
-  private MultipleCurrencyAmount  mTotalShippingCost;
+  private MultipleCurrencyAmounts mTotalProductCost;
+  private MultipleCurrencyAmounts mTotalCost;
+  private MultipleCurrencyAmounts mTotalShippingCost;
 
 
   ////////// Static Initialiser(s) //////////
@@ -149,7 +149,7 @@ public class OrderPricing implements Parcelable
    * currency amount is null.
    *
    *****************************************************/
-  static private boolean currencyCanBeUsed( MultipleCurrencyAmount multipleCurrencyAmount, String currencyCode )
+  static private boolean currencyCanBeUsed( MultipleCurrencyAmounts multipleCurrencyAmount, String currencyCode )
     {
     return ( multipleCurrencyAmount == null || multipleCurrencyAmount.contains( currencyCode ) );
     }
@@ -242,7 +242,7 @@ public class OrderPricing implements Parcelable
 
       try
         {
-        mPromoCodeDiscount = new MultipleCurrencyAmount( promoCodeJSONObject.getJSONObject( JSON_NAME_DISCOUNT ) );
+        mPromoCodeDiscount = new MultipleCurrencyAmounts( promoCodeJSONObject.getJSONObject( JSON_NAME_DISCOUNT ) );
         }
       catch ( Exception exception )
         {
@@ -263,9 +263,9 @@ public class OrderPricing implements Parcelable
       }
 
 
-    mTotalProductCost  = new MultipleCurrencyAmount( totalProductCostJSONObject );
-    mTotalCost         = new MultipleCurrencyAmount( totalJSONObject );
-    mTotalShippingCost = new MultipleCurrencyAmount( totalShippingCostJSONObject );
+    mTotalProductCost  = new MultipleCurrencyAmounts( totalProductCostJSONObject );
+    mTotalCost         = new MultipleCurrencyAmounts( totalJSONObject );
+    mTotalShippingCost = new MultipleCurrencyAmounts( totalShippingCostJSONObject );
     }
 
 
@@ -297,7 +297,7 @@ public class OrderPricing implements Parcelable
       }
 
     mPromoCodeInvalidMessage = parcel.readString();
-    mPromoCodeDiscount       = (MultipleCurrencyAmount)parcel.readParcelable( MultipleCurrencyAmount.class.getClassLoader() );
+    mPromoCodeDiscount       = (MultipleCurrencyAmounts)parcel.readParcelable( MultipleCurrencyAmounts.class.getClassLoader() );
 
 
     // Read the line items
@@ -312,9 +312,9 @@ public class OrderPricing implements Parcelable
       }
 
 
-    mTotalProductCost      = (MultipleCurrencyAmount)parcel.readParcelable( MultipleCurrencyAmount.class.getClassLoader() );
-    mTotalCost             = (MultipleCurrencyAmount)parcel.readParcelable( MultipleCurrencyAmount.class.getClassLoader() );
-    mTotalShippingCost     = (MultipleCurrencyAmount)parcel.readParcelable( MultipleCurrencyAmount.class.getClassLoader() );
+    mTotalProductCost      = (MultipleCurrencyAmounts)parcel.readParcelable( MultipleCurrencyAmounts.class.getClassLoader() );
+    mTotalCost             = (MultipleCurrencyAmounts)parcel.readParcelable( MultipleCurrencyAmounts.class.getClassLoader() );
+    mTotalShippingCost     = (MultipleCurrencyAmounts)parcel.readParcelable( MultipleCurrencyAmounts.class.getClassLoader() );
     }
 
 
@@ -392,7 +392,7 @@ public class OrderPricing implements Parcelable
    * Returns any promo code discount.
    *
    *****************************************************/
-  public MultipleCurrencyAmount getPromoCodeDiscount()
+  public MultipleCurrencyAmounts getPromoCodeDiscount()
     {
     return ( mPromoCodeDiscount );
     }
@@ -414,7 +414,7 @@ public class OrderPricing implements Parcelable
    * Returns the total cost.
    *
    *****************************************************/
-  public MultipleCurrencyAmount getTotalCost()
+  public MultipleCurrencyAmounts getTotalCost()
     {
     return ( mTotalCost );
     }
@@ -425,7 +425,7 @@ public class OrderPricing implements Parcelable
    * Returns the total shipping cost.
    *
    *****************************************************/
-  public MultipleCurrencyAmount getTotalShippingCost()
+  public MultipleCurrencyAmounts getTotalShippingCost()
     {
     return ( mTotalShippingCost );
     }
@@ -442,7 +442,7 @@ public class OrderPricing implements Parcelable
     // We start with the fall-back currencies from the Multiple Currency Amount
     // class.
 
-    for ( String candidateCurrencyCode : MultipleCurrencyAmount.FALLBACK_CURRENCY_CODES )
+    for ( String candidateCurrencyCode : MultipleCurrencyAmounts.FALLBACK_CURRENCY_CODES )
       {
       if ( currencyIsUbiquitous( candidateCurrencyCode ) ) return ( candidateCurrencyCode );
       }
@@ -493,9 +493,9 @@ public class OrderPricing implements Parcelable
     {
     private String                  mProductId;
     private String                  mDescription;
-    private MultipleCurrencyAmount  mShippingCost;
+    private MultipleCurrencyAmounts mShippingCost;
     private int                     mQuantity;
-    private MultipleCurrencyAmount  mProductCost;
+    private MultipleCurrencyAmounts mProductCost;
 
 
     /*****************************************************
@@ -523,9 +523,9 @@ public class OrderPricing implements Parcelable
       {
       mProductId    = jsonObject.getString( JSON_NAME_TEMPLATE_ID );
       mDescription  = jsonObject.getString( JSON_NAME_DESCRIPTION );
-      mShippingCost = new MultipleCurrencyAmount( jsonObject.getJSONObject( JSON_NAME_SHIPPING_COST ) );
+      mShippingCost = new MultipleCurrencyAmounts( jsonObject.getJSONObject( JSON_NAME_SHIPPING_COST ) );
       mQuantity     = jsonObject.getInt( JSON_NAME_QUANTITY );
-      mProductCost  = new MultipleCurrencyAmount( jsonObject.getJSONObject( JSON_NAME_PRODUCT_COST ) );
+      mProductCost  = new MultipleCurrencyAmounts( jsonObject.getJSONObject( JSON_NAME_PRODUCT_COST ) );
       }
 
 
@@ -533,9 +533,9 @@ public class OrderPricing implements Parcelable
       {
       mProductId    = parcel.readString();
       mDescription  = parcel.readString();
-      mShippingCost = (MultipleCurrencyAmount)parcel.readParcelable( MultipleCurrencyAmount.class.getClassLoader() );
+      mShippingCost = (MultipleCurrencyAmounts)parcel.readParcelable( MultipleCurrencyAmounts.class.getClassLoader() );
       mQuantity     = parcel.readInt();
-      mProductCost  = (MultipleCurrencyAmount)parcel.readParcelable( MultipleCurrencyAmount.class.getClassLoader() );
+      mProductCost  = (MultipleCurrencyAmounts)parcel.readParcelable( MultipleCurrencyAmounts.class.getClassLoader() );
       }
 
 
@@ -583,7 +583,7 @@ public class OrderPricing implements Parcelable
      * Returns the shipping cost.
      *
      *****************************************************/
-    public MultipleCurrencyAmount getShippingCost()
+    public MultipleCurrencyAmounts getShippingCost()
       {
       return ( mShippingCost );
       }
@@ -605,7 +605,7 @@ public class OrderPricing implements Parcelable
      * Returns the product cost.
      *
      *****************************************************/
-    public MultipleCurrencyAmount getProductCost()
+    public MultipleCurrencyAmounts getProductCost()
       {
       return ( mProductCost );
       }

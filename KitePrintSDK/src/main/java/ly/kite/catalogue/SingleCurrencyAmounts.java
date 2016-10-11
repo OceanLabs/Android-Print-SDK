@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * SingleCurrencyAmount.java
+ * SingleCurrencyAmounts.java
  *
  *
  * Modified MIT License
@@ -39,9 +39,6 @@ package ly.kite.catalogue;
 
 ///// Import(s) /////
 
-
-///// Class Declaration /////
-
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -50,34 +47,37 @@ import java.text.NumberFormat;
 import java.util.Currency;
 import java.util.Locale;
 
+
+///// Class Declaration /////
+
 /*****************************************************
  *
  * This class represents an amount in a single currency.
  *
  *****************************************************/
-public class SingleCurrencyAmount implements Parcelable
+public class SingleCurrencyAmounts implements Parcelable
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                     = "SingleCurrencyAmount";
+  private static final String  LOG_TAG                     = "SingleCurrencyAmounts";
 
   private static final String  FORMAL_AMOUNT_FORMAT_STRING = "%1$s %2$.2f";
 
 
   ////////// Static Variable(s) //////////
 
-  public static final Parcelable.Creator<SingleCurrencyAmount> CREATOR =
-    new Parcelable.Creator<SingleCurrencyAmount>()
+  public static final Parcelable.Creator<SingleCurrencyAmounts> CREATOR =
+    new Parcelable.Creator<SingleCurrencyAmounts>()
       {
-      public SingleCurrencyAmount createFromParcel( Parcel sourceParcel )
+      public SingleCurrencyAmounts createFromParcel( Parcel sourceParcel )
         {
-        return ( new SingleCurrencyAmount( sourceParcel ) );
+        return ( new SingleCurrencyAmounts( sourceParcel ) );
         }
 
-      public SingleCurrencyAmount[] newArray( int size )
+      public SingleCurrencyAmounts[] newArray( int size )
         {
-        return ( new SingleCurrencyAmount[ size ] );
+        return ( new SingleCurrencyAmounts[ size ] );
         }
       };
 
@@ -87,6 +87,7 @@ public class SingleCurrencyAmount implements Parcelable
   private Currency    mCurrency;
   private BigDecimal  mAmount;
   private String      mFormattedAmount;
+  private BigDecimal  mOriginalAmount;
 
 
   ////////// Static Initialiser(s) //////////
@@ -104,12 +105,14 @@ public class SingleCurrencyAmount implements Parcelable
    * @param currency        The currency that the amount is in.
    * @param amount          A BigDecimal representing the amount.
    * @param formattedAmount A string representation of the amount.
+   * @param originalAmount  A BigDecimal representing the original amount
+   *                        for strike-through pricing.
    *
    * @throws IllegalArgumentException if either the currency
    *         or the amount is null.
    *
    *****************************************************/
-  public SingleCurrencyAmount( Currency currency, BigDecimal amount, String formattedAmount )
+  public SingleCurrencyAmounts( Currency currency, BigDecimal amount, String formattedAmount, BigDecimal originalAmount )
     {
     if ( currency == null ) throw ( new IllegalArgumentException( "Currency must be supplied" ) );
     if ( amount   == null ) throw ( new IllegalArgumentException( "Amount must be supplied" ) );
@@ -117,6 +120,45 @@ public class SingleCurrencyAmount implements Parcelable
     mCurrency        = currency;
     mAmount          = amount;
     mFormattedAmount = formattedAmount;
+    mOriginalAmount  = originalAmount;
+    }
+
+
+  /*****************************************************
+   *
+   * Constructs a new single currency amount.
+   *
+   * @param currency        The currency that the amount is in.
+   * @param amount          A BigDecimal representing the amount.
+   * @param formattedAmount A string representation of the amount.
+   *
+   * @throws IllegalArgumentException if either the currency
+   *         or the amount is null.
+   *
+   *****************************************************/
+  public SingleCurrencyAmounts( Currency currency, BigDecimal amount, String formattedAmount )
+    {
+    this( currency, amount, formattedAmount, null );
+    }
+
+
+  /*****************************************************
+   *
+   * Constructs a new single currency amount, with no formatted
+   * amount.
+   *
+   * @param currency        The currency that the amount is in.
+   * @param amount          A BigDecimal representing the amount.
+   * @param originalAmount  A BigDecimal representing the original amount
+   *                        for strike-through pricing.
+   *
+   * @throws IllegalArgumentException if either the currency
+   *         or the amount is null.
+   *
+   *****************************************************/
+  public SingleCurrencyAmounts( Currency currency, BigDecimal amount, BigDecimal originalAmount )
+    {
+    this ( currency, amount, null, originalAmount );
     }
 
 
@@ -132,18 +174,19 @@ public class SingleCurrencyAmount implements Parcelable
    *         or the amount is null.
    *
    *****************************************************/
-  public SingleCurrencyAmount( Currency currency, BigDecimal amount )
+  public SingleCurrencyAmounts( Currency currency, BigDecimal amount )
     {
-    this ( currency, amount, null );
+    this ( currency, amount, null, null );
     }
 
 
   // Constructor used by parcelable interface
-  SingleCurrencyAmount( Parcel parcel )
+  SingleCurrencyAmounts( Parcel parcel )
     {
     mCurrency        = (Currency)parcel.readSerializable();
     mAmount          = (BigDecimal)parcel.readSerializable();
     mFormattedAmount = parcel.readString();
+    mOriginalAmount  = (BigDecimal)parcel.readSerializable();
     }
 
 
@@ -172,6 +215,7 @@ public class SingleCurrencyAmount implements Parcelable
     targetParcel.writeSerializable( mCurrency );
     targetParcel.writeSerializable( mAmount );
     targetParcel.writeString( mFormattedAmount );
+    targetParcel.writeSerializable( mOriginalAmount );
     }
 
 
@@ -256,26 +300,33 @@ public class SingleCurrencyAmount implements Parcelable
 
   /*****************************************************
    *
+   * Returns true if the there is an original amount.
+   *
+   *****************************************************/
+  public boolean hasOriginalAmount()
+    {
+    return ( mOriginalAmount != null );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the original amount as a double.
+   *
+   *****************************************************/
+  public double getOriginalAmountAsDouble()
+    {
+    return ( mOriginalAmount != null ? mOriginalAmount.doubleValue() : 0d );
+    }
+
+
+  /*****************************************************
+   *
    * Returns the amount as a displayable string for the
    * supplied locale.
    *
-   * If our currency is the same as the main currency in use
-   * for the supplied locale, then we use the number formatter
-   * to format the amount - which will give a localised string.
-   *
-   * If the currency is different, then we format the amount with
-   * the full currency code. We do this to avoid any ambiguity.
-   * For example, if we were to live in Sweden but found a cost
-   * in Danish Krone, then having an amount such as "4.00 kr"
-   * would be misleading (because we would believe we were being
-   * quoted in Swedish Kronor).
-   *
-   * @param locale The locale for which a display amount is required.
-   *               If the locale is not supplied or suported by the device,
-   *               the display amount is always shown with a currency prefix.
-   *
    *****************************************************/
-  public String getDisplayAmountForLocale( Locale locale )
+  private String getDisplayAmountForLocale( double amountAsDouble, Locale locale )
     {
     if ( locale != null )
       {
@@ -291,7 +342,7 @@ public class SingleCurrencyAmount implements Parcelable
           {
           NumberFormat numberFormatter = NumberFormat.getCurrencyInstance( locale );
 
-          return ( numberFormatter.format( getAmountAsDouble() ) );
+          return ( numberFormatter.format( amountAsDouble ) );
           }
         }
       catch ( IllegalArgumentException iae )
@@ -302,7 +353,61 @@ public class SingleCurrencyAmount implements Parcelable
 
 
     // Format the amount formally
-    return ( String.format( Locale.getDefault(), FORMAL_AMOUNT_FORMAT_STRING, mCurrency.getCurrencyCode(), getAmountAsDouble() ) );
+    return ( String.format( Locale.getDefault(), FORMAL_AMOUNT_FORMAT_STRING, mCurrency.getCurrencyCode(), amountAsDouble ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the amount as a displayable string for the
+   * supplied locale.
+   *
+   * If our currency is the same as the main currency in use
+   * for the supplied locale, then we use the number formatter
+   * to format the amount - which will give a localised string.
+   *
+   * If the currency is different, then we format the amount with
+   * the full currency code. We do this to avoid any ambiguity.
+   * For example, if we were to live in Sweden but found a cost
+   * in Danish Krone, then having an amount such as "4.00 kr"
+   * would be misleading (because we would believe we were being
+   * quoted in Swedish Kronor).
+   *
+   * @param locale The locale for which a display amount is required.
+   *               If the locale is not supplied or supported by the device,
+   *               the display amount is always shown with a currency prefix.
+   *
+   *****************************************************/
+  public String getDisplayAmountForLocale( Locale locale )
+    {
+    return ( getDisplayAmountForLocale( getAmountAsDouble(), locale ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the original amount as a displayable string for the
+   * supplied locale.
+   *
+   * If our currency is the same as the main currency in use
+   * for the supplied locale, then we use the number formatter
+   * to format the amount - which will give a localised string.
+   *
+   * If the currency is different, then we format the amount with
+   * the full currency code. We do this to avoid any ambiguity.
+   * For example, if we were to live in Sweden but found a cost
+   * in Danish Krone, then having an amount such as "4.00 kr"
+   * would be misleading (because we would believe we were being
+   * quoted in Swedish Kronor).
+   *
+   * @param locale The locale for which a display amount is required.
+   *               If the locale is not supplied or supported by the device,
+   *               the display amount is always shown with a currency prefix.
+   *
+   *****************************************************/
+  public String getDisplayOriginalAmountForLocale( Locale locale )
+    {
+    return ( hasOriginalAmount() ? getDisplayAmountForLocale( getOriginalAmountAsDouble(), locale ) : null );
     }
 
 
@@ -311,9 +416,13 @@ public class SingleCurrencyAmount implements Parcelable
    * Returns this amount multiplied by the supplied quantity.
    *
    *****************************************************/
-  public SingleCurrencyAmount multipliedBy( int quantity )
+  public SingleCurrencyAmounts multipliedBy( int quantity )
     {
-    return ( new SingleCurrencyAmount( mCurrency, mAmount.multiply( BigDecimal.valueOf( quantity ) ) ) );
+    BigDecimal quantityBigDecimal = BigDecimal.valueOf( quantity );
+
+    BigDecimal multipliedOriginalAmount = ( hasOriginalAmount() ? mOriginalAmount.multiply( quantityBigDecimal ) : null );
+
+    return ( new SingleCurrencyAmounts( mCurrency, mAmount.multiply( quantityBigDecimal ), multipliedOriginalAmount ) );
     }
 
 

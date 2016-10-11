@@ -111,7 +111,8 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
   static private final String  JSON_NAME_LABEL_COLOUR                = "ios_sdk_label_color";
   static private final String  JSON_NAME_LEFT                        = "left";
   static private final String  JSON_NAME_MASK_BLEED                  = "mask_bleed";
-  static private final String  JSON_NAME_BORDER                      = "ios_image_border";
+  static private final String  JSON_NAME_ORIGINAL_AMOUNT             = "original_amount";
+  //static private final String  JSON_NAME_BORDER                      = "ios_image_border";
   static private final String  JSON_NAME_MASK_URL                    = "mask_url";
   static private final String  JSON_NAME_OPTIONS                     = "options";
   static private final String  JSON_NAME_OPTION_NAME                 = "name";
@@ -225,9 +226,9 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
    * Parses a JSON shipping cost.
    *
    ****************************************************/
-  private static MultipleCurrencyAmount parseShippingCost( JSONObject shippingCostJSONObject ) throws JSONException
+  private static MultipleCurrencyAmounts parseShippingCost( JSONObject shippingCostJSONObject ) throws JSONException
     {
-    return ( new MultipleCurrencyAmount( shippingCostJSONObject ) );
+    return ( new MultipleCurrencyAmounts( shippingCostJSONObject ) );
     }
 
 
@@ -375,13 +376,21 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
    * Parses a JSON cost.
    *
    ****************************************************/
-  private static SingleCurrencyAmount parseCost( JSONObject costJSONObject ) throws JSONException
+  private static SingleCurrencyAmounts parseCost( JSONObject costJSONObject ) throws JSONException
     {
     Currency   currency        = Currency.getInstance( costJSONObject.getString( JSON_NAME_CURRENCY ) );
     BigDecimal amount          = new BigDecimal( costJSONObject.getString( JSON_NAME_AMOUNT ) );
     String     formattedAmount = costJSONObject.getString( JSON_NAME_FORMATTED_AMOUNT );
 
-    return ( new SingleCurrencyAmount( currency, amount, formattedAmount ) );
+
+    // Check for an original amount
+
+    String originalAmountString = costJSONObject.optString( JSON_NAME_ORIGINAL_AMOUNT, null );
+
+    BigDecimal originalAmount = ( originalAmountString != null ? new BigDecimal( originalAmountString ) : null );
+
+
+    return ( new SingleCurrencyAmounts( currency, amount, formattedAmount, originalAmount ) );
     }
 
 
@@ -410,9 +419,9 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
    * Parses a JSON cost array.
    *
    ****************************************************/
-  private static MultipleCurrencyAmount parseCost( JSONArray costJSONArray ) throws JSONException
+  private static MultipleCurrencyAmounts parseCost( JSONArray costJSONArray ) throws JSONException
     {
-    MultipleCurrencyAmount cost = new MultipleCurrencyAmount();
+    MultipleCurrencyAmounts cost = new MultipleCurrencyAmounts();
 
     for ( int costIndex = 0; costIndex < costJSONArray.length(); costIndex ++ )
       {
@@ -509,7 +518,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
         String                           productName        = productJSONObject.getString( JSON_NAME_PRODUCT_NAME );
         String                           productDescription = productJSONObject.getString( JSON_NAME_DESCRIPTION );
         int                              imagesPerPage      = productJSONObject.optInt( JSON_NAME_IMAGES_PER_PAGE, DEFAULT_IMAGES_PER_PAGE );
-        MultipleCurrencyAmount           cost               = parseCost( productJSONObject.getJSONArray( JSON_NAME_COST ) );
+        MultipleCurrencyAmounts cost               = parseCost( productJSONObject.getJSONArray( JSON_NAME_COST ) );
         boolean                          printInStore       = productJSONObject.optBoolean( JSON_NAME_PRINT_IN_STORE, false );
         MultipleDestinationShippingCosts shippingCosts      = parseShippingCosts( productJSONObject.getJSONObject( JSON_NAME_SHIPPING_COSTS ) );
 
@@ -846,7 +855,11 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
           {
           ///// User config data /////
 
-          catalogue.setUserConfigData( jsonData.getJSONObject( topLevelKey ) );
+          JSONObject userConfigData = jsonData.getJSONObject( topLevelKey );
+
+          Log.i( LOG_TAG, "Storing user config data: " + userConfigData.toString() );
+
+          catalogue.setUserConfigData( userConfigData );
           }
 
         else if ( topLevelKey.equals( JSON_NAME_PRODUCT_ARRAY ) )
