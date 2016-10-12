@@ -292,17 +292,6 @@ public class MultipleCurrencyAmounts implements Parcelable
 
   /*****************************************************
    *
-   * Returns the cost at a position.
-   *
-   *****************************************************/
-  public SingleCurrencyAmounts get( int position )
-    {
-    return ( mCurrencyCodeAmountTable.get( position ) );
-    }
-
-
-  /*****************************************************
-   *
    * Returns all the currency codes.
    *
    *****************************************************/
@@ -331,8 +320,18 @@ public class MultipleCurrencyAmounts implements Parcelable
       if ( ( amount = get( fallbackCurrencyCode ) ) != null ) return ( amount );
       }
 
-    // Lastly try and get the first supported currency
-    if ( ( amount = get( 0 ) ) != null ) return ( amount );
+
+    // Lastly, try and get any supported currency
+
+    Collection<SingleCurrencyAmounts> collection = mCurrencyAmountTable.values();
+
+    if ( collection != null )
+      {
+      Iterator<SingleCurrencyAmounts> iterator = collection.iterator();
+
+      if ( iterator.hasNext() ) return ( iterator.next() );
+      }
+
 
     return ( null );
     }
@@ -521,10 +520,12 @@ public class MultipleCurrencyAmounts implements Parcelable
 
     // Get the single currency amounts
 
-    SingleCurrencyAmounts multipliedAmount = getAmountsWithFallback( currency.getCurrencyCode() ).multipliedBy( quantity );
+    SingleCurrencyAmounts singleAmounts = getAmountsWithFallback( currency.getCurrencyCode() );
 
-    if ( multipliedAmount == null ) return ( null );
+    if ( singleAmounts == null ) return ( null );
 
+
+    SingleCurrencyAmounts multipliedAmount = singleAmounts.multipliedBy( quantity );
 
     // Format the amount we found for the default locale. It may not be the same currency
     // we asked for.
