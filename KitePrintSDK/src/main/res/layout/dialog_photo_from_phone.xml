@@ -28,12 +28,11 @@
             android:textSize="16sp"
             android:text="@string/scan_qr_code_instructions"/>
 
-        <ImageView
-            android:id="@+id/qr_code_image_view"
+        <ly.kite.widget.QRCodeView
+            android:id="@+id/qr_code_view"
             android:layout_marginTop="10dp"
             android:layout_width="fill_parent"
-            android:layout_height="180dp"
-            android:scaleType="fitCenter"/>
+            android:layout_height="180dp"/>
 
         <ly.kite.widget.CustomTypefaceTextView
             android:layout_marginTop="10dp"
@@ -43,26 +42,30 @@
             android:textSize="16sp"
             android:text="@string/scan_qr_code_alternate_instructions"/>
 
-        <ly.kite.widget.CustomTypefaceTextView
-            android:id="@+id/url_text_view"
+        <FrameLayout
             android:layout_marginTop="10dp"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="@color/qr_code_url"/>
+            android:layout_height="wrap_content">
 
+            <ly.kite.widget.CustomTypefaceTextView
+                android:id="@+id/url_text_view"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="@color/qr_code_url"/>
+
+            <ProgressBar
+                android:id="@+id/progress_spinner"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="?android:indeterminateProgressStyle"
+                android:visibility="invisible"/>
+
+        </FrameLayout>
 
     </LinearLayout>
-
-
-    <ProgressBar
-        android:id="@+id/progress_spinner"
-        android:layout_gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="?android:indeterminateProgressStyle"
-        android:visibility="invisible"/>
 
 </FrameLayout>

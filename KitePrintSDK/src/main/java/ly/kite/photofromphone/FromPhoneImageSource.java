@@ -34,24 +34,19 @@
 
 ///// Package Declaration /////
 
-package ly.kite.journey;
+package ly.kite.photofromphone;
 
 
 ///// Import(s) /////
 
-import java.util.ArrayList;
-import java.util.List;
-
-import android.Manifest;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 
 import ly.kite.R;
-import ly.kite.util.Asset;
-import ly.kite.photopicker.Photo;
-import ly.kite.photopicker.PhotoPicker;
+import ly.kite.journey.AImageSource;
+import ly.kite.photofromphone.PhotoFromPhoneFragment;
 
 
 ///// Class Declaration /////
@@ -74,7 +69,7 @@ public class FromPhoneImageSource extends AImageSource
 
   ////////// Member Variable(s) //////////
 
-  private PhotoFromPhoneFragment  mPhotoFromPhotaFragment;
+  private PhotoFromPhoneFragment mPhotoFromPhotaFragment;
 
 
   ////////// Static Initialiser(s) //////////
