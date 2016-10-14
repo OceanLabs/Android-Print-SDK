@@ -43,6 +43,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -105,7 +106,6 @@ public class MainActivity extends ADeepLinkableActivity
 
   private static final int    REQUEST_CODE_SELECT_PICTURE = 1;
   private static final int    REQUEST_CODE_CHECKOUT       = 2;
-
 
 
   static private final String DEEP_LINK_URI_SCHEMA        = "kite-sample-app";
@@ -211,8 +211,14 @@ public class MainActivity extends ADeepLinkableActivity
    *****************************************************/
   public void onPrintLocalButtonClicked( View view )
     {
-    // Launch the picture selector
-    PhotoPicker.startPhotoPickerForResult( this, REQUEST_CODE_SELECT_PICTURE );
+    callRunnableWithPermissions( new String[] { Manifest.permission.READ_EXTERNAL_STORAGE }, new Runnable()
+      {
+      public void run()
+        {
+        // Launch the picture selector
+        PhotoPicker.startPhotoPickerForResult( MainActivity.this, REQUEST_CODE_SELECT_PICTURE );
+        }
+      });
     }
 
 
@@ -317,7 +323,7 @@ public class MainActivity extends ADeepLinkableActivity
       kiteSDK
 
         // Uncomment this if you have defined Instagram credentials
-        //.setInstagramCredentials( INSTAGRAM_API_KEY, INSTAGRAM_REDIRECT_URI )
+        .setInstagramCredentials( INSTAGRAM_API_KEY, INSTAGRAM_REDIRECT_URI )
 
         .startShopping( this, assetList );  // Use this to shop all products in catalogue
         //.startShoppingByProductId( this, assets, "pbx_squares_5x5", "pbx_squares_8x8" );  // Use this to shop specific products by id

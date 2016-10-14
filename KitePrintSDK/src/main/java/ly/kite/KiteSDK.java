@@ -104,7 +104,7 @@ public class KiteSDK
   static public  final boolean DISPLAY_PRODUCTS                                    = false;
 
 
-  static public  final String SDK_VERSION                                          = "5.6.2";
+  static public  final String SDK_VERSION                                          = "5.6.3";
 
   static public  final String IMAGE_CATEGORY_APP                                   = "app";
   static public  final String IMAGE_CATEGORY_PRODUCT_ITEM                          = "product_item";
@@ -1919,9 +1919,9 @@ public class KiteSDK
    *****************************************************/
   public static enum DefaultEnvironment implements IEnvironment
     {
-    TEST    ( "Test",    "https://api.kite.ly/v3.0",     ENVIRONMENT_TEST,    PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_HOST, PAYPAL_SANDBOX_CLIENT_ID, STRIPE_TEST_PUBLIC_KEY ),
-    STAGING ( "Staging", "https://staging.kite.ly/v3.0", ENVIRONMENT_STAGING, PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_HOST, PAYPAL_SANDBOX_CLIENT_ID, STRIPE_TEST_PUBLIC_KEY ), /* private environment intended only for Ocean Labs use, hands off :) */
-    LIVE    ( "Live",    "https://api.kite.ly/v3.0",     ENVIRONMENT_LIVE,    PayPalConfiguration.ENVIRONMENT_PRODUCTION, PAYPAL_LIVE_API_HOST,    PAYPAL_LIVE_CLIENT_ID,    STRIPE_LIVE_PUBLIC_KEY );
+    TEST               ( "Test",    "https://api.kite.ly/v3.0",     ENVIRONMENT_TEST,    PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_HOST, PAYPAL_SANDBOX_CLIENT_ID, STRIPE_TEST_PUBLIC_KEY ),
+    STAGING_DO_NOT_USE ( "Staging", "https://staging.kite.ly/v3.0", ENVIRONMENT_STAGING, PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_HOST, PAYPAL_SANDBOX_CLIENT_ID, STRIPE_TEST_PUBLIC_KEY ), /* Private environment intended only for Kite / Ocean Labs use, hands off :) */
+    LIVE               ( "Live",    "https://api.kite.ly/v3.0",     ENVIRONMENT_LIVE,    PayPalConfiguration.ENVIRONMENT_PRODUCTION, PAYPAL_LIVE_API_HOST,    PAYPAL_LIVE_CLIENT_ID,    STRIPE_LIVE_PUBLIC_KEY );
 
 
     private Environment  mEnvironment;
