@@ -56,12 +56,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.TextView;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.catalogue.Catalogue;
-import ly.kite.journey.selection.ICatalogueHolder;
 import ly.kite.ordering.OrderingDataAgent;
 import ly.kite.journey.basket.BasketActivity;
 import ly.kite.widget.LabelledImageView;
@@ -385,7 +383,7 @@ abstract public class AKiteFragment extends Fragment
    *****************************************************/
   protected void setThemeColour( int themeColour, LabelledImageView labelledImageView )
     {
-    if ( themeColour != Catalogue.NO_THEME_COLOUR && labelledImageView != null )
+    if ( themeColour != Catalogue.NO_COLOUR && labelledImageView != null )
       {
       labelledImageView.setForcedLabelColour( themeColour );
       }
@@ -399,7 +397,7 @@ abstract public class AKiteFragment extends Fragment
    *****************************************************/
   protected void setThemeColour( int themeColour, View view )
     {
-    if ( themeColour != Catalogue.NO_THEME_COLOUR && view != null )
+    if ( themeColour != Catalogue.NO_COLOUR && view != null )
       {
       view.setBackgroundColor( themeColour );
       }

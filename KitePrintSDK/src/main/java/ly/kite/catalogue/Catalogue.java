@@ -46,12 +46,8 @@ import org.json.JSONObject;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Currency;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 
 ///// Class Declaration /////
@@ -67,14 +63,17 @@ public class Catalogue
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String    LOG_TAG                = "Catalogue";
+  static private final String    LOG_TAG                          = "Catalogue";
 
   // Dummy catalogue - used for testing
-  static public  final Catalogue DUMMY_CATALOGUE        = new Catalogue().addProduct( "Dummy Group", null, Product.DUMMY_PRODUCT );
+  static public  final Catalogue DUMMY_CATALOGUE                  = new Catalogue().addProduct( "Dummy Group", null, Product.DUMMY_PRODUCT );
 
-  static private final boolean   DISPLAY_PRODUCT_GROUPS = false;
+  static private final boolean   DISPLAY_PRODUCT_GROUPS           = false;
 
-  static public  final int       NO_THEME_COLOUR        = 0x000000;
+  static private final String    JSON_NAME_THEME_COLOUR_PRIMARY   = "theme_colour_primary";
+  static private final String    JSON_NAME_THEME_COLOUR_SECONDARY = "theme_colour_secondary";
+
+  static public  final int       NO_COLOUR                        = 0x000000;
 
 
   ////////// Static Variable(s) //////////
@@ -100,6 +99,37 @@ public class Catalogue
 
 
   ////////// Static Method(s) //////////
+
+  /*****************************************************
+   *
+   * Converts a colour string to a colour.
+   *
+   *****************************************************/
+  static private int colourFromString( String colourString )
+    {
+    if ( colourString != null )
+      {
+      int length = colourString.length();
+
+      try
+        {
+        if ( length == 7 && colourString.charAt( 0 ) == '#' )
+          {
+          return ( 0xff000000 | Integer.parseInt( colourString.substring( 1 ), 16 ) );
+          }
+        else if ( length == 9 && colourString.charAt( 0 ) == '#' )
+          {
+          return ( Integer.parseInt( colourString.substring( 1 ), 16 ) );
+          }
+        }
+      catch ( NumberFormatException nfe )
+        {
+        Log.e( LOG_TAG, "Invalid colour format: " + colourString );
+        }
+      }
+
+    return ( NO_COLOUR );
+    }
 
 
   ////////// Constructor(s) //////////
@@ -200,8 +230,14 @@ public class Catalogue
    *****************************************************/
   public int getPrimaryThemeColour()
     {
-    // TODO: Extract theme colour from user config
-    return ( NO_THEME_COLOUR );
+    String colourString = getUserConfigString( JSON_NAME_THEME_COLOUR_PRIMARY );
+
+    if ( colourString != null )
+      {
+      return ( colourFromString( colourString ) );
+      }
+
+    return ( NO_COLOUR );
     }
 
 
@@ -212,8 +248,14 @@ public class Catalogue
    *****************************************************/
   public int getSecondaryThemeColour()
     {
-    // TODO: Extract theme colour from user config
-    return ( NO_THEME_COLOUR );
+    String colourString = getUserConfigString( JSON_NAME_THEME_COLOUR_SECONDARY );
+
+    if ( colourString != null )
+      {
+      return ( colourFromString( colourString ) );
+      }
+
+    return ( NO_COLOUR );
     }
 
 
