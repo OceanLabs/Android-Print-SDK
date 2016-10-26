@@ -70,8 +70,8 @@ public class Catalogue
 
   static private final boolean   DISPLAY_PRODUCT_GROUPS           = false;
 
-  static private final String    JSON_NAME_THEME_COLOUR_PRIMARY   = "theme_colour_primary";
-  static private final String    JSON_NAME_THEME_COLOUR_SECONDARY = "theme_colour_secondary";
+  static final String            JSON_NAME_THEME_COLOUR_PRIMARY   = "theme_colour_primary";
+  static final String            JSON_NAME_THEME_COLOUR_SECONDARY = "theme_colour_secondary";
 
   static public  final int       NO_COLOUR                        = 0x000000;
 
@@ -105,7 +105,7 @@ public class Catalogue
    * Converts a colour string to a colour.
    *
    *****************************************************/
-  static private int colourFromString( String colourString )
+  static int colourFromString( String colourString )
     {
     if ( colourString != null )
       {
@@ -119,7 +119,9 @@ public class Catalogue
           }
         else if ( length == 9 && colourString.charAt( 0 ) == '#' )
           {
-          return ( Integer.parseInt( colourString.substring( 1 ), 16 ) );
+          // We need to parse the colour as a long and then convert to integer, because
+          // the integer parse doesn't like values greater than 0x7fffffff.
+          return ( (int)Long.parseLong( colourString.substring( 1 ), 16 ) );
           }
         }
       catch ( NumberFormatException nfe )

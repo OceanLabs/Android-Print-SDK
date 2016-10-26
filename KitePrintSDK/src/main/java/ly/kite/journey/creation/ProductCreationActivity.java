@@ -55,6 +55,7 @@ import android.util.Log;
 import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.analytics.Analytics;
+import ly.kite.journey.creation.calendar.CalendarFragment;
 import ly.kite.ordering.OrderingDataAgent;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.journey.IImageSpecStore;
@@ -84,6 +85,7 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
                                                                       PhoneCaseFragment.ICallback,
                                                                       ImageSelectionFragment.ICallback,
                                                                       PhotobookFragment.ICallback,
+                                                                      CalendarFragment.ICallback,
                                                                       ReviewAndEditFragment.ICallback,
                                                                       EditImageFragment.ICallback,
                                                                       OrderingDataAgent.IAddListener
@@ -138,6 +140,7 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
     {
     switch ( type )
       {
+      case CALENDAR:
       case CIRCLE:
       case GREETINGCARD:
       case PHONE_CASE:
@@ -478,6 +481,32 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
     }
 
 
+  ////////// CalendarFragment.ICallback Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called to edit an asset.
+   *
+   *****************************************************/
+  @Override
+  public void calOnEdit( int assetIndex )
+    {
+    editImage( assetIndex );
+    }
+
+
+  /*****************************************************
+   *
+   * Called to move on to payment.
+   *
+   *****************************************************/
+  @Override
+  public void calOnNext()
+    {
+    onNewBasketItem( mImageSpecArrayList );
+    }
+
+
   ////////// ReviewAndEditFragment.ICallback Method(s) //////////
 
   /*****************************************************
@@ -590,9 +619,13 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
 
     switch ( mProduct.getUserJourneyType() )
       {
+      case CALENDAR:
+        addFragment( CalendarFragment.newInstance( mProduct ), CalendarFragment.TAG );
+        break;
+
       case CIRCLE:
-      case RECTANGLE:
       case GREETINGCARD:
+      case RECTANGLE:
         addFragment( ImageSelectionFragment.newInstance( mProduct ), ImageSelectionFragment.TAG );
         break;
 

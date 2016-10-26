@@ -8,27 +8,13 @@
 
     <include layout="@layout/include_small_progress_bar"/>
 
-    <!--
-    <ListView
-        android:id="@+id/list_view"
+    <ly.kite.widget.ExtendedRecyclerView
+        android:id="@+id/photobook_view"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1.0"
         android:paddingLeft="@dimen/screen_horizontal_margin"
-        android:paddingRight="@dimen/screen_horizontal_margin"
-        android:dividerHeight="0dp"
-        android:divider="@android:color/transparent"/>
-      -->
-
-    <ly.kite.journey.creation.photobook.PhotobookView
-        android:id="@+id/recycler_view"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1.0"
-        android:paddingLeft="@dimen/screen_horizontal_margin"
-        android:paddingRight="@dimen/screen_horizontal_margin"
-        android:dividerHeight="0dp"
-        android:divider="@android:color/transparent"/>
+        android:paddingRight="@dimen/screen_horizontal_margin"/>
 
     <include layout="@layout/include_photobook_cta_bar"/>
 

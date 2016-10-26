@@ -11,6 +11,6 @@
         android:padding="@dimen/photobook_instructions_text_padding"
         android:gravity="center"
         android:textSize="@dimen/photobook_instructions_text_size"
-        android:text="@string/photobook_instructions"/>
+        android:text="@string/multi_page_instructions"/>
 
 </FrameLayout>

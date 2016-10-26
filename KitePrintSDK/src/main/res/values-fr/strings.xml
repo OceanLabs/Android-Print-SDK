@@ -7,6 +7,7 @@
     <string name="unit_centimeters_short">cm</string>
     <string name="unit_inches_short">in</string>
     <string name="unit_pixels_short">px</string>
+
     <string name="title_choose_product_group">Imprimeur</string>
     <string name="title_create_phone_case">Créer une coque de smartphone</string>
     <string name="title_image_source">Sélectionner les photos</string>
@@ -14,6 +15,10 @@
     <string name="title_payment">Paiement</string>
     <string name="title_payment_source_sandbox">Paiement Source (Test)</string>
     <string name="title_payment_source">Paiement Source</string>
+    <string name="title_basket">Bakset</string>
+    <string name="title_photobook">Photobook</string>
+    <string name="title_calendar">Calendrier</string>
+
     <string name="drawer_open">Tiroir ouvert</string>
     <string name="drawer_closed">Tiroir fermé</string>
     <string name="alert_dialog_title_pack_not_full_format_string">Vous avez sélectionné %s</string>
@@ -233,12 +238,11 @@
     <string name="basket_left_button_text">Continuer vos achats</string>
     <string name="basket_right_button_text">Check-out</string>
     <string name="feedback_email_recipient"></string>
-    <string name="photobook_instructions"><b>Tap</b> image pour modifier,\n<b>Maintenez</b> de commander à nouveau.</string>
+    <string name="multi_page_instructions"><b>Tap</b> image pour modifier,\n<b>Maintenez</b> de commander à nouveau.</string>
     <string name="progress_dialog_title_add_to_basket">Ajout au panier</string>
     <string name="progress_dialog_title_updating_basket">Mise à jour panier</string>
     <string name="review_and_edit_title_format_string"></string>
     <string name="shipping_proceed_button_text"></string>
-    <string name="title_basket">Bakset</string>
-    <string name="title_photobook">Photobook</string>
+
 
 </resources>

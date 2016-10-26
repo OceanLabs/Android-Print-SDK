@@ -15,6 +15,7 @@
     <string name="title_create_phone_case">Gestalte Dein Phone Case</string>
     <string name="title_image_source">Wähle Photos aus</string>
     <string name="title_photobook">Photobuch</string>
+    <string name="title_calendar">Kalender</string>
     <string name="title_basket">Korb</string>
     <string name="title_payment_sandbox">Zahlung (Sandbox)</string>
     <string name="title_payment">Zahlung</string>
@@ -194,7 +195,7 @@
 
     <string name="phone_case_proceed_button_text">nächster Schritt</string>
 
-    <string name="photobook_instructions"><b>Tippen</b> Sie Bild zu bearbeiten,\n<b>Halten</b> Sie neu zu ordnen.</string>
+    <string name="multi_page_instructions"><b>Tippen</b> Sie Bild zu bearbeiten,\n<b>Halten</b> Sie neu zu ordnen.</string>
 
     <string name="address_book_empty">Adressbuch leer</string>
 

@@ -1,0 +1,20 @@
+<ly.kite.widget.AREFrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:layout_width="0dp"
+    android:layout_weight="1.0"
+    android:layout_height="wrap_content"
+    custom:aspectRatio="1.0"
+    android:padding="5dp">
+    <ly.kite.widget.CheckableImageContainerFrame
+        android:id="@+id/checkable_image_container_frame"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"/>
+    <ImageView
+        android:id="@+id/add_image_view"
+        android:layout_gravity="center"
+        android:layout_width="@dimen/multi_page_add_image_size"
+        android:layout_height="@dimen/multi_page_add_image_size"
+        android:src="@drawable/multi_page_add_image"
+        android:visibility="invisible"/>
+</ly.kite.widget.AREFrameLayout>

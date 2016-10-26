@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * PhotobookFragment.java
+ * CalendarFragment.java
  *
  *
  * Modified MIT License
@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.journey.creation.photobook;
+package ly.kite.journey.creation.calendar;
 
 
 ///// Import(s) /////
@@ -43,11 +43,14 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.os.SystemClock;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
@@ -74,21 +77,21 @@ import ly.kite.widget.ExtendedRecyclerView;
 /*****************************************************
  *
  * This fragment displays a screen that allows users to
- * create a photobook.
+ * create a calendar.
  *
  *****************************************************/
-public class PhotobookFragment extends AProductCreationFragment implements PhotobookAdaptor.IListener,
-                                                                           View.OnClickListener,
-                                                                           AImageSource.IAssetConsumer,
-                                                                           IUpdatedImageListener,
-                                                                           View.OnDragListener,
-                                                                           ActionMode.Callback,
-                                                                           PopupMenu.OnMenuItemClickListener
+public class CalendarFragment extends AProductCreationFragment implements CalendarAdaptor.IListener,
+                                                                          View.OnClickListener,
+                                                                          AImageSource.IAssetConsumer,
+                                                                          IUpdatedImageListener,
+                                                                          View.OnDragListener,
+                                                                          ActionMode.Callback,
+                                                                          PopupMenu.OnMenuItemClickListener
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static public  final String  TAG                                             = "PhotobookFragment";
+  static public  final String  TAG                                             = "CalendarFragment";
 
   // Size of auto-scroll zone for drag-and-drop, as a proportion of the list view size.
   static private final float   AUTO_SCROLL_ZONE_SIZE_AS_PROPORTION             = 0.3f;
@@ -99,28 +102,30 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
   static private final int     DISABLED_ALPHA                                  = 100;
   static private final int     ENABLED_ALPHA                                   = 255;
 
+  static         final int     MONTHS_PER_YEAR                                 = 12;
+
 
   ////////// Static Variable(s) //////////
 
 
   ////////// Member Variable(s) //////////
 
-  private ExtendedRecyclerView mPhotobookView;
-  private PhotobookAdaptor                mPhotobookAdaptor;
+  private ExtendedRecyclerView  mCalendarView;
+  private CalendarAdaptor       mCalendarAdaptor;
 
-  private Parcelable                      mPhotobookViewState;
+  private Parcelable            mCalendarViewState;
 
-  private int                             mAddImageIndex;
-  private PopupMenu                       mAddImagePopupMenu;
+  private int                   mAddImageIndex;
+  private PopupMenu             mAddImagePopupMenu;
 
-  private int                             mDraggedImageIndex;
+  private int                   mDraggedImageIndex;
 
-  private Handler                         mHandler;
-  private ScrollRunnable                  mScrollRunnable;
+  private Handler               mHandler;
+  private ScrollRunnable        mScrollRunnable;
 
-  private ActionMode                      mActionMode;
-  private MenuItem                        mActionModeEditMenuItem;
-  private MenuItem                        mActionModeDiscardMenuItem;
+  private ActionMode            mActionMode;
+  private MenuItem              mActionModeEditMenuItem;
+  private MenuItem              mActionModeDiscardMenuItem;
 
 
   ////////// Static Initialiser(s) //////////
@@ -133,9 +138,9 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
    * Creates a new instance of this fragment.
    *
    *****************************************************/
-  public static PhotobookFragment newInstance( Product product )
+  public static CalendarFragment newInstance( Product product )
     {
-    PhotobookFragment fragment = new PhotobookFragment();
+    CalendarFragment fragment = new CalendarFragment();
 
     Bundle arguments = new Bundle();
     arguments.putParcelable( BUNDLE_KEY_PRODUCT, product );
@@ -161,7 +166,6 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     {
     super.onCreate( savedInstanceState );
 
-
     setHasOptionsMenu( true );
     }
 
@@ -174,20 +178,19 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
   @Override
   public View onCreateView( LayoutInflater layoutInflator, ViewGroup container, Bundle savedInstanceState )
     {
-    View view = layoutInflator.inflate( R.layout.screen_photobook, container, false );
+    View view = layoutInflator.inflate( R.layout.screen_calendar, container, false );
 
     super.onViewCreated( view );
 
-    mPhotobookView = (ExtendedRecyclerView)view.findViewById( R.id.photobook_view );
-    mPhotobookView.setLayoutManager( new LinearLayoutManager( mKiteActivity ) );
+    mCalendarView = (ExtendedRecyclerView) view.findViewById( R.id.calendar_view );
+    mCalendarView.setLayoutManager( new LinearLayoutManager( mKiteActivity ) );
 
     // Set up the forwards button
     setForwardsButtonText( R.string.Next );
     setForwardsButtonOnClickListener( this );
 
     // We listen for drag events so that we can auto scroll up or down when dragging
-    //mPhotoBookListView.setOnDragListener( this );
-    mPhotobookView.setOnDragListener( this );
+    mCalendarView.setOnDragListener( this );
 
     return ( view );
     }
@@ -239,9 +242,9 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     super.onTop();
 
 
-    mKiteActivity.setTitle( R.string.title_photobook );
+    mKiteActivity.setTitle( R.string.title_calendar );
 
-    setUpListView();
+    setUpCalendarView();
     }
 
 
@@ -259,15 +262,15 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     // Clear out the stored images to reduce memory usage
     // when not on this screen.
 
-    if ( mPhotobookView != null )
+    if ( mCalendarView != null )
       {
       // Save the list view state so we can come back to the same position
-      mPhotobookViewState = mPhotobookView.onSaveInstanceState();
+      mCalendarViewState = mCalendarView.onSaveInstanceState();
 
-      mPhotobookView.setAdapter( null );
+      mCalendarView.setAdapter( null );
       }
 
-    mPhotobookView = null;
+    mCalendarView = null;
     }
 
 
@@ -294,7 +297,9 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
    *****************************************************/
   protected void onAllImagesCropped()
     {
-    if ( mPhotobookAdaptor != null ) mPhotobookAdaptor.notifyDataSetChanged();
+    if ( mCalendarAdaptor != null ) mCalendarAdaptor.notifyDataSetChanged();
+
+    onScreenReady();
     }
 
 
@@ -355,7 +360,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
           }
         else
           {
-          ( (ICallback)mKiteActivity ).pbOnNext();
+          ( (ICallback)mKiteActivity ).calOnNext();
           }
         }
       }
@@ -363,7 +368,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     }
 
 
-  ////////// PhotobookAdaptor.IListener Method(s) //////////
+  ////////// CalendarAdaptor.IListener Method(s) //////////
 
   /*****************************************************
    *
@@ -373,28 +378,28 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
   @Override
   public void onClickImage( int imageIndex, View view )
     {
-    // Determine whether the click is on a filled, or blank, page.
+    // Determine whether the click is on a filled, or blank, space.
     if ( mImageSpecArrayList.get( imageIndex) != null )
       {
-      ///// Filled page /////
+      ///// Filled space /////
 
       // Start the action mode
 
       mActionMode = mKiteActivity.startActionMode( this );
 
-      mPhotobookAdaptor.setSelectionMode( true );
+      mCalendarAdaptor.setSelectionMode( true );
 
       // Select the image that was clicked
-      mPhotobookAdaptor.selectImage( imageIndex );
+      mCalendarAdaptor.selectImage( imageIndex );
       }
     else
       {
-      ///// Blank page /////
+      ///// Blank space /////
 
       mAddImageIndex = imageIndex;
 
       mAddImagePopupMenu = new PopupMenu( mKiteActivity, view );
-      mAddImagePopupMenu.inflate( R.menu.photobook_add_image_popup );
+      mAddImagePopupMenu.inflate( R.menu.calendar_add_image_popup );
       addImageSourceMenuItems( mAddImagePopupMenu.getMenu() );
       mAddImagePopupMenu.setOnMenuItemClickListener( this );
       mAddImagePopupMenu.show();
@@ -414,7 +419,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
 
     mDraggedImageIndex = draggedAssetIndex;
 
-    mPhotobookView.startDrag( null, new View.DragShadowBuilder( view ), null, 0 );
+    mCalendarView.startDrag( null, new View.DragShadowBuilder( view ), null, 0 );
     }
 
 
@@ -472,9 +477,9 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
    *****************************************************/
   public void onImageUpdated( int imageIndex, ImageSpec imageSpec )
     {
-    if ( mPhotobookAdaptor != null )
+    if ( mCalendarAdaptor != null )
       {
-      mPhotobookAdaptor.notifyDataSetChanged();
+      mCalendarAdaptor.notifyDataSetChanged();
       }
     }
 
@@ -503,23 +508,25 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
 
 
       // Get the asset that we are currently dragged over
-
       int currentAssetIndex = imageIndexFromPoint( (int)x, (int)y );
 
-      if ( currentAssetIndex >= 0 )
+      // We only highlight the target image if it is different from the dragged one
+      if ( currentAssetIndex >= 0 && currentAssetIndex != mDraggedImageIndex )
         {
-        // We only highlight the target image if it is different from the dragged one
-        if ( currentAssetIndex != mDraggedImageIndex ) mPhotobookAdaptor.setHighlightedAsset( currentAssetIndex );
-        else                                           mPhotobookAdaptor.clearHighlightedAsset();
+        mCalendarAdaptor.setHighlightedAsset( currentAssetIndex );
+        }
+      else
+        {
+        mCalendarAdaptor.clearHighlightedAsset();
         }
 
 
       // Determine which zone the location is in
 
-      int photobookViewHeight = mPhotobookView.getHeight();
+      int calendarViewHeight = mCalendarView.getHeight();
 
-      float yTopStart    = photobookViewHeight * AUTO_SCROLL_ZONE_SIZE_AS_PROPORTION;
-      float yBottomStart = photobookViewHeight - yTopStart;
+      float yTopStart    = calendarViewHeight * AUTO_SCROLL_ZONE_SIZE_AS_PROPORTION;
+      float yBottomStart = calendarViewHeight - yTopStart;
 
       if ( y < yTopStart )
         {
@@ -543,7 +550,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
 
         // Calculate the speed and run auto-scroll
 
-        float speedAsProportionPerSecond = ( ( y - yBottomStart ) / ( photobookViewHeight - yBottomStart ) ) * AUTO_SCROLL_MAX_SPEED_IN_PROPORTION_PER_SECOND;
+        float speedAsProportionPerSecond = ( ( y - yBottomStart ) / ( calendarViewHeight - yBottomStart ) ) * AUTO_SCROLL_MAX_SPEED_IN_PROPORTION_PER_SECOND;
 
         setAutoScroll( speedAsProportionPerSecond );
         }
@@ -582,7 +589,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
 
     MenuInflater inflator = mode.getMenuInflater();
 
-    inflator.inflate( R.menu.photobook_action_mode, menu );
+    inflator.inflate( R.menu.calendar_action_mode, menu );
 
     mActionModeEditMenuItem    = menu.findItem( R.id.edit_menu_item );
     mActionModeDiscardMenuItem = menu.findItem( R.id.discard_menu_item );
@@ -619,7 +626,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
 
 
     // Get the selected assets
-    HashSet<Integer> selectedAssetIndexHashSet = mPhotobookAdaptor.getSelectedAssets();
+    HashSet<Integer> selectedAssetIndexHashSet = mCalendarAdaptor.getSelectedAssets();
 
 
     // Determine which action was clicked
@@ -641,7 +648,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
           {
           if ( mKiteActivity instanceof ICallback )
             {
-            ( (ICallback) mKiteActivity ).pbOnEdit( selectedAssetIndex );
+            ( (ICallback) mKiteActivity ).calOnEdit( selectedAssetIndex );
             }
           }
         }
@@ -662,7 +669,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
         mImageSpecArrayList.set( selectedAssetIndex, null );
         }
 
-      mPhotobookAdaptor.notifyDataSetChanged();
+      mCalendarAdaptor.notifyDataSetChanged();
 
       // Exit action mode
       mode.finish();
@@ -687,7 +694,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     mActionModeEditMenuItem = null;
 
     // End the selection mode
-    mPhotobookAdaptor.setSelectionMode( false );
+    mCalendarAdaptor.setSelectionMode( false );
 
     setForwardsButtonEnabled( true );
     }
@@ -722,8 +729,8 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
    *****************************************************/
   private void enforceAssetListSize()
     {
-    // Calculate the required number of assets: front cover + content pages
-    int requiredAssetCount = 1 + mProduct.getQuantityPerSheet();
+    // Calculate the required number of assets: pages
+    int requiredAssetCount = MONTHS_PER_YEAR * mProduct.getGridCountX() * mProduct.getGridCountY();
 
 
     // Remove any excess assets
@@ -745,25 +752,25 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
 
   /*****************************************************
    *
-   * Sets up the list view.
+   * Sets up the calendar view.
    *
    *****************************************************/
-  private void setUpListView()
+  private void setUpCalendarView()
     {
-    // Set up the photobook view
+    // Set up the calendar view
 
-    mPhotobookAdaptor = new PhotobookAdaptor( mKiteActivity, mProduct, mImageSpecArrayList, this );
+    mCalendarAdaptor = new CalendarAdaptor( mKiteActivity, mProduct, mImageSpecArrayList, this );
 
-    mPhotobookView.setAdapter( mPhotobookAdaptor );
+    mCalendarView.setAdapter( mCalendarAdaptor );
 
 
     // Restore any state
 
-    if ( mPhotobookViewState != null )
+    if ( mCalendarViewState != null )
       {
-      mPhotobookView.onRestoreInstanceState( mPhotobookViewState );
+      mCalendarView.onRestoreInstanceState( mCalendarViewState );
 
-      mPhotobookViewState = null;
+      mCalendarViewState = null;
       }
     }
 
@@ -833,7 +840,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     {
     stopAutoScroll();
 
-    mPhotobookAdaptor.clearHighlightedAsset();
+    mCalendarAdaptor.clearHighlightedAsset();
 
     // Determine which asset the drag ended on
     int dropImageIndex = imageIndexFromPoint( dropX, dropY );
@@ -853,7 +860,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
         mImageSpecArrayList.set( mDraggedImageIndex, dropImageSpec );
 
 
-        mPhotobookAdaptor.notifyDataSetChanged();
+        mCalendarAdaptor.notifyDataSetChanged();
         }
       }
 
@@ -867,18 +874,30 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
    *****************************************************/
   private int imageIndexFromPoint( int x, int y )
     {
-    int position = mPhotobookView.positionFromPoint( x, y );
+    int  monthIndex = mCalendarView.positionFromPoint( x, y );
+    View pageView   = mCalendarView.findChildViewUnder( x, y );
 
-    if ( position == PhotobookAdaptor.FRONT_COVER_POSITION )
+
+    // Convert the point into an image / asset index. Remember that the grid
+    // is a square at the top of the page view.
+
+    if ( monthIndex >= 0 && monthIndex < MONTHS_PER_YEAR && pageView != null )
       {
-      return ( 0 );
+      int gridCountX    = mProduct.getGridCountX();
+      int gridCountY    = mProduct.getGridCountY();
+      int gridSize      = pageView.getWidth() / gridCountX;
+
+      int gridX = ( x - pageView.getLeft() ) / gridSize;
+      int gridY = ( y - pageView.getTop()  ) / gridSize;
+
+      if ( gridX >= 0 && gridX < gridCountX && gridY >= 0 && gridY < gridCountY )
+        {
+        return ( ( monthIndex * gridCountX * gridCountY ) +
+                 ( gridY * gridCountX ) +
+                   gridX );
+        }
       }
-    else if ( position >= PhotobookAdaptor.CONTENT_START_POSITION )
-      {
-      return ( 1 +
-               ( ( position - PhotobookAdaptor.CONTENT_START_POSITION ) * 2 ) +
-               ( x > ( mPhotobookView.getWidth() / 2 ) ? 1 : 0 ) );
-      }
+
 
     return ( -1 );
     }
@@ -893,8 +912,8 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
    *****************************************************/
   public interface ICallback
     {
-    public void pbOnEdit( int assetIndex );
-    public void pbOnNext();
+    public void calOnEdit( int assetIndex );
+    public void calOnNext();
     }
 
 
@@ -930,9 +949,9 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
 
         long elapsedTimeMillis = currentRealtimeMillis - mLastScrollRealtimeMillis;
 
-        int scrollPixels = (int)( ( mPhotobookView.getHeight() * ( (float)elapsedTimeMillis / 1000f ) ) * mSpeedAsProportionPerSecond );
+        int scrollPixels = (int)( ( mCalendarView.getHeight() * ( (float)elapsedTimeMillis / 1000f ) ) * mSpeedAsProportionPerSecond );
 
-        mPhotobookView.scrollBy( 0, scrollPixels );
+        mCalendarView.scrollBy( 0, scrollPixels );
         }
 
 
@@ -956,7 +975,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     @Override
     public void run()
       {
-      ( (ICallback)mKiteActivity ).pbOnNext();
+      ( (ICallback)mKiteActivity ).calOnNext();
       }
     }
 

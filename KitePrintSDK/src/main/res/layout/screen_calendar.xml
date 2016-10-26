@@ -1,0 +1,36 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true"
+    android:background="@color/product_creation_background">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
+
+        <include layout="@layout/include_small_progress_bar"/>
+
+        <ly.kite.widget.ExtendedRecyclerView
+            android:id="@+id/calendar_view"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:paddingLeft="@dimen/screen_horizontal_margin"
+            android:paddingRight="@dimen/screen_horizontal_margin"/>
+
+        <include layout="@layout/include_calendar_cta_bar"/>
+
+    </LinearLayout>
+
+    <ly.kite.widget.PromptTextFrame
+        android:id="@+id/prompt_text_frame"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        custom:promptText="@string/multi_page_instructions"
+        android:layerType="hardware"/>
+
+</FrameLayout>

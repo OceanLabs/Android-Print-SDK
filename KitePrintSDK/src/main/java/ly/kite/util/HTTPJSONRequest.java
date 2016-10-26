@@ -44,6 +44,7 @@ import java.io.InputStreamReader;
 import java.util.Map;
 
 import org.apache.http.HttpResponse;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
@@ -128,9 +129,21 @@ public class HTTPJSONRequest extends HTTPRequest
 
     if ( ! bodyJSONString.trim().equals( "" ) )
       {
-      JSONTokener tokener = new JSONTokener( bodyJSONString );
+      try
+        {
+        JSONTokener tokener = new JSONTokener( bodyJSONString );
 
-      mJSONResponse = new JSONObject( tokener );
+        mJSONResponse = new JSONObject( tokener );
+        }
+      catch ( JSONException je )
+        {
+        // Display the body in the log. Sometimes the server returns non-JSON, which
+        // we want to see.
+        Log.e( LOG_TAG, "Unable to parse response as JSON:\n" + bodyJSONString, je );
+
+        // Re-throw the exception
+        throw ( je );
+        }
       }
     else
       {

@@ -61,7 +61,6 @@ import ly.kite.util.Asset;
 import ly.kite.catalogue.Product;
 import ly.kite.util.AssetFragment;
 import ly.kite.widget.EditableImageContainerFrame;
-import ly.kite.widget.PromptTextFrame;
 
 
 ///// Class Declaration /////
@@ -96,9 +95,7 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
 
   protected EditableImageContainerFrame  mEditableImageContainerFrame;
   private   ProgressBar                  mProgressSpinner;
-  private   PromptTextFrame              mPromptTextFrame;
 
-  protected boolean                      mShowPromptText;
   private   boolean                      mEditOperationInProgress;
 
   protected Asset                        mLastEditedAsset;
@@ -235,7 +232,6 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
 
     mEditableImageContainerFrame = (EditableImageContainerFrame)view.findViewById( R.id.editable_image_container_frame );
     mProgressSpinner             = (ProgressBar)view.findViewById( R.id.progress_spinner );
-    mPromptTextFrame             = (PromptTextFrame)view.findViewById( R.id.prompt_text_frame );
 
 
     // If there is a container frame - set the callback.
@@ -260,15 +256,6 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
   public void onActivityCreated( Bundle savedInstanceState )
     {
     super.onActivityCreated( savedInstanceState );
-
-
-    // Only show the prompt animation the first time this
-    // screen is displayed.
-
-    if ( savedInstanceState == null && mPromptTextFrame != null )
-      {
-      mShowPromptText = true;
-      }
 
 
     // Try to restore any previous cropping
@@ -392,16 +379,7 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
     {
     if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "onLoadComplete()" );
 
-    // Once both the image and the mask have been loaded -
-    // display any prompt text.
-
-    if ( mShowPromptText && mPromptTextFrame != null )
-      {
-      mShowPromptText = false;
-
-      mPromptTextFrame.startDisplayCycle();
-      }
-
+    onScreenReady();
 
     // Enable any confirm button
     setForwardsButtonEnabled( true );

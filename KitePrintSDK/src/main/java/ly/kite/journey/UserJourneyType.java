@@ -66,6 +66,8 @@ public enum UserJourneyType
   {
   CIRCLE        ( R.drawable.filled_white_circle,    EditableMaskedImageView.BorderHighlight.OVAL ),
 
+  CALENDAR      ( R.drawable.filled_white_rectangle, EditableMaskedImageView.BorderHighlight.RECTANGLE ),
+
   FRAME,
 
   GREETINGCARD  ( R.drawable.filled_white_rectangle, EditableMaskedImageView.BorderHighlight.RECTANGLE )

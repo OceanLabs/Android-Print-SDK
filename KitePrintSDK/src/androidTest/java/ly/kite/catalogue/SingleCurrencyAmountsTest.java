@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * SingleCurrencyAmountTest.java
+ * SingleCurrencyAmountsTest.java
  *
  *
  * Modified MIT License
@@ -56,12 +56,12 @@ import java.util.Locale;
  * This class tests the single currency amount class.
  *
  *****************************************************/
-public class SingleCurrencyAmountTest extends TestCase
+public class SingleCurrencyAmountsTest extends TestCase
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG = "SingleCurrencyAmountTest";
+  private static final String  LOG_TAG = "SingleCurrencyAmountsTest";
 
 
   ////////// Static Variable(s) //////////
@@ -120,15 +120,27 @@ public class SingleCurrencyAmountTest extends TestCase
     Assert.assertEquals( "GBP", amount.getCurrencyCode() );
     Assert.assertEquals( 23.20, amount.getAmountAsDouble() );
     Assert.assertEquals( null, amount.getFormattedAmount() );
+    Assert.assertEquals( 0d, amount.getOriginalAmountAsDouble() );
     }
 
   public void testConstructor4()
     {
-    SingleCurrencyAmounts amount = new SingleCurrencyAmounts( Currency.getInstance( "GBP" ), BigDecimal.valueOf( 23.20 ), "$23.40" );
+    SingleCurrencyAmounts amount = new SingleCurrencyAmounts( Currency.getInstance( "GBP" ), BigDecimal.valueOf( 23.20 ), "£23.40" );
 
     Assert.assertEquals( "GBP", amount.getCurrencyCode() );
     Assert.assertEquals( 23.20, amount.getAmountAsDouble() );
-    Assert.assertEquals( "$23.40", amount.getFormattedAmount() );
+    Assert.assertEquals( "£23.40", amount.getFormattedAmount() );
+    Assert.assertEquals( 0d, amount.getOriginalAmountAsDouble() );
+    }
+
+  public void testConstructor5()
+    {
+    SingleCurrencyAmounts amount = new SingleCurrencyAmounts( Currency.getInstance( "GBP" ), BigDecimal.valueOf( 23.20 ), "£23.40", BigDecimal.valueOf( 25.00 ) );
+
+    Assert.assertEquals( "GBP", amount.getCurrencyCode() );
+    Assert.assertEquals( 23.20, amount.getAmountAsDouble() );
+    Assert.assertEquals( "£23.40", amount.getFormattedAmount() );
+    Assert.assertEquals( 25.00, amount.getOriginalAmountAsDouble() );
     }
 
 
@@ -153,6 +165,7 @@ public class SingleCurrencyAmountTest extends TestCase
     Assert.assertEquals( "USD", readAmount.getCurrencyCode() );
     Assert.assertEquals( 4.99,  readAmount.getAmountAsDouble() );
     Assert.assertEquals( null,  readAmount.getFormattedAmount() );
+    Assert.assertEquals( 0d,  readAmount.getOriginalAmountAsDouble() );
 
     parcel.recycle();
     }
@@ -171,6 +184,26 @@ public class SingleCurrencyAmountTest extends TestCase
     Assert.assertEquals( "USD",    readAmount.getCurrencyCode() );
     Assert.assertEquals( 4.99,     readAmount.getAmountAsDouble() );
     Assert.assertEquals( "£12.99", readAmount.getFormattedAmount() );
+    Assert.assertEquals( 0d,  readAmount.getOriginalAmountAsDouble() );
+
+    parcel.recycle();
+    }
+
+  public void testParcel3()
+    {
+    SingleCurrencyAmounts writeAmount = new SingleCurrencyAmounts( Currency.getInstance( "USD" ), BigDecimal.valueOf( 4.99 ), "£12.99", BigDecimal.valueOf ( 7.99 ) );
+
+    Parcel parcel = Parcel.obtain();
+
+    writeAmount.writeToParcel( parcel, 0 );
+
+    parcel.setDataPosition( 0 );
+    SingleCurrencyAmounts readAmount = new SingleCurrencyAmounts( parcel );
+
+    Assert.assertEquals( "USD",    readAmount.getCurrencyCode() );
+    Assert.assertEquals( 4.99,     readAmount.getAmountAsDouble() );
+    Assert.assertEquals( "£12.99", readAmount.getFormattedAmount() );
+    Assert.assertEquals(7.99,  readAmount.getOriginalAmountAsDouble() );
 
     parcel.recycle();
     }
@@ -266,6 +299,16 @@ public class SingleCurrencyAmountTest extends TestCase
     Locale locale = new Locale( "en", "ZZ" );
 
     Assert.assertEquals( "GBP 2.99", amount.getDisplayAmountForLocale( locale ) );
+    }
+
+  public void testDisplayAmount8()
+    {
+    SingleCurrencyAmounts amount = new SingleCurrencyAmounts( Currency.getInstance( "GBP" ), BigDecimal.valueOf( 2.99 ), BigDecimal.valueOf( 4.99 ) );
+
+    Locale locale = new Locale( "en", "ZZ" );
+
+    Assert.assertEquals( "GBP 2.99", amount.getDisplayAmountForLocale( locale ) );
+    Assert.assertEquals( "GBP 4.99", amount.getDisplayOriginalAmountForLocale( locale ) );
     }
 
 

@@ -65,6 +65,7 @@ import ly.kite.journey.AKiteFragment;
 import ly.kite.journey.IImageSpecStore;
 import ly.kite.catalogue.Product;
 import ly.kite.image.ImageAgent;
+import ly.kite.widget.PromptTextFrame;
 
 
 ///// Class Declaration /////
@@ -95,14 +96,17 @@ abstract public class AProductCreationFragment extends    AKiteFragment
   protected ArrayList<ImageSpec>          mImageSpecArrayList;
 
   private   ProgressBar                   mProgressBar;
+  private   PromptTextFrame               mPromptTextFrame;
   private   Button                        mProceedOverlayButton;
   private   Button                        mCancelButton;
   private   Button                        mConfirmButton;
   private   Button                        mCTABarLeftButton;
   private   Button                        mCTABarRightButton;
 
-  protected int mInitialImagesToCropCount;
-  protected int mRemainingImagesToCropCount;
+  protected boolean                       mShowPromptText;
+
+  protected int                           mInitialImagesToCropCount;
+  protected int                           mRemainingImagesToCropCount;
 
 
   ////////// Static Initialiser(s) //////////
@@ -157,6 +161,15 @@ abstract public class AProductCreationFragment extends    AKiteFragment
   public void onActivityCreated( Bundle savedInstanceState )
     {
     super.onActivityCreated( savedInstanceState );
+
+
+    // Only show the prompt animation the first time this
+    // screen is displayed.
+
+    if ( savedInstanceState == null && mPromptTextFrame != null )
+      {
+      mShowPromptText = true;
+      }
 
 
     // We can't get the shared assets and quantity list until after the
@@ -314,6 +327,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
   protected void onViewCreated( View view )
     {
     // Get references to any views
+    mPromptTextFrame      = (PromptTextFrame)view.findViewById( R.id.prompt_text_frame );
     mProgressBar          = (ProgressBar)view.findViewById( R.id.progress_bar );
     mProceedOverlayButton = (Button)view.findViewById( R.id.proceed_overlay_button );
     mCancelButton         = (Button)view.findViewById( R.id.cancel_button );
@@ -600,6 +614,24 @@ abstract public class AProductCreationFragment extends    AKiteFragment
    *****************************************************/
   protected void onAllImagesCropped()
     {
+    }
+
+
+  /*****************************************************
+   *
+   * Called by a child class when everything has been loaded
+   * or cropped, and the screen is ready to be used.
+   *
+   *****************************************************/
+  protected void onScreenReady()
+    {
+    // Display any prompt text
+    if ( mShowPromptText && mPromptTextFrame != null )
+      {
+      mShowPromptText = false;
+
+      mPromptTextFrame.startDisplayCycle();
+      }
     }
 
 
