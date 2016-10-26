@@ -44,6 +44,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Handler;
+import android.text.Html;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -153,7 +154,7 @@ public class PromptTextFrame extends FrameLayout
       TypedArray typedArray = context.obtainStyledAttributes( attributeSet, R.styleable.PromptTextFrame, defaultStyle, defaultStyle );
 
 
-      // If a prompt was defined in the XML then set it now.
+      // If a prompt was defined in the XML then set it now, respecting any tags.
 
       TypedValue value = new TypedValue();
 
@@ -161,7 +162,7 @@ public class PromptTextFrame extends FrameLayout
 
       if ( prompt != null )
         {
-        mPromptTextView.setText( prompt );
+        mPromptTextView.setText( Html.fromHtml( prompt ) );
         }
 
 

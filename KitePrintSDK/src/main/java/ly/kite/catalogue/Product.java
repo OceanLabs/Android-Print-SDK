@@ -115,8 +115,10 @@ public class Product implements IGroupOrProduct, Parcelable
   private String                            mType;
   private UserJourneyType                   mUserJourneyType;
   private int                               mQuantityPerSheet;
+  private int                               mGridCountX;
+  private int                               mGridCountY;
 
-  private MultipleCurrencyAmounts mCost;
+  private MultipleCurrencyAmounts           mCost;
   private MultipleDestinationShippingCosts  mShippingCosts;
   private URL                               mHeroImageURL;
   private int                               mLabelColour;
@@ -133,6 +135,8 @@ public class Product implements IGroupOrProduct, Parcelable
   private List<ProductOption>               mOptionList;
 
   private int                               mFlags;
+
+  private ArrayList<String>                 mCalendarImageURLStringList;
 
 
   ////////// Static Initialiser(s) //////////
@@ -295,6 +299,9 @@ public class Product implements IGroupOrProduct, Parcelable
     mUserJourneyType  = (userJourneyString != null ? UserJourneyType.valueOf( userJourneyString ) : null);
 
     mQuantityPerSheet = sourceParcel.readInt();
+    mGridCountX       = sourceParcel.readInt();
+    mGridCountY       = sourceParcel.readInt();
+
     mCost             = (MultipleCurrencyAmounts) sourceParcel.readParcelable( MultipleCurrencyAmounts.class.getClassLoader() );
     mShippingCosts    = (MultipleDestinationShippingCosts) sourceParcel.readParcelable( MultipleDestinationShippingCosts.class.getClassLoader() );
     mHeroImageURL     = (URL) sourceParcel.readSerializable();
@@ -315,6 +322,8 @@ public class Product implements IGroupOrProduct, Parcelable
     sourceParcel.readList( mOptionList, ProductOption.class.getClassLoader() );
 
     mFlags = sourceParcel.readInt();
+
+    mCalendarImageURLStringList = sourceParcel.createStringArrayList();
     }
 
 
@@ -347,6 +356,9 @@ public class Product implements IGroupOrProduct, Parcelable
     targetParcel.writeString( mType );
     targetParcel.writeString( mUserJourneyType != null ? mUserJourneyType.name() : null );
     targetParcel.writeInt( mQuantityPerSheet );
+    targetParcel.writeInt( mGridCountX );
+    targetParcel.writeInt( mGridCountY );
+
     targetParcel.writeParcelable( mCost, flags );
     targetParcel.writeParcelable( mShippingCosts, flags );
     targetParcel.writeSerializable( mHeroImageURL );
@@ -367,6 +379,8 @@ public class Product implements IGroupOrProduct, Parcelable
     targetParcel.writeList( mOptionList );
 
     targetParcel.writeInt( mFlags );
+
+    targetParcel.writeStringList( mCalendarImageURLStringList );
     }
 
 
@@ -496,6 +510,42 @@ public class Product implements IGroupOrProduct, Parcelable
   public int getQuantityPerSheet()
     {
     return ( mQuantityPerSheet );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the grid size.
+   *
+   *****************************************************/
+  public Product setGridSize( int gridCountX, int gridCountY )
+    {
+    mGridCountX = gridCountX;
+    mGridCountY = gridCountY;
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the X grid count.
+   *
+   *****************************************************/
+  public int getGridCountX()
+    {
+    return ( mGridCountX );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the Y grid count.
+   *
+   *****************************************************/
+  public int getGridCountY()
+    {
+    return ( mGridCountY );
     }
 
 
@@ -834,6 +884,30 @@ public class Product implements IGroupOrProduct, Parcelable
 
   /*****************************************************
    *
+   * Sets any calendar images.
+   *
+   *****************************************************/
+  public Product setCalendarImages( ArrayList<String> imageURLStringList )
+    {
+    mCalendarImageURLStringList = imageURLStringList;
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns any calendar images.
+   *
+   *****************************************************/
+  public ArrayList<String> getCalendarImages()
+    {
+    return ( mCalendarImageURLStringList );
+    }
+
+
+  /*****************************************************
+   *
    * Appends all the product images used by this product,
    * to the supplied list.
    *
@@ -878,7 +952,7 @@ public class Product implements IGroupOrProduct, Parcelable
    *****************************************************/
   public SingleCurrencyAmounts getCostWithFallback( Locale locale )
     {
-    return ( mCost.getAmountWithFallback( Currency.getInstance( locale ) ) );
+    return ( mCost.getAmountsWithFallback( Currency.getInstance( locale ) ) );
     }
 
 

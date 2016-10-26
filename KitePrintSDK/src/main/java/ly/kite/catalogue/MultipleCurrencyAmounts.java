@@ -343,7 +343,7 @@ public class MultipleCurrencyAmounts implements Parcelable
    * if the amount is not known in the requested currency.
    *
    *****************************************************/
-  public SingleCurrencyAmounts getAmountWithFallback( Currency preferredCurrency )
+  public SingleCurrencyAmounts getAmountsWithFallback( Currency preferredCurrency )
     {
     return ( getAmountsWithFallback( preferredCurrency.getCurrencyCode() ) );
     }
@@ -355,7 +355,7 @@ public class MultipleCurrencyAmounts implements Parcelable
    * if the amount is not known in the requested currency.
    *
    *****************************************************/
-  public SingleCurrencyAmounts getAmountWithFallbackMultipliedBy( int quantity, Currency preferredCurrency )
+  public SingleCurrencyAmounts getAmountsWithFallbackMultipliedBy( int quantity, Currency preferredCurrency )
     {
     return ( getAmountsWithFallback( preferredCurrency.getCurrencyCode() ).multipliedBy( quantity ) );
     }
@@ -367,9 +367,9 @@ public class MultipleCurrencyAmounts implements Parcelable
    * if the amount is not known in the requested currency.
    *
    *****************************************************/
-  public SingleCurrencyAmounts getAmountWithFallback( Locale locale )
+  public SingleCurrencyAmounts getAmountsWithFallback( Locale locale )
     {
-    return ( getAmountWithFallback( Currency.getInstance( locale ) ) );
+    return ( getAmountsWithFallback( Currency.getInstance( locale ) ) );
     }
 
 

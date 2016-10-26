@@ -45,9 +45,9 @@
                     <ImageView
                         android:id="@+id/left_add_image_view"
                         android:layout_gravity="center"
-                        android:layout_width="@dimen/photobook_add_image_size"
-                        android:layout_height="@dimen/photobook_add_image_size"
-                        android:src="@drawable/photobook_add_image"
+                        android:layout_width="@dimen/multi_page_add_image_size"
+                        android:layout_height="@dimen/multi_page_add_image_size"
+                        android:src="@drawable/multi_page_add_image"
                         android:visibility="invisible"/>
                 </FrameLayout>
                 <FrameLayout
@@ -66,9 +66,9 @@
                     <ImageView
                         android:id="@+id/right_add_image_view"
                         android:layout_gravity="center"
-                        android:layout_width="@dimen/photobook_add_image_size"
-                        android:layout_height="@dimen/photobook_add_image_size"
-                        android:src="@drawable/photobook_add_image"
+                        android:layout_width="@dimen/multi_page_add_image_size"
+                        android:layout_height="@dimen/multi_page_add_image_size"
+                        android:src="@drawable/multi_page_add_image"
                         android:visibility="invisible"/>
                 </FrameLayout>
             </LinearLayout>

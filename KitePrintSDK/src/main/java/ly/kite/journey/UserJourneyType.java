@@ -66,6 +66,16 @@ public enum UserJourneyType
   {
   CIRCLE        ( R.drawable.filled_white_circle,    EditableMaskedImageView.BorderHighlight.OVAL ),
 
+  CALENDAR      ( R.drawable.filled_white_rectangle, EditableMaskedImageView.BorderHighlight.RECTANGLE )
+            {
+            // A calendar job is a standard order, but blank images are allowed
+            @Override
+            public void addJobsToOrder( Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, Order order )
+              {
+              addJobsToOrder( product, orderQuantity, optionsMap, imageSpecList, true, order );
+              }
+            },
+
   FRAME,
 
   GREETINGCARD  ( R.drawable.filled_white_rectangle, EditableMaskedImageView.BorderHighlight.RECTANGLE )
@@ -232,25 +242,51 @@ public enum UserJourneyType
    * job.
    *
    *****************************************************/
-  public void addJobsToOrder( Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, Order order )
+  void addJobsToOrder( Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, boolean nullImagesAreBlankPages, Order order )
     {
-    // Create a list of uploadable images.
+    // Create a list of images.
 
-    List<UploadableImage> uploadableImageList = new ArrayList<>();
+    List<AssetFragment> assetFragmentList = new ArrayList<>();
 
     for ( ImageSpec imageSpec : imageSpecList )
       {
-      AssetFragment assetFragment = imageSpec.getAssetFragment();
-      int           quantity      = imageSpec.getQuantity();
+      AssetFragment assetFragment;
+      int           quantity;
+
+      if ( imageSpec != null )
+        {
+        assetFragment = imageSpec.getAssetFragment();
+        quantity      = imageSpec.getQuantity();
+        }
+      else
+        {
+        assetFragment = null;
+        quantity      = ( nullImagesAreBlankPages ? 1 : 0 );
+        }
+
 
       // We need to duplicate images according to the ImageSpec quantity.
       for ( int index = 0; index < quantity; index ++ )
         {
-        uploadableImageList.add( new UploadableImage( assetFragment ) );
+        assetFragmentList.add( assetFragment );
         }
       }
 
-    order.addJob( Job.createPrintJob( product, orderQuantity, optionsMap, uploadableImageList ) );
+    order.addJob( Job.createPrintJob( product, orderQuantity, optionsMap, assetFragmentList ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Creates a job from the supplied assets.
+   *
+   * The default implementation creates a generic print
+   * job.
+   *
+   *****************************************************/
+  public void addJobsToOrder( Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, Order order )
+    {
+    addJobsToOrder( product, orderQuantity, optionsMap, imageSpecList, false, order );
     }
 
 

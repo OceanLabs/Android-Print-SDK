@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * PhotobookView.java
+ * BorderTests.java
  *
  *
  * Modified MIT License
@@ -34,31 +34,30 @@
 
 ///// Package Declaration /////
 
-package ly.kite.journey.creation.photobook;
+package ly.kite.catalogue;
 
 
 ///// Import(s) /////
 
+import android.os.Parcel;
+
+import junit.framework.Assert;
+import junit.framework.TestCase;
+
 
 ///// Class Declaration /////
 
-import android.content.Context;
-import android.os.Parcelable;
-import android.support.v7.widget.RecyclerView;
-import android.util.AttributeSet;
-import android.view.View;
-
 /*****************************************************
  *
- * This class is a view that displays a photobook.
+ * This class tests the single currency amount class.
  *
  *****************************************************/
-public class PhotobookView extends RecyclerView
+public class BorderTests extends TestCase
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String  LOG_TAG = "PhotobookView";
+  private static final String  LOG_TAG = "BorderTests";
 
 
   ////////// Static Variable(s) //////////
@@ -75,65 +74,50 @@ public class PhotobookView extends RecyclerView
 
   ////////// Constructor(s) //////////
 
-  public PhotobookView( Context context )
-    {
-    super( context );
-    }
-
-  public PhotobookView( Context context, AttributeSet attrs )
-    {
-    super( context, attrs );
-    }
-
-  public PhotobookView( Context context, AttributeSet attrs, int defStyle )
-    {
-    super( context, attrs, defStyle );
-    }
-
-
-  ////////// RecyclerView Method(s) //////////
-
-  /*****************************************************
-   *
-   * Saves the instance state.
-   *
-   *****************************************************/
-  @Override
-  public Parcelable onSaveInstanceState()
-    {
-    return ( super.onSaveInstanceState() );
-    }
-
-
-  /*****************************************************
-   *
-   * Restores the instance state.
-   *
-   *****************************************************/
-  @Override
-  public void onRestoreInstanceState( Parcelable state )
-    {
-    super.onRestoreInstanceState( state );
-    }
-
 
   ////////// Method(s) //////////
 
   /*****************************************************
    *
-   * Returns a position corresponding to the supplied point.
+   * Constructor tests.
    *
    *****************************************************/
-  public int positionFromPoint( int x, int y )
+
+  public void testConstructor1()
     {
-    View childView = findChildViewUnder( x, y );
+    Border border = new Border( 1, 2, 3, 4 );
 
-    if ( childView != null )
-      {
-      return ( getChildAdapterPosition( childView ) );
-      }
+    Assert.assertEquals( 1, border.topPixels );
+    Assert.assertEquals( 2, border.rightPixels );
+    Assert.assertEquals( 3, border.bottomPixels );
+    Assert.assertEquals( 4, border.leftPixels );
+    }
 
-    return ( -1 );
+
+  /*****************************************************
+   *
+   * Parcel tests.
+   *
+   *****************************************************/
+
+  public void testParcel1()
+    {
+    Border originalBorder = new Border( 10, 11, 12, 13 );
+
+    Parcel parcel = Parcel.obtain();
+
+    originalBorder.writeToParcel( parcel, 0 );
+
+    parcel.setDataPosition( 0 );
+
+    Border readBorder = Border.CREATOR.createFromParcel( parcel );
+
+    Assert.assertEquals( 10, readBorder.topPixels );
+    Assert.assertEquals( 11, readBorder.rightPixels );
+    Assert.assertEquals( 12, readBorder.bottomPixels );
+    Assert.assertEquals( 13, readBorder.leftPixels );
+
+    parcel.recycle();
     }
 
 

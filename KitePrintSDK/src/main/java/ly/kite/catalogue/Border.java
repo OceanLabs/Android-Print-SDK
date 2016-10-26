@@ -54,158 +54,157 @@ import android.util.DisplayMetrics;
  *
  *****************************************************/
 public class Border implements Parcelable
-{
-    ////////// Static Constant(s) //////////
+  {
+  ////////// Static Constant(s) //////////
 
-    @SuppressWarnings( "unused" )
-    private static final String  LOG_TAG = "Bleed";
-
-
-    ////////// Static Variable(s) //////////
-
-    public static final Parcelable.Creator<Border> CREATOR =
-            new Parcelable.Creator<Border>()
-            {
-                public Border createFromParcel( Parcel sourceParcel )
-                {
-                    return ( new Border( sourceParcel ) );
-                }
-
-                public Border[] newArray( int size )
-                {
-                    return ( new Border[ size ] );
-                }
-            };
+  @SuppressWarnings( "unused" )
+  private static final String  LOG_TAG = "Bleed";
 
 
-    ////////// Member Variable(s) //////////
+  ////////// Static Variable(s) //////////
 
-    final public int  topPixels;
-    final public int  leftPixels;
-    final public int  rightPixels;
-    final public int  bottomPixels;
+  public static final Parcelable.Creator<Border> CREATOR =
+          new Parcelable.Creator<Border>()
+          {
+              public Border createFromParcel( Parcel sourceParcel )
+              {
+                  return ( new Border( sourceParcel ) );
+              }
+
+              public Border[] newArray( int size )
+              {
+                  return ( new Border[ size ] );
+              }
+          };
 
 
-    ////////// Static Initialiser(s) //////////
+  ////////// Member Variable(s) //////////
+
+  final public int  topPixels;
+  final public int  leftPixels;
+  final public int  rightPixels;
+  final public int  bottomPixels;
 
 
-    ////////// Static Method(s) //////////
+  ////////// Static Initialiser(s) //////////
 
 
-    ////////// Constructor(s) //////////
+  ////////// Static Method(s) //////////
 
-    public Border( int topPixels, int rightPixels, int bottomPixels, int leftPixels )
+
+  ////////// Constructor(s) //////////
+
+  public Border( int topPixels, int rightPixels, int bottomPixels, int leftPixels )
     {
-        this.topPixels    = topPixels;
-        this.leftPixels   = leftPixels;
-        this.rightPixels  = rightPixels;
-        this.bottomPixels = bottomPixels;
+    this.topPixels = topPixels;
+    this.leftPixels = leftPixels;
+    this.rightPixels = rightPixels;
+    this.bottomPixels = bottomPixels;
     }
 
 
-    // Constructor used by parcelable interface
-    private Border( Parcel sourceParcel )
+  // Constructor used by parcelable interface
+  private Border( Parcel sourceParcel )
     {
-        this.topPixels    = sourceParcel.readInt();
-        this.leftPixels   = sourceParcel.readInt();
-        this.rightPixels  = sourceParcel.readInt();
-        this.bottomPixels = sourceParcel.readInt();
+    this.topPixels    = sourceParcel.readInt();
+    this.leftPixels   = sourceParcel.readInt();
+    this.rightPixels  = sourceParcel.readInt();
+    this.bottomPixels = sourceParcel.readInt();
     }
 
 
-    ////////// Parcelable Method(s) //////////
+  ////////// Parcelable Method(s) //////////
 
-    /*****************************************************
-     *
-     * Describes the contents of this parcelable.
-     *
-     *****************************************************/
-    @Override
-    public int describeContents()
+  /*****************************************************
+   *
+   * Describes the contents of this parcelable.
+   *
+   *****************************************************/
+  @Override
+  public int describeContents()
     {
-        return ( 0 );
+    return ( 0 );
     }
 
 
-    /*****************************************************
-     *
-     * Write the contents of this product to a parcel.
-     *
-     *****************************************************/
-    @Override
-    public void writeToParcel( Parcel targetParcel, int flags )
+  /*****************************************************
+   *
+   * Write the contents of this product to a parcel.
+   *
+   *****************************************************/
+  @Override
+  public void writeToParcel( Parcel targetParcel, int flags )
     {
-        targetParcel.writeInt( this.topPixels );
-        targetParcel.writeInt( this.leftPixels );
-        targetParcel.writeInt( this.rightPixels );
-        targetParcel.writeInt( this.bottomPixels );
+    targetParcel.writeInt( this.topPixels );
+    targetParcel.writeInt( this.leftPixels );
+    targetParcel.writeInt( this.rightPixels );
+    targetParcel.writeInt( this.bottomPixels );
     }
 
 
-    ////////// Method(s) //////////
+  ////////// Method(s) //////////
 
-    /*****************************************************
-     *
-     * Creates a string representation of this Border.
-     *
-     *****************************************************/
-    @Override
-    public String toString()
+  /*****************************************************
+   *
+   * Creates a string representation of this Border.
+   *
+   *****************************************************/
+  @Override
+  public String toString()
     {
-        StringBuilder stringBuilder = new StringBuilder();
+    StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder
-                .append( "{ topPixels = " ).append( this.topPixels )
-                .append( ", leftPixels = " ).append( this.leftPixels )
-                .append( ", rightPixels = " ).append( this.rightPixels )
-                .append( ", bottomPixels = " ).append( this.bottomPixels ).append( " }" );
+    stringBuilder
+            .append( "{ topPixels = " ).append( this.topPixels )
+            .append( ", leftPixels = " ).append( this.leftPixels )
+            .append( ", rightPixels = " ).append( this.rightPixels )
+            .append( ", bottomPixels = " ).append( this.bottomPixels ).append( " }" );
 
-        return ( stringBuilder.toString() );
+    return ( stringBuilder.toString() );
     }
 
 
+  public int getTopDp( Context context )
+    {
+    return convertPixelsToDp( topPixels, context );
+    }
 
-    public int getTopDp( Context context )
-      {
-      return convertPixelsToDp( topPixels, context );
-      }
+  public int getRightDp( Context context )
+    {
+    return convertPixelsToDp( rightPixels, context );
+    }
 
-    public int getRightDp( Context context )
-      {
-      return convertPixelsToDp( rightPixels, context );
-      }
+  public int getBottomDp( Context context )
+    {
+    return convertPixelsToDp( bottomPixels, context );
+    }
 
-    public int getBottomDp( Context context )
-      {
-      return convertPixelsToDp( bottomPixels, context );
-      }
-
-    public int getLeftDp( Context context )
-      {
-      return convertPixelsToDp( leftPixels, context );
-      }
+  public int getLeftDp( Context context )
+    {
+    return convertPixelsToDp( leftPixels, context );
+    }
 
 
-    /*****************************************************
-     *
-     * This method converts device specific pixels to density independent pixels.
-     *
-     *****************************************************/
-    private static int convertPixelsToDp( float px, Context context )
-      {
-      Resources resources = context.getResources();
-      DisplayMetrics metrics = resources.getDisplayMetrics();
-      float dp = px / ( metrics.densityDpi / 160f );
-      return Math.round(dp);
-     }
+  /*****************************************************
+   *
+   * This method converts device specific pixels to density independent pixels.
+   *
+   *****************************************************/
+  private static int convertPixelsToDp( float px, Context context )
+    {
+    Resources resources = context.getResources();
+    DisplayMetrics metrics = resources.getDisplayMetrics();
+    float dp = px / ( metrics.densityDpi / 160f );
+    return Math.round( dp );
+    }
 
-    ////////// Inner Class(es) //////////
+  ////////// Inner Class(es) //////////
 
-    /*****************************************************
-     *
-     * ...
-     *
-     *****************************************************/
+  /*****************************************************
+   *
+   * ...
+   *
+   *****************************************************/
 
-}
+  }
 

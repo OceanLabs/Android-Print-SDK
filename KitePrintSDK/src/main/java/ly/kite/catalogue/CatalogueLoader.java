@@ -61,6 +61,7 @@ import ly.kite.KiteSDKException;
 import ly.kite.KiteSDK;
 import ly.kite.journey.creation.ProductCreationActivity;
 import ly.kite.journey.UserJourneyType;
+import ly.kite.util.Asset;
 import ly.kite.util.AssetHelper;
 import ly.kite.util.HTTPJSONRequest;
 import ly.kite.api.KiteAPIRequest;
@@ -89,18 +90,21 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
 
   static public  final long    ANY_AGE_OK                            = -1;
 
-  static private final String TEMPLATE_REQUEST_FORMAT_STRING         = "%s/template/?limit=100";
+  static private final String  TEMPLATE_REQUEST_FORMAT_STRING        = "%s/template/?limit=200";
 
   static private final String  JSON_NAME_ACTIVE                      = "active";
   static private final String  JSON_NAME_AMOUNT                      = "amount";
   static private final String  JSON_NAME_BACKGROUND_IMAGE_URL        = "product_background_image_url";
   static private final String  JSON_NAME_BOTTOM                      = "bottom";
+  static private final String  JSON_NAME_CALENDAR_ASSETS             = "ios_calendar_assets";
   static private final String  JSON_NAME_CURRENCY                    = "currency";
   static private final String  JSON_NAME_CENTIMETERS                 = "cm";
   static private final String  JSON_NAME_COST                        = "cost";
   static private final String  JSON_NAME_COVER_PHOTO_VARIANTS        = "cover_photo_variants";
   static private final String  JSON_NAME_DESCRIPTION                 = "description";
   static private final String  JSON_NAME_FORMATTED_AMOUNT            = "formatted";
+  static private final String  JSON_NAME_GRID_COUNT_X                = "grid_count_x";
+  static private final String  JSON_NAME_GRID_COUNT_Y                = "grid_count_y";
   static private final String  JSON_NAME_GROUP_IMAGE                 = "ios_sdk_class_photo";
   static private final String  JSON_NAME_GROUP_LABEL                 = "ios_sdk_product_class";
   static private final String  JSON_NAME_HEIGHT                      = "height";
@@ -145,6 +149,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
   static private final String  JSON_NAME_WIDTH                       = "width";
 
   static private final int     DEFAULT_IMAGES_PER_PAGE               = 1;
+  static private final int     DEFAULT_GRID_SIZE                     = 1;
 
   static private final String  COVER_PHOTO_VARIANT_ID_DEFAULT        = "default";
 
@@ -487,6 +492,38 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
 
   /****************************************************
    *
+   * Parses JSON calendar assets.
+   *
+   ****************************************************/
+  private static ArrayList<String> parseCalendarAssets( JSONArray assetsJSONArray )
+    {
+    ArrayList<String> imageURLStringList = new ArrayList<>();
+
+    if ( assetsJSONArray != null )
+      {
+      int assetCount = assetsJSONArray.length();
+
+      for ( int assetIndex = 0; assetIndex < assetCount; assetIndex ++ )
+        {
+        try
+          {
+          String imageURLString = assetsJSONArray.getString( assetIndex );
+
+          imageURLStringList.add( imageURLString );
+          }
+        catch ( JSONException je )
+          {
+          Log.e( LOG_TAG, "Unable to parse calendar assets: " + assetsJSONArray.toString(), je );
+          }
+        }
+      }
+
+    return ( imageURLStringList );
+    }
+
+
+  /****************************************************
+   *
    * Parses a JSON products array.
    *
    ****************************************************/
@@ -518,7 +555,9 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
         String                           productName        = productJSONObject.getString( JSON_NAME_PRODUCT_NAME );
         String                           productDescription = productJSONObject.getString( JSON_NAME_DESCRIPTION );
         int                              imagesPerPage      = productJSONObject.optInt( JSON_NAME_IMAGES_PER_PAGE, DEFAULT_IMAGES_PER_PAGE );
-        MultipleCurrencyAmounts cost               = parseCost( productJSONObject.getJSONArray( JSON_NAME_COST ) );
+        int                              gridCountX         = productJSONObject.optInt( JSON_NAME_GRID_COUNT_X, DEFAULT_GRID_SIZE );
+        int                              gridCountY         = productJSONObject.optInt( JSON_NAME_GRID_COUNT_Y, DEFAULT_GRID_SIZE );
+        MultipleCurrencyAmounts          cost               = parseCost( productJSONObject.getJSONArray( JSON_NAME_COST ) );
         boolean                          printInStore       = productJSONObject.optBoolean( JSON_NAME_PRINT_IN_STORE, false );
         MultipleDestinationShippingCosts shippingCosts      = parseShippingCosts( productJSONObject.getJSONObject( JSON_NAME_SHIPPING_COSTS ) );
 
@@ -567,7 +606,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
           }
         catch ( JSONException je)
           {
-            // Ignore
+          // Ignore
           }
 
 
@@ -584,9 +623,17 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
         List<ProductOption> productOptionList = parseProductOptions( productOptionJSONArray );
 
 
+        // Get any calendar assets
+
+        JSONArray calendarAssetsJSONArray = productJSONObject.optJSONArray( JSON_NAME_CALENDAR_ASSETS );
+
+        ArrayList<String> calendarImageURLStringList = parseCalendarAssets( calendarAssetsJSONArray );
+
+
         // Create the product and display it
 
         Product product = new Product( productId, productCode, productName, productType, labelColour, userJourneyType, imagesPerPage )
+                .setGridSize( gridCountX, gridCountY )
                 .setCost( cost )
                 .setDescription( productDescription )
                 .setShippingCosts( shippingCosts )
@@ -596,7 +643,8 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
                 .setSize( size )
                 .setCreationImage( imageAspectRatio, imageBorder )
                 .setProductOptions( productOptionList )
-                .setFlag( Product.Flag.PRINT_IN_STORE, printInStore );
+                .setFlag( Product.Flag.PRINT_IN_STORE, printInStore )
+                .setCalendarImages( calendarImageURLStringList );
 
 
         if ( backgroundImageURLString != null )

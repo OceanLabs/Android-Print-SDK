@@ -8,6 +8,7 @@
     <string name="title_create_phone_case">Lav mobiletui</string>
     <string name="title_image_source">Vælg billeder</string>
     <string name="title_photobook">Fotobog</string>
+    <string name="title_calendar">Kalender</string>
     <string name="title_basket">Kurv</string>
     <string name="title_payment_sandbox">Betaling (Snadbox))</string>
     <string name="title_payment">Betaling</string>
@@ -185,7 +186,7 @@
 
     <string name="phone_case_proceed_button_text">Næste</string>
 
-    <string name="photobook_instructions"><b>Klik</b> på billedet for at redigere,\n<b>Hold</b> for at genbestille.</string>
+    <string name="multi_page_instructions"><b>Klik</b> på billedet for at redigere,\n<b>Hold</b> for at genbestille.</string>
 
     <string name="address_book_empty">Adressebogen er tom</string>
 
