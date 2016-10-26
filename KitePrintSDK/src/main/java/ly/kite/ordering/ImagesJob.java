@@ -63,6 +63,12 @@ public class ImagesJob extends Job
     }
 
 
+  public ImagesJob( Product product, int orderQuantity, HashMap<String,String> optionsMap, List<?> objectList, boolean nullImagesAreBlank )
+    {
+    this( 0, product, orderQuantity, optionsMap, objectList, nullImagesAreBlank );
+    }
+
+
   public ImagesJob( Product product, int orderQuantity, HashMap<String,String> optionsMap, List<?> objectList )
     {
     this( 0, product, orderQuantity, optionsMap, objectList, false );

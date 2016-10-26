@@ -16,8 +16,7 @@
 
         <ly.kite.widget.ExtendedRecyclerView
             android:id="@+id/calendar_view"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            style="@style/single_column_inset_layout"
             android:layout_weight="1.0"
             android:paddingLeft="@dimen/screen_horizontal_margin"
             android:paddingRight="@dimen/screen_horizontal_margin"/>

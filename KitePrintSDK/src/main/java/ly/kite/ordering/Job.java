@@ -62,9 +62,14 @@ public abstract class Job implements Parcelable
    *
    *****************************************************/
 
+  static public Job createPrintJob( Product product, int orderQuantity, HashMap<String, String> optionsMap, List<?> imageList, boolean nullImagesAreBlank )
+    {
+    return ( new ImagesJob( product, orderQuantity, optionsMap, imageList, nullImagesAreBlank ) );
+    }
+
   static public Job createPrintJob( Product product, int orderQuantity, HashMap<String, String> optionsMap, List<?> imageList )
     {
-    return ( new ImagesJob( product, orderQuantity, optionsMap, imageList ) );
+    return ( createPrintJob( product, orderQuantity, optionsMap, imageList, false ) );
     }
 
   static public Job createPrintJob( Product product, HashMap<String, String> optionsMap, List<?> imageList )
