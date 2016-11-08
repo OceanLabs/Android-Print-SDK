@@ -46,15 +46,12 @@ import android.app.Dialog;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
 import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.util.LogWriter;
 import android.text.Editable;
 import android.text.SpannableString;
@@ -69,14 +66,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import org.json.JSONObject;
 
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Random;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
@@ -344,8 +340,8 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
 
 
     // Get references to any call-to-action bar buttons
-    mCTABarLeftButton  = (Button)findViewById( R.id.cta_bar_left_button );
-    mCTABarRightButton = (Button)findViewById( R.id.cta_bar_right_button );
+    mCTABarLeftButton  = (Button)findViewById( R.id.cta_bar_left_text_view );
+    mCTABarRightButton = (Button)findViewById( R.id.cta_bar_right_text_view );
 
     // Automatically add listeners
     if ( mCTABarLeftButton  != null ) mCTABarLeftButton.setOnClickListener( this );
@@ -746,7 +742,7 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
       {
       ///// CTA bar left button /////
 
-      onLeftButtonClicked();
+      onLeftClicked();
 
       return;
       }
@@ -755,7 +751,7 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
       {
       ///// CTA bar right button /////
 
-      onRightButtonClicked();
+      onRightClicked();
 
       return;
       }
@@ -1369,7 +1365,7 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
 
   /*****************************************************
    *
-   * Returns the left button.
+   * Returns the left text view.
    *
    *****************************************************/
   protected Button getLeftButton()
@@ -1380,7 +1376,7 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
 
   /*****************************************************
    *
-   * Returns the right button.
+   * Returns the right text view.
    *
    *****************************************************/
   protected Button getRightButton()
@@ -1391,12 +1387,34 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
 
   /*****************************************************
    *
-   * Sets the text of a button.
+   * Sets the text of a text view.
    *
    *****************************************************/
-  private void setButtonText( Button button, String text )
+  private void setText( TextView textView, String text )
     {
-    if ( button != null ) button.setText( text );
+    if ( textView != null ) textView.setText( text );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the text of any left text view.
+   *
+   *****************************************************/
+  protected void setLeftText( String text )
+    {
+    setText( getLeftButton(), text );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the text of any right text view
+   *
+   *****************************************************/
+  protected void setRightText( String text )
+    {
+    setText( getRightButton(), text );
     }
 
 
@@ -1405,9 +1423,9 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
    * Sets the text of any left button.
    *
    *****************************************************/
-  protected void setLeftButtonText( String text )
+  protected void setLeftText( int textResourceId )
     {
-    setButtonText( getLeftButton(), text );
+    setLeftText( getString( textResourceId ) );
     }
 
 
@@ -1416,80 +1434,58 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
    * Sets the text of any right button.
    *
    *****************************************************/
-  protected void setRightButtonText( String text )
+  protected void setRightText( int textResourceId )
     {
-    setButtonText( getRightButton(), text );
+    setRightText( getString( textResourceId ) );
     }
 
 
   /*****************************************************
    *
-   * Sets the text of any left button.
+   * Sets the colour of any left text view.
    *
    *****************************************************/
-  protected void setLeftButtonText( int textResourceId )
+  private void setColourRes( TextView textView, int colourResourceId )
     {
-    setLeftButtonText( getString( textResourceId ) );
-    }
-
-
-  /*****************************************************
-   *
-   * Sets the text of any right button.
-   *
-   *****************************************************/
-  protected void setRightButtonText( int textResourceId )
-    {
-    setRightButtonText( getString( textResourceId ) );
-    }
-
-
-  /*****************************************************
-   *
-   * Sets the colour of any left button.
-   *
-   *****************************************************/
-  private void setButtonColourRes( Button button, int colourResourceId )
-    {
-    if ( button != null )
+    if ( textView != null )
       {
       Resources resources = getResources();
 
-      button.setTextColor( resources.getColor( colourResourceId ) );
+      textView.setTextColor( resources.getColor( colourResourceId ) );
       }
     }
 
 
   /*****************************************************
    *
-   * Sets the colour of any left button.
+   * Sets the colour of any left text view.
    *
    *****************************************************/
-  protected void setLeftButtonColourRes( int colourResourceId )
+  protected void setLeftColourRes( int colourResourceId )
     {
-    setButtonColourRes( getLeftButton(), colourResourceId );
+    setColourRes( getLeftButton(), colourResourceId );
     }
 
 
   /*****************************************************
    *
-   * Sets the colour of any right button.
+   * Sets the colour of any right text view.
    *
    *****************************************************/
-  protected void setRightButtonColourRes( int colourResourceId )
+  protected void setRightColourRes( int colourResourceId )
     {
-    setButtonColourRes( getRightButton(), colourResourceId );
+    setColourRes( getRightButton(), colourResourceId );
     }
 
 
   /*****************************************************
    *
-   * Sets the enabled state of a button.
+   * Sets the enabled state of a text view.
    *
    *****************************************************/
-  private void setButtonEnabled( Button button, boolean enabled )
+  protected void setEnabled( TextView textView, boolean enabled )
     {
-    if ( button != null ) button.setEnabled( enabled );
+    if ( textView != null ) textView.setEnabled( enabled );
     }
 
 
@@ -1498,9 +1494,9 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
    * Sets the enabled state of any left button.
    *
    *****************************************************/
-  protected void setLeftButtonEnabled( boolean enabled )
+  protected void setLeftEnabled( boolean enabled )
     {
-    setButtonEnabled( getLeftButton(), enabled );
+    setEnabled( getLeftButton(), enabled );
     }
 
 
@@ -1509,20 +1505,20 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
    * Sets the enabled state of any right button.
    *
    *****************************************************/
-  protected void setRightButtonEnabled( boolean enabled )
+  protected void setRightEnabled( boolean enabled )
     {
-    setButtonEnabled( getRightButton(), enabled );
+    setEnabled( getRightButton(), enabled );
     }
 
 
   /*****************************************************
    *
-   * Sets the visible state of a button.
+   * Sets the visible state of a view.
    *
    *****************************************************/
-  private void setButtonVisible( Button button, boolean visible )
+  private void setVisible( View view, boolean visible )
     {
-    if ( button != null ) button.setVisibility( visible ? View.VISIBLE : View.INVISIBLE );
+    if ( view != null ) view.setVisibility( visible ? View.VISIBLE : View.INVISIBLE );
     }
 
 
@@ -1531,9 +1527,9 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
    * Sets the visible state of any left button.
    *
    *****************************************************/
-  protected void setLeftButtonVisible( boolean visible )
+  protected void setLeftVisible( boolean visible )
     {
-    setButtonVisible( getLeftButton(), visible );
+    setVisible( getLeftButton(), visible );
     }
 
 
@@ -1542,18 +1538,18 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
    * Sets the visible state of any right button.
    *
    *****************************************************/
-  protected void setRightButtonVisible( boolean visible )
+  protected void setRightVisible( boolean visible )
     {
-    setButtonVisible( getRightButton(), visible );
+    setVisible( getRightButton(), visible );
     }
 
 
   /*****************************************************
    *
-   * Called when the left CTA button is clicked.
+   * Called when the left CTA text view is clicked.
    *
    *****************************************************/
-  protected void onLeftButtonClicked()
+  protected void onLeftClicked()
     {
     }
 
@@ -1563,7 +1559,7 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
    * Called when the right CTA button is clicked.
    *
    *****************************************************/
-  protected void onRightButtonClicked()
+  protected void onRightClicked()
     {
     }
 

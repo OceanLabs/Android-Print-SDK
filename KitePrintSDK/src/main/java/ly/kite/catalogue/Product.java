@@ -436,6 +436,30 @@ public class Product implements IGroupOrProduct, Parcelable
 
   /*****************************************************
    *
+   * Returns a display price.
+   *
+   *****************************************************/
+  @Override
+  public String getDisplayPrice( String preferredCurrency )
+    {
+    return ( mCost.getDefaultDisplayAmountWithFallback( preferredCurrency ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a description, or null if there is no
+   * description.
+   *
+   *****************************************************/
+  public String getDescription()
+    {
+    return ( mDescription );
+    }
+
+
+  /*****************************************************
+   *
    * Returns true or false according to whether a flag is
    * set.
    *
@@ -477,17 +501,6 @@ public class Product implements IGroupOrProduct, Parcelable
     mDescription = description;
 
     return ( this );
-    }
-
-
-  /*****************************************************
-   *
-   * Returns the description.
-   *
-   *****************************************************/
-  public String getDescription()
-    {
-    return ( mDescription );
     }
 
 
@@ -558,18 +571,6 @@ public class Product implements IGroupOrProduct, Parcelable
   public boolean containsMultiplePrices()
     {
     return ( false );
-    }
-
-
-  /*****************************************************
-   *
-   * Returns a display price.
-   *
-   *****************************************************/
-  @Override
-  public String getDisplayPrice( String preferredCurrency )
-    {
-    return ( mCost.getDefaultDisplayAmountWithFallback( preferredCurrency ) );
     }
 
 

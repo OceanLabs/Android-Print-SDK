@@ -12,10 +12,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import java.util.Locale;
 
-import ly.kite.KiteSDK;
 import ly.kite.R;
 
 public class AddressEditActivity extends AAddressActivity implements View.OnClickListener
@@ -35,7 +35,7 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
   private EditText  mAddressCountyEditText;
   private EditText  mAddressPostcodeEditText;
   private EditText  mEmailAddressEditText;
-  private Button    mProceedButton;
+  private TextView  mProceedTextView;
 
 
 
@@ -106,7 +106,7 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
     mAddressPostcodeEditText = (EditText)findViewById( R.id.edit_text_address_postcode );
     mEmailAddressEditText    = (EditText)findViewById( R.id.edit_text_email_address    );
 
-    mProceedButton           = (Button)findViewById( R.id.proceed_overlay_button );
+    mProceedTextView         = (TextView)findViewById( R.id.proceed_overlay_text_view );
 
 
     setTitle( R.string.title_activity_address_edit );
@@ -185,14 +185,14 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
       }
 
 
-    mProceedButton.setText( R.string.address_edit_proceed_button_text );
+    mProceedTextView.setText( R.string.address_edit_proceed_button_text );
 
 
     // hide keyboard initially
     this.getWindow().setSoftInputMode( WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN );
 
 
-    mProceedButton.setOnClickListener( this );
+    mProceedTextView.setOnClickListener( this );
     }
 
 
@@ -250,7 +250,7 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
   @Override
   public void onClick( View view )
     {
-    if ( view == mProceedButton )
+    if ( view == mProceedTextView )
       {
       onSaveClicked();
 

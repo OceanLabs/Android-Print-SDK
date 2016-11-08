@@ -137,6 +137,17 @@ public class AREImageView extends ImageView
     }
 
 
+  /*****************************************************
+   *
+   * Sets the aspect ratio.
+   *
+   *****************************************************/
+  public void setAspectRatio( float aspectRatio )
+    {
+    mAspectRatioEnforcer.setAspectRatio( aspectRatio );
+    }
+
+
   ////////// Inner Class(es) //////////
 
   /*****************************************************

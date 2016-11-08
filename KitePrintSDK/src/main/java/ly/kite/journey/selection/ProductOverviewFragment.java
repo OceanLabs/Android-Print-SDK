@@ -132,11 +132,18 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
   private View                     mOverlaidComponents;
   private ViewPager                mProductImageViewPager;
   private PagingDots               mPagingDots;
-  private Button                   mOverlaidStartButton;
+  private View                     mThemableMainStartView;
+  private View                     mNonThemableMainStartView;
+  private View                     mMainStartView;  // References either themable or non-themable view
   private SlidingOverlayFrame      mSlidingOverlayFrame;
-  private View                     mDrawerControlLayout;
+  private View                     mToggleDrawerView;
+  private View                     mOpenDrawerView;
+  private View                     mCloseDrawerView;
   private ImageView                mOpenCloseDrawerIconImageView;
-  private Button                   mProceedOverlayButton;
+  private TextView                 mProceedOverlayTextView;
+  private View                     mThemableDrawerStartView;
+  private View                     mNonThemableDrawerStartView;
+  private View                     mDrawerStartView;
 
   private PagerAdapter             mProductImageAdaptor;
 
@@ -257,11 +264,25 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
     mProductImageViewPager              = (ViewPager)mContentView.findViewById( R.id.view_pager );
     mOverlaidComponents                 = mContentView.findViewById( R.id.overlaid_components );
     mPagingDots                         = (PagingDots)mContentView.findViewById( R.id.paging_dots );
-    mOverlaidStartButton                = (Button)mContentView.findViewById( R.id.overlaid_start_button );
+    mThemableMainStartView              = mContentView.findViewById( R.id.themable_main_start_view );
+    mNonThemableMainStartView           = mContentView.findViewById( R.id.non_themable_main_start_view );
     mSlidingOverlayFrame                = (SlidingOverlayFrame)mContentView.findViewById( R.id.sliding_overlay_frame );
-    mDrawerControlLayout                = mContentView.findViewById( R.id.drawer_control_layout );
+    mToggleDrawerView                   = mContentView.findViewById( R.id.toggle_drawer_view );
+    mOpenDrawerView                     = mContentView.findViewById( R.id.open_drawer_view );
+    mCloseDrawerView                    = mContentView.findViewById( R.id.close_drawer_view );
     mOpenCloseDrawerIconImageView       = (ImageView)mContentView.findViewById( R.id.open_close_drawer_icon_image_view );
-    mProceedOverlayButton               = (Button)mContentView.findViewById( R.id.proceed_overlay_button );
+    mProceedOverlayTextView             = (TextView)mContentView.findViewById( R.id.proceed_overlay_text_view );
+    mThemableDrawerStartView            = mContentView.findViewById( R.id.themable_drawer_start_view );
+    mNonThemableDrawerStartView         = mContentView.findViewById( R.id.non_themable_drawer_start_view );
+
+    // Determine the main start view
+    if ( mThemableMainStartView != null ) mMainStartView = mThemableMainStartView;
+    else                                  mMainStartView = mNonThemableMainStartView;
+
+    // Determine the drawer start view
+    if      ( mProceedOverlayTextView  != null ) mDrawerStartView = mProceedOverlayTextView;
+    else if ( mThemableDrawerStartView != null ) mDrawerStartView = mThemableDrawerStartView;
+    else                                         mDrawerStartView = mNonThemableDrawerStartView;
 
 
     // Check if we can set up the the screen yet
@@ -413,9 +434,17 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
     // Anything that's not the drawer control is assumed to be
     // one of the start buttons.
 
-    if ( view == mDrawerControlLayout )
+    if ( view == mToggleDrawerView )
       {
       toggleSliderState();
+      }
+    else if ( mOpenDrawerView != null && view == mOpenDrawerView )
+      {
+      if ( mSlidingOverlayFrame != null && ! mSlidingOverlayFrame.sliderIsExpanded() ) toggleSliderState();
+      }
+    else if ( mCloseDrawerView != null && view == mCloseDrawerView )
+      {
+      if ( mSlidingOverlayFrame != null && mSlidingOverlayFrame.sliderIsExpanded() ) toggleSliderState();
       }
     else
       {
@@ -517,7 +546,8 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
       {
       mSlidingOverlayFrame.snapToExpandedState( mExpandSlidingDrawerAtStart );
       mSlidingOverlayFrame.setSlideAnimationDuration( SLIDE_ANIMATION_DURATION_MILLIS );
-      mOpenCloseDrawerIconImageView.setRotation( mExpandSlidingDrawerAtStart ? OPEN_CLOSE_ICON_ROTATION_DOWN : OPEN_CLOSE_ICON_ROTATION_UP );
+
+      if ( mOpenCloseDrawerIconImageView != null ) mOpenCloseDrawerIconImageView.setRotation( mExpandSlidingDrawerAtStart ? OPEN_CLOSE_ICON_ROTATION_DOWN : OPEN_CLOSE_ICON_ROTATION_UP );
       }
 
 
@@ -730,18 +760,27 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
       }
 
 
-    // Buttons
+    ///// Buttons /////
 
-
-    if ( mProceedOverlayButton != null )
+    if ( mProceedOverlayTextView != null )
       {
-      mProceedOverlayButton.setText( R.string.product_overview_start_button_text );
+      mProceedOverlayTextView.setText( R.string.product_overview_start_button_text );
 
-      // Set any theme colour
-      setThemeColour( mCatalogue.getPrimaryThemeColour(), mProceedOverlayButton );
-
-      mProceedOverlayButton.setOnClickListener( this );
+      setThemeColour( mCatalogue.getPrimaryThemeColour(), mProceedOverlayTextView );
       }
+
+    if ( mThemableDrawerStartView != null )
+      {
+      if ( mThemableDrawerStartView instanceof TextView )
+        {
+        ( (TextView)mThemableDrawerStartView ).setText( R.string.product_overview_start_button_text );
+        }
+
+      setThemeColour( mCatalogue.getPrimaryThemeColour(), mThemableDrawerStartView );
+      }
+
+
+    if ( mDrawerStartView != null ) mDrawerStartView.setOnClickListener( this );
 
 
     mProductImageViewPager.setOnClickListener( this );
@@ -751,18 +790,23 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
     setThemeColour( mCatalogue.getSecondaryThemeColour(), mContentView, R.id.drawer_control_themable_view );
 
 
-    if ( mDrawerControlLayout != null )
+    if ( mToggleDrawerView != null ) mToggleDrawerView.setOnClickListener( this );
+
+    if ( mOpenDrawerView   != null ) mOpenDrawerView.setOnClickListener( this );
+
+    if ( mCloseDrawerView  != null ) mCloseDrawerView.setOnClickListener( this );
+
+
+    if ( mThemableMainStartView != null )
       {
-      mDrawerControlLayout.setOnClickListener( this );
+      // Set any theme colour
+      setThemeColour( mCatalogue.getPrimaryThemeColour(), mThemableMainStartView );
       }
 
 
-    if ( mOverlaidStartButton != null )
+    if ( mMainStartView != null )
       {
-      // Set any theme colour
-      setThemeColour( mCatalogue.getPrimaryThemeColour(), mOverlaidStartButton );
-
-      mOverlaidStartButton.setOnClickListener( this );
+      mMainStartView.setOnClickListener( this );
       }
     }
 
@@ -868,29 +912,26 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
       openCloseIconFinalRotation     = OPEN_CLOSE_ICON_ROTATION_UP;
       }
 
-
-    // Create the overlaid components animation
-    Animation overlaidComponentsAnimation = new AlphaAnimation( overlaidComponentsInitialAlpha, overlaidComponentsFinalAlpha );
-    overlaidComponentsAnimation.setDuration( SLIDE_ANIMATION_DURATION_MILLIS );
-    overlaidComponentsAnimation.setFillAfter( true );
-
-
-    // Create the open/close icon animation.
-    // The rotation is delayed, but will finish at the same time as the slide animation.
-    Animation openCloseIconAnimation = new RotateAnimation( openCloseIconInitialRotation, openCloseIconFinalRotation, mOpenCloseDrawerIconImageView.getWidth() * 0.5f, mOpenCloseDrawerIconImageView.getHeight() * 0.5f );
-    openCloseIconAnimation.setStartOffset( OPEN_CLOSE_ICON_ANIMATION_DELAY_MILLIS );
-    openCloseIconAnimation.setDuration( OPEN_CLOSE_ICON_ANIMATION_DURATION_MILLIS );
-    openCloseIconAnimation.setFillAfter( true );
-
-
     if ( mOverlaidComponents != null )
       {
+      // Create the overlaid components animation
+      Animation overlaidComponentsAnimation = new AlphaAnimation( overlaidComponentsInitialAlpha, overlaidComponentsFinalAlpha );
+      overlaidComponentsAnimation.setDuration( SLIDE_ANIMATION_DURATION_MILLIS );
+      overlaidComponentsAnimation.setFillAfter( true );
+
       mOverlaidComponents.setAlpha( 1f );               // Clear any alpha already applied
       mOverlaidComponents.startAnimation( overlaidComponentsAnimation );
       }
 
     if ( mOpenCloseDrawerIconImageView != null )
       {
+      // Create the open/close icon animation.
+      // The rotation is delayed, but will finish at the same time as the slide animation.
+      Animation openCloseIconAnimation = new RotateAnimation( openCloseIconInitialRotation, openCloseIconFinalRotation, mOpenCloseDrawerIconImageView.getWidth() * 0.5f, mOpenCloseDrawerIconImageView.getHeight() * 0.5f );
+      openCloseIconAnimation.setStartOffset( OPEN_CLOSE_ICON_ANIMATION_DELAY_MILLIS );
+      openCloseIconAnimation.setDuration( OPEN_CLOSE_ICON_ANIMATION_DURATION_MILLIS );
+      openCloseIconAnimation.setFillAfter( true );
+
       mOpenCloseDrawerIconImageView.setRotation( 0f );  // Clear any rotation already applied
       mOpenCloseDrawerIconImageView.startAnimation( openCloseIconAnimation );
       }

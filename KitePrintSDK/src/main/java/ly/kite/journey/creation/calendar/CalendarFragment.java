@@ -43,14 +43,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
-import android.graphics.Point;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.os.SystemClock;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
@@ -61,6 +58,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 
 import ly.kite.journey.AImageSource;
 import ly.kite.journey.creation.AProductCreationFragment;
@@ -85,8 +83,7 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
                                                                           AImageSource.IAssetConsumer,
                                                                           IUpdatedImageListener,
                                                                           View.OnDragListener,
-                                                                          ActionMode.Callback,
-                                                                          PopupMenu.OnMenuItemClickListener
+                                                                          ActionMode.Callback
   {
   ////////// Static Constant(s) //////////
 
@@ -186,8 +183,8 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
     mCalendarView.setLayoutManager( new LinearLayoutManager( mKiteActivity ) );
 
     // Set up the forwards button
-    setForwardsButtonText( R.string.Next );
-    setForwardsButtonOnClickListener( this );
+    setForwardsTextViewText( R.string.Next );
+    setForwardsTextViewOnClickListener( this );
 
     // We listen for drag events so that we can auto scroll up or down when dragging
     mCalendarView.setOnDragListener( this );
@@ -328,9 +325,9 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
   @Override
   public void onClick( View view )
     {
-    Button proceedButton = getForwardsButton();
+    TextView proceedTextView = getForwardsTextView();
 
-    if ( view == proceedButton )
+    if ( view == proceedTextView )
       {
       ///// Checkout /////
 
@@ -398,11 +395,7 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
 
       mAddImageIndex = imageIndex;
 
-      mAddImagePopupMenu = new PopupMenu( mKiteActivity, view );
-      mAddImagePopupMenu.inflate( R.menu.calendar_add_image_popup );
-      addImageSourceMenuItems( mAddImagePopupMenu.getMenu() );
-      mAddImagePopupMenu.setOnMenuItemClickListener( this );
-      mAddImagePopupMenu.show();
+      mAddImagePopupMenu = displayAddImagePopupMenu( view );
       }
     }
 
@@ -595,7 +588,7 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
     mActionModeDiscardMenuItem = menu.findItem( R.id.discard_menu_item );
 
     // Can't click next whilst in action mode
-    setForwardsButtonEnabled( false );
+    setForwardsTextViewEnabled( false );
 
 
     return ( true );
@@ -696,26 +689,7 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
     // End the selection mode
     mCalendarAdaptor.setSelectionMode( false );
 
-    setForwardsButtonEnabled( true );
-    }
-
-
-  ////////// PopupMenu.OnMenuItemClickListener Method(s) //////////
-
-  /*****************************************************
-   *
-   * Called when a pop-up menu item is clicked.
-   *
-   *****************************************************/
-  @Override
-  public boolean onMenuItemClick( MenuItem item )
-    {
-    if ( onCheckAddImageOptionItem( item, getMaxAddImageCount() ) )
-      {
-      return ( true );
-      }
-
-    return ( false );
+    setForwardsTextViewEnabled( true );
     }
 
 

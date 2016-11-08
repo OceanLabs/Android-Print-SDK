@@ -134,12 +134,12 @@ public class EditImageFragment extends AEditImageFragment
     {
     View view = super.onCreateView( layoutInflator, container, savedInstanceState );
 
-    setBackwardsButtonVisibility( View.VISIBLE );
-    setBackwardsButtonText( R.string.Cancel );
+    setBackwardsTextViewVisibility( View.VISIBLE );
+    setBackwardsTextViewText( R.string.Cancel );
 
-    setForwardsButtonVisibility( View.VISIBLE );
-    setForwardsButtonText( R.string.Done );
-    setForwardsButtonBold( true );
+    setForwardsTextViewVisibility( View.VISIBLE );
+    setForwardsTextViewText( R.string.Done );
+    setForwardsTextViewBold( true );
 
     return ( view );
     }

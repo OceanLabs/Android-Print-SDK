@@ -8,19 +8,27 @@
      -->
 
     <item
-        android:id="@+id/add_photo_from_device"
+        android:id="@+id/add_image_menu_item"
+        android:title="">
+        <menu
+            android:id="@+id/add_image_menu"
+            android:title=""/>
+    </item>
+
+    <item
+        android:id="@+id/add_image_from_device"
         android:title=""/>
 
     <item
-        android:id="@+id/add_photo_from_instagram"
+        android:id="@+id/add_image_from_instagram"
         android:title=""/>
 
     <item
-        android:id="@+id/add_photo_from_facebook"
+        android:id="@+id/add_image_from_facebook"
         android:title=""/>
 
     <item
-        android:id="@+id/upload_photo_from_phone"
+        android:id="@+id/upload_image_from_phone"
         android:title=""/>
 
 </menu>

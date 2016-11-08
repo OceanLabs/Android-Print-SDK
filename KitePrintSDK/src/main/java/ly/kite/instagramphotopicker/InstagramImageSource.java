@@ -51,8 +51,6 @@ import ly.kite.R;
 import ly.kite.KiteSDK;
 import ly.kite.journey.AImageSource;
 import ly.kite.util.Asset;
-import ly.kite.instagramphotopicker.InstagramPhoto;
-import ly.kite.instagramphotopicker.InstagramPhotoPicker;
 
 
 ///// Class Declaration /////
@@ -89,7 +87,7 @@ public class InstagramImageSource extends AImageSource
     super( R.color.image_source_background_instagram,
            R.drawable.ic_add_instagram_white,
            R.string.image_source_instagram,
-           R.id.add_photo_from_instagram,
+           R.id.add_image_from_instagram,
            R.string.select_photo_from_instagram );
     }
 

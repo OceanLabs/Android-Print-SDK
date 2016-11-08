@@ -49,8 +49,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
-import android.widget.Button;
+import android.widget.PopupMenu;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +78,10 @@ import ly.kite.widget.PromptTextFrame;
  *
  *****************************************************/
 abstract public class AProductCreationFragment extends    AKiteFragment
-                                               implements AImageSource.IAssetConsumer
+                                               implements View.OnClickListener,
+                                                          PopupMenu.OnMenuItemClickListener,
+                                                          AImageSource.IAssetConsumer
+
   {
   ////////// Static Constant(s) //////////
 
@@ -97,11 +101,12 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
   private   ProgressBar                   mProgressBar;
   private   PromptTextFrame               mPromptTextFrame;
-  private   Button                        mProceedOverlayButton;
-  private   Button                        mCancelButton;
-  private   Button                        mConfirmButton;
-  private   Button                        mCTABarLeftButton;
-  private   Button                        mCTABarRightButton;
+  private   TextView                      mProceedOverlayTextView;
+  private   TextView                      mCancelTextView;
+  private   TextView                      mConfirmTextView;
+  private   TextView                      mCTABarLeftTextView;
+  private   TextView                      mCTABarRightTextView;
+  private   View                          mAddImageView;
 
   protected boolean                       mShowPromptText;
 
@@ -201,11 +206,11 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
     menuInflator.inflate( menuResourceId, menu );
 
-    MenuItem addPhotoItem = menu.findItem( R.id.add_photo_menu_item );
+    MenuItem addImageItem = menu.findItem( R.id.add_image_menu_item );
 
-    if ( addPhotoItem != null )
+    if ( addImageItem != null )
       {
-      SubMenu addPhotoSubMenu = addPhotoItem.getSubMenu();
+      SubMenu addPhotoSubMenu = addImageItem.getSubMenu();
 
       if ( addPhotoSubMenu != null )
         {
@@ -242,6 +247,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
     return ( super.onOptionsItemSelected( item ) );
     }
+
 
 
   /*****************************************************
@@ -296,7 +302,44 @@ abstract public class AProductCreationFragment extends    AKiteFragment
     super.onTop();
 
     // We don't enable the proceed button until all the assets have been cropped
-    setForwardsButtonEnabled( mRemainingImagesToCropCount < 1 );
+    setForwardsTextViewEnabled( mRemainingImagesToCropCount < 1 );
+    }
+
+
+  ////////// View.OnClickListener Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when something is clicked.
+   *
+   *****************************************************/
+  @Override
+  public void onClick( View view )
+    {
+    if ( mAddImageView != null && view == mAddImageView )
+      {
+      ///// Add photo /////
+
+      displayAddImagePopupMenu( view );
+      }
+    }
+
+  ////////// PopupMenu.OnMenuItemClickListener Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when a pop-up menu item is clicked.
+   *
+   *****************************************************/
+  @Override
+  public boolean onMenuItemClick( MenuItem item )
+    {
+    if ( onCheckAddImageOptionItem( item, getMaxAddImageCount() ) )
+      {
+      return ( true );
+      }
+
+    return ( false );
     }
 
 
@@ -327,13 +370,17 @@ abstract public class AProductCreationFragment extends    AKiteFragment
   protected void onViewCreated( View view )
     {
     // Get references to any views
-    mPromptTextFrame      = (PromptTextFrame)view.findViewById( R.id.prompt_text_frame );
-    mProgressBar          = (ProgressBar)view.findViewById( R.id.progress_bar );
-    mProceedOverlayButton = (Button)view.findViewById( R.id.proceed_overlay_button );
-    mCancelButton         = (Button)view.findViewById( R.id.cancel_button );
-    mConfirmButton        = (Button)view.findViewById( R.id.confirm_button );
-    mCTABarLeftButton     = (Button)view.findViewById( R.id.cta_bar_left_button );
-    mCTABarRightButton    = (Button)view.findViewById( R.id.cta_bar_right_button );
+    mPromptTextFrame        = (PromptTextFrame)view.findViewById( R.id.prompt_text_frame );
+    mProgressBar            = (ProgressBar)view.findViewById( R.id.progress_bar );
+    mProceedOverlayTextView = (TextView)view.findViewById( R.id.proceed_overlay_text_view );
+    mCancelTextView         = (TextView)view.findViewById( R.id.cancel_text_view );
+    mConfirmTextView        = (TextView)view.findViewById( R.id.confirm_text_view );
+    mCTABarLeftTextView     = (TextView)view.findViewById( R.id.cta_bar_left_text_view );
+    mCTABarRightTextView    = (TextView)view.findViewById( R.id.cta_bar_right_text_view );
+    mAddImageView           = view.findViewById( R.id.add_image_view );
+
+    // If there is an add photo view - set the listener
+    if ( mAddImageView != null ) mAddImageView.setOnClickListener( this );
     }
 
 
@@ -353,13 +400,31 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
   /*****************************************************
    *
-   * Returns a backwards button.
+   * Displays a pop-up menu to add an image, using the
+   * available image sources.
    *
    *****************************************************/
-  protected Button getBackwardsButton()
+  protected PopupMenu displayAddImagePopupMenu( View view )
     {
-    if ( mCTABarLeftButton != null ) return ( mCTABarLeftButton );
-    if ( mCancelButton     != null ) return ( mCancelButton );
+    PopupMenu popupMenu = new PopupMenu( mKiteActivity, view );
+    popupMenu.inflate( R.menu.add_image_popup );
+    addImageSourceMenuItems( popupMenu.getMenu() );
+    popupMenu.setOnMenuItemClickListener( this );
+    popupMenu.show();
+
+    return ( popupMenu );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a backwards text view.
+   *
+   *****************************************************/
+  protected TextView getBackwardsTextView()
+    {
+    if ( mCTABarLeftTextView != null ) return ( mCTABarLeftTextView );
+    if ( mCancelTextView     != null ) return ( mCancelTextView );
 
     return ( null );
     }
@@ -367,66 +432,66 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
   /*****************************************************
    *
-   * Sets the visibility of any backwards button.
+   * Sets the visibility of any backwards text view.
    *
    *****************************************************/
-  protected void setBackwardsButtonVisibility( int visibility )
+  protected void setBackwardsTextViewVisibility( int visibility )
     {
-    Button backwardsButton = getBackwardsButton();
+    TextView backwardsTextView = getBackwardsTextView();
 
-    if ( backwardsButton != null ) backwardsButton.setVisibility( visibility );
+    if ( backwardsTextView != null ) backwardsTextView.setVisibility( visibility );
     }
 
 
   /*****************************************************
    *
-   * Sets the text of any backwards button.
+   * Sets the text of any backwards text view.
    *
    *****************************************************/
-  protected void setBackwardsButtonText( int textResourceId )
+  protected void setBackwardsTextViewText( int textResourceId )
     {
-    Button backwardsButton = getBackwardsButton();
+    TextView backwardsTextView = getBackwardsTextView();
 
-    if ( backwardsButton != null ) backwardsButton.setText( textResourceId );
+    if ( backwardsTextView != null ) backwardsTextView.setText( textResourceId );
     }
 
 
   /*****************************************************
    *
-   * Sets the enabled state of any backwards button.
+   * Sets the enabled state of any backwards text view.
    *
    *****************************************************/
-  protected void setBackwardsButtonEnabled( boolean enabled )
+  protected void setBackwardsTextViewEnabled( boolean enabled )
     {
-    Button backwardsButton = getBackwardsButton();
+    TextView backwardsTextView = getBackwardsTextView();
 
-    if ( backwardsButton != null ) backwardsButton.setEnabled( enabled );
+    if ( backwardsTextView != null ) backwardsTextView.setEnabled( enabled );
     }
 
 
   /*****************************************************
    *
-   * Sets the listener for any backwards button.
+   * Sets the listener for any backwards text view.
    *
    *****************************************************/
-  protected void setBackwardsButtonOnClickListener( View.OnClickListener listener )
+  protected void setBackwardsTextViewOnClickListener( View.OnClickListener listener )
     {
-    Button backwardsButton = getBackwardsButton();
+    TextView backwardsTextView = getBackwardsTextView();
 
-    if ( backwardsButton != null ) backwardsButton.setOnClickListener( listener );
+    if ( backwardsTextView != null ) backwardsTextView.setOnClickListener( listener );
     }
 
 
   /*****************************************************
    *
-   * Returns a forwards button.
+   * Returns a forwards text view.
    *
    *****************************************************/
-  protected Button getForwardsButton()
+  protected TextView getForwardsTextView()
     {
-    if ( mCTABarRightButton    != null ) return ( mCTABarRightButton );
-    if ( mProceedOverlayButton != null ) return ( mProceedOverlayButton );
-    if ( mConfirmButton        != null ) return ( mConfirmButton );
+    if ( mCTABarRightTextView    != null ) return ( mCTABarRightTextView );
+    if ( mProceedOverlayTextView != null ) return ( mProceedOverlayTextView );
+    if ( mConfirmTextView        != null ) return ( mConfirmTextView );
 
     return ( null );
     }
@@ -434,69 +499,69 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
   /*****************************************************
    *
-   * Sets the visibility of any forwards button.
+   * Sets the visibility of any forwards text view.
    *
    *****************************************************/
-  protected void setForwardsButtonVisibility( int visibility )
+  protected void setForwardsTextViewVisibility( int visibility )
     {
-    Button forwardsButton = getForwardsButton();
+    TextView forwardsTextView = getForwardsTextView();
 
-    if ( forwardsButton != null ) forwardsButton.setVisibility( visibility );
+    if ( forwardsTextView != null ) forwardsTextView.setVisibility( visibility );
     }
 
 
   /*****************************************************
    *
-   * Sets the text of any forwards button.
+   * Sets the text of any forwards text view.
    *
    *****************************************************/
-  protected void setForwardsButtonText( int textResourceId )
+  protected void setForwardsTextViewText( int textResourceId )
     {
-    Button forwardsButton = getForwardsButton();
+    TextView forwardsTextView = getForwardsTextView();
 
-    if ( forwardsButton != null ) forwardsButton.setText( textResourceId );
+    if ( forwardsTextView != null ) forwardsTextView.setText( textResourceId );
     }
 
 
   /*****************************************************
    *
-   * Sets the style of any forwards button.
+   * Sets the style of any forwards text view.
    *
    *****************************************************/
-  protected void setForwardsButtonBold( boolean bold )
+  protected void setForwardsTextViewBold( boolean bold )
     {
-    Button forwardsButton = getForwardsButton();
+    TextView forwardsTextView = getForwardsTextView();
 
-    if ( forwardsButton != null )
+    if ( forwardsTextView != null )
       {
-      forwardsButton.setTypeface( forwardsButton.getTypeface(), bold ? Typeface.BOLD : Typeface.NORMAL );
+      forwardsTextView.setTypeface( forwardsTextView.getTypeface(), bold ? Typeface.BOLD : Typeface.NORMAL );
       }
     }
 
 
   /*****************************************************
    *
-   * Sets the enabled state of any forwards button.
+   * Sets the enabled state of any forwards text view.
    *
    *****************************************************/
-  protected void setForwardsButtonEnabled( boolean enabled )
+  protected void setForwardsTextViewEnabled( boolean enabled )
     {
-    Button forwardsButton = getForwardsButton();
+    TextView forwardsTextView = getForwardsTextView();
 
-    if ( forwardsButton != null ) forwardsButton.setEnabled( enabled );
+    if ( forwardsTextView != null ) forwardsTextView.setEnabled( enabled );
     }
 
 
   /*****************************************************
    *
-   * Sets the listener for any forwards button.
+   * Sets the listener for any forwards text view.
    *
    *****************************************************/
-  protected void setForwardsButtonOnClickListener( View.OnClickListener listener )
+  protected void setForwardsTextViewOnClickListener( View.OnClickListener listener )
     {
-    Button forwardsButton = getForwardsButton();
+    TextView forwardsTextView = getForwardsTextView();
 
-    if ( forwardsButton != null ) forwardsButton.setOnClickListener( listener );
+    if ( forwardsTextView != null ) forwardsTextView.setOnClickListener( listener );
     }
 
 
@@ -552,7 +617,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
     boolean assetsToCrop = mInitialImagesToCropCount > 0;
 
     // Set the enabled state of the proceed button according to whether there are assets to crop
-    setForwardsButtonEnabled( assetsToCrop );
+    setForwardsTextViewEnabled( assetsToCrop );
 
     return ( assetsToCrop );
     }
@@ -745,7 +810,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
       {
       onNewAssetsBeingCropped();
 
-      setForwardsButtonEnabled( false );
+      setForwardsTextViewEnabled( false );
       }
     }
 
@@ -836,7 +901,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
       if ( mRemainingImagesToCropCount < 1 )
         {
-        setForwardsButtonEnabled( true );
+        setForwardsTextViewEnabled( true );
 
         onAllImagesCropped();
         }

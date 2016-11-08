@@ -57,8 +57,9 @@ import java.util.List;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
-import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.IGroupOrProduct;
+import ly.kite.image.ImageAgent;
+import ly.kite.widget.AREImageView;
 import ly.kite.widget.HeaderFooterGridView;
 import ly.kite.widget.LabelledImageView;
 
@@ -328,23 +329,23 @@ abstract public class AGroupOrProductFragment extends AProductSelectionFragment 
       {
       // Either re-use the convert view, or create a new one.
 
-      Object          tagObject;
-      View            view;
-      ViewReferences  viewReferences;
+      Object      tagObject;
+      View        view;
+      ViewHolder  viewHolder;
 
       if ( convertView != null &&
            ( tagObject = convertView.getTag() ) != null &&
-           ( tagObject instanceof ViewReferences ) )
+           ( tagObject instanceof ViewHolder ) )
         {
-        view           = convertView;
-        viewReferences = (ViewReferences)tagObject;
+        view       = convertView;
+        viewHolder = (ViewHolder)tagObject;
         }
       else
         {
-        view           = mLayoutInflator.inflate( mLayoutResourceId, null );
-        viewReferences = new ViewReferences( view );
+        view       = mLayoutInflator.inflate( mLayoutResourceId, null );
+        viewHolder = new ViewHolder( view );
 
-        view.setTag( viewReferences );
+        view.setTag( viewHolder );
         }
 
 
@@ -353,7 +354,7 @@ abstract public class AGroupOrProductFragment extends AProductSelectionFragment 
 
       IGroupOrProduct groupOrProduct = (IGroupOrProduct)getItem( position );
 
-      viewReferences.bind( groupOrProduct, parent );
+      viewHolder.bind( groupOrProduct, parent );
 
 
       return ( view );
@@ -367,21 +368,27 @@ abstract public class AGroupOrProductFragment extends AProductSelectionFragment 
      * References to views within the layout.
      *
      *****************************************************/
-    private class ViewReferences
+    private class ViewHolder
       {
-      LabelledImageView  productImageView;
+      LabelledImageView  labelledImageView;
+      AREImageView       areImageView;
+      TextView           labelTextView;
+      TextView           descriptionTextView;
       FrameLayout        priceOverlayFrame;
       TextView           fromTextView;
       TextView           priceTextView;
       View               overlayIndicatorView;
 
 
-      ViewReferences( View view )
+      ViewHolder( View view )
         {
-        this.productImageView     = (LabelledImageView) view.findViewById( R.id.labelled_image_view );
-        this.priceOverlayFrame    = (FrameLayout) view.findViewById( R.id.price_overlay_frame );
-        this.fromTextView         = (TextView) view.findViewById( R.id.from_text_view );
-        this.priceTextView        = (TextView) view.findViewById( R.id.price_text_view );
+        this.labelledImageView    = (LabelledImageView)view.findViewById( R.id.labelled_image_view );
+        this.areImageView         = (AREImageView)view.findViewById( R.id.are_image_view );
+        this.labelTextView        = (TextView)view.findViewById( R.id.label_text_view );
+        this.descriptionTextView  = (TextView)view.findViewById( R.id.description_text_view );
+        this.priceOverlayFrame    = (FrameLayout)view.findViewById( R.id.price_overlay_frame );
+        this.fromTextView         = (TextView)view.findViewById( R.id.from_text_view );
+        this.priceTextView        = (TextView)view.findViewById( R.id.price_text_view );
         this.overlayIndicatorView = view.findViewById( R.id.overlay_indicator_view );
         }
 
@@ -406,10 +413,8 @@ abstract public class AGroupOrProductFragment extends AProductSelectionFragment 
             aspectRatio = parent.getWidth() / ( parent.getHeight() * 0.5f );
             }
 
-          // Make sure we only expand the height
-          //if ( aspectRatio > DEFAULT_ASPECT_RATIO ) aspectRatio = DEFAULT_ASPECT_RATIO;
-
-          this.productImageView.setImageAspectRatio( aspectRatio );
+          if ( this.labelledImageView != null ) this.labelledImageView.setImageAspectRatio( aspectRatio );
+          if ( this.areImageView      != null ) this.areImageView.setAspectRatio( aspectRatio );
           }
 
 
@@ -421,10 +426,17 @@ abstract public class AGroupOrProductFragment extends AProductSelectionFragment 
           ///// Group / Product image /////
 
           // Set any theme colour
-          setThemeColour( mCatalogue.getPrimaryThemeColour(), this.productImageView );
+          setThemeColour( mCatalogue.getPrimaryThemeColour(), this.labelledImageView );
 
-          this.productImageView.setImageAnchorGravity( groupOrProduct.getDisplayImageAnchorGravity( mContext ) );
-          this.productImageView.setLabel( groupOrProduct.getDisplayLabel(), groupOrProduct.getDisplayLabelColour() );
+          if ( this.labelledImageView != null )
+            {
+            this.labelledImageView.setImageAnchorGravity( groupOrProduct.getDisplayImageAnchorGravity( mContext ) );
+            this.labelledImageView.setLabel( groupOrProduct.getDisplayLabel(), groupOrProduct.getDisplayLabelColour() );
+            }
+
+          if ( this.labelTextView != null ) this.labelTextView.setText( groupOrProduct.getDisplayLabel() );
+
+          if ( this.descriptionTextView != null ) this.descriptionTextView.setText( groupOrProduct.getDescription() );
 
           // Populate any price overlay
           String displayPrice = groupOrProduct.getDisplayPrice( KiteSDK.getInstance( getActivity() ).getLockedCurrencyCode() );
@@ -456,7 +468,8 @@ abstract public class AGroupOrProductFragment extends AProductSelectionFragment 
           {
           ///// Placeholder image /////
 
-          this.productImageView.setLabel( null );
+          if ( this.labelledImageView != null ) this.labelledImageView.setLabel( null );
+          if ( this.labelTextView     != null ) this.labelTextView.setText( null );
 
           // Any price overlay should not be visible for a placeholder image
           if ( this.priceOverlayFrame != null ) this.priceOverlayFrame.setVisibility( View.GONE );
@@ -465,7 +478,20 @@ abstract public class AGroupOrProductFragment extends AProductSelectionFragment 
           }
 
 
-        this.productImageView.requestScaledImageOnceSized( KiteSDK.IMAGE_CATEGORY_PRODUCT_ITEM, imageURL );
+        if ( this.labelledImageView != null )
+          {
+          this.labelledImageView.requestScaledImageOnceSized( KiteSDK.IMAGE_CATEGORY_PRODUCT_ITEM, imageURL );
+          }
+
+        if ( this.areImageView != null )
+          {
+          ImageAgent.with( getActivity() )
+                  .load( imageURL, KiteSDK.IMAGE_CATEGORY_PRODUCT_ITEM )
+                  .reduceColourSpace()
+                  .resizeForIfSized( this.areImageView )
+                  .onlyScaleDown()
+                  .into( this.areImageView, imageURL );
+          }
 
 
         // If there is an overlay indicator view, set its visibility according to any

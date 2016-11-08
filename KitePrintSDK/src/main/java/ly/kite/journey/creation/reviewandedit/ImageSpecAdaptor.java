@@ -62,7 +62,7 @@ import ly.kite.widget.ViewHelper;
 
 /*****************************************************
  *
- * An adaptor for the image sources.
+ * An adaptor for each image on the review and edit screen.
  *
  *****************************************************/
 public class ImageSpecAdaptor extends BaseAdapter
@@ -160,24 +160,19 @@ public class ImageSpecAdaptor extends BaseAdapter
 
     Object          tagObject;
     View            view;
-    ViewReferences  viewReferences;
+    ViewHolder viewHolder;
 
     if ( convertView != null &&
             ( tagObject = convertView.getTag() ) != null &&
-            ( tagObject instanceof ViewReferences ) )
+            ( tagObject instanceof ViewHolder ) )
       {
       view           = convertView;
-      viewReferences = (ViewReferences)tagObject;
+      viewHolder = (ViewHolder)tagObject;
       }
     else
       {
       view                            = mLayoutInflator.inflate( R.layout.grid_item_review_and_crop, parent, false );
-      viewReferences                  = new ViewReferences();
-      viewReferences.framedImageView  = (FramedImageView)view.findViewById( R.id.framed_image_view );
-      viewReferences.quantityTextView = (TextView)view.findViewById( R.id.quantity_text_view );
-      viewReferences.decreaseButton   = (Button)view.findViewById( R.id.decrease_button );
-      viewReferences.increaseButton   = (Button)view.findViewById( R.id.increase_button );
-      viewReferences.editButton       = (Button)view.findViewById( R.id.edit_button );
+      viewHolder = new ViewHolder( view );
 
 
       // We only need to set the overlay or border once, when the view is first created,
@@ -187,21 +182,21 @@ public class ImageSpecAdaptor extends BaseAdapter
 
       if ( imageBorder != null )
         {
-        viewReferences.framedImageView.setBackgroundColor( mContext.getResources().getColor( android.R.color.white ) );
+        viewHolder.framedImageView.setBackgroundColor( mContext.getResources().getColor( android.R.color.white ) );
 
-        viewReferences.framedImageView.setPaddingProportions(
+        viewHolder.framedImageView.setPaddingProportions(
                 imageBorder.left,
                 imageBorder.top,
                 imageBorder.right,
                 imageBorder.bottom );
         }
 
-      viewReferences.framedImageView.setStencil( mProduct.getUserJourneyType().editMaskResourceId() );
+      viewHolder.framedImageView.setStencil( mProduct.getUserJourneyType().editMaskResourceId() );
 
       // Set the aspect ratio of the review image to match the image aspect ratio
-      viewReferences.framedImageView.setImageAspectRatio( mProduct.getImageAspectRatio() );
+      viewHolder.framedImageView.setImageAspectRatio( mProduct.getImageAspectRatio() );
 
-      view.setTag( viewReferences );
+      view.setTag( viewHolder );
       }
 
 
@@ -210,15 +205,15 @@ public class ImageSpecAdaptor extends BaseAdapter
     ImageSpec     imageSpec     = (ImageSpec)getItem( position );
     AssetFragment assetFragment = imageSpec.getAssetFragment();
 
-    viewReferences.framedImageView.requestScaledImageOnceSized( assetFragment );
+    viewHolder.framedImageView.requestScaledImageOnceSized( assetFragment );
 
-    viewReferences.quantityTextView.setText( String.valueOf( imageSpec.getQuantity() ) );
-    viewReferences.imageIndex = position;
+    viewHolder.quantityTextView.setText( String.valueOf( imageSpec.getQuantity() ) );
+    viewHolder.imageIndex = position;
 
-    viewReferences.framedImageView.setOnClickListener( viewReferences );
-    viewReferences.decreaseButton.setOnClickListener( viewReferences );
-    viewReferences.increaseButton.setOnClickListener( viewReferences );
-    viewReferences.editButton.setOnClickListener( viewReferences );
+    viewHolder.framedImageView.setOnClickListener( viewHolder );
+    viewHolder.decreaseButton.setOnClickListener( viewHolder );
+    viewHolder.increaseButton.setOnClickListener( viewHolder );
+    viewHolder.editTextView.setOnClickListener( viewHolder );
 
 
     // Scan through the view hierarchy and set any special properties. This allows apps to apply
@@ -253,15 +248,25 @@ public class ImageSpecAdaptor extends BaseAdapter
    * acts as the on click listener for the controls.
    *
    *****************************************************/
-  private class ViewReferences implements View.OnClickListener
+  private class ViewHolder implements View.OnClickListener
     {
     FramedImageView  framedImageView;
     TextView         quantityTextView;
     Button           decreaseButton;
     Button           increaseButton;
-    Button           editButton;
+    TextView         editTextView;
 
     int              imageIndex;
+
+
+    ViewHolder( View view )
+      {
+      this.framedImageView  = (FramedImageView)view.findViewById( R.id.framed_image_view );
+      this.quantityTextView = (TextView)view.findViewById( R.id.quantity_text_view );
+      this.decreaseButton   = (Button)view.findViewById( R.id.decrease_button );
+      this.increaseButton   = (Button)view.findViewById( R.id.increase_button );
+      this.editTextView     = (TextView)view.findViewById( R.id.edit_text_view );
+      }
 
 
     @Override
@@ -300,7 +305,7 @@ public class ImageSpecAdaptor extends BaseAdapter
 
         mListener.onQuantityChanged( this.imageIndex );
         }
-      else if ( view == this.editButton )
+      else if ( view == this.editTextView )
         {
         ///// Edit /////
 

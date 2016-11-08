@@ -2,6 +2,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <FrameLayout
+        android:id="@+id/fadeable_view"
         android:layout_gravity="bottom"
         android:layout_width="fill_parent"
         android:layout_height="@dimen/proceed_overlay_frame_height"
@@ -25,7 +26,7 @@
 
         <ly.kite.widget.CustomTypefaceButton
             style="@style/KiteSDKCTAButton.Centered"
-            android:id="@+id/proceed_overlay_button"
+            android:id="@+id/proceed_overlay_text_view"
             android:layout_gravity="center"/>
 
     </FrameLayout>
