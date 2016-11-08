@@ -106,7 +106,7 @@ public class ShippingActivity extends AShippingActivity implements View.OnClickL
   private EditText  mEmailEditText;
   private View      mPhoneView;
   private EditText  mPhoneEditText;
-  private Button    mForwardsButton;
+  private TextView  mForwardsTextView;
 
 
   ////////// Static Initialiser(s) //////////
@@ -194,14 +194,14 @@ public class ShippingActivity extends AShippingActivity implements View.OnClickL
 
     // Set up the forwards button
 
-    mForwardsButton = (Button)findViewById( R.id.cta_bar_right_button );
+    mForwardsTextView = (TextView)findViewById( R.id.cta_bar_right_text_view );
 
-    if ( mForwardsButton == null )
+    if ( mForwardsTextView == null )
       {
-      mForwardsButton = (Button)findViewById( R.id.proceed_overlay_button );
+      mForwardsTextView = (TextView)findViewById( R.id.proceed_overlay_text_view );
       }
 
-    mForwardsButton.setText( R.string.shipping_proceed_button_text );
+    mForwardsTextView.setText( R.string.shipping_proceed_button_text );
 
 
     // Display any values
@@ -237,7 +237,7 @@ public class ShippingActivity extends AShippingActivity implements View.OnClickL
 
 
     // Set up a listener on the forwards button
-    mForwardsButton.setOnClickListener( this );
+    mForwardsTextView.setOnClickListener( this );
     }
 
 
@@ -302,9 +302,9 @@ public class ShippingActivity extends AShippingActivity implements View.OnClickL
   @Override
   public void onClick( View view )
     {
-    if ( view == mForwardsButton )
+    if ( view == mForwardsTextView )
       {
-      onForwardsButtonClicked();
+      onForwardsClicked();
 
       return;
       }
@@ -342,7 +342,7 @@ public class ShippingActivity extends AShippingActivity implements View.OnClickL
     }
 
 
-  public void onForwardsButtonClicked()
+  public void onForwardsClicked()
     {
     // Prepare an intent to return
     Intent resultIntent = new Intent();

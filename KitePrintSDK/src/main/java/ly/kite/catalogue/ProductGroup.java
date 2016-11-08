@@ -101,18 +101,6 @@ public class ProductGroup implements IGroupOrProduct
 
   /*****************************************************
    *
-   * Appends all the product images used by this product,
-   * to the supplied list.
-   *
-   *****************************************************/
-  public void appendAllImages( List<URL> targetURLList )
-    {
-    if ( mImageURL != null ) targetURLList.add( mImageURL );
-    }
-
-
-  /*****************************************************
-   *
    * Returns the display image URL.
    *
    *****************************************************/
@@ -156,19 +144,6 @@ public class ProductGroup implements IGroupOrProduct
   public int getDisplayLabelColour()
     {
     return ( mLabelColour );
-    }
-
-
-  /*****************************************************
-   *
-   * Returns true or false according to whether a flag is
-   * set.
-   *
-   *****************************************************/
-  @Override
-  public boolean flagIsSet( String tag )
-    {
-    return ( false );
     }
 
 
@@ -219,8 +194,8 @@ public class ProductGroup implements IGroupOrProduct
 
       // See if this is the lowest cost
       if ( candidateSingleCurrencyCost != null &&
-           ( lowestSingleCurrencyCost == null ||
-             candidateSingleCurrencyCost.getAmount().compareTo( lowestSingleCurrencyCost.getAmount() ) < 0 ) )
+              ( lowestSingleCurrencyCost == null ||
+                      candidateSingleCurrencyCost.getAmount().compareTo( lowestSingleCurrencyCost.getAmount() ) < 0 ) )
         {
         lowestSingleCurrencyCost = candidateSingleCurrencyCost;
         }
@@ -231,6 +206,45 @@ public class ProductGroup implements IGroupOrProduct
     if ( lowestSingleCurrencyCost != null ) return ( lowestSingleCurrencyCost.getDisplayAmountForLocale( locale ) );
 
     return ( null );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a description, or null if there is no
+   * description.
+   *
+   *****************************************************/
+  public String getDescription()
+    {
+    return ( null );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns true or false according to whether a flag is
+   * set.
+   *
+   *****************************************************/
+  @Override
+  public boolean flagIsSet( String tag )
+    {
+    return ( false );
+    }
+
+
+  ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Appends all the product images used by this product,
+   * to the supplied list.
+   *
+   *****************************************************/
+  public void appendAllImages( List<URL> targetURLList )
+    {
+    if ( mImageURL != null ) targetURLList.add( mImageURL );
     }
 
 

@@ -50,7 +50,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.facebookphotopicker.FacebookAgent;
 import ly.kite.util.Asset;
@@ -92,7 +91,7 @@ public class FacebookImageSource extends AImageSource
     super( R.color.image_source_background_facebook,
             R.drawable.ic_add_facebook_white,
             R.string.image_source_facebook,
-            R.id.add_photo_from_facebook,
+            R.id.add_image_from_facebook,
             R.string.select_photo_from_facebook );
     }
 

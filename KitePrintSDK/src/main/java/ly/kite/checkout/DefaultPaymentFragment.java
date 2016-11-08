@@ -46,6 +46,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.paypal.android.sdk.payments.PayPalPayment;
 import com.paypal.android.sdk.payments.PaymentConfirmation;
@@ -89,8 +90,12 @@ public class DefaultPaymentFragment extends APaymentFragment
 
   private boolean           mPayPalAvailable;
 
-  private Button            mPayPalButton;
-  private Button            mCreditCardButton;
+  private TextView          mPayPalTextView;
+  private View              mPayPalView;
+
+  private TextView          mChangeableCreditCardTextView;
+  private TextView          mFixedCreditCardTextView;
+  private TextView          mCreditCardTextView;
 
   private ICreditCardAgent  mCreditCardAgent;
 
@@ -140,14 +145,22 @@ public class DefaultPaymentFragment extends APaymentFragment
     View view = layoutInflater.inflate( R.layout.fragment_default_payment, container, false );
 
 
-    mPayPalButton = (Button)view.findViewById( R.id.paypal_button );
+    mPayPalTextView = (TextView)view.findViewById( R.id.paypal_text_view );
 
-    if ( mPayPalButton == null ) mPayPalButton = (Button)view.findViewById( R.id.cta_bar_left_button );
+    if ( mPayPalTextView == null ) mPayPalTextView = (TextView)view.findViewById( R.id.cta_bar_left_text_view );
+
+    mPayPalView = view.findViewById( R.id.paypal_view );
 
 
-    mCreditCardButton = (Button)view.findViewById( R.id.credit_card_button );
+    mChangeableCreditCardTextView = (TextView)view.findViewById( R.id.credit_card_text_view );
 
-    if ( mCreditCardButton == null ) mCreditCardButton = (Button)view.findViewById( R.id.cta_bar_right_button );
+    if ( mChangeableCreditCardTextView == null ) mChangeableCreditCardTextView = (TextView)view.findViewById( R.id.cta_bar_right_text_view );
+
+    mFixedCreditCardTextView = (TextView)view.findViewById( R.id.fixed_credit_card_text_view );
+
+
+    if ( mChangeableCreditCardTextView != null ) mCreditCardTextView = mChangeableCreditCardTextView;
+    else                                         mCreditCardTextView = mFixedCreditCardTextView;
 
 
     // Determine if PayPal payments are available
@@ -158,21 +171,41 @@ public class DefaultPaymentFragment extends APaymentFragment
 
     if ( mPayPalAvailable )
       {
-      mPayPalButton.setText( R.string.payment_paypal_button_text );
-      mPayPalButton.setTextColor( getResources().getColor( R.color.payment_paypal_button_text ) );
+      if ( mPayPalTextView != null )
+        {
+        mPayPalTextView.setText( R.string.payment_paypal_button_text );
+        mPayPalTextView.setTextColor( getResources().getColor( R.color.payment_paypal_button_text ) );
 
-      mPayPalButton.setOnClickListener( this );
+        mPayPalTextView.setOnClickListener( this );
+        }
+
+      if ( mPayPalView != null )
+        {
+        mPayPalView.setOnClickListener( this );
+        }
       }
     else
       {
-      mPayPalButton.setVisibility( View.GONE );
+      if ( mPayPalTextView != null )
+        {
+        mPayPalTextView.setVisibility( View.GONE );
+        }
+
+      if ( mPayPalView != null )
+        {
+        mPayPalView.setVisibility( View.GONE );
+        }
       }
 
 
-    mCreditCardButton.setText( R.string.payment_credit_card_button_text );
-    mCreditCardButton.setTextColor( getResources().getColor( R.color.payment_credit_card_button_text ) );
+    if ( mChangeableCreditCardTextView != null )
+      {
+      mChangeableCreditCardTextView.setTextColor( getResources().getColor( R.color.payment_credit_card_button_text ) );
+      }
 
-    mCreditCardButton.setOnClickListener( this );
+    mCreditCardTextView.setText( R.string.payment_credit_card_button_text );
+
+    mCreditCardTextView.setOnClickListener( this );
 
 
     getPaymentActivity().onPaymentFragmentReady();
@@ -190,8 +223,10 @@ public class DefaultPaymentFragment extends APaymentFragment
   @Override
   public void onEnableButtons( boolean enabled )
     {
-    mCreditCardButton.setEnabled( enabled );
-    mPayPalButton.setEnabled( enabled && mPayPalAvailable );
+    if ( mPayPalTextView != null ) mPayPalTextView.setEnabled( enabled && mPayPalAvailable );
+    if ( mPayPalView     != null ) mPayPalView.setEnabled( enabled && mPayPalAvailable );
+
+    mCreditCardTextView.setEnabled( enabled );
     }
 
 
@@ -205,10 +240,11 @@ public class DefaultPaymentFragment extends APaymentFragment
     {
     if ( free )
       {
-      mPayPalButton.setVisibility( View.GONE );
+      if ( mPayPalTextView != null ) mPayPalTextView.setVisibility( View.GONE );
+      if ( mPayPalView     != null ) mPayPalView.setVisibility( View.GONE );
 
-      mCreditCardButton.setText( R.string.payment_credit_card_button_text_free );
-      mCreditCardButton.setOnClickListener( new View.OnClickListener()
+      mCreditCardTextView.setText( R.string.payment_credit_card_button_text_free );
+      mCreditCardTextView.setOnClickListener( new View.OnClickListener()
         {
         @Override
         public void onClick( View view )
@@ -219,10 +255,11 @@ public class DefaultPaymentFragment extends APaymentFragment
       }
     else
       {
-      mPayPalButton.setVisibility( View.VISIBLE );
+      if ( mPayPalTextView != null ) mPayPalTextView.setVisibility( View.VISIBLE );
+      if ( mPayPalView     != null ) mPayPalView.setVisibility( View.VISIBLE );
 
-      mCreditCardButton.setText( R.string.payment_credit_card_button_text );
-      mCreditCardButton.setOnClickListener( this );
+      mCreditCardTextView.setText( R.string.payment_credit_card_button_text );
+      mCreditCardTextView.setOnClickListener( this );
       }
     }
 
@@ -239,15 +276,16 @@ public class DefaultPaymentFragment extends APaymentFragment
 
     if ( mOrderPricing != null )
       {
-      if ( view == mPayPalButton )
+      if ( ( mPayPalTextView != null && view == mPayPalTextView ) ||
+           ( mPayPalView     != null && view == mPayPalView     ) )
         {
-        onPayPalButtonClicked( view );
+        onPayPalClicked( view );
 
         return;
         }
-      else if ( view == mCreditCardButton )
+      else if ( view == mCreditCardTextView )
         {
-        onCreditCardButtonClicked( view );
+        onCreditCardClicked( view );
 
         return;
         }
@@ -313,10 +351,10 @@ public class DefaultPaymentFragment extends APaymentFragment
 
   /*****************************************************
    *
-   * Called when the pay by credit card button is clicked.
+   * Called when pay by credit card is clicked.
    *
    *****************************************************/
-  public void onCreditCardButtonClicked( View view )
+  public void onCreditCardClicked( View view )
     {
     // Call the credit card agent
 
@@ -374,10 +412,10 @@ public class DefaultPaymentFragment extends APaymentFragment
 
   /*****************************************************
    *
-   * Called when the pay by PayPal button is clicked.
+   * Called when pay by PayPal is clicked.
    *
    *****************************************************/
-  public void onPayPalButtonClicked( View view )
+  public void onPayPalClicked( View view )
     {
     SingleCurrencyAmounts totalCost = getTotalCost();
 

@@ -237,10 +237,10 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
     // If there is a container frame - set the callback.
     if ( mEditableImageContainerFrame != null ) mEditableImageContainerFrame.setCallback( this );
 
-    setBackwardsButtonOnClickListener( this );
+    setBackwardsTextViewOnClickListener( this );
 
     // The confirm button is not enabled until both image and mask are loaded
-    setForwardsButtonEnabled( false );
+    setForwardsTextViewEnabled( false );
 
 
     return ( view );
@@ -351,18 +351,24 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
   @Override
   public void onClick( View view )
     {
-    if ( view == getBackwardsButton() )
+    if ( view == getBackwardsTextView() )
       {
       ///// Cancel /////
 
       onCancel();
+
+      return;
       }
-    else if ( view == getForwardsButton() )
+    else if ( view == getForwardsTextView() )
       {
       ///// Confirm /////
 
       onConfirm();
+
+      return;
       }
+
+    super.onClick( view );
     }
 
 
@@ -382,8 +388,8 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
     onScreenReady();
 
     // Enable any confirm button
-    setForwardsButtonEnabled( true );
-    setForwardsButtonOnClickListener( this );
+    setForwardsTextViewEnabled( true );
+    setForwardsTextViewOnClickListener( this );
     }
 
 

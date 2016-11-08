@@ -52,6 +52,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -104,6 +105,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
   private BaseAdapter                  mImageSourceAdaptor;
   private GridView                     mImageSourceGridView;
+  private View                         mFadeableView;
   private Button                       mClearPhotosButton;
 
   private RecyclerView                 mImageRecyclerView;
@@ -175,6 +177,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
     mImageSourceGridView  = (GridView)view.findViewById( R.id.image_source_grid_view );
     mImageRecyclerView    = (RecyclerView)view.findViewById( R.id.image_recycler_view );
+    mFadeableView          = view.findViewById( R.id.fadeable_view );
     mClearPhotosButton    = (Button)view.findViewById( R.id.clear_photos_button );
 
 
@@ -182,17 +185,19 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
     ArrayList<AImageSource> imageSourceList = KiteSDK.getInstance( mKiteActivity ).getAvailableImageSources();
 
-    mImageSourceAdaptor = new ImageSourceAdaptor( mKiteActivity, AImageSource.LayoutType.HORIZONTAL, imageSourceList );
-    mImageSourceGridView.setNumColumns( mImageSourceAdaptor.getCount() );
-    mImageSourceGridView.setAdapter( mImageSourceAdaptor );
+    if ( mImageSourceGridView != null )
+      {
+      mImageSourceAdaptor = new ImageSourceAdaptor( mKiteActivity, AImageSource.LayoutType.HORIZONTAL, imageSourceList );
+      mImageSourceGridView.setNumColumns( mImageSourceAdaptor.getCount() );
+      mImageSourceGridView.setAdapter( mImageSourceAdaptor );
+
+      mImageSourceGridView.setOnItemClickListener( this );
+      }
 
 
-    // Set up the listener(s)
-
-    mImageSourceGridView.setOnItemClickListener( this );
     mClearPhotosButton.setOnClickListener( this );
 
-    setForwardsButtonOnClickListener( this );
+    setForwardsTextViewOnClickListener( this );
 
 
     return ( view );
@@ -244,17 +249,17 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
       setClearPhotosButtonText();
 
-      setForwardsButtonVisibility( View.GONE );
+      setForwardsTextViewVisibility( View.GONE );
       }
     else
       {
       mClearPhotosButton.setVisibility( View.GONE );
 
-      setForwardsButtonVisibility( View.VISIBLE );
+      setForwardsTextViewVisibility( View.VISIBLE );
       }
 
 
-    setForwardsButtonText( R.string.image_selection_proceed_button_text );
+    setForwardsTextViewText( R.string.image_selection_proceed_button_text );
     }
 
 
@@ -312,7 +317,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     setTitle();
 
     animateClearPhotosButtonOut();
-    animateProceedOverlayButtonIn();
+    animateFadeableViewIn();
 
     mImagePackAdaptor.onUpdateCheckedImages();
 
@@ -411,7 +416,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
   @Override
   public void onItemClick( AdapterView<?> parent, View view, int position, long id )
     {
-    if ( parent == mImageSourceGridView )
+    if ( mImageSourceGridView != null && parent == mImageSourceGridView )
       {
       ///// Image Source /////
 
@@ -459,11 +464,13 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
       setTitle();
 
       animateClearPhotosButtonOut();
-      animateProceedOverlayButtonIn();
+      animateFadeableViewIn();
 
       setUpRecyclerView();
+
+      return;
       }
-    else if ( view == getForwardsButton() )
+    else if ( view == getForwardsTextView() )
       {
       ///// Review and Crop /////
 
@@ -475,8 +482,11 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
         {
         ( (ICallback)mKiteActivity ).isOnNext();
         }
+
+      return;
       }
 
+    super.onClick( view );
     }
 
 
@@ -506,13 +516,13 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
       ///// Hide button /////
 
       animateClearPhotosButtonOut();
-      animateProceedOverlayButtonIn();
+      animateFadeableViewIn();
       }
     else if ( previousUncheckedImagesCount == 0 && mUncheckedImagesCount > 0 )
       {
       /////  Show button /////
 
-      animateProceedOverlayButtonOut();
+      animateFadeableViewOut();
       animateClearPhotosButtonIn();
       }
 
@@ -660,41 +670,43 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
   /*****************************************************
    *
-   * Animates the proceed overlay button in.
+   * Animates the fadeable view in.
    *
    *****************************************************/
-  private void animateProceedOverlayButtonIn()
+  private void animateFadeableViewIn()
     {
-    Button proceedButton = getForwardsButton();
+    if ( mFadeableView != null )
+      {
+      mFadeableView.setVisibility( View.VISIBLE );
 
-    proceedButton.setVisibility( View.VISIBLE );
+      Animation animation = new AlphaAnimation( 0f, 1f );
 
-    Animation animation = new AlphaAnimation( 0f, 1f );
+      animation.setDuration( PROCEED_BUTTON_BUTTON_ANIMATION_DURATION_MILLIS );
 
-    animation.setDuration( PROCEED_BUTTON_BUTTON_ANIMATION_DURATION_MILLIS );
-
-    proceedButton.startAnimation( animation );
+      mFadeableView.startAnimation( animation );
+      }
     }
 
 
   /*****************************************************
    *
-   * Animates the proceed overlay button out.
+   * Animates the fadeable view out.
    *
    *****************************************************/
-  private void animateProceedOverlayButtonOut()
+  private void animateFadeableViewOut()
     {
-    Button proceedButton = getForwardsButton();
+    if ( mFadeableView != null )
+      {
+      mFadeableView.setVisibility( View.VISIBLE );
 
-    proceedButton.setVisibility( View.VISIBLE );
+      Animation animation = new AlphaAnimation( 1f, 0f );
 
-    Animation animation = new AlphaAnimation( 1f, 0f );
+      animation.setDuration( PROCEED_BUTTON_BUTTON_ANIMATION_DURATION_MILLIS );
+      animation.setFillAfter( true );
+      animation.setAnimationListener( new VisibilitySettingAnimationListener( mFadeableView, View.GONE ) );
 
-    animation.setDuration( PROCEED_BUTTON_BUTTON_ANIMATION_DURATION_MILLIS );
-    animation.setFillAfter( true );
-    animation.setAnimationListener( new VisibilitySettingAnimationListener( proceedButton, View.GONE ) );
-
-    proceedButton.startAnimation( animation );
+      mFadeableView.startAnimation( animation );
+      }
     }
 
 

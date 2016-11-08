@@ -9,31 +9,109 @@
          must include a similar file.
      -->
 
+    <ly.kite.widget.LabelledImageView
+        android:id="@+id/labelled_image_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <ly.kite.widget.AREImageView
+        android:id="@+id/are_image_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/description_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
     <FrameLayout
         android:id="@+id/price_overlay_frame"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"/>
 
-    <ly.kite.widget.CustomTypefaceTextView
+    <TextView
         android:id="@+id/from_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"/>
 
-    <ly.kite.widget.CustomTypefaceTextView
+    <TextView
         android:id="@+id/price_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"/>
 
-    <ly.kite.widget.CustomTypefaceTextView
+    <TextView
+        android:id="@+id/original_price_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <View
+        android:id="@+id/themable_main_start_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <View
+        android:id="@+id/non_themable_main_start_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <View
+        android:id="@+id/toggle_drawer_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <View
+        android:id="@+id/open_drawer_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <View
+        android:id="@+id/close_drawer_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <View
+        android:id="@+id/drawer_control_themable_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <View
+        android:id="@+id/themable_drawer_start_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <View
+        android:id="@+id/non_themable_drawer_start_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <View
+        android:id="@+id/add_image_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <TextView
         android:id="@+id/summary_description_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"/>
 
-    <ly.kite.widget.CustomTypefaceTextView
+    <TextView
         android:id="@+id/summary_shipping_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -51,14 +129,32 @@
         android:layout_height="wrap_content"
         android:visibility="gone"/>
 
-    <Button
-        android:id="@+id/paypal_button"
+    <TextView
+        android:id="@+id/proceed_overlay_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"/>
 
-    <Button
-        android:id="@+id/credit_card_button"
+    <TextView
+        android:id="@+id/cancel_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/confirm_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/cta_bar_left_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/cta_bar_right_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"/>
@@ -84,6 +180,66 @@
 
     <View
         android:id="@+id/overlay_indicator_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <ImageView
+        android:id="@+id/open_close_drawer_icon_image_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <View
+        android:id="@+id/continue_shopping_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/pay_amount_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/paypal_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <View
+        android:id="@+id/fadeable_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <View
+        android:id="@+id/paypal_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/credit_card_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/fixed_credit_card_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <View
+        android:id="@+id/credit_card_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/order_proof_of_payment_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"/>

@@ -40,7 +40,7 @@
                 </FrameLayout>
                 <ly.kite.widget.CustomTypefaceButton
                     style="@style/KiteSDKCTAButton.Centered"
-                    android:id="@+id/overlaid_start_button"
+                    android:id="@+id/themable_main_start_view"
                     android:text="@string/product_overview_start_button_text"/>
             </LinearLayout>
         </FrameLayout>

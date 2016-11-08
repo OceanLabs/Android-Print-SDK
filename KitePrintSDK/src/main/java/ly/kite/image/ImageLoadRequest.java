@@ -941,11 +941,13 @@ public class ImageLoadRequest
   private class ImageViewTarget extends ATarget
     {
     private ImageView  mImageView;
+    private Object     mKeyTag;
 
 
-    ImageViewTarget( ImageView imageView )
+    ImageViewTarget( ImageView imageView, Object keyTag )
       {
       mImageView = imageView;
+      mKeyTag    = keyTag;
       }
 
 
@@ -958,12 +960,17 @@ public class ImageLoadRequest
     @Override
     void onImageAvailable( Bitmap bitmap )
       {
-      if ( KiteSDK.DEBUG_IMAGE_LOADING )
-        {
-        Log.d( LOG_TAG, "Delivering bitmap : " + bitmap + ( bitmap != null ? " ( " + bitmap.getWidth() + " x " + bitmap.getHeight() + " )" : "" ) + " -> " + mImageView );
-        }
+      // Check if a key tag is required to match
 
-      mImageView.setImageBitmap( bitmap );
+      if ( mKeyTag == null || mKeyTag.equals( mImageView.getTag() ) )
+        {
+        if ( KiteSDK.DEBUG_IMAGE_LOADING )
+          {
+          Log.d( LOG_TAG, "Delivering bitmap : " + bitmap + ( bitmap != null ? " ( " + bitmap.getWidth() + " x " + bitmap.getHeight() + " )" : "" ) + " -> " + mImageView );
+          }
+
+        mImageView.setImageBitmap( bitmap );
+        }
       }
 
     @Override
@@ -1425,14 +1432,35 @@ public class ImageLoadRequest
 
     /*****************************************************
      *
-     * Sets the target of the image.
+     * Sets the target of the image as an image view.
+     *
+     *****************************************************/
+    public ImageLoadRequest into( ImageView imageView, Object keyTag )
+      {
+      // If a key tag is supplied, clear the image first, and use the
+      // tag as a key: the image view will only accept an image if its
+      // tag matches the key tag.
+
+      if ( keyTag != null )
+        {
+        imageView.setTag( keyTag );
+        imageView.setImageDrawable( null );
+        }
+
+      setTarget( new ImageViewTarget( imageView, keyTag ) );
+
+      return ( create() );
+      }
+
+
+    /*****************************************************
+     *
+     * Sets the target of the image as an image view.
      *
      *****************************************************/
     public ImageLoadRequest into( ImageView imageView )
       {
-      setTarget( new ImageViewTarget( imageView ) );
-
-      return ( create() );
+      return ( into( imageView, null ) );
       }
 
 

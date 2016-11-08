@@ -124,6 +124,8 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
   private TextView                mDeliveryAddressTextView;
   private TextView                mTotalShippingPriceTextView;
   private TextView                mTotalPriceTextView;
+  private View                    mContinueShoppingView;
+  private TextView                mPayAmountTextView;
 
   private Catalogue               mCatalogue;
 
@@ -245,21 +247,25 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
     mDeliveryAddressTextView    = (TextView)findViewById( R.id.delivery_address_text_view );
     mTotalShippingPriceTextView = (TextView)findViewById( R.id.total_shipping_price_text_view );
     mTotalPriceTextView         = (TextView)findViewById( R.id.total_price_text_view );
-
+    mContinueShoppingView       = findViewById( R.id.continue_shopping_view );
+    mPayAmountTextView          = (TextView)findViewById( R.id.pay_amount_text_view );
 
     KiteSDK kiteSDK = KiteSDK.getInstance( this );
 
 
     setTitle( R.string.title_basket );
 
-    setLeftButtonText( R.string.basket_left_button_text );
-    setLeftButtonColourRes( R.color.basket_left_button );
+    setLeftText( R.string.basket_left_button_text );
+    setLeftColourRes( R.color.basket_left_button );
 
-    setRightButtonText( R.string.basket_right_button_text );
-    setRightButtonColourRes( R.color.basket_right_button );
+    setRightText( R.string.basket_right_button_text );
+    setRightColourRes( R.color.basket_right_button );
 
 
     mDeliveryAddressTextView.setOnClickListener( this );
+
+    if ( mContinueShoppingView != null ) mContinueShoppingView.setOnClickListener( this );
+    if ( mPayAmountTextView    != null ) mPayAmountTextView.setOnClickListener( this );
     }
 
 
@@ -287,10 +293,11 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
 
     // Set up the buttons and Load the catalogue
 
-    if ( mIsManagedCheckout ) setLeftButtonVisible( false );
-    else                      setLeftButtonEnabled( false );
+    if ( mIsManagedCheckout ) setLeftVisible( false );
+    else                      setLeftEnabled( false );
 
-    setRightButtonEnabled( false );
+    setRightEnabled( false );
+    setEnabled( mPayAmountTextView, false );
 
     if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.VISIBLE );
 
@@ -378,7 +385,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
    *
    *****************************************************/
   @Override
-  protected void onLeftButtonClicked()
+  protected void onLeftClicked()
     {
     continueShopping();
     }
@@ -390,7 +397,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
    *
    *****************************************************/
   @Override
-  protected void onRightButtonClicked()
+  protected void onRightClicked()
     {
     // Make sure we have something in the basket
 
@@ -401,6 +408,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
       return;
       }
 
+
     // Make sure we have a shipping address
 
     if ( mShippingAddress == null )
@@ -409,7 +417,6 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
 
       return;
       }
-
 
 
     // Set up the order shipping details
@@ -436,7 +443,8 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
     if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.INVISIBLE );
 
     // The right button is always re-enabled, regardless of the mode
-    setRightButtonEnabled( true );
+    setRightEnabled( true );
+    setEnabled( mPayAmountTextView, true );
 
 
     // See what mode we're in
@@ -457,7 +465,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
         }
 
 
-      setLeftButtonVisible( false );
+      setLeftVisible( false );
 
       onGotBasket();
       }
@@ -465,7 +473,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
       {
       ///// Full shopping journey /////
 
-      setLeftButtonEnabled( true );
+      setLeftEnabled( true );
 
       loadAndDisplayBasket();
       }
@@ -513,6 +521,19 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
 
       return;
       }
+    else if ( mContinueShoppingView != null && view == mContinueShoppingView )
+      {
+      onLeftClicked();
+
+      return;
+      }
+    else if ( mPayAmountTextView != null && view == mPayAmountTextView )
+      {
+      onRightClicked();
+
+      return;
+      }
+
 
     super.onClick( view );
     }
@@ -683,7 +704,8 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
     {
     // CLear the current prices
     mTotalShippingPriceTextView.setText( null );
-    mTotalPriceTextView.setText( null );
+    if ( mTotalPriceTextView != null ) mTotalPriceTextView.setText( null );
+    if ( mPayAmountTextView  != null ) mPayAmountTextView.setText( R.string.Pay );
 
 
     // Only request the pricing if there is something in the basket
@@ -714,7 +736,12 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
 
     mTotalShippingPriceTextView.setText( orderPricing.getTotalShippingCost().getDefaultDisplayAmountWithFallback() );
 
-    mTotalPriceTextView.setText( getString( R.string.Total ) + " " + orderPricing.getTotalCost().getDefaultDisplayAmountWithFallback() );
+
+    String displayTotalCost = orderPricing.getTotalCost().getDefaultDisplayAmountWithFallback();
+
+    if ( mTotalPriceTextView != null ) mTotalPriceTextView.setText( getString( R.string.Total ) + " " + displayTotalCost );
+
+    if ( mPayAmountTextView  != null ) mPayAmountTextView.setText( getString( R.string.Pay ) + " " + displayTotalCost );
     }
 
 
@@ -799,7 +826,6 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
      *****************************************************/
     private class ViewHolder implements View.OnClickListener
       {
-      private int         mPosition;
       private BasketItem  mBasketItem;
       private Product     mProduct;
 
@@ -910,10 +936,6 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
 
       void bind( int position )
         {
-        // Save the position in the view holder
-        mPosition = position;
-
-
         // Get the appropriate basket item, and populate the view
 
         mBasketItem = (BasketItem)getItem( position );
@@ -968,10 +990,10 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
 
             mOriginalPriceTextView.setPaintFlags( mOriginalPriceTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG );
             }
-          }
-        else
-          {
-          mOriginalPriceTextView.setVisibility( View.GONE );
+          else
+            {
+            mOriginalPriceTextView.setVisibility( View.GONE );
+            }
           }
         }
       }

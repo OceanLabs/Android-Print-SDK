@@ -79,8 +79,6 @@ abstract public class AProductSelectionFragment extends AKiteFragment implements
   ////////// Constructor(s) //////////
 
 
-  ////////// CatalogueLoader.ICatalogueConsumer Method(s) //////////
-
   ////////// ICatalogueConsumer Method(s) //////////
 
   /*****************************************************

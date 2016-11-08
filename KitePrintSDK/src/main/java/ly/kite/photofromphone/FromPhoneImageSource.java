@@ -46,7 +46,6 @@ import android.content.Intent;
 
 import ly.kite.R;
 import ly.kite.journey.AImageSource;
-import ly.kite.photofromphone.PhotoFromPhoneFragment;
 
 
 ///// Class Declaration /////
@@ -85,7 +84,7 @@ public class FromPhoneImageSource extends AImageSource
     super( R.color.image_source_background_from_phone,
             R.drawable.ic_add_photo_white,
             R.string.image_source_from_phone,
-            R.id.upload_photo_from_phone,
+            R.id.upload_image_from_phone,
             R.string.upload_photo_from_phone );
     }
 

@@ -10,7 +10,7 @@
         android:padding="@dimen/cta_bar_padding">
 
         <ly.kite.widget.CustomTypefaceButton
-            android:id="@+id/cta_bar_left_button"
+            android:id="@+id/cta_bar_left_text_view"
             android:layout_gravity="left|center_vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -19,7 +19,7 @@
             android:visibility="gone"/>
 
         <ly.kite.widget.CustomTypefaceButton
-            android:id="@+id/cta_bar_right_button"
+            android:id="@+id/cta_bar_right_text_view"
             android:layout_gravity="right|center_vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -58,6 +58,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 
 import ly.kite.journey.AImageSource;
 import ly.kite.journey.creation.AProductCreationFragment;
@@ -82,8 +83,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
                                                                            AImageSource.IAssetConsumer,
                                                                            IUpdatedImageListener,
                                                                            View.OnDragListener,
-                                                                           ActionMode.Callback,
-                                                                           PopupMenu.OnMenuItemClickListener
+                                                                           ActionMode.Callback
   {
   ////////// Static Constant(s) //////////
 
@@ -182,8 +182,8 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     mPhotobookView.setLayoutManager( new LinearLayoutManager( mKiteActivity ) );
 
     // Set up the forwards button
-    setForwardsButtonText( R.string.Next );
-    setForwardsButtonOnClickListener( this );
+    setForwardsTextViewText( R.string.Next );
+    setForwardsTextViewOnClickListener( this );
 
     // We listen for drag events so that we can auto scroll up or down when dragging
     //mPhotoBookListView.setOnDragListener( this );
@@ -323,9 +323,9 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
   @Override
   public void onClick( View view )
     {
-    Button proceedButton = getForwardsButton();
+    TextView proceedTextView = getForwardsTextView();
 
-    if ( view == proceedButton )
+    if ( view == proceedTextView )
       {
       ///// Checkout /////
 
@@ -393,11 +393,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
 
       mAddImageIndex = imageIndex;
 
-      mAddImagePopupMenu = new PopupMenu( mKiteActivity, view );
-      mAddImagePopupMenu.inflate( R.menu.photobook_add_image_popup );
-      addImageSourceMenuItems( mAddImagePopupMenu.getMenu() );
-      mAddImagePopupMenu.setOnMenuItemClickListener( this );
-      mAddImagePopupMenu.show();
+      mAddImagePopupMenu = displayAddImagePopupMenu( view );
       }
     }
 
@@ -588,7 +584,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     mActionModeDiscardMenuItem = menu.findItem( R.id.discard_menu_item );
 
     // Can't click next whilst in action mode
-    setForwardsButtonEnabled( false );
+    setForwardsTextViewEnabled( false );
 
 
     return ( true );
@@ -689,26 +685,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     // End the selection mode
     mPhotobookAdaptor.setSelectionMode( false );
 
-    setForwardsButtonEnabled( true );
-    }
-
-
-  ////////// PopupMenu.OnMenuItemClickListener Method(s) //////////
-
-  /*****************************************************
-   *
-   * Called when a pop-up menu item is clicked.
-   *
-   *****************************************************/
-  @Override
-  public boolean onMenuItemClick( MenuItem item )
-    {
-    if ( onCheckAddImageOptionItem( item, getMaxAddImageCount() ) )
-      {
-      return ( true );
-      }
-
-    return ( false );
+    setForwardsTextViewEnabled( true );
     }
 
 

@@ -49,6 +49,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.TextView;
 
 import ly.kite.R;
 import ly.kite.analytics.Analytics;
@@ -80,7 +81,7 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements I
 
   private GridView          mGridView;
   private Parcelable        mGridViewState;
-  private Button            mProceedOverlayButton;
+  private TextView          mProceedOverlayTextView;
 
   private ImageSpecAdaptor  mImageSpecAdaptor;
 
@@ -141,13 +142,13 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements I
     {
     View view = layoutInflator.inflate( R.layout.screen_review_and_edit, container, false );
 
-    mGridView             = (GridView)view.findViewById( R.id.grid_view );
-    mProceedOverlayButton = (Button)view.findViewById( R.id.proceed_overlay_button );
+    mGridView               = (GridView)view.findViewById( R.id.grid_view );
+    mProceedOverlayTextView = (TextView)view.findViewById( R.id.proceed_overlay_text_view );
 
 
-    mProceedOverlayButton.setText( R.string.review_and_edit_proceed_button_text );
+    mProceedOverlayTextView.setText( R.string.review_and_edit_proceed_button_text );
 
-    mProceedOverlayButton.setOnClickListener( this );
+    mProceedOverlayTextView.setOnClickListener( this );
 
 
     return ( view );
@@ -273,7 +274,7 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements I
   @Override
   public void onClick( View view )
     {
-    if ( view == mProceedOverlayButton )
+    if ( view == mProceedOverlayTextView )
       {
       ///// Confirm /////
 

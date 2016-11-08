@@ -145,10 +145,10 @@ public class PhoneCaseFragment extends AEditImageFragment
     {
     View view = super.onCreateView( layoutInflator, container, savedInstanceState );
 
-    setBackwardsButtonVisibility( View.GONE );
+    setBackwardsTextViewVisibility( View.GONE );
 
-    setForwardsButtonVisibility( View.VISIBLE );
-    setForwardsButtonText( R.string.phone_case_proceed_button_text );
+    setForwardsTextViewVisibility( View.VISIBLE );
+    setForwardsTextViewText( R.string.phone_case_proceed_button_text );
 
     return ( view );
     }

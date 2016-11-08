@@ -109,6 +109,15 @@ public interface IGroupOrProduct
 
   /*****************************************************
    *
+   * Returns a description, or null if there is no
+   * description.
+   *
+   *****************************************************/
+  public String getDescription();
+
+
+  /*****************************************************
+   *
    * Returns true or false according to whether a flag is
    * set.
    *

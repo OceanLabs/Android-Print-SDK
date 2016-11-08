@@ -60,7 +60,7 @@
             android:textSize="@dimen/review_and_crop_plus_minus_text_size"/>
 
         <ly.kite.widget.CustomTypefaceButton
-            android:id="@+id/edit_button"
+            android:id="@+id/edit_text_view"
             android:layout_marginLeft="30dp"
             android:layout_width="wrap_content"
             android:layout_weight="1.0"
