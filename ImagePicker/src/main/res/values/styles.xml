@@ -8,6 +8,7 @@
 
     <style name="Theme.ImagePicker.ActionBar" parent="android:Widget.ActionBar">
         <item name="android:displayOptions">homeAsUp|showTitle</item>
+        <item name="android:background">@color/ip_action_bar_colour</item>
     </style>
 
 </resources>
