@@ -57,15 +57,19 @@ public class CVVEditTextEnforcer extends AEditTextEnforcer implements TextWatche
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String  LOG_TAG              = "CVVEditTextEnforcer";
+  static private final String  LOG_TAG                      = "CVVEditTextEnforcer";
 
-  static public  final int     REQUIRED_DIGIT_COUNT = 3;
+  static public  final int     DEFAULT_REQUIRED_DIGIT_COUNT = 3;
+
+  static public  final String  HINT_DIGITS                  = "123456789";
 
 
   ////////// Static Variable(s) //////////
 
 
   ////////// Member Variable(s) //////////
+
+  private int  mRequiredDigitCount;
 
 
   ////////// Static Initialiser(s) //////////
@@ -79,6 +83,8 @@ public class CVVEditTextEnforcer extends AEditTextEnforcer implements TextWatche
   public CVVEditTextEnforcer( EditText editText, ICallback callback )
     {
     super( editText, callback );
+
+    setRequiredDigitCount( DEFAULT_REQUIRED_DIGIT_COUNT );
 
     // Set up the text change listener
     editText.addTextChangedListener( this );
@@ -120,7 +126,7 @@ public class CVVEditTextEnforcer extends AEditTextEnforcer implements TextWatche
     String digitsString = getDigits( charSequence );
 
     // Make sure we haven't exceeded the limit
-    if ( digitsString.length() > REQUIRED_DIGIT_COUNT ) digitsString = digitsString.substring( 0, REQUIRED_DIGIT_COUNT );
+    if ( digitsString.length() > mRequiredDigitCount ) digitsString = digitsString.substring( 0, mRequiredDigitCount );
 
 
     // Only change the original string if it doesn't already match the digits string - to avoid triggering
@@ -136,7 +142,7 @@ public class CVVEditTextEnforcer extends AEditTextEnforcer implements TextWatche
 
 
     // If we have the correct number of digits - call the callback
-    if ( digitsString.length() == REQUIRED_DIGIT_COUNT && mCallback != null )
+    if ( digitsString.length() == mRequiredDigitCount && mCallback != null )
       {
       mCallback.eteOnTextComplete( mEditText );
       }
@@ -152,6 +158,21 @@ public class CVVEditTextEnforcer extends AEditTextEnforcer implements TextWatche
   public void afterTextChanged( Editable s )
     {
     // Do nothing
+    }
+
+
+  ////////// TextWatcher Method(s) //////////
+
+  /*****************************************************
+   *
+   * Sets the number of digits.
+   *
+   *****************************************************/
+  public void setRequiredDigitCount( int digitCount )
+    {
+    mRequiredDigitCount = digitCount;
+
+    if ( mEditText != null ) mEditText.setHint( HINT_DIGITS.substring( 0, digitCount ) );
     }
 
 

@@ -39,8 +39,6 @@ package ly.kite.widget;
 
 ///// Import(s) /////
 
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.widget.EditText;
 
 
@@ -82,7 +80,7 @@ public class AEditTextEnforcer
    * Returns just the digits from a character sequence.
    *
    *****************************************************/
-  static public String getDigits( CharSequence originalCharSequence )
+  static protected String getDigits( CharSequence originalCharSequence )
     {
     if ( originalCharSequence == null ) return ( "" );
 
@@ -97,6 +95,112 @@ public class AEditTextEnforcer
       }
 
     return ( stringBuilder.toString() );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns true if the digits string starts with the supplied
+   * range.
+   *
+   *****************************************************/
+  static protected boolean digitsStartBetween( String digitsString, int rangeFirst, int rangeLast )
+    {
+    if ( digitsString == null || digitsString.length() < 1 || rangeFirst < 1 || rangeLast < 1 || rangeFirst > rangeLast ) return ( false );
+
+    int prefixSize = 0;
+
+    if      ( rangeLast <         10 ) prefixSize = 1;
+    else if ( rangeLast <        100 ) prefixSize = 2;
+    else if ( rangeLast <       1000 ) prefixSize = 3;
+    else if ( rangeLast <      10000 ) prefixSize = 4;
+    else if ( rangeLast <     100000 ) prefixSize = 5;
+    else if ( rangeLast <    1000000 ) prefixSize = 6;
+    else if ( rangeLast <   10000000 ) prefixSize = 7;
+    else if ( rangeLast <  100000000 ) prefixSize = 8;
+
+    if ( digitsString.length() < prefixSize ) return ( false );
+
+    int prefix = Integer.parseInt( digitsString.substring( 0, prefixSize ) );
+
+    if ( prefix >= rangeFirst && prefix <= rangeLast ) return ( true );
+
+    return ( false );
+    }
+
+
+  /*****************************************************
+   *
+   * Formats a card number according to the supplied groups.
+   *
+   *****************************************************/
+  static protected String formatNumber( String digitString, int... numberGroupings )
+    {
+    int digitStringLength;
+
+    if ( digitString == null || ( digitStringLength = digitString.length() ) < 1 ) return ( "" );
+
+    if ( numberGroupings == null || numberGroupings.length < 1 ) return ( digitString );
+
+
+    StringBuilder stringBuilder = new StringBuilder();
+
+    int digitIndex    = 0;
+    int groupingIndex = 0;
+
+    while ( digitIndex < digitStringLength && groupingIndex < numberGroupings.length )
+      {
+      int end = digitIndex + numberGroupings[ groupingIndex ];
+
+      stringBuilder.append( safeSubstring( digitString, digitIndex, end ) );
+
+      if ( end < digitStringLength ) stringBuilder.append( " " );
+
+      digitIndex    += numberGroupings[ groupingIndex ];
+      groupingIndex ++;
+      }
+
+    if ( digitIndex < digitString.length() ) stringBuilder.append( safeSubstring( digitString, digitIndex ) );
+
+    return ( stringBuilder.toString() );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a substring, correcting any bounds.
+   *
+   *****************************************************/
+  static protected String safeSubstring( String sourceString, int start, int end )
+    {
+    int sourceStringLength;
+
+    if ( sourceString == null || ( sourceStringLength = sourceString.length() ) < 1 ) return ( "" );
+
+    if ( start >= sourceStringLength ) return ( "" );
+
+    if ( start < 0 ) start = 0;
+
+    if ( end < start ) return ( "" );
+
+    if ( end >= sourceStringLength ) end = sourceStringLength;
+
+    return ( sourceString.substring( start, end ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a substring, correcting any bounds.
+   *
+   *****************************************************/
+  static protected String safeSubstring( String sourceString, int start )
+    {
+    int sourceStringLength;
+
+    if ( sourceString == null || ( sourceStringLength = sourceString.length() ) < 1 ) return ( "" );
+
+    return ( safeSubstring( sourceString, start, sourceStringLength - 1 ) );
     }
 
 

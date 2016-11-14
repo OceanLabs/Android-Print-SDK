@@ -15,6 +15,11 @@
     <string name="unit_inches_short">in</string>
     <string name="unit_pixels_short">px</string>
 
+    <string name="credit_card_number_hint" translatable="false">1234 5678 1234 5678</string>
+    <string name="month_hint">MM</string>
+    <string name="year_hint">YYYY</string>
+    <string name="cvv_hint" translatable="false">123</string>
+
     <string name="title_choose_product_group">Print Shop</string>
     <string name="title_create_phone_case">Create Phone Case</string>
     <string name="title_image_source">Choose Photos</string>

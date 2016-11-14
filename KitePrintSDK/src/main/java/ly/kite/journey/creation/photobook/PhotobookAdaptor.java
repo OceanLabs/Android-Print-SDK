@@ -55,9 +55,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.ordering.ImageSpec;
-import ly.kite.util.Asset;
 import ly.kite.catalogue.Product;
 import ly.kite.image.ImageAgent;
 import ly.kite.util.AssetFragment;
@@ -76,17 +76,19 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String  LOG_TAG                 = "PhotobookAdaptor";
+  static private final String  LOG_TAG                   = "PhotobookAdaptor";
 
-  static private final int     FRONT_COVER_ASSET_INDEX = 0;
+  static private final int     FRONT_COVER_ASSET_INDEX   = 0;
 
-  static public  final int     FRONT_COVER_POSITION    = 0;
-  static public  final int     INSTRUCTIONS_POSITION   = 1;
-  static public  final int     CONTENT_START_POSITION  = 2;
+  static public  final int     FRONT_COVER_POSITION      = 0;
+  static public  final int     INSTRUCTIONS_POSITION     = 1;
+  static public  final int     CONTENT_START_POSITION    = 2;
 
-  static public  final int     FRONT_COVER_VIEW_TYPE   = 0;
-  static public  final int     INSTRUCTIONS_VIEW_TYPE  = 1;
-  static public  final int     CONTENT_VIEW_TYPE       = 2;
+  static public  final int     FRONT_COVER_VIEW_TYPE     = 0;
+  static public  final int     INSTRUCTIONS_VIEW_TYPE    = 1;
+  static public  final int     CONTENT_VIEW_TYPE         = 2;
+
+  static         final int     COVER_SUMMARY_IMAGE_COUNT = 9;
 
 
   ////////// Static Variable(s) //////////
@@ -106,6 +108,9 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
 
   private boolean                                    mInSelectionMode;
   private HashSet<Integer>                           mSelectedAssetIndexHashSet;
+
+  private boolean                                    mFrontCoverIsSummary;
+  private int                                        mFrontCoverPlaceableImageCount;
 
   private int                                        mCurrentlyHighlightedAssetIndex;
 
@@ -131,6 +136,15 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
     mVisibleCheckableImageArray = new SparseArray<>();
 
     mSelectedAssetIndexHashSet  = new HashSet<>();
+
+    if ( mFrontCoverIsSummary = KiteSDK.getInstance( activity ).getCustomiser().photobookFrontCoverIsSummary() )
+      {
+      mFrontCoverPlaceableImageCount = 0;
+      }
+    else
+      {
+      mFrontCoverPlaceableImageCount = 1;
+      }
     }
 
 
@@ -221,65 +235,110 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
    *****************************************************/
   private void bindFrontCover( FrontCoverViewHolder viewHolder )
     {
-    // If the holder is already bound - remove its reference
-    if ( viewHolder.imageIndex >= 0 )
+    if ( mFrontCoverIsSummary )
       {
-      mVisibleCheckableImageSet.remove( viewHolder.checkableImageContainerFrame );
-      mVisibleCheckableImageArray.remove( viewHolder.imageIndex );
-      }
+      ///// Summary front cover /////
 
+      viewHolder.imageIndex = -1;
 
-    viewHolder.imageIndex = FRONT_COVER_ASSET_INDEX;
-
-    mVisibleCheckableImageSet.add( viewHolder.checkableImageContainerFrame );
-    mVisibleCheckableImageArray.put( viewHolder.imageIndex, viewHolder.checkableImageContainerFrame );
-
-
-    // We only display the add image icon if there is no assets and quantity for that position,
-    // not just if there is no edited asset yet.
-
-    ImageSpec imageSpec = mImageSpecArrayList.get( FRONT_COVER_ASSET_INDEX );
-
-    if ( imageSpec != null  )
-      {
+      viewHolder.checkableImageContainerFrame.setVisibility( View.INVISIBLE );
       viewHolder.addImageView.setVisibility( View.INVISIBLE );
+      viewHolder.imageGridView.setVisibility( View.VISIBLE );
 
-      AssetFragment assetFragment = imageSpec.getAssetFragment();
-
-      if ( mInSelectionMode )
+      // Populate the summary image grid
+      for ( int imageIndex = 0; imageIndex < COVER_SUMMARY_IMAGE_COUNT; imageIndex ++ )
         {
-        if ( mSelectedAssetIndexHashSet.contains( FRONT_COVER_ASSET_INDEX ) )
+        ImageView imageView = viewHolder.imageGridViewHolder.gridImageViewArray[ imageIndex ];
+
+        imageView.setImageDrawable( null );
+
+        ImageSpec imageSpec = mImageSpecArrayList.get( imageIndex );
+
+        if ( imageSpec != null )
           {
-          viewHolder.checkableImageContainerFrame.setState( CheckableImageContainerFrame.State.CHECKED );
+          AssetFragment imageAssetFragment = imageSpec.getAssetFragment();
+
+          if ( imageAssetFragment != null )
+            {
+            ImageAgent.with( mActivity )
+                    .load( imageAssetFragment )
+                    .resizeForDimen( imageView, R.dimen.image_default_resize_size, R.dimen.image_default_resize_size )
+                    .onlyScaleDown()
+                    .reduceColourSpace()
+                    .into( imageView, imageAssetFragment );
+            }
           }
-        else
-          {
-          viewHolder.checkableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_VISIBLE );
-          }
-        }
-      else
-        {
-        viewHolder.checkableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE );
-        }
 
-      if ( assetFragment != null )
-        {
-        viewHolder.checkableImageContainerFrame.clearForNewImage( assetFragment );
-
-        ImageAgent.with( mActivity )
-                .load( assetFragment )
-                .resizeForDimen( viewHolder.checkableImageContainerFrame, R.dimen.image_default_resize_size, R.dimen.image_default_resize_size )
-                .onlyScaleDown()
-                .reduceColourSpace()
-                .into( viewHolder.checkableImageContainerFrame, assetFragment );
         }
-
       }
     else
       {
-      viewHolder.addImageView.setVisibility( View.VISIBLE );
-      viewHolder.checkableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE );
-      viewHolder.checkableImageContainerFrame.clear();
+      ///// Standard front cover /////
+
+      viewHolder.checkableImageContainerFrame.setVisibility( View.VISIBLE );
+      // The add image view visibility is set below
+      viewHolder.imageGridView.setVisibility( View.INVISIBLE );
+
+      // If the holder is already bound - remove its reference
+      if ( viewHolder.imageIndex >= 0 )
+        {
+        mVisibleCheckableImageSet.remove( viewHolder.checkableImageContainerFrame );
+        mVisibleCheckableImageArray.remove( viewHolder.imageIndex );
+        }
+
+
+      viewHolder.imageIndex = FRONT_COVER_ASSET_INDEX;
+
+      mVisibleCheckableImageSet.add( viewHolder.checkableImageContainerFrame );
+      mVisibleCheckableImageArray.put( viewHolder.imageIndex, viewHolder.checkableImageContainerFrame );
+
+
+      // We only display the add image icon if there is no assets and quantity for that position,
+      // not just if there is no edited asset yet.
+
+      ImageSpec imageSpec = mImageSpecArrayList.get( FRONT_COVER_ASSET_INDEX );
+
+      if ( imageSpec != null )
+        {
+        viewHolder.addImageView.setVisibility( View.INVISIBLE );
+
+        AssetFragment assetFragment = imageSpec.getAssetFragment();
+
+        if ( mInSelectionMode )
+          {
+          if ( mSelectedAssetIndexHashSet.contains( FRONT_COVER_ASSET_INDEX ) )
+            {
+            viewHolder.checkableImageContainerFrame.setState( CheckableImageContainerFrame.State.CHECKED );
+            }
+          else
+            {
+            viewHolder.checkableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_VISIBLE );
+            }
+          }
+        else
+          {
+          viewHolder.checkableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE );
+          }
+
+        if ( assetFragment != null )
+          {
+          viewHolder.checkableImageContainerFrame.clearForNewImage( assetFragment );
+
+          ImageAgent.with( mActivity )
+                  .load( assetFragment )
+                  .resizeForDimen( viewHolder.checkableImageContainerFrame, R.dimen.image_default_resize_size, R.dimen.image_default_resize_size )
+                  .onlyScaleDown()
+                  .reduceColourSpace()
+                  .into( viewHolder.checkableImageContainerFrame, assetFragment );
+          }
+
+        }
+      else
+        {
+        viewHolder.addImageView.setVisibility( View.VISIBLE );
+        viewHolder.checkableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE );
+        viewHolder.checkableImageContainerFrame.clear();
+        }
       }
     }
 
@@ -305,7 +364,7 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
 
 
     // Calculate the indexes for the list view position
-    int leftIndex  = ( ( position - CONTENT_START_POSITION ) * 2 ) + 1;
+    int leftIndex  = mFrontCoverPlaceableImageCount + ( ( position - CONTENT_START_POSITION ) * 2 );
     int rightIndex = leftIndex + 1;
 
 
@@ -604,10 +663,12 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
   private class FrontCoverViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
                                                                                 View.OnLongClickListener
     {
-    int imageIndex;
+    int                           imageIndex;
 
     CheckableImageContainerFrame  checkableImageContainerFrame;
     ImageView                     addImageView;
+    View                          imageGridView;
+    ImageGridViewHolder           imageGridViewHolder;
 
 
     FrontCoverViewHolder( View view )
@@ -618,6 +679,9 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
 
       this.checkableImageContainerFrame = (CheckableImageContainerFrame)view.findViewById( R.id.checkable_image_container_frame );
       this.addImageView                 = (ImageView)view.findViewById( R.id.add_image_view );
+      this.imageGridView                = view.findViewById( R.id.image_grid );
+
+      this.imageGridViewHolder          = new ImageGridViewHolder( this.imageGridView );
 
       this.checkableImageContainerFrame.setOnClickListener( this );
       this.checkableImageContainerFrame.setOnLongClickListener( this );
@@ -629,37 +693,40 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
     @Override
     public void onClick( View view )
       {
-      if ( view == this.checkableImageContainerFrame )
+      if ( ! mFrontCoverIsSummary )
         {
-        if ( mInSelectionMode )
+        if ( view == this.checkableImageContainerFrame )
           {
-          ImageSpec imageSpec = getImageSpecAt( this.imageIndex );
-
-          if ( imageSpec != null )
+          if ( mInSelectionMode )
             {
-            if ( ! mSelectedAssetIndexHashSet.contains( this.imageIndex ) )
-              {
-              mSelectedAssetIndexHashSet.add( this.imageIndex );
+            ImageSpec imageSpec = getImageSpecAt( this.imageIndex );
 
-              this.checkableImageContainerFrame.setChecked( true );
+            if ( imageSpec != null )
+              {
+              if ( !mSelectedAssetIndexHashSet.contains( this.imageIndex ) )
+                {
+                mSelectedAssetIndexHashSet.add( this.imageIndex );
+
+                this.checkableImageContainerFrame.setChecked( true );
+                }
+              else
+                {
+                mSelectedAssetIndexHashSet.remove( this.imageIndex );
+
+                this.checkableImageContainerFrame.setChecked( false );
+                }
+
+              onSelectedImagesChanged();
               }
             else
               {
-              mSelectedAssetIndexHashSet.remove( this.imageIndex );
-
-              this.checkableImageContainerFrame.setChecked( false );
+              rejectAddImage( this.addImageView );
               }
-
-            onSelectedImagesChanged();
             }
           else
             {
-            rejectAddImage( this.addImageView );
+            mListener.onClickImage( this.imageIndex, view );
             }
-          }
-        else
-          {
-          mListener.onClickImage( this.imageIndex, view );
           }
         }
       }
@@ -670,19 +737,52 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
     @Override
     public boolean onLongClick( View view )
       {
-      if ( ! mInSelectionMode )
+      if ( ! mFrontCoverIsSummary )
         {
-        if ( view == this.checkableImageContainerFrame && getImageSpecAt( FRONT_COVER_ASSET_INDEX ) != null )
+        if ( !mInSelectionMode )
           {
-          mListener.onLongClickImage( this.imageIndex, this.checkableImageContainerFrame );
+          if ( view == this.checkableImageContainerFrame && getImageSpecAt( FRONT_COVER_ASSET_INDEX ) != null )
+            {
+            mListener.onLongClickImage( this.imageIndex, this.checkableImageContainerFrame );
 
-          return ( true );
+            return ( true );
+            }
           }
         }
 
       return ( false );
       }
 
+    }
+
+
+  /*****************************************************
+   *
+   * Summary image grid view holder.
+   *
+   *****************************************************/
+  private class ImageGridViewHolder
+    {
+    ImageView[]  gridImageViewArray;
+
+
+    ImageGridViewHolder( View view )
+      {
+      this.gridImageViewArray = new ImageView[ COVER_SUMMARY_IMAGE_COUNT ];
+
+      if ( view != null )
+        {
+        this.gridImageViewArray[ 0 ] = (ImageView) view.findViewById( R.id.grid_image_1 );
+        this.gridImageViewArray[ 1 ] = (ImageView) view.findViewById( R.id.grid_image_2 );
+        this.gridImageViewArray[ 2 ] = (ImageView) view.findViewById( R.id.grid_image_3 );
+        this.gridImageViewArray[ 3 ] = (ImageView) view.findViewById( R.id.grid_image_4 );
+        this.gridImageViewArray[ 4 ] = (ImageView) view.findViewById( R.id.grid_image_5 );
+        this.gridImageViewArray[ 5 ] = (ImageView) view.findViewById( R.id.grid_image_6 );
+        this.gridImageViewArray[ 6 ] = (ImageView) view.findViewById( R.id.grid_image_7 );
+        this.gridImageViewArray[ 7 ] = (ImageView) view.findViewById( R.id.grid_image_8 );
+        this.gridImageViewArray[ 8 ] = (ImageView) view.findViewById( R.id.grid_image_9 );
+        }
+      }
     }
 
 

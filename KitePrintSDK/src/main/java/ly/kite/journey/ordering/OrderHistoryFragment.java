@@ -199,6 +199,7 @@ public class OrderHistoryFragment extends AKiteFragment implements AdapterView.O
       String userDataJSON = orderHistoryItem.getUserDataJSON();
 
       Order order = new Order(
+              getActivity(),
               orderHistoryItem.getBasket(),
               orderHistoryItem.getShippingAddress(),
               orderHistoryItem.getNotificationEmail(),

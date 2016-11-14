@@ -32,6 +32,7 @@
                 android:layout_height="@dimen/multi_page_add_image_size"
                 android:src="@drawable/multi_page_add_image"
                 android:visibility="invisible"/>
+            <include layout="@layout/include_9x9_image_grid"/>
         </FrameLayout>
     </FrameLayout>
 

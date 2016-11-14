@@ -46,6 +46,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.Calendar;
@@ -82,13 +83,14 @@ abstract public class ACreditCardDialogFragment extends DialogFragment implement
 
   ////////// Member Variable(s) //////////
 
-  private EditText  mCardNumberEditText;
-  private EditText  mExpiryMonthEditText;
-  private EditText  mExpiryYearEditText;
-  private EditText  mCVVEditText;
-  private TextView  mErrorTextView;
-  private Button    mCancelButton;
-  private Button    mProceedButton;
+  private EditText   mCardNumberEditText;
+  private EditText   mExpiryMonthEditText;
+  private EditText   mExpiryYearEditText;
+  private EditText   mCVVEditText;
+  private ImageView  mLogoImageView;
+  private TextView   mErrorTextView;
+  private Button     mCancelButton;
+  private Button     mProceedButton;
 
 
   ////////// Static Initialiser(s) //////////
@@ -130,6 +132,7 @@ abstract public class ACreditCardDialogFragment extends DialogFragment implement
     mExpiryMonthEditText = (EditText)view.findViewById( R.id.expiry_month_edit_text );
     mExpiryYearEditText  = (EditText)view.findViewById( R.id.expiry_year_edit_text );
     mCVVEditText         = (EditText)view.findViewById( R.id.cvv_edit_text );
+    mLogoImageView       = (ImageView)view.findViewById( R.id.logo_image_view );
     mErrorTextView       = (TextView)view.findViewById( R.id.error_text_view );
     mCancelButton        = (Button)view.findViewById( R.id.cancel_button );
     mProceedButton       = (Button)view.findViewById( R.id.proceed_button );
@@ -137,9 +140,16 @@ abstract public class ACreditCardDialogFragment extends DialogFragment implement
 
     // Set up enforcers for the text fields
 
+    CVVEditTextEnforcer cvvEditTextEnforcer = null;
+
+    if ( mCVVEditText != null )
+      {
+      cvvEditTextEnforcer = new CVVEditTextEnforcer( mCVVEditText, this );
+      }
+
     if ( mCardNumberEditText != null )
       {
-      new CardNumberEditTextEnforcer( mCardNumberEditText, this );
+      new CardNumberEditTextEnforcer( mCardNumberEditText, mLogoImageView, cvvEditTextEnforcer, this );
       }
 
     if ( mExpiryMonthEditText != null )
@@ -154,11 +164,6 @@ abstract public class ACreditCardDialogFragment extends DialogFragment implement
       int firstYear = Calendar.getInstance().get( Calendar.YEAR );
 
       new YearEditTextEnforcer( mExpiryYearEditText, firstYear, firstYear + MAX_CARD_VALIDITY_IN_YEARS, this );
-      }
-
-    if ( mCVVEditText != null )
-      {
-      new CVVEditTextEnforcer( mCVVEditText, this );
       }
 
     if ( mCancelButton  != null ) mCancelButton.setOnClickListener( this );
@@ -278,7 +283,10 @@ abstract public class ACreditCardDialogFragment extends DialogFragment implement
    *****************************************************/
   protected void onClearError()
     {
-    mErrorTextView.setText( null );
+    if ( mErrorTextView != null )
+      {
+      mErrorTextView.setText( null );
+      }
     }
 
 
@@ -289,7 +297,10 @@ abstract public class ACreditCardDialogFragment extends DialogFragment implement
    *****************************************************/
   protected void onDisplayError( String message )
     {
-    mErrorTextView.setText( message );
+    if ( mErrorTextView != null )
+      {
+      mErrorTextView.setText( message );
+      }
     }
 
 
@@ -300,7 +311,7 @@ abstract public class ACreditCardDialogFragment extends DialogFragment implement
    *****************************************************/
   protected void onDisplayError( int messageResourceId )
     {
-    mErrorTextView.setText( getActivity().getString( messageResourceId ) );
+    onDisplayError( getActivity().getString( messageResourceId ) );
     }
 
 
