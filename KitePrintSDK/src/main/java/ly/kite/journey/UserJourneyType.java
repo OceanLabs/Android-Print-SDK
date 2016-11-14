@@ -39,18 +39,19 @@ package ly.kite.journey;
 
 ///// Import(s) /////
 
+import android.content.Context;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.catalogue.Product;
 import ly.kite.ordering.ImageSpec;
 import ly.kite.ordering.Job;
 import ly.kite.ordering.Order;
-import ly.kite.util.Asset;
 import ly.kite.util.AssetFragment;
-import ly.kite.util.UploadableImage;
 import ly.kite.widget.EditableMaskedImageView;
 
 
@@ -70,9 +71,9 @@ public enum UserJourneyType
             {
             // A calendar job is a standard order, but blank images are allowed
             @Override
-            public void addJobsToOrder( Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, Order order )
+            public void addJobsToOrder( Context context, Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, Order order )
               {
-              addJobsToOrder( product, orderQuantity, optionsMap, imageSpecList, true, order );
+              addJobsToOrder( context, product, orderQuantity, optionsMap, imageSpecList, true, order );
               }
             },
 
@@ -82,7 +83,7 @@ public enum UserJourneyType
             {
             // Greeting cards have their own job
             @Override
-            public void addJobsToOrder( Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, Order order )
+            public void addJobsToOrder( Context context, Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, Order order )
               {
               for ( ImageSpec imageSpec : imageSpecList )
                 {
@@ -104,8 +105,12 @@ public enum UserJourneyType
             {
             // Photobooks have their own job
             @Override
-            public void addJobsToOrder( Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, Order order )
+            public void addJobsToOrder( Context context, Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, Order order )
               {
+              // Determine if the front cover is a summary page
+              boolean frontCoverIsSummary = KiteSDK.getInstance( context ).getCustomiser().photobookFrontCoverIsSummary();
+
+
               // We take the first image as the front cover, and use the remainder for the content pages
 
               AssetFragment       frontCoverAssetFragment = null;
@@ -129,7 +134,7 @@ public enum UserJourneyType
                   quantity      = 1;
                   }
 
-                if ( pageIndex == 0 )
+                if ( pageIndex == 0 && ( ! frontCoverIsSummary ) )
                   {
                   frontCoverAssetFragment = assetFragment;
                   }
@@ -242,7 +247,7 @@ public enum UserJourneyType
    * job.
    *
    *****************************************************/
-  void addJobsToOrder( Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, boolean nullImagesAreBlankPages, Order order )
+  void addJobsToOrder( Context context, Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, boolean nullImagesAreBlankPages, Order order )
     {
     // Create a list of images.
 
@@ -272,6 +277,8 @@ public enum UserJourneyType
         }
       }
 
+
+    // TODO: Create multiple jobs, if more than quantityPerSheet
     order.addJob( Job.createPrintJob( product, orderQuantity, optionsMap, assetFragmentList ) );
     }
 
@@ -284,9 +291,9 @@ public enum UserJourneyType
    * job.
    *
    *****************************************************/
-  public void addJobsToOrder( Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, Order order )
+  public void addJobsToOrder( Context context, Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, Order order )
     {
-    addJobsToOrder( product, orderQuantity, optionsMap, imageSpecList, false, order );
+    addJobsToOrder( context, product, orderQuantity, optionsMap, imageSpecList, false, order );
     }
 
 

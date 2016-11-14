@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:id="@+id/image_grid"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_marginBottom="1dp"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1.00"
+            android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/grid_image_1"
+                android:layout_marginRight="1dp"
+                android:layout_width="0dp"
+                android:layout_weight="1.00"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"/>
+            <ImageView
+                android:id="@+id/grid_image_2"
+                android:layout_marginLeft="1dp"
+                android:layout_marginRight="1dp"
+                android:layout_width="0dp"
+                android:layout_weight="1.00"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"/>
+            <ImageView
+                android:id="@+id/grid_image_3"
+                android:layout_marginLeft="1dp"
+                android:layout_width="0dp"
+                android:layout_weight="1.00"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="1dp"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1.00"
+            android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/grid_image_4"
+                android:layout_marginRight="1dp"
+                android:layout_width="0dp"
+                android:layout_weight="1.00"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"/>
+            <ImageView
+                android:id="@+id/grid_image_5"
+                android:layout_marginLeft="1dp"
+                android:layout_marginRight="1dp"
+                android:layout_width="0dp"
+                android:layout_weight="1.00"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"/>
+            <ImageView
+                android:id="@+id/grid_image_6"
+                android:layout_marginLeft="1dp"
+                android:layout_width="0dp"
+                android:layout_weight="1.00"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="1dp"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1.00"
+            android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/grid_image_7"
+                android:layout_marginRight="1dp"
+                android:layout_width="0dp"
+                android:layout_weight="1.00"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"/>
+            <ImageView
+                android:id="@+id/grid_image_8"
+                android:layout_marginLeft="1dp"
+                android:layout_marginRight="1dp"
+                android:layout_width="0dp"
+                android:layout_weight="1.00"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"/>
+            <ImageView
+                android:id="@+id/grid_image_9"
+                android:layout_marginLeft="1dp"
+                android:layout_width="0dp"
+                android:layout_weight="1.00"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</merge>

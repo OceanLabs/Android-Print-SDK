@@ -162,6 +162,18 @@ public class SDKCustomiser
 
   /*****************************************************
    *
+   * Returns true if the photobook cover page is a summary
+   * of photos in the content pages.
+   *
+   *****************************************************/
+  public boolean photobookFrontCoverIsSummary()
+    {
+    return ( false );
+    }
+
+
+  /*****************************************************
+   *
    * Returns the custom image editor agent.
    *
    *****************************************************/

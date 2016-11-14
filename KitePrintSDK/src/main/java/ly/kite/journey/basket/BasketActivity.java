@@ -644,7 +644,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
       }
 
 
-    return ( new Order( mBasketItemList, mShippingAddress, mContactEmail, mContactPhone, mAdditionalParametersMap ) );
+    return ( new Order( this, mBasketItemList, mShippingAddress, mContactEmail, mContactPhone, mAdditionalParametersMap ) );
     }
 
 

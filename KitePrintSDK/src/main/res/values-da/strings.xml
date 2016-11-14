@@ -4,6 +4,9 @@
     <string name="unit_centimeters">centimeter</string>
     <string name="unit_inches">tommer</string>
 
+    <string name="month_hint">MM</string>
+    <string name="year_hint">ÅÅÅÅ</string>
+
     <string name="title_choose_product_group">Trykkeri</string>
     <string name="title_create_phone_case">Lav mobiletui</string>
     <string name="title_image_source">Vælg billeder</string>

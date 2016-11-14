@@ -88,7 +88,8 @@ public class Order implements Parcelable /* , Serializable */
      * Constructor used by basket activity.
      *
      *****************************************************/
-    public Order( List<BasketItem>       basketItemList,
+    public Order( Context                context,
+                  List<BasketItem>       basketItemList,
                   Address                shippingAddress,
                   String                 contactEmail,
                   String                 contactPhone,
@@ -100,10 +101,10 @@ public class Order implements Parcelable /* , Serializable */
         {
         for ( BasketItem basketItem : basketItemList )
           {
-          Product product = basketItem.getProduct();
-          int orderQuantity = basketItem.getOrderQuantity();
+          Product product       = basketItem.getProduct();
+          int     orderQuantity = basketItem.getOrderQuantity();
 
-          product.getUserJourneyType().addJobsToOrder( product, orderQuantity, basketItem.getOptionsMap(), basketItem.getImageSpecList(), this );
+          product.getUserJourneyType().addJobsToOrder( context, product, orderQuantity, basketItem.getOptionsMap(), basketItem.getImageSpecList(), this );
           }
         }
 
@@ -120,7 +121,8 @@ public class Order implements Parcelable /* , Serializable */
      * Constructor used by order history fragment.
      *
      *****************************************************/
-    public Order( List<BasketItem>       basketItemList,
+    public Order( Context                context,
+                  List<BasketItem>       basketItemList,
                   Address                shippingAddress,
                   String                 contactEmail,
                   String                 contactPhone,
@@ -131,7 +133,7 @@ public class Order implements Parcelable /* , Serializable */
                   String                 proofOfPayment,
                   String                 receipt )
       {
-      this( basketItemList, shippingAddress, contactEmail, contactPhone, additionalParametersMap );
+      this( context, basketItemList, shippingAddress, contactEmail, contactPhone, additionalParametersMap );
 
       setUserData( userDataJSONObject );
       setPromoCode( promoCode );

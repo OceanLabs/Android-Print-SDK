@@ -775,9 +775,11 @@ abstract public class AProductCreationFragment extends    AKiteFragment
    *****************************************************/
   protected void onAddAssets( List<Asset> newAssetList, int insertionPointIndex )
     {
+    int imageSpecCount = mImageSpecArrayList.size();
+
     for ( Asset asset : newAssetList )
       {
-      if ( insertionPointIndex >= mImageSpecArrayList.size() ) break;
+      if ( insertionPointIndex >= imageSpecCount ) break;
 
       ImageSpec imageSpec = new ImageSpec( asset );
 
@@ -787,8 +789,8 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
 
       // Find the next free slot
-      while ( insertionPointIndex < mImageSpecArrayList.size() &&
-              mImageSpecArrayList.get( ++ insertionPointIndex ) != null );
+      while ( ( ++ insertionPointIndex ) < imageSpecCount &&
+              mImageSpecArrayList.get( insertionPointIndex ) != null );
       }
 
 
@@ -840,19 +842,6 @@ abstract public class AProductCreationFragment extends    AKiteFragment
       proceedRunnable,
       R.string.add_more, null );
     }
-
-
-// TODO: Delete
-//  /*****************************************************
-//   *
-//   * Finds an edited asset in the list.
-//   *
-//   *****************************************************/
-//  protected int findEditedAsset( Asset soughtEditedAsset )
-//    {
-//    return ( AssetsAndQuantity.findEditedAsset( mImageSpecArrayList, soughtEditedAsset ) );
-//    }
-
 
 
   ////////// Inner Class(es) //////////

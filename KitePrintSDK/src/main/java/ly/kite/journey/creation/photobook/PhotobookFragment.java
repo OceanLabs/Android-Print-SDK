@@ -56,10 +56,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import ly.kite.KiteSDK;
 import ly.kite.journey.AImageSource;
 import ly.kite.journey.creation.AProductCreationFragment;
 import ly.kite.journey.creation.IUpdatedImageListener;
@@ -93,8 +92,6 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
   // Size of auto-scroll zone for drag-and-drop, as a proportion of the list view size.
   static private final float   AUTO_SCROLL_ZONE_SIZE_AS_PROPORTION             = 0.3f;
   static private final float   AUTO_SCROLL_MAX_SPEED_IN_PROPORTION_PER_SECOND  = 0.5f;
-  static private final long    AUTO_SCROLL_INTERVAL_MILLIS                     = 10;
-  static private final int     AUTO_SCROLL_INTERVAL_MILLIS_AS_INT              = (int)AUTO_SCROLL_INTERVAL_MILLIS;
 
   static private final int     DISABLED_ALPHA                                  = 100;
   static private final int     ENABLED_ALPHA                                   = 255;
@@ -105,22 +102,23 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
 
   ////////// Member Variable(s) //////////
 
-  private ExtendedRecyclerView mPhotobookView;
-  private PhotobookAdaptor                mPhotobookAdaptor;
+  private int                   mFrontCoverPlaceableImageCount;
 
-  private Parcelable                      mPhotobookViewState;
+  private ExtendedRecyclerView  mPhotobookView;
+  private PhotobookAdaptor      mPhotobookAdaptor;
 
-  private int                             mAddImageIndex;
-  private PopupMenu                       mAddImagePopupMenu;
+  private Parcelable            mPhotobookViewState;
 
-  private int                             mDraggedImageIndex;
+  private int                   mAddImageIndex;
 
-  private Handler                         mHandler;
-  private ScrollRunnable                  mScrollRunnable;
+  private int                   mDraggedImageIndex;
 
-  private ActionMode                      mActionMode;
-  private MenuItem                        mActionModeEditMenuItem;
-  private MenuItem                        mActionModeDiscardMenuItem;
+  private Handler               mHandler;
+  private ScrollRunnable        mScrollRunnable;
+
+  private ActionMode            mActionMode;
+  private MenuItem              mActionModeEditMenuItem;
+  private MenuItem              mActionModeDiscardMenuItem;
 
 
   ////////// Static Initialiser(s) //////////
@@ -203,6 +201,16 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     {
     super.onActivityCreated( savedInstanceState );
 
+    // Set up for any summary cover
+    if ( KiteSDK.getInstance( getActivity() ).getCustomiser().photobookFrontCoverIsSummary() )
+      {
+      mFrontCoverPlaceableImageCount = 0;
+      }
+    else
+      {
+      mFrontCoverPlaceableImageCount = 1;
+      }
+
     // Make sure we have cropped versions of all assets
     requestCroppedAssets();
     }
@@ -219,7 +227,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     {
     // Limit the number of images selectable, if the image source supports it.
 
-    int maxImages = 1 + mProduct.getQuantityPerSheet() - mImageSpecArrayList.size();
+    int maxImages = mFrontCoverPlaceableImageCount + mProduct.getQuantityPerSheet() - mImageSpecArrayList.size();
 
     if ( maxImages < 0 ) maxImages = 0;
 
@@ -335,7 +343,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
         }
       else if ( mKiteActivity instanceof ICallback )
         {
-        int expectedImageCount = 1 + mProduct.getQuantityPerSheet();
+        int expectedImageCount = mFrontCoverPlaceableImageCount + mProduct.getQuantityPerSheet();
 
 
         // Pages can be blank, so to calculate the actual number of images we need to go through
@@ -393,7 +401,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
 
       mAddImageIndex = imageIndex;
 
-      mAddImagePopupMenu = displayAddImagePopupMenu( view );
+      displayAddImagePopupMenu( view );
       }
     }
 
@@ -700,7 +708,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
   private void enforceAssetListSize()
     {
     // Calculate the required number of assets: front cover + content pages
-    int requiredAssetCount = 1 + mProduct.getQuantityPerSheet();
+    int requiredAssetCount = mFrontCoverPlaceableImageCount + mProduct.getQuantityPerSheet();
 
 
     // Remove any excess assets
@@ -848,11 +856,11 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
 
     if ( position == PhotobookAdaptor.FRONT_COVER_POSITION )
       {
-      return ( 0 );
+      return ( mFrontCoverPlaceableImageCount - 1 );
       }
     else if ( position >= PhotobookAdaptor.CONTENT_START_POSITION )
       {
-      return ( 1 +
+      return ( mFrontCoverPlaceableImageCount +
                ( ( position - PhotobookAdaptor.CONTENT_START_POSITION ) * 2 ) +
                ( x > ( mPhotobookView.getWidth() / 2 ) ? 1 : 0 ) );
       }

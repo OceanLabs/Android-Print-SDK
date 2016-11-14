@@ -9,20 +9,44 @@
         android:orientation="vertical">
 
 
-        <!-- Credit card number -->
-
-        <ly.kite.widget.CustomTypefaceTextView
-            android:layout_width="fill_parent"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/KiteSDKFormFieldLabelText"
-            android:text="@string/Card_Number"/>
+            android:orientation="horizontal">
 
-        <ly.kite.widget.CustomTypefaceEditText
-            android:id="@+id/card_number_edit_text"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            style="@style/KiteSDKFormFieldEntryText"
-            android:inputType="number"/>
+            <!-- Credit card number -->
+
+            <LinearLayout
+                android:layout_gravity="top"
+                android:layout_width="wrap_content"
+                android:layout_weight="1.0"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <ly.kite.widget.CustomTypefaceTextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/KiteSDKFormFieldLabelText"
+                    android:text="@string/Card_Number"/>
+                <ly.kite.widget.CustomTypefaceEditText
+                    android:id="@+id/card_number_edit_text"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/KiteSDKFormFieldEntryText"
+                    android:inputType="number"
+                    android:hint="@string/credit_card_number_hint"/>
+            </LinearLayout>
+
+
+            <!-- Credit card logo -->
+
+            <ImageView
+                android:id="@+id/logo_image_view"
+                android:layout_gravity="top|right"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:scaleType="fitCenter"/>
+
+        </LinearLayout>
 
 
         <LinearLayout
@@ -55,7 +79,8 @@
                         android:layout_weight="0.3"
                         android:layout_height="fill_parent"
                         style="@style/KiteSDKFormFieldEntryText"
-                        android:inputType="number"/>
+                        android:inputType="number"
+                        android:hint="@string/month_hint"/>
 
                     <ly.kite.widget.CustomTypefaceTextView
                         android:layout_width="0dp"
@@ -71,7 +96,8 @@
                         android:layout_weight="0.5"
                         android:layout_height="fill_parent"
                         style="@style/KiteSDKFormFieldEntryText"
-                        android:inputType="number"/>
+                        android:inputType="number"
+                        android:hint="@string/year_hint"/>
 
                 </LinearLayout>
 
@@ -103,7 +129,8 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     style="@style/KiteSDKFormFieldEntryText"
-                    android:inputType="number"/>
+                    android:inputType="number"
+                    android:hint="@string/cvv_hint"/>
 
             </LinearLayout>
 
