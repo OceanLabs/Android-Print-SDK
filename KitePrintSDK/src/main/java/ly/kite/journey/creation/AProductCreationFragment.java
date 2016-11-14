@@ -187,7 +187,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
     if ( mImageSpecArrayList == null )
       {
-      throw ( new IllegalStateException( "The assets and quantity list could not be obtained" ) );
+      throw ( new IllegalStateException( "The image spec list could not be obtained" ) );
       }
 
     }
@@ -769,32 +769,53 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
   /*****************************************************
    *
-   * Adds new unedited assets into the current list, filling
-   * in any empty slots from the supplied position.
+   * Inserts new unedited assets into the current list,
+   * filling in any empty slots from the supplied position.
    *
    *****************************************************/
-  protected void onAddAssets( List<Asset> newAssetList, int insertionPointIndex )
+  protected void onAddAssets( List<Asset> newAssetList, int firstInsertionPointIndex, boolean appendIfFull )
     {
     int imageSpecCount = mImageSpecArrayList.size();
 
+    int insertionPointIndex = nextInsertionPointIndexFrom( firstInsertionPointIndex );
+
     for ( Asset asset : newAssetList )
       {
-      if ( insertionPointIndex >= imageSpecCount ) break;
-
       ImageSpec imageSpec = new ImageSpec( asset );
 
-      mImageSpecArrayList.set( insertionPointIndex, imageSpec );
+      if ( insertionPointIndex < imageSpecCount )
+        {
+        mImageSpecArrayList.set( insertionPointIndex, imageSpec );
+        }
+      else
+        {
+        if ( appendIfFull ) mImageSpecArrayList.add( imageSpec );
+        else                break;
+        }
 
       onAssetAdded( imageSpec );
 
-
-      // Find the next free slot
-      while ( ( ++ insertionPointIndex ) < imageSpecCount &&
-              mImageSpecArrayList.get( insertionPointIndex ) != null );
+      insertionPointIndex = nextInsertionPointIndexFrom( insertionPointIndex );
       }
 
 
     onNewAssetsPossiblyAdded();
+    }
+
+  /*****************************************************
+   *
+   * Finds the next insertion point from that supplied.
+   *
+   *****************************************************/
+  int nextInsertionPointIndexFrom( int startIndex )
+    {
+    int imageSpecCount = mImageSpecArrayList.size();
+
+    int index = startIndex;
+
+    for ( ; index < imageSpecCount && mImageSpecArrayList.get( index ) != null; index ++ );
+
+    return ( index );
     }
 
 

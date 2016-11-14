@@ -186,15 +186,12 @@ public class ImageSourceFragment extends AProductCreationFragment implements Ada
     {
     if ( assetList != null && assetList.size() > 0 )
       {
-      // Add the assets to the assets / quantity list held by the activity
+      // Add the assets to the assets / quantity list held by the activity. If the list has
+      // empty slots - insert the assets where there is space, and extend the list if
+      // necessary.
+      super.onAddAssets( assetList, 0, true );
 
-      for ( Asset asset : assetList )
-        {
-        mImageSpecArrayList.add( new ImageSpec( asset ) );
-        }
-
-
-      // If we got at least one asset - call back to the activity. Otherwise we say on this screen
+      // If we got at least one asset - call back to the activity. Otherwise we stay on this screen
       // unless the user pressed back.
       if ( mKiteActivity instanceof ICallback )
         {
