@@ -249,7 +249,8 @@ public enum UserJourneyType
    *****************************************************/
   void addJobsToOrder( Context context, Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, boolean nullImagesAreBlankPages, Order order )
     {
-    // Create a list of images.
+    // Expand out the images into a flat list, with images duplicated if the ImageSpec quantity
+    // is greater than 1.
 
     List<AssetFragment> assetFragmentList = new ArrayList<>();
 
@@ -270,7 +271,7 @@ public enum UserJourneyType
         }
 
 
-      // We need to duplicate images according to the ImageSpec quantity.
+      // Duplicate images according to the ImageSpec quantity.
       for ( int index = 0; index < quantity; index ++ )
         {
         assetFragmentList.add( assetFragment );
@@ -278,8 +279,16 @@ public enum UserJourneyType
       }
 
 
-    // TODO: Create multiple jobs, if more than quantityPerSheet
-    order.addJob( Job.createPrintJob( product, orderQuantity, optionsMap, assetFragmentList ) );
+    // Go through the asset fragment list, and create a job for each batch of images. The
+    // print job creation should gracefully handle there not being enough images in the
+    // last job.
+
+    int assetsPerJob = product.getQuantityPerSheet();
+
+    for ( int offset = 0; offset < assetFragmentList.size(); offset += assetsPerJob )
+      {
+      order.addJob( Job.createPrintJob( product, orderQuantity, optionsMap, assetFragmentList, offset, assetsPerJob ) );
+      }
     }
 
 

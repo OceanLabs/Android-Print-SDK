@@ -634,7 +634,10 @@ public class AssetHelper
 
   /*****************************************************
    *
-   * Creates a basket asset from a session asset.
+   * Creates a basket asset from a source asset.
+   *
+   * @return A basket asset. This may be the source asset if
+   *         it was already in the correct basket.
    *
    *****************************************************/
   static public Asset createAsBasketAsset( Context context, long basketId, Asset sourceAsset )
@@ -642,6 +645,14 @@ public class AssetHelper
     // It is perfectly valid to supply a null asset, in which case we return null back.
     if ( sourceAsset == null ) return ( null );
 
+    // If the asset is already in the correct basket, we can simply return the source asset.
+    if ( sourceAsset.getType() == Type.IMAGE_FILE && sourceAsset.getImageFilePath().startsWith( basketDirectoryString( context, basketId ) ) )
+      {
+      return ( sourceAsset );
+      }
+
+
+    // Create a new basket asset
 
     String basketFilePath = reserveBasketAsset( context, basketId, sourceAsset );
 
@@ -714,13 +725,13 @@ public class AssetHelper
    * assets.
    *
    *****************************************************/
-  static public List<ImageSpec> createAsBasketAssets( Context context, long basketId, List<ImageSpec> sessionImageSpecList )
+  static public List<ImageSpec> createAsBasketAssets( Context context, long basketId, List<ImageSpec> imageSpecList )
     {
-    if ( sessionImageSpecList == null ) return ( new ArrayList<>( 0 ) );
+    if ( imageSpecList == null ) return ( new ArrayList<>( 0 ) );
 
-    List<ImageSpec> basketImageSpecList = new ArrayList<>( sessionImageSpecList.size() );
+    List<ImageSpec> basketImageSpecList = new ArrayList<>( imageSpecList.size() );
 
-    for ( ImageSpec imageSpec : sessionImageSpecList )
+    for ( ImageSpec imageSpec : imageSpecList )
       {
       // Some of the image specs may be null. For example, photobooks use null placeholders
       // for blank pages.

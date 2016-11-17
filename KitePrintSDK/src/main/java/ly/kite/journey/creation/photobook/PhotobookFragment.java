@@ -308,7 +308,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
 
   /*****************************************************
    *
-   * Adds new unedited assets to the end of the current list.
+   * Adds new unedited assets into the current list.
    * Duplicates will be discarded.
    *
    *****************************************************/
@@ -317,7 +317,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     {
     // We intercept this call so that we can call the version
     // that inserts new assets into a sparse list instead.
-    super.onAddAssets( newAssetList, mAddImageIndex );
+    super.onAddAssets( newAssetList, mAddImageIndex, false );
     }
 
 

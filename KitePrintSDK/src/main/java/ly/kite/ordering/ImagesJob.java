@@ -39,7 +39,7 @@ public class ImagesJob extends Job
   private List<UploadableImage> mUploadableImageList;
 
 
-  public ImagesJob( long jobId, Product product, int orderQuantity, HashMap<String,String> optionMap, List<?> objectList, boolean nullObjectsAreBlankPages )
+  public ImagesJob( long jobId, Product product, int orderQuantity, HashMap<String,String> optionMap, List<?> objectList, int offset, int length, boolean nullObjectsAreBlankPages )
     {
     super( jobId, product, orderQuantity, optionMap );
 
@@ -55,23 +55,49 @@ public class ImagesJob extends Job
 
     if ( objectList != null )
       {
-      for ( Object object : objectList )
+      if ( offset < 0 )
         {
+        length += offset;
+        offset  = 0;
+        }
+
+      for ( int objectIndex = offset; objectIndex < objectList.size() && objectIndex < ( offset + length ); objectIndex ++ )
+        {
+        Object object = objectList.get( objectIndex );
+
         addUploadableImages( object, mUploadableImageList, nullObjectsAreBlankPages );
         }
       }
     }
 
 
+  public ImagesJob( Product product, int orderQuantity, HashMap<String,String> optionMap, List<?> objectList, int offset, int length, boolean nullObjectsAreBlankPages )
+    {
+    this( 0, product, orderQuantity, optionMap, objectList, offset, length, nullObjectsAreBlankPages );
+    }
+
+
+  public ImagesJob( long jobId, Product product, int orderQuantity, HashMap<String,String> optionMap, List<?> objectList, int offset, boolean nullObjectsAreBlankPages )
+    {
+    this( jobId, product, orderQuantity, optionMap, objectList, offset, ( objectList != null ? objectList.size() : 0 ), nullObjectsAreBlankPages );
+    }
+
+
+  public ImagesJob( Product product, int orderQuantity, HashMap<String,String> optionMap, List<?> objectList, int offset, boolean nullObjectsAreBlankPages )
+    {
+    this( 0, product, orderQuantity, optionMap, objectList, offset, nullObjectsAreBlankPages );
+    }
+
+
   public ImagesJob( Product product, int orderQuantity, HashMap<String,String> optionsMap, List<?> objectList, boolean nullImagesAreBlank )
     {
-    this( 0, product, orderQuantity, optionsMap, objectList, nullImagesAreBlank );
+    this( product, orderQuantity, optionsMap, objectList, 0, nullImagesAreBlank );
     }
 
 
   public ImagesJob( Product product, int orderQuantity, HashMap<String,String> optionsMap, List<?> objectList )
     {
-    this( 0, product, orderQuantity, optionsMap, objectList, false );
+    this( product, orderQuantity, optionsMap, objectList, 0, false );
     }
 
 

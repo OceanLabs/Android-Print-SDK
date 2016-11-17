@@ -311,7 +311,7 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
     {
     // We intercept this call so that we can call the version
     // that inserts new assets into a sparse list instead.
-    super.onAddAssets( newAssetList, mAddImageIndex );
+    super.onAddAssets( newAssetList, mAddImageIndex, false );
     }
 
 

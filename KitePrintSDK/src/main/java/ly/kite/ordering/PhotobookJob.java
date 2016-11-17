@@ -101,7 +101,7 @@ public class PhotobookJob extends ImagesJob
 
   public PhotobookJob( long jobId, Product product, int orderQuantity, HashMap<String,String> optionsMap, Object frontCoverImage, List<?> contentObjectList )
     {
-    super( jobId, product, orderQuantity, optionsMap, contentObjectList, true );
+    super( jobId, product, orderQuantity, optionsMap, contentObjectList, 0, true );
 
     mFrontCoverUploadableImage = singleUploadableImageFrom( frontCoverImage );
     }
