@@ -62,9 +62,10 @@ public class OrderingDataAgent
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String  LOG_TAG           = "OrderingDataAgent";
+  static private final String  LOG_TAG            = "OrderingDataAgent";
 
-  static public  final long    BASKET_ID_DEFAULT = 0;
+  static public  final int     CREATE_NEW_ITEM_ID = -1;
+  static public  final long    BASKET_ID_DEFAULT  = 0;
 
 
   ////////// Static Variable(s) //////////
@@ -163,7 +164,7 @@ public class OrderingDataAgent
    *****************************************************/
   public void addItem( Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, int orderQuantity, IAddListener addListener )
     {
-    addItem( -1, product, optionsMap, imageSpecList, orderQuantity, addListener );
+    addItem( CREATE_NEW_ITEM_ID, product, optionsMap, imageSpecList, orderQuantity, addListener );
     }
 
 
@@ -200,14 +201,31 @@ public class OrderingDataAgent
   /*****************************************************
    *
    * Saves an item to the default basket synchronously.
+   * This should not be called from anywhere other than
+   * the AddItemTask.
    *
    *****************************************************/
   private void addItem( long itemId, Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, int orderQuantity )
     {
-    // Move any referenced assets to the basket
-    List<ImageSpec> basketImageSpecList = AssetHelper.createAsBasketAssets( mApplicationContext, BASKET_ID_DEFAULT, imageSpecList );
+    // We need to create a basket item per <mProduct.getQuantityPerSheet()> images, i.e.
+    // split the images into multiple jobs. Pretend we're creating an order, and get the
+    // correct user journey type to split the images for us.
 
-    mDatabaseAgent.saveDefaultBasketItem( itemId, product, optionsMap, basketImageSpecList, orderQuantity );
+    Order order = new Order();
+
+    product.getUserJourneyType().addJobsToOrder( mApplicationContext, product, 1, optionsMap, imageSpecList, order );
+
+    for ( Job job : order.getJobs() )
+      {
+      // Move any referenced assets to the basket (if they are not already in)
+      List<ImageSpec> jobImageSpecList = AssetHelper.createAsBasketAssets( mApplicationContext, BASKET_ID_DEFAULT, job.getImagesAsSpecList() );
+
+      mDatabaseAgent.saveDefaultBasketItem( itemId, product, optionsMap, jobImageSpecList, orderQuantity );
+
+      // If we were supplied an item id then this is an update. However, if more images were
+      // subsequently added whilst editing the item - additional jobs are inserted as new ones.
+      itemId = CREATE_NEW_ITEM_ID;
+      }
     }
 
 
