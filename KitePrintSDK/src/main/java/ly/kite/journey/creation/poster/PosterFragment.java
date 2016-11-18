@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * CalendarFragment.java
+ * PosterFragment.java
  *
  *
  * Modified MIT License
@@ -34,17 +34,13 @@
 
 ///// Package Declaration /////
 
-package ly.kite.journey.creation.calendar;
+package ly.kite.journey.creation.poster;
 
 
 ///// Import(s) /////
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.view.ActionMode;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
@@ -56,13 +52,17 @@ import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+
+import ly.kite.R;
+import ly.kite.catalogue.Product;
 import ly.kite.journey.AImageSource;
 import ly.kite.journey.creation.AProductCreationFragment;
 import ly.kite.journey.creation.IUpdatedImageListener;
 import ly.kite.ordering.ImageSpec;
 import ly.kite.util.Asset;
-import ly.kite.catalogue.Product;
-import ly.kite.R;
 import ly.kite.widget.ExtendedRecyclerView;
 
 
@@ -74,19 +74,17 @@ import ly.kite.widget.ExtendedRecyclerView;
  * create a calendar.
  *
  *****************************************************/
-public class CalendarFragment extends AProductCreationFragment implements CalendarAdaptor.IListener,
-                                                                          View.OnClickListener,
-                                                                          AImageSource.IAssetConsumer,
-                                                                          IUpdatedImageListener,
-                                                                          View.OnDragListener,
-                                                                          ActionMode.Callback
+public class PosterFragment extends AProductCreationFragment implements PosterAdaptor.IListener,
+                                                                        View.OnClickListener,
+                                                                        AImageSource.IAssetConsumer,
+                                                                        IUpdatedImageListener,
+                                                                        View.OnDragListener,
+                                                                        ActionMode.Callback
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static public  final String  TAG             = "CalendarFragment";
-
-  static         final int     MONTHS_PER_YEAR = 12;
+  static public  final String  TAG = "PosterFragment";
 
 
   ////////// Static Variable(s) //////////
@@ -94,8 +92,8 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
 
   ////////// Member Variable(s) //////////
 
-  private ExtendedRecyclerView  mCalendarView;
-  private CalendarAdaptor       mCalendarAdaptor;
+  private ExtendedRecyclerView  mPosterView;
+  private PosterAdaptor         mPosterAdaptor;
 
   private int                   mAddImageIndex;
   private PopupMenu             mAddImagePopupMenu;
@@ -116,9 +114,9 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
    * Creates a new instance of this fragment.
    *
    *****************************************************/
-  public static CalendarFragment newInstance( Product product )
+  public static PosterFragment newInstance( Product product )
     {
-    CalendarFragment fragment = new CalendarFragment();
+    PosterFragment fragment = new PosterFragment();
 
     Bundle arguments = new Bundle();
     arguments.putParcelable( BUNDLE_KEY_PRODUCT, product );
@@ -156,18 +154,20 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
   @Override
   public View onCreateView( LayoutInflater layoutInflator, ViewGroup container, Bundle savedInstanceState )
     {
-    View view = layoutInflator.inflate( R.layout.screen_calendar, container, false );
+    View view = layoutInflator.inflate( R.layout.screen_poster, container, false );
 
     super.onViewCreated( view );
 
-    mCalendarView = (ExtendedRecyclerView) view.findViewById( R.id.calendar_view );
-    mCalendarView.setLayoutManager( new LinearLayoutManager( mKiteActivity ) );
+    mPosterView = (ExtendedRecyclerView) view.findViewById( R.id.poster_view );
+
+    GridLayoutManager gridLayoutManager = new GridLayoutManager( mKiteActivity, mProduct.getGridCountX() );
+    mPosterView.setLayoutManager( gridLayoutManager );
 
     // Set up the forwards button
     setForwardsTextViewText( R.string.Next );
     setForwardsTextViewOnClickListener( this );
 
-    mCalendarView.setOnDragListener( this );
+    mPosterView.setOnDragListener( this );
 
     return ( view );
     }
@@ -219,9 +219,9 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
     super.onTop();
 
 
-    mKiteActivity.setTitle( R.string.title_calendar );
+    mKiteActivity.setTitle( R.string.title_poster );
 
-    setUpCalendarView();
+    setUpPosterView();
     }
 
 
@@ -235,7 +235,7 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
     {
     super.onNotTop();
 
-    suspendView( mCalendarView );
+    suspendView( mPosterView );
     }
 
 
@@ -249,7 +249,7 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
     {
     // Before we crop assets, make sure that the asset list
     // is the correct size.
-    enforceAssetListSize( MONTHS_PER_YEAR * mProduct.getGridCountX() * mProduct.getGridCountY() );
+    enforceAssetListSize( mProduct.getQuantityPerSheet() );
 
     return ( super.requestCroppedAssets() );
     }
@@ -262,7 +262,7 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
    *****************************************************/
   protected void onAllImagesCropped()
     {
-    if ( mCalendarAdaptor != null ) mCalendarAdaptor.notifyDataSetChanged();
+    if ( mPosterAdaptor != null ) mPosterAdaptor.notifyDataSetChanged();
 
     onScreenReady();
     }
@@ -325,7 +325,7 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
           }
         else
           {
-          ( (ICallback)mKiteActivity ).calOnNext();
+          ( (ICallback)mKiteActivity ).posterOnNext();
           }
         }
       }
@@ -333,7 +333,7 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
     }
 
 
-  ////////// CalendarAdaptor.IListener Method(s) //////////
+  ////////// PosterAdaptor.IListener Method(s) //////////
 
   /*****************************************************
    *
@@ -352,10 +352,10 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
 
       mKiteActivity.startActionMode( this );
 
-      mCalendarAdaptor.setSelectionMode( true );
+      mPosterAdaptor.setSelectionMode( true );
 
       // Select the image that was clicked
-      mCalendarAdaptor.selectImage( imageIndex );
+      mPosterAdaptor.selectImage( imageIndex );
       }
     else
       {
@@ -380,7 +380,7 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
 
     mDraggedImageIndex = draggedAssetIndex;
 
-    mCalendarView.startDrag( null, new View.DragShadowBuilder( view ), null, 0 );
+    mPosterView.startDrag( null, new View.DragShadowBuilder( view ), null, 0 );
     }
 
 
@@ -438,9 +438,9 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
    *****************************************************/
   public void onImageUpdated( int imageIndex, ImageSpec imageSpec )
     {
-    if ( mCalendarAdaptor != null )
+    if ( mPosterAdaptor != null )
       {
-      mCalendarAdaptor.notifyDataSetChanged();
+      mPosterAdaptor.notifyDataSetChanged();
       }
     }
 
@@ -467,22 +467,21 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
       float x = event.getX();
       float y = event.getY();
 
-
       // Get the asset that we are currently dragged over
       int currentAssetIndex = imageIndexFromPoint( (int)x, (int)y );
 
       // We only highlight the target image if it is different from the dragged one
       if ( currentAssetIndex >= 0 && currentAssetIndex != mDraggedImageIndex )
         {
-        mCalendarAdaptor.setHighlightedAsset( currentAssetIndex );
+        mPosterAdaptor.setHighlightedAsset( currentAssetIndex );
         }
       else
         {
-        mCalendarAdaptor.clearHighlightedAsset();
+        mPosterAdaptor.clearHighlightedAsset();
         }
 
       // Check if we need to auto-scroll
-      checkAutoScroll( mCalendarView, x, y );
+      checkAutoScroll( mPosterView, x, y );
 
       return ( true );
       }
@@ -555,7 +554,7 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
 
 
     // Get the selected assets
-    HashSet<Integer> selectedAssetIndexHashSet = mCalendarAdaptor.getSelectedAssets();
+    HashSet<Integer> selectedAssetIndexHashSet = mPosterAdaptor.getSelectedAssets();
 
 
     // Determine which action was clicked
@@ -577,7 +576,7 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
           {
           if ( mKiteActivity instanceof ICallback )
             {
-            ( (ICallback) mKiteActivity ).calOnEdit( selectedAssetIndex );
+            ( (ICallback) mKiteActivity ).posterOnEdit( selectedAssetIndex );
             }
           }
         }
@@ -598,7 +597,7 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
         mImageSpecArrayList.set( selectedAssetIndex, null );
         }
 
-      mCalendarAdaptor.notifyDataSetChanged();
+      mPosterAdaptor.notifyDataSetChanged();
 
       // Exit action mode
       mode.finish();
@@ -622,7 +621,7 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
     mActionModeEditMenuItem = null;
 
     // End the selection mode
-    mCalendarAdaptor.setSelectionMode( false );
+    mPosterAdaptor.setSelectionMode( false );
 
     setForwardsTextViewEnabled( true );
     }
@@ -632,17 +631,17 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
 
   /*****************************************************
    *
-   * Sets up the calendar view.
+   * Sets up the poster view.
    *
    *****************************************************/
-  private void setUpCalendarView()
+  private void setUpPosterView()
     {
-    mCalendarAdaptor = new CalendarAdaptor( mKiteActivity, mProduct, mImageSpecArrayList, this );
+    mPosterAdaptor = new PosterAdaptor( mKiteActivity, mImageSpecArrayList, this );
 
-    mCalendarView.setAdapter( mCalendarAdaptor );
+    mPosterView.setAdapter( mPosterAdaptor );
 
 
-    restoreView( mCalendarView );
+    restoreView( mPosterView );
     }
 
 
@@ -655,7 +654,7 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
     {
     stopAutoScroll();
 
-    mCalendarAdaptor.clearHighlightedAsset();
+    mPosterAdaptor.clearHighlightedAsset();
 
     // Determine which asset the drag ended on
     int dropImageIndex = imageIndexFromPoint( dropX, dropY );
@@ -675,7 +674,7 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
         mImageSpecArrayList.set( mDraggedImageIndex, dropImageSpec );
 
 
-        mCalendarAdaptor.notifyDataSetChanged();
+        mPosterAdaptor.notifyDataSetChanged();
         }
       }
 
@@ -689,30 +688,13 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
    *****************************************************/
   private int imageIndexFromPoint( int x, int y )
     {
-    int  monthIndex = mCalendarView.positionFromPoint( x, y );
-    View pageView   = mCalendarView.findChildViewUnder( x, y );
+    int  imageIndex = mPosterView.positionFromPoint( x, y );
+    View view       = mPosterView.findChildViewUnder( x, y );
 
-
-    // Convert the point into an image / asset index. Remember that the grid
-    // is a square at the top of the page view.
-
-    if ( monthIndex >= 0 && monthIndex < MONTHS_PER_YEAR && pageView != null )
+    if ( imageIndex >= 0 && imageIndex < mProduct.getQuantityPerSheet() && view != null )
       {
-      int gridCountX    = mProduct.getGridCountX();
-      int gridCountY    = mProduct.getGridCountY();
-      int gridSize      = pageView.getWidth() / gridCountX;
-
-      int gridX = ( x - pageView.getLeft() ) / gridSize;
-      int gridY = ( y - pageView.getTop()  ) / gridSize;
-
-      if ( gridX >= 0 && gridX < gridCountX && gridY >= 0 && gridY < gridCountY )
-        {
-        return ( ( monthIndex * gridCountX * gridCountY ) +
-                 ( gridY * gridCountX ) +
-                   gridX );
-        }
+      return ( imageIndex );
       }
-
 
     return ( -1 );
     }
@@ -727,8 +709,8 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
    *****************************************************/
   public interface ICallback
     {
-    public void calOnEdit( int assetIndex );
-    public void calOnNext();
+    public void posterOnEdit( int assetIndex );
+    public void posterOnNext();
     }
 
 
@@ -742,7 +724,7 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
     @Override
     public void run()
       {
-      ( (ICallback)mKiteActivity ).calOnNext();
+      ( (ICallback)mKiteActivity ).posterOnNext();
       }
     }
 

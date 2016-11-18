@@ -12,6 +12,7 @@
     <string name="title_image_source">Vælg billeder</string>
     <string name="title_photobook">Fotobog</string>
     <string name="title_calendar">Kalender</string>
+    <string name="title_poster">Poster</string>
     <string name="title_basket">Kurv</string>
     <string name="title_payment_sandbox">Betaling (Snadbox))</string>
     <string name="title_payment">Betaling</string>

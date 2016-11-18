@@ -43,6 +43,10 @@ import android.content.Intent;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Parcelable;
+import android.os.SystemClock;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -59,6 +63,7 @@ import java.util.List;
 import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.image.IImageSizeConsumer;
+import ly.kite.journey.creation.photobook.PhotobookFragment;
 import ly.kite.ordering.ImageSpec;
 import ly.kite.util.Asset;
 import ly.kite.journey.AImageSource;
@@ -66,6 +71,7 @@ import ly.kite.journey.AKiteFragment;
 import ly.kite.journey.IImageSpecStore;
 import ly.kite.catalogue.Product;
 import ly.kite.image.ImageAgent;
+import ly.kite.widget.ExtendedRecyclerView;
 import ly.kite.widget.PromptTextFrame;
 
 
@@ -86,9 +92,17 @@ abstract public class AProductCreationFragment extends    AKiteFragment
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static public  final String  TAG               = "AProductCreationFrag.";
+  static public    final String  TAG               = "AProductCreationFrag.";
 
-  static private final int     PROGRESS_COMPLETE = 100;  // 100%
+  static private   final int     PROGRESS_COMPLETE = 100;  // 100%
+
+  // Size of auto-scroll zone for drag-and-drop, as a proportion of the view height.
+  static private   final float   AUTO_SCROLL_ZONE_SIZE_AS_PROPORTION             = 0.3f;
+  static private   final float   AUTO_SCROLL_MAX_SPEED_IN_PROPORTION_PER_SECOND  = 0.5f;
+
+  static protected final int     DISABLED_ALPHA                                  = 100;
+  static protected final int     ENABLED_ALPHA                                   = 255;
+
 
 
   ////////// Static Variable(s) //////////
@@ -112,6 +126,11 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
   protected int                           mInitialImagesToCropCount;
   protected int                           mRemainingImagesToCropCount;
+
+  private Handler                         mHandler;
+  private ScrollRunnable                  mScrollRunnable;
+
+  private Parcelable                      mRecyclerViewState;
 
 
   ////////// Static Initialiser(s) //////////
@@ -324,6 +343,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
       }
     }
 
+
   ////////// PopupMenu.OnMenuItemClickListener Method(s) //////////
 
   /*****************************************************
@@ -361,6 +381,31 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
 
   ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Ensures that the asset list is exactly the correct
+   * size.
+   *
+   *****************************************************/
+  protected void enforceAssetListSize( int requiredAssetCount )
+    {
+    // Remove any excess assets
+
+    while ( mImageSpecArrayList.size() > requiredAssetCount )
+      {
+      mImageSpecArrayList.remove( mImageSpecArrayList.size() - 1 );
+      }
+
+
+    // Pad out any shortfall
+
+    while ( mImageSpecArrayList.size() < requiredAssetCount )
+      {
+      mImageSpecArrayList.add( null );
+      }
+    }
+
 
   /*****************************************************
    *
@@ -865,6 +910,144 @@ abstract public class AProductCreationFragment extends    AKiteFragment
     }
 
 
+  /*****************************************************
+   *
+   * Checks if we need to perform an auto-scrolling.
+   *
+   *****************************************************/
+  protected void checkAutoScroll( RecyclerView recyclerView, float x, float y )
+    {
+    // Determine which zone the location is in
+
+    int photobookViewHeight = recyclerView.getHeight();
+
+    float yTopStart    = photobookViewHeight * AUTO_SCROLL_ZONE_SIZE_AS_PROPORTION;
+    float yBottomStart = photobookViewHeight - yTopStart;
+
+    if ( y < yTopStart )
+      {
+      ///// Top zone /////
+
+      // Calculate the speed and run auto-scroll
+
+      float speedAsProportionPerSecond = ( ( y - yTopStart ) / yTopStart ) * AUTO_SCROLL_MAX_SPEED_IN_PROPORTION_PER_SECOND;
+
+      setAutoScroll( recyclerView, speedAsProportionPerSecond );
+      }
+    else if ( y <= yBottomStart )
+      {
+      ///// Middle zone
+
+      stopAutoScroll();
+      }
+    else
+      {
+      ///// Bottom zone /////
+
+      // Calculate the speed and run auto-scroll
+
+      float speedAsProportionPerSecond = ( ( y - yBottomStart ) / ( photobookViewHeight - yBottomStart ) ) * AUTO_SCROLL_MAX_SPEED_IN_PROPORTION_PER_SECOND;
+
+      setAutoScroll( recyclerView, speedAsProportionPerSecond );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Ensures that auto-scroll is running at the supplied
+   * speed.
+   *
+   *****************************************************/
+  private void setAutoScroll( RecyclerView recyclerView, float speedAsProportionPerSecond )
+    {
+    // Make sure we have a handler
+    if ( mHandler == null ) mHandler = new Handler();
+
+
+    // Make sure we have a scroll runnable. The presence of a scroll handler
+    // also indicates whether auto-scrolling is actually running. So if we
+    // need to create a scroll runnable, we also need to post it.
+
+    if ( mScrollRunnable == null )
+      {
+      mScrollRunnable = new ScrollRunnable( recyclerView );
+
+      postScrollRunnable();
+      }
+
+
+    // Set the speed
+    mScrollRunnable.setSpeed( speedAsProportionPerSecond );
+    }
+
+
+  /*****************************************************
+   *
+   * Ensures that auto-scroll is not running.
+   *
+   *****************************************************/
+  protected void stopAutoScroll()
+    {
+    if ( mScrollRunnable != null )
+      {
+      if ( mHandler != null ) mHandler.removeCallbacks( mScrollRunnable );
+
+      mScrollRunnable = null;
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Posts the scroll runnable.
+   *
+   *****************************************************/
+  private void postScrollRunnable()
+    {
+    mHandler.postDelayed( mScrollRunnable, 10 );
+    }
+
+
+  /*****************************************************
+   *
+   * Saves the state of a recycler view, and clears its
+   * adaptor.
+   *
+   *****************************************************/
+  protected void suspendView( ExtendedRecyclerView extendedRecyclerView )
+    {
+    // Clear out the stored images to reduce memory usage
+    // when not on this screen.
+
+    if ( extendedRecyclerView != null )
+      {
+      // Save the list view state so we can come back to the same position
+      mRecyclerViewState = extendedRecyclerView.onSaveInstanceState();
+
+      extendedRecyclerView.setAdapter( null );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Restores the state of a recycler view.
+   *
+   *****************************************************/
+  protected void restoreView( ExtendedRecyclerView extendedRecyclerView )
+    {
+    // Restore any state
+
+    if ( extendedRecyclerView != null && mRecyclerViewState != null )
+      {
+      extendedRecyclerView.onRestoreInstanceState( mRecyclerViewState );
+
+      mRecyclerViewState = null;
+      }
+    }
+
+
   ////////// Inner Class(es) //////////
 
   /*****************************************************
@@ -927,6 +1110,61 @@ abstract public class AProductCreationFragment extends    AKiteFragment
     public void onImageSizeUnavailable( Exception exception )
       {
       // TODO
+      }
+
+    }
+
+
+  /*****************************************************
+   *
+   * A runnable for scrolling the list view.
+   *
+   *****************************************************/
+  private class ScrollRunnable implements Runnable
+    {
+    private RecyclerView  mRecyclerView;
+    private float         mSpeedAsProportionPerSecond;
+    private long          mLastScrollRealtimeMillis;
+
+
+    ScrollRunnable( RecyclerView recyclerView )
+      {
+      mRecyclerView = recyclerView;
+      }
+
+
+    void setSpeed( float speedAsProportionPerSecond )
+      {
+      mSpeedAsProportionPerSecond = speedAsProportionPerSecond;
+      }
+
+
+    @Override
+    public void run()
+      {
+      // Get the current elapsed time
+      long currentRealtimeMillis = SystemClock.elapsedRealtime();
+
+
+      // Check that the time looks OK
+
+      if ( mLastScrollRealtimeMillis > 0 && currentRealtimeMillis > mLastScrollRealtimeMillis )
+        {
+        // Calculate the scroll amount
+
+        long elapsedTimeMillis = currentRealtimeMillis - mLastScrollRealtimeMillis;
+
+        int scrollPixels = (int)( ( mRecyclerView.getHeight() * ( (float)elapsedTimeMillis / 1000f ) ) * mSpeedAsProportionPerSecond );
+
+        mRecyclerView.scrollBy( 0, scrollPixels );
+        }
+
+
+      // Save the current time and re-post
+
+      mLastScrollRealtimeMillis = currentRealtimeMillis;
+
+      postScrollRunnable();
       }
 
     }

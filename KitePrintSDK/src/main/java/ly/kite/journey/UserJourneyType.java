@@ -65,9 +65,9 @@ import ly.kite.widget.EditableMaskedImageView;
  *****************************************************/
 public enum UserJourneyType
   {
-  CIRCLE        ( R.drawable.filled_white_circle,    EditableMaskedImageView.BorderHighlight.OVAL ),
+  CIRCLE ( R.drawable.filled_white_circle,    EditableMaskedImageView.BorderHighlight.OVAL ),
 
-  CALENDAR      ( R.drawable.filled_white_rectangle, EditableMaskedImageView.BorderHighlight.RECTANGLE )
+  CALENDAR ( R.drawable.filled_white_rectangle, EditableMaskedImageView.BorderHighlight.RECTANGLE )
             {
             // A calendar job is a standard order, but blank images are allowed
             @Override
@@ -79,7 +79,7 @@ public enum UserJourneyType
 
   FRAME,
 
-  GREETINGCARD  ( R.drawable.filled_white_rectangle, EditableMaskedImageView.BorderHighlight.RECTANGLE )
+  GREETINGCARD ( R.drawable.filled_white_rectangle, EditableMaskedImageView.BorderHighlight.RECTANGLE )
             {
             // Greeting cards have their own job
             @Override
@@ -99,9 +99,9 @@ public enum UserJourneyType
               }
             },
 
-  PHONE_CASE    ( true ),
+  PHONE_CASE ( true ),
 
-  PHOTOBOOK     ( R.drawable.filled_white_rectangle, EditableMaskedImageView.BorderHighlight.RECTANGLE )
+  PHOTOBOOK ( R.drawable.filled_white_rectangle, EditableMaskedImageView.BorderHighlight.RECTANGLE )
             {
             // Photobooks have their own job
             @Override
@@ -155,9 +155,17 @@ public enum UserJourneyType
 
   POSTCARD,
 
-  POSTER,
+  POSTER ( R.drawable.filled_white_rectangle, EditableMaskedImageView.BorderHighlight.RECTANGLE )
+            {
+            // A poster job is a standard order, but blank images are allowed
+            @Override
+            public void addJobsToOrder( Context context, Product product, int orderQuantity, HashMap<String, String> optionsMap, List<ImageSpec> imageSpecList, Order order )
+              {
+              addJobsToOrder( context, product, orderQuantity, optionsMap, imageSpecList, true, order );
+              }
+            },
 
-  RECTANGLE     ( R.drawable.filled_white_rectangle, EditableMaskedImageView.BorderHighlight.RECTANGLE );
+  RECTANGLE ( R.drawable.filled_white_rectangle, EditableMaskedImageView.BorderHighlight.RECTANGLE );
 
 
   ////////// Member Variable(s) //////////
@@ -247,7 +255,7 @@ public enum UserJourneyType
    * job.
    *
    *****************************************************/
-  void addJobsToOrder( Context context, Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, boolean nullImagesAreBlankPages, Order order )
+  void addJobsToOrder( Context context, Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, boolean nullImagesAreBlank, Order order )
     {
     // Expand out the images into a flat list, with images duplicated if the ImageSpec quantity
     // is greater than 1.
@@ -267,7 +275,7 @@ public enum UserJourneyType
       else
         {
         assetFragment = null;
-        quantity      = ( nullImagesAreBlankPages ? 1 : 0 );
+        quantity      = ( nullImagesAreBlank ? 1 : 0 );
         }
 
 
@@ -287,7 +295,7 @@ public enum UserJourneyType
 
     for ( int offset = 0; offset < assetFragmentList.size(); offset += assetsPerJob )
       {
-      order.addJob( Job.createPrintJob( product, orderQuantity, optionsMap, assetFragmentList, offset, assetsPerJob ) );
+      order.addJob( Job.createPrintJob( product, orderQuantity, optionsMap, assetFragmentList, offset, assetsPerJob, nullImagesAreBlank ) );
       }
     }
 

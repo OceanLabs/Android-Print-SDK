@@ -56,6 +56,7 @@ import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.analytics.Analytics;
 import ly.kite.journey.creation.calendar.CalendarFragment;
+import ly.kite.journey.creation.poster.PosterFragment;
 import ly.kite.ordering.OrderingDataAgent;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.journey.IImageSpecStore;
@@ -86,6 +87,7 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
                                                                       ImageSelectionFragment.ICallback,
                                                                       PhotobookFragment.ICallback,
                                                                       CalendarFragment.ICallback,
+                                                                      PosterFragment.ICallback,
                                                                       ReviewAndEditFragment.ICallback,
                                                                       EditImageFragment.ICallback,
                                                                       OrderingDataAgent.IAddListener
@@ -145,12 +147,12 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
       case GREETINGCARD:
       case PHONE_CASE:
       case PHOTOBOOK:
+      case POSTER:
       case RECTANGLE:
         return ( true );
 
       case FRAME:
       case POSTCARD:
-      case POSTER:
       }
 
     return ( false );
@@ -507,6 +509,32 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
     }
 
 
+  ////////// PosterFragment.ICallback Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called to edit an asset.
+   *
+   *****************************************************/
+  @Override
+  public void posterOnEdit( int assetIndex )
+    {
+    editImage( assetIndex );
+    }
+
+
+  /*****************************************************
+   *
+   * Called to move on to payment.
+   *
+   *****************************************************/
+  @Override
+  public void posterOnNext()
+    {
+    onNewBasketItem( mImageSpecArrayList );
+    }
+
+
   ////////// ReviewAndEditFragment.ICallback Method(s) //////////
 
   /*****************************************************
@@ -635,6 +663,10 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
 
       case PHOTOBOOK:
         addFragment( PhotobookFragment.newInstance( mProduct ), PhotobookFragment.TAG );
+        break;
+
+      case POSTER:
+        addFragment( PosterFragment.newInstance( mProduct ), PosterFragment.TAG );
         break;
       }
 

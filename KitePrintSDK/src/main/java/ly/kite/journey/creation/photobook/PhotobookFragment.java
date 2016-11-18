@@ -44,9 +44,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Parcelable;
-import android.os.SystemClock;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.ActionMode;
 import android.view.DragEvent;
@@ -87,14 +84,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static public  final String  TAG                                             = "PhotobookFragment";
-
-  // Size of auto-scroll zone for drag-and-drop, as a proportion of the list view size.
-  static private final float   AUTO_SCROLL_ZONE_SIZE_AS_PROPORTION             = 0.3f;
-  static private final float   AUTO_SCROLL_MAX_SPEED_IN_PROPORTION_PER_SECOND  = 0.5f;
-
-  static private final int     DISABLED_ALPHA                                  = 100;
-  static private final int     ENABLED_ALPHA                                   = 255;
+  static public  final String  TAG = "PhotobookFragment";
 
 
   ////////// Static Variable(s) //////////
@@ -107,16 +97,10 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
   private ExtendedRecyclerView  mPhotobookView;
   private PhotobookAdaptor      mPhotobookAdaptor;
 
-  private Parcelable            mPhotobookViewState;
-
   private int                   mAddImageIndex;
 
   private int                   mDraggedImageIndex;
 
-  private Handler               mHandler;
-  private ScrollRunnable        mScrollRunnable;
-
-  private ActionMode            mActionMode;
   private MenuItem              mActionModeEditMenuItem;
   private MenuItem              mActionModeDiscardMenuItem;
 
@@ -159,7 +143,6 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     {
     super.onCreate( savedInstanceState );
 
-
     setHasOptionsMenu( true );
     }
 
@@ -183,8 +166,6 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     setForwardsTextViewText( R.string.Next );
     setForwardsTextViewOnClickListener( this );
 
-    // We listen for drag events so that we can auto scroll up or down when dragging
-    //mPhotoBookListView.setOnDragListener( this );
     mPhotobookView.setOnDragListener( this );
 
     return ( view );
@@ -249,7 +230,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
 
     mKiteActivity.setTitle( R.string.title_photobook );
 
-    setUpListView();
+    setUpPhotobookView();
     }
 
 
@@ -263,19 +244,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     {
     super.onNotTop();
 
-
-    // Clear out the stored images to reduce memory usage
-    // when not on this screen.
-
-    if ( mPhotobookView != null )
-      {
-      // Save the list view state so we can come back to the same position
-      mPhotobookViewState = mPhotobookView.onSaveInstanceState();
-
-      mPhotobookView.setAdapter( null );
-      }
-
-    mPhotobookView = null;
+    suspendView( mPhotobookView );
     }
 
 
@@ -289,7 +258,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     {
     // Before we crop assets, make sure that the asset list
     // is the correct size.
-    enforceAssetListSize();
+    enforceAssetListSize( mFrontCoverPlaceableImageCount + mProduct.getQuantityPerSheet() );
 
     return ( super.requestCroppedAssets() );
     }
@@ -388,7 +357,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
 
       // Start the action mode
 
-      mActionMode = mKiteActivity.startActionMode( this );
+      mKiteActivity.startActionMode( this );
 
       mPhotobookAdaptor.setSelectionMode( true );
 
@@ -518,39 +487,8 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
         }
 
 
-      // Determine which zone the location is in
-
-      int photobookViewHeight = mPhotobookView.getHeight();
-
-      float yTopStart    = photobookViewHeight * AUTO_SCROLL_ZONE_SIZE_AS_PROPORTION;
-      float yBottomStart = photobookViewHeight - yTopStart;
-
-      if ( y < yTopStart )
-        {
-        ///// Top zone /////
-
-        // Calculate the speed and run auto-scroll
-
-        float speedAsProportionPerSecond = ( ( y - yTopStart ) / yTopStart ) * AUTO_SCROLL_MAX_SPEED_IN_PROPORTION_PER_SECOND;
-
-        setAutoScroll( speedAsProportionPerSecond );
-        }
-      else if ( y <= yBottomStart )
-        {
-        ///// Middle zone
-
-        stopAutoScroll();
-        }
-      else
-        {
-        ///// Bottom zone /////
-
-        // Calculate the speed and run auto-scroll
-
-        float speedAsProportionPerSecond = ( ( y - yBottomStart ) / ( photobookViewHeight - yBottomStart ) ) * AUTO_SCROLL_MAX_SPEED_IN_PROPORTION_PER_SECOND;
-
-        setAutoScroll( speedAsProportionPerSecond );
-        }
+      // Check if we need to auto-scroll
+      checkAutoScroll( mPhotobookView, x, y );
 
       return ( true );
       }
@@ -687,7 +625,6 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
   @Override
   public void onDestroyActionMode( ActionMode mode )
     {
-    mActionMode             = null;
     mActionModeEditMenuItem = null;
 
     // End the selection mode
@@ -701,111 +638,17 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
 
   /*****************************************************
    *
-   * Ensures that the asset list is exactly the correct
-   * size.
+   * Sets up the photobook view.
    *
    *****************************************************/
-  private void enforceAssetListSize()
+  private void setUpPhotobookView()
     {
-    // Calculate the required number of assets: front cover + content pages
-    int requiredAssetCount = mFrontCoverPlaceableImageCount + mProduct.getQuantityPerSheet();
-
-
-    // Remove any excess assets
-
-    while ( mImageSpecArrayList.size() > requiredAssetCount )
-      {
-      mImageSpecArrayList.remove( mImageSpecArrayList.size() - 1 );
-      }
-
-
-    // Pad out any shortfall
-
-    while ( mImageSpecArrayList.size() < requiredAssetCount )
-      {
-      mImageSpecArrayList.add( null );
-      }
-    }
-
-
-  /*****************************************************
-   *
-   * Sets up the list view.
-   *
-   *****************************************************/
-  private void setUpListView()
-    {
-    // Set up the photobook view
-
     mPhotobookAdaptor = new PhotobookAdaptor( mKiteActivity, mProduct, mImageSpecArrayList, this );
 
     mPhotobookView.setAdapter( mPhotobookAdaptor );
 
 
-    // Restore any state
-
-    if ( mPhotobookViewState != null )
-      {
-      mPhotobookView.onRestoreInstanceState( mPhotobookViewState );
-
-      mPhotobookViewState = null;
-      }
-    }
-
-
-  /*****************************************************
-   *
-   * Ensures that auto-scroll is running at the supplied
-   * speed.
-   *
-   *****************************************************/
-  private void setAutoScroll( float speedAsProportionPerSecond )
-    {
-    // Make sure we have a handler
-    if ( mHandler == null ) mHandler = new Handler();
-
-
-    // Make sure we have a scroll runnable. The presence of a scroll handler
-    // also indicates whether auto-scrolling is actually running. So if we
-    // need to create a scroll runnable, we also need to post it.
-
-    if ( mScrollRunnable == null )
-      {
-      mScrollRunnable = new ScrollRunnable();
-
-      postScrollRunnable();
-      }
-
-
-    // Set the speed
-    mScrollRunnable.setSpeed( speedAsProportionPerSecond );
-    }
-
-
-  /*****************************************************
-   *
-   * Ensures that auto-scroll is not running.
-   *
-   *****************************************************/
-  private void stopAutoScroll()
-    {
-    if ( mScrollRunnable != null )
-      {
-      if ( mHandler != null ) mHandler.removeCallbacks( mScrollRunnable );
-
-      mScrollRunnable = null;
-      }
-    }
-
-
-  /*****************************************************
-   *
-   * Posts the scroll runnable.
-   *
-   *****************************************************/
-  private void postScrollRunnable()
-    {
-    mHandler.postDelayed( mScrollRunnable, 10 );
+    restoreView( mPhotobookView );
     }
 
 
@@ -880,54 +723,6 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     {
     public void pbOnEdit( int assetIndex );
     public void pbOnNext();
-    }
-
-
-  /*****************************************************
-   *
-   * A runnable for scrolling the list view.
-   *
-   *****************************************************/
-  private class ScrollRunnable implements Runnable
-    {
-    private float  mSpeedAsProportionPerSecond;
-    private long   mLastScrollRealtimeMillis;
-
-
-    void setSpeed( float speedAsProportionPerSecond )
-      {
-      mSpeedAsProportionPerSecond = speedAsProportionPerSecond;
-      }
-
-
-    @Override
-    public void run()
-      {
-      // Get the current elapsed time
-      long currentRealtimeMillis = SystemClock.elapsedRealtime();
-
-
-      // Check that the time looks OK
-
-      if ( mLastScrollRealtimeMillis > 0 && currentRealtimeMillis > mLastScrollRealtimeMillis )
-        {
-        // Calculate the scroll amount
-
-        long elapsedTimeMillis = currentRealtimeMillis - mLastScrollRealtimeMillis;
-
-        int scrollPixels = (int)( ( mPhotobookView.getHeight() * ( (float)elapsedTimeMillis / 1000f ) ) * mSpeedAsProportionPerSecond );
-
-        mPhotobookView.scrollBy( 0, scrollPixels );
-        }
-
-
-      // Save the current time and re-post
-
-      mLastScrollRealtimeMillis = currentRealtimeMillis;
-
-      postScrollRunnable();
-      }
-
     }
 
 

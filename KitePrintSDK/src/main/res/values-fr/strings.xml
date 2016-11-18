@@ -21,6 +21,7 @@
     <string name="title_basket">Bakset</string>
     <string name="title_photobook">Photobook</string>
     <string name="title_calendar">Calendrier</string>
+    <string name="title_poster">Affiche</string>
 
     <string name="drawer_open">Tiroir ouvert</string>
     <string name="drawer_closed">Tiroir fermé</string>

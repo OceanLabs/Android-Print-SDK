@@ -19,6 +19,7 @@
     <string name="title_image_source">Wähle Photos aus</string>
     <string name="title_photobook">Photobuch</string>
     <string name="title_calendar">Kalender</string>
+    <string name="title_poster">Poster</string>
     <string name="title_basket">Korb</string>
     <string name="title_payment_sandbox">Zahlung (Sandbox)</string>
     <string name="title_payment">Zahlung</string>

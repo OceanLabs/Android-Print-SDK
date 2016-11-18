@@ -103,6 +103,7 @@
     <dimen name="inactivity_warning_time_remaining_text_size">24sp</dimen>
 
     <dimen name="multi_page_add_image_size">15dp</dimen>
+    <dimen name="poster_add_image_size">10dp</dimen>
 
     <dimen name="photobook_front_cover_width">150dp</dimen>
     <dimen name="photobook_front_cover_height">150dp</dimen>
