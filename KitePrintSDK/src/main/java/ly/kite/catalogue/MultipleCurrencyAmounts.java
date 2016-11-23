@@ -135,6 +135,22 @@ public class MultipleCurrencyAmounts implements Parcelable
     }
 
 
+  /*****************************************************
+   *
+   * Returns a currency code from a currency.
+   *
+   * @return null, if no currency was supplied
+   * @return The currency code, if a currency was supplied
+   *
+   *****************************************************/
+  static private String getSafeCurrencyCode( Currency currency )
+    {
+    if ( currency != null ) return ( currency.getCurrencyCode() );
+
+    return ( "" );
+    }
+
+
   ////////// Constructor(s) //////////
 
   public MultipleCurrencyAmounts()
@@ -345,7 +361,7 @@ public class MultipleCurrencyAmounts implements Parcelable
    *****************************************************/
   public SingleCurrencyAmounts getAmountsWithFallback( Currency preferredCurrency )
     {
-    return ( getAmountsWithFallback( preferredCurrency.getCurrencyCode() ) );
+    return ( getAmountsWithFallback( getSafeCurrencyCode( preferredCurrency ) ) );
     }
 
 
@@ -357,7 +373,7 @@ public class MultipleCurrencyAmounts implements Parcelable
    *****************************************************/
   public SingleCurrencyAmounts getAmountsWithFallbackMultipliedBy( int quantity, Currency preferredCurrency )
     {
-    return ( getAmountsWithFallback( preferredCurrency.getCurrencyCode() ).multipliedBy( quantity ) );
+    return ( getAmountsWithFallback( getSafeCurrencyCode( preferredCurrency ) ).multipliedBy( quantity ) );
     }
 
 
@@ -369,7 +385,21 @@ public class MultipleCurrencyAmounts implements Parcelable
    *****************************************************/
   public SingleCurrencyAmounts getAmountsWithFallback( Locale locale )
     {
-    return ( getAmountsWithFallback( Currency.getInstance( locale ) ) );
+    // We keep getting dodgy locales that have the country set incorrectly (e.g. fa, en),
+    // so if we can't get a currency from the locale, allow the fall-back procedure
+    // to pick the currency.
+
+    Currency currency = null;
+
+    try
+      {
+      currency = Currency.getInstance( locale );
+      }
+    catch ( Exception ignore )
+      {
+      }
+
+    return ( getAmountsWithFallback( currency ) );
     }
 
 
