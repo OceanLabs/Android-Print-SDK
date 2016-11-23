@@ -49,20 +49,13 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 
 import ly.kite.R;
-import ly.kite.catalogue.Product;
-import ly.kite.image.ImageAgent;
-import ly.kite.journey.creation.calendar.CalendarFragment;
 import ly.kite.ordering.ImageSpec;
-import ly.kite.util.AssetFragment;
 import ly.kite.widget.CheckableImageContainerFrame;
 
 
@@ -198,19 +191,7 @@ public class PosterAdaptor extends RecyclerView.Adapter
         }
 
 
-      AssetFragment assetFragment = imageSpec.getAssetFragment();
-
-      if ( assetFragment != null )
-        {
-        checkableImageContainerFrame.clearForNewImage( assetFragment );
-
-        ImageAgent.with( mActivity )
-                .load( assetFragment )
-                .resizeForDimen( checkableImageContainerFrame, R.dimen.image_default_resize_size, R.dimen.image_default_resize_size )
-                .onlyScaleDown()
-                .reduceColourSpace()
-                .into( checkableImageContainerFrame, assetFragment );
-        }
+      imageSpec.loadThumbnail( mActivity, checkableImageContainerFrame );
       }
     else
       {

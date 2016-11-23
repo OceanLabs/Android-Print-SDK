@@ -101,6 +101,7 @@ public class ImageLoadRequest
   private IImageSizeConsumer  mImageSizeConsumer;
 
   private IImageTransformer   mPreResizeTransformer;
+  private IImageTransformer   mPostResizeTransformer;
 
   private int                 mResizeWidth;
   private int                 mResizeHeight;
@@ -551,6 +552,16 @@ public class ImageLoadRequest
     if ( mResizeWidth > 0 && mResizeHeight > 0 )
       {
       bitmap = ImageAgent.scaleBitmap( bitmap, mResizeWidth, mResizeHeight, mOnlyScaleDown );
+      }
+
+
+    // Apply any post-resize transformation
+
+    if ( mPostResizeTransformer != null )
+      {
+      if ( KiteSDK.DEBUG_IMAGE_LOADING ) Log.d( LOG_TAG, "Applying post-resize transformer: " + mPostResizeTransformer );
+
+      bitmap = mPostResizeTransformer.getTransformedBitmap( bitmap );
       }
 
 
@@ -1412,6 +1423,19 @@ public class ImageLoadRequest
     public Builder reduceColourSpace()
       {
       mBitmapConfig = Bitmap.Config.RGB_565;
+
+      return ( this );
+      }
+
+
+    /*****************************************************
+     *
+     * Transforms an image after it is resized.
+     *
+     *****************************************************/
+    public Builder transformAfterResize( IImageTransformer transformer )
+      {
+      mPostResizeTransformer = transformer;
 
       return ( this );
       }

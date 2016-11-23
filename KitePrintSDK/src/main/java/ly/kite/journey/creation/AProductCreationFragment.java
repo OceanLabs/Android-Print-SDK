@@ -670,7 +670,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
   /*****************************************************
    *
-   * Requests a single square cropped image for an asset.
+   * Requests a single cropped image for an asset.
    *
    *****************************************************/
   protected void requestCroppedImage( ImageSpec imageSpec )
@@ -714,6 +714,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
    *****************************************************/
   protected void onImageCropped( ImageSpec imageSpec )
     {
+    imageSpec.clearThumbnail();
     }
 
 

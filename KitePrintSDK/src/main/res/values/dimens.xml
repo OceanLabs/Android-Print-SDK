@@ -95,6 +95,7 @@
     <dimen name="image_check_size">28dp</dimen>
 
     <dimen name="image_default_resize_size">100px</dimen>
+    <dimen name="image_default_thumbnail_size">64px</dimen>
 
     <dimen name="page_number_text_inset">10dp</dimen>
     <dimen name="page_number_text_size">14sp</dimen>

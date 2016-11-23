@@ -39,15 +39,25 @@ package ly.kite.ordering;
 
 ///// Import(s) /////
 
+import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.RectF;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import java.util.List;
 
+import ly.kite.R;
+import ly.kite.image.IImageConsumer;
+import ly.kite.image.IImageTransformer;
+import ly.kite.image.ImageAgent;
+import ly.kite.image.ImageViewConsumer;
 import ly.kite.util.Asset;
 import ly.kite.util.AssetFragment;
+import ly.kite.util.AssetHelper;
 import ly.kite.util.StringUtils;
+import ly.kite.widget.CheckableImageContainerFrame;
 
 
 ///// Class Declaration /////
@@ -90,6 +100,8 @@ public class ImageSpec implements Parcelable
   private int            mQuantity;
 
   private String         mCroppedForProductId;
+
+  private Asset          mThumbnailAsset;
 
 
   ////////// Static Initialiser(s) //////////
@@ -334,6 +346,51 @@ public class ImageSpec implements Parcelable
 
   /*****************************************************
    *
+   * Clears a thumbnail image.
+   *
+   *****************************************************/
+  public void clearThumbnail()
+    {
+    mThumbnailAsset = null;
+    }
+
+
+  /*****************************************************
+   *
+   * Loads a thumbnail image into an image consumer.
+   *
+   *****************************************************/
+  public void loadThumbnail( Context context, CheckableImageContainerFrame checkableImageContainerFrame )
+    {
+    // If we already have a thumbnail -  load it
+    if ( mThumbnailAsset != null )
+      {
+      checkableImageContainerFrame.clearForNewImage( mThumbnailAsset );
+
+      ImageAgent.with( context )
+              .load( mThumbnailAsset )
+              .into( checkableImageContainerFrame, mThumbnailAsset );
+      }
+
+    // If we have an asset fragment - load it, scaling, and saving the scaled-down
+    // image as a thumbnail.
+    if ( mAssetFragment != null )
+      {
+      checkableImageContainerFrame.clearForNewImage( mAssetFragment );
+
+      ImageAgent.with( context )
+              .load( mAssetFragment )
+              .resizeForDimen( checkableImageContainerFrame, R.dimen.image_default_thumbnail_size, R.dimen.image_default_thumbnail_size )
+              .onlyScaleDown()
+              .reduceColourSpace()
+              .transformAfterResize( new ThumbnailProxy( context ) )
+              .into( checkableImageContainerFrame, mAssetFragment );
+      }
+    }
+
+
+  /*****************************************************
+   *
    * Returns true if this image spec equals the supplied
    * image spec.
    *
@@ -362,9 +419,31 @@ public class ImageSpec implements Parcelable
 
   /*****************************************************
    *
-   * ...
+   * An image consumer proxy that is used for creating
+   * thumbnail images.
    *
    *****************************************************/
+  private class ThumbnailProxy implements IImageTransformer
+    {
+    private Context  mContext;
+
+
+    ThumbnailProxy( Context context )
+      {
+      mContext = context;
+      }
+
+
+    @Override
+    public Bitmap getTransformedBitmap( Bitmap bitmap )
+      {
+      // Create a session asset from the bitmap
+      mThumbnailAsset = AssetHelper.createAsSessionAsset( mContext, bitmap );
+
+      // We haven't transformed the bitmap, so return the original one back.
+      return ( bitmap );
+      }
+    }
 
   }
 
