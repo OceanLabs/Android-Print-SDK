@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 import ly.kite.catalogue.Product;
+import ly.kite.util.AssetFragment;
 import ly.kite.util.UploadableImage;
 
 /**
@@ -155,6 +156,38 @@ public class ImagesJob extends Job
         if ( uploadableImage != null ) uploadableImageList.add( uploadableImage );
         }
       }
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the images for this job as a list of image
+   * specs.
+   *
+   *****************************************************/
+  public List<ImageSpec> getImagesAsSpecList()
+    {
+    List<ImageSpec> imageSpecList = new ArrayList<>();
+
+    if ( mUploadableImageList != null )
+      {
+      for ( UploadableImage uploadableImage : mUploadableImageList )
+        {
+        AssetFragment assetFragment;
+
+        if ( uploadableImage != null &&
+             ( assetFragment = uploadableImage.getAssetFragment() ) != null )
+          {
+          imageSpecList.add( new ImageSpec( assetFragment ) );
+          }
+        else
+          {
+          imageSpecList.add( null );
+          }
+        }
+      }
+
+    return ( imageSpecList );
     }
 
 

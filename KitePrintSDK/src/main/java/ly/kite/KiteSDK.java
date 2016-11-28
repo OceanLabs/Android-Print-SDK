@@ -63,6 +63,7 @@ import ly.kite.address.Country;
 import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.MultipleCurrencyAmounts;
 import ly.kite.catalogue.Product;
+import ly.kite.journey.ordering.OrderHistoryActivity;
 import ly.kite.ordering.OrderingDataAgent;
 import ly.kite.catalogue.CatalogueLoader;
 import ly.kite.checkout.PaymentActivity;
@@ -104,7 +105,7 @@ public class KiteSDK
   static public  final boolean DISPLAY_PRODUCTS                                    = false;
 
 
-  static public  final String SDK_VERSION                                          = "5.6.6";
+  static public  final String SDK_VERSION                                          = "5.6.7";
 
   static public  final String IMAGE_CATEGORY_APP                                   = "app";
   static public  final String IMAGE_CATEGORY_PRODUCT_ITEM                          = "product_item";
@@ -1396,6 +1397,17 @@ public class KiteSDK
 
   /*****************************************************
    *
+   * Returns a count of the number of items in the basket.
+   *
+   *****************************************************/
+  public int getBasketItemCount()
+    {
+    return ( OrderingDataAgent.getInstance( mApplicationContext ).getItemCount() );
+    }
+
+
+  /*****************************************************
+   *
    * Prepares to start shopping.
    *
    *****************************************************/
@@ -1543,13 +1555,12 @@ public class KiteSDK
 
   /*****************************************************
    *
-   * Launches managed checkout, and returns the result.
+   * Launches the order history screen.
    *
    *****************************************************/
-  @Deprecated
-  public void startCheckout( Activity activity, Order order, int requestCode )
+  public void startOrderHistory( Activity activity )
     {
-    startCheckoutForResult( activity, order, requestCode );
+    OrderHistoryActivity.start( activity );
     }
 
 
@@ -1574,6 +1585,17 @@ public class KiteSDK
     PaymentActivity.startForResult( activity, order, requestCode );
     }
 
+
+  /*****************************************************
+   *
+   * Launches managed checkout, and returns the result.
+   *
+   *****************************************************/
+  @Deprecated
+  public void startCheckout( Activity activity, Order order, int requestCode )
+    {
+    startCheckoutForResult( activity, order, requestCode );
+    }
 
   /*****************************************************
    *

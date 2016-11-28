@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * CalendarAdaptor.java
+ * PosterAdaptor.java
  *
  *
  * Modified MIT License
@@ -34,26 +34,21 @@
 
 ///// Package Declaration /////
 
-package ly.kite.journey.creation.calendar;
+package ly.kite.journey.creation.poster;
 
 
 ///// Import(s) /////
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -61,9 +56,6 @@ import java.util.Iterator;
 
 import ly.kite.R;
 import ly.kite.ordering.ImageSpec;
-import ly.kite.catalogue.Product;
-import ly.kite.image.ImageAgent;
-import ly.kite.util.AssetFragment;
 import ly.kite.widget.CheckableImageContainerFrame;
 
 
@@ -74,12 +66,12 @@ import ly.kite.widget.CheckableImageContainerFrame;
  * This is the adaptor for the photobook list view.
  *
  *****************************************************/
-public class CalendarAdaptor extends RecyclerView.Adapter
+public class PosterAdaptor extends RecyclerView.Adapter
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String  LOG_TAG                 = "CalendarAdaptor";
+  static private final String  LOG_TAG                 = "PosterAdaptor";
 
 
   ////////// Static Variable(s) //////////
@@ -88,13 +80,8 @@ public class CalendarAdaptor extends RecyclerView.Adapter
   ////////// Member Variable(s) //////////
 
   private Activity                                   mActivity;
-  private Product                                    mProduct;
   private ArrayList<ImageSpec>                       mImageSpecArrayList;
   private IListener                                  mListener;
-
-  private int                                        mImagesPerMonth;
-  private int                                        mGridCountX;
-  private int                                        mGridCountY;
 
   private LayoutInflater                             mLayoutInflator;
 
@@ -115,16 +102,11 @@ public class CalendarAdaptor extends RecyclerView.Adapter
 
   ////////// Constructor(s) //////////
 
-  CalendarAdaptor( Activity activity, Product product, ArrayList<ImageSpec> imageSpecArrayList, IListener listener )
+  PosterAdaptor( Activity activity, ArrayList<ImageSpec> imageSpecArrayList, IListener listener )
     {
     mActivity                   = activity;
-    mProduct                    = product;
     mImageSpecArrayList         = imageSpecArrayList;
     mListener                   = listener;
-
-    mGridCountX                 = mProduct.getGridCountX();
-    mGridCountY                 = mProduct.getGridCountY();
-    mImagesPerMonth             = mGridCountX * mGridCountY;
 
     mLayoutInflator             = activity.getLayoutInflater();
 
@@ -145,7 +127,7 @@ public class CalendarAdaptor extends RecyclerView.Adapter
   @Override
   public int getItemCount()
     {
-    return ( CalendarFragment.MONTHS_PER_YEAR );
+    return ( mImageSpecArrayList.size() );
     }
 
 
@@ -157,7 +139,7 @@ public class CalendarAdaptor extends RecyclerView.Adapter
   @Override
   public RecyclerView.ViewHolder onCreateViewHolder( ViewGroup parent, int viewType )
     {
-    return ( new PageViewHolder( mLayoutInflator.inflate( R.layout.item_calendar_page, parent, false ) ) );
+    return ( new ImageViewHolder( mLayoutInflator.inflate( R.layout.item_poster_image, parent, false ) ) );
     }
 
 
@@ -169,98 +151,53 @@ public class CalendarAdaptor extends RecyclerView.Adapter
   @Override
   public void onBindViewHolder( RecyclerView.ViewHolder viewHolder, int position )
     {
-    PageViewHolder pageViewHolder = (PageViewHolder)viewHolder;
+    ImageViewHolder imageViewHolder = (ImageViewHolder)viewHolder;
+
+    // We don't need to remove any previously visible images, because everything is always visible
 
 
-    // Remove any previously visible items
+    // Set up the new image
 
-    int previousFirstImageSpecIndex = pageViewHolder.firstImageSpecIndex;
+    imageViewHolder.imageIndex = position;
 
-    if ( previousFirstImageSpecIndex >= 0 )
+    CheckableImageContainerFrame checkableImageContainerFrame = imageViewHolder.checkableImageContainerFrame;
+    ImageView                    addImageView                 = imageViewHolder.addImageView;
+
+    mVisibleCheckableImageSet.add( checkableImageContainerFrame );
+    mVisibleCheckableImageArray.put( position, checkableImageContainerFrame );
+
+    // Get the matching image spec
+    ImageSpec imageSpec = getImageSpecAt( position );
+
+
+    if ( imageSpec != null )
       {
-      for ( int imageIndex = 0; imageIndex < mImagesPerMonth; imageIndex ++ )
+      addImageView.setVisibility( View.INVISIBLE );
+
+      if ( mInSelectionMode )
         {
-        // We don't need to remove the checkable image container frame from the set because it's recycled and so always visible
-        mVisibleCheckableImageArray.remove( previousFirstImageSpecIndex + imageIndex );
-        }
-      }
-
-
-    pageViewHolder.monthIndex          = position;
-    pageViewHolder.firstImageSpecIndex = position * mImagesPerMonth;
-
-
-    // Process each of the images
-
-    for ( int imageIndex = 0; imageIndex < mImagesPerMonth; imageIndex ++ )
-      {
-      CheckableImageContainerFrame checkableImageContainerFrame = pageViewHolder.imageViewHolderArray[ imageIndex ].checkableImageContainerFrame;
-      ImageView                    addImageView                 = pageViewHolder.imageViewHolderArray[ imageIndex ].addImageView;
-
-      mVisibleCheckableImageSet.add( checkableImageContainerFrame );
-      mVisibleCheckableImageArray.put( pageViewHolder.firstImageSpecIndex + imageIndex, checkableImageContainerFrame );
-
-
-      // Get the matching image spec
-      ImageSpec imageSpec = getImageSpecAt( position, imageIndex );
-
-
-      if ( imageSpec != null )
-        {
-        addImageView.setVisibility( View.INVISIBLE );
-
-        if ( mInSelectionMode )
+        if ( mSelectedAssetIndexHashSet.contains( position ) )
           {
-          if ( mSelectedAssetIndexHashSet.contains( pageViewHolder.firstImageSpecIndex + imageIndex ) )
-            {
-            checkableImageContainerFrame.setState( CheckableImageContainerFrame.State.CHECKED );
-            }
-          else
-            {
-            checkableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_VISIBLE );
-            }
+          checkableImageContainerFrame.setState( CheckableImageContainerFrame.State.CHECKED );
           }
         else
           {
-          checkableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE );
-          }
-
-
-        AssetFragment assetFragment = imageSpec.getAssetFragment();
-
-        if ( assetFragment != null )
-          {
-          checkableImageContainerFrame.clearForNewImage( assetFragment );
-
-          ImageAgent.with( mActivity )
-                  .load( assetFragment )
-                  .resizeForDimen( checkableImageContainerFrame, R.dimen.image_default_resize_size, R.dimen.image_default_resize_size )
-                  .onlyScaleDown()
-                  .reduceColourSpace()
-                  .into( checkableImageContainerFrame, assetFragment );
+          checkableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_VISIBLE );
           }
         }
       else
         {
-        addImageView.setVisibility( View.VISIBLE );
         checkableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE );
-        checkableImageContainerFrame.clear();
         }
 
+
+      imageSpec.loadThumbnail( mActivity, checkableImageContainerFrame );
       }
-
-
-    // Set up the calendar asset
-
-    pageViewHolder.assetImageView.setImageDrawable( null );
-
-    ArrayList<String> calendarImageURLString = mProduct.getCalendarImages();
-
-    if ( calendarImageURLString != null && calendarImageURLString.size() >= CalendarFragment.MONTHS_PER_YEAR )
+    else
       {
-      Picasso.with( mActivity )
-              .load( calendarImageURLString.get( position ) )
-              .into( pageViewHolder.assetImageView );
+      addImageView.setVisibility( View.VISIBLE );
+      checkableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE );
+      checkableImageContainerFrame.clear();
       }
     }
 
@@ -273,15 +210,11 @@ public class CalendarAdaptor extends RecyclerView.Adapter
    * if it doesn't exist.
    *
    *****************************************************/
-  private ImageSpec getImageSpecAt( int monthIndex, int imageIndex )
+  private ImageSpec getImageSpecAt( int imageIndex )
     {
-    if ( monthIndex < 0 || monthIndex >= CalendarFragment.MONTHS_PER_YEAR ) return ( null );
-
-    int imageSpecIndex = ( monthIndex * mImagesPerMonth ) + imageIndex;
-
-    if ( imageSpecIndex >= 0 && imageSpecIndex < mImageSpecArrayList.size() )
+    if ( imageIndex >= 0 && imageIndex < mImageSpecArrayList.size() )
       {
-      return ( mImageSpecArrayList.get( imageSpecIndex ) );
+      return ( mImageSpecArrayList.get( imageIndex ) );
       }
 
     return ( null );
@@ -459,64 +392,25 @@ public class CalendarAdaptor extends RecyclerView.Adapter
 
   /*****************************************************
    *
-   * Content view holder.
+   * Image view holder.
    *
    *****************************************************/
-  private class PageViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
-                                                                          View.OnLongClickListener
+  private class ImageViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
+                                                                           View.OnLongClickListener
     {
-    int                monthIndex;
-    int                firstImageSpecIndex;
+    int                           imageIndex;
+    CheckableImageContainerFrame  checkableImageContainerFrame;
+    ImageView                     addImageView;
 
-    LinearLayout       imageLayout;
-    ImageView          assetImageView;
-
-    ImageViewHolder[]  imageViewHolderArray;
-
-
-    PageViewHolder( View view )
+    ImageViewHolder( View view )
       {
       super( view );
 
-      this.monthIndex           = -1;
-      this.firstImageSpecIndex  = -1;
+      this.checkableImageContainerFrame = (CheckableImageContainerFrame)view.findViewById( R.id.checkable_image_container_frame );
+      this.addImageView                 = (ImageView)view.findViewById( R.id.add_image_view );
 
-      this.imageLayout          = (LinearLayout)view.findViewById( R.id.image_layout );
-      this.assetImageView       = (ImageView)view.findViewById( R.id.asset_image_view );
-
-
-      // Set up the image layout
-
-      this.imageViewHolderArray = new ImageViewHolder[ mImagesPerMonth ];
-
-      for ( int y = 0; y < mGridCountY; y ++ )
-        {
-        LinearLayout rowLayout = new LinearLayout( mActivity );
-        rowLayout.setOrientation( LinearLayout.HORIZONTAL );
-
-        for ( int x = 0; x < mGridCountX; x ++ )
-          {
-          View imageView = mLayoutInflator.inflate( R.layout.item_calendar_image, rowLayout, false );
-
-          ImageViewHolder imageViewHolder = new ImageViewHolder( imageView );
-
-          this.imageViewHolderArray[ ( y * mGridCountX ) + x ] = imageViewHolder;
-
-          // Add the image to the current row
-          rowLayout.addView( imageView );
-
-          imageViewHolder.checkableImageContainerFrame.setOnClickListener( this );
-          imageViewHolder.checkableImageContainerFrame.setOnLongClickListener( this );
-          }
-
-
-        // Add the row to the image layout
-
-        LinearLayout.LayoutParams rowLayoutParams = new LinearLayout.LayoutParams( LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT );
-
-        this.imageLayout.addView( rowLayout, rowLayoutParams );
-        }
-
+      this.checkableImageContainerFrame.setOnClickListener( this );
+      this.checkableImageContainerFrame.setOnLongClickListener( this );
       }
 
 
@@ -525,54 +419,39 @@ public class CalendarAdaptor extends RecyclerView.Adapter
     @Override
     public void onClick( View view )
       {
-      // Work out which view was clicked
-
-      for ( int imageIndex = 0; imageIndex < mImagesPerMonth; imageIndex ++ )
+      if ( view == this.checkableImageContainerFrame )
         {
-        int assetIndex = this.firstImageSpecIndex + imageIndex;
-
-        CheckableImageContainerFrame checkableImageContainerFrame = this.imageViewHolderArray[ imageIndex ].checkableImageContainerFrame;
-        ImageView                    addImageView                 = this.imageViewHolderArray[ imageIndex ].addImageView;
-
-        if ( view == checkableImageContainerFrame )
+        if ( mInSelectionMode )
           {
-          if ( mInSelectionMode )
+          ImageSpec imageSpec = getImageSpecAt( this.imageIndex );
+
+          if ( imageSpec != null )
             {
-            ImageSpec imageSpec = getImageSpecAt( this.monthIndex, imageIndex );
-
-            if ( imageSpec != null )
+            if ( ! mSelectedAssetIndexHashSet.contains( this.imageIndex ) )
               {
-              if ( ! mSelectedAssetIndexHashSet.contains( assetIndex ) )
-                {
-                mSelectedAssetIndexHashSet.add( assetIndex );
+              mSelectedAssetIndexHashSet.add( this.imageIndex );
 
-                checkableImageContainerFrame.setChecked( true );
-                }
-              else
-                {
-                mSelectedAssetIndexHashSet.remove( assetIndex );
-
-                checkableImageContainerFrame.setChecked( false );
-                }
-
-              onSelectedImagesChanged();
+              this.checkableImageContainerFrame.setChecked( true );
               }
             else
               {
-              rejectAddImage( addImageView );
+              mSelectedAssetIndexHashSet.remove( this.imageIndex );
+
+              this.checkableImageContainerFrame.setChecked( false );
               }
+
+            onSelectedImagesChanged();
             }
           else
             {
-            mListener.onClickImage( assetIndex, view );
+            rejectAddImage( this.addImageView );
             }
-
-          return;
           }
-
+        else
+          {
+          mListener.onClickImage( this.imageIndex, view );
+          }
         }
-
-
       }
 
 
@@ -581,52 +460,20 @@ public class CalendarAdaptor extends RecyclerView.Adapter
     @Override
     public boolean onLongClick( View view )
       {
-      // Work out which view was clicked
-
-      for ( int imageIndex = 0; imageIndex < mImagesPerMonth; imageIndex ++ )
+      if ( ! mInSelectionMode )
         {
-        int assetIndex = this.firstImageSpecIndex + imageIndex;
-
-        CheckableImageContainerFrame checkableImageContainerFrame = this.imageViewHolderArray[ imageIndex ].checkableImageContainerFrame;
-
-        if ( ! mInSelectionMode )
+        if ( view == this.checkableImageContainerFrame )
           {
-          if ( view == checkableImageContainerFrame )
+          if ( getImageSpecAt( this.imageIndex ) != null )
             {
-            if ( getImageSpecAt( this.monthIndex, imageIndex ) != null )
-              {
-              mListener.onLongClickImage( assetIndex, checkableImageContainerFrame );
+            mListener.onLongClickImage( this.imageIndex, this.checkableImageContainerFrame );
 
-              return ( true );
-              }
+            return ( true );
             }
           }
         }
-
       return ( false );
-      }
-
-    }
-
-
-  /*****************************************************
-   *
-   * Image view holder.
-   *
-   *****************************************************/
-  private class ImageViewHolder
-    {
-    View                          view;
-    CheckableImageContainerFrame  checkableImageContainerFrame;
-    ImageView                     addImageView;
-
-    ImageViewHolder( View view )
-      {
-      this.view                         = view;
-      this.checkableImageContainerFrame = (CheckableImageContainerFrame)view.findViewById( R.id.checkable_image_container_frame );
-      this.addImageView                 = (ImageView)view.findViewById( R.id.add_image_view );
       }
     }
 
   }
-

@@ -217,14 +217,20 @@ public class OrderingDataAgent
 
     for ( Job job : order.getJobs() )
       {
-      // Move any referenced assets to the basket (if they are not already in)
-      List<ImageSpec> jobImageSpecList = AssetHelper.createAsBasketAssets( mApplicationContext, BASKET_ID_DEFAULT, job.getImagesAsSpecList() );
+      // TODO: Currently we only support ImageJobs
+      if ( job instanceof ImagesJob )
+        {
+        ImagesJob imagesJob = (ImagesJob)job;
 
-      mDatabaseAgent.saveDefaultBasketItem( itemId, product, optionsMap, jobImageSpecList, orderQuantity );
+        // Move any referenced assets to the basket (if they are not already in)
+        List<ImageSpec> jobImageSpecList = AssetHelper.createAsBasketAssets( mApplicationContext, BASKET_ID_DEFAULT, imagesJob.getImagesAsSpecList() );
 
-      // If we were supplied an item id then this is an update. However, if more images were
-      // subsequently added whilst editing the item - additional jobs are inserted as new ones.
-      itemId = CREATE_NEW_ITEM_ID;
+        mDatabaseAgent.saveDefaultBasketItem( itemId, product, optionsMap, jobImageSpecList, orderQuantity );
+
+        // If we were supplied an item id then this is an update. However, if more images were
+        // subsequently added whilst editing the item - additional jobs are inserted as new ones.
+        itemId = CREATE_NEW_ITEM_ID;
+        }
       }
     }
 

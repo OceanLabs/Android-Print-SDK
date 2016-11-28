@@ -19,6 +19,7 @@
     <string name="title_image_source">Wähle Photos aus</string>
     <string name="title_photobook">Photobuch</string>
     <string name="title_calendar">Kalender</string>
+    <string name="title_poster">Poster</string>
     <string name="title_basket">Korb</string>
     <string name="title_payment_sandbox">Zahlung (Sandbox)</string>
     <string name="title_payment">Zahlung</string>
@@ -257,6 +258,9 @@
     <string name="payment_credit_card_button_text_free">Kasse kostenlos!</string>
     <string name="payment_paypal_button_text">PayPal</string>
 
+    <string name="stripe_error_invalid_card_details">Ungültige Kartendetails</string>
+    <string name="stripe_error_create_object">Stripe-Objekt kann nicht erstellt werden</string>
+    <string name="stripe_error_retrieve_token">Das Stripe-Token konnte nicht abgerufen werden</string>
 
     <string name="send_email_chooser_title">E-Mail senden</string>
 
@@ -289,6 +293,9 @@
 
     <string name="alert_dialog_title_order_cancelled">Bestellung storniert</string>
     <string name="alert_dialog_message_order_cancelled">Fehler - deine Bestellung wurde während der Übermittlung storniert.</string>
+
+    <string name="alert_dialog_message_server_offline_maintenance">Der Server ist derzeit offline für Wartungszwecke.</string>
+    <string name="alert_dialog_message_server_returned_html">Der Server gab eine ungültige (HTML) Antwort zurück. Dies tritt normalerweise auf, wenn der Server nicht verfügbar ist.</string>
 
     <string name="scan_qr_code">QR Code scannen</string>
     <string name="scan_qr_code_instructions">Bitte den QR Code mit QR Coder Scanner\nvon deinem Geraät aus scannen.</string>

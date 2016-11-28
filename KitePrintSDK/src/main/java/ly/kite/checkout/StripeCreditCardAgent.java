@@ -81,7 +81,7 @@ public class StripeCreditCardAgent extends ACreditCardDialogFragment implements 
   private Context                 mContext;
   private DefaultPaymentFragment  mPaymentFragment;
   private Order                   mOrder;
-  private SingleCurrencyAmounts mSingleCurrencyAmount;
+  private SingleCurrencyAmounts   mSingleCurrencyAmount;
 
 
   ////////// Static Initialiser(s) //////////
@@ -181,7 +181,7 @@ public class StripeCreditCardAgent extends ACreditCardDialogFragment implements 
       }
     catch ( Exception exception )
       {
-      onDisplayError( "Invalid card details: " + exception.getMessage() );
+      onDisplayError( getString( R.string.stripe_error_invalid_card_details ) + ": " + exception.getMessage() );
       }
     }
 
@@ -209,12 +209,12 @@ public class StripeCreditCardAgent extends ACreditCardDialogFragment implements 
       {
       stripe = new Stripe( stripePublicKey );
       }
-    catch ( AuthenticationException e )
+    catch ( AuthenticationException ae )
       {
-      Log.e( TAG, "Unable to create Stripe object", e );
+      Log.e( TAG, "Unable to create Stripe object", ae );
 
       // TODO: Display an error dialog
-      Toast.makeText( mContext, "Unable to create Stripe object", Toast.LENGTH_LONG ).show();
+      Toast.makeText( mContext, getString( R.string.stripe_error_create_object ) + ": " + ae.getMessage(), Toast.LENGTH_LONG ).show();
 
       return;
       }
@@ -229,7 +229,7 @@ public class StripeCreditCardAgent extends ACreditCardDialogFragment implements 
     indeterminateProgressDialogFragment.setCancelable( false );
 
 
-    // TODO: Get rid of this anonymous inner class
+    // TODO: Get rid of this yucky anonymous inner class
     stripe.createToken
       (
       card,
@@ -251,9 +251,11 @@ public class StripeCreditCardAgent extends ACreditCardDialogFragment implements 
           {
           indeterminateProgressDialogFragment.dismiss();
 
+          Log.e( TAG, "Error retrieving token", exception );
+
           // TODO: Display error dialog
           // Show localised error message
-          Toast.makeText( mContext, exception.getMessage(), Toast.LENGTH_LONG ).show();
+          Toast.makeText( mContext, getString( R.string.stripe_error_retrieve_token ) + ": " + exception.getMessage(), Toast.LENGTH_LONG ).show();
           }
         }
       );

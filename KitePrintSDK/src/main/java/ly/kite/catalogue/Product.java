@@ -953,7 +953,7 @@ public class Product implements IGroupOrProduct, Parcelable
    *****************************************************/
   public SingleCurrencyAmounts getCostWithFallback( Locale locale )
     {
-    return ( mCost.getAmountsWithFallback( Currency.getInstance( locale ) ) );
+    return ( mCost.getAmountsWithFallback( locale ) );
     }
 
 

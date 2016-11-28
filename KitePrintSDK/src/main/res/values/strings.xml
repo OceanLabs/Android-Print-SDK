@@ -25,6 +25,7 @@
     <string name="title_image_source">Choose Photos</string>
     <string name="title_photobook">Photobook</string>
     <string name="title_calendar">Calendar</string>
+    <string name="title_poster">Poster</string>
     <string name="title_basket">Basket</string>
     <string name="title_payment_sandbox">Payment (Sandbox)</string>
     <string name="title_payment">Payment</string>
@@ -267,6 +268,9 @@
     <string name="payment_credit_card_button_text_free">Checkout for Free!</string>
     <string name="payment_paypal_button_text">PayPal</string>
 
+    <string name="stripe_error_invalid_card_details">Invalid card details</string>
+    <string name="stripe_error_create_object">Unable to create Stripe object</string>
+    <string name="stripe_error_retrieve_token">Unable to retrieve Stripe token</string>
 
     <string name="send_email_chooser_title">Send Email</string>
 
@@ -299,6 +303,9 @@
 
     <string name="alert_dialog_title_order_cancelled">Order Cancelled</string>
     <string name="alert_dialog_message_order_cancelled">Something has gone wrong - your order appears to have been cancelled during submission.</string>
+
+    <string name="alert_dialog_message_server_offline_maintenance">The server is currently off-line for maintenance.</string>
+    <string name="alert_dialog_message_server_returned_html">The server returned an invalid (HTML) response. This usually occurs when the server is unavailable.</string>
 
     <string name="scan_qr_code">Scan QR Code</string>
     <string name="scan_qr_code_instructions">Please scan the QR code using a\nQR reader app on your device.</string>

@@ -457,7 +457,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
     //      "account_id": "P-3"
     //      },
     //    "stripe":
-    //      {
+    //      {0
     //      "public_key": "pk_test_FxzXniUJWigFysP0bowWbuy3",
     //      "account_id": null
     //      }

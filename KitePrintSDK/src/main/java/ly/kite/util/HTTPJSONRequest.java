@@ -51,6 +51,9 @@ import org.json.JSONTokener;
 import android.content.Context;
 import android.util.Log;
 
+import ly.kite.KiteSDKException;
+import ly.kite.R;
+
 
 ///// Class Declaration /////
 
@@ -112,6 +115,7 @@ public class HTTPJSONRequest extends HTTPRequest
    * Processes the response on a background thread.
    *
    *****************************************************/
+  @Override
   protected void processResponseInBackground( HttpResponse response ) throws Exception
     {
     BufferedReader reader = new BufferedReader( new InputStreamReader( response.getEntity().getContent(), "UTF-8" ) );
@@ -141,8 +145,24 @@ public class HTTPJSONRequest extends HTTPRequest
         // we want to see.
         Log.e( LOG_TAG, "Unable to parse response as JSON:\n" + bodyJSONString, je );
 
-        // Re-throw the exception
-        throw ( je );
+        // If the body is HTML rather than JSON, try and come up with a more user-friendly
+        // error message.
+        if ( bodyJSONString.contains( "<!DOCTYPE html>" ) )
+          {
+          if ( bodyJSONString.contains( "Offline for Maintenance" ) )
+            {
+            throw ( new KiteSDKException( mApplicationContext.getString( R.string.alert_dialog_message_server_offline_maintenance ) ) );
+            }
+          else
+            {
+            throw ( new KiteSDKException( mApplicationContext.getString( R.string.alert_dialog_message_server_returned_html ) ) );
+            }
+          }
+        else
+          {
+          // Re-throw the exception
+          throw ( je );
+          }
         }
       }
     else

@@ -72,9 +72,9 @@ public abstract class Job implements Parcelable
     return ( new ImagesJob( product, orderQuantity, optionsMap, imageList, false ) );
     }
 
-  static public Job createPrintJob( Product product, int orderQuantity, HashMap<String, String> optionsMap, List<?> imageList, int offset, int length )
+  static public Job createPrintJob( Product product, int orderQuantity, HashMap<String, String> optionsMap, List<?> imageList, int offset, int length, boolean nullImagesAreBlank )
     {
-    return ( new ImagesJob( product, orderQuantity, optionsMap, imageList, offset, length, false ) );
+    return ( new ImagesJob( product, orderQuantity, optionsMap, imageList, offset, length, nullImagesAreBlank ) );
     }
 
   static public Job createPrintJob( Product product, HashMap<String, String> optionsMap, List<?> imageList )
@@ -320,43 +320,6 @@ public abstract class Job implements Parcelable
     {
     return ( mOptionsMap );
     }
-
-
-  /*****************************************************
-   *
-   * Returns the images for this job as a list of image
-   * specs.
-   *
-   *****************************************************/
-  public List<ImageSpec> getImagesAsSpecList()
-    {
-    List<ImageSpec> imageSpecList = new ArrayList<>();
-
-    List<UploadableImage> uploadableImageList = getImagesForUploading();
-
-    if ( uploadableImageList != null )
-      {
-      for ( UploadableImage uploadableImage : uploadableImageList )
-        {
-        AssetFragment assetFragment;
-
-        if ( uploadableImage != null &&
-             ( assetFragment = uploadableImage.getAssetFragment() ) != null )
-          {
-          imageSpecList.add( new ImageSpec( assetFragment ) );
-          }
-        else
-          {
-          imageSpecList.add( null );
-          }
-
-        uploadableImage.getAssetFragment();
-        }
-      }
-
-    return ( imageSpecList );
-    }
-
 
 
   @Override
