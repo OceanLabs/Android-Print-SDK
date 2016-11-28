@@ -104,7 +104,7 @@
                     android:textStyle="bold"/>
 
                 <ly.kite.widget.CustomTypefaceButton
-                    android:id="@+id/next_button"
+                    android:id="@+id/next_view"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:background="#ffe34b"

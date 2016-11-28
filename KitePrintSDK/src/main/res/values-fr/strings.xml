@@ -179,6 +179,11 @@
     <string name="payment_credit_card_button_text">Payer par carte de crédit</string>
     <string name="payment_credit_card_button_text_free">Commander gratuitement!</string>
     <string name="payment_paypal_button_text">Payer avec PayPal</string>
+
+    <string name="stripe_error_invalid_card_details">Détails de la carte non valide</string>
+    <string name="stripe_error_create_object">Impossible de créer l\'objet Stripe</string>
+    <string name="stripe_error_retrieve_token">Impossible de récupérer le jeton Stripe</string>
+
     <string name="send_email_chooser_title">Envoyer un message</string>
     <string name="feedback_email_subject">Assistance Kite App Android</string>
     <string name="feedback_email_text"><![CDATA[Veuillez nous indiquer vos nom et prénom: Veuillez fournir un code de bon de réduction utilisé dans votre transaction: Quel est votre numéro de téléphone (au cas où nous aurions besoin de vous contacter) ? Quel est le problème que vous rencontrez avec l\'application test Kite? Quel appareil Android (téléphone / tablette) utilisez-vous? Merci beaucoup. Nous ne manquerons pas de revenir vers vous dès que nous le pouvons. L\'équipe Kite]]></string>
@@ -198,6 +203,10 @@
     <string name="alert_dialog_title_order_submission_error">Erreur sur la validation de la commande</string>
     <string name="alert_dialog_title_order_timeout">Délai expiré sur la validation de la commande</string>
     <string name="alert_dialog_message_order_timeout">Votre commande ne semble pas avoir &#233;t&#233; trait&#233;e.&#160;Il se peut que les serveurs sont actuellement occup&#233;s et que le paiement prend davantage de temps.&#160;Souhaiteriez vous patienter ou abandonner et faire quelque chose d\'autre?</string>
+
+    <string name="alert_dialog_message_server_offline_maintenance">Le serveur est actuellement hors ligne pour la maintenance.</string>
+    <string name="alert_dialog_message_server_returned_html">Le serveur a renvoyé une réponse non valide (HTML). Cela se produit généralement lorsque le serveur n\'est pas disponible.</string>
+
     <string name="order_timeout_button_wait">Patienter</string>
     <string name="order_timeout_button_give_up">Abandonner</string>
     <string name="alert_dialog_title_order_cancelled">Commande annulée</string>

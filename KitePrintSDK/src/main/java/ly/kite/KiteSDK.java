@@ -63,6 +63,7 @@ import ly.kite.address.Country;
 import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.MultipleCurrencyAmounts;
 import ly.kite.catalogue.Product;
+import ly.kite.journey.ordering.OrderHistoryActivity;
 import ly.kite.ordering.OrderingDataAgent;
 import ly.kite.catalogue.CatalogueLoader;
 import ly.kite.checkout.PaymentActivity;
@@ -1554,13 +1555,12 @@ public class KiteSDK
 
   /*****************************************************
    *
-   * Launches managed checkout, and returns the result.
+   * Launches the order history screen.
    *
    *****************************************************/
-  @Deprecated
-  public void startCheckout( Activity activity, Order order, int requestCode )
+  public void startOrderHistory( Activity activity )
     {
-    startCheckoutForResult( activity, order, requestCode );
+    OrderHistoryActivity.start( activity );
     }
 
 
@@ -1585,6 +1585,17 @@ public class KiteSDK
     PaymentActivity.startForResult( activity, order, requestCode );
     }
 
+
+  /*****************************************************
+   *
+   * Launches managed checkout, and returns the result.
+   *
+   *****************************************************/
+  @Deprecated
+  public void startCheckout( Activity activity, Order order, int requestCode )
+    {
+    startCheckoutForResult( activity, order, requestCode );
+    }
 
   /*****************************************************
    *

@@ -249,6 +249,9 @@
     <string name="payment_credit_card_button_text_free">Bestil gratis!</string>
     <string name="payment_paypal_button_text">PayPal</string>
 
+    <string name="stripe_error_invalid_card_details">Ugyldige kortoplysninger</string>
+    <string name="stripe_error_create_object">Kan ikke oprette Stripe objekt</string>
+    <string name="stripe_error_retrieve_token">Kan ikke hente Stripe token</string>
 
     <string name="send_email_chooser_title">Send e-maill</string>
 
@@ -281,6 +284,9 @@
 
     <string name="alert_dialog_title_order_cancelled">Ordren er annulleret</string>
     <string name="alert_dialog_message_order_cancelled">Noget gik galt - din ordre ser ud til at være blevet annulleret under indsendelsen.</string>
+
+    <string name="alert_dialog_message_server_offline_maintenance">Serveren er i øjeblikket offline til vedligeholdelse.</string>
+    <string name="alert_dialog_message_server_returned_html">Serveren returnerede et ugyldigt (HTML) svar. Dette sker normalt, når serveren ikke er tilgængelig.</string>
 
     <string name="action_settings">Indstillinger</string>
     <string name="title_activity_checkout">Forsendelses detaljer</string>

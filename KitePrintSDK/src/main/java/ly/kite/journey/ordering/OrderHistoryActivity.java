@@ -39,6 +39,7 @@ package ly.kite.journey.ordering;
 
 ///// Import(s) /////
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -81,11 +82,11 @@ public class OrderHistoryActivity extends AKiteActivity
    * Starts this activity.
    *
    *****************************************************/
-  static public void start( Context context )
+  static public void start( Activity activity )
     {
-    Intent intent = new Intent( context, OrderHistoryActivity.class );
+    Intent intent = new Intent( activity, OrderHistoryActivity.class );
 
-    context.startActivity( intent );
+    activity.startActivity( intent );
     }
 
 

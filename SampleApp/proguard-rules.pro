@@ -32,6 +32,9 @@
          private javax.net.ssl.SSLSocketFactory delegate;
     }
 
+-keep class com.stripe.** { *; }
+-keep interface com.stripe.** { *; }
+
 -dontwarn com.squareup.picasso.**
 -dontwarn com.paypal.android.**
 -dontwarn okio.**
