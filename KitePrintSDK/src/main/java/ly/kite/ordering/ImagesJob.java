@@ -221,20 +221,33 @@ public class ImagesJob extends Job
    * implementation just adds the assets as an array.
    *
    *****************************************************/
-  protected void putAssetsJSON( List<UploadableImage> uploadableImageList, JSONObject jsonObject ) throws JSONException
+  protected void putAssetsJSON( List<UploadableImage> uploadableImageList, JSONObject jsonObject, boolean useNullForBlank ) throws JSONException
     {
     JSONArray assetsJSONArray = new JSONArray();
 
     for ( UploadableImage uploadableImage : uploadableImageList )
       {
-      assetsJSONArray.put( "" + uploadableImage.getUploadedAssetId() );
+      if      ( uploadableImage != null ) assetsJSONArray.put( String.valueOf( uploadableImage.getUploadedAssetId() ) );
+      else if ( useNullForBlank )         assetsJSONArray.put( JSONObject.NULL );
       }
 
     jsonObject.put( "assets", assetsJSONArray );
     }
 
 
-    @Override
+  /*****************************************************
+   *
+   * Adds the assets to the supplied JSON object. The default
+   * implementation just adds the assets as an array.
+   *
+   *****************************************************/
+  protected void putAssetsJSON( List<UploadableImage> uploadableImageList, JSONObject jsonObject ) throws JSONException
+    {
+    putAssetsJSON( uploadableImageList, jsonObject, false );
+    }
+
+
+  @Override
     public int describeContents() {
         return 0;
     }

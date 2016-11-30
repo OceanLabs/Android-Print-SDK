@@ -230,7 +230,7 @@ public class PhotobookJob extends ImagesJob
     if ( uploadableImage != null )
       {
       pageJSONObject.put( "layout", "single_centered" );
-      pageJSONObject.put( "asset", "" + uploadableImage.getUploadedAssetId() );
+      pageJSONObject.put( "asset", String.valueOf( uploadableImage.getUploadedAssetId() ) );
       }
     else
       {
