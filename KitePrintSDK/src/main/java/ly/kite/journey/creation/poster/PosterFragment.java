@@ -96,7 +96,6 @@ public class PosterFragment extends AProductCreationFragment implements PosterAd
   private PosterAdaptor         mPosterAdaptor;
 
   private int                   mAddImageIndex;
-  private PopupMenu             mAddImagePopupMenu;
 
   private int                   mDraggedImageIndex;
 
@@ -198,13 +197,7 @@ public class PosterFragment extends AProductCreationFragment implements PosterAd
   protected int getMaxAddImageCount()
     {
     // Limit the number of images selectable, if the image source supports it.
-
-    int maxImages = 1 + mProduct.getQuantityPerSheet() - mImageSpecArrayList.size();
-
-    if ( maxImages < 0 ) maxImages = 0;
-
-
-    return ( maxImages );
+    return ( getRemainingImageCapacity( mAddImageIndex ) );
     }
 
 
@@ -363,7 +356,7 @@ public class PosterFragment extends AProductCreationFragment implements PosterAd
 
       mAddImageIndex = imageIndex;
 
-      mAddImagePopupMenu = displayAddImagePopupMenu( view );
+      displayAddImagePopupMenu( view );
       }
     }
 

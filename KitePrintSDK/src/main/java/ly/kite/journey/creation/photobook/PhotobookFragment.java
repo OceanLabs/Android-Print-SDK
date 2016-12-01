@@ -207,13 +207,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
   protected int getMaxAddImageCount()
     {
     // Limit the number of images selectable, if the image source supports it.
-
-    int maxImages = mFrontCoverPlaceableImageCount + mProduct.getQuantityPerSheet() - mImageSpecArrayList.size();
-
-    if ( maxImages < 0 ) maxImages = 0;
-
-
-    return ( maxImages );
+    return ( getRemainingImageCapacity( mAddImageIndex ) );
     }
 
 
