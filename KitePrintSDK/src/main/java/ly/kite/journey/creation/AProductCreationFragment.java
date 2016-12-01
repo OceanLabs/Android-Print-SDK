@@ -242,7 +242,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
   /*****************************************************
    *
-   * Called when an options item is selected.
+   * Called when an options item (action) is selected.
    *
    *****************************************************/
   @Override
@@ -267,32 +267,6 @@ abstract public class AProductCreationFragment extends    AKiteFragment
     return ( super.onOptionsItemSelected( item ) );
     }
 
-
-
-  /*****************************************************
-   *
-   * Called when an item in the options menu is selected.
-   *
-   *****************************************************/
-  final protected boolean onCheckAddImageOptionItem( MenuItem item, int maxImageCount )
-    {
-    int itemId = item.getItemId();
-
-
-    // If one of the image source menu items was selected - launch the appropriate picker
-
-    AImageSource imageSource = KiteSDK.getInstance( mKiteActivity ).getImageSourceByMenuItemId( itemId );
-
-    if ( imageSource != null )
-      {
-      imageSource.onPick( this, maxImageCount );
-
-      return ( true );
-      }
-
-
-    return ( false );
-    }
 
 
   /*****************************************************
@@ -748,6 +722,74 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
   /*****************************************************
    *
+   * Called when an item in the options menu is selected.
+   *
+   *****************************************************/
+  final protected boolean onCheckAddImageOptionItem( MenuItem item, int maxImageCount )
+    {
+    int itemId = item.getItemId();
+
+
+    // If one of the image source menu items was selected - launch the appropriate picker
+
+    AImageSource imageSource = KiteSDK.getInstance( mKiteActivity ).getImageSourceByMenuItemId( itemId );
+
+    if ( imageSource != null )
+      {
+      imageSource.onPick( this, maxImageCount );
+
+      return ( true );
+      }
+
+
+    return ( false );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the maximum number of images required when
+   * adding images. The default implementation allows
+   * unlimited images to be picked.
+   *
+   *****************************************************/
+  protected int getMaxAddImageCount()
+    {
+    return ( AImageSource.UNLIMITED_IMAGES );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the maximum number of images required when
+   * adding images. This implementation may be used by
+   * fragments that pad out the image spec list to a
+   * fixed size, with nulls where there are blank images.
+   *
+   *****************************************************/
+  protected int getRemainingImageCapacity( int index )
+    {
+    if ( index < 0 ) index = 0;
+
+
+    // Go through every image from the supplied start index to
+    // the end of the image list, and count the number of empty
+    // spaces.
+
+    int remainingCapacity = 0;
+
+    for ( ; index < mImageSpecArrayList.size(); index ++ )
+      {
+      if ( mImageSpecArrayList.get( index ) == null ) remainingCapacity ++;
+      }
+
+
+    return ( remainingCapacity );
+    }
+
+
+  /*****************************************************
+   *
    * Called when an item in the options menu is selected,
    * which has not already been handled.
    *
@@ -766,18 +808,6 @@ abstract public class AProductCreationFragment extends    AKiteFragment
    *****************************************************/
   protected void onAssetAdded( ImageSpec imageSpec )
     {
-    }
-
-
-  /*****************************************************
-   *
-   * Returns the maximum number of images required when
-   * adding images.
-   *
-   *****************************************************/
-  protected int getMaxAddImageCount()
-    {
-    return ( AImageSource.UNLIMITED_IMAGES );
     }
 
 
