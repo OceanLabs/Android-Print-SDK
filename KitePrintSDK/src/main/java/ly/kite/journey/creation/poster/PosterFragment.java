@@ -298,7 +298,7 @@ public class PosterFragment extends AProductCreationFragment implements PosterAd
         }
       else if ( mKiteActivity instanceof ICallback )
         {
-        int expectedImageCount = 1 + mProduct.getQuantityPerSheet();
+        int expectedImageCount = mProduct.getQuantityPerSheet();
 
 
         // Pages can be blank, so to calculate the actual number of images we need to go through
