@@ -224,9 +224,7 @@ public class StripeCreditCardAgent extends ACreditCardDialogFragment implements 
 
     final IndeterminateProgressDialogFragment indeterminateProgressDialogFragment = IndeterminateProgressDialogFragment.newInstance( getActivity(), R.string.Processing_ );
 
-    indeterminateProgressDialogFragment.show( getActivity().getFragmentManager(), IndeterminateProgressDialogFragment.TAG );
-
-    indeterminateProgressDialogFragment.setCancelable( false );
+    indeterminateProgressDialogFragment.show( getActivity() );
 
 
     // TODO: Get rid of this yucky anonymous inner class

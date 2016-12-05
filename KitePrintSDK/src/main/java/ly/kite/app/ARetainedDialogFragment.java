@@ -58,7 +58,7 @@ import ly.kite.KiteSDK;
  * and providing callbacks.
  *
  *****************************************************/
-abstract public class ARetainedDialogFragment<C> extends DialogFragment
+abstract public class ARetainedDialogFragment extends DialogFragment
   {
   ////////// Static Constant(s) //////////
 
@@ -70,7 +70,7 @@ abstract public class ARetainedDialogFragment<C> extends DialogFragment
 
   ////////// Member Variable(s) //////////
 
-  protected RetainedFragmentHelper<C>  mRetainedFragmentHelper;
+  protected RetainedFragmentHelper  mRetainedFragmentHelper;
 
 
   ////////// Static Initialiser(s) //////////
@@ -108,9 +108,9 @@ abstract public class ARetainedDialogFragment<C> extends DialogFragment
 
   ////////// Constructor(s) //////////
 
-  public ARetainedDialogFragment()
+  public ARetainedDialogFragment( Class<?> callbackClass )
     {
-    mRetainedFragmentHelper = new RetainedFragmentHelper<>( this );
+    mRetainedFragmentHelper = new RetainedFragmentHelper( this, callbackClass );
     }
 
 
@@ -154,7 +154,7 @@ abstract public class ARetainedDialogFragment<C> extends DialogFragment
     {
     super.setTargetFragment( fragment, requestCode );
 
-    mRetainedFragmentHelper.setTargetFragment( fragment, requestCode );
+    mRetainedFragmentHelper.onSetTargetFragment( fragment, requestCode );
     }
 
 
@@ -212,7 +212,7 @@ abstract public class ARetainedDialogFragment<C> extends DialogFragment
    *****************************************************/
   protected abstract class AStateNotifier
     {
-    abstract public void notify( C callback );
+    abstract public void notify( Object callbackObject );
     }
 
   }

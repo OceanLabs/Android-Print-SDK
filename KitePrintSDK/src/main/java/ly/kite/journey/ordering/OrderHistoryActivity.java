@@ -45,6 +45,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import ly.kite.R;
+import ly.kite.checkout.OrderSubmissionFragment;
 import ly.kite.journey.AKiteActivity;
 
 
@@ -58,7 +59,7 @@ import ly.kite.journey.AKiteActivity;
  * orders in a fragment or activity.
  *
  *****************************************************/
-public class OrderHistoryActivity extends AKiteActivity
+public class OrderHistoryActivity extends AKiteActivity implements OrderHistoryFragment.ICancelListener
   {
   ////////// Static Constant(s) //////////
 
@@ -107,10 +108,30 @@ public class OrderHistoryActivity extends AKiteActivity
 
     setContentView( R.layout.screen_general_fragment_container );
 
-    getFragmentManager()
-      .beginTransaction()
-        .add( R.id.fragment_container, new OrderHistoryFragment() )
-      .commit();
+    if ( savedInstanceState == null )
+      {
+      getFragmentManager()
+        .beginTransaction()
+          .add( R.id.fragment_container, new OrderHistoryFragment() )
+          .addToBackStack( OrderHistoryFragment.TAG )
+        .commit();
+      }
+    }
+
+
+  ////////// AKiteActivity Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called if the catalogue load is cancelled.
+   *
+   *****************************************************/
+  @Override
+  public void onLoadCancelled()
+    {
+    popFragment();
+
+    finish();
     }
 
 

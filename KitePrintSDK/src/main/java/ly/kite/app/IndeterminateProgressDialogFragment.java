@@ -39,9 +39,13 @@ package ly.kite.app;
 
 ///// Import(s) /////
 
+import android.app.Activity;
 import android.app.DialogFragment;
+import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,7 +76,7 @@ public class IndeterminateProgressDialogFragment extends DialogFragment
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static public  final String  TAG                = "IndeterminateProgressDialogFragment";
+  static public  final String  TAG                = "IndeterminateProgres...";
 
   static private final String  BUNDLE_KEY_MESSAGE = "message";
 
@@ -82,7 +86,8 @@ public class IndeterminateProgressDialogFragment extends DialogFragment
 
   ////////// Member Variable(s) //////////
 
-  private String  mMessage;
+  private String           mMessage;
+  private ICancelListener  mCancelListener;
 
 
   ////////// Static Initialiser(s) //////////
@@ -119,6 +124,18 @@ public class IndeterminateProgressDialogFragment extends DialogFragment
   static public IndeterminateProgressDialogFragment newInstance( Context context, int messageResourceId )
     {
     return ( newInstance( context.getString( messageResourceId ) ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Creates an instance of this fragment, with a message
+   * passed in the arguments.
+   *
+   *****************************************************/
+  static public IndeterminateProgressDialogFragment newInstance( Fragment fragment, int messageResourceId )
+    {
+    return ( newInstance( fragment.getString( messageResourceId ) ) );
     }
 
 
@@ -172,21 +189,95 @@ public class IndeterminateProgressDialogFragment extends DialogFragment
     }
 
 
+  /*****************************************************
+   *
+   * Called if the dialog is cancelled.
+   *
+   *****************************************************/
+  @Override
+  public void onCancel( DialogInterface dialogInterface )
+    {
+    if ( mCancelListener != null ) mCancelListener.onDialogCancelled( this );
+    }
+
+
   ////////// Method(s) //////////
 
   /*****************************************************
    *
-   * ...
+   * Displays this progress dialog.
    *
    *****************************************************/
+  public void show( Activity activity, ICancelListener cancelListener )
+    {
+    if ( cancelListener != null )
+      {
+      mCancelListener = cancelListener;
+
+      setCancelable( true );
+      }
+    else
+      {
+      setCancelable( false );
+      }
+
+    show( activity.getFragmentManager(), TAG );
+    }
+
+
+  /*****************************************************
+   *
+   * Displays this progress dialog.
+   *
+   *****************************************************/
+  public void show( Activity activity )
+    {
+    show( activity, null );
+    }
+
+
+  /*****************************************************
+   *
+   * Displays this progress dialog.
+   *
+   *****************************************************/
+  public void show( Fragment fragment, ICancelListener cancelListener )
+    {
+    Activity activity = fragment.getActivity();
+
+    if ( activity != null )
+      {
+      show( activity, cancelListener );
+      }
+    else
+      {
+      Log.e( TAG, "Unable to show dialog - no activity found" );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Displays this progress dialog.
+   *
+   *****************************************************/
+  public void show( Fragment fragment )
+    {
+    show( fragment, null );
+    }
+
 
   ////////// Inner Class(es) //////////
 
   /*****************************************************
    *
-   * ...
+   * A cancel listener.
    *
    *****************************************************/
+  public interface ICancelListener
+    {
+    public void onDialogCancelled( IndeterminateProgressDialogFragment dialogFragment );
+    }
 
   }
 

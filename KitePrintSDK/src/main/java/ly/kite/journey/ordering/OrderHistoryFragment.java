@@ -39,6 +39,7 @@ package ly.kite.journey.ordering;
 
 ///// Import(s) /////
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -57,11 +58,15 @@ import org.json.JSONObject;
 import java.util.List;
 
 import ly.kite.R;
+import ly.kite.app.IndeterminateProgressDialogFragment;
 import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.CatalogueLoader;
+import ly.kite.catalogue.CatalogueLoaderFragment;
 import ly.kite.catalogue.ICatalogueConsumer;
 import ly.kite.checkout.OrderReceiptActivity;
+import ly.kite.journey.AKiteActivity;
 import ly.kite.journey.AKiteFragment;
+import ly.kite.journey.selection.ProductSelectionActivity;
 import ly.kite.ordering.Order;
 import ly.kite.ordering.OrderHistoryItem;
 import ly.kite.ordering.OrderingDataAgent;
@@ -75,7 +80,9 @@ import ly.kite.pricing.OrderPricing;
  * This fragment shows the order history screen.
  *
  *****************************************************/
-public class OrderHistoryFragment extends AKiteFragment implements AdapterView.OnItemClickListener, ICatalogueConsumer
+public class OrderHistoryFragment extends AKiteFragment implements AdapterView.OnItemClickListener,
+                                                                   IndeterminateProgressDialogFragment.ICancelListener,
+                                                                   ICatalogueConsumer
   {
   ////////// Static Constant(s) //////////
 
@@ -88,12 +95,13 @@ public class OrderHistoryFragment extends AKiteFragment implements AdapterView.O
 
   ////////// Member Variable(s) //////////
 
-  private Catalogue               mCatalogue;
+  private CatalogueLoaderFragment              mCatalogueLoaderFragment;
+  private Catalogue                            mCatalogue;
 
-  private ListView                mListView;
+  private ListView                             mListView;
 
-  private List<OrderHistoryItem>  mOrderHistoryItemList;
-  private OrderHistoryAdaptor     mOrderHistoryAdaptor;
+  private List<OrderHistoryItem>               mOrderHistoryItemList;
+  private OrderHistoryAdaptor                  mOrderHistoryAdaptor;
 
 
   ////////// Static Initialiser(s) //////////
@@ -121,6 +129,25 @@ public class OrderHistoryFragment extends AKiteFragment implements AdapterView.O
 
   /*****************************************************
    *
+   * Called when the fragment is created.
+   *
+   *****************************************************/
+  @Override
+  public void onCreate( Bundle savedInstanceState )
+    {
+    super.onCreate( savedInstanceState );
+
+    mCatalogueLoaderFragment = CatalogueLoaderFragment.findFragment( getActivity() );
+
+    if ( mCatalogueLoaderFragment != null )
+      {
+      displayProgressDialog();
+      }
+    }
+
+
+  /*****************************************************
+   *
    * Called when the activity is resumed.
    *
    *****************************************************/
@@ -129,10 +156,11 @@ public class OrderHistoryFragment extends AKiteFragment implements AdapterView.O
     {
     super.onResume();
 
+
     // Request the catalogue. We do this when the activity resumes, because
     // we may have looked at a failed order which gets re-tried and then
     // succeeds. If this happens, we need to refresh our order history list.
-    CatalogueLoader.getInstance( getActivity() ).requestCatalogue( this );
+    requestCatalogue();
     }
 
 
@@ -160,12 +188,41 @@ public class OrderHistoryFragment extends AKiteFragment implements AdapterView.O
     }
 
 
+  ////////// IndeterminateProgressDialogFragment.ICancelListener Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when the progress dialog is cancelled.
+   *
+   *****************************************************/
+  @Override
+  public void onDialogCancelled( IndeterminateProgressDialogFragment dialogFragment )
+    {
+    // Cancel any catalogue load
+    if ( mCatalogueLoaderFragment != null )
+      {
+      mCatalogueLoaderFragment.cancelRequests();
+
+      removeCatalogueLoaderFragment();
+      }
+
+    hideProgressDialog();
+
+    // Notify the activity that the load was cancelled
+    onLoadCancelled();
+    }
+
+
   ////////// ICatalogueConsumer Method(s) //////////
 
   @Override
   public void onCatalogueSuccess( Catalogue catalogue )
     {
     mCatalogue = catalogue;
+
+    hideProgressDialog();
+
+    removeCatalogueLoaderFragment();
 
     checkDisplayOrders();
     }
@@ -174,7 +231,20 @@ public class OrderHistoryFragment extends AKiteFragment implements AdapterView.O
   @Override
   public void onCatalogueError( Exception exception )
     {
-    // TODO
+    hideProgressDialog();
+
+    removeCatalogueLoaderFragment();
+
+    // Display an error dialog
+    ( (AKiteActivity)getActivity() ).displayModalDialog
+            (
+                    R.string.alert_dialog_title_error_retrieving_products,
+                    R.string.alert_dialog_message_error_retrieving_products,
+                    R.string.Retry,
+                    new RequestCatalogueRunnable(),
+                    R.string.Cancel,
+                    new FinishRunnable()
+            );
     }
 
 
@@ -226,6 +296,49 @@ public class OrderHistoryFragment extends AKiteFragment implements AdapterView.O
 
   /*****************************************************
    *
+   * Requests the catalogue.
+   *
+   *****************************************************/
+  void requestCatalogue()
+    {
+    displayProgressDialog();
+
+    if ( mCatalogueLoaderFragment == null )
+      {
+      mCatalogueLoaderFragment = CatalogueLoaderFragment.start( this );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Removes the catalogue loader fragment.
+   *
+   *****************************************************/
+  private void removeCatalogueLoaderFragment()
+    {
+    if ( mCatalogueLoaderFragment != null )
+      {
+      mCatalogueLoaderFragment.removeFrom( this );
+
+      mCatalogueLoaderFragment = null;
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Ensures that the display progress dialog is showing.
+   *
+   *****************************************************/
+  private void displayProgressDialog()
+    {
+    displayProgressDialog( R.string.Loading_catalogue, this );
+    }
+
+
+  /*****************************************************
+   *
    * Checks whether we have all the information we need
    * to display orders.
    *
@@ -245,7 +358,34 @@ public class OrderHistoryFragment extends AKiteFragment implements AdapterView.O
     }
 
 
+  /*****************************************************
+   *
+   * Called to finish this activity.
+   *
+   *****************************************************/
+  void onLoadCancelled()
+    {
+    Activity activity = getActivity();
+
+    if ( activity != null && activity instanceof ICancelListener )
+      {
+      ( (ICancelListener)activity ).onLoadCancelled();
+      }
+    }
+
+
   ////////// Inner Class(es) //////////
+
+  /*****************************************************
+   *
+   * A listener for cancel events.
+   *
+   *****************************************************/
+  public interface ICancelListener
+    {
+    public void onLoadCancelled();
+    }
+
 
   /*****************************************************
    *
@@ -324,6 +464,36 @@ public class OrderHistoryFragment extends AKiteFragment implements AdapterView.O
         this.dateTextView.setText( orderHistoryItem.getDateString() );
         this.descriptionTextView.setText( orderHistoryItem.getDescription() );
         }
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * A request catalogue runnable.
+   *
+   *****************************************************/
+  private class RequestCatalogueRunnable implements Runnable
+    {
+    @Override
+    public void run()
+      {
+      requestCatalogue();
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * A finish runnable.
+   *
+   *****************************************************/
+  private class FinishRunnable implements Runnable
+    {
+    @Override
+    public void run()
+      {
+      onLoadCancelled();
       }
     }
 

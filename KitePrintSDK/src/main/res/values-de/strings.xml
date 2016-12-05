@@ -141,6 +141,7 @@
     <string name="ITEM">Gegenstand/Artikel</string>
     <string name="Keep">behalten</string>
     <string name="Loading">Laden</string>
+    <string name="Loading_catalogue">Katalog wird geladen</string>
     <string name="Log_Out">abmelden</string>
     <string name="Next">nächster</string>
     <string name="No_Results">keine Ergebnisse</string>

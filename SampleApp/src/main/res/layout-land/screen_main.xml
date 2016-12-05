@@ -1,0 +1,120 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical">
+
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.2">
+
+        <LinearLayout
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="fill_parent"
+                android:gravity="right|center_vertical"
+                android:padding="5dp"
+                android:text="@string/Sandbox"
+                android:textSize="@dimen/control_label_text_size"/>
+
+            <Switch
+                android:id="@+id/environment_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:padding="10dp"/>
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="fill_parent"
+                android:gravity="left|center_vertical"
+                android:padding="5dp"
+                android:text="@string/Live"
+                android:textSize="@dimen/control_label_text_size"/>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.6"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            style="@style/double_column_inset_layout.container.left">
+
+            <LinearLayout
+                style="@style/double_column_inset_layout.content.left"
+                android:layout_gravity="top"
+                android:orientation="vertical">
+                <Button
+                    android:id="@+id/print_local_button"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/main_print_local_button_text"
+                    android:textSize="@dimen/control_label_text_size"
+                    android:onClick="onPrintLocalButtonClicked"/>
+                <Button
+                    android:id="@+id/print_remote_button"
+                    android:layout_marginTop="@dimen/main_button_spacing"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/main_print_remote_button_text"
+                    android:textSize="@dimen/control_label_text_size"
+                    android:onClick="onPrintRemoteButtonClicked"/>
+            </LinearLayout>
+
+        </FrameLayout>
+
+        <FrameLayout
+            style="@style/double_column_inset_layout.container.right">
+
+            <LinearLayout
+                style="@style/double_column_inset_layout.content.right"
+                android:layout_gravity="top"
+                android:orientation="vertical">
+                <Button
+                    android:id="@+id/print_postcard_button"
+                    android:layout_marginTop="@dimen/main_button_spacing"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/main_print_postcard_button_text"
+                    android:textSize="@dimen/control_label_text_size"
+                    android:onClick="onPrintPostcardButtonClicked"/>
+                <Button
+                    android:id="@+id/order_history_button"
+                    android:layout_marginTop="@dimen/main_button_spacing"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/main_order_history_button_text"
+                    android:textSize="@dimen/control_label_text_size"
+                    android:onClick="onOrderHistoryButtonClicked"/>
+            </LinearLayout>
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.2"
+        android:gravity="bottom|center_horizontal"
+        android:paddingBottom="10dp"
+        android:text="https://www.kite.ly"/>
+
+</LinearLayout>

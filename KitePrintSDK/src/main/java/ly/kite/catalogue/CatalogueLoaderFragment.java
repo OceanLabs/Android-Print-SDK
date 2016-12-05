@@ -40,25 +40,12 @@ package ly.kite.catalogue;
 ///// Import(s) /////
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
+import android.app.Fragment;
 import android.content.Context;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 
 import ly.kite.KiteSDK;
-import ly.kite.R;
 import ly.kite.app.ARetainedFragment;
-import ly.kite.app.RetainedFragmentHelper;
-import ly.kite.journey.AKiteActivity;
-import ly.kite.journey.selection.ChooseProductFragment;
-import ly.kite.journey.selection.ChooseProductGroupFragment;
-import ly.kite.ordering.Order;
 
 
 ///// Class Declaration /////
@@ -69,7 +56,7 @@ import ly.kite.ordering.Order;
  * catalogue.
  *
  *****************************************************/
-public class CatalogueLoaderFragment extends ARetainedFragment<ICatalogueConsumer> implements ICatalogueConsumer
+public class CatalogueLoaderFragment extends ARetainedFragment implements ICatalogueConsumer
   {
   ////////// Static Constant(s) //////////
 
@@ -92,19 +79,47 @@ public class CatalogueLoaderFragment extends ARetainedFragment<ICatalogueConsume
 
   /*****************************************************
    *
-   * Attaches this fragment to the activity, and then
+   * Attaches the fragment to the activity, and then
    * submits the order.
    *
    *****************************************************/
-  static public CatalogueLoaderFragment start( Activity activity, String[] filterProductIds )
+  static private CatalogueLoaderFragment start( Activity activity, CatalogueLoaderFragment catalogueLoaderFragment, String... filterProductIds )
     {
-    CatalogueLoaderFragment catalogueLoaderFragment = new CatalogueLoaderFragment();
-
     catalogueLoaderFragment.addTo( activity, TAG );
 
     catalogueLoaderFragment.loadCatalogue( activity, filterProductIds );
 
     return ( catalogueLoaderFragment );
+    }
+
+
+  /*****************************************************
+   *
+   * Attaches this fragment to the activity, and then
+   * submits the order.
+   *
+   *****************************************************/
+  static public CatalogueLoaderFragment start( Activity activity, String... filterProductIds )
+    {
+    CatalogueLoaderFragment catalogueLoaderFragment = new CatalogueLoaderFragment();
+
+    return ( start( activity, catalogueLoaderFragment, filterProductIds ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Attaches this fragment to the activity, and then
+   * submits the order.
+   *
+   *****************************************************/
+  static public <T extends Fragment & ICatalogueConsumer> CatalogueLoaderFragment start( T catalogueConsumerFragment, String... filterProductIds )
+    {
+    CatalogueLoaderFragment catalogueLoaderFragment = new CatalogueLoaderFragment();
+
+    catalogueLoaderFragment.setTargetFragment( catalogueConsumerFragment, 0 );
+
+    return ( start( catalogueConsumerFragment.getActivity(), catalogueLoaderFragment, filterProductIds ) );
     }
 
 
@@ -121,6 +136,11 @@ public class CatalogueLoaderFragment extends ARetainedFragment<ICatalogueConsume
 
   ////////// Constructor(s) //////////
 
+  public CatalogueLoaderFragment()
+    {
+    super( ICatalogueConsumer.class );
+    }
+
 
   ////////// ARetainedFragment Method(s) //////////
 
@@ -135,14 +155,14 @@ public class CatalogueLoaderFragment extends ARetainedFragment<ICatalogueConsume
   @Override
   public void onCatalogueSuccess( final Catalogue catalogue )
     {
-    setState( mRetainedFragmentHelper.new AStateNotifier()
+    setStateNotifier( mRetainedFragmentHelper.new AStateNotifier()
       {
       @Override
-      public void notify( ICatalogueConsumer catalogueConsumer )
+      public void notify( Object catalogueConsumerObject )
         {
-        if ( KiteSDK.DEBUG_RETAINED_FRAGMENT ) Log.d( TAG, "notify( catalogueConsumer = " + catalogueConsumer + " ) - success" );
+        if ( KiteSDK.DEBUG_RETAINED_FRAGMENT ) Log.d( TAG, "notify( catalogueConsumerObject = " + catalogueConsumerObject + " ) - success" );
 
-        catalogueConsumer.onCatalogueSuccess( catalogue );
+        ( (ICatalogueConsumer)catalogueConsumerObject ).onCatalogueSuccess( catalogue );
         }
       } );
     }
@@ -156,14 +176,14 @@ public class CatalogueLoaderFragment extends ARetainedFragment<ICatalogueConsume
   @Override
   public void onCatalogueError( final Exception exception )
     {
-    setState( mRetainedFragmentHelper.new AStateNotifier()
+    setStateNotifier( mRetainedFragmentHelper.new AStateNotifier()
       {
       @Override
-      public void notify( ICatalogueConsumer catalogueConsumer )
+      public void notify( Object catalogueConsumerObject )
         {
-        if ( KiteSDK.DEBUG_RETAINED_FRAGMENT ) Log.d( TAG, "notify( catalogueConsumer = " + catalogueConsumer + " ) - error" );
+        if ( KiteSDK.DEBUG_RETAINED_FRAGMENT ) Log.d( TAG, "notify( catalogueConsumerObject = " + catalogueConsumerObject + " ) - success" );
 
-        catalogueConsumer.onCatalogueError( exception );
+        ( (ICatalogueConsumer)catalogueConsumerObject ).onCatalogueError( exception );
         }
       } );
     }
@@ -196,6 +216,8 @@ public class CatalogueLoaderFragment extends ARetainedFragment<ICatalogueConsume
     {
     if ( mCatalogueLoader != null ) mCatalogueLoader.cancelRequests();
     }
+
+
 
 
   ////////// Inner Class(es) //////////

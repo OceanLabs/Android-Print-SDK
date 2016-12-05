@@ -98,6 +98,7 @@
     <string name="Free">Gratuit</string>
     <string name="add_more">Ajouter plus</string>
     <string name="Loading">Chargement</string>
+    <string name="Loading_catalogue">Chargement du catalogue</string>
     <string name="Log_Out">Se déconnecter</string>
     <string name="No_Results">Aucun résultat</string>
     <string name="Next_Customer">Prochain client</string>

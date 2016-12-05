@@ -61,7 +61,6 @@ import ly.kite.KiteSDKException;
 import ly.kite.KiteSDK;
 import ly.kite.journey.creation.ProductCreationActivity;
 import ly.kite.journey.UserJourneyType;
-import ly.kite.util.Asset;
 import ly.kite.util.AssetHelper;
 import ly.kite.util.HTTPJSONRequest;
 import ly.kite.api.KiteAPIRequest;
@@ -156,7 +155,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
 
   ////////// Static Variable(s) //////////
 
-  static private CatalogueLoader sProductCache;
+  static private CatalogueLoader sCatalogueLoaderInstance;
 
 
   ////////// Member Variable(s) //////////
@@ -217,12 +216,12 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
    ****************************************************/
   public static CatalogueLoader getInstance( Context context )
     {
-    if ( sProductCache == null )
+    if ( sCatalogueLoaderInstance == null )
       {
-      sProductCache = new CatalogueLoader( context );
+      sCatalogueLoaderInstance = new CatalogueLoader( context );
       }
 
-    return ( sProductCache );
+    return ( sCatalogueLoaderInstance );
     }
 
 
@@ -779,8 +778,12 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
    *                         is < 0, there is no maximum age.
    * @param consumer         The sync listener for the result.
    *
+   * @return true, if the catalogue is immediately available.
+   * @return false, if a catalogue retrieval must be completed
+   *         before it can be returned.
+   *
    ****************************************************/
-  public void requestCatalogue( long maximumAgeMillis, ICatalogueConsumer consumer )
+  public boolean requestCatalogue( long maximumAgeMillis, ICatalogueConsumer consumer )
     {
     if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "requestCatalogue( maximumAgeMillis = " + maximumAgeMillis + ", consumer = " + consumer + " )" );
 
@@ -791,7 +794,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
       {
       mConsumerList.addLast( consumer );
 
-      return;
+      return ( false );
       }
 
 
@@ -816,7 +819,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
         {
         postCatalogueToConsumer( mLastRetrievedCatalogue, consumer );
 
-        return;
+        return ( true );
         }
       }
 
@@ -832,6 +835,8 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
 
     // Kick off the retrieval
     mHTTPJSONRequest.start( this );
+
+    return ( false );
     }
 
 
@@ -863,12 +868,16 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
    *
    * @param consumer        The sync listener for the result.
    *
+   * @return true, if the catalogue is immediately available.
+   * @return false, if a catalogue retrieval must be completed
+   *         before it can be returned.
+   *
    ****************************************************/
-  public void requestCatalogue( ICatalogueConsumer consumer )
+  public boolean requestCatalogue( ICatalogueConsumer consumer )
     {
     if ( DISPLAY_DEBUGGING ) Log.d( LOG_TAG, "requestCatalogue( consumer = " + consumer + " )" );
 
-    requestCatalogue( ANY_AGE_OK, consumer );
+    return ( requestCatalogue( ANY_AGE_OK, consumer ) );
     }
 
 
