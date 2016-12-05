@@ -59,6 +59,7 @@ import android.widget.AdapterView;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
+import ly.kite.app.IndeterminateProgressDialogFragment;
 import ly.kite.catalogue.Catalogue;
 import ly.kite.ordering.OrderingDataAgent;
 import ly.kite.journey.basket.BasketActivity;
@@ -88,12 +89,14 @@ abstract public class AKiteFragment extends Fragment
 
   ////////// Member Variable(s) //////////
 
-  protected AKiteActivity   mKiteActivity;
+  protected AKiteActivity                        mKiteActivity;
 
-  private   MenuItem        mBasketMenuItem;
+  private   IndeterminateProgressDialogFragment  mProgressDialogFragment;
 
-  private   AdapterView<?>  mManagedAdaptorView;
-  private   int             mManagedAdaptorViewPosition;
+  private   MenuItem                             mBasketMenuItem;
+
+  private   AdapterView<?>                       mManagedAdaptorView;
+  private   int                                  mManagedAdaptorViewPosition;
 
 
   ////////// Static Initialiser(s) //////////
@@ -417,6 +420,60 @@ abstract public class AKiteFragment extends Fragment
 
       setThemeColour( themeColour, view );
       }
+    }
+
+
+  /*****************************************************
+   *
+   * Ensures that a progress dialog is showing.
+   *
+   *****************************************************/
+  protected void displayProgressDialog( int messageResourceId )
+    {
+    displayProgressDialog( messageResourceId, null );
+    }
+
+
+  /*****************************************************
+   *
+   * Ensures that a progress dialog is showing.
+   *
+   *****************************************************/
+  protected void displayProgressDialog( int messageResourceId, IndeterminateProgressDialogFragment.ICancelListener cancelListener )
+    {
+    if ( mProgressDialogFragment == null )
+      {
+      mProgressDialogFragment = IndeterminateProgressDialogFragment.newInstance( this, R.string.Loading_catalogue );
+
+      mProgressDialogFragment.show( this, cancelListener );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Ensures that any display progress dialog is hidden.
+   *
+   *****************************************************/
+  protected void hideProgressDialog()
+    {
+    if ( mProgressDialogFragment != null )
+      {
+      mProgressDialogFragment.dismissAllowingStateLoss();
+
+      mProgressDialogFragment = null;
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Removes this fragment.
+   *
+   *****************************************************/
+  protected void finish()
+    {
+    if ( mKiteActivity != null ) mKiteActivity.onBackPressed();
     }
 
 

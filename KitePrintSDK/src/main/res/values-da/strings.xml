@@ -133,6 +133,7 @@
     <string name="ITEM">VARE</string>
     <string name="Keep">Behold</string>
     <string name="Loading">Loading</string>
+    <string name="Loading_catalogue">Loading katalog</string>
     <string name="Log_Out">Log ud</string>
     <string name="Next">Næste</string>
     <string name="No_Results">Ingen resultater</string>

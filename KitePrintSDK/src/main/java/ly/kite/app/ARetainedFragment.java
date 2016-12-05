@@ -58,7 +58,7 @@ import ly.kite.KiteSDK;
  * and providing callbacks.
  *
  *****************************************************/
-abstract public class ARetainedFragment<C> extends Fragment
+abstract public class ARetainedFragment extends Fragment
   {
   ////////// Static Constant(s) //////////
 
@@ -70,7 +70,7 @@ abstract public class ARetainedFragment<C> extends Fragment
 
   ////////// Member Variable(s) //////////
 
-  protected RetainedFragmentHelper<C>  mRetainedFragmentHelper;
+  protected RetainedFragmentHelper  mRetainedFragmentHelper;
 
 
   ////////// Static Initialiser(s) //////////
@@ -108,9 +108,9 @@ abstract public class ARetainedFragment<C> extends Fragment
 
   ////////// Constructor(s) //////////
 
-  public ARetainedFragment()
+  public ARetainedFragment( Class<?> callbackClass )
     {
-    mRetainedFragmentHelper = new RetainedFragmentHelper<>( this );
+    mRetainedFragmentHelper = new RetainedFragmentHelper( this, callbackClass );
     }
 
 
@@ -165,7 +165,7 @@ abstract public class ARetainedFragment<C> extends Fragment
     {
     super.setTargetFragment( fragment, requestCode );
 
-    mRetainedFragmentHelper.setTargetFragment( fragment, requestCode );
+    mRetainedFragmentHelper.onSetTargetFragment( fragment, requestCode );
     }
 
 
@@ -178,7 +178,7 @@ abstract public class ARetainedFragment<C> extends Fragment
    * and a target fragment of the correct callback type.
    *
    *****************************************************/
-  protected void setState( RetainedFragmentHelper.AStateNotifier stateNotifier )
+  protected void setStateNotifier( RetainedFragmentHelper.AStateNotifier stateNotifier )
     {
     mRetainedFragmentHelper.setState( stateNotifier );
     }
@@ -192,6 +192,22 @@ abstract public class ARetainedFragment<C> extends Fragment
   public void removeFrom( Activity activity )
     {
     mRetainedFragmentHelper.removeFrom( activity );
+    }
+
+
+  /*****************************************************
+   *
+   * Removes this fragment from the activity and clears
+   * its target fragment.
+   *
+   *****************************************************/
+  public void removeFrom( Fragment fragment )
+    {
+    super.setTargetFragment( null, 0 );
+
+    Activity activity = fragment.getActivity();
+
+    if ( activity != null ) removeFrom( activity );
     }
 
 

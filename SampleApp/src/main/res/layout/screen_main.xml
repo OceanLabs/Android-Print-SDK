@@ -79,6 +79,14 @@
                 android:text="@string/main_print_postcard_button_text"
                 android:textSize="@dimen/control_label_text_size"
                 android:onClick="onPrintPostcardButtonClicked"/>
+            <Button
+                android:id="@+id/order_history_button"
+                android:layout_marginTop="@dimen/main_button_spacing"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/main_order_history_button_text"
+                android:textSize="@dimen/control_label_text_size"
+                android:onClick="onOrderHistoryButtonClicked"/>
         </LinearLayout>
 
     </FrameLayout>

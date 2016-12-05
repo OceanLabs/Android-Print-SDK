@@ -60,7 +60,7 @@ import ly.kite.ordering.Order;
  * order.
  *
  *****************************************************/
-public class OrderSubmissionFragment extends ARetainedDialogFragment<IOrderSubmissionResultListener> implements IOrderSubmissionProgressListener
+public class OrderSubmissionFragment extends ARetainedDialogFragment implements IOrderSubmissionProgressListener
   {
   ////////// Static Constant(s) //////////
 
@@ -114,6 +114,10 @@ public class OrderSubmissionFragment extends ARetainedDialogFragment<IOrderSubmi
 
   ////////// Constructor(s) //////////
 
+  public OrderSubmissionFragment()
+    {
+    super( IOrderSubmissionResultListener.class );
+    }
 
   ////////// DialogFragment Method(s) //////////
 
@@ -215,9 +219,9 @@ public class OrderSubmissionFragment extends ARetainedDialogFragment<IOrderSubmi
     setState( mRetainedFragmentHelper.new AStateNotifier()
       {
       @Override
-      public void notify( IOrderSubmissionResultListener callback )
+      public void notify( Object callback )
         {
-        callback.onOrderComplete( order, state );
+        ( (IOrderSubmissionResultListener)callback ).onOrderComplete( order, state );
         }
       } );
     }
@@ -238,9 +242,9 @@ public class OrderSubmissionFragment extends ARetainedDialogFragment<IOrderSubmi
     setState( mRetainedFragmentHelper.new AStateNotifier()
       {
       @Override
-      public void notify( IOrderSubmissionResultListener callback )
+      public void notify( Object callbackObject )
         {
-        callback.onOrderTimeout( order );
+        ( (IOrderSubmissionResultListener)callbackObject ).onOrderTimeout( order );
         }
       } );
     }
@@ -261,9 +265,9 @@ public class OrderSubmissionFragment extends ARetainedDialogFragment<IOrderSubmi
     setState( mRetainedFragmentHelper.new AStateNotifier()
       {
       @Override
-      public void notify( IOrderSubmissionResultListener callback )
+      public void notify( Object callbackObject )
         {
-        callback.onOrderError( order, exception );
+        ( (IOrderSubmissionResultListener)callbackObject ).onOrderError( order, exception );
         }
       } );
     }
@@ -284,9 +288,9 @@ public class OrderSubmissionFragment extends ARetainedDialogFragment<IOrderSubmi
     setState( mRetainedFragmentHelper.new AStateNotifier()
       {
       @Override
-      public void notify( IOrderSubmissionResultListener callback )
+      public void notify( Object callbackObject )
         {
-        callback.onOrderDuplicate( order, originalOrderId );
+        ( (IOrderSubmissionResultListener)callbackObject ).onOrderDuplicate( order, originalOrderId );
         }
       } );
     }

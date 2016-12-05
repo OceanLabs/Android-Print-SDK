@@ -56,7 +56,7 @@ import ly.kite.KiteSDK;
  * both standard and dialog.
  *
  *****************************************************/
-public class RetainedFragmentHelper<C>
+public class RetainedFragmentHelper
   {
   ////////// Static Constant(s) //////////
 
@@ -69,7 +69,8 @@ public class RetainedFragmentHelper<C>
 
   ////////// Member Variable(s) //////////
 
-  private Fragment        mFragment;
+  private Fragment        mRetainedFragment;
+  private Class<?>        mCallbackClass;
 
   private AStateNotifier  mStateNotifier;
 
@@ -83,9 +84,10 @@ public class RetainedFragmentHelper<C>
 
   ////////// Constructor(s) //////////
 
-  RetainedFragmentHelper( Fragment fragment )
+  RetainedFragmentHelper( Fragment retainedFragment, Class<?> callbackClass )
     {
-    mFragment = fragment;
+    mRetainedFragment = retainedFragment;
+    mCallbackClass    = callbackClass;
     }
 
 
@@ -100,7 +102,7 @@ public class RetainedFragmentHelper<C>
     {
     // Make sure we are retained even if the activity is destroyed, e.g. during
     // orientation changes.
-    mFragment.setRetainInstance( true );
+    mRetainedFragment.setRetainInstance( true );
     }
 
 
@@ -117,7 +119,7 @@ public class RetainedFragmentHelper<C>
       {
       fragmentManager
         .beginTransaction()
-          .add( mFragment, tag )
+          .add( mRetainedFragment, tag )
         .commit();
       }
     }
@@ -141,7 +143,7 @@ public class RetainedFragmentHelper<C>
    * Called when a target fragment is set.
    *
    *****************************************************/
-  public void setTargetFragment( Fragment fragment, int requestCode )
+  public void onSetTargetFragment( Fragment fragment, int requestCode )
     {
     if ( KiteSDK.DEBUG_RETAINED_FRAGMENT ) Log.d( LOG_TAG, "setTargetFragment( fragment = " + fragment + ", requestCode = " + requestCode + " )" );
 
@@ -163,21 +165,21 @@ public class RetainedFragmentHelper<C>
       // If we are attached to an activity that is the correct callback type -
       // notify it of the current state.
 
-      C activityCallback = getActivityCallback();
+      Object callbackActivity = getCallbackActivity();
 
-      if ( KiteSDK.DEBUG_RETAINED_FRAGMENT ) Log.d( LOG_TAG, "  activityCallback = " + activityCallback );
+      if ( KiteSDK.DEBUG_RETAINED_FRAGMENT ) Log.d( LOG_TAG, "  callbackActivity = " + callbackActivity );
 
-      if ( activityCallback != null ) mStateNotifier.notify( activityCallback );
+      if ( callbackActivity != null ) mStateNotifier.notify( callbackActivity );
 
 
       // If we have a target fragment that is the correct callback type -
       // notify it of the current state.
 
-      C fragmentCallback = getFragmentCallback();
+      Object callbackFragment = getCallbackFragment();
 
-      if ( KiteSDK.DEBUG_RETAINED_FRAGMENT ) Log.d( LOG_TAG, "  fragmentCallback = " + fragmentCallback );
+      if ( KiteSDK.DEBUG_RETAINED_FRAGMENT ) Log.d( LOG_TAG, "  callbackFragment = " + callbackFragment );
 
-      if ( fragmentCallback != null ) mStateNotifier.notify( fragmentCallback );
+      if ( callbackFragment != null ) mStateNotifier.notify( callbackFragment );
       }
 
 
@@ -188,26 +190,34 @@ public class RetainedFragmentHelper<C>
 
   /*****************************************************
    *
-   * Returns any activity cast to the callback type.
+   * Returns the supplied object, if it is non-null, and
+   * can be cast to the callback class.
    *
    *****************************************************/
-  private C getActivityCallback()
+  private Object getCallbackObject( Object candidateObject )
     {
-    Activity activity;
-
-    if ( ( activity = mFragment.getActivity() ) != null )
+    if ( candidateObject != null )
       {
-      try
+      if ( mCallbackClass.isAssignableFrom( candidateObject.getClass() ) )
         {
-        return ( (C)activity );
-        }
-      catch ( ClassCastException cce )
-        {
-        // Fall through
+        return ( candidateObject );
         }
       }
 
+
     return ( null );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the activity if it is assignable to the callback
+   * class.
+   *
+   *****************************************************/
+  private Object getCallbackActivity()
+    {
+    return ( getCallbackObject( mRetainedFragment.getActivity() ) );
     }
 
 
@@ -216,23 +226,9 @@ public class RetainedFragmentHelper<C>
    * Returns any target fragment cast to the callback type
    *
    *****************************************************/
-  private C getFragmentCallback()
+  private Object getCallbackFragment()
     {
-    Fragment fragment;
-
-    if ( ( fragment = mFragment.getTargetFragment() ) != null )
-      {
-      try
-        {
-        return ( (C)fragment );
-        }
-      catch ( ClassCastException cce )
-        {
-        // Fall through
-        }
-      }
-
-    return ( null );
+    return ( getCallbackObject( mRetainedFragment.getTargetFragment() ) );
     }
 
 
@@ -245,7 +241,7 @@ public class RetainedFragmentHelper<C>
    *****************************************************/
   protected void setState( AStateNotifier stateNotifier )
     {
-    if ( KiteSDK.DEBUG_RETAINED_FRAGMENT ) Log.d( LOG_TAG, "setState( stateNotifier = " + stateNotifier + " )" );
+    if ( KiteSDK.DEBUG_RETAINED_FRAGMENT ) Log.d( LOG_TAG, "setStateNotifier( stateNotifier = " + stateNotifier + " )" );
 
     mStateNotifier = stateNotifier;
 
@@ -266,7 +262,7 @@ public class RetainedFragmentHelper<C>
       {
       fragmentManager
         .beginTransaction()
-          .remove( mFragment )
+          .remove( mRetainedFragment )
         .commitAllowingStateLoss();
       }
     }
@@ -281,7 +277,7 @@ public class RetainedFragmentHelper<C>
    *****************************************************/
   abstract public class AStateNotifier
     {
-    abstract public void notify( C callback );
+    abstract public void notify( Object callback );
     }
 
   }
