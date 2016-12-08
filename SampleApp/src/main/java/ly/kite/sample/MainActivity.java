@@ -184,16 +184,6 @@ public class MainActivity extends ADeepLinkableActivity
       if ( resultCode == Activity.RESULT_OK )
         {
         Toast.makeText( this, "User successfully checked out!", Toast.LENGTH_LONG ).show();
-
-        if ( mKiteSDK != null )
-          {
-          Order order = mKiteSDK.getOrder( data );
-
-          if ( order != null )
-            {
-            Toast.makeText( this, "Order id: " + order.getReceipt(), Toast.LENGTH_SHORT ).show();
-            }
-          }
         }
       else if ( resultCode == Activity.RESULT_CANCELED )
         {

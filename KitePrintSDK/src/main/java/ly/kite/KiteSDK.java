@@ -1710,17 +1710,6 @@ public class KiteSDK
     }
 
 
-  /*****************************************************
-   *
-   * Returns an order from a result intent.
-   *
-   *****************************************************/
-  public Order getOrder( Intent intent )
-    {
-    return ( intent.getParcelableExtra( AKiteActivity.INTENT_EXTRA_NAME_ORDER ) );
-    }
-
-
   ////////// Inner Class(es) //////////
 
   /*****************************************************
