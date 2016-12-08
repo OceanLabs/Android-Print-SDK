@@ -64,6 +64,7 @@ import ly.kite.catalogue.ICatalogueConsumer;
 import ly.kite.catalogue.Product;
 import ly.kite.ordering.Job;
 import ly.kite.ordering.Order;
+import ly.kite.ordering.OrderingDataAgent;
 import ly.kite.photopicker.Photo;
 import ly.kite.photopicker.PhotoPicker;
 import ly.kite.util.Asset;
@@ -89,21 +90,6 @@ public class MainActivity extends ADeepLinkableActivity
 
   private static final String  REPLACE_DETAILS_HERE       = "REPLACE_ME";
 
-  /**********************************************************************
-   * Insert your Kite API keys here. These are found under your profile
-   * by logging in to the developer portal at https://www.kite.ly
-   **********************************************************************/
-  private static final String API_KEY_TEST                = REPLACE_DETAILS_HERE;
-  private static final String API_KEY_LIVE                = REPLACE_DETAILS_HERE;
-
-
-  /**********************************************************************
-   * Insert your Instagram details here.
-   **********************************************************************/
-  private static final String INSTAGRAM_API_KEY           = REPLACE_DETAILS_HERE;
-  private static final String INSTAGRAM_REDIRECT_URI      = REPLACE_DETAILS_HERE;
-
-
   private static final int    REQUEST_CODE_SELECT_PICTURE = 1;
   private static final int    REQUEST_CODE_CHECKOUT       = 2;
 
@@ -113,15 +99,38 @@ public class MainActivity extends ADeepLinkableActivity
   static private final String PRODUCT_ID_POSTCARD         = "postcard";
 
 
+  /**********************************************************************
+   * Insert your Kite API keys here. These are found under your profile
+   * by logging in to the developer portal at https://www.kite.ly
+   **********************************************************************/
+  static private       String API_KEY_TEST                = REPLACE_DETAILS_HERE;
+  static private       String API_KEY_STAGING             = REPLACE_DETAILS_HERE;
+  static private       String API_KEY_LIVE                = REPLACE_DETAILS_HERE;
+
+
+  /**********************************************************************
+   * Insert your Instagram details here.
+   **********************************************************************/
+  private static      String INSTAGRAM_API_KEY           = REPLACE_DETAILS_HERE;
+  private static      String INSTAGRAM_REDIRECT_URI      = REPLACE_DETAILS_HERE;
+
+
+
   ////////// Static Variable(s) //////////
 
 
   ////////// Member Variable(s) //////////
 
-  private Switch  mEnvironmentSwitch;
+  private Switch   mEnvironmentSwitch;
+
+  private KiteSDK  mKiteSDK;
 
 
   ////////// Static Initialiser(s) //////////
+
+  static
+    {
+    }
 
 
   ////////// Static Method(s) //////////
@@ -253,6 +262,19 @@ public class MainActivity extends ADeepLinkableActivity
 
   /*****************************************************
    *
+   * Called when the order history button is clicked.
+   *
+   *****************************************************/
+  public void onOrderHistoryButtonClicked( View view )
+    {
+    KiteSDK kiteSDK = configureSDK();
+
+    kiteSDK.startOrderHistory( this );
+    }
+
+
+  /*****************************************************
+   *
    * Called when the print local photos button is clicked.
    *
    *****************************************************/
@@ -286,6 +308,9 @@ public class MainActivity extends ADeepLinkableActivity
       apiKey      = API_KEY_TEST;
       environment = KiteSDK.DefaultEnvironment.TEST;
       }
+
+//    apiKey      = API_KEY_STAGING;
+//    environment = KiteSDK.DefaultEnvironment.STAGING_DO_NOT_USE;
 
 
     // Check that the API has been set in code
@@ -412,6 +437,12 @@ public class MainActivity extends ADeepLinkableActivity
           {
           // Ignore
           }
+        }
+
+      @Override
+      public void onCatalogueCancelled()
+        {
+        // Ignore
         }
 
       @Override
