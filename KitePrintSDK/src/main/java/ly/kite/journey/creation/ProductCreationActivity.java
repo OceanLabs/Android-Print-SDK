@@ -769,19 +769,19 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
    *****************************************************/
   private void onNewBasketItem( List<ImageSpec> imageSpecList )
     {
-    OrderingDataAgent basketAgent = OrderingDataAgent.getInstance( this );
+    OrderingDataAgent orderingDataAgent = OrderingDataAgent.getInstance( this );
 
     if ( mInEditMode )
       {
       showProgressDialog( R.string.progress_dialog_title_updating_basket );
 
-      basketAgent.replaceItem( mBasketItemId, mProduct, mOptionMap, imageSpecList, mOrderQuantity, this );
+      orderingDataAgent.replaceItem( mBasketItemId, mProduct, mOptionMap, imageSpecList, mOrderQuantity, this );
       }
     else
       {
       showProgressDialog( R.string.progress_dialog_title_add_to_basket );
 
-      basketAgent.addItem( mProduct, mOptionMap, imageSpecList, this );
+      orderingDataAgent.addItem( mProduct, mOptionMap, imageSpecList, this );
       }
 
     }

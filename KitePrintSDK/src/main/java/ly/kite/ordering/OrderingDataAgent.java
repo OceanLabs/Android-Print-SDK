@@ -76,7 +76,7 @@ public class OrderingDataAgent
   ////////// Member Variable(s) //////////
 
   private Context                mApplicationContext;
-  private OrderingDatabaseAgent  mDatabaseAgent;
+  private OrderingDatabaseAgent  mOrderingDatabaseAgent;
 
 
   ////////// Static Initialiser(s) //////////
@@ -105,7 +105,7 @@ public class OrderingDataAgent
   private OrderingDataAgent( Context context )
     {
     mApplicationContext = context.getApplicationContext();
-    mDatabaseAgent      = new OrderingDatabaseAgent( mApplicationContext, null );
+    mOrderingDatabaseAgent = new OrderingDatabaseAgent( mApplicationContext, null );
     }
 
 
@@ -118,7 +118,7 @@ public class OrderingDataAgent
    *****************************************************/
   public OrderingDataAgent clearBasket( long basketId )
     {
-    mDatabaseAgent.clearBasket( basketId );
+    mOrderingDatabaseAgent.clearBasket( basketId );
 
     AssetHelper.clearBasketAssets( mApplicationContext, basketId );
 
@@ -192,7 +192,7 @@ public class OrderingDataAgent
     {
     // Delete the item and add a new one
 
-    mDatabaseAgent.deleteItem( itemId );
+    mOrderingDatabaseAgent.deleteItem( itemId );
 
     addItem( itemId, product, optionsMap, imageSpecList, orderQuantity, addListener );
     }
@@ -225,7 +225,7 @@ public class OrderingDataAgent
         // Move any referenced assets to the basket (if they are not already in)
         List<ImageSpec> jobImageSpecList = AssetHelper.createAsBasketAssets( mApplicationContext, BASKET_ID_DEFAULT, imagesJob.getImagesAsSpecList() );
 
-        mDatabaseAgent.saveDefaultBasketItem( itemId, product, optionsMap, jobImageSpecList, orderQuantity );
+        mOrderingDatabaseAgent.saveDefaultBasketItem( itemId, product, optionsMap, jobImageSpecList, orderQuantity );
 
         // If we were supplied an item id then this is an update. However, if more images were
         // subsequently added whilst editing the item - additional jobs are inserted as new ones.
@@ -242,7 +242,7 @@ public class OrderingDataAgent
    *****************************************************/
   public List<BasketItem> getAllItems( Catalogue catalogue )
     {
-    return ( mDatabaseAgent.loadDefaultBasket( mApplicationContext, catalogue ) );
+    return ( mOrderingDatabaseAgent.loadDefaultBasket( mApplicationContext, catalogue ) );
     }
 
 
@@ -253,7 +253,7 @@ public class OrderingDataAgent
    *****************************************************/
   public int getItemCount()
     {
-    return ( mDatabaseAgent.selectItemCount() );
+    return ( mOrderingDatabaseAgent.selectItemCount() );
     }
 
 
@@ -264,7 +264,7 @@ public class OrderingDataAgent
    *****************************************************/
   public int incrementOrderQuantity( long itemId )
     {
-    return ( mDatabaseAgent.updateOrderQuantity( itemId, +1 ) );
+    return ( mOrderingDatabaseAgent.updateOrderQuantity( itemId, +1 ) );
     }
 
 
@@ -275,12 +275,12 @@ public class OrderingDataAgent
    *****************************************************/
   public int decrementOrderQuantity( long itemId )
     {
-    int orderQuantity = mDatabaseAgent.updateOrderQuantity( itemId, -1 );
+    int orderQuantity = mOrderingDatabaseAgent.updateOrderQuantity( itemId, -1 );
 
     // If the order quantity has gone to zero - delete the item
     if ( orderQuantity < 1 )
       {
-      mDatabaseAgent.deleteItem( itemId );
+      mOrderingDatabaseAgent.deleteItem( itemId );
       }
 
     return ( orderQuantity );
@@ -294,7 +294,7 @@ public class OrderingDataAgent
    *****************************************************/
   public List<OrderHistoryItem> getOrderHistoryList( Catalogue catalogue )
     {
-    return ( mDatabaseAgent.loadOrderHistory( mApplicationContext, catalogue ) );
+    return ( mOrderingDatabaseAgent.loadOrderHistory( mApplicationContext, catalogue ) );
     }
 
 
@@ -314,13 +314,13 @@ public class OrderingDataAgent
       //   - Remove its basket (assets & database entries)
       //   - Clear all order details except those required for a successful order history entry
 
-      long basketId = mDatabaseAgent.selectBasketIdForOrder( previousOrderId );
+      long basketId = mOrderingDatabaseAgent.selectBasketIdForOrder( previousOrderId );
 
       if ( basketId >= 0 )
         {
         clearBasket( basketId );
 
-        mDatabaseAgent.updateToSuccessfulOrder( previousOrderId, order.getReceipt() );
+        mOrderingDatabaseAgent.updateToSuccessfulOrder( previousOrderId, order.getReceipt() );
         }
       }
     else
@@ -329,7 +329,7 @@ public class OrderingDataAgent
 
       clearDefaultBasket();
 
-      mDatabaseAgent.insertSuccessfulOrder( order.getItemsDescription(), order.getReceipt(), order.getOrderPricing().getPricingJSONString() );
+      mOrderingDatabaseAgent.insertSuccessfulOrder( order.getItemsDescription(), order.getReceipt(), order.getOrderPricing().getPricingJSONString() );
       }
     }
 
@@ -348,23 +348,23 @@ public class OrderingDataAgent
       // TODO: Do we need to update the date?
       // So simply retrieve the basket id and return it.
 
-      return ( mDatabaseAgent.selectBasketIdForOrder( previousOrderId ) );
+      return ( mOrderingDatabaseAgent.selectBasketIdForOrder( previousOrderId ) );
       }
     else
       {
       // Get a new basket id
-      long newBasketId = mDatabaseAgent.insertBasket( -1 );
+      long newBasketId = mOrderingDatabaseAgent.insertBasket( -1 );
 
 
       // Move items and assets from the default basket to the new basket
 
       AssetHelper.moveBasket( mApplicationContext, BASKET_ID_DEFAULT, newBasketId );
 
-      mDatabaseAgent.updateBasket( BASKET_ID_DEFAULT, newBasketId );
+      mOrderingDatabaseAgent.updateBasket( BASKET_ID_DEFAULT, newBasketId );
 
 
       // Create the new order on the database, and return its id
-      return ( mDatabaseAgent.newOrder( newBasketId, order ) );
+      return ( mOrderingDatabaseAgent.newOrder( newBasketId, order ) );
       }
     }
 

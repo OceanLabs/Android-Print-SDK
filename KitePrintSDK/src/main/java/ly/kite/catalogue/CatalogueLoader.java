@@ -1158,9 +1158,23 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
 
     /*****************************************************
      *
+     * Called when a request is cancelled.
+     *
+     *****************************************************/
+    @Override
+    public void onCatalogueCancelled()
+      {
+      // Simply pass the error through to the consumer
+      mConsumer.onCatalogueCancelled();
+      }
+
+
+    /*****************************************************
+     *
      * Called when a request results in an error.
      *
      *****************************************************/
+    @Override
     public void onCatalogueError( Exception exception )
       {
       // Simply pass the error through to the consumer

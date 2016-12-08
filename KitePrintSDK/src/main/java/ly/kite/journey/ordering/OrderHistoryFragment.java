@@ -60,13 +60,11 @@ import java.util.List;
 import ly.kite.R;
 import ly.kite.app.IndeterminateProgressDialogFragment;
 import ly.kite.catalogue.Catalogue;
-import ly.kite.catalogue.CatalogueLoader;
 import ly.kite.catalogue.CatalogueLoaderFragment;
 import ly.kite.catalogue.ICatalogueConsumer;
 import ly.kite.checkout.OrderReceiptActivity;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.journey.AKiteFragment;
-import ly.kite.journey.selection.ProductSelectionActivity;
 import ly.kite.ordering.Order;
 import ly.kite.ordering.OrderHistoryItem;
 import ly.kite.ordering.OrderingDataAgent;
@@ -81,7 +79,6 @@ import ly.kite.pricing.OrderPricing;
  *
  *****************************************************/
 public class OrderHistoryFragment extends AKiteFragment implements AdapterView.OnItemClickListener,
-                                                                   IndeterminateProgressDialogFragment.ICancelListener,
                                                                    ICatalogueConsumer
   {
   ////////// Static Constant(s) //////////
@@ -95,7 +92,6 @@ public class OrderHistoryFragment extends AKiteFragment implements AdapterView.O
 
   ////////// Member Variable(s) //////////
 
-  private CatalogueLoaderFragment              mCatalogueLoaderFragment;
   private Catalogue                            mCatalogue;
 
   private ListView                             mListView;
@@ -126,25 +122,6 @@ public class OrderHistoryFragment extends AKiteFragment implements AdapterView.O
 
 
   ////////// AKiteFragment Method(s) //////////
-
-  /*****************************************************
-   *
-   * Called when the fragment is created.
-   *
-   *****************************************************/
-  @Override
-  public void onCreate( Bundle savedInstanceState )
-    {
-    super.onCreate( savedInstanceState );
-
-    mCatalogueLoaderFragment = CatalogueLoaderFragment.findFragment( getActivity() );
-
-    if ( mCatalogueLoaderFragment != null )
-      {
-      displayProgressDialog();
-      }
-    }
-
 
   /*****************************************************
    *
@@ -188,31 +165,6 @@ public class OrderHistoryFragment extends AKiteFragment implements AdapterView.O
     }
 
 
-  ////////// IndeterminateProgressDialogFragment.ICancelListener Method(s) //////////
-
-  /*****************************************************
-   *
-   * Called when the progress dialog is cancelled.
-   *
-   *****************************************************/
-  @Override
-  public void onDialogCancelled( IndeterminateProgressDialogFragment dialogFragment )
-    {
-    // Cancel any catalogue load
-    if ( mCatalogueLoaderFragment != null )
-      {
-      mCatalogueLoaderFragment.cancelRequests();
-
-      removeCatalogueLoaderFragment();
-      }
-
-    hideProgressDialog();
-
-    // Notify the activity that the load was cancelled
-    onLoadCancelled();
-    }
-
-
   ////////// ICatalogueConsumer Method(s) //////////
 
   @Override
@@ -220,21 +172,19 @@ public class OrderHistoryFragment extends AKiteFragment implements AdapterView.O
     {
     mCatalogue = catalogue;
 
-    hideProgressDialog();
-
-    removeCatalogueLoaderFragment();
-
     checkDisplayOrders();
+    }
+
+
+  @Override
+  public void onCatalogueCancelled()
+    {
     }
 
 
   @Override
   public void onCatalogueError( Exception exception )
     {
-    hideProgressDialog();
-
-    removeCatalogueLoaderFragment();
-
     // Display an error dialog
     ( (AKiteActivity)getActivity() ).displayModalDialog
             (
@@ -301,39 +251,7 @@ public class OrderHistoryFragment extends AKiteFragment implements AdapterView.O
    *****************************************************/
   void requestCatalogue()
     {
-    displayProgressDialog();
-
-    if ( mCatalogueLoaderFragment == null )
-      {
-      mCatalogueLoaderFragment = CatalogueLoaderFragment.start( this );
-      }
-    }
-
-
-  /*****************************************************
-   *
-   * Removes the catalogue loader fragment.
-   *
-   *****************************************************/
-  private void removeCatalogueLoaderFragment()
-    {
-    if ( mCatalogueLoaderFragment != null )
-      {
-      mCatalogueLoaderFragment.removeFrom( this );
-
-      mCatalogueLoaderFragment = null;
-      }
-    }
-
-
-  /*****************************************************
-   *
-   * Ensures that the display progress dialog is showing.
-   *
-   *****************************************************/
-  private void displayProgressDialog()
-    {
-    displayProgressDialog( R.string.Loading_catalogue, this );
+    CatalogueLoaderFragment.findOrStart( this );
     }
 
 

@@ -48,7 +48,7 @@ import android.os.Bundle;
 import ly.kite.R;
 import ly.kite.api.OrderState;
 import ly.kite.app.ARetainedDialogFragment;
-import ly.kite.app.ARetainedFragment;
+import ly.kite.app.RetainedFragmentHelper;
 import ly.kite.ordering.Order;
 
 
@@ -108,7 +108,7 @@ public class OrderSubmissionFragment extends ARetainedDialogFragment implements 
    *****************************************************/
   static public OrderSubmissionFragment findFragment( Activity activity )
     {
-    return ( (OrderSubmissionFragment) findFragment( activity, TAG, OrderSubmissionFragment.class ) );
+    return ( (OrderSubmissionFragment) find( activity, TAG, OrderSubmissionFragment.class ) );
     }
 
 
@@ -118,6 +118,7 @@ public class OrderSubmissionFragment extends ARetainedDialogFragment implements 
     {
     super( IOrderSubmissionResultListener.class );
     }
+
 
   ////////// DialogFragment Method(s) //////////
 
@@ -149,7 +150,7 @@ public class OrderSubmissionFragment extends ARetainedDialogFragment implements 
     }
 
 
-  ////////// IOrderSubmissionResultListener Method(s) //////////
+  ////////// IOrderSubmissionProgressListener Method(s) //////////
 
   /*****************************************************
    *
@@ -204,6 +205,9 @@ public class OrderSubmissionFragment extends ARetainedDialogFragment implements 
     }
 
 
+  // These methods are implemented by IOrderSubmissionResultListener, which
+  // is extended by IOrderSubmissionProgressListener.
+
   /*****************************************************
    *
    * Called when an order submission has completed.
@@ -216,7 +220,7 @@ public class OrderSubmissionFragment extends ARetainedDialogFragment implements 
     // and there is no target fragment. The callback will therefore get re-notified
     // when we are attached or a target fragment is set.
 
-    setState( mRetainedFragmentHelper.new AStateNotifier()
+    setStateNotifier( new RetainedFragmentHelper.AStateNotifier()
       {
       @Override
       public void notify( Object callback )
@@ -239,7 +243,7 @@ public class OrderSubmissionFragment extends ARetainedDialogFragment implements 
     // and there is no target fragment. The callback will therefore get re-notified
     // when we are attached or a target fragment is set.
 
-    setState( mRetainedFragmentHelper.new AStateNotifier()
+    setStateNotifier( new RetainedFragmentHelper.AStateNotifier()
       {
       @Override
       public void notify( Object callbackObject )
@@ -262,7 +266,7 @@ public class OrderSubmissionFragment extends ARetainedDialogFragment implements 
     // and there is no target fragment. The callback will therefore get re-notified
     // when we are attached or a target fragment is set.
 
-    setState( mRetainedFragmentHelper.new AStateNotifier()
+    setStateNotifier( new RetainedFragmentHelper.AStateNotifier()
       {
       @Override
       public void notify( Object callbackObject )
@@ -285,7 +289,7 @@ public class OrderSubmissionFragment extends ARetainedDialogFragment implements 
     // and there is no target fragment. The callback will therefore get re-notified
     // when we are attached or a target fragment is set.
 
-    setState( mRetainedFragmentHelper.new AStateNotifier()
+    setStateNotifier( new RetainedFragmentHelper.AStateNotifier()
       {
       @Override
       public void notify( Object callbackObject )

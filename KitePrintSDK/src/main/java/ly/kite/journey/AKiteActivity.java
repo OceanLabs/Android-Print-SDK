@@ -683,7 +683,7 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
          resultCode == ACTIVITY_RESULT_CODE_END_CUSTOMER_SESSION ||
          ( requestCode == ACTIVITY_REQUEST_CODE_CHECKOUT && resultCode == RESULT_OK ) )
       {
-      setResult( resultCode );
+      setResult( resultCode, data );
 
       finish();
 

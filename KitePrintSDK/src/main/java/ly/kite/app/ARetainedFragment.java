@@ -132,17 +132,6 @@ abstract public class ARetainedFragment extends Fragment
 
   /*****************************************************
    *
-   * Adds this fragment to the activity.
-   *
-   *****************************************************/
-  public void addTo( Activity activity, String tag )
-    {
-    mRetainedFragmentHelper.addTo( activity, tag );
-    }
-
-
-  /*****************************************************
-   *
    * Called when the fragment is attached to an activity.
    *
    *****************************************************/
@@ -170,6 +159,17 @@ abstract public class ARetainedFragment extends Fragment
 
 
   ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Adds this fragment to the activity.
+   *
+   *****************************************************/
+  public void addTo( Activity activity, String tag )
+    {
+    mRetainedFragmentHelper.addTo( activity, tag );
+    }
+
 
   /*****************************************************
    *

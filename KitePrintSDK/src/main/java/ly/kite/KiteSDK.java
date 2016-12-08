@@ -63,6 +63,7 @@ import ly.kite.address.Country;
 import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.MultipleCurrencyAmounts;
 import ly.kite.catalogue.Product;
+import ly.kite.journey.AKiteActivity;
 import ly.kite.journey.ordering.OrderHistoryActivity;
 import ly.kite.ordering.OrderingDataAgent;
 import ly.kite.catalogue.CatalogueLoader;
@@ -105,7 +106,7 @@ public class KiteSDK
   static public  final boolean DISPLAY_PRODUCTS                                    = false;
 
 
-  static public  final String SDK_VERSION                                          = "5.6.10";
+  static public  final String SDK_VERSION                                          = "5.6.11";
 
   static public  final String IMAGE_CATEGORY_APP                                   = "app";
   static public  final String IMAGE_CATEGORY_PRODUCT_ITEM                          = "product_item";
@@ -745,6 +746,8 @@ public class KiteSDK
           Class<? extends SDKCustomiser> customiserClass = (Class<? extends SDKCustomiser>)Class.forName( customiserClassName );
 
           mCustomiser = customiserClass.newInstance();
+
+          mCustomiser.setContext( mApplicationContext );
           }
         catch ( Exception e )
           {
@@ -1704,6 +1707,17 @@ public class KiteSDK
           }
         }
       }
+    }
+
+
+  /*****************************************************
+   *
+   * Returns an order from a result intent.
+   *
+   *****************************************************/
+  public Order getOrder( Intent intent )
+    {
+    return ( intent.getParcelableExtra( AKiteActivity.INTENT_EXTRA_NAME_ORDER ) );
     }
 
 

@@ -48,12 +48,15 @@ import ly.kite.checkout.APaymentFragment;
 import ly.kite.checkout.AShippingActivity;
 import ly.kite.checkout.DefaultPaymentFragment;
 import ly.kite.checkout.ICreditCardAgent;
+import ly.kite.checkout.IOrderSubmissionResultListener;
 import ly.kite.checkout.ShippingActivity;
 import ly.kite.checkout.StripeCreditCardAgent;
 import ly.kite.instagramphotopicker.InstagramImageSource;
 import ly.kite.journey.AImageSource;
 import ly.kite.journey.DeviceImageSource;
 import ly.kite.journey.creation.ICustomImageEditorAgent;
+import ly.kite.ordering.IOrderSubmissionSuccessListener;
+import ly.kite.ordering.Order;
 
 
 ///// Class Declaration /////
@@ -79,6 +82,8 @@ public class SDKCustomiser
 
   ////////// Member Variable(s) //////////
 
+  private Context  mContext;
+
 
   ////////// Static Initialiser(s) //////////
 
@@ -90,6 +95,28 @@ public class SDKCustomiser
 
 
   ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Sets the context.
+   *
+   *****************************************************/
+  void setContext( Context context )
+    {
+    mContext = context;
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the context.
+   *
+   *****************************************************/
+  protected Context getContext()
+    {
+    return ( mContext );
+    }
+
 
   /*****************************************************
    *
@@ -237,6 +264,18 @@ public class SDKCustomiser
   public ICreditCardAgent getCreditCardAgent()
     {
     return ( new StripeCreditCardAgent() );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a callback for successful order submission.
+   * The default is null, i.e. there is no listener.
+   *
+   *****************************************************/
+  public IOrderSubmissionSuccessListener getOrderSubmissionSuccessListener()
+    {
+    return ( null );
     }
 
 
