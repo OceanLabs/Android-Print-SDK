@@ -1,6 +1,6 @@
 /*****************************************************
  *
- * SampleSDKCustomiser.java
+ * IOrderSubmissionSuccessListener.java
  *
  *
  * Modified MIT License
@@ -34,92 +34,28 @@
 
 ///// Package Declaration /////
 
-package ly.kite.sample;
+package ly.kite.ordering;
 
 
 ///// Import(s) /////
 
-import android.widget.Toast;
-
-import ly.kite.SDKCustomiser;
-import ly.kite.checkout.IOrderSubmissionResultListener;
-import ly.kite.ordering.IOrderSubmissionSuccessListener;
 import ly.kite.ordering.Order;
 
 
-///// Class Declaration /////
+///// Interface Declaration /////
 
 /*****************************************************
  *
- * This class demonstrates the use of a customiser to
- * change the behaviour of the SDK.
- *
- * To customise any aspect of the SDK, simply override
- * the default methods in the SDKCustomiser class.
+ * This interface defines an order submission success
+ * listener.
  *
  *****************************************************/
-public class SampleSDKCustomiser extends SDKCustomiser
+public interface IOrderSubmissionSuccessListener
   {
   ////////// Static Constant(s) //////////
-
-  @SuppressWarnings( "unused" )
-  static private final String  LOG_TAG = "SampleSDKCustomiser";
-
-
-  ////////// Static Variable(s) //////////
-
-
-  ////////// Member Variable(s) //////////
-
-
-  ////////// Static Initialiser(s) //////////
-
-
-  ////////// Static Method(s) //////////
-
-
-  ////////// Constructor(s) //////////
 
 
   ////////// Method(s) //////////
 
-  /*****************************************************
-   *
-   * Returns true if the user's phone number should be
-   * entered on the shipping screen.
-   *
-   *****************************************************/
-  public boolean requestPhoneNumber()
-    {
-    return ( false );
-    }
-
-
-  /*****************************************************
-   *
-   * Returns a callback for order completion.
-   *
-   *****************************************************/
-  public IOrderSubmissionSuccessListener getOrderSubmissionSuccessListener()
-    {
-    return ( new IOrderSubmissionSuccessListener()
-      {
-      @Override
-      public void onOrderSubmissionSuccess( Order sanitisedOrder )
-        {
-        Toast.makeText( getContext(), "Order success: " + sanitisedOrder.getReceipt(), Toast.LENGTH_SHORT ).show();
-        }
-      } );
-    }
-
-
-  ////////// Inner Class(es) //////////
-
-  /*****************************************************
-   *
-   * ...
-   *
-   *****************************************************/
-
+  public void onOrderSubmissionSuccess( Order sanitisedOrder );
   }
-

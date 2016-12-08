@@ -40,12 +40,18 @@ package ly.kite.catalogue;
 ///// Import(s) /////
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.os.Bundle;
 import android.util.Log;
 
 import ly.kite.KiteSDK;
-import ly.kite.app.ARetainedFragment;
+import ly.kite.R;
+import ly.kite.app.ARetainedDialogFragment;
+import ly.kite.app.RetainedFragmentHelper;
 
 
 ///// Class Declaration /////
@@ -56,7 +62,7 @@ import ly.kite.app.ARetainedFragment;
  * catalogue.
  *
  *****************************************************/
-public class CatalogueLoaderFragment extends ARetainedFragment implements ICatalogueConsumer
+public class CatalogueLoaderFragment extends ARetainedDialogFragment implements ICatalogueConsumer
   {
   ////////// Static Constant(s) //////////
 
@@ -68,6 +74,8 @@ public class CatalogueLoaderFragment extends ARetainedFragment implements ICatal
 
 
   ////////// Member Variable(s) //////////
+
+  private ProgressDialog   mProgressDialog;
 
   private CatalogueLoader  mCatalogueLoader;
 
@@ -99,7 +107,7 @@ public class CatalogueLoaderFragment extends ARetainedFragment implements ICatal
    * submits the order.
    *
    *****************************************************/
-  static public CatalogueLoaderFragment start( Activity activity, String... filterProductIds )
+  static private CatalogueLoaderFragment start( Activity activity, String... filterProductIds )
     {
     CatalogueLoaderFragment catalogueLoaderFragment = new CatalogueLoaderFragment();
 
@@ -113,7 +121,7 @@ public class CatalogueLoaderFragment extends ARetainedFragment implements ICatal
    * submits the order.
    *
    *****************************************************/
-  static public <T extends Fragment & ICatalogueConsumer> CatalogueLoaderFragment start( T catalogueConsumerFragment, String... filterProductIds )
+  static private <F extends Fragment & ICatalogueConsumer> CatalogueLoaderFragment start( F catalogueConsumerFragment, String... filterProductIds )
     {
     CatalogueLoaderFragment catalogueLoaderFragment = new CatalogueLoaderFragment();
 
@@ -128,9 +136,43 @@ public class CatalogueLoaderFragment extends ARetainedFragment implements ICatal
    * Tries to find this fragment, and returns it.
    *
    *****************************************************/
-  static public CatalogueLoaderFragment findFragment( Activity activity )
+  static public CatalogueLoaderFragment find( Activity activity )
     {
-    return ( (CatalogueLoaderFragment)findFragment( activity, TAG, CatalogueLoaderFragment.class ) );
+    return ( (CatalogueLoaderFragment)find( activity, TAG, CatalogueLoaderFragment.class ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns this fragment, if it is already attached to
+   * the activity. Otherwise will create and display a
+   * new fragment.
+   *
+   *****************************************************/
+  static public CatalogueLoaderFragment findOrStart( Activity activity, String... filterProductIds )
+    {
+    CatalogueLoaderFragment fragment = find( activity );
+
+    if ( fragment != null ) return ( fragment );
+
+    return ( start( activity, filterProductIds ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns this fragment, if it is already attached to
+   * the activity. Otherwise will create and display a
+   * new fragment.
+   *
+   *****************************************************/
+  static public <F extends Fragment & ICatalogueConsumer> CatalogueLoaderFragment findOrStart( F catalogueConsumerFragment, String... filterProductIds )
+    {
+    CatalogueLoaderFragment foundFragment = find( catalogueConsumerFragment.getActivity() );
+
+    if ( foundFragment != null ) return ( foundFragment );
+
+    return ( start( catalogueConsumerFragment, filterProductIds ) );
     }
 
 
@@ -142,7 +184,45 @@ public class CatalogueLoaderFragment extends ARetainedFragment implements ICatal
     }
 
 
-  ////////// ARetainedFragment Method(s) //////////
+  ////////// DialogFragment Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called to create a dialog.
+   *
+   *****************************************************/
+  @Override
+  public AlertDialog onCreateDialog( Bundle savedInstanceState )
+    {
+    // If there isn't already a progress dialog - create one now
+
+    if ( mProgressDialog == null )
+      {
+      mProgressDialog = new ProgressDialog( getActivity() );
+
+      mProgressDialog.setIndeterminate( true );
+      mProgressDialog.setProgressStyle( ProgressDialog.STYLE_HORIZONTAL );
+      mProgressDialog.setProgressPercentFormat( null );
+      mProgressDialog.setProgressNumberFormat( null );   // Don't display the "N/100" text
+      mProgressDialog.setTitle( R.string.Loading_catalogue );
+      }
+
+    setCancelable( true );
+
+    return ( mProgressDialog );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the dialog is cancelled.
+   *
+   *****************************************************/
+  @Override
+  public void onCancel( DialogInterface dialogInterface )
+    {
+    onCatalogueCancelled();
+    }
 
 
   ////////// CatalogueLoader.ICatalogueConsumer Method(s) //////////
@@ -155,7 +235,7 @@ public class CatalogueLoaderFragment extends ARetainedFragment implements ICatal
   @Override
   public void onCatalogueSuccess( final Catalogue catalogue )
     {
-    setStateNotifier( mRetainedFragmentHelper.new AStateNotifier()
+    setStateNotifier( new RetainedFragmentHelper.AStateNotifier()
       {
       @Override
       public void notify( Object catalogueConsumerObject )
@@ -163,6 +243,31 @@ public class CatalogueLoaderFragment extends ARetainedFragment implements ICatal
         if ( KiteSDK.DEBUG_RETAINED_FRAGMENT ) Log.d( TAG, "notify( catalogueConsumerObject = " + catalogueConsumerObject + " ) - success" );
 
         ( (ICatalogueConsumer)catalogueConsumerObject ).onCatalogueSuccess( catalogue );
+
+        remove();
+        }
+      } );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the catalogue load is cancelled.
+   *
+   *****************************************************/
+  @Override
+  public void onCatalogueCancelled()
+    {
+    setStateNotifier( new RetainedFragmentHelper.AStateNotifier()
+      {
+      @Override
+      public void notify( Object catalogueConsumerObject )
+        {
+        if ( KiteSDK.DEBUG_RETAINED_FRAGMENT ) Log.d( TAG, "notify( catalogueConsumerObject = " + catalogueConsumerObject + " ) - cancelled" );
+
+        ( (ICatalogueConsumer)catalogueConsumerObject ).onCatalogueCancelled();
+
+        cancel();
         }
       } );
     }
@@ -176,7 +281,7 @@ public class CatalogueLoaderFragment extends ARetainedFragment implements ICatal
   @Override
   public void onCatalogueError( final Exception exception )
     {
-    setStateNotifier( mRetainedFragmentHelper.new AStateNotifier()
+    setStateNotifier( new RetainedFragmentHelper.AStateNotifier()
       {
       @Override
       public void notify( Object catalogueConsumerObject )
@@ -184,6 +289,8 @@ public class CatalogueLoaderFragment extends ARetainedFragment implements ICatal
         if ( KiteSDK.DEBUG_RETAINED_FRAGMENT ) Log.d( TAG, "notify( catalogueConsumerObject = " + catalogueConsumerObject + " ) - success" );
 
         ( (ICatalogueConsumer)catalogueConsumerObject ).onCatalogueError( exception );
+
+        remove();
         }
       } );
     }
@@ -212,12 +319,12 @@ public class CatalogueLoaderFragment extends ARetainedFragment implements ICatal
    * Cancels any running requests.
    *
    *****************************************************/
-  public void cancelRequests()
+  public void cancel()
     {
     if ( mCatalogueLoader != null ) mCatalogueLoader.cancelRequests();
+
+    remove();
     }
-
-
 
 
   ////////// Inner Class(es) //////////

@@ -62,6 +62,14 @@ public interface ICatalogueConsumer
 
   /*****************************************************
    *
+   * Called when a load is cancelled.
+   *
+   *****************************************************/
+  public void onCatalogueCancelled();
+
+
+  /*****************************************************
+   *
    * Called when a request results in an error.
    *
    * @param exception The exception that was thrown.

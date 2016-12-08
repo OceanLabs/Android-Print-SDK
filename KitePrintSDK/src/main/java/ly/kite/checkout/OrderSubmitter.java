@@ -44,8 +44,10 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
 
+import ly.kite.KiteSDK;
 import ly.kite.api.OrderState;
 import ly.kite.api.OrderStatusRequest;
+import ly.kite.ordering.IOrderSubmissionSuccessListener;
 import ly.kite.ordering.Order;
 
 
@@ -57,7 +59,8 @@ import ly.kite.ordering.Order;
  * progress, reporting back to a listener.
  *
  *****************************************************/
-public class OrderSubmitter implements Order.ISubmissionProgressListener, OrderStatusRequest.IResultListener
+public class OrderSubmitter implements Order.ISubmissionProgressListener,
+                                       OrderStatusRequest.IResultListener
   {
   ////////// Static Constant(s) //////////
 
@@ -172,7 +175,7 @@ public class OrderSubmitter implements Order.ISubmissionProgressListener, OrderS
          state == OrderState.PROCESSED ||
          state == OrderState.CANCELLED )
       {
-      mProgressListener.onOrderComplete( mOrder, state );
+      onOrderComplete( mOrder, state );
       }
     else
       {
@@ -273,6 +276,37 @@ public class OrderSubmitter implements Order.ISubmissionProgressListener, OrderS
     if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "pollOrderStatus()" );
 
     new OrderStatusRequest( mApplicationContext, this ).start( mOrder.getReceipt() );
+    }
+
+
+  /*****************************************************
+   *
+   * Called to return order completion.
+   *
+   *****************************************************/
+  private void onOrderComplete( Order order, OrderState state )
+    {
+    // Callback to the progress listener
+    mProgressListener.onOrderComplete( mOrder, state );
+
+
+    // If the order was completed successfully - callback to any
+    // customiser-registered listener.
+
+    if ( state == OrderState.VALIDATED || state == OrderState.PROCESSED )
+      {
+      IOrderSubmissionSuccessListener listener = KiteSDK
+              .getInstance( mApplicationContext )
+                .getCustomiser()
+                  .getOrderSubmissionSuccessListener();
+
+      if ( listener != null )
+        {
+        Order sanitisedOrder = order.createSanitisedCopy();
+
+        listener.onOrderSubmissionSuccess( sanitisedOrder );
+        }
+      }
     }
 
 

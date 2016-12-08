@@ -122,12 +122,10 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
   private String                        mGotoProductGroupLabel;
   private String                        mGotoProductId;
 
-  private ProgressBar                   mProgressSpinner;
   private ChooseProductGroupFragment    mChooseProductGroupFragment;
   private ChooseProductFragment         mChooseProductFragment;
   private ProductOverviewFragment       mProductOverviewFragment;
 
-  private CatalogueLoaderFragment       mCatalogueLoaderFragment;
   private Catalogue                     mCatalogue;
   private ICatalogueConsumer            mCatalogueConsumer;
   private boolean                       mAddFragmentOnCatalogue;
@@ -295,11 +293,8 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
     mImageSpecArrayList = imageSpecArrayListFrom( assetArrayList );
 
 
-    // Set up the screen content
-
+    // Set up the screen
     setContentView( R.layout.screen_product_selection );
-
-    mProgressSpinner = (ProgressBar)findViewById( R.id.progress_spinner );
 
 
     // We need to get a filtered product catalogue before we create any fragments,
@@ -317,8 +312,6 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
       mProductOptionValueMap  = (HashMap<String,String>)savedInstanceState.getSerializable( BUNDLE_KEY_OPTION_MAP );
       }
 
-
-    mCatalogueLoaderFragment = CatalogueLoaderFragment.findFragment( this );
 
     requestCatalogue();
     }
@@ -395,14 +388,13 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
     {
     super.onStop();
 
-    if ( mCatalogueLoaderFragment != null )
-      {
-      mCatalogueLoaderFragment.cancelRequests();
 
-      mCatalogueLoaderFragment.removeFrom( this );
-
-      mCatalogueLoaderFragment = null;
-      }
+//    CatalogueLoaderFragment catalogueLoaderFragment = CatalogueLoaderFragment.find( this );
+//
+//    if ( catalogueLoaderFragment != null )
+//      {
+//      catalogueLoaderFragment.cancel();
+//      }
     }
 
 
@@ -441,8 +433,6 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
   @Override
   public void onCatalogueSuccess( Catalogue catalogue )
     {
-    onCatalogueRequestComplete();
-
     // Some apps may wish to amend the catalogue
     mCatalogue = getAdjustedCatalogue( catalogue );
 
@@ -540,14 +530,24 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
 
   /*****************************************************
    *
+   * Called when the catalogue load is cancelled.
+   *
+   *****************************************************/
+  @Override
+  public void onCatalogueCancelled()
+    {
+    finish();
+    }
+
+
+  /*****************************************************
+   *
    * Called when the catalogue load fails.
    *
    *****************************************************/
   @Override
   public void onCatalogueError( Exception exception )
     {
-    onCatalogueRequestComplete();
-
     mCatalogue = null;
 
     if ( isVisible() )
@@ -715,35 +715,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
    *****************************************************/
   void requestCatalogue()
     {
-    if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.VISIBLE );
-
-    if ( mCatalogueLoaderFragment == null )
-      {
-      mCatalogueLoaderFragment = CatalogueLoaderFragment.start( this, mFilterProductIds );
-      }
-    }
-
-
-  /*****************************************************
-   *
-   * Called when the catalogue load completes.
-   *
-   *****************************************************/
-  private void onCatalogueRequestComplete()
-    {
-    if ( isVisible() )
-      {
-      // Hide any progress spinner
-      if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.GONE );
-      }
-
-    // Remove the loader fragment
-    if ( mCatalogueLoaderFragment != null )
-      {
-      mCatalogueLoaderFragment.removeFrom( this );
-
-      mCatalogueLoaderFragment = null;
-      }
+    CatalogueLoaderFragment.findOrStart( this, mFilterProductIds );
     }
 
 

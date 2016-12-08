@@ -482,6 +482,18 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
 
   /*****************************************************
    *
+   * Called when loading is cancelled.
+   *
+   *****************************************************/
+  @Override
+  public void onCatalogueCancelled()
+    {
+    // Ignore
+    }
+
+
+  /*****************************************************
+   *
    * Called when there is an error loading the catalogue.
    *
    *****************************************************/

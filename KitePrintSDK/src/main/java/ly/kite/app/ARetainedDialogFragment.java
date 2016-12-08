@@ -83,8 +83,16 @@ abstract public class ARetainedDialogFragment extends DialogFragment
    * Tries to find this fragment, and returns it.
    *
    *****************************************************/
-  static protected Fragment findFragment( Activity activity, String tag, Class<? extends ARetainedDialogFragment> fragmentClass )
+  static protected Fragment find( Activity activity, String tag, Class<? extends ARetainedDialogFragment> fragmentClass )
     {
+    if ( activity == null )
+      {
+      Log.e( LOG_TAG, "Null activity supplied" );
+
+      return ( null );
+      }
+
+
     FragmentManager fragmentManager = activity.getFragmentManager();
 
     if ( fragmentManager != null )
@@ -181,12 +189,23 @@ abstract public class ARetainedDialogFragment extends DialogFragment
 
   /*****************************************************
    *
+   * Adds this fragment to the activity.
+   *
+   *****************************************************/
+  public void addTo( Activity activity, String tag )
+    {
+    mRetainedFragmentHelper.addTo( activity, tag );
+    }
+
+
+  /*****************************************************
+   *
    * Sets the current state notifier. The notifier may
    * get called twice, if there is both an attached activity
    * and a target fragment of the correct callback type.
    *
    *****************************************************/
-  protected void setState( RetainedFragmentHelper.AStateNotifier stateNotifier )
+  protected void setStateNotifier( RetainedFragmentHelper.AStateNotifier stateNotifier )
     {
     mRetainedFragmentHelper.setState( stateNotifier );
     }
@@ -197,23 +216,17 @@ abstract public class ARetainedDialogFragment extends DialogFragment
    * Removes this fragment from the activity.
    *
    *****************************************************/
-  public void removeFrom( Activity activity )
+  public void remove()
     {
-    mRetainedFragmentHelper.removeFrom( activity );
+    Activity activity = getActivity();
+
+    if ( activity != null ) mRetainedFragmentHelper.removeFrom( activity );
+
+    super.setTargetFragment( null, 0 );
     }
 
 
   ////////// Inner Class(es) //////////
-
-  /*****************************************************
-   *
-   * An interface for state notification.
-   *
-   *****************************************************/
-  protected abstract class AStateNotifier
-    {
-    abstract public void notify( Object callbackObject );
-    }
 
   }
 

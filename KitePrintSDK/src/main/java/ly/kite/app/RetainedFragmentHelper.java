@@ -275,9 +275,9 @@ public class RetainedFragmentHelper
    * An interface for state notification.
    *
    *****************************************************/
-  abstract public class AStateNotifier
+  public interface AStateNotifier
     {
-    abstract public void notify( Object callback );
+    public void notify( Object callback );
     }
 
   }

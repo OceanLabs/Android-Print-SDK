@@ -39,11 +39,11 @@ package ly.kite.checkout;
 
 ///// Import(s) /////
 
-
-///// Interface Declaration /////
-
 import ly.kite.api.OrderState;
 import ly.kite.ordering.Order;
+
+
+///// Interface Declaration /////
 
 /*****************************************************
  *

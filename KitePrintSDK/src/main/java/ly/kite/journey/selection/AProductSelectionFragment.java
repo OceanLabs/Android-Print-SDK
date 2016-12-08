@@ -95,6 +95,19 @@ abstract public class AProductSelectionFragment extends AKiteFragment implements
 
   /*****************************************************
    *
+   * Called when the catalogue load is cancelled.
+   *
+   *****************************************************/
+  @Override
+  public void onCatalogueCancelled()
+    {
+    // Don't do anything. Catalogue cancellations are dealt with
+    // by the activity.
+    }
+
+
+  /*****************************************************
+   *
    * Called when the sync completes successfully.
    *
    *****************************************************/

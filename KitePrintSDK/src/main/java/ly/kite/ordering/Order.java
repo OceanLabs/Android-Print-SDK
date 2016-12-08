@@ -587,6 +587,32 @@ public class Order implements Parcelable /* , Serializable */
     }
 
 
+    /*****************************************************
+     *
+     * Returns a sanitised version of this order.
+     *
+     *****************************************************/
+    public Order createSanitisedCopy()
+      {
+      // Create a new order, and copy over relevant details
+
+      Order sanitisedOrder = new Order();
+
+      sanitisedOrder.setShippingAddress( getShippingAddress() );
+      sanitisedOrder.setNotificationEmail( getNotificationEmail() );
+      sanitisedOrder.setNotificationPhoneNumber( getNotificationPhoneNumber() );
+      sanitisedOrder.setUserData( getUserData() );
+      sanitisedOrder.setAdditionalParameters( getAdditionalParameters() );
+      sanitisedOrder.setPromoCode( getPromoCode() );
+
+      sanitisedOrder.setOrderPricing( getOrderPricing() );
+      sanitisedOrder.setProofOfPayment( getProofOfPayment() );
+      sanitisedOrder.setReceipt( getReceipt() );
+
+
+      return ( sanitisedOrder );
+      }
+
 
     private boolean isAssetUploadInProgress() {
         // There may be a brief window where assetUploadReq == null whilst we asynchronously collect info about the assets
