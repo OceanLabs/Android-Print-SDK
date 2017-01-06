@@ -8,12 +8,24 @@
     android:padding="20dp"
     android:orientation="vertical">
 
-    <ly.kite.widget.FramedImageView
-        android:id="@+id/framed_image_view"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        custom:aspectRatio="@dimen/review_and_crop_image_aspect_ratio"
-        android:background="@android:color/white"/>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ly.kite.widget.FramedImageView
+            android:id="@+id/framed_image_view"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            custom:aspectRatio="@dimen/review_and_crop_image_aspect_ratio"
+            android:background="@android:color/white"/>
+        <ly.kite.widget.CustomTypefaceTextView
+            android:id="@+id/border_text_view"
+            android:layout_gravity="bottom|center"
+            android:layout_marginBottom="@dimen/review_border_text_bottom_margin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/review_border_text_size"
+            android:singleLine="true"/>
+    </FrameLayout>
 
     <LinearLayout
         android:layout_marginTop="10dp"
@@ -28,7 +40,7 @@
             android:layout_height="fill_parent"
             android:background="@color/review_and_crop_quantity_highlight"
             android:gravity="center"
-            android:textColor="@android:color/white"
+            android:textColor="@color/review_and_edit_quantity_text"
             android:textSize="@dimen/review_and_crop_quantity_text_size"/>
 
         <ly.kite.widget.CustomTypefaceButton

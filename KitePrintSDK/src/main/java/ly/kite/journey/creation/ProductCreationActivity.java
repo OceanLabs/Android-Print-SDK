@@ -57,6 +57,7 @@ import ly.kite.R;
 import ly.kite.analytics.Analytics;
 import ly.kite.journey.creation.calendar.CalendarFragment;
 import ly.kite.journey.creation.poster.PosterFragment;
+import ly.kite.journey.creation.reviewandedit.EditBorderTextImageFragment;
 import ly.kite.ordering.OrderingDataAgent;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.journey.IImageSpecStore;
@@ -90,6 +91,7 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
                                                                       PosterFragment.ICallback,
                                                                       ReviewAndEditFragment.ICallback,
                                                                       EditImageFragment.ICallback,
+                                                                      EditBorderTextImageFragment.ICallback,
                                                                       OrderingDataAgent.IAddListener
   {
   ////////// Static Constant(s) //////////
@@ -590,6 +592,23 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
     }
 
 
+  ////////// EditBorderTextImageFragment.ICallback Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when the OK button is clicked.
+   *
+   *****************************************************/
+  @Override
+  public void btiOnForwards( AssetFragment assetFragment, String borderText )
+    {
+    // Remove the edit image fragment from the back stack
+    popFragment();
+
+    onImageEdited( assetFragment, borderText );
+    }
+
+
   ////////// Method(s) //////////
 
   /*****************************************************
@@ -634,16 +653,8 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
    *****************************************************/
   private void addNextFragment()
     {
-    // For all user journeys, if there are no assets - we first display the image
-    // source fragment.
-
-    if ( mImageSpecArrayList.size() < 1 )
-      {
-      addFragment( ImageSourceFragment.newInstance( mProduct ), ImageSourceFragment.TAG );
-
-      return;
-      }
-
+    // Some screen we can go to if there are no image assets. Others, like the phone case, require
+    // the user to select an image first.
 
     switch ( mProduct.getUserJourneyType() )
       {
@@ -658,7 +669,10 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
         break;
 
       case PHONE_CASE:
-        addFragment( PhoneCaseFragment.newInstance( mProduct ), PhoneCaseFragment.TAG );
+        if ( ! imageSourceFragmentStarted() )
+          {
+          addFragment( PhoneCaseFragment.newInstance( mProduct ), PhoneCaseFragment.TAG );
+          }
         break;
 
       case PHOTOBOOK:
@@ -669,7 +683,29 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
         addFragment( PosterFragment.newInstance( mProduct ), PosterFragment.TAG );
         break;
       }
+    }
 
+
+  /*****************************************************
+   *
+   * Starts the image source fragment if there are currently
+   * no image assets.
+   *
+   * @return true, if the image source fragment was started
+   *         (because there were no image assets).
+   * @return false othwerise
+   *
+   *****************************************************/
+  private boolean imageSourceFragmentStarted()
+    {
+    if ( mImageSpecArrayList.size() < 1 )
+      {
+      addFragment( ImageSourceFragment.newInstance( mProduct ), ImageSourceFragment.TAG );
+
+      return ( true );
+      }
+
+    return ( false );
     }
 
 
@@ -698,6 +734,16 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
 
       mCustomImageEditorAgent.onStartEditor( this, imageSpec.getAsset(), AKiteActivity.ACTIVITY_REQUEST_CODE_EDIT_IMAGE );
       }
+
+    // If the product supports border text - launch the border text image editor
+    else if ( mProduct.flagIsSet( Product.Flag.SUPPORTS_TEXT_ON_BORDER ) )
+      {
+      EditBorderTextImageFragment borderTextImageFragment = EditBorderTextImageFragment.newInstance( mProduct, imageSpec.getAsset(), imageSpec.getBorderText() );
+
+      addFragment( borderTextImageFragment, EditBorderTextImageFragment.TAG );
+      }
+
+    // Fall back to the standard image editor
     else
       {
       EditImageFragment editImageFragment = EditImageFragment.newInstance( mProduct, imageSpec.getAsset() );
@@ -712,13 +758,14 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
    * Called when an image is edited.
    *
    *****************************************************/
-  public void onImageEdited( AssetFragment assetFragment )
+  public void onImageEdited( AssetFragment assetFragment, String borderText )
     {
     // Replace the edited asset with the new one
 
     ImageSpec imageSpec = mImageSpecArrayList.get( mLastEditedImageIndex );
 
     imageSpec.setImage( assetFragment, mProduct.getId() );
+    imageSpec.setBorderText( borderText );
 
 
     // Once an image has been edited, we need to notify any fragments that use it. A fragment
@@ -744,6 +791,17 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
         }
       }
 
+    }
+
+
+  /*****************************************************
+   *
+   * Called when an image is edited.
+   *
+   *****************************************************/
+  public void onImageEdited( AssetFragment assetFragment )
+    {
+    onImageEdited( assetFragment, null );
     }
 
 

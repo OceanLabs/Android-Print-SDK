@@ -35,6 +35,26 @@ public class GreetingCardJob extends Job
   private UploadableImage  mInsideRightUploadableImage;
 
 
+  /*****************************************************
+   *
+   * Returns an image spec containing the asset fragment frpm
+   * the supplied uploadable image, or null if the uploadable
+   * image is null.
+   *
+   *****************************************************/
+  static private ImageSpec imageSpecFrom( UploadableImage uploadableImage )
+    {
+    AssetFragment assetFragment;
+
+    if ( uploadableImage == null || ( assetFragment = uploadableImage.getAssetFragment() ) == null )
+      {
+      return ( null );
+      }
+
+    return ( new ImageSpec( assetFragment ) );
+    }
+
+
   public GreetingCardJob( long jobId, Product product, int orderQuantity, HashMap<String,String> optionsMap, Object frontImage, Object backImage, Object insideLeftImage, Object insideRightImage )
     {
     super( jobId, product, orderQuantity, optionsMap );
@@ -49,6 +69,25 @@ public class GreetingCardJob extends Job
     {
     this( 0, product, orderQuantity, optionsMap, frontImage, backImage, insideLeftImage, insideRightImage );
     }
+
+
+//  /*****************************************************
+//   *
+//   * Returns the images for this job as a list of image
+//   * specs.
+//   *
+//   *****************************************************/
+//  public List<ImageSpec> getImagesAsSpecList()
+//    {
+//    List<ImageSpec> imageSpecList = new ArrayList<>( 4 );
+//
+//    imageSpecList.add( imageSpecFrom( mFrontUploadableImage ) );
+//    imageSpecList.add( imageSpecFrom( mBackUploadableImage ) );
+//    imageSpecList.add( imageSpecFrom( mInsideLeftUploadableImage ) );
+//    imageSpecList.add( imageSpecFrom( mInsideRightUploadableImage ) );
+//
+//    return ( imageSpecList );
+//    }
 
 
   @Override

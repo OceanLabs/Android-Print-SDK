@@ -18,7 +18,7 @@
     <string name="title_payment">Paiement</string>
     <string name="title_payment_source_sandbox">Paiement Source (Test)</string>
     <string name="title_payment_source">Paiement Source</string>
-    <string name="title_basket">Bakset</string>
+    <string name="title_basket">Basket</string>
     <string name="title_photobook">Photobook</string>
     <string name="title_calendar">Calendrier</string>
     <string name="title_poster">Affiche</string>
@@ -40,17 +40,17 @@
     <string name="alert_dialog_title_no_mask">Erreur interne</string>
     <string name="alert_dialog_message_no_mask">Un problème est survenu: aucun masque n\'a été trouvé.Veuillez vérifier vos identifiants d\'accès.</string>
     <string name="alert_dialog_title_no_product">Erreur interne</string>
-    <string name="alert_dialog_message_no_product"><![CDATA[Un problème est survenu: aucun produit n\'a été détecté. Veuillez vérifier vos identifiants d\'accès.]]></string>
+    <string name="alert_dialog_message_no_product">Un problème est survenu: aucun produit n\'a été détecté. Veuillez vérifier vos identifiants d\'accès.</string>
     <string name="alert_dialog_title_error_retrieving_products">Erreur de récupération des produits</string>
-    <string name="alert_dialog_message_error_retrieving_products"><![CDATA[Un problème est survenu sur la récupération des produits. Veuillez s\'il vous plaît vérifier votre connexion Internet et vos identifiants d\'accès.]]></string>
+    <string name="alert_dialog_message_error_retrieving_products">Un problème est survenu sur la récupération des produits. Veuillez s\'il vous plaît vérifier votre connexion Internet et vos identifiants d\'accès.</string>
     <string name="alert_dialog_title_no_product_group_label">Aucun groupe de produits</string>
-    <string name="alert_dialog_message_no_product_group_label"><![CDATA[Un problème est survenu: pas de groupe de produit n\'a été trouvé. Veuillez consulter le journal pour plus de détails.]]></string>
+    <string name="alert_dialog_message_no_product_group_label">Un problème est survenu: pas de groupe de produit n\'a été trouvé. Veuillez consulter le journal pour plus de détails.</string>
     <string name="alert_dialog_title_product_not_found">Produit non trouvé</string>
     <string name="alert_dialog_message_product_not_found">Aucun produit n\'a &#233;t&#233; trouv&#233;. Veuillez consulter votre historique de commandes pour plus de d&#233;tails.</string>
     <string name="alert_dialog_title_create_order">Lancer une commande</string>
     <string name="alert_dialog_message_no_cropped_image_asset">Un probl&#232;me est survenu - Kite n\'a pas pu cr&#233;er d\'image recadr&#233;e.</string>
     <string name="alert_dialog_title_load_image">Impossible de charger l\'image</string>
-    <string name="alert_dialog_message_could_not_load_image"><![CDATA[Une image n\'a pas pu être chargée. Veuillez vérifier votre connexion Internet, et vos identifiants d\'accès.]]></string>
+    <string name="alert_dialog_message_could_not_load_image">Une image n\'a pas pu être chargée. Veuillez vérifier votre connexion Internet, et vos identifiants d\'accès.</string>
     <string name="alert_dialog_title_delete_photo">Supprimer la photo?</string>
     <string name="alert_dialog_message_delete_photo">Êtes-vous sûr de vouloir supprimer cette photo?</string>
     <string name="alert_dialog_delete_photo_cancel_text">Garder</string>
@@ -71,6 +71,12 @@
 
     <string name="alert_dialog_title_end_customer_session">Terminer session</string>
     <string name="alert_dialog_message_end_customer_session">Etes-vous sûr que vous voulez terminer votre session?</string>
+
+    <string name="alert_dialog_title_remove_item">Retirer l\'objet</string>
+    <string name="alert_dialog_message_remove_item">Veuillez confirmer que vous souhaitez supprimer cet article de votre panier.</string>
+
+    <string name="alert_dialog_title_empty_basket">Panier vide</string>
+    <string name="alert_dialog_message_empty_basket">Votre panier est actuellement vide. Veuillez ajouter un élément avant de passer à la caisse.</string>
 
     <string name="alert_dialog_message_connectivity">Veuillez vérifier votre connexion Internet et réessayez</string>
     <string name="alert_dialog_message_processing">Veuillez patienter…</string>
@@ -142,7 +148,13 @@
     <string name="product_overview_guarantee_title">Qualité garantie</string>
     <string name="product_overview_guarantee_text">Nous sommes convaincus que vous serez plus que satisfait de nos produits.&#160;Mais juste au cas o&#249;, nous offrons un remboursement complet si vous n\'&#234;tes pas satisfait &#224; 100% !</string>
     <string name="product_overview_start_button_text">Lancer la création</string>
+
+    <string name="image_selection_empty_message">Ajouter des photos en appuyant sur\nles icônes ci-dessus</string>
+
     <string name="phone_case_proceed_button_text">Suivant</string>
+
+    <string name="edit_border_text_hint">Ajouter texte ici</string>
+
     <string name="address_book_empty">Répertoire vide</string>
 
     <string name="image_source_prompt">Ajouter des photos en appuyant sur ​​l\'une des options</string>

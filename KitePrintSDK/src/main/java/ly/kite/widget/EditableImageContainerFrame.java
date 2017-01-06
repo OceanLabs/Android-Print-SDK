@@ -299,7 +299,7 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
    * Sets the mask as a drawable resource.
    *
    *****************************************************/
-  public EditableImageContainerFrame setMask( int resourceId, float aspectRatio )
+  public EditableImageContainerFrame setMask( int resourceId, float aspectRatio, Bleed bleed )
     {
     if ( KiteSDK.DEBUG_IMAGE_CONTAINERS ) Log.d( LOG_TAG, "setMask( resourceId = " + resourceId + ", aspectRatio = " + aspectRatio + " )" );
 
@@ -311,9 +311,20 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
     // If this ever changes, then we'll need to remember where the mask came from, so we can
     // re-load it when the fragment is top-most again.
 
-    mEditableMaskedImageView.setMask( resourceId, aspectRatio );
+    mEditableMaskedImageView.setMask( resourceId, aspectRatio, bleed );
 
     return ( this );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the mask as a drawable resource.
+   *
+   *****************************************************/
+  public EditableImageContainerFrame setMask( int resourceId, float aspectRatio )
+    {
+    return ( setMask( resourceId, aspectRatio, null ) );
     }
 
 

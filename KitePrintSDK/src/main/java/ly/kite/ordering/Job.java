@@ -35,7 +35,9 @@ import ly.kite.util.UploadableImage;
  *****************************************************/
 public abstract class Job implements Parcelable
   {
-  private static final String JSON_NAME_OPTIONS = "options";
+  static private   final String  JSON_NAME_OPTIONS       = "options";
+  static protected final String  JSON_NAME_POLAROID_TEXT = "polaroid_text";
+
 
   private           long                     mId;  // The id from the basket database
   transient private Product                  mProduct;  // Stop the product being serialised
@@ -185,32 +187,35 @@ public abstract class Job implements Parcelable
 
   /*****************************************************
    *
-   * Adds uploadable images to a list.
+   * Adds uploadable images and any border text to two lists.
    *
    *****************************************************/
-  static protected void addUploadableImages( Object object, List<UploadableImage> uploadableImageList, boolean nullObjectsAreBlankPages )
+  static protected void addUploadableImages( Object object, List<UploadableImage> uploadableImageList, List<String> borderTextList, boolean nullObjectsAreBlankPages )
     {
-    if ( object == null )
+    if ( object == null && nullObjectsAreBlankPages )
       {
-      if ( nullObjectsAreBlankPages )
-        {
-        uploadableImageList.add( null );
-        }
+      uploadableImageList.add( null );
+
+      if ( borderTextList != null ) borderTextList.add( null );
       }
 
 
-    // For ImageSpecs, we need to add as many images as the quantity
+    // For ImageSpecs, we need to add as many images as the quantity, and keep
+    // track of any border text.
 
     else if ( object instanceof ImageSpec )
       {
       ImageSpec imageSpec = (ImageSpec)object;
 
       AssetFragment assetFragment = imageSpec.getAssetFragment();
+      String        borderText    = imageSpec.getBorderText();
       int           quantity      = imageSpec.getQuantity();
 
       for ( int index = 0; index < quantity; index ++ )
         {
         uploadableImageList.add( new UploadableImage( assetFragment ) );
+
+        if ( borderTextList != null ) borderTextList.add( borderText );
         }
       }
 
@@ -221,7 +226,12 @@ public abstract class Job implements Parcelable
       {
       UploadableImage uploadableImage = singleUploadableImageFrom( object );
 
-      if ( uploadableImage != null ) uploadableImageList.add( uploadableImage );
+      if ( uploadableImage != null )
+        {
+        uploadableImageList.add( uploadableImage );
+
+        if ( borderTextList != null ) borderTextList.add( null );
+        }
       }
     }
 
@@ -295,19 +305,29 @@ public abstract class Job implements Parcelable
     }
 
 
-  // Adds the product option choices to the JSON
-  protected void addProductOptions( JSONObject jobJSONObject ) throws JSONException
+  /*****************************************************
+   *
+   * Adds the product option choices to the JSON.
+   *
+   * @return The options JSON object, so that the caller
+   *         may add further options if desired.
+   *
+   *****************************************************/
+  protected JSONObject addProductOptions( JSONObject jobJSONObject ) throws JSONException
     {
-    if ( mOptionsMap == null ) return;
-
     JSONObject optionsJSONObject = new JSONObject();
 
-    for ( String optionCode : mOptionsMap.keySet() )
+    if ( mOptionsMap != null )
       {
-      optionsJSONObject.put( optionCode, mOptionsMap.get( optionCode ) );
+      for ( String optionCode : mOptionsMap.keySet() )
+        {
+        optionsJSONObject.put( optionCode, mOptionsMap.get( optionCode ) );
+        }
       }
 
     jobJSONObject.put( JSON_NAME_OPTIONS, optionsJSONObject );
+
+    return ( optionsJSONObject );
     }
 
 

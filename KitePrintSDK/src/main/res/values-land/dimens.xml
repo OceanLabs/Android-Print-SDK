@@ -5,4 +5,12 @@
     <dimen name="basket_item_height">70dp</dimen>
     <dimen name="basket_item_image_width">60dp</dimen>
 
+    <dimen name="edit_border_text_image_frame_width">206dp</dimen>
+    <dimen name="edit_border_text_image_frame_height">240dp</dimen>
+    <dimen name="edit_border_text_image_thin_border_size">14dp</dimen>
+    <dimen name="edit_border_text_image_thick_border_size">48dp</dimen>
+    <dimen name="edit_border_text_size">25sp</dimen>
+
+    <dimen name="review_border_text_bottom_margin">6dp</dimen>
+
 </resources>

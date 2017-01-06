@@ -104,7 +104,7 @@ public class OrderingDataAgent
 
   private OrderingDataAgent( Context context )
     {
-    mApplicationContext = context.getApplicationContext();
+    mApplicationContext    = context.getApplicationContext();
     mOrderingDatabaseAgent = new OrderingDatabaseAgent( mApplicationContext, null );
     }
 
@@ -208,28 +208,28 @@ public class OrderingDataAgent
   private void addItem( long itemId, Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, int orderQuantity )
     {
     // We need to create a basket item per <mProduct.getQuantityPerSheet()> images, i.e.
-    // split the images into multiple jobs. Pretend we're creating an order, and get the
-    // correct user journey type to split the images for us.
+    // split the images into multiple jobs.
 
-    Order order = new Order();
+    List<List<ImageSpec>> splitImageSpecLists = product.getUserJourneyType().dbItemsFromCreationItems( product, imageSpecList );
 
-    product.getUserJourneyType().addJobsToOrder( mApplicationContext, product, 1, optionsMap, imageSpecList, order );
-
-    for ( Job job : order.getJobs() )
+    if ( splitImageSpecLists != null )
       {
-      // TODO: Currently we only support ImageJobs
-      if ( job instanceof ImagesJob )
+      // Each list of image specs now corresponds to a basket item
+
+      for ( List<ImageSpec> itemImageSpecList : splitImageSpecLists )
         {
-        ImagesJob imagesJob = (ImagesJob)job;
+        if ( itemImageSpecList != null )
+          {
+          // Move any referenced assets to the basket (if they are not already in)
+          itemImageSpecList = AssetHelper.createAsBasketAssets( mApplicationContext, BASKET_ID_DEFAULT, itemImageSpecList );
 
-        // Move any referenced assets to the basket (if they are not already in)
-        List<ImageSpec> jobImageSpecList = AssetHelper.createAsBasketAssets( mApplicationContext, BASKET_ID_DEFAULT, imagesJob.getImagesAsSpecList() );
+          // Create or replace the basket item
+          mOrderingDatabaseAgent.saveDefaultBasketItem( itemId, product, optionsMap, itemImageSpecList, orderQuantity );
 
-        mOrderingDatabaseAgent.saveDefaultBasketItem( itemId, product, optionsMap, jobImageSpecList, orderQuantity );
-
-        // If we were supplied an item id then this is an update. However, if more images were
-        // subsequently added whilst editing the item - additional jobs are inserted as new ones.
-        itemId = CREATE_NEW_ITEM_ID;
+          // If we were supplied an item id then this is an update. However, if more images were
+          // subsequently added whilst editing the item - additional jobs are inserted as new ones.
+          itemId = CREATE_NEW_ITEM_ID;
+          }
         }
       }
     }

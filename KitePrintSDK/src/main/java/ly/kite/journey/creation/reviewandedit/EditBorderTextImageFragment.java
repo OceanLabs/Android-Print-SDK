@@ -1,11 +1,11 @@
 /*****************************************************
  *
- * EditImageFragment.java
+ * EditBorderTextImageFragment.java
  *
  *
  * Modified MIT License
  *
- * Copyright (c) 2010-2015 Kite Tech Ltd. https://www.kite.ly
+ * Copyright (c) 2010-2016 Kite Tech Ltd. https://www.kite.ly
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -42,40 +42,48 @@ package ly.kite.journey.creation.reviewandedit;
 import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import ly.kite.R;
-import ly.kite.journey.UserJourneyType;
+import ly.kite.catalogue.Bleed;
 import ly.kite.journey.creation.AEditImageFragment;
-import ly.kite.util.Asset;
 import ly.kite.catalogue.Product;
+import ly.kite.util.Asset;
 import ly.kite.util.AssetFragment;
-import ly.kite.widget.EditableMaskedImageView;
 
 
 ///// Class Declaration /////
 
 /*****************************************************
  *
- * This fragment allows the user to edit an image.
+ * This activity allows the user to edit an image that
+ * also allows text on the border.
  *
  *****************************************************/
-public class EditImageFragment extends AEditImageFragment
+public class EditBorderTextImageFragment extends AEditImageFragment
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static public final String TAG = "EditImageFragment";
+  static public  final String  TAG                    = "EditBorderTextImageFragment";
+
+  static private final String  BUNDLE_KEY_BORDER_TEXT = "borderText";
 
 
   ////////// Static Variable(s) //////////
 
 
   ////////// Member Variable(s) //////////
+
+  private String    mInitialBorderText;
+
+  private EditText  mBorderEditText;
 
 
   ////////// Static Initialiser(s) //////////
@@ -88,27 +96,31 @@ public class EditImageFragment extends AEditImageFragment
    * Creates a new instance of this fragment.
    *
    *****************************************************/
-  public static EditImageFragment newInstance( Product product, Asset imageAsset )
+  public static EditBorderTextImageFragment newInstance( Product product, Asset imageAsset, String borderText )
     {
-    return ( new EditImageFragment( product, imageAsset ) );
+    EditBorderTextImageFragment fragment = new EditBorderTextImageFragment( product, imageAsset );
+
+    if ( borderText != null ) fragment.getArguments().putString( BUNDLE_KEY_BORDER_TEXT, borderText );
+
+    return ( fragment );
     }
 
 
   ////////// Constructor(s) //////////
 
-  public EditImageFragment()
+  public EditBorderTextImageFragment()
     {
     }
 
 
   @SuppressLint("ValidFragment")
-  private EditImageFragment( Product product, Asset imageAsset )
+  private EditBorderTextImageFragment( Product product, Asset imageAsset )
     {
     super( product, imageAsset );
     }
 
 
-    ////////// AEditImageFragment Method(s) //////////
+  ////////// AEditImageFragment Method(s) //////////
 
   /*****************************************************
    *
@@ -120,7 +132,31 @@ public class EditImageFragment extends AEditImageFragment
     {
     super.onCreate( savedInstanceState );
 
+
+    // The border text may have been changed since the screen was entered, so check for saved
+    // text first, then fallback to any supplied as an argument.
+
+    if ( savedInstanceState == null )
+      {
+      Bundle arguments = getArguments();
+
+      mInitialBorderText = arguments.getString( BUNDLE_KEY_BORDER_TEXT );
+      }
+
+
     setHasOptionsMenu( true );
+    }
+
+
+  /*****************************************************
+   *
+   * Called the first time the options menu is created.
+   *
+   *****************************************************/
+  @Override
+  public void onCreateOptionsMenu( Menu menu, MenuInflater menuInflator )
+    {
+    onCreateOptionsMenu( menu, menuInflator, R.menu.edit_border_text_image );
     }
 
 
@@ -132,27 +168,19 @@ public class EditImageFragment extends AEditImageFragment
   @Override
   public View onCreateView( LayoutInflater layoutInflator, ViewGroup container, Bundle savedInstanceState )
     {
-    View view = super.onCreateView( layoutInflator, container, savedInstanceState );
+    View view = super.onCreateView( layoutInflator, R.layout.screen_edit_border_text_image, container, savedInstanceState );
+
+    mBorderEditText = (EditText)view.findViewById( R.id.border_edit_text );
 
 
-    // Set the text of the backwards (cancel) button. If it is blank - hide the button.
+    if ( mInitialBorderText != null ) mBorderEditText.setText( mInitialBorderText );
 
-    String backwardsText = getString( R.string.edit_image_backwards_button_text );
 
-    if ( backwardsText != null && backwardsText.trim().length() > 0 )
-      {
-      setBackwardsTextViewVisibility( View.VISIBLE );
-      setBackwardsTextViewText( backwardsText );
-      }
-    else
-      {
-      setBackwardsTextViewVisibility( View.GONE );
-      }
-
+    setBackwardsTextViewVisibility( View.GONE );
 
     setForwardsTextViewVisibility( View.VISIBLE );
-    setForwardsTextViewText( R.string.edit_image_forwards_button_text );
-    setForwardsTextViewBold( true );
+    setForwardsTextViewText( R.string.edit_border_text_image_forwards_button_text );
+
 
     return ( view );
     }
@@ -169,44 +197,32 @@ public class EditImageFragment extends AEditImageFragment
     super.onActivityCreated( savedInstanceState );
 
 
+    // If we haven't already got an image asset - look in the asset list. Always use the
+    // last one in the list - the most recently selected.
+
+    if ( mImageAsset == null )
+      {
+      int imageSpecCount = ( mImageSpecArrayList != null ? mImageSpecArrayList.size() : 0 );
+
+      if ( imageSpecCount > 0 )
+        {
+        mImageAsset = mImageSpecArrayList.get( imageSpecCount - 1 ).getAsset();
+        }
+      }
+
+
     if ( mEditableImageContainerFrame != null )
       {
-      // Set up the editable image
-
-      Resources resources = getResources();
-
-      UserJourneyType                         userJourneyType = mProduct.getUserJourneyType();
-      EditableMaskedImageView.BorderHighlight borderHighlight = userJourneyType.editBorderHighlight();
-
       mEditableImageContainerFrame
               .setImage( mImageAsset )
-              .setMask( mProduct.getUserJourneyType().editMaskResourceId(), mProduct.getImageAspectRatio() )
-              .setTranslucentBorderPixels( resources.getDimensionPixelSize( R.dimen.edit_image_translucent_border_size ) )
-              .setBorderHighlight( borderHighlight, resources.getDimensionPixelSize( R.dimen.edit_image_border_highlight_size ) );
-
-      if ( borderHighlight == EditableMaskedImageView.BorderHighlight.RECTANGLE )
-        {
-        mEditableImageContainerFrame.setCornerOverlays( R.drawable.corner_top_left, R.drawable.corner_top_right, R.drawable.corner_bottom_left, R.drawable.corner_bottom_right );
-        }
+              .setMask( R.drawable.filled_white_rectangle, mProduct.getImageAspectRatio() );
       }
     }
 
 
   /*****************************************************
    *
-   * Called the first time the options menu is created.
-   *
-   *****************************************************/
-  @Override
-  public void onCreateOptionsMenu( Menu menu, MenuInflater menuInflator )
-    {
-    onCreateOptionsMenu( menu, menuInflator, R.menu.edit_image );
-    }
-
-
-  /*****************************************************
-   *
-   * Called when the fragment is on top.
+   * Called when the fragment is top-most.
    *
    *****************************************************/
   @Override
@@ -214,8 +230,12 @@ public class EditImageFragment extends AEditImageFragment
     {
     super.onTop();
 
-    mKiteActivity.setTitle( R.string.edit_image_title );
+    if ( mProduct != null ) mKiteActivity.setTitle( mProduct.getName() );
     }
+
+
+  // We don't need to save the instance state - the edit text containing the border text will
+  // do that automatically.
 
 
   /*****************************************************
@@ -223,11 +243,12 @@ public class EditImageFragment extends AEditImageFragment
    * Called when an edited asset is returned.
    *
    *****************************************************/
+  @Override
   protected void onEditedAsset( AssetFragment assetFragment )
     {
     if ( assetFragment != null && mKiteActivity instanceof ICallback )
       {
-      ((ICallback)mKiteActivity).eiOnConfirm( assetFragment );
+      ( (ICallback)mKiteActivity ).btiOnForwards( assetFragment, mBorderEditText.getText().toString() );
       }
     }
 
@@ -236,23 +257,10 @@ public class EditImageFragment extends AEditImageFragment
 
   /*****************************************************
    *
-   * Called when the cancel button is clicked.
+   * Called when the Next button is clicked.
    *
    *****************************************************/
-  protected void onCancel()
-    {
-    if ( mKiteActivity instanceof ICallback )
-      {
-      ( (ICallback)mKiteActivity ).eiOnCancel();
-      }
-    }
-
-
-  /*****************************************************
-   *
-   * Called when the confirm button is clicked.
-   *
-   *****************************************************/
+  @Override
   protected void onConfirm()
     {
     returnEditedAsset();
@@ -263,13 +271,12 @@ public class EditImageFragment extends AEditImageFragment
 
   /*****************************************************
    *
-   * The callback interface.
+   * A callback interface.
    *
    *****************************************************/
   public interface ICallback
     {
-    public void eiOnCancel();
-    public void eiOnConfirm( AssetFragment assetFragment );
+    public void btiOnForwards( AssetFragment assetFragment, String borderText );
     }
 
   }

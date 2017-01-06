@@ -107,6 +107,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
   private GridView                     mImageSourceGridView;
   private View                         mFadeableView;
   private Button                       mClearPhotosButton;
+  private View                         mEmptyView;
 
   private RecyclerView                 mImageRecyclerView;
   private GridLayoutManager            mImageLayoutManager;
@@ -179,6 +180,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     mImageRecyclerView    = (RecyclerView)view.findViewById( R.id.image_recycler_view );
     mFadeableView          = view.findViewById( R.id.fadeable_view );
     mClearPhotosButton    = (Button)view.findViewById( R.id.clear_photos_button );
+    mEmptyView            = view.findViewById( R.id.empty_view );
 
 
     // Set up the image sources
@@ -193,6 +195,9 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
       mImageSourceGridView.setOnItemClickListener( this );
       }
+
+
+    checkEmptyView();
 
 
     mClearPhotosButton.setOnClickListener( this );
@@ -339,6 +344,8 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     if ( mProduct != null ) setTitle();
 
     setUpRecyclerView();
+
+    checkEmptyView();
     }
 
 
@@ -391,6 +398,8 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     mAssetIsCheckedArrayList.add( true );
 
     mImagePackAdaptor.addAsset( imageSpec );
+
+    checkEmptyView();
     }
 
 
@@ -467,6 +476,8 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
       animateFadeableViewIn();
 
       setUpRecyclerView();
+
+      checkEmptyView();
 
       return;
       }
@@ -572,6 +583,21 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     mImageRecyclerView.setLayoutManager( mImageLayoutManager );
 
     mImageRecyclerView.setAdapter( mImagePackAdaptor );
+    }
+
+
+  /*****************************************************
+   *
+   * Displays / hides any empty view.
+   *
+   *****************************************************/
+  private void checkEmptyView()
+    {
+    if ( mEmptyView != null && mImageSpecArrayList != null )
+      {
+      if ( mImageSpecArrayList.size() > 0 ) mEmptyView.setVisibility( View.GONE );
+      else                                  mEmptyView.setVisibility( View.VISIBLE );
+      }
     }
 
 

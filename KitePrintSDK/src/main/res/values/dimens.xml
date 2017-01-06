@@ -20,6 +20,8 @@
     <dimen name="empty_text_size">15sp</dimen>
     <dimen name="spinner_text_size">18sp</dimen>
 
+    <dimen name="empty_text_top_padding">40dp</dimen>
+
     <dimen name="checkable_image_highlight_border_size">5dp</dimen>
 
     <dimen name="form_field_label_text_size">15sp</dimen>
@@ -47,6 +49,7 @@
     <dimen name="prompt_text_frame_padding_vertical">10dp</dimen>
     <dimen name="prompt_text_frame_text_size">18sp</dimen>
 
+    <dimen name="group_or_product_grid_horizontal_margin">0dp</dimen>
     <dimen name="group_or_product_grid_vertical_spacing">2dp</dimen>
     <dimen name="group_or_product_grid_horizontal_spacing">2dp</dimen>
 
@@ -133,8 +136,17 @@
     <dimen name="review_and_crop_plus_minus_text_size">28sp</dimen>
     <dimen name="review_and_crop_rectangle_border_size">20dp</dimen>
 
+    <dimen name="review_border_text_bottom_margin">10dp</dimen>
+    <dimen name="review_border_text_size">36sp</dimen>
+
     <dimen name="edit_image_translucent_border_size">20dp</dimen>
     <dimen name="edit_image_border_highlight_size">1dp</dimen>
+
+    <dimen name="edit_border_text_image_frame_width">300dp</dimen>
+    <dimen name="edit_border_text_image_frame_height">350dp</dimen>
+    <dimen name="edit_border_text_image_thin_border_size">20dp</dimen>
+    <dimen name="edit_border_text_image_thick_border_size">70dp</dimen>
+    <dimen name="edit_border_text_size">36sp</dimen>
 
     <dimen name="log_out_dialog_width">240dp</dimen>
 

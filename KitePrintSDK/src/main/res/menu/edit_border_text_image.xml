@@ -1,0 +1,36 @@
+<menu
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/add_image_menu_item"
+        android:icon="@drawable/ic_add_photo"
+        android:showAsAction="always"
+        tools:ignore="AppCompatResource,MenuTitle">
+
+        <menu
+            android:id="@+id/add_image_menu">
+
+            <!-- This is empty for now - the items will be added according to
+                 what's available.
+              -->
+
+        </menu>
+
+    </item>
+
+    <item
+        android:id="@+id/flip_horizontally_menu_item"
+        android:title="@string/Flip"
+        android:icon="@drawable/ic_flip_horizontally"
+        android:showAsAction="always"
+        tools:ignore="AppCompatResource"/>
+
+    <item
+        android:id="@+id/rotate_anticlockwise_menu_item"
+        android:title="@string/Rotate"
+        android:icon="@drawable/ic_rotate_anticlockwise"
+        android:showAsAction="always"
+        tools:ignore="AppCompatResource"/>
+
+</menu>

@@ -86,7 +86,7 @@ public class DeviceImageSource extends AImageSource
   public DeviceImageSource()
     {
     super( R.color.image_source_background_device,
-           R.drawable.ic_add_photo_white,
+           R.drawable.ic_image_source_device,
            R.string.image_source_device,
            R.id.add_image_from_device,
            R.string.select_photo_from_device );

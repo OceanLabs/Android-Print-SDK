@@ -81,33 +81,36 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
   {
   ////////// Static Constant(s) //////////
 
-  static private final String LOG_TAG                                   = "OrderingDatabaseAgent";
+  static private final String LOG_TAG                                        = "OrderingDatabaseAgent";
 
-  static private final String DATABASE_NAME                             = "ordering.db";
-  static private final int    DATABASE_VERSION                          = 2;
+  static private final String DATABASE_NAME                                  = "ordering.db";
+  static private final int    DATABASE_VERSION                               = 3;
 
-  static private final String TABLE_ADDRESS                             = "Address";
-  static private final String TABLE_BASKET                              = "Basket";
-  static private final String TABLE_IMAGE_SPEC                          = "ImageSpec";
-  static private final String TABLE_ITEM                                = "Item";
-  static private final String TABLE_ITEM_IMAGE_SPEC                     = "ItemImageSpec";
-  static private final String TABLE_OPTION                              = "Option";
-  static private final String TABLE_ORDER                               = "_Order";
-  static private final String TABLE_ORDER_ADDITIONAL_PARAMETER          = "OrderAdditionalParameter";
+  static private final String TABLE_ADDRESS                                  = "Address";
+  static private final String TABLE_BASKET                                   = "Basket";
+  static private final String TABLE_IMAGE_SPEC                               = "ImageSpec";
+  static private final String TABLE_IMAGE_SPEC_ADDITIONAL_PARAMETER          = "ImageSpecAdditionalParameter";
+  static private final String TABLE_ITEM                                     = "Item";
+  static private final String TABLE_ITEM_IMAGE_SPEC                          = "ItemImageSpec";
+  static private final String TABLE_OPTION                                   = "Option";
+  static private final String TABLE_ORDER                                    = "_Order";
+  static private final String TABLE_ORDER_ADDITIONAL_PARAMETER               = "OrderAdditionalParameter";
 
-  static private final String COLUMN_IMAGE_SPEC_ID                      = "image_spec_id";
+  static private final String COLUMN_IMAGE_SPEC_ID                           = "image_spec_id";
 
-  static private final String SQL_DROP_ADDRESS_TABLE                    = "DROP TABLE " + TABLE_ADDRESS;
-  static private final String SQL_DROP_BASKET_TABLE                     = "DROP TABLE " + TABLE_BASKET;
-  static private final String SQL_DROP_IMAGE_SPEC_TABLE                 = "DROP TABLE " + TABLE_IMAGE_SPEC;
-  static private final String SQL_DROP_ITEM_TABLE                       = "DROP TABLE " + TABLE_ITEM;
-  static private final String SQL_DROP_ITEM_IMAGE_SPEC_TABLE            = "DROP TABLE " + TABLE_ITEM_IMAGE_SPEC;
-  static private final String SQL_DROP_OPTION_TABLE                     = "DROP TABLE " + TABLE_OPTION;
-  static private final String SQL_DROP_ORDER_TABLE                      = "DROP TABLE " + TABLE_ORDER;
-  static private final String SQL_DROP_ORDER_ADDITIONAL_PARAMETER_TABLE = "DROP TABLE " + TABLE_ORDER_ADDITIONAL_PARAMETER;
+  static private final String SQL_DROP_ADDRESS_TABLE                         = "DROP TABLE " + TABLE_ADDRESS;
+  static private final String SQL_DROP_BASKET_TABLE                          = "DROP TABLE " + TABLE_BASKET;
+  static private final String SQL_DROP_IMAGE_SPEC_TABLE                      = "DROP TABLE " + TABLE_IMAGE_SPEC;
+  static private final String SQL_DROP_IMAGE_SPEC_ADDITIONAL_PARAMETER_TABLE = "DROP TABLE " + TABLE_IMAGE_SPEC_ADDITIONAL_PARAMETER;
+  static private final String SQL_DROP_ITEM_TABLE                            = "DROP TABLE " + TABLE_ITEM;
+  static private final String SQL_DROP_ITEM_IMAGE_SPEC_TABLE                 = "DROP TABLE " + TABLE_ITEM_IMAGE_SPEC;
+  static private final String SQL_DROP_OPTION_TABLE                          = "DROP TABLE " + TABLE_OPTION;
+  static private final String SQL_DROP_ORDER_TABLE                           = "DROP TABLE " + TABLE_ORDER;
+  static private final String SQL_DROP_ORDER_ADDITIONAL_PARAMETER_TABLE      = "DROP TABLE " + TABLE_ORDER_ADDITIONAL_PARAMETER;
 
-  static private final String ORDER_HISTORY_DATE_FORMAT                 = "dd MMMM yyyy";
+  static private final String ORDER_HISTORY_DATE_FORMAT                      = "dd MMMM yyyy";
 
+  static private final String IMAGE_SPEC_ADDITIONAL_PARAMETER_NAME_BORDER_TEXT = "borderText";
 
   static private final String SQL_CREATE_ADDRESS_TABLE =
           "CREATE TABLE " + TABLE_ADDRESS +
@@ -131,6 +134,18 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
                   "id            INTEGER  PRIMARY KEY," +
                   "dummy_column  TEXT     NULL" +
                   " )";
+
+
+  static private final String SQL_CREATE_IMAGE_SPEC_ADDITIONAL_PARAMETER_TABLE =
+          "CREATE TABLE " + TABLE_IMAGE_SPEC_ADDITIONAL_PARAMETER +
+                  " ( " +
+                  "image_spec_id   INTEGER  NOT NULL," +
+                  "name            TEXT     NOT NULL," +
+                  "value           TEXT     NOT NULL" +
+                  " )";
+
+  static private final String SQL_CREATE_IMAGE_SPEC_ADDITIONAL_PARAMETER_INDEX_1 =
+          "CREATE UNIQUE INDEX ImageSpecAdditonalParameterIndex1 ON " + TABLE_IMAGE_SPEC_ADDITIONAL_PARAMETER + " ( image_spec_id, name )";
 
 
   static private final String SQL_CREATE_IMAGE_SPEC_TABLE =
@@ -278,6 +293,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
 
     database.execSQL( SQL_CREATE_ADDRESS_TABLE );
     database.execSQL( SQL_CREATE_IMAGE_SPEC_TABLE );
+    database.execSQL( SQL_CREATE_IMAGE_SPEC_ADDITIONAL_PARAMETER_TABLE );
     database.execSQL( SQL_CREATE_BASKET_TABLE );
     database.execSQL( SQL_CREATE_ORDER_TABLE );
     database.execSQL( SQL_CREATE_ITEM_TABLE );
@@ -285,6 +301,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
     database.execSQL( SQL_CREATE_OPTION_TABLE );
     database.execSQL( SQL_CREATE_ORDER_ADDITIONAL_PARAMETER_TABLE );
 
+    database.execSQL( SQL_CREATE_IMAGE_SPEC_ADDITIONAL_PARAMETER_INDEX_1 );
     database.execSQL( SQL_CREATE_ITEM_INDEX_1 );
     database.execSQL( SQL_CREATE_ITEM_IMAGE_SPEC_INDEX_1 );
     database.execSQL( SQL_CREATE_OPTION_INDEX_1 );
@@ -304,17 +321,26 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
   @Override
   public void onUpgrade( SQLiteDatabase database, int oldVersionNumber, int newVersionNumber )
     {
-    database.execSQL( SQL_DROP_ADDRESS_TABLE );
-    database.execSQL( SQL_DROP_BASKET_TABLE );
-    database.execSQL( SQL_DROP_ITEM_IMAGE_SPEC_TABLE );
-    database.execSQL( SQL_DROP_IMAGE_SPEC_TABLE );
-    database.execSQL( SQL_DROP_OPTION_TABLE );
-    database.execSQL( SQL_DROP_ORDER_ADDITIONAL_PARAMETER_TABLE );
-    database.execSQL( SQL_DROP_ITEM_TABLE );
-    database.execSQL( SQL_DROP_ORDER_TABLE );
-    database.execSQL( SQL_DROP_BASKET_TABLE );
+    if ( oldVersionNumber == 2 && newVersionNumber == 3 )
+      {
+      database.execSQL( SQL_CREATE_IMAGE_SPEC_ADDITIONAL_PARAMETER_TABLE );
+      database.execSQL( SQL_CREATE_IMAGE_SPEC_ADDITIONAL_PARAMETER_INDEX_1 );
+      }
+    else
+      {
+      database.execSQL( SQL_DROP_ADDRESS_TABLE );
+      database.execSQL( SQL_DROP_BASKET_TABLE );
+      database.execSQL( SQL_DROP_ITEM_IMAGE_SPEC_TABLE );
+      database.execSQL( SQL_DROP_IMAGE_SPEC_ADDITIONAL_PARAMETER_TABLE );
+      database.execSQL( SQL_DROP_IMAGE_SPEC_TABLE );
+      database.execSQL( SQL_DROP_OPTION_TABLE );
+      database.execSQL( SQL_DROP_ORDER_ADDITIONAL_PARAMETER_TABLE );
+      database.execSQL( SQL_DROP_ITEM_TABLE );
+      database.execSQL( SQL_DROP_ORDER_TABLE );
+      database.execSQL( SQL_DROP_BASKET_TABLE );
 
-    onCreate( database );
+      onCreate( database );
+      }
     }
 
   
@@ -913,6 +939,16 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
 
             return ( null );
             }
+
+
+          // Insert any image spec additional parameters
+
+          String borderText = imageSpec.getBorderText();
+
+          if ( borderText != null )
+            {
+            insertImageSpecAdditionalParameter( database, imageSpecId, IMAGE_SPEC_ADDITIONAL_PARAMETER_NAME_BORDER_TEXT, borderText );
+            }
           }
         else
           {
@@ -985,6 +1021,45 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
     finally
       {
       if ( database != null ) database.close();
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Inserts an image spec additional parameter.
+   *
+   * @return The (primary key /) id of the new item, or -1,
+   *         if the item could not be created.
+   *
+   *****************************************************/
+  private long insertImageSpecAdditionalParameter( SQLiteDatabase database, long imageSpecId, String name, String value )
+    {
+    ContentValues contentValues = new ContentValues();
+
+    contentValues.put( "image_spec_id", imageSpecId );
+    contentValues.put( "name",          name );
+    contentValues.put( "value",         value );
+
+
+    // Try to insert the new parameter
+
+    try
+      {
+      long id = database.insert( TABLE_IMAGE_SPEC_ADDITIONAL_PARAMETER, null, contentValues );
+
+      if ( id < 0 )
+        {
+        Log.e( LOG_TAG, "Unable to insert new image spec parameter" );
+        }
+
+      return ( id );
+      }
+    catch ( Exception exception )
+      {
+      Log.e( LOG_TAG, "Unable to insert new image spec parameter", exception );
+
+      return ( -1 );
       }
     }
 
@@ -1476,6 +1551,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
       }
 
 
+
     // Get all the addresses
 
 //    SparseArray<Address> addressesSparseArray = selectAllAddresses( basketId );
@@ -1723,6 +1799,13 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
    *****************************************************/
   SparseArray<ImageSpec> selectAllImageSpecs( Context context, long basketId )
     {
+    // Get all the image spec additional parameters
+
+    SparseArray<HashMap<String,String>> imageSpecAdditionalParametersSparseArray = selectAllImageSpecAdditionalParameters( context, basketId );
+
+    if ( imageSpecAdditionalParametersSparseArray == null ) imageSpecAdditionalParametersSparseArray = new SparseArray<>();
+
+
     // Construct the SQL statement:
     StringBuilder sqlStringBuilder = new StringBuilder()
             .append( "SELECT ispec.id," )
@@ -1773,6 +1856,19 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
 
         ImageSpec imageSpec = new ImageSpec( AssetHelper.createExistingBasketAsset( context, basketId, imageFileName ), new RectF( left, top, right, bottom ), quantity );
 
+
+        // Restore any additional parameters
+
+        HashMap<String,String> additionalParametersHashMap = imageSpecAdditionalParametersSparseArray.get( (int)imageSpecId );
+
+        if ( additionalParametersHashMap != null )
+          {
+          String borderText = additionalParametersHashMap.get( IMAGE_SPEC_ADDITIONAL_PARAMETER_NAME_BORDER_TEXT );
+
+          if ( borderText != null ) imageSpec.setBorderText( borderText );
+          }
+
+
         imageSpecSparseArray.put( (int)imageSpecId, imageSpec );
         }
 
@@ -1782,6 +1878,89 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
     catch ( Exception exception )
       {
       Log.e( LOG_TAG, "Unable to select all assets", exception );
+
+      return ( null );
+      }
+    finally
+      {
+      // Make sure the cursor is closed
+      if ( cursor != null ) cursor.close();
+
+      // Make sure the database is closed
+      if ( database != null ) database.close();
+      }
+
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a sparse array of hash maps, indexed by
+   * image spec id.
+   *
+   *****************************************************/
+  SparseArray<HashMap<String,String>> selectAllImageSpecAdditionalParameters( Context context, long basketId )
+    {
+    // Construct the SQL statement:
+    StringBuilder sqlStringBuilder = new StringBuilder()
+            .append( "SELECT isap.image_spec_id," )
+            .append(        "isap.name," )
+            .append(        "isap.value" )
+            .append( "  FROM Item i," )
+            .append( "       ItemImageSpec iis,")
+            .append( "       ImageSpec ispec," )
+            .append( "       ImageSpecAdditionalParameter isap" )
+            .append( " WHERE i.basket_id        = " ).append( basketId )
+            .append( "   AND iis.item_id        = i.id" )
+            .append( "   AND ispec.id           = iis.image_spec_id" )
+            .append( "   AND isap.image_spec_id = ispec.id" )
+            .append( " ORDER BY ispec.id" );
+
+
+    // Initialise the database and cursor
+    SQLiteDatabase database = null;
+    Cursor         cursor   = null;
+
+    try
+      {
+      // Open the database
+      database = getWritableDatabase();
+
+      // Execute the query, and get a cursor for the result set
+      cursor = database.rawQuery( sqlStringBuilder.toString(), null );
+
+
+      SparseArray<HashMap<String,String>> imageSpecAdditionalParametersSparseArray = new SparseArray<>();
+
+
+      // Process every row; each row corresponds to a single parameter
+
+      while ( cursor.moveToNext() )
+        {
+        // Get the values from the cursor
+
+        long   imageSpecId = cursor.getLong  ( cursor.getColumnIndex( "image_spec_id" ) );
+        String name        = cursor.getString( cursor.getColumnIndex( "name" ) );
+        String value       = cursor.getString( cursor.getColumnIndex( "value" ) );
+
+        HashMap<String,String> parametersHashMap = imageSpecAdditionalParametersSparseArray.get( (int)imageSpecId );
+
+        if ( parametersHashMap == null )
+          {
+          parametersHashMap = new HashMap<>();
+
+          imageSpecAdditionalParametersSparseArray.put( (int)imageSpecId, parametersHashMap );
+          }
+
+        parametersHashMap.put( name, value );
+        }
+
+
+      return ( imageSpecAdditionalParametersSparseArray );
+      }
+    catch ( Exception exception )
+      {
+      Log.e( LOG_TAG, "Unable to select all image spec additional parameters", exception );
 
       return ( null );
       }
@@ -2188,6 +2367,13 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
     {
     // Construct the delete SQL statements.
 
+    String deleteImageSpecAdditionalParameterSQLString = "DELETE" +
+                                                          " FROM ImageSpecAdditionalParameter" +
+                                                          " WHERE image_spec_id IN ( SELECT image_spec_id" +
+                                                                                    " FROM ItemImageSpec" +
+                                                                                   " WHERE item_id = " + itemId +
+                                                                                  " )";
+
     String deleteImageSpecSQLString = "DELETE" +
                                      " FROM ImageSpec" +
                                     " WHERE id IN ( SELECT image_spec_id" +
@@ -2211,6 +2397,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
 
       // Execute the delete statements
       //database.execSQL( deleteAddressSQLString );
+      database.execSQL( deleteImageSpecAdditionalParameterSQLString );
       database.execSQL( deleteImageSpecSQLString );
       database.execSQL( deleteItemImageSpecSQLString );
       database.execSQL( deleteOptionSQLString );

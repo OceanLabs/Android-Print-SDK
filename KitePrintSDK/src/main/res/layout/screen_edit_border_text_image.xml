@@ -1,0 +1,39 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        android:background="@color/edit_image_background">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0">
+            <include layout="@layout/include_edit_border_text_image"/>
+        </FrameLayout>
+
+        <include layout="@layout/include_edit_image_cta_bar"/>
+
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progress_spinner"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <ly.kite.widget.PromptTextFrame
+        android:id="@+id/prompt_text_frame"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        custom:promptText="@string/edit_image_prompt_text"
+        android:layerType="hardware"/>
+
+</FrameLayout>

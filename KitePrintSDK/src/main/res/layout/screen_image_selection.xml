@@ -26,6 +26,17 @@
 
         <include layout="@layout/include_proceed_overlay"/>
 
+        <ly.kite.widget.CustomTypefaceTextView
+            android:id="@+id/empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white"
+            android:paddingTop="@dimen/empty_text_top_padding"
+            android:gravity="top|center_horizontal"
+            android:text="@string/image_selection_empty_message"
+            android:textSize="@dimen/empty_text_size"
+            android:visibility="gone"/>
+
         <ly.kite.widget.CustomTypefaceButton
             android:id="@+id/clear_photos_button"
             android:layout_gravity="bottom"

@@ -37,7 +37,8 @@ public class ImagesJob extends Job
   static private final String LOG_TAG = "ImagesJob";
 
 
-  private List<UploadableImage> mUploadableImageList;
+  private ArrayList<UploadableImage>  mUploadableImageList;
+  private ArrayList<String>           mBorderTextList;
 
 
   public ImagesJob( long jobId, Product product, int orderQuantity, HashMap<String,String> optionMap, List<?> objectList, int offset, int length, boolean nullObjectsAreBlankPages )
@@ -54,6 +55,11 @@ public class ImagesJob extends Job
 
     mUploadableImageList = new ArrayList<>();
 
+    if ( product.flagIsSet( Product.Flag.SUPPORTS_TEXT_ON_BORDER ) )
+      {
+      mBorderTextList = new ArrayList<>();
+      }
+
     if ( objectList != null )
       {
       if ( offset < 0 )
@@ -66,7 +72,7 @@ public class ImagesJob extends Job
         {
         Object object = objectList.get( objectIndex );
 
-        addUploadableImages( object, mUploadableImageList, nullObjectsAreBlankPages );
+        addUploadableImages( object, mUploadableImageList, mBorderTextList, nullObjectsAreBlankPages );
         }
       }
     }
@@ -159,36 +165,36 @@ public class ImagesJob extends Job
     }
 
 
-  /*****************************************************
-   *
-   * Returns the images for this job as a list of image
-   * specs.
-   *
-   *****************************************************/
-  public List<ImageSpec> getImagesAsSpecList()
-    {
-    List<ImageSpec> imageSpecList = new ArrayList<>();
-
-    if ( mUploadableImageList != null )
-      {
-      for ( UploadableImage uploadableImage : mUploadableImageList )
-        {
-        AssetFragment assetFragment;
-
-        if ( uploadableImage != null &&
-             ( assetFragment = uploadableImage.getAssetFragment() ) != null )
-          {
-          imageSpecList.add( new ImageSpec( assetFragment ) );
-          }
-        else
-          {
-          imageSpecList.add( null );
-          }
-        }
-      }
-
-    return ( imageSpecList );
-    }
+//  /*****************************************************
+//   *
+//   * Returns the images for this job as a list of image
+//   * specs.
+//   *
+//   *****************************************************/
+//  public List<ImageSpec> getImagesAsSpecList()
+//    {
+//    List<ImageSpec> imageSpecList = new ArrayList<>();
+//
+//    if ( mUploadableImageList != null )
+//      {
+//      for ( UploadableImage uploadableImage : mUploadableImageList )
+//        {
+//        AssetFragment assetFragment;
+//
+//        if ( uploadableImage != null &&
+//             ( assetFragment = uploadableImage.getAssetFragment() ) != null )
+//          {
+//          imageSpecList.add( new ImageSpec( assetFragment ) );
+//          }
+//        else
+//          {
+//          imageSpecList.add( null );
+//          }
+//        }
+//      }
+//
+//    return ( imageSpecList );
+//    }
 
 
   @Override
@@ -200,9 +206,15 @@ public class ImagesJob extends Job
       {
       jsonObject.put( "template_id", getProductId() );
 
-      addProductOptions( jsonObject );
+      JSONObject productOptionsJSONObject = addProductOptions( jsonObject );
 
       putAssetsJSON( mUploadableImageList, jsonObject );
+
+      // If we have a border text list - add it into the options
+      if ( mBorderTextList != null )
+        {
+        addBorderTextList( productOptionsJSONObject );
+        }
 
       jsonObject.put( "frame_contents", new JSONObject() );
       }
@@ -237,6 +249,33 @@ public class ImagesJob extends Job
 
   /*****************************************************
    *
+   * Adds the border text into the supplied JSON object.
+   *
+   *****************************************************/
+  private void addBorderTextList( JSONObject jsonObject )
+    {
+    // Create a JSON array for the border text
+    JSONArray borderTextJSONArray = new JSONArray();
+
+    // Add the border text, or an empty string if there is none
+    for ( String borderText : mBorderTextList )
+      {
+      borderTextJSONArray.put( borderText != null ? borderText : "" );
+      }
+
+    try
+      {
+      jsonObject.put( JSON_NAME_POLAROID_TEXT, borderTextJSONArray );
+      }
+    catch ( JSONException je )
+      {
+      Log.e( LOG_TAG, "Unable to add polaroid text into options", je );
+      }
+    }
+
+
+  /*****************************************************
+   *
    * Adds the assets to the supplied JSON object. The default
    * implementation just adds the assets as an array.
    *
@@ -252,12 +291,25 @@ public class ImagesJob extends Job
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel parcel, int flags) {
-        super.writeToParcel( parcel, flags );
-        parcel.writeTypedList( mUploadableImageList );
 
+  @Override
+  public void writeToParcel( Parcel parcel, int flags )
+    {
+    super.writeToParcel( parcel, flags );
+
+    parcel.writeTypedList( mUploadableImageList );
+
+    if ( mBorderTextList != null )
+      {
+      parcel.writeInt( mBorderTextList.size() );
+      parcel.writeStringList( mBorderTextList );
+      }
+    else
+      {
+      parcel.writeInt( -1 );
+      }
     }
+
 
   protected ImagesJob( Parcel parcel )
     {
@@ -265,6 +317,16 @@ public class ImagesJob extends Job
 
     mUploadableImageList = new ArrayList<>();
     parcel.readTypedList( mUploadableImageList, UploadableImage.CREATOR );
+
+
+    int borderTextSize = parcel.readInt();
+
+    if ( borderTextSize >= 0 )
+      {
+      mBorderTextList = new ArrayList<>( borderTextSize );
+
+      parcel.readStringList( mBorderTextList );
+      }
     }
 
     public static final Parcelable.Creator<ImagesJob> CREATOR

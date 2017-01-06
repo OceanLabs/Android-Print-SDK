@@ -6,6 +6,8 @@
 
     <ly.kite.widget.HeaderFooterGridView
         android:id="@+id/grid_view"
+        android:layout_marginLeft="@dimen/group_or_product_grid_horizontal_margin"
+        android:layout_marginRight="@dimen/group_or_product_grid_horizontal_margin"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:numColumns="@integer/display_item_grid_num_columns"

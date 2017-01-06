@@ -97,6 +97,7 @@ public class ImageSpec implements Parcelable
   ////////// Member Variable(s) //////////
 
   private AssetFragment  mAssetFragment;
+  private String         mBorderText;
   private int            mQuantity;
 
   private String         mCroppedForProductId;
@@ -183,10 +184,17 @@ public class ImageSpec implements Parcelable
 
   ////////// Constructor(s) //////////
 
-  public ImageSpec( AssetFragment assetFragment, int quantity )
+  public ImageSpec( AssetFragment assetFragment, String borderText, int quantity )
     {
     mAssetFragment = assetFragment;
+    mBorderText    = borderText;
     mQuantity      = quantity;
+    }
+
+
+  public ImageSpec( AssetFragment assetFragment, int quantity )
+    {
+    this( assetFragment, null, quantity );
     }
 
 
@@ -208,9 +216,18 @@ public class ImageSpec implements Parcelable
     }
 
 
+  private ImageSpec( AssetFragment assetFragment, String borderText, int quantity, String croppedForProductId )
+    {
+    this( assetFragment, borderText, quantity );
+
+    mCroppedForProductId = croppedForProductId;
+    }
+
+
   private ImageSpec( Parcel sourceParcel )
     {
     mAssetFragment       = sourceParcel.readParcelable( AssetFragment.class.getClassLoader() );
+    mBorderText          = sourceParcel.readString();
     mQuantity            = sourceParcel.readInt();
     mCroppedForProductId = sourceParcel.readString();
     }
@@ -229,6 +246,7 @@ public class ImageSpec implements Parcelable
   public void writeToParcel( Parcel targetParcel, int flags )
     {
     targetParcel.writeParcelable( mAssetFragment, flags );
+    targetParcel.writeString( mBorderText );
     targetParcel.writeInt( mQuantity );
     targetParcel.writeString( mCroppedForProductId );
     }
@@ -254,7 +272,18 @@ public class ImageSpec implements Parcelable
    *****************************************************/
   public Asset getAsset()
     {
-    return ( mAssetFragment.getAsset() );
+    return ( mAssetFragment != null ? mAssetFragment.getAsset() : null );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the border text.
+   *
+   *****************************************************/
+  public String getBorderText()
+    {
+    return ( mBorderText );
     }
 
 
@@ -293,6 +322,17 @@ public class ImageSpec implements Parcelable
     mAssetFragment = assetFragment;
 
     setCroppedForProductId( croppedForProductId );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the border text.
+   *
+   *****************************************************/
+  public void setBorderText( String borderText )
+    {
+    mBorderText = borderText;
     }
 
 
@@ -386,6 +426,21 @@ public class ImageSpec implements Parcelable
               .transformAfterResize( new ThumbnailProxy( context ) )
               .into( checkableImageContainerFrame, mAssetFragment );
       }
+    }
+
+
+  /*****************************************************
+   *
+   * Creates a new image spec from this one, but with a
+   * different asset. Used when assets are moved into the
+   * basket.
+   *
+   *****************************************************/
+  public ImageSpec createCopyWithReplacedAsset( Asset newAsset )
+    {
+    AssetFragment newAssetFragment = new AssetFragment( newAsset, mAssetFragment.getProportionalRectangle() );
+
+    return ( new ImageSpec( newAssetFragment, mBorderText, mQuantity, mCroppedForProductId ) );
     }
 
 

@@ -139,6 +139,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
   static private final String  JSON_NAME_RIGHT                       = "right";
   static private final String  JSON_NAME_SHIPPING_COSTS              = "shipping_costs";
   static private final String  JSON_NAME_SUPPORTED_OPTIONS           = "supported_options";
+  static private final String  JSON_NAME_SUPPORTS_TEXT_ON_BORDER     = "supports_text_on_border";
   static private final String  JSON_NAME_TOP                         = "top";
   static private final String  JSON_NAME_URL                         = "url";
   static private final String  JSON_NAME_USER_CONFIG                 = "user_config";
@@ -565,17 +566,18 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
 
         JSONObject productDetailJSONObject = productJSONObject.getJSONObject( JSON_NAME_PRODUCT_DETAIL );
 
-        URL                    groupImageURL       = new URL( productDetailJSONObject.getString( JSON_NAME_GROUP_IMAGE ) );
+        URL                    groupImageURL        = new URL( productDetailJSONObject.getString( JSON_NAME_GROUP_IMAGE ) );
         //URL                    heroImageURL        = new URL( productDetailJSONObject.getString( JSON_NAME_PRODUCT_HERO_IMAGE ) );
-        int                    labelColour         = parseColour( productDetailJSONObject.getJSONArray( JSON_NAME_LABEL_COLOUR ) );
-        String                 groupLabel          = productDetailJSONObject.getString( JSON_NAME_GROUP_LABEL );
-        ArrayList<URL>         imageURLList        = parseProductShots( productDetailJSONObject.getJSONArray( JSON_NAME_PRODUCT_SHOTS ) );
+        int                    labelColour          = parseColour( productDetailJSONObject.getJSONArray( JSON_NAME_LABEL_COLOUR ) );
+        String                 groupLabel           = productDetailJSONObject.getString( JSON_NAME_GROUP_LABEL );
+        ArrayList<URL>         imageURLList         = parseProductShots( productDetailJSONObject.getJSONArray( JSON_NAME_PRODUCT_SHOTS ) );
         //String                 productSubclass     = productDetailJSONObject.getString( JSON_NAME_PRODUCT_SUBCLASS );
-        String                 productType         = productDetailJSONObject.getString( JSON_NAME_PRODUCT_TYPE );
-        UserJourneyType        userJourneyType     = parseUserJourneyType( productDetailJSONObject.getString( JSON_NAME_PRODUCT_UI_CLASS ) );
-        String                 productCode         = productDetailJSONObject.getString( JSON_NAME_PRODUCT_CODE );
-        MultipleUnitSize       size                = parseProductSize( productDetailJSONObject.getJSONObject( JSON_NAME_PRODUCT_SIZE ) );
-        float                  imageAspectRatio    = (float)productDetailJSONObject.optDouble( JSON_NAME_IMAGE_ASPECT_RATIO, Product.DEFAULT_IMAGE_ASPECT_RATIO );
+        String                 productType          = productDetailJSONObject.getString( JSON_NAME_PRODUCT_TYPE );
+        UserJourneyType        userJourneyType      = parseUserJourneyType( productDetailJSONObject.getString( JSON_NAME_PRODUCT_UI_CLASS ) );
+        String                 productCode          = productDetailJSONObject.getString( JSON_NAME_PRODUCT_CODE );
+        MultipleUnitSize       size                 = parseProductSize( productDetailJSONObject.getJSONObject( JSON_NAME_PRODUCT_SIZE ) );
+        float                  imageAspectRatio     = (float)productDetailJSONObject.optDouble( JSON_NAME_IMAGE_ASPECT_RATIO, Product.DEFAULT_IMAGE_ASPECT_RATIO );
+        boolean                supportsTextOnBorder = productDetailJSONObject.optBoolean( JSON_NAME_SUPPORTS_TEXT_ON_BORDER, false );
 
 
         // Get the cover photo
@@ -643,6 +645,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
                 .setCreationImage( imageAspectRatio, imageBorder )
                 .setProductOptions( productOptionList )
                 .setFlag( Product.Flag.PRINT_IN_STORE, printInStore )
+                .setFlag( Product.Flag.SUPPORTS_TEXT_ON_BORDER, supportsTextOnBorder )
                 .setCalendarImages( calendarImageURLStringList );
 
 
