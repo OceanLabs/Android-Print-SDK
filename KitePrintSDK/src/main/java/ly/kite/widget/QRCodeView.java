@@ -42,12 +42,19 @@ package ly.kite.widget;
 import java.net.URL;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
-import com.onbarcode.barcode.android.*;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 
 
 ///// Class Declaration /////
@@ -70,13 +77,70 @@ public class QRCodeView extends View
 
   ////////// Member Variable(s) //////////
 
-  private QRCode  mQRCode;
+  private int     mSize;
+
+  private URL     mURL;
+
+  private Bitmap  mQRCodeBitmap;
 
 
   ////////// Static Initialiser(s) //////////
 
 
   ////////// Static Method(s) //////////
+
+  /*****************************************************
+   *
+   * Creates the QR code bitmap.
+   *
+   *****************************************************/
+  static private Bitmap createQRCodeBitmap( URL url, int size )
+    {
+    QRCodeWriter qrCodeWriter = new QRCodeWriter();
+
+    try
+      {
+      BitMatrix bitMatrix = qrCodeWriter.encode( url.toExternalForm(), BarcodeFormat.QR_CODE, size, size, null );
+
+      int matrixWidth = bitMatrix.getWidth();
+      int matrixHeight = bitMatrix.getHeight();
+
+
+      // Create a bitmap and a canvas over it
+
+      Bitmap bitmap = Bitmap.createBitmap( matrixWidth, matrixHeight, Bitmap.Config.ARGB_8888 );
+
+      Canvas canvas = new Canvas( bitmap );
+
+      Paint  paint = new Paint();
+
+      paint.setColor( 0xff000000 );
+      paint.setStyle( Paint.Style.FILL );
+
+
+      // Draw the bits onto the canvas
+
+      for ( int i = 0; i < matrixWidth; i++ )
+        {
+        for ( int j = 0; j < matrixHeight; j++ )
+          {
+          if ( bitMatrix.get( i, j ) )
+            {
+            canvas.drawRect( i, j, i + 1, j + 1, paint );
+            }
+          }
+        }
+
+
+      return ( bitmap );
+      }
+    catch ( WriterException we )
+      {
+      Log.e( LOG_TAG, "Unable to encode QR code for " + url.toString(), we );
+      }
+
+    return ( null );
+    }
 
 
   ////////// Constructor(s) //////////
@@ -101,6 +165,24 @@ public class QRCodeView extends View
 
   /*****************************************************
    *
+   * Called when the size changes.
+   *
+   *****************************************************/
+  @Override
+  public void onSizeChanged( int width, int height, int oldWidth, int oldHeight )
+    {
+    super.onSizeChanged( width, height, oldWidth, oldHeight );
+
+    mSize         = Math.min( width, height );
+
+    mQRCodeBitmap = null;
+
+    invalidate();
+    }
+
+
+  /*****************************************************
+   *
    * Draws the view.
    *
    *****************************************************/
@@ -109,26 +191,24 @@ public class QRCodeView extends View
     {
     super.onDraw( canvas );
 
-    if ( mQRCode != null )
+    if ( mQRCodeBitmap == null )
+      {
+      mQRCodeBitmap = createQRCodeBitmap( mURL, mSize );
+      }
+
+    if ( mQRCodeBitmap != null )
       {
       int width = getWidth();
       int height = getHeight();
 
-      mQRCode.setBarcodeWidth( height );
-      mQRCode.setBarcodeHeight( height );
-
       int halfWidth  = width / 2;
       int halfHeight = height / 2;
+      int halfSize   = mSize / 2;
 
-      RectF rectF = new RectF( halfWidth - halfHeight, 0, halfWidth + halfHeight, height );
+      Rect  sourceRect  = new Rect( 0, 0, mQRCodeBitmap.getWidth(), mQRCodeBitmap.getHeight() );
+      RectF targetRectF = new RectF( halfWidth - halfSize, halfHeight - halfSize, halfWidth + halfSize, halfHeight + halfSize );
 
-      try
-        {
-        mQRCode.drawBarcode( canvas, rectF );
-        }
-      catch ( Exception ignore )
-        {
-        }
+      canvas.drawBitmap( mQRCodeBitmap, sourceRect, targetRectF, null );
       }
     }
 
@@ -142,10 +222,7 @@ public class QRCodeView extends View
    *****************************************************/
   public void setURL( URL url )
     {
-    mQRCode = new QRCode();
-
-    mQRCode.setData( url.toExternalForm() );
-    mQRCode.setAutoResize( true );
+    mURL = url;
 
     invalidate();
     }

@@ -205,7 +205,7 @@ public class OrderingDataAgent
    * the AddItemTask.
    *
    *****************************************************/
-  private void addItem( long itemId, Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, int orderQuantity )
+  void addItemSynchronously( long itemId, Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, int orderQuantity )
     {
     // We need to create a basket item per <mProduct.getQuantityPerSheet()> images, i.e.
     // split the images into multiple jobs.
@@ -411,7 +411,7 @@ public class OrderingDataAgent
     @Override
     protected Void doInBackground( Void... params )
       {
-      addItem( mItemId, mProduct, mOptionsMap, mImageSpecList, mOrderQuantity );
+      addItemSynchronously( mItemId, mProduct, mOptionsMap, mImageSpecList, mOrderQuantity );
 
       return ( null );
       }

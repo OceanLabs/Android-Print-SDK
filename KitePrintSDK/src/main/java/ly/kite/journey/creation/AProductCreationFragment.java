@@ -219,9 +219,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
    *****************************************************/
   protected void onCreateOptionsMenu( Menu menu, MenuInflater menuInflator, int menuResourceId )
     {
-    // The add photo XML has menu options for all the image sources, but they might
-    // not all be enabled. So after we've inflated it, we need to go through an remove
-    // any source that isn't available.
+    // Add a sub-menu item, to the add menu action, for every image source.
 
     menuInflator.inflate( menuResourceId, menu );
 
