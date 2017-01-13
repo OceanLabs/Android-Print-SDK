@@ -104,6 +104,7 @@ abstract public class AReceiptActivity extends AOrderSubmissionActivity implemen
 
   protected View          mNextView;
   protected View          mRetryPrintView;
+  protected TextView      mCTABarRightTextView;
 
 
   ////////// Static Initialiser(s) //////////
@@ -191,6 +192,8 @@ abstract public class AReceiptActivity extends AOrderSubmissionActivity implemen
     mNextView                         = findViewById( R.id.next_view );
     mRetryPrintView                   = findViewById( R.id.retry_print_view );
 
+    mCTABarRightTextView              = (TextView)findViewById( R.id.cta_bar_right_text_view );
+
 
     // Populate any fields that were found
 
@@ -225,6 +228,11 @@ abstract public class AReceiptActivity extends AOrderSubmissionActivity implemen
     if ( mNextView != null )
       {
       mNextView.setOnClickListener( this );
+      }
+
+    if ( mCTABarRightTextView != null )
+      {
+      mCTABarRightTextView.setOnClickListener( this );
       }
 
     if ( mRetryPrintView != null )
@@ -312,7 +320,7 @@ abstract public class AReceiptActivity extends AOrderSubmissionActivity implemen
   @Override
   public void onClick( View view )
     {
-    if ( view == mNextView )
+    if ( view == mNextView || view == mCTABarRightTextView )
       {
       ///// Next /////
 
@@ -354,10 +362,20 @@ abstract public class AReceiptActivity extends AOrderSubmissionActivity implemen
         {
         if ( mNextView != null ) mNextView.setVisibility( View.GONE );
         }
+
+      if ( mCTABarRightTextView != null )
+        {
+        mCTABarRightTextView.setText( R.string.Continue_Shopping );
+        }
       }
     else
       {
       onShowReceiptFailure();
+
+      if ( mCTABarRightTextView != null )
+        {
+        mCTABarRightTextView.setText( R.string.Retry );
+        }
       }
     }
 

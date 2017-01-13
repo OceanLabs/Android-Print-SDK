@@ -166,19 +166,28 @@ public class ImageSpecAdaptor extends BaseAdapter
             ( tagObject = convertView.getTag() ) != null &&
             ( tagObject instanceof ViewHolder ) )
       {
-      view           = convertView;
+      view       = convertView;
       viewHolder = (ViewHolder)tagObject;
       }
     else
       {
-      view                            = mLayoutInflator.inflate( R.layout.grid_item_review_and_crop, parent, false );
+      view       = mLayoutInflator.inflate( R.layout.grid_item_review_and_crop, parent, false );
       viewHolder = new ViewHolder( view );
 
 
       // We only need to set the overlay or border once, when the view is first created,
       // since any re-use of the view will keep the properties.
 
-      BorderF imageBorder = mProduct.getImageBorder();
+      BorderF imageBorder = null;
+
+      if ( mProduct.flagIsSet( Product.Flag.SUPPORTS_TEXT_ON_BORDER ) )
+        {
+        imageBorder = new BorderF( 0.1f, 0.1f, 0.3f, 0.1f );
+        }
+      else
+        {
+        imageBorder = mProduct.getImageBorder();
+        }
 
       if ( imageBorder != null )
         {
@@ -206,6 +215,11 @@ public class ImageSpecAdaptor extends BaseAdapter
     AssetFragment assetFragment = imageSpec.getAssetFragment();
 
     viewHolder.framedImageView.requestScaledImageOnceSized( assetFragment );
+
+    if ( viewHolder.borderTextView != null )
+      {
+      viewHolder.borderTextView.setText( imageSpec.getBorderText() );
+      }
 
     viewHolder.quantityTextView.setText( String.valueOf( imageSpec.getQuantity() ) );
     viewHolder.imageIndex = position;
@@ -251,6 +265,7 @@ public class ImageSpecAdaptor extends BaseAdapter
   private class ViewHolder implements View.OnClickListener
     {
     FramedImageView  framedImageView;
+    TextView         borderTextView;
     TextView         quantityTextView;
     Button           decreaseButton;
     Button           increaseButton;
@@ -262,6 +277,7 @@ public class ImageSpecAdaptor extends BaseAdapter
     ViewHolder( View view )
       {
       this.framedImageView  = (FramedImageView)view.findViewById( R.id.framed_image_view );
+      this.borderTextView   = (TextView)view.findViewById( R.id.border_text_view );
       this.quantityTextView = (TextView)view.findViewById( R.id.quantity_text_view );
       this.decreaseButton   = (Button)view.findViewById( R.id.decrease_button );
       this.increaseButton   = (Button)view.findViewById( R.id.increase_button );

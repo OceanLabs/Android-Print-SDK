@@ -43,8 +43,12 @@ import android.widget.Toast;
 
 import ly.kite.SDKCustomiser;
 import ly.kite.checkout.IOrderSubmissionResultListener;
+import ly.kite.instagramphotopicker.InstagramImageSource;
+import ly.kite.journey.AImageSource;
+import ly.kite.journey.DeviceImageSource;
 import ly.kite.ordering.IOrderSubmissionSuccessListener;
 import ly.kite.ordering.Order;
+import ly.kite.photofromphone.FromPhoneImageSource;
 
 
 ///// Class Declaration /////
@@ -92,6 +96,17 @@ public class SampleSDKCustomiser extends SDKCustomiser
   public boolean requestPhoneNumber()
     {
     return ( false );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the image sources.
+   *
+   *****************************************************/
+  public AImageSource[] getImageSources()
+    {
+    return ( new AImageSource[] { new DeviceImageSource(), new InstagramImageSource(), new FromPhoneImageSource() } );
     }
 
 

@@ -57,7 +57,9 @@ import java.util.List;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
+import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.IGroupOrProduct;
+import ly.kite.catalogue.ProductGroup;
 import ly.kite.image.ImageAgent;
 import ly.kite.widget.AREImageView;
 import ly.kite.widget.HeaderFooterGridView;

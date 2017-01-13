@@ -223,10 +223,9 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
    * Returns the content view for this fragment
    *
    *****************************************************/
-  @Override
-  public View onCreateView( LayoutInflater layoutInflator, ViewGroup container, Bundle savedInstanceState )
+  public View onCreateView( LayoutInflater layoutInflator, int layoutResourceId, ViewGroup container, Bundle savedInstanceState )
     {
-    View view = layoutInflator.inflate( R.layout.screen_edit_image, container, false );
+    View view = layoutInflator.inflate( layoutResourceId, container, false );
 
     super.onViewCreated( view );
 
@@ -234,16 +233,34 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
     mProgressSpinner             = (ProgressBar)view.findViewById( R.id.progress_spinner );
 
 
-    // If there is a container frame - set the callback.
+    // If there is a container frame - set the callback
     if ( mEditableImageContainerFrame != null ) mEditableImageContainerFrame.setCallback( this );
 
-    setBackwardsTextViewOnClickListener( this );
+
+    setBackwardsTextViewVisibility( View.GONE );
+
+
+    setForwardsTextViewVisibility( View.VISIBLE );
+    setForwardsTextViewText( R.string.edit_image_forwards_button_text );
+    setForwardsTextViewBold( true );
 
     // The confirm button is not enabled until both image and mask are loaded
     setForwardsTextViewEnabled( false );
 
 
     return ( view );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the content view for this fragment
+   *
+   *****************************************************/
+  @Override
+  public View onCreateView( LayoutInflater layoutInflator, ViewGroup container, Bundle savedInstanceState )
+    {
+    return ( onCreateView( layoutInflator, R.layout.screen_edit_image, container, savedInstanceState ) );
     }
 
 

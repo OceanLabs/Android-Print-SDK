@@ -47,7 +47,9 @@ import java.util.List;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
+import ly.kite.address.Address;
 import ly.kite.catalogue.Product;
+import ly.kite.ordering.BasketItem;
 import ly.kite.ordering.ImageSpec;
 import ly.kite.ordering.Job;
 import ly.kite.ordering.Order;
@@ -65,11 +67,25 @@ import ly.kite.widget.EditableMaskedImageView;
  *****************************************************/
 public enum UserJourneyType
   {
-  CIRCLE ( R.drawable.filled_white_circle,    EditableMaskedImageView.BorderHighlight.OVAL ),
+  CIRCLE ( R.drawable.filled_white_circle,    EditableMaskedImageView.BorderHighlight.OVAL )
+            {
+            @Override
+            public List<List<ImageSpec>> dbItemsFromCreationItems( Product product, List<ImageSpec> imageSpecList )
+              {
+              return ( splitImagesByJob( product, imageSpecList, false ) );
+              }
+            },
 
   CALENDAR ( R.drawable.filled_white_rectangle, EditableMaskedImageView.BorderHighlight.RECTANGLE )
             {
             // A calendar job is a standard order, but blank images are allowed
+
+            @Override
+            public List<List<ImageSpec>> dbItemsFromCreationItems( Product product, List<ImageSpec> imageSpecList )
+              {
+              return ( splitImagesByJob( product, imageSpecList, true ) );
+              }
+
             @Override
             public void addJobsToOrder( Context context, Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, Order order )
               {
@@ -77,32 +93,96 @@ public enum UserJourneyType
               }
             },
 
-  FRAME,
+  FRAME
+            {
+            @Override
+            public List<List<ImageSpec>> dbItemsFromCreationItems( Product product, List<ImageSpec> imageSpecList )
+              {
+              return ( null );
+              }
+            },
 
   GREETINGCARD ( R.drawable.filled_white_rectangle, EditableMaskedImageView.BorderHighlight.RECTANGLE )
             {
-            // Greeting cards have their own job
+            // Greetings cards are saved to the database with 1 x (front) image and 3 x (null) other
+            // images. So we want to ignore the null images for the moment.
+
+            @Override
+            public List<List<ImageSpec>> dbItemsFromCreationItems( Product product, List<ImageSpec> imageSpecList )
+              {
+              // Flatten the image spec list
+              ArrayList<ImageSpec> flatImageSpecList = flattenImageSpecList( imageSpecList, false );
+
+
+              // Create multiple sets of 4 images
+
+              List<List<ImageSpec>> splitImageSpecLists = new ArrayList<>();
+
+              for ( ImageSpec imageSpec : flatImageSpecList )
+                {
+                List<ImageSpec> itemImageSpecList = new ArrayList<>( 4 );
+
+                itemImageSpecList.add( imageSpec );
+                itemImageSpecList.add( null );
+                itemImageSpecList.add( null );
+                itemImageSpecList.add( null );
+                }
+
+
+              return ( splitImageSpecLists );
+              }
+
             @Override
             public void addJobsToOrder( Context context, Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, Order order )
               {
               for ( ImageSpec imageSpec : imageSpecList )
                 {
-                AssetFragment assetFragment = imageSpec.getAssetFragment();
-                int           quantity      = imageSpec.getQuantity();
-
-                // We create a new job for each asset fragment
-                for ( int index = 0; index < quantity; index ++ )
+                if ( imageSpec != null )
                   {
-                  order.addJob( Job.createGreetingCardJob( product, orderQuantity, optionsMap, assetFragment ) );
+                  AssetFragment assetFragment = imageSpec.getAssetFragment();
+                  int           quantity      = imageSpec.getQuantity();
+
+                  // Create a new job for each image
+                  for ( int index = 0; index < quantity; index++ )
+                    {
+                    order.addJob( Job.createGreetingCardJob( product, orderQuantity, optionsMap, assetFragment ) );
+                    }
                   }
                 }
               }
+
+            @Override
+            public ArrayList<ImageSpec> creationImagesFromDBImages( ArrayList<ImageSpec> basketItemImages )
+              {
+              // For greetings cards, images are stored in the basket as one front cover image and 3 null images. For
+              // editing we want to simply return the front cover image.
+
+              ArrayList<ImageSpec> productCreationImages = new ArrayList<>( 1 );
+
+              productCreationImages.add( basketItemImages.get( 0 ) );
+
+              return ( productCreationImages );
+              }
             },
 
-  PHONE_CASE ( true ),
+  PHONE_CASE ( true )
+            {
+            @Override
+            public List<List<ImageSpec>> dbItemsFromCreationItems( Product product, List<ImageSpec> imageSpecList )
+              {
+              return ( splitImagesByJob( product, imageSpecList, false ) );
+              }
+            },
 
   PHOTOBOOK ( R.drawable.filled_white_rectangle, EditableMaskedImageView.BorderHighlight.RECTANGLE )
             {
+            // Photobook image spec lists are already clamped to the correct size
+            @Override
+            public List<List<ImageSpec>> dbItemsFromCreationItems( Product product, List<ImageSpec> imageSpecList )
+              {
+              return ( splitImagesByJob( product, imageSpecList, true ) );
+              }
+
             // Photobooks have their own job
             @Override
             public void addJobsToOrder( Context context, Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, Order order )
@@ -153,11 +233,25 @@ public enum UserJourneyType
               }
             },
 
-  POSTCARD,
+  POSTCARD
+            {
+            @Override
+            public List<List<ImageSpec>> dbItemsFromCreationItems( Product product, List<ImageSpec> imageSpecList )
+              {
+              return ( null );
+              }
+            },
 
   POSTER ( R.drawable.filled_white_rectangle, EditableMaskedImageView.BorderHighlight.RECTANGLE )
             {
             // A poster job is a standard order, but blank images are allowed
+
+            @Override
+            public List<List<ImageSpec>> dbItemsFromCreationItems( Product product, List<ImageSpec> imageSpecList )
+              {
+              return ( splitImagesByJob( product, imageSpecList, true ) );
+              }
+
             @Override
             public void addJobsToOrder( Context context, Product product, int orderQuantity, HashMap<String, String> optionsMap, List<ImageSpec> imageSpecList, Order order )
               {
@@ -165,7 +259,14 @@ public enum UserJourneyType
               }
             },
 
-  RECTANGLE ( R.drawable.filled_white_rectangle, EditableMaskedImageView.BorderHighlight.RECTANGLE );
+  RECTANGLE ( R.drawable.filled_white_rectangle, EditableMaskedImageView.BorderHighlight.RECTANGLE )
+            {
+            @Override
+            public List<List<ImageSpec>> dbItemsFromCreationItems( Product product, List<ImageSpec> imageSpecList )
+              {
+              return ( splitImagesByJob( product, imageSpecList, false ) );
+              }
+            };
 
 
   ////////// Member Variable(s) //////////
@@ -179,6 +280,48 @@ public enum UserJourneyType
 
 
   ////////// Static Method(s) //////////
+
+
+  /*****************************************************
+   *
+   * Flattens an image spec list with multiple quantities
+   * into a list with potentially duplicated image specs,
+   * but all with a quantity of 1.
+   *
+   *****************************************************/
+  static protected ArrayList<ImageSpec> flattenImageSpecList( List<ImageSpec> sourceImageSpecList, boolean nullImagesAreBlank )
+    {
+    // Expand out the images into a flat list, with images duplicated if the ImageSpec quantity
+    // is greater than 1. Note that when we flatten out a null image spec, we add a null image
+    // spec to the list, not an image spec with a null asset fragment.
+
+    ArrayList<ImageSpec> flattenedImageSpecList = new ArrayList<>();
+
+    for ( ImageSpec sourceImageSpec : sourceImageSpecList )
+      {
+      ImageSpec  flatImageSpec;
+      int        quantity;
+
+      if ( sourceImageSpec != null )
+        {
+        flatImageSpec = new ImageSpec( sourceImageSpec.getAssetFragment(), sourceImageSpec.getBorderText(), 1 );
+        quantity      = sourceImageSpec.getQuantity();
+        }
+      else
+        {
+        flatImageSpec = null;
+        quantity      = ( nullImagesAreBlank ? 1 : 0 );
+        }
+
+      // Duplicate images according to the quantity.
+      for ( int index = 0; index < quantity; index ++ )
+        {
+        flattenedImageSpecList.add( flatImageSpec );
+        }
+      }
+
+    return ( flattenedImageSpecList );
+    }
 
 
   ////////// Constructor(s) //////////
@@ -249,6 +392,59 @@ public enum UserJourneyType
 
   /*****************************************************
    *
+   * Splits a single list of image image specs into multiple
+   * lists, according to the maximum number of images per
+   * item.
+   *
+   *****************************************************/
+  List<List<ImageSpec>> splitImagesByJob( Product product, List<ImageSpec> imageSpecList, boolean nullImagesAreBlank )
+    {
+    // Flatten the images into a single list
+    ArrayList<ImageSpec> flatImageSpecList = flattenImageSpecList( imageSpecList, nullImagesAreBlank );
+
+
+    // Go through the image specs in batches, and create a list for each batch of images.
+
+    int imagesPerJob = product.getQuantityPerSheet();
+
+    ArrayList<List<ImageSpec>> imageSpecLists = new ArrayList<>();
+
+    for ( int offset = 0; offset < flatImageSpecList.size(); offset += imagesPerJob )
+      {
+      List<ImageSpec> jobImageSpecList = flatImageSpecList.subList( offset, Math.min( offset + imagesPerJob, flatImageSpecList.size() ) );
+
+      imageSpecLists.add( jobImageSpecList );
+      }
+
+
+    return ( imageSpecLists );
+    }
+
+
+  /*****************************************************
+   *
+   * Splits a single list of image image specs into multiple
+   * lists, according to the maximum number of images per
+   * item.
+   *
+   *****************************************************/
+  public List<List<ImageSpec>> splitImagesByJob( Product product, List<ImageSpec> imageSpecList )
+    {
+    return ( splitImagesByJob( product, imageSpecList, false ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Splits a single list of image image specs into multiple
+   * lists, according to how they are stored on the database.
+   *
+   *****************************************************/
+  abstract public List<List<ImageSpec>> dbItemsFromCreationItems( Product product, List<ImageSpec> imageSpecList );
+
+
+  /*****************************************************
+   *
    * Creates a job from the supplied assets.
    *
    * The default implementation creates a generic print
@@ -257,45 +453,13 @@ public enum UserJourneyType
    *****************************************************/
   void addJobsToOrder( Context context, Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, boolean nullImagesAreBlank, Order order )
     {
-    // Expand out the images into a flat list, with images duplicated if the ImageSpec quantity
-    // is greater than 1.
+    // Split the images into a list for each separate job
+    List<List<ImageSpec>> imageSpecLists = splitImagesByJob( product, imageSpecList );
 
-    List<AssetFragment> assetFragmentList = new ArrayList<>();
-
-    for ( ImageSpec imageSpec : imageSpecList )
+    // Go through each list of images and create a job for it.
+    for ( List<ImageSpec> jobImageSpecList : imageSpecLists )
       {
-      AssetFragment assetFragment;
-      int           quantity;
-
-      if ( imageSpec != null )
-        {
-        assetFragment = imageSpec.getAssetFragment();
-        quantity      = imageSpec.getQuantity();
-        }
-      else
-        {
-        assetFragment = null;
-        quantity      = ( nullImagesAreBlank ? 1 : 0 );
-        }
-
-
-      // Duplicate images according to the ImageSpec quantity.
-      for ( int index = 0; index < quantity; index ++ )
-        {
-        assetFragmentList.add( assetFragment );
-        }
-      }
-
-
-    // Go through the asset fragment list, and create a job for each batch of images. The
-    // print job creation should gracefully handle there not being enough images in the
-    // last job.
-
-    int assetsPerJob = product.getQuantityPerSheet();
-
-    for ( int offset = 0; offset < assetFragmentList.size(); offset += assetsPerJob )
-      {
-      order.addJob( Job.createPrintJob( product, orderQuantity, optionsMap, assetFragmentList, offset, assetsPerJob, nullImagesAreBlank ) );
+      order.addJob( Job.createPrintJob( product, orderQuantity, optionsMap, jobImageSpecList, nullImagesAreBlank ) );
       }
     }
 
@@ -311,6 +475,20 @@ public enum UserJourneyType
   public void addJobsToOrder( Context context, Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, Order order )
     {
     addJobsToOrder( context, product, orderQuantity, optionsMap, imageSpecList, false, order );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a list image image specs suitable for passing
+   * to the product creation activity, from a basket item
+   * list.
+   *
+   *****************************************************/
+  public ArrayList<ImageSpec> creationImagesFromDBImages( ArrayList<ImageSpec> basketItemImages )
+    {
+    // Default behaviour is to return list unchanged
+    return ( basketItemImages );
     }
 
 

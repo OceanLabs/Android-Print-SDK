@@ -1,0 +1,32 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:layout_gravity="center"
+    android:layout_width="@dimen/edit_border_text_image_frame_width"
+    android:layout_height="@dimen/edit_border_text_image_frame_height"
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    android:paddingTop="@dimen/edit_border_text_image_thin_border_size"
+    android:paddingLeft="@dimen/edit_border_text_image_thin_border_size"
+    android:paddingRight="@dimen/edit_border_text_image_thin_border_size">
+    <ly.kite.widget.EditableImageContainerFrame
+        android:id="@+id/editable_image_container_frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.0"
+        android:layerType="hardware"/>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/edit_border_text_image_thick_border_size">
+        <ly.kite.widget.CustomTypefaceEditText
+            android:id="@+id/border_edit_text"
+            android:layout_gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textSize="@dimen/edit_border_text_size"
+            android:hint="@string/edit_border_text_hint"
+            android:background="@null"
+            android:singleLine="true"/>
+    </FrameLayout>
+</LinearLayout>

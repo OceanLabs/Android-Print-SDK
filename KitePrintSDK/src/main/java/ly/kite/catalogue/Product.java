@@ -289,39 +289,39 @@ public class Product implements IGroupOrProduct, Parcelable
     {
     this();
 
-    mId          = sourceParcel.readString();
-    mCode        = sourceParcel.readString();
-    mName        = sourceParcel.readString();
-    mDescription = sourceParcel.readString();
-    mType        = sourceParcel.readString();
+    mId                         = sourceParcel.readString();
+    mCode                       = sourceParcel.readString();
+    mName                       = sourceParcel.readString();
+    mDescription                = sourceParcel.readString();
+    mType                       = sourceParcel.readString();
 
-    String userJourneyString = sourceParcel.readString();
-    mUserJourneyType  = (userJourneyString != null ? UserJourneyType.valueOf( userJourneyString ) : null);
+    String userJourneyString    = sourceParcel.readString();
+    mUserJourneyType            = (userJourneyString != null ? UserJourneyType.valueOf( userJourneyString ) : null);
 
-    mQuantityPerSheet = sourceParcel.readInt();
-    mGridCountX       = sourceParcel.readInt();
-    mGridCountY       = sourceParcel.readInt();
+    mQuantityPerSheet           = sourceParcel.readInt();
+    mGridCountX                 = sourceParcel.readInt();
+    mGridCountY                 = sourceParcel.readInt();
 
-    mCost             = (MultipleCurrencyAmounts) sourceParcel.readParcelable( MultipleCurrencyAmounts.class.getClassLoader() );
-    mShippingCosts    = (MultipleDestinationShippingCosts) sourceParcel.readParcelable( MultipleDestinationShippingCosts.class.getClassLoader() );
-    mHeroImageURL     = (URL) sourceParcel.readSerializable();
-    mLabelColour      = sourceParcel.readInt();
+    mCost                       = (MultipleCurrencyAmounts) sourceParcel.readParcelable( MultipleCurrencyAmounts.class.getClassLoader() );
+    mShippingCosts              = (MultipleDestinationShippingCosts) sourceParcel.readParcelable( MultipleDestinationShippingCosts.class.getClassLoader() );
+    mHeroImageURL               = (URL)sourceParcel.readSerializable();
+    mLabelColour                = sourceParcel.readInt();
 
-    mImageURLList = readURLList( sourceParcel );
+    mImageURLList               = readURLList( sourceParcel );
 
-    mMaskURL          = (URL)sourceParcel.readSerializable();
-    mMaskBleed        = (Bleed)sourceParcel.readParcelable( Bleed.class.getClassLoader() );
-    mSize             = (MultipleUnitSize)sourceParcel.readParcelable( MultipleUnitSize.class.getClassLoader() );
-    mImageAspectRatio = sourceParcel.readFloat();
-    mImageBorderF     = (BorderF)sourceParcel.readParcelable( BorderF.class.getClassLoader() );
+    mMaskURL                    = (URL)sourceParcel.readSerializable();
+    mMaskBleed                  = (Bleed)sourceParcel.readParcelable( Bleed.class.getClassLoader() );
+    mSize                       = (MultipleUnitSize)sourceParcel.readParcelable( MultipleUnitSize.class.getClassLoader() );
+    mImageAspectRatio           = sourceParcel.readFloat();
+    mImageBorderF               = (BorderF)sourceParcel.readParcelable( BorderF.class.getClassLoader() );
 
-    mUnderImageURLList = readURLList( sourceParcel );
-    mOverImageURLList  = readURLList( sourceParcel );
+    mUnderImageURLList          = readURLList( sourceParcel );
+    mOverImageURLList           = readURLList( sourceParcel );
 
-    mOptionList = new ArrayList<>();
+    mOptionList                 = new ArrayList<>();
     sourceParcel.readList( mOptionList, ProductOption.class.getClassLoader() );
 
-    mFlags = sourceParcel.readInt();
+    mFlags                      = sourceParcel.readInt();
 
     mCalendarImageURLStringList = sourceParcel.createStringArrayList();
     }
@@ -464,17 +464,27 @@ public class Product implements IGroupOrProduct, Parcelable
    * set.
    *
    *****************************************************/
-  @Override
-  public boolean flagIsSet( String tag )
+  public boolean flagIsSet( Flag flag )
     {
-    Flag flag = Flag.fromTag( tag );
-
     if ( flag != null )
       {
       return ( flag.isSet( mFlags ) );
       }
 
     return ( false );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns true or false according to whether a flag is
+   * set.
+   *
+   *****************************************************/
+  @Override
+  public boolean flagIsSet( String tag )
+    {
+    return ( flagIsSet( Flag.fromTag( tag ) ) );
     }
 
 
@@ -1145,7 +1155,8 @@ public class Product implements IGroupOrProduct, Parcelable
    *****************************************************/
   public enum Flag
     {
-    PRINT_IN_STORE ( "print_in_store", 0x0001 );
+    PRINT_IN_STORE          ( "print_in_store",          0x0001 ),
+    SUPPORTS_TEXT_ON_BORDER ( "supports_text_on_border", 0x0002 );
 
 
     public String  tag;

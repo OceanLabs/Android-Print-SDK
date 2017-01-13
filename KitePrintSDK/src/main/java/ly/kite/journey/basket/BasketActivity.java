@@ -59,6 +59,7 @@ import java.util.List;
 
 import ly.kite.KiteSDK;
 import ly.kite.address.Address;
+import ly.kite.journey.UserJourneyType;
 import ly.kite.ordering.OrderingDataAgent;
 import ly.kite.ordering.BasketItem;
 import ly.kite.catalogue.Catalogue;
@@ -894,7 +895,10 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
 
           if ( view == mEditTouchFrame )
             {
-            ProductCreationActivity.startForResult( BasketActivity.this, mBasketItem.getId(), mBasketItem.getProduct(), mBasketItem.getOptionsMap(), mBasketItem.getImageSpecList(), mBasketItem.getOrderQuantity(), ACTIVITY_REQUEST_CODE_EDIT_BASKET_ITEM );
+            Product         product         = mBasketItem.getProduct();
+            UserJourneyType userJourneyType = product.getUserJourneyType();
+
+            ProductCreationActivity.startForResult( BasketActivity.this, mBasketItem.getId(), product, mBasketItem.getOptionsMap(), userJourneyType.creationImagesFromDBImages( mBasketItem.getImageSpecList() ), mBasketItem.getOrderQuantity(), ACTIVITY_REQUEST_CODE_EDIT_BASKET_ITEM );
 
             return;
             }

@@ -111,7 +111,7 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
 
   private ListView             mOrderSummaryListView;
   private EditText             mPromoEditText;
-  private Button               mPromoButton;
+  private TextView             mPromoTextView;
   private ProgressBar          mProgressBar;
 
   private OrderPricing         mOrderPricing;
@@ -229,7 +229,7 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
 
     mOrderSummaryListView = (ListView)findViewById( R.id.order_summary_list_view );
     mPromoEditText        = (EditText)findViewById( R.id.promo_edit_text );
-    mPromoButton          = (Button)findViewById( R.id.promo_button );
+    mPromoTextView        = (TextView)findViewById( R.id.promo_text_view );
     mProgressBar          = (ProgressBar)findViewById( R.id.progress_bar );
 
 
@@ -349,7 +349,7 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
     {
     mOrderPricing = orderPricing;
 
-    mPromoButton.setEnabled( true );
+    mPromoTextView.setEnabled( true );
 
     mProgressBar.setVisibility( View.GONE );
 
@@ -478,7 +478,7 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
 
     if ( mOrderPricing == null )
       {
-      mPromoButton.setEnabled( false );
+      mPromoTextView.setEnabled( false );
 
       if ( mPaymentFragment != null ) mPaymentFragment.onEnableButtons( false );
 
@@ -518,7 +518,7 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
       mPromoEditText.setEnabled( true );
       mPromoEditText.setTextColor( getResources().getColor( R.color.payment_promo_code_text_error ) );
 
-      mPromoButton.setText( R.string.payment_promo_button_text_clear );
+      mPromoTextView.setText( R.string.payment_promo_button_text_clear );
 
       mPromoActionClearsCode = true;
 
@@ -547,7 +547,7 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
         {
         mPromoEditText.setEnabled( false );
 
-        mPromoButton.setText( R.string.payment_promo_button_text_clear );
+        mPromoTextView.setText( R.string.payment_promo_button_text_clear );
 
         mPromoActionClearsCode = true;
         }
@@ -555,7 +555,7 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
         {
         mPromoEditText.setEnabled( true );
 
-        mPromoButton.setText( R.string.payment_promo_button_text_apply );
+        mPromoTextView.setText( R.string.payment_promo_button_text_apply );
 
         mPromoActionClearsCode = false;
         }
@@ -607,7 +607,7 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
     {
     boolean isEnabled = ( mPromoEditText.getText().length() > 0 );
 
-    mPromoButton.setEnabled( isEnabled );
+    mPromoTextView.setEnabled( isEnabled );
 
     return ( isEnabled );
     }
@@ -642,8 +642,8 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
       mPromoEditText.setEnabled( true );
       mPromoEditText.setText( null );
 
-      mPromoButton.setText( R.string.payment_promo_button_text_apply );
-      mPromoButton.setEnabled( false );
+      mPromoTextView.setText( R.string.payment_promo_button_text_apply );
+      mPromoTextView.setEnabled( false );
 
       mPromoActionClearsCode = false;
 
@@ -730,7 +730,7 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
       setPromoButtonEnabledState();
 
       // Change the button text back to Apply (even if we disable the button because the code is blank)
-      mPromoButton.setText( R.string.payment_promo_button_text_apply );
+      mPromoTextView.setText( R.string.payment_promo_button_text_apply );
 
       mPromoActionClearsCode = false;
       }

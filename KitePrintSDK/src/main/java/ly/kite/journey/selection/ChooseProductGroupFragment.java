@@ -215,30 +215,30 @@ public class ChooseProductGroupFragment extends AGroupOrProductFragment
     onSaveManagedAdaptorViewPosition( position );
 
 
-    // Convert the position into an adaptor index
-    int adaptorIndex = mGridView.adaptorIndexFromPosition( position );
-
-
-    // If a header / footer image is clicked - call back to the activity
-
-    if ( adaptorIndex < 0 || adaptorIndex >= mProductGroupList.size() )
+    if ( mKiteActivity instanceof ChooseProductFragment.ICallback )
       {
-      if ( mKiteActivity instanceof ICallback )
+      ICallback callback = (ICallback) mKiteActivity;
+
+
+      // Convert the position into an adaptor index
+      int adaptorIndex = mGridView.adaptorIndexFromPosition( position );
+
+
+      // If a header / footer image is clicked - call back to the activity
+
+      if ( adaptorIndex < 0 || adaptorIndex >= mProductGroupList.size() )
         {
-        ( (ICallback)mKiteActivity ).pgOnHeaderOrFooterClicked( position, adaptorIndex );
+        callback.pgOnHeaderOrFooterClicked( position, adaptorIndex );
+
+        return;
         }
 
-      return;
-      }
 
+      // Get the product group and call back to the activity with it
 
-    // Get the product group and call back to the activity with it
+      ProductGroup chosenProductGroup = mProductGroupList.get( adaptorIndex );
 
-    ProductGroup chosenProductGroup = mProductGroupList.get( adaptorIndex );
-
-    if ( mKiteActivity instanceof ICallback )
-      {
-      ( (ICallback)mKiteActivity ).pgOnProductGroupChosen( chosenProductGroup );
+      callback.pgOnProductGroupChosen( chosenProductGroup );
       }
     }
 

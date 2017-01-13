@@ -35,7 +35,7 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
   private EditText  mAddressCountyEditText;
   private EditText  mAddressPostcodeEditText;
   private EditText  mEmailAddressEditText;
-  private TextView  mProceedTextView;
+  private TextView  mForwardsTextView;
 
 
 
@@ -106,7 +106,15 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
     mAddressPostcodeEditText = (EditText)findViewById( R.id.edit_text_address_postcode );
     mEmailAddressEditText    = (EditText)findViewById( R.id.edit_text_email_address    );
 
-    mProceedTextView         = (TextView)findViewById( R.id.proceed_overlay_text_view );
+
+    // Work out what the forwards 'button' is
+
+    mForwardsTextView = (TextView)findViewById( R.id.proceed_overlay_text_view );
+
+    if ( mForwardsTextView == null )
+      {
+      mForwardsTextView = (TextView)findViewById( R.id.cta_bar_right_text_view );
+      }
 
 
     setTitle( R.string.title_activity_address_edit );
@@ -185,14 +193,16 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
       }
 
 
-    mProceedTextView.setText( R.string.address_edit_proceed_button_text );
+    if ( mForwardsTextView != null )
+      {
+      mForwardsTextView.setText( R.string.address_edit_proceed_button_text );
+
+      mForwardsTextView.setOnClickListener( this );
+      }
 
 
     // hide keyboard initially
     this.getWindow().setSoftInputMode( WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN );
-
-
-    mProceedTextView.setOnClickListener( this );
     }
 
 
@@ -250,7 +260,7 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
   @Override
   public void onClick( View view )
     {
-    if ( view == mProceedTextView )
+    if ( view == mForwardsTextView )
       {
       onSaveClicked();
 

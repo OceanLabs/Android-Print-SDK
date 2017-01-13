@@ -198,7 +198,11 @@
 
     <string name="product_overview_start_button_text">jetzt gestalten</string>
 
+    <string name="image_selection_empty_message">Fügen Sie Fotos hinzu, indem\nSie die Symbole oben antippen</string>
+
     <string name="phone_case_proceed_button_text">nächster Schritt</string>
+
+    <string name="edit_border_text_hint">Addieren Sie Text hier</string>
 
     <string name="multi_page_instructions"><b>Tippen</b> Sie Bild zu bearbeiten,\n<b>Halten</b> Sie neu zu ordnen.</string>
 

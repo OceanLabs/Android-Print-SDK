@@ -611,6 +611,17 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
    * Sets the mask as a drawable resource id.
    *
    *****************************************************/
+  public void setMask( int drawableResourceId, float aspectRatio, Bleed bleed )
+    {
+    setMask( getResources().getDrawable( drawableResourceId ), aspectRatio, bleed );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the mask as a drawable resource id.
+   *
+   *****************************************************/
   public void setMask( int drawableResourceId, float aspectRatio )
     {
     setMask( getResources().getDrawable( drawableResourceId ), aspectRatio, null );

@@ -35,8 +35,8 @@ android {
         // Change the min version to 15 if including Facebook support
         minSdkVersion 14
         targetSdkVersion 24
-        versionCode 205
-        versionName '2.5'
+        versionCode 300
+        versionName '3.0'
     }
 
     sourceSets {

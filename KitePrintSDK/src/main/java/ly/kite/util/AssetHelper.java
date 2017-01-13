@@ -63,7 +63,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 import java.util.UUID;
 
 import ly.kite.KiteSDK;
@@ -733,14 +732,16 @@ public class AssetHelper
 
     for ( ImageSpec imageSpec : imageSpecList )
       {
-      // Some of the image specs may be null. For example, photobooks use null placeholders
-      // for blank pages.
+      // Some products, such as photobooks, use null placeholders for blank pages.
+      // Make sure we cah cope with both null image specs and null assets.
 
-      if ( imageSpec != null )
+      Asset sourceAsset;
+
+      if ( imageSpec != null && ( sourceAsset = imageSpec.getAsset() ) != null )
         {
-        Asset basketAsset = createAsBasketAsset( context, basketId, imageSpec.getAsset() );
+        Asset basketAsset = createAsBasketAsset( context, basketId, sourceAsset );
 
-        basketImageSpecList.add( new ImageSpec( basketAsset, imageSpec.getAssetFragment().getProportionalRectangle(), imageSpec.getQuantity() ) );
+        basketImageSpecList.add( imageSpec.createCopyWithReplacedAsset( basketAsset ) );
         }
       else
         {

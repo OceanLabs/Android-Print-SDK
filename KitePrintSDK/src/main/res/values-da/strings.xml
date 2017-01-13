@@ -189,7 +189,11 @@
 
     <string name="product_overview_start_button_text">Begynd at skabe</string>
 
+    <string name="image_selection_empty_message">Tilføj billeder ved at trykke\npå ikonerne ovenfor</string>
+
     <string name="phone_case_proceed_button_text">Næste</string>
+
+    <string name="edit_border_text_hint">Tilføj tekst her</string>
 
     <string name="multi_page_instructions"><b>Klik</b> på billedet for at redigere,\n<b>Hold</b> for at genbestille.</string>
 

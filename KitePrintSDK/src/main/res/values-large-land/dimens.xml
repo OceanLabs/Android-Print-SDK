@@ -5,6 +5,14 @@
     <dimen name="image_source_border_size">20dp</dimen>
     <dimen name="image_source_text_spacing">10dp</dimen>
 
+    <dimen name="edit_border_text_image_frame_width">343dp</dimen>
+    <dimen name="edit_border_text_image_frame_height">400dp</dimen>
+    <dimen name="edit_border_text_image_thin_border_size">23dp</dimen>
+    <dimen name="edit_border_text_image_thick_border_size">80dp</dimen>
+    <dimen name="edit_border_text_size">42sp</dimen>
+
+    <dimen name="review_border_text_bottom_margin">20dp</dimen>
+
     <dimen name="basket_item_height">88dp</dimen>
     <dimen name="basket_item_image_width">75dp</dimen>
 

@@ -59,6 +59,7 @@ import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.Product;
 import ly.kite.catalogue.ProductGroup;
 import ly.kite.R;
+import ly.kite.widget.HeaderFooterGridView;
 
 
 ///// Class Declaration /////
@@ -221,6 +222,13 @@ public class ChooseProductFragment extends AGroupOrProductFragment
     super.onCatalogueSuccess( catalogue );
 
 
+    // Call back to the activity in case it wants to (e.g.) add any headers / footers
+    if ( mKiteActivity instanceof ICallback )
+      {
+      ( (ICallback)mKiteActivity ).pOnPrePopulateProductGrid( catalogue, mGridView );
+      }
+
+
     // Try and find a product list
 
     mProductList = catalogue.getProductsForGroup( mProductGroupLabel );
@@ -254,19 +262,31 @@ public class ChooseProductFragment extends AGroupOrProductFragment
     onSaveManagedAdaptorViewPosition( position );
 
 
-    // Get the product group. Remember to ignore any clicks on placeholder images.
-
-    int adaptorIndex = mGridView.adaptorIndexFromPosition( position );
-
-    if ( adaptorIndex < 0 || adaptorIndex >= mProductList.size() ) return;
-
-    Product chosenProduct = mProductList.get( adaptorIndex );
-
-
-    // Call back to the activity
     if ( mKiteActivity instanceof ICallback )
       {
-      ( (ICallback)mKiteActivity ).pOnProductChosen( chosenProduct );
+      ICallback callback = (ICallback)mKiteActivity;
+
+
+      // Convert the position into an adaptor index
+      int adaptorIndex = mGridView.adaptorIndexFromPosition( position );
+
+
+      // If a header / footer image is clicked - call back to the activity
+
+      if ( adaptorIndex < 0 || adaptorIndex >= mProductList.size() )
+        {
+        callback.pOnHeaderOrFooterClicked( position, adaptorIndex );
+
+        return;
+        }
+
+
+
+      // Get the product and call back to the activity with it
+
+      Product chosenProduct = mProductList.get( adaptorIndex );
+
+      callback.pOnProductChosen( chosenProduct );
       }
     }
 
@@ -280,6 +300,8 @@ public class ChooseProductFragment extends AGroupOrProductFragment
    *****************************************************/
   public interface ICallback
     {
+    public void pOnPrePopulateProductGrid( Catalogue catalogue, HeaderFooterGridView headerFooterGridView );
+    public void pOnHeaderOrFooterClicked( int position, int adaptorIndex );
     public void pOnProductChosen( Product product );
     }
 

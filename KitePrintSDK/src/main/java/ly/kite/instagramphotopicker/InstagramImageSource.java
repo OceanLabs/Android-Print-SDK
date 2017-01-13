@@ -85,7 +85,7 @@ public class InstagramImageSource extends AImageSource
   public InstagramImageSource()
     {
     super( R.color.image_source_background_instagram,
-           R.drawable.ic_add_instagram_white,
+           R.drawable.ic_image_source_instagram,
            R.string.image_source_instagram,
            R.id.add_image_from_instagram,
            R.string.select_photo_from_instagram );

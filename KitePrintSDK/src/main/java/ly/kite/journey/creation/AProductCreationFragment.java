@@ -219,9 +219,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
    *****************************************************/
   protected void onCreateOptionsMenu( Menu menu, MenuInflater menuInflator, int menuResourceId )
     {
-    // The add photo XML has menu options for all the image sources, but they might
-    // not all be enabled. So after we've inflated it, we need to go through an remove
-    // any source that isn't available.
+    // Add a sub-menu item, to the add menu action, for every image source.
 
     menuInflator.inflate( menuResourceId, menu );
 
@@ -454,11 +452,13 @@ abstract public class AProductCreationFragment extends    AKiteFragment
    * Sets the visibility of any backwards text view.
    *
    *****************************************************/
-  protected void setBackwardsTextViewVisibility( int visibility )
+  protected TextView setBackwardsTextViewVisibility( int visibility )
     {
     TextView backwardsTextView = getBackwardsTextView();
 
     if ( backwardsTextView != null ) backwardsTextView.setVisibility( visibility );
+
+    return ( backwardsTextView );
     }
 
 
@@ -467,11 +467,28 @@ abstract public class AProductCreationFragment extends    AKiteFragment
    * Sets the text of any backwards text view.
    *
    *****************************************************/
-  protected void setBackwardsTextViewText( int textResourceId )
+  protected TextView setBackwardsTextViewText( int textResourceId )
     {
     TextView backwardsTextView = getBackwardsTextView();
 
     if ( backwardsTextView != null ) backwardsTextView.setText( textResourceId );
+
+    return ( backwardsTextView );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the text of any backwards text view.
+   *
+   *****************************************************/
+  protected TextView setBackwardsTextViewText( String text )
+    {
+    TextView backwardsTextView = getBackwardsTextView();
+
+    if ( backwardsTextView != null ) backwardsTextView.setText( text );
+
+    return ( backwardsTextView );
     }
 
 
@@ -480,11 +497,13 @@ abstract public class AProductCreationFragment extends    AKiteFragment
    * Sets the enabled state of any backwards text view.
    *
    *****************************************************/
-  protected void setBackwardsTextViewEnabled( boolean enabled )
+  protected TextView setBackwardsTextViewEnabled( boolean enabled )
     {
     TextView backwardsTextView = getBackwardsTextView();
 
     if ( backwardsTextView != null ) backwardsTextView.setEnabled( enabled );
+
+    return ( backwardsTextView );
     }
 
 
@@ -493,11 +512,13 @@ abstract public class AProductCreationFragment extends    AKiteFragment
    * Sets the listener for any backwards text view.
    *
    *****************************************************/
-  protected void setBackwardsTextViewOnClickListener( View.OnClickListener listener )
+  protected TextView setBackwardsTextViewOnClickListener( View.OnClickListener listener )
     {
     TextView backwardsTextView = getBackwardsTextView();
 
     if ( backwardsTextView != null ) backwardsTextView.setOnClickListener( listener );
+
+    return ( backwardsTextView );
     }
 
 
@@ -521,11 +542,13 @@ abstract public class AProductCreationFragment extends    AKiteFragment
    * Sets the visibility of any forwards text view.
    *
    *****************************************************/
-  protected void setForwardsTextViewVisibility( int visibility )
+  protected TextView setForwardsTextViewVisibility( int visibility )
     {
     TextView forwardsTextView = getForwardsTextView();
 
     if ( forwardsTextView != null ) forwardsTextView.setVisibility( visibility );
+
+    return ( forwardsTextView );
     }
 
 
@@ -534,11 +557,13 @@ abstract public class AProductCreationFragment extends    AKiteFragment
    * Sets the text of any forwards text view.
    *
    *****************************************************/
-  protected void setForwardsTextViewText( int textResourceId )
+  protected TextView setForwardsTextViewText( int textResourceId )
     {
     TextView forwardsTextView = getForwardsTextView();
 
     if ( forwardsTextView != null ) forwardsTextView.setText( textResourceId );
+
+    return ( forwardsTextView );
     }
 
 
@@ -547,7 +572,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
    * Sets the style of any forwards text view.
    *
    *****************************************************/
-  protected void setForwardsTextViewBold( boolean bold )
+  protected TextView setForwardsTextViewBold( boolean bold )
     {
     TextView forwardsTextView = getForwardsTextView();
 
@@ -555,6 +580,8 @@ abstract public class AProductCreationFragment extends    AKiteFragment
       {
       forwardsTextView.setTypeface( forwardsTextView.getTypeface(), bold ? Typeface.BOLD : Typeface.NORMAL );
       }
+
+    return ( forwardsTextView );
     }
 
 
@@ -563,11 +590,13 @@ abstract public class AProductCreationFragment extends    AKiteFragment
    * Sets the enabled state of any forwards text view.
    *
    *****************************************************/
-  protected void setForwardsTextViewEnabled( boolean enabled )
+  protected TextView setForwardsTextViewEnabled( boolean enabled )
     {
     TextView forwardsTextView = getForwardsTextView();
 
     if ( forwardsTextView != null ) forwardsTextView.setEnabled( enabled );
+
+    return ( forwardsTextView );
     }
 
 
@@ -576,11 +605,13 @@ abstract public class AProductCreationFragment extends    AKiteFragment
    * Sets the listener for any forwards text view.
    *
    *****************************************************/
-  protected void setForwardsTextViewOnClickListener( View.OnClickListener listener )
+  protected TextView setForwardsTextViewOnClickListener( View.OnClickListener listener )
     {
     TextView forwardsTextView = getForwardsTextView();
 
     if ( forwardsTextView != null ) forwardsTextView.setOnClickListener( listener );
+
+    return ( forwardsTextView );
     }
 
 

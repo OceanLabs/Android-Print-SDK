@@ -71,7 +71,7 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements I
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  public  static final String  TAG                                = "ReviewAndEditFragment";
+  public  static final String  TAG = "ReviewAndEditFragment";
 
 
   ////////// Static Variable(s) //////////
@@ -81,7 +81,8 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements I
 
   private GridView          mGridView;
   private Parcelable        mGridViewState;
-  private TextView          mProceedOverlayTextView;
+  //private TextView          mProceedOverlayTextView;
+  private TextView          mForwardsTextView;
 
   private ImageSpecAdaptor  mImageSpecAdaptor;
 
@@ -142,13 +143,13 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements I
     {
     View view = layoutInflator.inflate( R.layout.screen_review_and_edit, container, false );
 
-    mGridView               = (GridView)view.findViewById( R.id.grid_view );
-    mProceedOverlayTextView = (TextView)view.findViewById( R.id.proceed_overlay_text_view );
+    super.onViewCreated( view );
+
+    mGridView         = (GridView)view.findViewById( R.id.grid_view );
+    mForwardsTextView = setForwardsTextViewText( R.string.review_and_edit_proceed_button_text );
 
 
-    mProceedOverlayTextView.setText( R.string.review_and_edit_proceed_button_text );
-
-    mProceedOverlayTextView.setOnClickListener( this );
+    setForwardsTextViewOnClickListener( this );
 
 
     return ( view );
@@ -274,7 +275,7 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements I
   @Override
   public void onClick( View view )
     {
-    if ( view == mProceedOverlayTextView )
+    if ( view == mForwardsTextView )
       {
       ///// Confirm /////
 

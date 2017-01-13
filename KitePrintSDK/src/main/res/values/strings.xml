@@ -36,10 +36,34 @@
     <string name="drawer_open">Drawer open</string>
     <string name="drawer_closed">Drawer closed</string>
 
+
+    <!-- These strings are not part of the SDK, but are frequently used by apps -->
+
+    <string name="settings_title_show_notification_messages">Notification Messages</string>
+    <string name="settings_title_support">Customer Support</string>
+    <string name="settings_title_privacy">Privacy Policy</string>
+    <string name="settings_title_terms">Terms of Use</string>
+    <string name="settings_title_legal">Legal</string>
+    <string name="settings_title_licences">Open-source Licences</string>
+    <string name="settings_summary_licences">Licence details for open-source software</string>
+    <string name="settings_title_build_version">Build Version</string>
+
+    <string name="preference_key_show_notification_messages">preference_key_show_notification_messages</string>
+    <string name="preference_key_support" translatable="false">preference_key_support</string>
+    <string name="preference_key_legal" translatable="false">preference_key_legal</string>
+    <string name="preference_key_privacy" translatable="false">preference_key_privacy</string>
+    <string name="preference_key_build_version" translatable="false">preference_key_build_version</string>
+
+    <string name="license_title_picasso">Picasso</string>
+    <string name="license_url_picasso">https://raw.githubusercontent.com/square/picasso/picasso-parent-2.5.2/LICENSE.txt</string>
+    <string name="license_grid_view">GridView with Header and Footer</string>
+    <string name="license_url_grid_view">https://raw.githubusercontent.com/liaohuqiu/android-GridViewWithHeaderAndFooter/1.0.12/LICENSE.txt</string>
+
+
     <string name="alert_dialog_title_pack_not_full_format_string">You have selected %s</string>
     <string name="alert_dialog_message_pack_not_full_format_string" tools:ignore="PluralsCandidate">You can add %d more for the same price</string>
 
-    <string name="alert_dialog_title_oops">Oops!</string>
+    <string name="alert_dialog_title_oops">@string/Oops_</string>
     <string name="alert_dialog_message_pricing_format_string">There was a problem retrieving pricing from the server:\n%s</string>
 
     <string name="alert_dialog_title_no_intent">Internal Error</string>
@@ -157,6 +181,7 @@
     <string name="ORDER_ID">ORDER ID</string>
     <string name="Order_Summary">Order Summary</string>
     <string name="ORDER_SUMMARY">ORDER SUMMARY</string>
+    <string name="Oops_">Oops!</string>
     <string name="Pay">Pay</string>
     <string name="Payment_Id">Payment Id</string>
     <string name="PAYMENT_ID">PAYMENT ID</string>
@@ -206,13 +231,21 @@
 
     <string name="product_overview_start_button_text">Start creating</string>
 
+    <string name="image_selection_empty_message">Add photos by tapping\nthe icons above</string>
+
+    <string name="edit_image_backwards_button_text" translatable="false">@string/Cancel</string>
+    <string name="edit_image_forwards_button_text" translatable="false">@string/Done</string>
+
+    <string name="edit_border_text_image_forwards_button_text" translatable="false">@string/Save</string>
+    <string name="edit_border_text_hint">Add Text Here</string>
+
     <string name="phone_case_proceed_button_text">Next</string>
 
     <string name="multi_page_instructions"><b>Tap</b> picture to edit,\n<b>Hold</b> to re-order.</string>
 
     <string name="address_book_empty">Address Book Empty</string>
 
-    <string name="image_source_prompt">Add photos by tapping one of the options</string>
+    <string name="image_source_prompt">Add photos by tapping\none of the options</string>
 
     <string name="image_selection_title_format_string">%1$s - %2$d / %3$d</string>
     <string name="image_selection_pack_title_format_string" tools:ignore="PluralsCandidate">#%1$d Pack of %2$d %3$s</string>

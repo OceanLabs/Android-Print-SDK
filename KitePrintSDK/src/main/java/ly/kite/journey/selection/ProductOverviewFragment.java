@@ -141,6 +141,7 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
   private View                     mCloseDrawerView;
   private ImageView                mOpenCloseDrawerIconImageView;
   private TextView                 mProceedOverlayTextView;
+  private TextView                 mCTABarRightTextView;
   private View                     mThemableDrawerStartView;
   private View                     mNonThemableDrawerStartView;
   private View                     mDrawerStartView;
@@ -274,6 +275,7 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
     mProceedOverlayTextView             = (TextView)mContentView.findViewById( R.id.proceed_overlay_text_view );
     mThemableDrawerStartView            = mContentView.findViewById( R.id.themable_drawer_start_view );
     mNonThemableDrawerStartView         = mContentView.findViewById( R.id.non_themable_drawer_start_view );
+    mCTABarRightTextView                = (TextView)mContentView.findViewById( R.id.cta_bar_right_text_view );
 
     // Determine the main start view
     if ( mThemableMainStartView != null ) mMainStartView = mThemableMainStartView;
@@ -437,19 +439,36 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
     if ( view == mToggleDrawerView )
       {
       toggleSliderState();
+
+      return;
       }
     else if ( mOpenDrawerView != null && view == mOpenDrawerView )
       {
       if ( mSlidingOverlayFrame != null && ! mSlidingOverlayFrame.sliderIsExpanded() ) toggleSliderState();
+
+      return;
       }
     else if ( mCloseDrawerView != null && view == mCloseDrawerView )
       {
       if ( mSlidingOverlayFrame != null && mSlidingOverlayFrame.sliderIsExpanded() ) toggleSliderState();
+
+      return;
       }
-    else
+    else if ( view == mProductImageViewPager )
       {
-      onCreateProduct( mProduct );
+      // If the sliding drawer is open then clicking on the product view will close it. Otherwise
+      // we go to the next screen.
+      if ( mSlidingOverlayFrame != null && mSlidingOverlayFrame.sliderIsExpanded() )
+        {
+        toggleSliderState();
+
+        return;
+        }
       }
+
+
+    // Anything not already captured will take us to product creation
+    onCreateProduct( mProduct );
     }
 
 
@@ -779,6 +798,12 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
       setThemeColour( mCatalogue.getPrimaryThemeColour(), mThemableDrawerStartView );
       }
 
+    if ( mCTABarRightTextView != null )
+      {
+      mCTABarRightTextView.setText( R.string.product_overview_start_button_text );
+
+      mCTABarRightTextView.setOnClickListener( this );
+      }
 
     if ( mDrawerStartView != null ) mDrawerStartView.setOnClickListener( this );
 

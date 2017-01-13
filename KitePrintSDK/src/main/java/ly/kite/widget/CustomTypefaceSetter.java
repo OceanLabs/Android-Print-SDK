@@ -89,50 +89,54 @@ public class CustomTypefaceSetter
 
 
     // A custom typeface is set according to the following priority order:
-    //   1. The R.string.custom_typeface_file_name string
-    //   2. The "customTypefaceAssetName" attribute
-    //   3. The "customTypefaceStyle" attribute ( -> "custom_typeface_style_x" )
+    //   1. The "customTypefaceAssetName" attribute
+    //   2. The "customTypefaceStyle" attribute ( -> "custom_typeface_style_x" )
+    //   3. The R.string.custom_typeface_file_name string
 
 
     Resources resources = context.getResources();
 
-    // 1
-    Typeface customTypeface = loadTypeface( context, resources.getString( R.string.custom_typeface_file_name ) );
+    Typeface customTypeface = null;
 
 
-    if ( customTypeface == null )
+    if ( attributeSet != null )
       {
-      if ( attributeSet != null )
+      TypedArray typedArray = context.obtainStyledAttributes( attributeSet, R.styleable.CustomTypefaceWidget, defaultStyle, defaultStyle );
+
+      TypedValue value = new TypedValue();
+
+      // 1
+      customTypeface = loadTypeface( context, typedArray.getString( R.styleable.CustomTypefaceWidget_customTypefaceAssetName  ) );
+
+      if ( customTypeface == null )
         {
-        TypedArray typedArray = context.obtainStyledAttributes( attributeSet, R.styleable.CustomTypefaceWidget, defaultStyle, defaultStyle );
-
-        TypedValue value = new TypedValue();
-
         // 2
-        customTypeface = loadTypeface( context, typedArray.getString( R.styleable.CustomTypefaceWidget_customTypefaceAssetName  ) );
 
-        if ( customTypeface == null )
+        String customTypefaceStyle = typedArray.getString( R.styleable.CustomTypefaceWidget_customTypefaceStyle );
+
+        if ( customTypefaceStyle != null && ! customTypefaceStyle.trim().equals( "" ) )
           {
-          // 3
+          String customTypefaceResourceName = CUSTOM_TYPEFACE_STYLE_PREFIX + customTypefaceStyle;
 
-          String customTypefaceStyle = typedArray.getString( R.styleable.CustomTypefaceWidget_customTypefaceStyle );
+          int customTypefaceAssetNameResourceId = resources.getIdentifier( customTypefaceResourceName, "string", context.getPackageName() );
 
-          if ( customTypefaceStyle != null && ! customTypefaceStyle.trim().equals( "" ) )
+          if ( customTypefaceAssetNameResourceId != 0 )
             {
-            String customTypefaceResourceName = CUSTOM_TYPEFACE_STYLE_PREFIX + customTypefaceStyle;
-
-            int customTypefaceAssetNameResourceId = resources.getIdentifier( customTypefaceResourceName, "string", context.getPackageName() );
-
-            if ( customTypefaceAssetNameResourceId != 0 )
-              {
-              customTypeface = loadTypeface( context, resources.getString( customTypefaceAssetNameResourceId ) );
-              }
+            customTypeface = loadTypeface( context, resources.getString( customTypefaceAssetNameResourceId ) );
             }
           }
-
-        typedArray.recycle();
         }
+
+      typedArray.recycle();
       }
+
+
+    // 3
+    if ( customTypeface == null )
+      {
+      customTypeface = loadTypeface( context, resources.getString( R.string.custom_typeface_file_name ) );
+      }
+
 
 
     // If we found a custom typeface - try to use it, but make sure we keep any

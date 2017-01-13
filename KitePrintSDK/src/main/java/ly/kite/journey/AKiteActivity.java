@@ -63,7 +63,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -161,8 +160,8 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
   protected AKiteFragment         mTopFragment;
 
   private   ImageView             mEndCustomerSessionImageView;
-  private   Button                mCTABarLeftButton;
-  private   Button                mCTABarRightButton;
+  private   TextView              mCTABarLeftTextView;
+  private   TextView              mCTABarRightTextView;
 
   private   boolean               mConfirmEndSessionAction;
 
@@ -340,12 +339,12 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
 
 
     // Get references to any call-to-action bar buttons
-    mCTABarLeftButton  = (Button)findViewById( R.id.cta_bar_left_text_view );
-    mCTABarRightButton = (Button)findViewById( R.id.cta_bar_right_text_view );
+    mCTABarLeftTextView = (TextView)findViewById( R.id.cta_bar_left_text_view );
+    mCTABarRightTextView = (TextView)findViewById( R.id.cta_bar_right_text_view );
 
     // Automatically add listeners
-    if ( mCTABarLeftButton  != null ) mCTABarLeftButton.setOnClickListener( this );
-    if ( mCTABarRightButton != null ) mCTABarRightButton.setOnClickListener( this );
+    if ( mCTABarLeftTextView != null ) mCTABarLeftTextView.setOnClickListener( this );
+    if ( mCTABarRightTextView != null ) mCTABarRightTextView.setOnClickListener( this );
     }
 
 
@@ -738,7 +737,7 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
       return;
       }
 
-    if ( view == mCTABarLeftButton )
+    if ( view == mCTABarLeftTextView )
       {
       ///// CTA bar left button /////
 
@@ -747,7 +746,7 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
       return;
       }
 
-    if ( view == mCTABarRightButton )
+    if ( view == mCTABarRightTextView )
       {
       ///// CTA bar right button /////
 
@@ -1368,9 +1367,9 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
    * Returns the left text view.
    *
    *****************************************************/
-  protected Button getLeftButton()
+  protected TextView getLeftTextView()
     {
-    return ( mCTABarLeftButton );
+    return ( mCTABarLeftTextView );
     }
 
 
@@ -1379,9 +1378,9 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
    * Returns the right text view.
    *
    *****************************************************/
-  protected Button getRightButton()
+  protected TextView getRightTextView()
     {
-    return ( mCTABarRightButton );
+    return ( mCTABarRightTextView );
     }
 
 
@@ -1403,7 +1402,7 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
    *****************************************************/
   protected void setLeftText( String text )
     {
-    setText( getLeftButton(), text );
+    setText( getLeftTextView(), text );
     }
 
 
@@ -1414,7 +1413,7 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
    *****************************************************/
   protected void setRightText( String text )
     {
-    setText( getRightButton(), text );
+    setText( getRightTextView(), text );
     }
 
 
@@ -1463,7 +1462,7 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
    *****************************************************/
   protected void setLeftColourRes( int colourResourceId )
     {
-    setColourRes( getLeftButton(), colourResourceId );
+    setColourRes( getLeftTextView(), colourResourceId );
     }
 
 
@@ -1474,7 +1473,7 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
    *****************************************************/
   protected void setRightColourRes( int colourResourceId )
     {
-    setColourRes( getRightButton(), colourResourceId );
+    setColourRes( getRightTextView(), colourResourceId );
     }
 
 
@@ -1496,7 +1495,7 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
    *****************************************************/
   protected void setLeftEnabled( boolean enabled )
     {
-    setEnabled( getLeftButton(), enabled );
+    setEnabled( getLeftTextView(), enabled );
     }
 
 
@@ -1507,7 +1506,7 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
    *****************************************************/
   protected void setRightEnabled( boolean enabled )
     {
-    setEnabled( getRightButton(), enabled );
+    setEnabled( getRightTextView(), enabled );
     }
 
 
@@ -1529,7 +1528,7 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
    *****************************************************/
   protected void setLeftVisible( boolean visible )
     {
-    setVisible( getLeftButton(), visible );
+    setVisible( getLeftTextView(), visible );
     }
 
 
@@ -1540,7 +1539,7 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
    *****************************************************/
   protected void setRightVisible( boolean visible )
     {
-    setVisible( getRightButton(), visible );
+    setVisible( getRightTextView(), visible );
     }
 
 
