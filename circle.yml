@@ -2,8 +2,15 @@ machine:
   java:
     version: openjdk8
 test:
+  pre:
+    - emulator -avd circleci-android22 -no-audio -no-window:
+        background: true
+        parallel: true
+    - circle-android wait-for-boot
   override:
     - ./gradlew assembleRelease
     - cp -r KitePrintSDK/build/outputs $CIRCLE_ARTIFACTS
+    - ./gradlew createDebugCoverageReport
+    - cp -r KitePrintSDK/build/reports $CIRCLE_ARTIFACTS
   post:
     - bash <(curl -s https://codecov.io/bash)
