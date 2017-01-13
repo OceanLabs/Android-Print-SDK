@@ -6,4 +6,6 @@ test:
     - ./gradlew assembleRelease
     - cp -r KitePrintSDK/build/outputs $CIRCLE_ARTIFACTS
   post:
+    - ./gradlew createDebugCoverageReport
+    - cp -r KitePrintSDK/build/reports $CIRCLE_ARTIFACTS
     - bash <(curl -s https://codecov.io/bash)
