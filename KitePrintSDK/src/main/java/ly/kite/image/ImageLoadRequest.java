@@ -856,7 +856,7 @@ public class ImageLoadRequest
 
       Bitmap bitmap = newSource.load();
 
-      if ( bitmap != null )
+      if ( bitmap != null && mTarget != null )
         {
         mTarget.onImageAvailable( bitmap );
         }
@@ -866,7 +866,7 @@ public class ImageLoadRequest
     @Override
     public void onDownloadFailure( URL sourceURL, Exception exception )
       {
-      mTarget.onImageUnavailable( exception );
+      if ( mTarget != null ) mTarget.onImageUnavailable( exception );
       }
 
     }
