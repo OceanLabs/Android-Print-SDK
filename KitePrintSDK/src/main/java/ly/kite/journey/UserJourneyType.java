@@ -47,9 +47,7 @@ import java.util.List;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
-import ly.kite.address.Address;
 import ly.kite.catalogue.Product;
-import ly.kite.ordering.BasketItem;
 import ly.kite.ordering.ImageSpec;
 import ly.kite.ordering.Job;
 import ly.kite.ordering.Order;
@@ -72,7 +70,7 @@ public enum UserJourneyType
             @Override
             public List<List<ImageSpec>> dbItemsFromCreationItems( Product product, List<ImageSpec> imageSpecList )
               {
-              return ( splitImagesByJob( product, imageSpecList, false ) );
+              return ( splitImagesIntoJobs( product, imageSpecList, false ) );
               }
             },
 
@@ -83,7 +81,7 @@ public enum UserJourneyType
             @Override
             public List<List<ImageSpec>> dbItemsFromCreationItems( Product product, List<ImageSpec> imageSpecList )
               {
-              return ( splitImagesByJob( product, imageSpecList, true ) );
+              return ( splitImagesIntoJobs( product, imageSpecList, true ) );
               }
 
             @Override
@@ -170,7 +168,7 @@ public enum UserJourneyType
             @Override
             public List<List<ImageSpec>> dbItemsFromCreationItems( Product product, List<ImageSpec> imageSpecList )
               {
-              return ( splitImagesByJob( product, imageSpecList, false ) );
+              return ( splitImagesIntoJobs( product, imageSpecList, false ) );
               }
             },
 
@@ -180,7 +178,7 @@ public enum UserJourneyType
             @Override
             public List<List<ImageSpec>> dbItemsFromCreationItems( Product product, List<ImageSpec> imageSpecList )
               {
-              return ( splitImagesByJob( product, imageSpecList, true ) );
+              return ( splitImagesIntoJobs( product, imageSpecList, true ) );
               }
 
             // Photobooks have their own job
@@ -249,7 +247,7 @@ public enum UserJourneyType
             @Override
             public List<List<ImageSpec>> dbItemsFromCreationItems( Product product, List<ImageSpec> imageSpecList )
               {
-              return ( splitImagesByJob( product, imageSpecList, true ) );
+              return ( splitImagesIntoJobs( product, imageSpecList, true ) );
               }
 
             @Override
@@ -264,7 +262,7 @@ public enum UserJourneyType
             @Override
             public List<List<ImageSpec>> dbItemsFromCreationItems( Product product, List<ImageSpec> imageSpecList )
               {
-              return ( splitImagesByJob( product, imageSpecList, false ) );
+              return ( splitImagesIntoJobs( product, imageSpecList, false ) );
               }
             };
 
@@ -321,6 +319,50 @@ public enum UserJourneyType
       }
 
     return ( flattenedImageSpecList );
+    }
+
+
+  /*****************************************************
+   *
+   * Splits a single list of image image specs into multiple
+   * lists, according to the maximum number of images per
+   * item.
+   *
+   *****************************************************/
+  static List<List<ImageSpec>> splitImagesIntoJobs( Product product, List<ImageSpec> imageSpecList, boolean nullImagesAreBlank )
+    {
+    // Flatten the images into a single list
+    ArrayList<ImageSpec> flatImageSpecList = flattenImageSpecList( imageSpecList, nullImagesAreBlank );
+
+
+    // Go through the image specs in batches, and create a list for each batch of images.
+
+    int imagesPerJob = product.getQuantityPerSheet();
+
+    ArrayList<List<ImageSpec>> imageSpecLists = new ArrayList<>();
+
+    for ( int offset = 0; offset < flatImageSpecList.size(); offset += imagesPerJob )
+      {
+      List<ImageSpec> jobImageSpecList = flatImageSpecList.subList( offset, Math.min( offset + imagesPerJob, flatImageSpecList.size() ) );
+
+      imageSpecLists.add( jobImageSpecList );
+      }
+
+
+    return ( imageSpecLists );
+    }
+
+
+  /*****************************************************
+   *
+   * Splits a single list of image image specs into multiple
+   * lists, according to the maximum number of images per
+   * item.
+   *
+   *****************************************************/
+  static public List<List<ImageSpec>> splitImagesIntoJobs( Product product, List<ImageSpec> imageSpecList )
+    {
+    return ( splitImagesIntoJobs( product, imageSpecList, false ) );
     }
 
 
@@ -393,50 +435,6 @@ public enum UserJourneyType
   /*****************************************************
    *
    * Splits a single list of image image specs into multiple
-   * lists, according to the maximum number of images per
-   * item.
-   *
-   *****************************************************/
-  List<List<ImageSpec>> splitImagesByJob( Product product, List<ImageSpec> imageSpecList, boolean nullImagesAreBlank )
-    {
-    // Flatten the images into a single list
-    ArrayList<ImageSpec> flatImageSpecList = flattenImageSpecList( imageSpecList, nullImagesAreBlank );
-
-
-    // Go through the image specs in batches, and create a list for each batch of images.
-
-    int imagesPerJob = product.getQuantityPerSheet();
-
-    ArrayList<List<ImageSpec>> imageSpecLists = new ArrayList<>();
-
-    for ( int offset = 0; offset < flatImageSpecList.size(); offset += imagesPerJob )
-      {
-      List<ImageSpec> jobImageSpecList = flatImageSpecList.subList( offset, Math.min( offset + imagesPerJob, flatImageSpecList.size() ) );
-
-      imageSpecLists.add( jobImageSpecList );
-      }
-
-
-    return ( imageSpecLists );
-    }
-
-
-  /*****************************************************
-   *
-   * Splits a single list of image image specs into multiple
-   * lists, according to the maximum number of images per
-   * item.
-   *
-   *****************************************************/
-  public List<List<ImageSpec>> splitImagesByJob( Product product, List<ImageSpec> imageSpecList )
-    {
-    return ( splitImagesByJob( product, imageSpecList, false ) );
-    }
-
-
-  /*****************************************************
-   *
-   * Splits a single list of image image specs into multiple
    * lists, according to how they are stored on the database.
    *
    *****************************************************/
@@ -454,7 +452,7 @@ public enum UserJourneyType
   void addJobsToOrder( Context context, Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, boolean nullImagesAreBlank, Order order )
     {
     // Split the images into a list for each separate job
-    List<List<ImageSpec>> imageSpecLists = splitImagesByJob( product, imageSpecList );
+    List<List<ImageSpec>> imageSpecLists = splitImagesIntoJobs( product, imageSpecList );
 
     // Go through each list of images and create a job for it.
     for ( List<ImageSpec> jobImageSpecList : imageSpecLists )
