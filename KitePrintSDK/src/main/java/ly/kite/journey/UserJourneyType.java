@@ -124,6 +124,8 @@ public enum UserJourneyType
                 itemImageSpecList.add( null );
                 itemImageSpecList.add( null );
                 itemImageSpecList.add( null );
+
+                splitImageSpecLists.add( itemImageSpecList );
                 }
 
 

@@ -218,6 +218,117 @@ public class UserJourneyTypeTests extends AndroidTestCase
     assertProperties( imageSpecList2.get( 0 ), "/tmp/image2.jpg", null, 1 );
     }
 
+  public void testSplitIntoJobs3()
+    {
+    Product product = new Product( "product_id", "product_code", "Test product", "Product type", 0xffffffff, UserJourneyType.RECTANGLE, 2 );
+
+
+    ArrayList<ImageSpec> imageSpecList = new ArrayList<>();
+
+    imageSpecList.add( null );
+    imageSpecList.add( new ImageSpec( new AssetFragment( new Asset( "/tmp/image1.jpg" ) ), null, 2 ) );
+    imageSpecList.add( null );
+    imageSpecList.add( new ImageSpec( new AssetFragment( new Asset( "/tmp/image2.jpg" ) ), null, 1 ) );
+
+
+    List<List<ImageSpec>> imageSpecLists = UserJourneyType.splitImagesIntoJobs( product, imageSpecList, false );
+
+
+    Assert.assertEquals( 2, imageSpecLists.size() );
+
+    List<ImageSpec> imageSpecList1 = imageSpecLists.get( 0 );
+    List<ImageSpec> imageSpecList2 = imageSpecLists.get( 1 );
+
+    assertEquals( 2, imageSpecList1.size() );
+    assertProperties( imageSpecList1.get( 0 ), "/tmp/image1.jpg", null, 1 );
+    assertProperties( imageSpecList1.get( 1 ), "/tmp/image1.jpg", null, 1 );
+
+    assertEquals( 1, imageSpecList2.size() );
+    assertProperties( imageSpecList2.get( 0 ), "/tmp/image2.jpg", null, 1 );
+    }
+
+  public void testSplitIntoJobs4()
+    {
+    Product product = new Product( "product_id", "product_code", "Test product", "Product type", 0xffffffff, UserJourneyType.RECTANGLE, 2 );
+
+
+    ArrayList<ImageSpec> imageSpecList = new ArrayList<>();
+
+    imageSpecList.add( null );
+    imageSpecList.add( new ImageSpec( new AssetFragment( new Asset( "/tmp/image1.jpg" ) ), null, 2 ) );
+    imageSpecList.add( null );
+    imageSpecList.add( new ImageSpec( new AssetFragment( new Asset( "/tmp/image2.jpg" ) ), null, 1 ) );
+
+
+    List<List<ImageSpec>> imageSpecLists = UserJourneyType.splitImagesIntoJobs( product, imageSpecList, true );
+
+
+    Assert.assertEquals( 3, imageSpecLists.size() );
+
+    List<ImageSpec> imageSpecList1 = imageSpecLists.get( 0 );
+    List<ImageSpec> imageSpecList2 = imageSpecLists.get( 1 );
+    List<ImageSpec> imageSpecList3 = imageSpecLists.get( 2 );
+
+    assertEquals( 2, imageSpecList1.size() );
+    assertEquals( null, imageSpecList1.get( 0 ) );
+    assertProperties( imageSpecList1.get( 1 ), "/tmp/image1.jpg", null, 1 );
+
+    assertEquals( 2, imageSpecList2.size() );
+    assertProperties( imageSpecList2.get( 0 ), "/tmp/image1.jpg", null, 1 );
+    assertEquals( null, imageSpecList2.get( 1 ) );
+
+    assertEquals( 1, imageSpecList3.size() );
+    assertProperties( imageSpecList3.get( 0 ), "/tmp/image2.jpg", null, 1 );
+    }
+
+
+  /*****************************************************
+   *
+   * Convert into DB items tests.
+   *
+   *****************************************************/
+
+  public void testToDBItems1()
+    {
+    Product product = new Product( "product_id", "product_code", "Test product", "Product type", 0xffffffff, UserJourneyType.GREETINGCARD, 1 );
+
+    ArrayList<ImageSpec> imageSpecList = new ArrayList<>();
+
+    imageSpecList.add( null );
+    imageSpecList.add( new ImageSpec( new AssetFragment( new Asset( "/tmp/image1.jpg" ) ), null, 2 ) );
+    imageSpecList.add( null );
+    imageSpecList.add( new ImageSpec( new AssetFragment( new Asset( "/tmp/image2.jpg" ) ), null, 1 ) );
+
+
+    List<List<ImageSpec>> imageSpecLists = UserJourneyType.GREETINGCARD.dbItemsFromCreationItems( product, imageSpecList );
+
+
+    Assert.assertEquals( 3, imageSpecLists.size() );
+
+    List<ImageSpec> imageSpecList1 = imageSpecLists.get( 0 );
+    List<ImageSpec> imageSpecList2 = imageSpecLists.get( 1 );
+    List<ImageSpec> imageSpecList3 = imageSpecLists.get( 2 );
+
+    assertEquals( 4, imageSpecList1.size() );
+    assertProperties( imageSpecList1.get( 0 ), "/tmp/image1.jpg", null, 1 );
+    assertEquals( null, imageSpecList1.get( 1 ) );
+    assertEquals( null, imageSpecList1.get( 2 ) );
+    assertEquals( null, imageSpecList1.get( 3 ) );
+
+    assertEquals( 4, imageSpecList2.size() );
+    assertProperties( imageSpecList2.get( 0 ), "/tmp/image1.jpg", null, 1 );
+    assertEquals( null, imageSpecList2.get( 1 ) );
+    assertEquals( null, imageSpecList2.get( 2 ) );
+    assertEquals( null, imageSpecList2.get( 3 ) );
+
+    assertEquals( 4, imageSpecList3.size() );
+    assertProperties( imageSpecList3.get( 0 ), "/tmp/image2.jpg", null, 1 );
+    assertEquals( null, imageSpecList3.get( 1 ) );
+    assertEquals( null, imageSpecList3.get( 2 ) );
+    assertEquals( null, imageSpecList3.get( 3 ) );
+
+    }
+
 
   ////////// Inner Class(es) //////////
 
