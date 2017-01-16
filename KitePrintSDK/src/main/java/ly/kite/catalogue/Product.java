@@ -270,7 +270,7 @@ public class Product implements IGroupOrProduct, Parcelable
     }
 
 
-  Product( String productId, String productCode, String productName, String productType, int labelColour, UserJourneyType userJourneyType, int quantityPerSheet )
+  public Product( String productId, String productCode, String productName, String productType, int labelColour, UserJourneyType userJourneyType, int quantityPerSheet )
     {
     this();
 
