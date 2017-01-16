@@ -7,11 +7,11 @@ test:
     - emulator -avd circleci-android22 -no-audio -no-window:
         background: true
         parallel: true
-    # Wait for the emulator to boot
+    # The emulator takes about 4 1/2 minutes to boot, so wait until it's ready before
+    # starting the tests.
     - circle-android wait-for-boot
     # Run the tests on the emulator, and create a coverage report
     - ./gradlew createDebugCoverageReport
-    #- ./gradlew assembleRelease
     # Copy the coverage reports
     - cp -r KitePrintSDK/build/reports $CIRCLE_ARTIFACTS
   post:
