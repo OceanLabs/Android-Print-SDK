@@ -4,13 +4,13 @@ machine:
 test:
   override:
     # Start the emulator
-    - emulator -avd circleci-android23 -no-audio -no-window:
+    - emulator -avd circleci-android22 -no-audio -no-window:
         background: true
         parallel: true
     # Wait for the emulator to boot
     - circle-android wait-for-boot
     # Run the tests  against the emulator
-    - ./gradlew connectedAndroidTest
+    #- ./gradlew connectedAndroidTest
     # Run the tests on the emulator, and create a coverage report
     - ./gradlew createDebugCoverageReport
     #- ./gradlew assembleRelease
