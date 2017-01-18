@@ -46,6 +46,7 @@ import junit.framework.Assert;
 import java.util.ArrayList;
 import java.util.List;
 
+import ly.kite.KiteTestCase;
 import ly.kite.catalogue.Product;
 import ly.kite.ordering.ImageSpec;
 import ly.kite.util.Asset;
@@ -59,7 +60,7 @@ import ly.kite.util.AssetFragment;
  * This class tests the image agent class.
  *
  *****************************************************/
-public class UserJourneyTypeTests extends AndroidTestCase
+public class UserJourneyTypeTests extends KiteTestCase
   {
   ////////// Static Constant(s) //////////
 
@@ -146,19 +147,6 @@ public class UserJourneyTypeTests extends AndroidTestCase
     assertProperties( flattenedImageSpecList.get( 8 ), "/tmp/image4.jpg", "More border text", 1 );
     assertProperties( flattenedImageSpecList.get( 9 ), "/tmp/image4.jpg", "More border text", 1 );
     assertProperties( flattenedImageSpecList.get( 10 ), "/tmp/image4.jpg", "More border text", 1 );
-    }
-
-
-  /*****************************************************
-   *
-   * Checks the asset file name and quantity of an image spec.
-   *
-   *****************************************************/
-  private void assertProperties( ImageSpec imageSpec, String filePath, String borderText, int quantity )
-    {
-    Assert.assertEquals( filePath, imageSpec.getAsset().getImageFilePath() );
-    Assert.assertEquals( borderText, imageSpec.getBorderText() );
-    Assert.assertEquals( quantity, imageSpec.getQuantity() );
     }
 
 
