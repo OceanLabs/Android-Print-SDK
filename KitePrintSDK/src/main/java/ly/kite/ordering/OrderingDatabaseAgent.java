@@ -619,8 +619,8 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
     if ( itemId < 0 ) return ( itemId );
 
 
-    // Insert the options
-    insertOptions( itemId, optionsMap );
+    // Insert any options
+    if ( optionsMap != null ) insertOptions( itemId, optionsMap );
 
     return ( itemId );
     }

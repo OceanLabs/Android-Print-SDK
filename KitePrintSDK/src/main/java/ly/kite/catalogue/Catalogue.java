@@ -136,7 +136,7 @@ public class Catalogue
 
   ////////// Constructor(s) //////////
 
-  Catalogue()
+  public Catalogue()
     {
     mCustomDataTable              = new HashMap<>();
     mPayPalSupportedCurrencyCodes = new ArrayList<>();
@@ -288,7 +288,7 @@ public class Catalogue
    * Adds a product to the catalogue.
    *
    *****************************************************/
-  Catalogue addProduct( String groupLabel, URL groupImageURL, Product product )
+  public Catalogue addProduct( String groupLabel, URL groupImageURL, Product product )
     {
     // See if we already have the product group. If not - create it now.
 
