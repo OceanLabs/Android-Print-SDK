@@ -454,7 +454,7 @@ public enum UserJourneyType
   void addJobsToOrder( Context context, Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, boolean nullImagesAreBlank, Order order )
     {
     // Split the images into a list for each separate job
-    List<List<ImageSpec>> imageSpecLists = splitImagesIntoJobs( product, imageSpecList );
+    List<List<ImageSpec>> imageSpecLists = splitImagesIntoJobs( product, imageSpecList, nullImagesAreBlank );
 
     // Go through each list of images and create a job for it.
     for ( List<ImageSpec> jobImageSpecList : imageSpecLists )

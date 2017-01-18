@@ -165,36 +165,15 @@ public class ImagesJob extends Job
     }
 
 
-//  /*****************************************************
-//   *
-//   * Returns the images for this job as a list of image
-//   * specs.
-//   *
-//   *****************************************************/
-//  public List<ImageSpec> getImagesAsSpecList()
-//    {
-//    List<ImageSpec> imageSpecList = new ArrayList<>();
-//
-//    if ( mUploadableImageList != null )
-//      {
-//      for ( UploadableImage uploadableImage : mUploadableImageList )
-//        {
-//        AssetFragment assetFragment;
-//
-//        if ( uploadableImage != null &&
-//             ( assetFragment = uploadableImage.getAssetFragment() ) != null )
-//          {
-//          imageSpecList.add( new ImageSpec( assetFragment ) );
-//          }
-//        else
-//          {
-//          imageSpecList.add( null );
-//          }
-//        }
-//      }
-//
-//    return ( imageSpecList );
-//    }
+  /*****************************************************
+   *
+   * Returns the uploadable images list.
+   *
+   *****************************************************/
+  public List<UploadableImage> getUploadableImageList()
+    {
+    return ( mUploadableImageList );
+    }
 
 
   @Override

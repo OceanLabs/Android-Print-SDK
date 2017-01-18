@@ -54,9 +54,11 @@ import ly.kite.catalogue.Product;
 import ly.kite.journey.UserJourneyType;
 import ly.kite.ordering.BasketItem;
 import ly.kite.ordering.ImageSpec;
+import ly.kite.ordering.ImagesJob;
 import ly.kite.ordering.Job;
 import ly.kite.ordering.Order;
 import ly.kite.ordering.OrderingDataAgent;
+import ly.kite.util.UploadableImage;
 
 
 ///// Class Declaration /////
@@ -136,7 +138,46 @@ public class BasketOrderTests extends KiteTestCase
 
     List<Job> jobList = order.getJobs();
 
-    Assert.assertEquals( 2, jobList.size() );
+    Assert.assertEquals( 3, jobList.size() );
+
+    Job job1 = jobList.get( 0 );
+    Job job2 = jobList.get( 1 );
+    Job job3 = jobList.get( 2 );
+
+    Assert.assertTrue( job1 instanceof ImagesJob );
+    Assert.assertTrue( job2 instanceof ImagesJob );
+    Assert.assertTrue( job3 instanceof ImagesJob );
+
+    ImagesJob imagesJob1 = (ImagesJob)job1;
+    ImagesJob imagesJob2 = (ImagesJob)job2;
+    ImagesJob imagesJob3 = (ImagesJob)job3;
+
+    Assert.assertEquals( "product_id", imagesJob1.getProductId() );
+    Assert.assertEquals( 2, imagesJob1.getQuantity() );
+
+    Assert.assertEquals( "product_id", imagesJob2.getProductId() );
+    Assert.assertEquals( 2, imagesJob2.getQuantity() );
+
+    Assert.assertEquals( "product_id", imagesJob3.getProductId() );
+    Assert.assertEquals( 2, imagesJob3.getQuantity() );
+
+    List<UploadableImage> uploadableImageList1 = imagesJob1.getUploadableImageList();
+    List<UploadableImage> uploadableImageList2 = imagesJob2.getUploadableImageList();
+    List<UploadableImage> uploadableImageList3 = imagesJob3.getUploadableImageList();
+
+    Assert.assertEquals( 2, uploadableImageList1.size() );
+    Assert.assertEquals( 2, uploadableImageList2.size() );
+    Assert.assertEquals( 2, uploadableImageList3.size() );
+
+    Assert.assertNull( uploadableImageList1.get( 0 ) );
+    Assert.assertNotNull( uploadableImageList1.get( 1 ).getAssetFragment() );
+
+    Assert.assertNull( uploadableImageList2.get( 0 ) );
+    Assert.assertNull( uploadableImageList2.get( 1 ) );
+
+    Assert.assertNotNull( uploadableImageList3.get( 0 ).getAssetFragment() );
+    Assert.assertNotNull( uploadableImageList3.get( 1 ).getAssetFragment() );
+
     }
 
 
