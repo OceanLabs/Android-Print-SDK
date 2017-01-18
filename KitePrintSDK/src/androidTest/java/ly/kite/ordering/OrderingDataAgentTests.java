@@ -57,7 +57,7 @@ import ly.kite.util.Asset;
 
 /*****************************************************
  *
- * This class tests the image agent class.
+ * This class tests the ordering data agent class.
  *
  *****************************************************/
 public class OrderingDataAgentTests extends KiteTestCase

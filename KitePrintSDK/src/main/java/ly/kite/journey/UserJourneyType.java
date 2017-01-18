@@ -65,15 +65,6 @@ import ly.kite.widget.EditableMaskedImageView;
  *****************************************************/
 public enum UserJourneyType
   {
-  CIRCLE ( R.drawable.filled_white_circle,    EditableMaskedImageView.BorderHighlight.OVAL )
-            {
-            @Override
-            public List<List<ImageSpec>> dbItemsFromCreationItems( Product product, List<ImageSpec> imageSpecList )
-              {
-              return ( splitImagesIntoJobs( product, imageSpecList, false ) );
-              }
-            },
-
   CALENDAR ( R.drawable.filled_white_rectangle, EditableMaskedImageView.BorderHighlight.RECTANGLE )
             {
             // A calendar job is a standard order, but blank images are allowed
@@ -91,7 +82,16 @@ public enum UserJourneyType
               }
             },
 
-  FRAME
+    CIRCLE ( R.drawable.filled_white_circle,    EditableMaskedImageView.BorderHighlight.OVAL )
+              {
+              @Override
+              public List<List<ImageSpec>> dbItemsFromCreationItems( Product product, List<ImageSpec> imageSpecList )
+                {
+                return ( splitImagesIntoJobs( product, imageSpecList, false ) );
+                }
+              },
+
+    FRAME
             {
             @Override
             public List<List<ImageSpec>> dbItemsFromCreationItems( Product product, List<ImageSpec> imageSpecList )

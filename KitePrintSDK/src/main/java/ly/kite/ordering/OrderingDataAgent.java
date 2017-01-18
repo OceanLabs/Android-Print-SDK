@@ -205,7 +205,7 @@ public class OrderingDataAgent
    * the AddItemTask.
    *
    *****************************************************/
-  void addItemSynchronously( long itemId, Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, int orderQuantity )
+  public void addItemSynchronously( long itemId, Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, int orderQuantity )
     {
     // We need to create a basket item per <mProduct.getQuantityPerSheet()> images, i.e.
     // split the images into multiple jobs.
