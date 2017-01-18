@@ -46,7 +46,7 @@ import android.test.AndroidTestCase;
 
 /*****************************************************
  *
- * This class tests the image agent class.
+ * This class tests the ordering database agent.
  *
  *****************************************************/
 public class OrderingDatabaseAgentTests extends AndroidTestCase

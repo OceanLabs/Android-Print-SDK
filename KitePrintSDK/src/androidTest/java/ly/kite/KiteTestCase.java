@@ -57,7 +57,7 @@ import ly.kite.util.AssetHelper;
 
 /*****************************************************
  *
- * This class tests the image agent class.
+ * This is the parent of Kite unit test cases.
  *
  *****************************************************/
 public class KiteTestCase extends AndroidTestCase
