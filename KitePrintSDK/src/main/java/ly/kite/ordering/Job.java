@@ -342,6 +342,22 @@ public abstract class Job implements Parcelable
     }
 
 
+  /*****************************************************
+   *
+   * Returns a product option.
+   *
+   *****************************************************/
+  public String getProductOption( String parameter )
+    {
+    if ( mOptionsMap != null )
+      {
+      return ( mOptionsMap.get( parameter ) );
+      }
+
+    return ( null );
+    }
+
+
   @Override
   public void writeToParcel( Parcel parcel, int flags )
     {
