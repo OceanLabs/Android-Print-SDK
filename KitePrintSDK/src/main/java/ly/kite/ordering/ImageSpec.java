@@ -216,6 +216,12 @@ public class ImageSpec implements Parcelable
     }
 
 
+  public ImageSpec( Asset asset, RectF proportionalCropRectangle, String borderText, int quantity )
+    {
+    this( new AssetFragment( asset, proportionalCropRectangle ), borderText, quantity );
+    }
+
+
   private ImageSpec( AssetFragment assetFragment, String borderText, int quantity, String croppedForProductId )
     {
     this( assetFragment, borderText, quantity );

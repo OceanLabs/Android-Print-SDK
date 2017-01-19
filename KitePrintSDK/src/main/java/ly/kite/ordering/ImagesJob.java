@@ -176,6 +176,18 @@ public class ImagesJob extends Job
     }
 
 
+  /*****************************************************
+   *
+   * Returns the border text list.
+   *
+   *****************************************************/
+  public List<String> getBorderTextList()
+    {
+    return ( mBorderTextList );
+    }
+
+
+
   @Override
   JSONObject getJSONRepresentation()
     {

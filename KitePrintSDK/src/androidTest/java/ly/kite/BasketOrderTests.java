@@ -40,6 +40,7 @@ package ly.kite;
 ///// Import(s) /////
 
 import android.content.Context;
+import android.graphics.RectF;
 
 import junit.framework.Assert;
 
@@ -49,6 +50,7 @@ import java.util.List;
 
 import ly.kite.address.Address;
 import ly.kite.address.Country;
+import ly.kite.catalogue.BorderF;
 import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.Product;
 import ly.kite.journey.UserJourneyType;
@@ -58,6 +60,7 @@ import ly.kite.ordering.ImagesJob;
 import ly.kite.ordering.Job;
 import ly.kite.ordering.Order;
 import ly.kite.ordering.OrderingDataAgent;
+import ly.kite.util.AssetFragment;
 import ly.kite.util.UploadableImage;
 
 
@@ -115,8 +118,11 @@ public class BasketOrderTests extends KiteTestCase
     optionsMap.put( "Parameter1", "Alpha" );
     optionsMap.put( "Parameter2", "Bravo" );
 
-    ImageSpec originalImageSpec1 = new ImageSpec( createSessionAssetFile(), null, 1 );
-    ImageSpec originalImageSpec2 = new ImageSpec( createSessionAssetFile(), null, 2 );
+    RectF originalProportionalRectangle1 = new RectF( 0.0f, 0.0f, 1.0f, 1.0f );
+    RectF originalProportionalRectangle2 = new RectF( 0.3f, 0.25f, 0.8f, 0.75f );
+
+    ImageSpec originalImageSpec1 = new ImageSpec( createSessionAssetFile(), originalProportionalRectangle1, null, 1 );
+    ImageSpec originalImageSpec2 = new ImageSpec( createSessionAssetFile(), originalProportionalRectangle2, "Second border text", 2 );
 
     List<ImageSpec> originalImageSpecList = new ArrayList<>();
     originalImageSpecList.add( null );
@@ -152,32 +158,60 @@ public class BasketOrderTests extends KiteTestCase
     ImagesJob imagesJob2 = (ImagesJob)job2;
     ImagesJob imagesJob3 = (ImagesJob)job3;
 
+
+    AssetFragment assetFragment1;
+    AssetFragment assetFragment2;
+
+
+    // Job 1
+
     Assert.assertEquals( "product_id", imagesJob1.getProductId() );
     Assert.assertEquals( 2, imagesJob1.getQuantity() );
+
+    List<UploadableImage> uploadableImageList1 = imagesJob1.getUploadableImageList();
+    List<String>          borderTextList1      = imagesJob1.getBorderTextList();
+
+    Assert.assertEquals( 2, uploadableImageList1.size() );
+    Assert.assertNull( borderTextList1 );
+
+    Assert.assertNull( uploadableImageList1.get( 0 ) );
+
+    Assert.assertNotNull( assetFragment2 = uploadableImageList1.get( 1 ).getAssetFragment() );
+
+    Assert.assertEquals( originalProportionalRectangle1, assetFragment2.getProportionalRectangle() );
+
+
+    // Job 2
 
     Assert.assertEquals( "product_id", imagesJob2.getProductId() );
     Assert.assertEquals( 2, imagesJob2.getQuantity() );
 
-    Assert.assertEquals( "product_id", imagesJob3.getProductId() );
-    Assert.assertEquals( 2, imagesJob3.getQuantity() );
-
-    List<UploadableImage> uploadableImageList1 = imagesJob1.getUploadableImageList();
     List<UploadableImage> uploadableImageList2 = imagesJob2.getUploadableImageList();
-    List<UploadableImage> uploadableImageList3 = imagesJob3.getUploadableImageList();
+    List<String>          borderTextList2      = imagesJob2.getBorderTextList();
 
-    Assert.assertEquals( 2, uploadableImageList1.size() );
     Assert.assertEquals( 2, uploadableImageList2.size() );
-    Assert.assertEquals( 2, uploadableImageList3.size() );
-
-    Assert.assertNull( uploadableImageList1.get( 0 ) );
-    Assert.assertNotNull( uploadableImageList1.get( 1 ).getAssetFragment() );
+    Assert.assertNull( borderTextList2 );
 
     Assert.assertNull( uploadableImageList2.get( 0 ) );
     Assert.assertNull( uploadableImageList2.get( 1 ) );
 
-    Assert.assertNotNull( uploadableImageList3.get( 0 ).getAssetFragment() );
-    Assert.assertNotNull( uploadableImageList3.get( 1 ).getAssetFragment() );
 
+    // Job 3
+
+    Assert.assertEquals( "product_id", imagesJob3.getProductId() );
+    Assert.assertEquals( 2, imagesJob3.getQuantity() );
+
+    List<UploadableImage> uploadableImageList3 = imagesJob3.getUploadableImageList();
+    List<String>          borderTextList3      = imagesJob3.getBorderTextList();
+
+    Assert.assertEquals( 2, uploadableImageList3.size() );
+    Assert.assertNull( borderTextList3 );
+
+    Assert.assertNotNull( assetFragment1 = uploadableImageList3.get( 0 ).getAssetFragment() );
+    Assert.assertEquals( originalProportionalRectangle2, assetFragment1.getProportionalRectangle() );
+
+    Assert.assertNotNull( assetFragment2 = uploadableImageList3.get( 1 ).getAssetFragment() );
+    Assert.assertEquals( originalProportionalRectangle2, assetFragment2.getProportionalRectangle() );
     }
 
 
