@@ -387,7 +387,7 @@ public class BasketOrderTests extends KiteTestCase
     GreetingCardJob greetingCardJob3 = (GreetingCardJob)job3;
 
 
-    AssetFragment assetFragment1;
+    AssetFragment assetFragment;
 
 
     // Job 1
@@ -395,12 +395,12 @@ public class BasketOrderTests extends KiteTestCase
     Assert.assertEquals( "product_id", greetingCardJob1.getProductId() );
     Assert.assertEquals( 3, greetingCardJob1.getOrderQuantity() );
 
-    Assert.assertNotNull( assetFragment1 = greetingCardJob1.getFrontUploadableImage().getAssetFragment() );
+    Assert.assertNotNull( assetFragment = greetingCardJob1.getFrontUploadableImage().getAssetFragment() );
     Assert.assertNull( greetingCardJob1.getBackUploadableImage() );
     Assert.assertNull( greetingCardJob1.getInsideLeftUploadableImage() );
     Assert.assertNull( greetingCardJob1.getInsideRightUploadableImage() );
 
-    Assert.assertEquals( originalProportionalRectangle1, assetFragment1.getProportionalRectangle() );
+    Assert.assertEquals( originalProportionalRectangle1, assetFragment.getProportionalRectangle() );
 
     Assert.assertEquals( "Alpha", greetingCardJob1.getProductOption( "Parameter1" ) );
     Assert.assertEquals( "Bravo", greetingCardJob1.getProductOption( "Parameter2" ) );
@@ -411,12 +411,12 @@ public class BasketOrderTests extends KiteTestCase
     Assert.assertEquals( "product_id", greetingCardJob2.getProductId() );
     Assert.assertEquals( 3, greetingCardJob2.getOrderQuantity() );
 
-    Assert.assertNotNull( assetFragment1 = greetingCardJob2.getFrontUploadableImage().getAssetFragment() );
+    Assert.assertNotNull( assetFragment = greetingCardJob2.getFrontUploadableImage().getAssetFragment() );
     Assert.assertNull( greetingCardJob2.getBackUploadableImage() );
     Assert.assertNull( greetingCardJob2.getInsideLeftUploadableImage() );
     Assert.assertNull( greetingCardJob2.getInsideRightUploadableImage() );
 
-    Assert.assertEquals( originalProportionalRectangle2, assetFragment1.getProportionalRectangle() );
+    Assert.assertEquals( originalProportionalRectangle2, assetFragment.getProportionalRectangle() );
 
     Assert.assertEquals( "Alpha", greetingCardJob2.getProductOption( "Parameter1" ) );
     Assert.assertEquals( "Bravo", greetingCardJob2.getProductOption( "Parameter2" ) );
@@ -427,15 +427,126 @@ public class BasketOrderTests extends KiteTestCase
     Assert.assertEquals( "product_id", greetingCardJob3.getProductId() );
     Assert.assertEquals( 3, greetingCardJob3.getOrderQuantity() );
 
-    Assert.assertNotNull( assetFragment1 = greetingCardJob3.getFrontUploadableImage().getAssetFragment() );
+    Assert.assertNotNull( assetFragment = greetingCardJob3.getFrontUploadableImage().getAssetFragment() );
     Assert.assertNull( greetingCardJob3.getBackUploadableImage() );
     Assert.assertNull( greetingCardJob3.getInsideLeftUploadableImage() );
     Assert.assertNull( greetingCardJob3.getInsideRightUploadableImage() );
 
-    Assert.assertEquals( originalProportionalRectangle2, assetFragment1.getProportionalRectangle() );
+    Assert.assertEquals( originalProportionalRectangle2, assetFragment.getProportionalRectangle() );
 
     Assert.assertEquals( "Alpha", greetingCardJob3.getProductOption( "Parameter1" ) );
     Assert.assertEquals( "Bravo", greetingCardJob3.getProductOption( "Parameter2" ) );
+    }
+
+
+  /*****************************************************
+   *
+   * PHONE CASE tests.
+   *
+   *****************************************************/
+
+  public void testPhoneCase1()
+    {
+    OrderingDataAgent orderingDataAgent = OrderingDataAgent.getInstance( getContext() );
+    Product product = new Product( "product_id", "product_code", "A Phone Case", "Phone Case", 0xff000000, UserJourneyType.PHONE_CASE, 1 );
+
+    Catalogue catalogue = new Catalogue();
+    catalogue.addProduct( "Phone Cases", null, product );
+
+    HashMap<String,String> optionsMap = new HashMap<>();
+    optionsMap.put( "Parameter1", "Alpha" );
+    optionsMap.put( "Parameter2", "Bravo" );
+
+    RectF originalProportionalRectangle1 = new RectF( 0.0f, 0.0f, 1.0f, 1.0f );
+    RectF originalProportionalRectangle2 = new RectF( 0.3f, 0.25f, 0.8f, 0.75f );
+
+    ImageSpec originalImageSpec1 = new ImageSpec( createSessionAssetFile(), originalProportionalRectangle1, null, 1 );
+    ImageSpec originalImageSpec2 = new ImageSpec( createSessionAssetFile(), originalProportionalRectangle2, "Second border text", 2 );
+
+    List<ImageSpec> originalImageSpecList = new ArrayList<>();
+    originalImageSpecList.add( null );
+    originalImageSpecList.add( originalImageSpec1 );
+    originalImageSpecList.add( null );
+    originalImageSpecList.add( null );
+    originalImageSpecList.add( originalImageSpec2 );
+
+
+    orderingDataAgent.clearDefaultBasket();
+
+    orderingDataAgent.addItemSynchronously( OrderingDataAgent.CREATE_NEW_ITEM_ID, product, optionsMap, originalImageSpecList, 3 );
+
+    List<BasketItem> basketItemList = orderingDataAgent.getAllItems( catalogue );
+
+    Address shippingAddress = Address.getKiteTeamAddress();
+
+    Order order = new Order( getContext(), basketItemList, shippingAddress, "info@kite.ly", "0123 456789", null );
+
+    List<Job> jobList = order.getJobs();
+
+
+    Assert.assertEquals( 3, jobList.size() );
+
+    Job job1 = jobList.get( 0 );
+    Job job2 = jobList.get( 1 );
+    Job job3 = jobList.get( 1 );
+
+    Assert.assertTrue( job1 instanceof ImagesJob );
+    Assert.assertTrue( job2 instanceof ImagesJob );
+    Assert.assertTrue( job3 instanceof ImagesJob );
+
+    ImagesJob imagesJob1 = (ImagesJob)job1;
+    ImagesJob imagesJob2 = (ImagesJob)job2;
+    ImagesJob imagesJob3 = (ImagesJob)job3;
+
+    List<UploadableImage> uploadableImageList1 = imagesJob1.getUploadableImageList();
+    List<UploadableImage> uploadableImageList2 = imagesJob2.getUploadableImageList();
+    List<UploadableImage> uploadableImageList3 = imagesJob3.getUploadableImageList();
+
+    AssetFragment assetFragment1;
+    AssetFragment assetFragment2;
+    AssetFragment assetFragment3;
+
+
+    // Job 1
+
+    Assert.assertEquals( "product_id", imagesJob1.getProductId() );
+    Assert.assertEquals( 3, imagesJob1.getOrderQuantity() );
+
+    Assert.assertEquals( 1, uploadableImageList1.size() );
+    Assert.assertNotNull( assetFragment1 = uploadableImageList1.get( 0 ).getAssetFragment() );
+
+    Assert.assertEquals( originalProportionalRectangle1, assetFragment1.getProportionalRectangle() );
+
+    Assert.assertEquals( "Alpha", imagesJob1.getProductOption( "Parameter1" ) );
+    Assert.assertEquals( "Bravo", imagesJob1.getProductOption( "Parameter2" ) );
+
+
+    // Job 2
+
+    Assert.assertEquals( "product_id", imagesJob2.getProductId() );
+    Assert.assertEquals( 3, imagesJob2.getOrderQuantity() );
+
+    Assert.assertEquals( 1, uploadableImageList2.size() );
+    Assert.assertNotNull( assetFragment2 = uploadableImageList2.get( 0 ).getAssetFragment() );
+
+    Assert.assertEquals( originalProportionalRectangle2, assetFragment2.getProportionalRectangle() );
+
+    Assert.assertEquals( "Alpha", imagesJob2.getProductOption( "Parameter1" ) );
+    Assert.assertEquals( "Bravo", imagesJob2.getProductOption( "Parameter2" ) );
+
+
+    // Job 3
+
+    Assert.assertEquals( "product_id", imagesJob3.getProductId() );
+    Assert.assertEquals( 3, imagesJob3.getOrderQuantity() );
+
+    Assert.assertEquals( 1, uploadableImageList3.size() );
+    Assert.assertNotNull( assetFragment3 = uploadableImageList3.get( 0 ).getAssetFragment() );
+
+    Assert.assertEquals( originalProportionalRectangle2, assetFragment3.getProportionalRectangle() );
+
+    Assert.assertEquals( "Alpha", imagesJob3.getProductOption( "Parameter1" ) );
+    Assert.assertEquals( "Bravo", imagesJob3.getProductOption( "Parameter2" ) );
     }
 
 
