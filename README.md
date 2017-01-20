@@ -48,6 +48,7 @@ dependencies {
 Once you've updated your build.gradle file, you can force Android Studio to sync with your new configuration by selecting *Tools -> Android -> Sync Project with Gradle Files*
 
 This should download the aar dependency at which point you'll have access to the Kite Print SDK API calls. If it cannot find the dependency, you should make sure you've specified mavenCentral() as a repository in your build.gradle
+
 ## Quick Integration
 
 If you don't want to build your own shopping journey user experience you can integrate the SDK in a matter of minutes: 
@@ -70,6 +71,42 @@ public void onLaunchSDKButtonClicked(View button) {
 ```
 
 The `Asset` class has several constructors not shown above so that you can launch the SDK with your images in a manner that fits your application. You can find your Kite Print API credentials under the [Credentials](https://www.kite.ly/accounts/credentials/) section of the development dashboard.
+
+## Product Filtering (Launch to Product)
+
+When launching the SDK, it is possible to limit the set of products (by supplying product ids) that you wish to offer to the user.
+
+Additionally, if the SDK is launched with products limited to a single group, the user is taken directly to the product group listing. Likewise, if just a single product is specified, the user will be taken directly to the product overview screen.
+
+This allows apps to link to certain products and groups.
+
+```java
+    ArrayList<Asset> assets = new ArrayList<>();
+
+    try
+      {
+      assets.add(new Asset(new URL( "http://psps.s3.amazonaws.com/sdk_static/4.jpg" )));
+      }
+    catch (MalformedURLException ex) {/* Do something sensible */}
+
+    KiteSDK.getInstance(this, "<YOUR_LIVE_API_KEY>", KiteSDK.DefaultEnvironment.LIVE).startShoppingForProducts( this, assets, "my_product_id" );
+
+```
+
+The SDK may also be launched directly into a product group:
+
+```java
+    ArrayList<Asset> assets = new ArrayList<>();
+
+    try
+      {
+      assets.add(new Asset(new URL( "http://psps.s3.amazonaws.com/sdk_static/4.jpg" )));
+      }
+    catch (MalformedURLException ex) {/* Do something sensible */}
+
+    KiteSDK.getInstance(this, "<YOUR_LIVE_API_KEY>", KiteSDK.DefaultEnvironment.LIVE).startShoppingForProductGroup( this, assets, "My Product Group Label" );
+
+```
 
 ## Custom Checkout
 You can build your own UI if you don't want to use or customize the provided checkout and payment experience. You can still use the Kite Print SDK to handle the print order creation and submission: 
