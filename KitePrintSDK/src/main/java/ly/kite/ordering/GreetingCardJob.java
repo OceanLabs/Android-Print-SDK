@@ -71,25 +71,6 @@ public class GreetingCardJob extends Job
     }
 
 
-//  /*****************************************************
-//   *
-//   * Returns the images for this job as a list of image
-//   * specs.
-//   *
-//   *****************************************************/
-//  public List<ImageSpec> getImagesAsSpecList()
-//    {
-//    List<ImageSpec> imageSpecList = new ArrayList<>( 4 );
-//
-//    imageSpecList.add( imageSpecFrom( mFrontUploadableImage ) );
-//    imageSpecList.add( imageSpecFrom( mBackUploadableImage ) );
-//    imageSpecList.add( imageSpecFrom( mInsideLeftUploadableImage ) );
-//    imageSpecList.add( imageSpecFrom( mInsideRightUploadableImage ) );
-//
-//    return ( imageSpecList );
-//    }
-
-
   @Override
   public BigDecimal getCost( String currencyCode )
     {
@@ -107,6 +88,51 @@ public class GreetingCardJob extends Job
     {
     return 1;
     }
+
+
+  /*****************************************************
+   *
+   * Returns the front uploadable image.
+   *
+   *****************************************************/
+  public UploadableImage getFrontUploadableImage()
+    {
+    return ( mFrontUploadableImage );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the back uploadable image.
+   *
+   *****************************************************/
+  public UploadableImage getBackUploadableImage()
+    {
+    return ( mBackUploadableImage );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the inside left uploadable image.
+   *
+   *****************************************************/
+  public UploadableImage getInsideLeftUploadableImage()
+    {
+    return ( mInsideLeftUploadableImage );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the inside right uploadable image.
+   *
+   *****************************************************/
+  public UploadableImage getInsideRightUploadableImage()
+    {
+    return ( mInsideRightUploadableImage );
+    }
+
 
   @Override
   List<UploadableImage> getImagesForUploading()
