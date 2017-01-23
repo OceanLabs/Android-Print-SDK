@@ -271,6 +271,17 @@ public class PhotobookJob extends ImagesJob
 
   /*****************************************************
    *
+   * Returns any front cover uploadable image.
+   *
+   *****************************************************/
+  public UploadableImage getFrontCoverUploadableImage()
+    {
+    return ( mFrontCoverUploadableImage );
+    }
+
+
+  /*****************************************************
+   *
    * Returns true if the other object is the same as this
    * photobook job.
    *

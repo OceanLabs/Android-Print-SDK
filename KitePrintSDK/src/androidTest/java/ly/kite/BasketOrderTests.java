@@ -61,6 +61,7 @@ import ly.kite.ordering.ImagesJob;
 import ly.kite.ordering.Job;
 import ly.kite.ordering.Order;
 import ly.kite.ordering.OrderingDataAgent;
+import ly.kite.ordering.PhotobookJob;
 import ly.kite.util.AssetFragment;
 import ly.kite.util.UploadableImage;
 
@@ -376,7 +377,7 @@ public class BasketOrderTests extends KiteTestCase
 
     Job job1 = jobList.get( 0 );
     Job job2 = jobList.get( 1 );
-    Job job3 = jobList.get( 1 );
+    Job job3 = jobList.get( 2 );
 
     Assert.assertTrue( job1 instanceof GreetingCardJob );
     Assert.assertTrue( job2 instanceof GreetingCardJob );
@@ -488,7 +489,7 @@ public class BasketOrderTests extends KiteTestCase
 
     Job job1 = jobList.get( 0 );
     Job job2 = jobList.get( 1 );
-    Job job3 = jobList.get( 1 );
+    Job job3 = jobList.get( 2 );
 
     Assert.assertTrue( job1 instanceof ImagesJob );
     Assert.assertTrue( job2 instanceof ImagesJob );
@@ -547,6 +548,228 @@ public class BasketOrderTests extends KiteTestCase
 
     Assert.assertEquals( "Alpha", imagesJob3.getProductOption( "Parameter1" ) );
     Assert.assertEquals( "Bravo", imagesJob3.getProductOption( "Parameter2" ) );
+    }
+
+
+  /*****************************************************
+   *
+   * PHOTOBOOK tests.
+   *
+   *****************************************************/
+
+  // No summary front page
+  public void testPhotobook1()
+    {
+    OrderingDataAgent orderingDataAgent = OrderingDataAgent.getInstance( getContext() );
+    Product product = new Product( "product_id", "product_code", "Product Name", "Product Type", 0xff000000, UserJourneyType.PHOTOBOOK, 2 );
+
+    Catalogue catalogue = new Catalogue();
+    catalogue.addProduct( "Group Label", null, product );
+
+    HashMap<String,String> optionsMap = new HashMap<>();
+    optionsMap.put( "Parameter1", "Alpha" );
+    optionsMap.put( "Parameter2", "Bravo" );
+
+    RectF originalProportionalRectangle1 = new RectF( 0.0f, 0.0f, 1.0f, 1.0f );
+    RectF originalProportionalRectangle2 = new RectF( 0.3f, 0.25f, 0.8f, 0.75f );
+
+    ImageSpec originalImageSpec1 = new ImageSpec( createSessionAssetFile(), originalProportionalRectangle1, null, 1 );
+    ImageSpec originalImageSpec2 = new ImageSpec( createSessionAssetFile(), originalProportionalRectangle2, "Second border text", 2 );
+
+    List<ImageSpec> originalImageSpecList = new ArrayList<>();
+    originalImageSpecList.add( null );
+    originalImageSpecList.add( originalImageSpec1 );
+    originalImageSpecList.add( null );
+    originalImageSpecList.add( originalImageSpec2 );
+    originalImageSpecList.add( null );
+
+
+    // Initialise the SDK so that we can supply a customiser
+    KiteSDK.getInstance( getContext(), "NoKey", KiteSDK.DefaultEnvironment.TEST );
+
+
+    orderingDataAgent.clearDefaultBasket();
+
+    orderingDataAgent.addItemSynchronously( OrderingDataAgent.CREATE_NEW_ITEM_ID, product, optionsMap, originalImageSpecList, 3 );
+
+    List<BasketItem> basketItemList = orderingDataAgent.getAllItems( catalogue );
+
+    Address shippingAddress = Address.getKiteTeamAddress();
+
+    Order order = new Order( getContext(), basketItemList, shippingAddress, "info@kite.ly", "0123 456789", null );
+
+    List<Job> jobList = order.getJobs();
+
+
+    Assert.assertEquals( 2, jobList.size() );
+
+    Job job1 = jobList.get( 0 );
+    Job job2 = jobList.get( 1 );
+
+    Assert.assertTrue( job1 instanceof PhotobookJob );
+    Assert.assertTrue( job2 instanceof PhotobookJob );
+
+    PhotobookJob photobookJob1 = (PhotobookJob)job1;
+    PhotobookJob photobookJob2 = (PhotobookJob)job2;
+
+
+    AssetFragment frontCoverAssetFragment;
+    AssetFragment assetFragment1;
+    AssetFragment assetFragment2;
+
+
+    // Job 1
+
+    Assert.assertEquals( "product_id", photobookJob1.getProductId() );
+    Assert.assertEquals( 3, photobookJob1.getOrderQuantity() );
+
+    Assert.assertNull( photobookJob1.getFrontCoverUploadableImage() );
+
+    List<UploadableImage> uploadableImageList1 = photobookJob1.getUploadableImageList();
+    Assert.assertEquals( 2, uploadableImageList1.size() );
+
+    Assert.assertNotNull( assetFragment1 = uploadableImageList1.get( 0 ).getAssetFragment() );
+    Assert.assertNull( uploadableImageList1.get( 1 ) );
+
+    Assert.assertEquals( originalProportionalRectangle1, assetFragment1.getProportionalRectangle() );
+
+    Assert.assertEquals( "Alpha", photobookJob1.getProductOption( "Parameter1" ) );
+    Assert.assertEquals( "Bravo", photobookJob1.getProductOption( "Parameter2" ) );
+
+
+    // Job 2
+
+    Assert.assertEquals( "product_id", photobookJob2.getProductId() );
+    Assert.assertEquals( 3, photobookJob2.getOrderQuantity() );
+
+    Assert.assertNotNull( frontCoverAssetFragment = photobookJob2.getFrontCoverUploadableImage().getAssetFragment() );
+    Assert.assertEquals( originalProportionalRectangle2, frontCoverAssetFragment.getProportionalRectangle() );
+
+    List<UploadableImage> uploadableImageList2 = photobookJob2.getUploadableImageList();
+    Assert.assertEquals( 2, uploadableImageList2.size() );
+
+    Assert.assertNotNull( assetFragment1 = uploadableImageList2.get( 0 ).getAssetFragment() );
+    Assert.assertNull( uploadableImageList2.get( 1 ) );
+
+    Assert.assertEquals( originalProportionalRectangle2, assetFragment1.getProportionalRectangle() );
+
+    Assert.assertEquals( "Alpha", photobookJob2.getProductOption( "Parameter1" ) );
+    Assert.assertEquals( "Bravo", photobookJob2.getProductOption( "Parameter2" ) );
+    }
+
+
+  // Summary front page
+  public void testPhotobook2()
+    {
+    OrderingDataAgent orderingDataAgent = OrderingDataAgent.getInstance( getContext() );
+    Product product = new Product( "product_id", "product_code", "Product Name", "Product Type", 0xff000000, UserJourneyType.PHOTOBOOK, 2 );
+
+    Catalogue catalogue = new Catalogue();
+    catalogue.addProduct( "Group Label", null, product );
+
+    HashMap<String,String> optionsMap = new HashMap<>();
+    optionsMap.put( "Parameter1", "Alpha" );
+    optionsMap.put( "Parameter2", "Bravo" );
+
+    RectF originalProportionalRectangle1 = new RectF( 0.0f, 0.0f, 1.0f, 1.0f );
+    RectF originalProportionalRectangle2 = new RectF( 0.3f, 0.25f, 0.8f, 0.75f );
+
+    ImageSpec originalImageSpec1 = new ImageSpec( createSessionAssetFile(), originalProportionalRectangle1, null, 1 );
+    ImageSpec originalImageSpec2 = new ImageSpec( createSessionAssetFile(), originalProportionalRectangle2, "Second border text", 2 );
+
+    List<ImageSpec> originalImageSpecList = new ArrayList<>();
+    originalImageSpecList.add( null );
+    originalImageSpecList.add( originalImageSpec1 );
+    originalImageSpecList.add( null );
+    originalImageSpecList.add( null );
+    originalImageSpecList.add( originalImageSpec2 );
+
+
+    // Initialise the SDK so that we can supply a customiser
+    KiteSDK.getInstance( getContext(), "NoKey", KiteSDK.DefaultEnvironment.TEST )
+            .setCustomiser( PhotobookSummaryCustomiser.class );
+
+
+    orderingDataAgent.clearDefaultBasket();
+
+    orderingDataAgent.addItemSynchronously( OrderingDataAgent.CREATE_NEW_ITEM_ID, product, optionsMap, originalImageSpecList, 3 );
+
+    List<BasketItem> basketItemList = orderingDataAgent.getAllItems( catalogue );
+
+    Address shippingAddress = Address.getKiteTeamAddress();
+
+    Order order = new Order( getContext(), basketItemList, shippingAddress, "info@kite.ly", "0123 456789", null );
+
+    List<Job> jobList = order.getJobs();
+
+
+    Assert.assertEquals( 3, jobList.size() );
+
+    Job job1 = jobList.get( 0 );
+    Job job2 = jobList.get( 1 );
+    Job job3 = jobList.get( 2 );
+
+    Assert.assertTrue( job1 instanceof PhotobookJob );
+    Assert.assertTrue( job2 instanceof PhotobookJob );
+    Assert.assertTrue( job3 instanceof PhotobookJob );
+
+    PhotobookJob photobookJob1 = (PhotobookJob)job1;
+    PhotobookJob photobookJob2 = (PhotobookJob)job2;
+    PhotobookJob photobookJob3 = (PhotobookJob)job3;
+
+
+    AssetFragment assetFragment1;
+    AssetFragment assetFragment2;
+
+
+    // Job 1
+
+    Assert.assertEquals( "product_id", photobookJob1.getProductId() );
+    Assert.assertEquals( 3, photobookJob1.getOrderQuantity() );
+
+    List<UploadableImage> uploadableImageList1 = photobookJob1.getUploadableImageList();
+    Assert.assertEquals( 2, uploadableImageList1.size() );
+
+    Assert.assertNull( uploadableImageList1.get( 0 ) );
+    Assert.assertNotNull( assetFragment2 = uploadableImageList1.get( 1 ).getAssetFragment() );
+
+    Assert.assertEquals( originalProportionalRectangle1, assetFragment2.getProportionalRectangle() );
+
+    Assert.assertEquals( "Alpha", photobookJob1.getProductOption( "Parameter1" ) );
+    Assert.assertEquals( "Bravo", photobookJob1.getProductOption( "Parameter2" ) );
+
+
+    // Job 2
+
+    Assert.assertEquals( "product_id", photobookJob2.getProductId() );
+    Assert.assertEquals( 3, photobookJob2.getOrderQuantity() );
+
+    List<UploadableImage> uploadableImageList2 = photobookJob2.getUploadableImageList();
+    Assert.assertEquals( 2, uploadableImageList2.size() );
+
+    Assert.assertNull( uploadableImageList2.get( 0 ) );
+    Assert.assertNull( uploadableImageList2.get( 1 ) );
+
+    Assert.assertEquals( "Alpha", photobookJob2.getProductOption( "Parameter1" ) );
+    Assert.assertEquals( "Bravo", photobookJob2.getProductOption( "Parameter2" ) );
+
+
+    // Job 3
+
+    Assert.assertEquals( "product_id", photobookJob3.getProductId() );
+    Assert.assertEquals( 3, photobookJob3.getOrderQuantity() );
+
+    List<UploadableImage> uploadableImageList3 = photobookJob3.getUploadableImageList();
+    Assert.assertEquals( 2, uploadableImageList3.size() );
+
+    Assert.assertNotNull( assetFragment1 = uploadableImageList3.get( 0 ).getAssetFragment() );
+    Assert.assertNotNull( assetFragment2 = uploadableImageList3.get( 1 ).getAssetFragment() );
+
+    Assert.assertEquals( originalProportionalRectangle2, assetFragment1.getProportionalRectangle() );
+    Assert.assertEquals( originalProportionalRectangle2, assetFragment2.getProportionalRectangle() );
+
+    Assert.assertEquals( "Alpha", photobookJob3.getProductOption( "Parameter1" ) );
+    Assert.assertEquals( "Bravo", photobookJob3.getProductOption( "Parameter2" ) );
     }
 
 

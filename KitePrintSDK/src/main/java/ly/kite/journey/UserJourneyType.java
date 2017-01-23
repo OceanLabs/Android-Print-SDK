@@ -70,9 +70,9 @@ public enum UserJourneyType
             // A calendar job is a standard order, but blank images are allowed
 
             @Override
-            public List<List<ImageSpec>> dbItemsFromCreationItems( Product product, List<ImageSpec> imageSpecList )
+            public List<List<ImageSpec>> dbItemsFromCreationItems( Context context, List<ImageSpec> imageSpecList, Product product )
               {
-              return ( splitImagesIntoJobs( product, imageSpecList, true ) );
+              return ( splitImagesIntoJobs( imageSpecList, product, true ) );
               }
 
             @Override
@@ -85,16 +85,16 @@ public enum UserJourneyType
     CIRCLE ( R.drawable.filled_white_circle,    EditableMaskedImageView.BorderHighlight.OVAL )
               {
               @Override
-              public List<List<ImageSpec>> dbItemsFromCreationItems( Product product, List<ImageSpec> imageSpecList )
+              public List<List<ImageSpec>> dbItemsFromCreationItems( Context context, List<ImageSpec> imageSpecList, Product product )
                 {
-                return ( splitImagesIntoJobs( product, imageSpecList, false ) );
+                return ( splitImagesIntoJobs( imageSpecList, product, false ) );
                 }
               },
 
     FRAME
             {
             @Override
-            public List<List<ImageSpec>> dbItemsFromCreationItems( Product product, List<ImageSpec> imageSpecList )
+            public List<List<ImageSpec>> dbItemsFromCreationItems( Context context, List<ImageSpec> imageSpecList, Product product )
               {
               return ( null );
               }
@@ -106,7 +106,7 @@ public enum UserJourneyType
             // images. So we want to ignore the null images for the moment.
 
             @Override
-            public List<List<ImageSpec>> dbItemsFromCreationItems( Product product, List<ImageSpec> imageSpecList )
+            public List<List<ImageSpec>> dbItemsFromCreationItems( Context context, List<ImageSpec> imageSpecList, Product product )
               {
               // Flatten the image spec list
               ArrayList<ImageSpec> flatImageSpecList = flattenImageSpecList( imageSpecList, false );
@@ -168,9 +168,9 @@ public enum UserJourneyType
   PHONE_CASE ( true )
             {
             @Override
-            public List<List<ImageSpec>> dbItemsFromCreationItems( Product product, List<ImageSpec> imageSpecList )
+            public List<List<ImageSpec>> dbItemsFromCreationItems( Context context, List<ImageSpec> imageSpecList, Product product )
               {
-              return ( splitImagesIntoJobs( product, imageSpecList, false ) );
+              return ( splitImagesIntoJobs( imageSpecList, product, false ) );
               }
             },
 
@@ -178,15 +178,25 @@ public enum UserJourneyType
             {
             // Photobook image spec lists are already clamped to the correct size
             @Override
-            public List<List<ImageSpec>> dbItemsFromCreationItems( Product product, List<ImageSpec> imageSpecList )
+            public List<List<ImageSpec>> dbItemsFromCreationItems( Context context, List<ImageSpec> imageSpecList, Product product )
               {
-              return ( splitImagesIntoJobs( product, imageSpecList, true ) );
+              boolean frontCoverIsSummary = KiteSDK.getInstance( context ).getCustomiser().photobookFrontCoverIsSummary();
+
+              int imagesPerJob = product.getQuantityPerSheet() + ( frontCoverIsSummary ? 0 : 1 );
+
+              return ( splitImagesIntoJobs( imageSpecList, imagesPerJob, true ) );
               }
 
             // Photobooks have their own job
             @Override
             public void addJobsToOrder( Context context, Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, Order order )
               {
+              // Flatten the images into a single list. We shouldn't technically need to do this, as
+              // the Photobook UI only supplies image specs with a quantity of 1. Perform this step, though,
+              // in case an app supplies the image spec, and also for testing.
+              ArrayList<ImageSpec> flatImageSpecList = flattenImageSpecList( imageSpecList, true );
+
+
               // Determine if the front cover is a summary page
               boolean frontCoverIsSummary = KiteSDK.getInstance( context ).getCustomiser().photobookFrontCoverIsSummary();
 
@@ -198,20 +208,17 @@ public enum UserJourneyType
 
               int pageIndex = 0;
 
-              for ( ImageSpec imageSpec : imageSpecList )
+              for ( ImageSpec singleQuantityImageSpec : flatImageSpecList )
                 {
                 AssetFragment assetFragment;
-                int           quantity;
 
-                if ( imageSpec != null )
+                if ( singleQuantityImageSpec != null )
                   {
-                  assetFragment = imageSpec.getAssetFragment();
-                  quantity      = imageSpec.getQuantity();
+                  assetFragment = singleQuantityImageSpec.getAssetFragment();
                   }
                 else
                   {
                   assetFragment = null;
-                  quantity      = 1;
                   }
 
                 if ( pageIndex == 0 && ( ! frontCoverIsSummary ) )
@@ -220,10 +227,7 @@ public enum UserJourneyType
                   }
                 else
                   {
-                  for ( int index = 0; index < quantity; index ++ )
-                    {
-                    contentAssetFragmentList.add( assetFragment );
-                    }
+                  contentAssetFragmentList.add( assetFragment );
                   }
 
                 pageIndex ++;
@@ -236,7 +240,7 @@ public enum UserJourneyType
   POSTCARD
             {
             @Override
-            public List<List<ImageSpec>> dbItemsFromCreationItems( Product product, List<ImageSpec> imageSpecList )
+            public List<List<ImageSpec>> dbItemsFromCreationItems( Context context, List<ImageSpec> imageSpecList, Product product )
               {
               return ( null );
               }
@@ -247,9 +251,9 @@ public enum UserJourneyType
             // A poster job is a standard order, but blank images are allowed
 
             @Override
-            public List<List<ImageSpec>> dbItemsFromCreationItems( Product product, List<ImageSpec> imageSpecList )
+            public List<List<ImageSpec>> dbItemsFromCreationItems( Context context, List<ImageSpec> imageSpecList, Product product )
               {
-              return ( splitImagesIntoJobs( product, imageSpecList, true ) );
+              return ( splitImagesIntoJobs( imageSpecList, product, true ) );
               }
 
             @Override
@@ -262,9 +266,9 @@ public enum UserJourneyType
   RECTANGLE ( R.drawable.filled_white_rectangle, EditableMaskedImageView.BorderHighlight.RECTANGLE )
             {
             @Override
-            public List<List<ImageSpec>> dbItemsFromCreationItems( Product product, List<ImageSpec> imageSpecList )
+            public List<List<ImageSpec>> dbItemsFromCreationItems( Context context, List<ImageSpec> imageSpecList, Product product )
               {
-              return ( splitImagesIntoJobs( product, imageSpecList, false ) );
+              return ( splitImagesIntoJobs( imageSpecList, product, false ) );
               }
             };
 
@@ -280,7 +284,6 @@ public enum UserJourneyType
 
 
   ////////// Static Method(s) //////////
-
 
   /*****************************************************
    *
@@ -331,15 +334,13 @@ public enum UserJourneyType
    * item.
    *
    *****************************************************/
-  static List<List<ImageSpec>> splitImagesIntoJobs( Product product, List<ImageSpec> imageSpecList, boolean nullImagesAreBlank )
+  static List<List<ImageSpec>> splitImagesIntoJobs( List<ImageSpec> imageSpecList, int imagesPerJob, boolean nullImagesAreBlank )
     {
     // Flatten the images into a single list
     ArrayList<ImageSpec> flatImageSpecList = flattenImageSpecList( imageSpecList, nullImagesAreBlank );
 
 
     // Go through the image specs in batches, and create a list for each batch of images.
-
-    int imagesPerJob = product.getQuantityPerSheet();
 
     ArrayList<List<ImageSpec>> imageSpecLists = new ArrayList<>();
 
@@ -362,10 +363,24 @@ public enum UserJourneyType
    * item.
    *
    *****************************************************/
-  static public List<List<ImageSpec>> splitImagesIntoJobs( Product product, List<ImageSpec> imageSpecList )
+  static List<List<ImageSpec>> splitImagesIntoJobs( List<ImageSpec> imageSpecList, Product product, boolean nullImagesAreBlank )
     {
-    return ( splitImagesIntoJobs( product, imageSpecList, false ) );
+    return ( splitImagesIntoJobs( imageSpecList, product.getQuantityPerSheet(), nullImagesAreBlank ) );
     }
+
+
+  /*****************************************************
+   *
+   * Splits a single list of image image specs into multiple
+   * lists, according to the maximum number of images per
+   * item.
+   *
+   *****************************************************/
+  static public List<List<ImageSpec>> splitImagesIntoJobs( List<ImageSpec> imageSpecList, Product product )
+    {
+    return ( splitImagesIntoJobs( imageSpecList, product, false ) );
+    }
+
 
 
   ////////// Constructor(s) //////////
@@ -440,7 +455,7 @@ public enum UserJourneyType
    * lists, according to how they are stored on the database.
    *
    *****************************************************/
-  abstract public List<List<ImageSpec>> dbItemsFromCreationItems( Product product, List<ImageSpec> imageSpecList );
+  abstract public List<List<ImageSpec>> dbItemsFromCreationItems( Context context, List<ImageSpec> imageSpecList, Product product );
 
 
   /*****************************************************
@@ -451,10 +466,10 @@ public enum UserJourneyType
    * job.
    *
    *****************************************************/
-  void addJobsToOrder( Context context, Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, boolean nullImagesAreBlank, Order order )
+  static void addJobsToOrder( Context context, Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, boolean nullImagesAreBlank, Order order )
     {
     // Split the images into a list for each separate job
-    List<List<ImageSpec>> imageSpecLists = splitImagesIntoJobs( product, imageSpecList, nullImagesAreBlank );
+    List<List<ImageSpec>> imageSpecLists = splitImagesIntoJobs( imageSpecList, product, nullImagesAreBlank );
 
     // Go through each list of images and create a job for it.
     for ( List<ImageSpec> jobImageSpecList : imageSpecLists )
