@@ -167,7 +167,7 @@ public class UserJourneyTypeTests extends KiteTestCase
     imageSpecList.add( new ImageSpec( new AssetFragment( new Asset( "/tmp/image2.jpg" ) ), null, 1 ) );
 
 
-    List<List<ImageSpec>> imageSpecLists = UserJourneyType.splitImagesIntoJobs( product, imageSpecList, false );
+    List<List<ImageSpec>> imageSpecLists = UserJourneyType.splitImagesIntoJobs( imageSpecList, product, false );
 
 
     Assert.assertEquals( 1, imageSpecLists.size() );
@@ -190,7 +190,7 @@ public class UserJourneyTypeTests extends KiteTestCase
     imageSpecList.add( new ImageSpec( new AssetFragment( new Asset( "/tmp/image2.jpg" ) ), null, 1 ) );
 
 
-    List<List<ImageSpec>> imageSpecLists = UserJourneyType.splitImagesIntoJobs( product, imageSpecList, false );
+    List<List<ImageSpec>> imageSpecLists = UserJourneyType.splitImagesIntoJobs( imageSpecList, product, false );
 
 
     Assert.assertEquals( 2, imageSpecLists.size() );
@@ -219,7 +219,7 @@ public class UserJourneyTypeTests extends KiteTestCase
     imageSpecList.add( new ImageSpec( new AssetFragment( new Asset( "/tmp/image2.jpg" ) ), null, 1 ) );
 
 
-    List<List<ImageSpec>> imageSpecLists = UserJourneyType.splitImagesIntoJobs( product, imageSpecList, false );
+    List<List<ImageSpec>> imageSpecLists = UserJourneyType.splitImagesIntoJobs( imageSpecList, product, false );
 
 
     Assert.assertEquals( 2, imageSpecLists.size() );
@@ -248,7 +248,7 @@ public class UserJourneyTypeTests extends KiteTestCase
     imageSpecList.add( new ImageSpec( new AssetFragment( new Asset( "/tmp/image2.jpg" ) ), null, 1 ) );
 
 
-    List<List<ImageSpec>> imageSpecLists = UserJourneyType.splitImagesIntoJobs( product, imageSpecList, true );
+    List<List<ImageSpec>> imageSpecLists = UserJourneyType.splitImagesIntoJobs( imageSpecList, product, true );
 
 
     Assert.assertEquals( 3, imageSpecLists.size() );
@@ -288,7 +288,7 @@ public class UserJourneyTypeTests extends KiteTestCase
     imageSpecList.add( new ImageSpec( new AssetFragment( new Asset( "/tmp/image2.jpg" ) ), null, 1 ) );
 
 
-    List<List<ImageSpec>> imageSpecLists = UserJourneyType.GREETINGCARD.dbItemsFromCreationItems( product, imageSpecList );
+    List<List<ImageSpec>> imageSpecLists = UserJourneyType.GREETINGCARD.dbItemsFromCreationItems( getContext(), imageSpecList, product );
 
 
     Assert.assertEquals( 3, imageSpecLists.size() );

@@ -101,7 +101,7 @@ public class SDKCustomiser
    * Sets the context.
    *
    *****************************************************/
-  void setContext( Context context )
+  final void setContext( Context context )
     {
     mContext = context;
     }
@@ -112,7 +112,7 @@ public class SDKCustomiser
    * Returns the context.
    *
    *****************************************************/
-  protected Context getContext()
+  final protected Context getContext()
     {
     return ( mContext );
     }

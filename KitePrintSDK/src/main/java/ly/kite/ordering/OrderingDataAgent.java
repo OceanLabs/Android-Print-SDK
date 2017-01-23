@@ -210,7 +210,7 @@ public class OrderingDataAgent
     // We need to create a basket item per <mProduct.getQuantityPerSheet()> images, i.e.
     // split the images into multiple jobs.
 
-    List<List<ImageSpec>> splitImageSpecLists = product.getUserJourneyType().dbItemsFromCreationItems( product, imageSpecList );
+    List<List<ImageSpec>> splitImageSpecLists = product.getUserJourneyType().dbItemsFromCreationItems( mApplicationContext, imageSpecList, product );
 
     if ( splitImageSpecLists != null )
       {
