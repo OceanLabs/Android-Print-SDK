@@ -239,7 +239,7 @@
     <string name="edit_border_text_image_forwards_button_text" translatable="false">@string/Save</string>
     <string name="edit_border_text_hint">Add Text Here</string>
 
-    <string name="phone_case_proceed_button_text">Next</string>
+    <string name="phone_case_proceed_button_text" translatable="false">@string/Next</string>
 
     <string name="multi_page_instructions"><b>Tap</b> picture to edit,\n<b>Hold</b> to re-order.</string>
 
