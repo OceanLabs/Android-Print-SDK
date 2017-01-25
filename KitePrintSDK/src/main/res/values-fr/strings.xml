@@ -11,14 +11,14 @@
     <string name="month_hint">MM</string>
     <string name="year_hint">AAAA</string>
 
-    <string name="title_choose_product_group">Imprimeur</string>
+    <string name="title_choose_product_group">Printshop</string>
     <string name="title_create_phone_case">Créer une coque de smartphone</string>
     <string name="title_image_source">Sélectionner les photos</string>
     <string name="title_payment_sandbox">Paiement (Test)</string>
     <string name="title_payment">Paiement</string>
     <string name="title_payment_source_sandbox">Paiement Source (Test)</string>
     <string name="title_payment_source">Paiement Source</string>
-    <string name="title_basket">Basket</string>
+    <string name="title_basket">Panier</string>
     <string name="title_photobook">Photobook</string>
     <string name="title_calendar">Calendrier</string>
     <string name="title_poster">Affiche</string>
@@ -51,10 +51,12 @@
     <string name="alert_dialog_message_no_cropped_image_asset">Un probl&#232;me est survenu - Kite n\'a pas pu cr&#233;er d\'image recadr&#233;e.</string>
     <string name="alert_dialog_title_load_image">Impossible de charger l\'image</string>
     <string name="alert_dialog_message_could_not_load_image">Une image n\'a pas pu être chargée. Veuillez vérifier votre connexion Internet, et vos identifiants d\'accès.</string>
+
     <string name="alert_dialog_title_delete_photo">Supprimer la photo?</string>
     <string name="alert_dialog_message_delete_photo">Êtes-vous sûr de vouloir supprimer cette photo?</string>
     <string name="alert_dialog_delete_photo_cancel_text">Garder</string>
     <string name="alert_dialog_delete_photo_confirm_text">Effacer</string>
+
     <string name="alert_dialog_message_no_images_selected">Veuillez d\'abord sélectionner quelques images.</string>
 
     <string name="alert_dialog_message_no_recipient">Veuillez entrer un nom de destinataire</string>
@@ -256,7 +258,7 @@
         <item quantity="other">%d photos</item>
     </plurals>
     <string name="ITEM">ARTICLE</string>
-    <string name="Next">Prochain</string>
+    <string name="Next">Suivant</string>
     <string name="PRICE">PRIX</string>
     <string name="QUANTITY">QUANTITÉ</string>
     <string name="Choose_Delivery_Address">Choisissez l\'adresse de livraison</string>

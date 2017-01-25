@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="title_facebook_photo_picker">Seleccionador de fotos de Facebook</string>
+
+    <string name="app_name">@string/title_facebook_photo_picker</string>
+
+    <string name="title_facebook_alert_dialog">Error de Facebook</string>
+    <string name="message_facebook_alert_dialog">Se ha producido un problema al cargar tus fotos de Facebook:\n%1$s</string>
+
+    <string name="button_text_retry">Rever</string>
+    <string name="button_text_cancel">Cancelar</string>
+
+</resources>
