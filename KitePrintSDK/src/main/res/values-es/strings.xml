@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <string name="title_kite_sdk">Kite SDK</string>
+
+    <string name="unit_centimeters">centímetros</string>
+    <string name="unit_inches">pulgadas</string>
+    <string name="unit_pixels">píxeles</string>
+
+    <string name="unit_centimeters_short">cm</string>
+    <string name="unit_inches_short">en</string>
+    <string name="unit_pixels_short">px</string>
+
+    <string name="month_hint">MM</string>
+    <string name="year_hint">AAAA</string>
+
+    <string name="title_choose_product_group">Imprenta</string>
+    <string name="title_create_phone_case">Crear fundas para móviles</string>
+    <string name="title_image_source">Elija Fotos</string>
+    <string name="title_photobook">Àlbum de foto</string>
+    <string name="title_calendar">Calendario</string>
+    <string name="title_poster">Póster</string>
+    <string name="title_basket">Cesta</string>
+    <string name="title_payment_sandbox">Pago (Sandbox)</string>
+    <string name="title_payment">Pago</string>
+    <string name="title_payment_source_sandbox">Fuente de pago (Sandbox)</string>
+    <string name="title_payment_source">Fuente de pago</string>
+    <string name="title_order_history">Historial de pedidos</string>
+
+    <string name="drawer_open">Cajón abierto</string>
+    <string name="drawer_closed">Cajón cerrado</string>
+
+
+    <!-- These strings are not part of the SDK, but are frequently used by apps -->
+
+    <string name="settings_title_show_notification_messages">Notification Messages</string>
+    <string name="settings_title_support">Customer Support</string>
+    <string name="settings_title_privacy">Privacy Policy</string>
+    <string name="settings_title_terms">Terms of Use</string>
+    <string name="settings_title_legal">Legal</string>
+    <string name="settings_title_licences">Open-source Licences</string>
+    <string name="settings_summary_licences">Licence details for open-source software</string>
+    <string name="settings_title_build_version">Build Version</string>
+
+    <string name="preference_key_show_notification_messages">preference_key_show_notification_messages</string>
+    <string name="preference_key_support" translatable="false">preference_key_support</string>
+    <string name="preference_key_legal" translatable="false">preference_key_legal</string>
+    <string name="preference_key_privacy" translatable="false">preference_key_privacy</string>
+    <string name="preference_key_build_version" translatable="false">preference_key_build_version</string>
+
+    <string name="license_title_picasso">Picasso</string>
+    <string name="license_url_picasso">https://raw.githubusercontent.com/square/picasso/picasso-parent-2.5.2/LICENSE.txt</string>
+    <string name="license_grid_view">GridView with Header and Footer</string>
+    <string name="license_url_grid_view">https://raw.githubusercontent.com/liaohuqiu/android-GridViewWithHeaderAndFooter/1.0.12/LICENSE.txt</string>
+
+
+    <string name="alert_dialog_title_pack_not_full_format_string">Ha seleccionado %s</string>
+    <string name="alert_dialog_message_pack_not_full_format_string" tools:ignore="PluralsCandidate">Puede agregar %d más por el mismo precio</string>
+
+    <string name="alert_dialog_title_oops">@string/Oops_</string>
+    <string name="alert_dialog_message_pricing_format_string">Se ha producido un problema al recuperar los precios del servidor:\n%s</string>
+
+    <string name="alert_dialog_title_internal_error">Error interno</string>
+
+    <string name="alert_dialog_title_no_intent">@string/alert_dialog_title_internal_error</string>
+    <string name="alert_dialog_message_no_intent">Hubo un error: no se pasó ninguna intención al fragmento. Compruebe el registro para más detalles.</string>
+
+    <string name="alert_dialog_title_no_arguments">@string/alert_dialog_title_internal_error</string>
+    <string name="alert_dialog_message_no_arguments">Hubo un error: no se pasaron argumentos al fragmento. Compruebe el registro para más detalles.</string>
+
+    <string name="alert_dialog_title_no_asset_list">@string/alert_dialog_title_internal_error</string>
+    <string name="alert_dialog_message_no_asset_list">Se ha producido un error: no se encontró ninguna lista de activos. Compruebe el registro para más detalles.</string>
+
+    <string name="alert_dialog_title_no_asset">@string/alert_dialog_title_internal_error</string>
+    <string name="alert_dialog_message_no_asset">Se ha producido un error: no se encontró ningún recurso. Compruebe el registro para más detalles.</string>
+
+    <string name="alert_dialog_title_no_mask">@string/alert_dialog_title_internal_error</string>
+    <string name="alert_dialog_message_no_mask">Se ha producido un error: no se encontró ninguna máscara. Compruebe el registro para más detalles.</string>
+
+    <string name="alert_dialog_title_no_product">@string/alert_dialog_title_internal_error</string>
+    <string name="alert_dialog_message_no_product">Se ha producido un error: no se ha encontrado ningún producto. Compruebe el registro para más detalles.</string>
+
+    <string name="alert_dialog_title_error_retrieving_products">Error recuperar productos</string>
+    <string name="alert_dialog_message_error_retrieving_products">Se produjo un error al recuperar los productos. Compruebe su conexión a Internet, o el registro para obtener más detalles.</string>
+
+    <string name="alert_dialog_title_no_product_group_label">No hay grupo de productos</string>
+    <string name="alert_dialog_message_no_product_group_label">Se ha producido un error: no se encontró ningún grupo de productos. Compruebe el registro para más detalles.</string>
+
+    <string name="alert_dialog_title_product_not_found">Producto no encontrado</string>
+    <string name="alert_dialog_message_product_not_found">No se ha encontrado ningún producto. Compruebe el registro para más detalles.</string>
+
+    <string name="alert_dialog_title_create_order">Crear pedido</string>
+    <string name="alert_dialog_message_no_cropped_image_asset">Hubo un error interno: Kite no pudo crear un recurso de imagen recortada.</string>
+
+    <string name="alert_dialog_title_load_image">No se pudo cargar la imagen</string>
+    <string name="alert_dialog_message_could_not_load_image">No se pudo cargar una imagen. Compruebe su conexión a Internet, o el registro para obtener más detalles.</string>
+
+    <string name="alert_dialog_title_delete_photo">¿Borrar foto?</string>
+    <string name="alert_dialog_message_delete_photo">¿Estás seguro de que quieres eliminar esta foto?</string>
+    <string name="alert_dialog_delete_photo_cancel_text">Guardar</string>
+    <string name="alert_dialog_delete_photo_confirm_text">Borrar</string>
+
+    <string name="alert_dialog_message_no_images_selected">Selecciona primero algunas imágenes.</string>
+
+    <string name="alert_dialog_message_no_recipient">Introduzca un nombre de destinatario</string>
+    <string name="alert_dialog_message_no_line1">Por favor, rellene la línea 1 de la dirección</string>
+    <string name="alert_dialog_message_no_postal_code">Introduzca su código postal</string>
+    <string name="alert_dialog_message_no_email_address">Por favor introduzca un correo eléctronico</string>
+
+    <string name="alert_dialog_title_invalid_delivery_address">Dirección de entrega no válida</string>
+    <string name="alert_dialog_message_invalid_delivery_address">Por favor, elija una dirección de entrega</string>
+
+    <string name="alert_dialog_title_invalid_email_address">Dirección de correo electrónico no válida</string>
+    <string name="alert_dialog_message_invalid_email_address">Por favor, introduce una dirección de correo electrónico válida</string>
+
+    <string name="alert_dialog_title_invalid_phone_number">Numero de telefono invalido</string>
+    <string name="alert_dialog_message_invalid_phone_number">Por favor ingrese un número de teléfono válido</string>
+
+    <string name="alert_dialog_message_connectivity">Comprueba tu conexión a Internet y vuelve a intentarlo.</string>
+
+    <string name="alert_dialog_title_processing">@string/Processing_</string>
+    <string name="alert_dialog_message_processing">Un momento…</string>
+
+    <string name="alert_dialog_title_end_customer_session">Terminar sesión</string>
+    <string name="alert_dialog_message_end_customer_session">¿Seguro que quieres terminar la sesión?</string>
+
+    <string name="alert_dialog_title_remove_item">Remover el artículo</string>
+    <string name="alert_dialog_message_remove_item">Por favor, confirme que desea eliminar este artículo de su cesta.</string>
+
+    <string name="alert_dialog_title_empty_basket">Vacíar Cesta</string>
+    <string name="alert_dialog_message_empty_basket">Su cesta está vacía. Por favor, agregue un elemento antes de proceder a la comprobación.</string>
+
+    <string name="alert_dialog_message_uploading_images">Subiendo imágenes</string>
+
+    <string name="alert_dialog_message_unable_to_store_card">No se puede almacenar la tarjeta</string>
+    <string name="alert_dialog_message_no_payment_id">No hay identificación de pago en la prueba de pago.</string>
+    <string name="alert_dialog_message_no_proof_of_payment">Ningún comprobante de pago encontrado en la confirmación de pago</string>
+    <string name="alert_dialog_message_no_paypal_confirmation">No hay confirmación de pago recibida de PayPal</string>
+    <string name="alert_dialog_message_card_expired">Lo siento, parece que la tarjeta ha caducado. Vuelve a intentarlo.</string>
+    <string name="alert_dialog_message_card_not_recognised">Lo siento, no pudimos reconocer tu tarjeta. Inténtalo de nuevo manualmente introduciendo los detalles de tu tarjeta si es necesario.</string>
+
+    <string name="alert_dialog_item_pay_with_new_card">Pagar con tarjeta nueva</string>
+    <string name="alert_dialog_item_pay_with_existing_card_format_string">Pagar con la tarjeta que termina %1$s</string>
+
+    <string name="log_out_warning">Automáticamente\nCerrando la sesión en</string>
+    <string name="time_remaining_format_string">%1$s</string>
+
+    <string name="progress_dialog_title_add_to_basket">Añadir a la cesta</string>
+    <string name="progress_dialog_title_updating_basket">Actualización de la cesta</string>
+
+    <string name="button_symbol_increment">+</string>
+    <string name="button_symbol_decrement">-</string>
+
+    <string name="add_more">Añadir más</string>
+    <string name="Cancel">Cancelar</string>
+    <string name="Choose_Delivery_Address">Elegir dirección de entrega</string>
+    <string name="Continue_Shopping">Seguir comprando</string>
+    <string name="Country">País</string>
+    <string name="Description">Descripción</string>
+    <string name="Details">Detalles</string>
+    <string name="Done">Hecho</string>
+    <string name="Edit">Editar</string>
+    <string name="Email">Correo eléctronico</string>
+    <string name="End_Session">Terminar sesión</string>
+    <string name="Flip">Dar la vuelta</string>
+    <string name="Free">Gratis</string>
+    <string name="ITEM">ÍT</string>
+    <string name="Keep">Guardar</string>
+    <string name="Loading">Cargando</string>
+    <string name="Loading_catalogue">Cargando catálogo</string>
+    <string name="Log_Out">Cerrar sesión</string>
+    <string name="Next">Siguiente</string>
+    <string name="Next_Customer">Siguiente Cliente</string>
+    <string name="No_Results">No hay resultados</string>
+    <string name="OK">DE ACUERDO</string>
+    <string name="Order_Id">ID de pedido</string>
+    <string name="ORDER_ID">ID DE PEDIDO</string>
+    <string name="Order_Summary">Resumen de pedido</string>
+    <string name="ORDER_SUMMARY">RESUMEN DE PEDIDO</string>
+    <string name="Oops_">Oops!</string>
+    <string name="Pay">Paga</string>
+    <string name="Payment_Id">ID de pago</string>
+    <string name="PAYMENT_ID">ID DE PAGO</string>
+    <string name="PRICE">PRECIO</string>
+    <string name="print_these">Imprima estos</string>
+    <string name="Processing_">Tratamiento…</string>
+    <string name="Promotional_Discount">Descuento promocional</string>
+    <string name="Remove">Retirar</string>
+    <string name="Rotate">Girar</string>
+    <string name="Quantity">Cantidad</string>
+    <string name="QUANTITY">CANTIDAD</string>
+    <string name="Retry">Rever</string>
+    <string name="Save">Salvar</string>
+    <string name="Select_Image">Seleccionar imagen</string>
+    <string name="Shipping">Envío</string>
+    <string name="Size">Tamaño</string>
+    <string name="Total">Total</string>
+
+    <string name="image_source_device">Cámara</string>
+    <string name="image_source_instagram">Instagram</string>
+    <string name="image_source_facebook">Facebook</string>
+    <string name="image_source_from_phone">Subir desde el teléfono</string>
+
+    <string name="select_photo_from_device">Elige la foto de la cámara</string>
+    <string name="select_photo_from_instagram">Elija la foto de Instagram</string>
+    <string name="select_photo_from_facebook">Elige la foto de Facebook</string>
+    <string name="upload_photo_from_phone">Subir foto desde el teléfono</string>
+
+    <string name="destination_description_gbr">Reino Unido</string>
+    <string name="destination_description_europe">Europa</string>
+    <string name="destination_description_rest_of_world">Resto del mundo</string>
+
+    <string name="group_or_product_placeholder_image_url">https://s3.amazonaws.com/sdk-static/product_photography/placeholder.png</string>
+
+    <string name="product_quantity_format_string">Paquete de %d</string>
+    <string name="product_size_format_string_float">%1$.1f x %2$.1f %3$s</string>
+    <string name="product_size_format_string_int">%1$.0f x %2$.0f %3$s</string>
+
+    <string name="product_shipping_destination_format_string" translatable="false">%1$s:</string>
+    <string name="product_free_shipping">gratis</string>
+    <string name="product_shipping_summary_format_string">Envío: %s</string>
+
+    <string name="product_free_worldwide_shipping">Envío gratis a todo el mundo</string>
+
+    <string name="product_overview_guarantee_title">Garantía de calidad</string>
+    <string name="product_overview_guarantee_text" formatted="false">Estamos seguros de que usted estará más que feliz con nuestros productos. Pero por si acaso, le ofrecemos un reembolso completo si no está 100% feliz - incluso si es sólo un mal día.</string>
+
+    <string name="product_overview_start_button_text">Empezar a crear</string>
+
+    <string name="image_selection_empty_message">Añade fotos tocando\nlos iconos de arriba</string>
+
+    <string name="edit_image_backwards_button_text" translatable="false">@string/Cancel</string>
+    <string name="edit_image_forwards_button_text" translatable="false">@string/Done</string>
+
+    <string name="edit_border_text_image_forwards_button_text" translatable="false">@string/Save</string>
+    <string name="edit_border_text_hint">Añadir texto aquí</string>
+
+    <string name="phone_case_proceed_button_text" translatable="false">@string/Next</string>
+
+    <string name="multi_page_instructions"><b>Puntee</b> en imagen para editar,\n<b>Mantenga</b> para volver a ordenar.</string>
+
+    <string name="address_book_empty">Libreta de direcciones vacía</string>
+
+    <string name="image_source_prompt">Agrega fotos tocando\nuna de las opciones</string>
+
+    <string name="image_selection_title_format_string">%1$s - %2$d / %3$d</string>
+    <string name="image_selection_pack_title_format_string" tools:ignore="PluralsCandidate">#%1$d Paquete de %2$d %3$s</string>
+
+    <string name="image_selection_clear_photos_format_string">Borrar %s</string>
+
+    <string name="edit_image_prompt_text">Reposicionar la foto</string>
+
+    <string name="image_selection_proceed_button_text">Revisar y editar</string>
+
+    <string name="review_and_edit_title_format_string">%1$d / %2$d</string>
+    <string name="review_and_edit_proceed_button_text">Confirmar</string>
+
+    <string name="edit_image_title">Editar imagen</string>
+
+    <string name="basket_empty">La cesta está vacía</string>
+    <string name="basket_left_button_text">Seguir comprando</string>
+    <string name="basket_right_button_text">Revisa</string>
+
+    <string name="address_hint_text_recipient">Nombre</string>
+    <string name="address_hint_text_line_1">Línea 1</string>
+    <string name="address_hint_text_line_2">Línea 2</string>
+    <string name="address_hint_text_city">Ciudad</string>
+    <string name="address_hint_text_county_or_state">Condado / Estado</string>
+    <string name="address_hint_text_postcode_or_zip">Codigo postal / código postal</string>
+    <string name="address_hint_text_email" translatable="false">@string/Email</string>
+
+    <string name="shipping_delivery_address_button_text">Elegir dirección de entrega</string>
+    <string name="shipping_email_hint_text" translatable="false">@string/Email</string>
+    <string name="shipping_phone_hint_text">Número de teléfono</string>
+    <string name="shipping_email_reason">Su correo electrónico es necesario para que podamos enviarle actualizaciones de confirmación de pedido.</string>
+    <string name="shipping_phone_reason">Su número de teléfono es necesario en caso de que haya problemas de entrega.</string>
+    <string name="shipping_proceed_button_text">@string/Done</string>
+
+    <string name="address_search_prompt">Buscar direcciones arriba</string>
+
+    <string name="address_search_hint_format_string">Buscar %1$s</string>
+    <string name="address_search_empty_results">Buscar direcciones arriba</string>
+    <string name="address_search_dialog_title">Obtención de detalles</string>
+    <string name="address_search_dialog_message">Recuperación de los detalles de la dirección</string>
+    <string name="address_search_no_results">No se han encontrado resultados</string>
+
+    <string name="button_text_edit_address">Editar direcciónf</string>
+    <string name="button_text_delete_address">Eliminar dirección</string>
+
+    <string name="address_edit_proceed_button_text">Salvar</string>
+
+    <string name="powered_by">Desarrollado por Kite.ly</string>
+
+    <string name="payment_promo_hint">Codigo promocional</string>
+    <string name="payment_promo_button_text_apply">Aplicar</string>
+    <string name="payment_promo_button_text_clear">Borrar</string>
+    <string name="payment_credit_card_button_text">Tarjeta de crédito</string>
+    <string name="payment_credit_card_button_text_free">Realizar la compra gratis</string>
+    <string name="payment_paypal_button_text">PayPal</string>
+
+    <string name="stripe_error_invalid_card_details">Detalles de la tarjeta no válida</string>
+    <string name="stripe_error_create_object">No se puede crear objeto Stripe</string>
+    <string name="stripe_error_retrieve_token">No se puede recuperar el token Stripe</string>
+
+    <string name="send_email_chooser_title">Enviar correo electrónico</string>
+
+    <string name="feedback_email_recipient">info@kite.ly</string>
+    <string name="feedback_email_subject">Kite Android App Support</string>
+    <string name="feedback_email_text">Por favor, indique su nombre completo:\n\nPor favor, proporcione cualquier código de cupón utilizado en su transacción:\n\n¿Cuál es su número de teléfono (en caso de que necesitamos llamar y discutir su problema)?\n\n¿Cuál es el problema que está Tener con la aplicación Kite Sample?\n\n¿Qué dispositivo Android (teléfono / tablet) está usando?\n\n================================\n\nGracias mucho.\nNos aseguraremos de volver a usted tan pronto como podamos.\nKite Team</string>
+
+    <string name="order_failure_message">Algo salió mal.\nPor favor, inténtelo de nuevo.</string>
+
+    <string name="Card_Number">Número de tarjeta</string>
+    <string name="Expires">Caduca</string>
+    <string name="CVV">CVV</string>
+
+    <string name="card_error_invalid_number">Numero de tarjeta invalido</string>
+    <string name="card_error_invalid_expiry_date">Fecha de caducidad no válida</string>
+    <string name="card_error_invalid_cvv">Valor de verificación no válido</string>
+
+    <string name="order_submission_message_uploading">Subiendo imágenes</string>
+    <string name="order_submission_message_posted">Subido</string>
+    <string name="order_submission_message_received">Recibido</string>
+    <string name="order_submission_message_accepted">Aceptado</string>
+    <string name="order_submission_message_validated">Validado</string>
+    <string name="order_submission_message_processed">Procesada</string>
+
+    <string name="alert_dialog_title_order_submission_error">Error de envío de pedido</string>
+    <string name="alert_dialog_title_order_timeout">Tiempo de envío de la solicitud</string>
+    <string name="alert_dialog_message_order_timeout">Su pedido todavía no ha sido procesado. Es posible que los servidores estén actualmente ocupados y el pago esté tomando simplemente tiempo.\n\n¿Quieres esperar un poco más, o renunciar y hacer otra cosa?</string>
+    <string name="order_timeout_button_wait">Espere</string>
+    <string name="order_timeout_button_give_up">Rendirse</string>
+
+    <string name="alert_dialog_title_order_cancelled">Orden cancelada</string>
+    <string name="alert_dialog_message_order_cancelled">Algo ha fallado: su pedido parece haber sido cancelado durante la presentación.</string>
+
+    <string name="alert_dialog_message_server_offline_maintenance">El servidor está actualmente sin conexión para el mantenimiento.</string>
+    <string name="alert_dialog_message_server_returned_html">El servidor devolvió una respuesta no válida (HTML). Esto suele ocurrir cuando el servidor no está disponible.</string>
+
+    <string name="scan_qr_code">Escanear código QR</string>
+    <string name="scan_qr_code_instructions">Por favor, escanee el código QR usando una\naplicación de lector de QR en su mòvil.</string>
+    <string name="scan_qr_code_alternate_instructions">Alternativamente, escriba la siguiente URL en la barra de direcciones de su navegador móvil:</string>
+
+    <string name="action_settings">Ajustes</string>
+    <string name="title_activity_checkout">Detalles de envío</string>
+    <string name="title_activity_order_receipt">Recibo del pedido</string>
+    <string name="title_activity_payment">Pago</string>
+    <string name="title_activity_address_book">Directorio</string>
+    <string name="add_address">Añadir dirección</string>
+    <string name="title_activity_address_add">Ingresa la direccion</string>
+    <string name="title_activity_address_edit">Editar dirección</string>
+    <string name="action_save_address">Guardar dirección</string>
+
+    <plurals name="Photo_plurals">
+        <item quantity="zero">%d Fotos</item>
+        <item quantity="one">%d Foto</item>
+        <item quantity="two">%d Fotos</item>
+        <item quantity="few">%d Fotos</item>
+        <item quantity="many">%d Fotos</item>
+        <item quantity="other">%d Fotos</item>
+    </plurals>
+
+    <plurals name="photo_plurals">
+        <item quantity="zero">%d fotos</item>
+        <item quantity="one">%d foto</item>
+        <item quantity="two">%d fotos</item>
+        <item quantity="few">%d fotos</item>
+        <item quantity="many">%d fotos</item>
+        <item quantity="other">%d fotos</item>
+    </plurals>
+
+</resources>
