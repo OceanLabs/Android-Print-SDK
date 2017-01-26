@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Kite.ly</string>
+    <string name="kite_sdk_sample_app_name">Kite.ly</string>
 
     <string name="Sandbox">Sandbox</string>
     <string name="Live">Live</string>

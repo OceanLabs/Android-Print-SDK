@@ -48,7 +48,7 @@
     <string name="settings_summary_licences">Licence details for open-source software</string>
     <string name="settings_title_build_version">Build Version</string>
 
-    <string name="preference_key_show_notification_messages">preference_key_show_notification_messages</string>
+    <string name="preference_key_show_notification_messages" translatable="false">preference_key_show_notification_messages</string>
     <string name="preference_key_support" translatable="false">preference_key_support</string>
     <string name="preference_key_legal" translatable="false">preference_key_legal</string>
     <string name="preference_key_privacy" translatable="false">preference_key_privacy</string>
@@ -66,22 +66,24 @@
     <string name="alert_dialog_title_oops">@string/Oops_</string>
     <string name="alert_dialog_message_pricing_format_string">There was a problem retrieving pricing from the server:\n%s</string>
 
-    <string name="alert_dialog_title_no_intent">Internal Error</string>
+    <string name="alert_dialog_title_internal_error">Internal Error</string>
+
+    <string name="alert_dialog_title_no_intent">@string/alert_dialog_title_internal_error</string>
     <string name="alert_dialog_message_no_intent">There was an error: no intent was passed to the fragment. Please check the log for more details.</string>
 
-    <string name="alert_dialog_title_no_arguments">Internal Error</string>
+    <string name="alert_dialog_title_no_arguments">@string/alert_dialog_title_internal_error</string>
     <string name="alert_dialog_message_no_arguments">There was an error: no arguments were passed to the fragment. Please check the log for more details.</string>
 
-    <string name="alert_dialog_title_no_asset_list">Internal Error</string>
+    <string name="alert_dialog_title_no_asset_list">@string/alert_dialog_title_internal_error</string>
     <string name="alert_dialog_message_no_asset_list">There was an error: no asset list was found. Please check the log for more details.</string>
 
-    <string name="alert_dialog_title_no_asset">Internal Error</string>
+    <string name="alert_dialog_title_no_asset">@string/alert_dialog_title_internal_error</string>
     <string name="alert_dialog_message_no_asset">There was an error: no asset was found. Please check the log for more details.</string>
 
-    <string name="alert_dialog_title_no_mask">Internal Error</string>
+    <string name="alert_dialog_title_no_mask">@string/alert_dialog_title_internal_error</string>
     <string name="alert_dialog_message_no_mask">There was an error: no mask was found. Please check the log for more details.</string>
 
-    <string name="alert_dialog_title_no_product">Internal Error</string>
+    <string name="alert_dialog_title_no_product">@string/alert_dialog_title_internal_error</string>
     <string name="alert_dialog_message_no_product">There was an error: no product was found. Please check the log for more details.</string>
 
     <string name="alert_dialog_title_error_retrieving_products">Error Retrieving Products</string>
