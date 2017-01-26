@@ -42,12 +42,6 @@
     <string name="settings_summary_licences">Licence details for open-source software</string>
     <string name="settings_title_build_version">Build Version</string>
 
-    <string name="preference_key_show_notification_messages">preference_key_show_notification_messages</string>
-    <string name="preference_key_support" translatable="false">preference_key_support</string>
-    <string name="preference_key_legal" translatable="false">preference_key_legal</string>
-    <string name="preference_key_privacy" translatable="false">preference_key_privacy</string>
-    <string name="preference_key_build_version" translatable="false">preference_key_build_version</string>
-
     <string name="license_title_picasso">Picasso</string>
     <string name="license_url_picasso">https://raw.githubusercontent.com/square/picasso/picasso-parent-2.5.2/LICENSE.txt</string>
     <string name="license_grid_view">GridView with Header and Footer</string>
@@ -216,7 +210,6 @@
     <string name="product_size_format_string_float">%1$.1f x %2$.1f %3$s</string>
     <string name="product_size_format_string_int">%1$.0f x %2$.0f %3$s</string>
 
-    <string name="product_shipping_destination_format_string" translatable="false">%1$s:</string>
     <string name="product_free_shipping">gratis</string>
     <string name="product_shipping_summary_format_string">Envío: %s</string>
 
@@ -229,13 +222,7 @@
 
     <string name="image_selection_empty_message">Añade fotos tocando\nlos iconos de arriba</string>
 
-    <string name="edit_image_backwards_button_text" translatable="false">@string/Cancel</string>
-    <string name="edit_image_forwards_button_text" translatable="false">@string/Done</string>
-
-    <string name="edit_border_text_image_forwards_button_text" translatable="false">@string/Save</string>
     <string name="edit_border_text_hint">Añadir texto aquí</string>
-
-    <string name="phone_case_proceed_button_text" translatable="false">@string/Next</string>
 
     <string name="multi_page_instructions"><b>Puntee</b> en imagen para editar,\n<b>Mantenga</b> para volver a ordenar.</string>
 
@@ -267,10 +254,8 @@
     <string name="address_hint_text_city">Ciudad</string>
     <string name="address_hint_text_county_or_state">Condado / Estado</string>
     <string name="address_hint_text_postcode_or_zip">Codigo postal / código postal</string>
-    <string name="address_hint_text_email" translatable="false">@string/Email</string>
 
     <string name="shipping_delivery_address_button_text">Elegir dirección de entrega</string>
-    <string name="shipping_email_hint_text" translatable="false">@string/Email</string>
     <string name="shipping_phone_hint_text">Número de teléfono</string>
     <string name="shipping_email_reason">Su correo electrónico es necesario para que podamos enviarle actualizaciones de confirmación de pedido.</string>
     <string name="shipping_phone_reason">Su número de teléfono es necesario en caso de que haya problemas de entrega.</string>
