@@ -149,6 +149,30 @@ public class StripeCreditCardAgent extends ACreditCardDialogFragment implements 
   @Override
   protected void onProceed( String cardNumberString, String expiryMonthString, String expiryYearString, String cvvString )
     {
+    // Do basic validation of card details
+
+    if ( ! validateCard( cardNumberString, expiryMonthString, expiryYearString, cvvString ) ) return;
+
+
+    // Create a Stripe card and perform additional validation. If it's OK, use it for payment.
+
+    Card card = getValidatedCard( cardNumberString, expiryMonthString, expiryYearString, cvvString );
+
+    if ( card != null )
+      {
+      onUseCard( card );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a validated Stripe card, or null, if the card
+   * could not be validated.
+   *
+   *****************************************************/
+  private Card getValidatedCard( String cardNumberString, String expiryMonthString, String expiryYearString, String cvvString )
+    {
     // Create a Stripe card and validate it
 
     try
@@ -159,30 +183,32 @@ public class StripeCreditCardAgent extends ACreditCardDialogFragment implements 
         {
         onDisplayError( R.string.card_error_invalid_number );
 
-        return;
+        return ( null );
         }
 
       if ( ! card.validateExpiryDate() )
         {
         onDisplayError( R.string.card_error_invalid_expiry_date );
 
-        return;
+        return ( null );
         }
 
       if ( ! card.validateCVC() )
         {
         onDisplayError( R.string.card_error_invalid_cvv );
 
-        return;
+        return ( null );
         }
 
 
-      onUseCard( card );
+      return ( card );
       }
     catch ( Exception exception )
       {
       onDisplayError( getString( R.string.stripe_error_invalid_card_details ) + ": " + exception.getMessage() );
       }
+
+    return ( null );
     }
 
 

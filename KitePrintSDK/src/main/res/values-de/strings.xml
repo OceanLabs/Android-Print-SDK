@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <string name="app_name">Kite SDK</string>
-
     <string name="unit_centimeters">Zentimeter</string>
     <string name="unit_inches">Inches</string>
     <string name="unit_pixels">Pixel</string>
@@ -204,7 +202,7 @@
 
     <string name="edit_border_text_hint">Addieren Sie Text hier</string>
 
-    <string name="multi_page_instructions"><b>Tippen</b> Sie Bild zu bearbeiten,\n<b>Halten</b> Sie neu zu ordnen.</string>
+    <string name="multi_page_instructions_html"><![CDATA[<b>Tippen</b> Sie Bild zu bearbeiten,<br><b>Halten</b> Sie neu zu ordnen.]]></string>
 
     <string name="address_book_empty">Adressbuch leer</string>
 

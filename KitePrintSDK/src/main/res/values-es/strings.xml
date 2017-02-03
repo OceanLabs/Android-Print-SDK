@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <string name="title_kite_sdk">Kite SDK</string>
-
     <string name="unit_centimeters">centímetros</string>
     <string name="unit_inches">pulgadas</string>
     <string name="unit_pixels">píxeles</string>
@@ -172,7 +170,7 @@
     <string name="Order_Summary">Resumen de pedido</string>
     <string name="ORDER_SUMMARY">RESUMEN DE PEDIDO</string>
     <string name="Oops_">Oops!</string>
-    <string name="Pay">Paga</string>
+    <string name="Pay">Pagar</string>
     <string name="Payment_Id">ID de pago</string>
     <string name="PAYMENT_ID">ID DE PAGO</string>
     <string name="PRICE">PRECIO</string>
@@ -224,7 +222,7 @@
 
     <string name="edit_border_text_hint">Añadir texto aquí</string>
 
-    <string name="multi_page_instructions"><b>Puntee</b> en imagen para editar,\n<b>Mantenga</b> para volver a ordenar.</string>
+    <string name="multi_page_instructions_html"><![CDATA[<b>Puntee</b> en imagen para editar,<br><b>Mantenga</b> para volver a ordenar.]]></string>
 
     <string name="address_book_empty">Libreta de direcciones vacía</string>
 
@@ -296,7 +294,7 @@
     <string name="order_failure_message">Algo salió mal.\nPor favor, inténtelo de nuevo.</string>
 
     <string name="Card_Number">Número de tarjeta</string>
-    <string name="Expires">Caduca</string>
+    <string name="Expires">Fecha de caducidad</string>
     <string name="CVV">CVV</string>
 
     <string name="card_error_invalid_number">Numero de tarjeta invalido</string>

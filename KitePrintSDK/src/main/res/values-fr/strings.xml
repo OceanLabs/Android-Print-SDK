@@ -1,9 +1,9 @@
 <resources>
 
-    <string name="app_name">Kite SDK</string>
     <string name="unit_centimeters">centimètres</string>
     <string name="unit_inches">pouces</string>
     <string name="unit_pixels">pixels</string>
+
     <string name="unit_centimeters_short">cm</string>
     <string name="unit_inches_short">in</string>
     <string name="unit_pixels_short">px</string>
@@ -21,34 +21,47 @@
     <string name="title_basket">Panier</string>
     <string name="title_photobook">Photobook</string>
     <string name="title_calendar">Calendrier</string>
-    <string name="title_poster">Affiche</string>
+    <string name="title_poster">Poster</string>
 
     <string name="drawer_open">Tiroir ouvert</string>
     <string name="drawer_closed">Tiroir fermé</string>
+
     <string name="alert_dialog_title_pack_not_full_format_string">Vous avez sélectionné %s</string>
-    <string name="alert_dialog_message_pack_not_full_format_string">Vous pouvez ajouter %d de plus pour le m&#234;me prix</string>
+    <string name="alert_dialog_message_pack_not_full_format_string">Vous pouvez en ajouter %d de plus pour le même prix</string>
+
     <string name="alert_dialog_title_oops">Oups!</string>
     <string name="alert_dialog_message_pricing_format_string">Un probl&#232;me est survenu, nous n\'avons pas pu r&#233;cup&#233;rer le tarif &#224; partir du serveur: %s</string>
+
     <string name="alert_dialog_title_no_intent">Erreur interne</string>
     <string name="alert_dialog_message_no_intent">Un problème est survenu. Veuillez vérifier vos identifiants d\'accès.</string>
+
     <string name="alert_dialog_title_no_arguments">Erreur interne</string>
     <string name="alert_dialog_message_no_arguments">Un probl&#232;me est survenu. Veuillez v&#233;rifier vos identifiants d\'acc&#232;s.</string>
+
     <string name="alert_dialog_title_no_asset_list">Erreur interne</string>
     <string name="alert_dialog_message_no_asset_list">Un probl&#232;me est survenu. Veuillez v&#233;rifier vos identifiants d\'acc&#232;s.</string>
+
     <string name="alert_dialog_title_no_asset">Erreur interne</string>
     <string name="alert_dialog_message_no_asset">Un probl&#232;me est survenu. Veuillez v&#233;rifier vos identifiants d\'acc&#232;s.</string>
+
     <string name="alert_dialog_title_no_mask">Erreur interne</string>
     <string name="alert_dialog_message_no_mask">Un problème est survenu: aucun masque n\'a été trouvé.Veuillez vérifier vos identifiants d\'accès.</string>
+
     <string name="alert_dialog_title_no_product">Erreur interne</string>
     <string name="alert_dialog_message_no_product">Un problème est survenu: aucun produit n\'a été détecté. Veuillez vérifier vos identifiants d\'accès.</string>
+
     <string name="alert_dialog_title_error_retrieving_products">Erreur de récupération des produits</string>
     <string name="alert_dialog_message_error_retrieving_products">Un problème est survenu sur la récupération des produits. Veuillez s\'il vous plaît vérifier votre connexion Internet et vos identifiants d\'accès.</string>
+
     <string name="alert_dialog_title_no_product_group_label">Aucun groupe de produits</string>
     <string name="alert_dialog_message_no_product_group_label">Un problème est survenu: pas de groupe de produit n\'a été trouvé. Veuillez consulter le journal pour plus de détails.</string>
+
     <string name="alert_dialog_title_product_not_found">Produit non trouvé</string>
     <string name="alert_dialog_message_product_not_found">Aucun produit n\'a &#233;t&#233; trouv&#233;. Veuillez consulter votre historique de commandes pour plus de d&#233;tails.</string>
+
     <string name="alert_dialog_title_create_order">Lancer une commande</string>
     <string name="alert_dialog_message_no_cropped_image_asset">Un probl&#232;me est survenu - Kite n\'a pas pu cr&#233;er d\'image recadr&#233;e.</string>
+
     <string name="alert_dialog_title_load_image">Impossible de charger l\'image</string>
     <string name="alert_dialog_message_could_not_load_image">Une image n\'a pas pu être chargée. Veuillez vérifier votre connexion Internet, et vos identifiants d\'accès.</string>
 
@@ -66,8 +79,10 @@
 
     <string name="alert_dialog_title_invalid_delivery_address">Adresse de livraison invalide</string>
     <string name="alert_dialog_message_invalid_delivery_address">S\'il vous plaît choisir une adresse de livraison</string>
+
     <string name="alert_dialog_title_invalid_email_address">Adresse e-mail invalide</string>
     <string name="alert_dialog_message_invalid_email_address">Veuillez indiquer une adresse email valide</string>
+
     <string name="alert_dialog_title_invalid_phone_number">Numéro de téléphone invalide</string>
     <string name="alert_dialog_message_invalid_phone_number">Veuillez saisir un numéro de téléphone valide</string>
 
@@ -201,14 +216,17 @@
 
     <string name="send_email_chooser_title">Envoyer un message</string>
     <string name="feedback_email_subject">Assistance Kite App Android</string>
-    <string name="feedback_email_text"><![CDATA[Veuillez nous indiquer vos nom et prénom: Veuillez fournir un code de bon de réduction utilisé dans votre transaction: Quel est votre numéro de téléphone (au cas où nous aurions besoin de vous contacter) ? Quel est le problème que vous rencontrez avec l\'application test Kite? Quel appareil Android (téléphone / tablette) utilisez-vous? Merci beaucoup. Nous ne manquerons pas de revenir vers vous dès que nous le pouvons. L\'équipe Kite]]></string>
+    <string name="feedback_email_text">Veuillez nous indiquer vos nom et prénom:\n\nVeuillez fournir un code de bon de réduction utilisé dans votre transaction:\n\nQuel est votre numéro de téléphone (au cas où nous aurions besoin de vous contacter)?\n\nQuel est le problème que vous rencontrez avec l\'application test Kite?\n\nQuel appareil Android (téléphone / tablette) utilisez-vous?\n\nMerci beaucoup. Nous ne manquerons pas de revenir vers vous dès que nous le pouvons.\nL\'équipe Kite></string>
     <string name="order_failure_message">Un problème est survenu.\nVeuillez réessayer.</string>
+
     <string name="Card_Number">Numéro de carte</string>
     <string name="Expires">Expire</string>
     <string name="CVV">CVV</string>
+
     <string name="card_error_invalid_number">Numéro de carte invalide</string>
     <string name="card_error_invalid_expiry_date">Date d\'expiration invalide </string>
-    <string name="card_error_invalid_cvv">Valeur de vérification valide</string>
+    <string name="card_error_invalid_cvv">Valeur de vérification invalide</string>
+
     <string name="order_submission_message_uploading">En cours de téléchargement</string>
     <string name="order_submission_message_posted">Publié</string>
     <string name="order_submission_message_received">Reçu</string>
@@ -266,7 +284,9 @@
     <string name="basket_left_button_text">Continuer vos achats</string>
     <string name="basket_right_button_text">Check-out</string>
     <string name="feedback_email_recipient"></string>
-    <string name="multi_page_instructions"><b>Tap</b> image pour modifier,\n<b>Maintenez</b> de commander à nouveau.</string>
+
+    <string name="multi_page_instructions_html"><![CDATA[<b>Touchez</b> photo à éditer,<br><b>Maintenir</b> pour commander à nouveau.]]></string>
+
     <string name="progress_dialog_title_add_to_basket">Ajout au panier</string>
     <string name="progress_dialog_title_updating_basket">Mise à jour panier</string>
     <string name="review_and_edit_title_format_string"></string>

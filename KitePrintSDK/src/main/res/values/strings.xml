@@ -243,7 +243,7 @@
 
     <string name="phone_case_proceed_button_text" translatable="false">@string/Next</string>
 
-    <string name="multi_page_instructions"><b>Tap</b> picture to edit,\n<b>Hold</b> to re-order.</string>
+    <string name="multi_page_instructions_html"><![CDATA[<b>Tap</b> picture to edit,<br><b>Hold</b> to re-order.]]></string>
 
     <string name="address_book_empty">Address Book Empty</string>
 
