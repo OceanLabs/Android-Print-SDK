@@ -195,7 +195,7 @@
 
     <string name="edit_border_text_hint">Tilføj tekst her</string>
 
-    <string name="multi_page_instructions"><b>Klik</b> på billedet for at redigere,\n<b>Hold</b> for at genbestille.</string>
+    <string name="multi_page_instructions_html"><![CDATA[<b>Klik</b> på billedet for at redigere,<br><b>Hold</b> for at genbestille.]]></string>
 
     <string name="address_book_empty">Adressebogen er tom</string>
 
@@ -262,7 +262,7 @@
 
     <string name="feedback_email_recipient">info@kite.ly</string>
     <string name="feedback_email_subject">Kite Android App Support</string>
-    <string name="feedback_email_text">Please tell us your full name:\n\nPlease provide any voucher code used in your transaction:\n\nWhat is your phone number (in case we need to call and discuss your issue)?\n\nWhat is the issue you are having with the Kite Sample app?\n\nWhich Android device (phone/tablet) are you using?\n\n================================\n\nThanks a lot.\nWe’ll be sure to get back to you just as soon as we can.\nKite Team</string>
+    <string name="feedback_email_text">Fortæl os dit fulde navn:\n\nGiv enhver kupon kode, der bruges i din transaktion:\n\nHvad er dit telefonnummer (hvis vi har brug for at ringe og diskutere dit problem)?\n\nHvad er det problem, du har med Kite Sample app?\n\nHvilke Android-enhed (telefon / tablet) bruger du?\n\n================================\n\nMange tak.\nVi vil være sikker på at komme tilbage til dig lige så snart vi kan.\nKite Team</string>
 
     <string name="order_failure_message">Noget gik galt.\nPrøv venligst igen.</string>
 

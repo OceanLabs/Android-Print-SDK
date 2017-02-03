@@ -52,6 +52,7 @@ import android.widget.TextView;
 import java.util.Calendar;
 
 import ly.kite.R;
+import ly.kite.util.StringUtils;
 import ly.kite.widget.AEditTextEnforcer;
 import ly.kite.widget.CVVEditTextEnforcer;
 import ly.kite.widget.CardNumberEditTextEnforcer;
@@ -264,10 +265,10 @@ abstract public class ACreditCardDialogFragment extends DialogFragment implement
    *****************************************************/
   private void onProceed()
     {
-    String cardNumberString  = mCardNumberEditText.getText().toString();
-    String expiryMonthString = mExpiryMonthEditText.getText().toString();
-    String expiryYearString  = mExpiryYearEditText.getText().toString();
-    String cvvString         = mCVVEditText.getText().toString();
+    String cardNumberString  = StringUtils.getDigitString( mCardNumberEditText.getText().toString() );
+    String expiryMonthString = StringUtils.getDigitString( mExpiryMonthEditText.getText().toString() );
+    String expiryYearString  = StringUtils.getDigitString( mExpiryYearEditText.getText().toString() );
+    String cvvString         = StringUtils.getDigitString( mCVVEditText.getText().toString() );
 
     onProceed( cardNumberString,
                expiryMonthString,
@@ -322,6 +323,57 @@ abstract public class ACreditCardDialogFragment extends DialogFragment implement
    *
    *****************************************************/
   abstract protected void onProceed( String cardNumberString, String expiryMonthString, String expiryYearString, String cvvString );
+
+
+  /*****************************************************
+   *
+   * Performs basic validation of credit card details.
+   *
+   *****************************************************/
+  protected boolean validateCard( String cardNumberString, String expiryMonthString, String expiryYearString, String cvvString )
+    {
+    ///// Card number
+
+    if ( ! StringUtils.isDigitString( cardNumberString ) )
+      {
+      onDisplayError( R.string.card_error_invalid_number );
+
+      return ( false );
+      }
+
+
+    ///// Expiry month
+
+    if ( ! StringUtils.isDigitString( expiryMonthString ) )
+      {
+      onDisplayError( R.string.card_error_invalid_expiry_date );
+
+      return ( false );
+      }
+
+
+    ///// Expiry year
+
+    if ( ! StringUtils.isDigitString( expiryYearString ) )
+      {
+      onDisplayError( R.string.card_error_invalid_expiry_date );
+
+      return ( false );
+      }
+
+
+    ///// CVV
+
+    if ( ! StringUtils.isDigitString( cvvString ) )
+      {
+      onDisplayError( R.string.card_error_invalid_cvv );
+
+      return ( false );
+      }
+
+
+    return ( true );
+    }
 
 
   ////////// Inner Class(es) //////////

@@ -109,6 +109,48 @@ public class StringUtils
     }
 
 
+  /*****************************************************
+   *
+   * Extracts just the digits from a string.
+   *
+   *****************************************************/
+  static public String getDigitString( String source )
+    {
+    if ( source == null ) return ( "" );
+
+    StringBuilder stringBuilder = new StringBuilder( source.length() );
+
+    for ( char c : source.toCharArray() )
+      {
+      if ( Character.isDigit( c ) ) stringBuilder.append( c );
+      }
+
+    return ( stringBuilder.toString() );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns true if the supplied value consists of just
+   * digits, and at least one.
+   *
+   *****************************************************/
+  static public boolean isDigitString( String value )
+    {
+    if ( isNullOrBlank( value ) ) return ( false );
+
+    for ( char c : value.toCharArray() )
+      {
+      if ( ! Character.isDigit( c ) )
+        {
+        return ( false );
+        }
+      }
+
+    return ( true );
+    }
+
+
   ////////// Constructor(s) //////////
 
 
