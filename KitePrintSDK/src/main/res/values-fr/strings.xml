@@ -120,6 +120,7 @@
     <string name="Flip">Pivoter</string>
     <string name="Free">Gratuit</string>
     <string name="add_more">Ajouter plus</string>
+    <string name="Keep">Garder</string>
     <string name="Loading">Chargement</string>
     <string name="Loading_catalogue">Chargement du catalogue</string>
     <string name="Log_Out">Se déconnecter</string>
@@ -136,6 +137,7 @@
     <string name="print_these">Imprimer</string>
     <string name="Processing_">En cours…</string>
     <string name="Promotional_Discount">Réduction</string>
+    <string name="Remove">Retirer</string>
     <string name="Rotate">Pivoter</string>
     <string name="Quantity">Quantité</string>
     <string name="Retry">Recommencer</string>
