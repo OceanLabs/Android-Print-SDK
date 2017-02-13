@@ -39,6 +39,7 @@ package ly.kite.checkout;
 
 ///// Import(s) /////
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -83,6 +84,8 @@ public class StripeCreditCardAgent extends ACreditCardDialogFragment implements 
   private Order                   mOrder;
   private SingleCurrencyAmounts   mSingleCurrencyAmount;
 
+  private String                  mLocalisedStripeErrorMessage;
+
 
   ////////// Static Initialiser(s) //////////
 
@@ -91,6 +94,23 @@ public class StripeCreditCardAgent extends ACreditCardDialogFragment implements 
 
 
   ////////// Constructor(s) //////////
+
+
+  ////////// ACreditCardDialogFragment Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when the fragment is attached to an activity.
+   *
+   *****************************************************/
+  @Override
+  public void onAttach( Activity activity )
+    {
+    super.onAttach( activity );
+
+    // We get the error message here, because we can't get it when we aren't attached to an activity.
+    mLocalisedStripeErrorMessage = getString( R.string.stripe_error_retrieve_token );
+    }
 
 
   ////////// ICreditCardFragment Method(s) //////////
@@ -279,7 +299,7 @@ public class StripeCreditCardAgent extends ACreditCardDialogFragment implements 
 
           // TODO: Display error dialog
           // Show localised error message
-          Toast.makeText( mContext, getString( R.string.stripe_error_retrieve_token ) + ": " + exception.getMessage(), Toast.LENGTH_LONG ).show();
+          Toast.makeText( mContext, mLocalisedStripeErrorMessage + ": " + exception.getMessage(), Toast.LENGTH_LONG ).show();
           }
         }
       );
