@@ -42,6 +42,8 @@ package ly.kite.checkout;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -54,6 +56,7 @@ import com.stripe.exception.AuthenticationException;
 import ly.kite.KiteSDK;
 import ly.kite.app.IndeterminateProgressDialogFragment;
 import ly.kite.R;
+import ly.kite.app.RetainedFragmentHelper;
 import ly.kite.catalogue.SingleCurrencyAmounts;
 import ly.kite.ordering.Order;
 
@@ -80,11 +83,10 @@ public class StripeCreditCardAgent extends ACreditCardDialogFragment implements 
   ////////// Member Variable(s) //////////
 
   private Context                 mContext;
-  private DefaultPaymentFragment  mPaymentFragment;
   private Order                   mOrder;
   private SingleCurrencyAmounts   mSingleCurrencyAmount;
 
-  private String                  mLocalisedStripeErrorMessage;
+  private Resources               mResources;
 
 
   ////////// Static Initialiser(s) //////////
@@ -97,20 +99,6 @@ public class StripeCreditCardAgent extends ACreditCardDialogFragment implements 
 
 
   ////////// ACreditCardDialogFragment Method(s) //////////
-
-  /*****************************************************
-   *
-   * Called when the fragment is attached to an activity.
-   *
-   *****************************************************/
-  @Override
-  public void onAttach( Activity activity )
-    {
-    super.onAttach( activity );
-
-    // We get the error message here, because we can't get it when we aren't attached to an activity.
-    mLocalisedStripeErrorMessage = getString( R.string.stripe_error_retrieve_token );
-    }
 
 
   ////////// ICreditCardFragment Method(s) //////////
@@ -134,15 +122,16 @@ public class StripeCreditCardAgent extends ACreditCardDialogFragment implements 
    *
    *****************************************************/
   @Override
-  public void onPayClicked( Context context, DefaultPaymentFragment paymentFragment, Order order, SingleCurrencyAmounts singleCurrencyAmount )
+  public void onPayClicked( Context context, APaymentFragment paymentFragment, Order order, SingleCurrencyAmounts singleCurrencyAmount )
     {
     mContext              = context;
-    mPaymentFragment      = paymentFragment;
     mOrder                = order;
     mSingleCurrencyAmount = singleCurrencyAmount;
 
-    // Since we are a subclass of a dialog fragment, display us
-    // as a dialog.
+    mResources            = context.getResources();
+
+    setTargetFragment( paymentFragment, 0 );
+
     show( paymentFragment.getFragmentManager(), TAG );
     }
 
@@ -239,10 +228,6 @@ public class StripeCreditCardAgent extends ACreditCardDialogFragment implements 
    *****************************************************/
   private void onUseCard( Card card )
     {
-    // Hide the dialog
-    dismiss();
-
-
     // We can't call back to the activity because it has no concept of other credit cards. So
     // we need to do the processing ourselves, and then return the token as the payment id to the
     // Payment Activity.
@@ -259,54 +244,65 @@ public class StripeCreditCardAgent extends ACreditCardDialogFragment implements 
       {
       Log.e( TAG, "Unable to create Stripe object", ae );
 
-      // TODO: Display an error dialog
-      Toast.makeText( mContext, getString( R.string.stripe_error_create_object ) + ": " + ae.getMessage(), Toast.LENGTH_LONG ).show();
+      onDisplayError( getString( R.string.stripe_error_create_object ) + ": " + ae.getMessage() );
 
       return;
       }
 
 
-    // Show a progress dialog
+    onClearError();
 
-    final IndeterminateProgressDialogFragment indeterminateProgressDialogFragment = IndeterminateProgressDialogFragment.newInstance( getActivity(), R.string.Processing_ );
+    onProcessingStarted();
 
-    indeterminateProgressDialogFragment.show( getActivity() );
-
-
-    // TODO: Get rid of this yucky anonymous inner class
-    stripe.createToken
-      (
-      card,
-      new TokenCallback()
-        {
-        public void onSuccess( Token token )
-          {
-          indeterminateProgressDialogFragment.dismiss();
-
-          // Return the token to the activity
-
-          if ( mContext instanceof PaymentActivity )
-            {
-            mPaymentFragment.submitOrderForPrinting( token.getId(), KiteSDK.getInstance( getActivity() ).getStripeAccountId(), PaymentMethod.CREDIT_CARD );
-            }
-          }
-
-        public void onError( Exception exception )
-          {
-          indeterminateProgressDialogFragment.dismiss();
-
-          Log.e( TAG, "Error retrieving token", exception );
-
-          // TODO: Display error dialog
-          // Show localised error message
-          Toast.makeText( mContext, mLocalisedStripeErrorMessage + ": " + exception.getMessage(), Toast.LENGTH_LONG ).show();
-          }
-        }
-      );
+    // Try to get a payment token
+    stripe.createToken( card, new StripeTokenCallback() );
     }
 
 
   ////////// Inner Class(es) //////////
 
-  }
+  private class StripeTokenCallback extends TokenCallback
+    {
+    public void onSuccess( final Token token )
+      {
+      onProcessingStopped();
 
+      Log.i( TAG, "Successfully retrieved Stripe token: " + token.toString() );
+
+
+      // Return the token to the payment fragment as soon as it is attached (if it
+      // is the activity) or set (if it is a fragment).
+
+      setStateNotifier( new RetainedFragmentHelper.AStateNotifier()
+        {
+        @Override
+        public void notify( Object callback )
+          {
+          APaymentFragment paymentFragment = (APaymentFragment)callback;
+
+          paymentFragment.submitOrderForPrinting( token.getId(), KiteSDK.getInstance( mContext ).getStripeAccountId(), PaymentMethod.CREDIT_CARD );
+
+          // Once the order has been submitted, we can be dismissed.
+          remove();
+          }
+        } );
+      }
+
+    public void onError( Exception exception )
+      {
+      onProcessingStopped();
+
+      Log.e( TAG, "Error retrieving token", exception );
+
+      // We may not be attached to an activity at this point (e.g. if the device has been rotated),
+      // so we need to be careful that the getString call doesn't fail.
+      try
+        {
+        onDisplayError( mResources.getString( R.string.stripe_error_retrieve_token ) + ": " + exception.getMessage() );
+        }
+      catch ( Exception ignore )
+        {
+        }
+      }
+    }
+  }

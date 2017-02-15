@@ -47,11 +47,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.Calendar;
 
 import ly.kite.R;
+import ly.kite.app.ARetainedDialogFragment;
 import ly.kite.util.StringUtils;
 import ly.kite.widget.AEditTextEnforcer;
 import ly.kite.widget.CVVEditTextEnforcer;
@@ -68,7 +70,7 @@ import ly.kite.widget.YearEditTextEnforcer;
  * collect credit card details.
  *
  *****************************************************/
-abstract public class ACreditCardDialogFragment extends DialogFragment implements AEditTextEnforcer.ICallback,
+abstract public class ACreditCardDialogFragment extends ARetainedDialogFragment implements AEditTextEnforcer.ICallback,
                                                                                   View.OnClickListener
   {
   ////////// Static Constant(s) //////////
@@ -84,14 +86,15 @@ abstract public class ACreditCardDialogFragment extends DialogFragment implement
 
   ////////// Member Variable(s) //////////
 
-  private EditText   mCardNumberEditText;
-  private EditText   mExpiryMonthEditText;
-  private EditText   mExpiryYearEditText;
-  private EditText   mCVVEditText;
-  private ImageView  mLogoImageView;
-  private TextView   mErrorTextView;
-  private Button     mCancelButton;
-  private Button     mProceedButton;
+  private EditText     mCardNumberEditText;
+  private EditText     mExpiryMonthEditText;
+  private EditText     mExpiryYearEditText;
+  private EditText     mCVVEditText;
+  private ImageView    mLogoImageView;
+  private TextView     mErrorTextView;
+  private ProgressBar  mProgressSpinner;
+  private Button       mCancelButton;
+  private Button       mProceedButton;
 
 
   ////////// Static Initialiser(s) //////////
@@ -101,6 +104,11 @@ abstract public class ACreditCardDialogFragment extends DialogFragment implement
 
 
   ////////// Constructor(s) //////////
+
+  public ACreditCardDialogFragment()
+    {
+    super( APaymentFragment.class );
+    }
 
 
   ////////// DialogFragment Method(s) //////////
@@ -135,6 +143,7 @@ abstract public class ACreditCardDialogFragment extends DialogFragment implement
     mCVVEditText         = (EditText)view.findViewById( R.id.cvv_edit_text );
     mLogoImageView       = (ImageView)view.findViewById( R.id.logo_image_view );
     mErrorTextView       = (TextView)view.findViewById( R.id.error_text_view );
+    mProgressSpinner     = (ProgressBar)view.findViewById( R.id.progress_spinner );
     mCancelButton        = (Button)view.findViewById( R.id.cancel_button );
     mProceedButton       = (Button)view.findViewById( R.id.proceed_button );
 
@@ -166,6 +175,8 @@ abstract public class ACreditCardDialogFragment extends DialogFragment implement
 
       new YearEditTextEnforcer( mExpiryYearEditText, firstYear, firstYear + MAX_CARD_VALIDITY_IN_YEARS, this );
       }
+
+    mProgressSpinner.setVisibility( View.GONE );
 
     if ( mCancelButton  != null ) mCancelButton.setOnClickListener( this );
     if ( mProceedButton != null ) mProceedButton.setOnClickListener( this );
@@ -373,6 +384,48 @@ abstract public class ACreditCardDialogFragment extends DialogFragment implement
 
 
     return ( true );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the enabled state of all the UI components.
+   *
+   *****************************************************/
+  private void setUIEnabled( boolean enabled )
+    {
+    mCardNumberEditText.setEnabled( enabled );
+    mExpiryMonthEditText.setEnabled( enabled );
+    mExpiryYearEditText.setEnabled( enabled );
+    mCVVEditText.setEnabled( enabled );
+    mCancelButton.setEnabled( enabled );
+    mProceedButton.setEnabled( enabled );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when processing the card starts.
+   *
+   *****************************************************/
+  protected void onProcessingStarted()
+    {
+    setUIEnabled( false );
+
+    mProgressSpinner.setVisibility( View.VISIBLE );
+    }
+
+
+  /*****************************************************
+   *
+   * Called when processing the card stops.
+   *
+   *****************************************************/
+  protected void onProcessingStopped()
+    {
+    setUIEnabled( true );
+
+    mProgressSpinner.setVisibility( View.GONE );
     }
 
 

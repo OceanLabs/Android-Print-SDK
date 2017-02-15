@@ -449,13 +449,10 @@ public class DefaultPaymentFragment extends APaymentFragment
 
   /*****************************************************
    *
-   * Submits the order for printing. This should only be
-   * called from this fragment (an external credit card
-   * fragment should call the payment activity directly),
-   * and only for PayPal payments (since we assume the
-   * PayPal account id).
+   * Submits the order for printing.
    *
    *****************************************************/
+  @Override
   public void submitOrderForPrinting( String paymentId, String accountId, PaymentMethod paymentMethod )
     {
     getPaymentActivity().submitOrderForPrinting( authorisationProofOfPaymentFrom( paymentId ), accountId, paymentMethod );
