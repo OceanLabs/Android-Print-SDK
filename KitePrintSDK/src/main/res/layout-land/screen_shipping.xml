@@ -32,6 +32,7 @@
 
                     <ly.kite.widget.CustomTypefaceButton
                         android:id="@+id/address_picker_button"
+                        style="@style/ShippingAddressPickerButton"
                         android:layout_gravity="top"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
@@ -56,12 +57,13 @@
 
                         <ly.kite.widget.CustomTypefaceEditText
                             android:id="@+id/email_edit_text"
+                            style="@style/ShippingEditText"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="@string/shipping_email_hint_text"
                             android:inputType="textEmailAddress"
                             android:maxLines="1"
-                            android:singleLine="true"/>
+                            android:ellipsize="end"/>
 
                         <ly.kite.widget.CustomTypefaceTextView
                             android:layout_marginTop="@dimen/activity_vertical_margin"
@@ -72,13 +74,14 @@
 
                         <ly.kite.widget.CustomTypefaceEditText
                             android:id="@+id/phone_edit_text"
+                            style="@style/ShippingEditText"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/activity_vertical_margin"
                             android:hint="@string/shipping_phone_hint_text"
                             android:inputType="phone"
                             android:maxLines="1"
-                            android:singleLine="true"/>
+                            android:ellipsize="end"/>
 
                         <ly.kite.widget.CustomTypefaceTextView
                             android:id="@+id/phone_require_reason"

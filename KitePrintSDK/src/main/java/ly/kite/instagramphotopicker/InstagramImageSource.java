@@ -92,6 +92,24 @@ public class InstagramImageSource extends AImageSource
     }
 
 
+  protected InstagramImageSource( int horizontalBackgroundColourResourceId,
+                          int verticalBackgroundColourResourceId,
+                          int horizontalLayoutIconResourceId,
+                          int verticalLayoutIconResourceId,
+                          int labelResourceId,
+                          int menuItemId,
+                          int menuItemTitleResourceId )
+    {
+    super( horizontalBackgroundColourResourceId,
+            verticalBackgroundColourResourceId,
+            horizontalLayoutIconResourceId,
+            verticalLayoutIconResourceId,
+            labelResourceId,
+            menuItemId,
+            menuItemTitleResourceId );
+    }
+
+
   ////////// AImageSource Method(s) //////////
 
   /*****************************************************

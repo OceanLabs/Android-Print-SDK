@@ -224,8 +224,8 @@ public class ImageSourceAdaptor extends BaseAdapter
 
     void bind( AImageSource imageSource )
       {
-      if ( this.backgroundView != null ) this.backgroundView.setBackgroundColor( mContext.getResources().getColor( imageSource.getBackgroundColourResourceId() ) );
-      if ( this.iconImageView  != null ) this.iconImageView.setImageResource( imageSource.getIconResourceId() );
+      if ( this.backgroundView != null ) this.backgroundView.setBackgroundColor( mContext.getResources().getColor( imageSource.getBackgroundColourResourceId( mLayoutType ) ) );
+      if ( this.iconImageView  != null ) this.iconImageView.setImageResource( imageSource.getIconResourceId( mLayoutType ) );
       if ( this.labelTextView  != null ) this.labelTextView.setText( imageSource.getLabelResourceId() );
       }
     }

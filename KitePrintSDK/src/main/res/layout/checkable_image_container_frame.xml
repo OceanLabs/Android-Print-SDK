@@ -10,10 +10,12 @@
 
     <ImageView
         android:id="@+id/check_image_view"
+        android:layout_margin="@dimen/image_check_margin"
         android:layout_gravity="top|right"
         android:layout_width="@dimen/image_check_size"
         android:layout_height="@dimen/image_check_size"
-        android:src="@drawable/ic_check_on"
+        android:src="@drawable/check_on"
+        android:scaleType="fitCenter"
         android:visibility="invisible"/>
 
 </merge>

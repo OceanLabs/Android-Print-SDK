@@ -95,7 +95,8 @@
     <item name="image_selection_image_aspect_ratio" type="dimen" format="float">1.0</item>
     <dimen name="image_selection_thumbnail_size">360px</dimen>
 
-    <dimen name="image_check_size">28dp</dimen>
+    <dimen name="image_check_margin">2dp</dimen>
+    <dimen name="image_check_size">20dp</dimen>
 
     <dimen name="image_default_resize_size">100px</dimen>
     <dimen name="image_default_thumbnail_size">64px</dimen>

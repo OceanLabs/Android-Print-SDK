@@ -39,6 +39,7 @@
     <color name="cta_button_text">@android:color/white</color>
 
     <color name="cta_bar_background">@android:color/white</color>
+    <color name="cta_bar_button_text">@android:color/primary_text_light</color>
 
     <color name="paging_dot_unselected">#7fffffff</color>
     <color name="paging_dot_selected">#ffffffff</color>
@@ -56,7 +57,8 @@
     <color name="image_source_background_instagram">#fff6bb42</color>
     <color name="image_source_background_facebook">#ff5d9cec</color>
     <color name="image_source_background_from_phone">#ff48cfad</color>
-    <color name="image_source_text">@android:color/white</color>
+    <color name="image_source_text_vertical">@android:color/white</color>
+    <color name="image_source_text_horizontal">@android:color/white</color>
 
     <color name="image_selection_placeholder_background_1">#ffe6e9ed</color>
     <color name="image_selection_placeholder_background_2">#ffdce0e5</color>
@@ -85,6 +87,7 @@
     <color name="basket_list_shipping_separator">#ffd8d8d8</color>
     <color name="basket_order_delivery_underline">#ff3d7a73</color>
     <color name="basket_order_total_separator">#ffdbdbdb</color>
+    <color name="basket_total_price_text">@color/basket_highlight</color>
 
     <color name="payment_promo_code_text_default">@android:color/black</color>
     <color name="payment_promo_code_text_error">#ffff0000</color>

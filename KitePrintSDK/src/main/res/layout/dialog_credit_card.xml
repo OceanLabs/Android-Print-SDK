@@ -10,17 +10,36 @@
     android:orientation="vertical">
 
 
-    <include layout="@layout/include_credit_card_form"/>
-
-
-    <ly.kite.widget.CustomTypefaceTextView
-        android:id="@+id/error_text_view"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="@dimen/credit_card_error_message_vertical_padding"
-        android:paddingBottom="@dimen/credit_card_error_message_vertical_padding"
-        android:gravity="center"
-        android:textColor="@color/error_text"/>
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <include layout="@layout/include_credit_card_form"/>
+
+            <ly.kite.widget.CustomTypefaceTextView
+                android:id="@+id/error_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/credit_card_error_message_vertical_padding"
+                android:paddingBottom="@dimen/credit_card_error_message_vertical_padding"
+                android:gravity="center"
+                android:textColor="@color/error_text"/>
+
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progress_spinner"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="?android:indeterminateProgressStyle"/>
+
+    </FrameLayout>
 
 
     <LinearLayout

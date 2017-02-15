@@ -101,7 +101,8 @@
                     android:text="@string/Choose_Delivery_Address"
                     android:textSize="@dimen/basket_order_item_text_size"
                     android:textStyle="bold"
-                    android:singleLine="true"/>
+                    android:maxLines="1"
+                    android:ellipsize="end"/>
                 <View
                     android:layout_width="@dimen/basket_price_column_width"
                     android:layout_height="fill_parent"/>
@@ -131,6 +132,7 @@
                     android:layout_weight="0.0"
                     android:src="@drawable/ic_shipping"/>
                 <ly.kite.widget.CustomTypefaceTextView
+                    style="@style/BasketShippingText"
                     android:layout_marginLeft="@dimen/basket_order_item_text_margin"
                     android:layout_width="wrap_content"
                     android:layout_weight="1.0"
@@ -141,6 +143,7 @@
                     android:textStyle="bold"/>
                 <ly.kite.widget.CustomTypefaceTextView
                     android:id="@+id/total_shipping_price_text_view"
+                    style="@style/BasketShippingText"
                     android:layout_width="@dimen/basket_price_column_width"
                     android:layout_height="fill_parent"
                     android:gravity="right|center_vertical"
@@ -174,7 +177,7 @@
                     android:layout_width="@dimen/basket_price_column_width"
                     android:layout_height="fill_parent"
                     android:gravity="right|center_vertical"
-                    android:textColor="@color/basket_highlight"
+                    android:textColor="@color/basket_total_price_text"
                     android:textSize="@dimen/basket_total_price_size"
                     android:textStyle="bold"/>
             </LinearLayout>

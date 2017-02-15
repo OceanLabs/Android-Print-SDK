@@ -163,7 +163,7 @@ public class PostcardJob extends Job
 
   private PostcardJob( Parcel parcel )
     {
-    //super( ProductCache.getDirtyInstance().getProductById( parcel.readString() ) );
+    //super( ProductCache.getDirtyInstance().findProductById( parcel.readString() ) );
     super( parcel );
 
     mFrontUploadableImage = parcel.readParcelable( AssetFragment.class.getClassLoader() );

@@ -320,7 +320,7 @@ abstract public class AReceiptActivity extends AOrderSubmissionActivity implemen
   @Override
   public void onClick( View view )
     {
-    if ( view == mNextView || view == mCTABarRightTextView )
+    if ( view == mNextView || ( mOrderSuccess && view == mCTABarRightTextView ) )
       {
       ///// Next /////
 
@@ -329,7 +329,7 @@ abstract public class AReceiptActivity extends AOrderSubmissionActivity implemen
       return;
       }
 
-    if ( view == mRetryPrintView )
+    if ( view == mRetryPrintView || ( ( ! mOrderSuccess ) && view == mCTABarRightTextView ) )
       {
       ///// Retry print /////
 

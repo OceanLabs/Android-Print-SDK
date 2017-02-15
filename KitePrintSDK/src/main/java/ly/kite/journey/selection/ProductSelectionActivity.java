@@ -50,7 +50,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -117,20 +116,20 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
 
   ////////// Member Variable(s) //////////
 
-  private ArrayList<ImageSpec>          mImageSpecArrayList;
-  private String[]                      mFilterProductIds;
-  private String                        mGotoProductGroupLabel;
-  private String                        mGotoProductId;
+  private   ArrayList<ImageSpec>          mImageSpecArrayList;
+  private   String[]                      mFilterProductIds;
+  private   String                        mGotoProductGroupLabel;
+  private   String                        mGotoProductId;
 
-  private ChooseProductGroupFragment    mChooseProductGroupFragment;
-  private ChooseProductFragment         mChooseProductFragment;
-  private ProductOverviewFragment       mProductOverviewFragment;
+  private   ChooseProductGroupFragment    mChooseProductGroupFragment;
+  private   ChooseProductFragment         mChooseProductFragment;
+  private   ProductOverviewFragment       mProductOverviewFragment;
 
-  private Catalogue                     mCatalogue;
-  private ICatalogueConsumer            mCatalogueConsumer;
-  private boolean                       mAddFragmentOnCatalogue;
+  protected Catalogue                     mCatalogue;
+  private   ICatalogueConsumer            mCatalogueConsumer;
+  private   boolean                       mAddFragmentOnCatalogue;
 
-  private HashMap<String,String>        mProductOptionValueMap;
+  private   HashMap<String,String>        mProductOptionValueMap;
 
 
   ////////// Static Initialiser(s) //////////
@@ -802,7 +801,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
 
       if ( mGotoProductId != null )
         {
-        Product gotoProduct = mCatalogue.getProductById( mGotoProductId );
+        Product gotoProduct = mCatalogue.findProductById( mGotoProductId );
 
         if ( gotoProduct != null )
           {
@@ -863,7 +862,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
    * product group.
    *
    *****************************************************/
-  private void onDisplayChooseProduct( ProductGroup productGroup )
+  protected void onDisplayChooseProduct( ProductGroup productGroup )
     {
     mChooseProductFragment = ChooseProductFragment.newInstance( productGroup );
 
@@ -877,7 +876,7 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
    * product.
    *
    *****************************************************/
-  private void onDisplayProductOverview( Product product )
+  protected void onDisplayProductOverview( Product product )
     {
     mProductOverviewFragment = ProductOverviewFragment.newInstance( product );
 

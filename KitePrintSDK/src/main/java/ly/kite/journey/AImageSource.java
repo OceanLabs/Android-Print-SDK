@@ -70,8 +70,12 @@ abstract public class AImageSource
 
   ///// Member Variable(s) /////
 
-  private int  mBackgroundColourResourceId;
-  private int  mIconResourceId;
+  private int  mHorizontalBackgroundColourResourceId;
+  private int  mVerticalBackgroundColourResourceId;
+
+  private int  mHorizontalLayoutIconResourceId;
+  private int  mVerticalLayoutIconResourceId;
+
   private int  mLabelResourceId;
 
   private int  mMenuItemId;
@@ -85,17 +89,37 @@ abstract public class AImageSource
 
   ///// Constructor(s) /////
 
+  protected AImageSource( int horizontalBackgroundColourResourceId,
+                          int verticalBackgroundColourResourceId,
+                          int horizontalLayoutIconResourceId,
+                          int verticalLayoutIconResourceId,
+                          int labelResourceId,
+                          int menuItemId,
+                          int menuItemTitleResourceId )
+    {
+    mHorizontalBackgroundColourResourceId = horizontalBackgroundColourResourceId;
+    mVerticalBackgroundColourResourceId   = verticalBackgroundColourResourceId;
+    mHorizontalLayoutIconResourceId       = horizontalLayoutIconResourceId;
+    mVerticalLayoutIconResourceId         = verticalLayoutIconResourceId;
+    mLabelResourceId                      = labelResourceId;
+    mMenuItemId                           = menuItemId;
+    mMenuItemTitleResourceId              = menuItemTitleResourceId;
+    }
+
+
   protected AImageSource( int backgroundColourResourceId,
                           int iconResourceId,
                           int labelResourceId,
                           int menuItemId,
                           int menuItemTitleResourceId )
     {
-    mBackgroundColourResourceId = backgroundColourResourceId;
-    mIconResourceId             = iconResourceId;
-    mLabelResourceId            = labelResourceId;
-    mMenuItemId                 = menuItemId;
-    mMenuItemTitleResourceId    = menuItemTitleResourceId;
+    this( backgroundColourResourceId,
+          backgroundColourResourceId,
+          iconResourceId,
+          iconResourceId,
+          labelResourceId,
+          menuItemId,
+          menuItemTitleResourceId );
     }
 
 
@@ -105,9 +129,20 @@ abstract public class AImageSource
    * represents this image source.
    *
    *****************************************************/
-  int getBackgroundColourResourceId()
+  int getBackgroundColourResourceId( LayoutType layoutType )
     {
-    return ( mBackgroundColourResourceId );
+    switch ( layoutType )
+      {
+      case HORIZONTAL:
+
+        return ( mHorizontalBackgroundColourResourceId );
+
+      case VERTICAL:
+
+        return ( mVerticalBackgroundColourResourceId );
+      }
+
+    return ( 0 );
     }
 
 
@@ -117,9 +152,20 @@ abstract public class AImageSource
    * this image source.
    *
    *****************************************************/
-  int getIconResourceId()
+  int getIconResourceId( LayoutType layoutType )
     {
-    return ( mIconResourceId );
+    switch ( layoutType )
+      {
+      case HORIZONTAL:
+
+        return ( mHorizontalLayoutIconResourceId );
+
+      case VERTICAL:
+
+        return ( mVerticalLayoutIconResourceId );
+      }
+
+    return ( 0 );
     }
 
 

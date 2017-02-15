@@ -63,6 +63,18 @@
         android:layout_height="wrap_content"
         android:visibility="gone"/>
 
+    <ImageView
+        android:id="@+id/open_drawer_icon_image_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <ImageView
+        android:id="@+id/close_drawer_icon_image_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
     <View
         android:id="@+id/toggle_drawer_view"
         android:layout_width="wrap_content"
@@ -264,6 +276,18 @@
 
     <TextView
         android:id="@+id/empty_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <View
+        android:id="@+id/next_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <View
+        android:id="@+id/retry_print_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"/>

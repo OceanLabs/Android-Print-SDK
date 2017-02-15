@@ -974,7 +974,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
   /*****************************************************
    *
-   * Checks if we need to perform an auto-scrolling.
+   * Checks if we need to perform any auto-scrolling.
    *
    *****************************************************/
   protected void checkAutoScroll( RecyclerView recyclerView, float x, float y )

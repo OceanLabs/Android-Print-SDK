@@ -93,6 +93,24 @@ public class DeviceImageSource extends AImageSource
     }
 
 
+  protected DeviceImageSource( int horizontalBackgroundColourResourceId,
+                                  int verticalBackgroundColourResourceId,
+                                  int horizontalLayoutIconResourceId,
+                                  int verticalLayoutIconResourceId,
+                                  int labelResourceId,
+                                  int menuItemId,
+                                  int menuItemTitleResourceId )
+    {
+    super( horizontalBackgroundColourResourceId,
+            verticalBackgroundColourResourceId,
+            horizontalLayoutIconResourceId,
+            verticalLayoutIconResourceId,
+            labelResourceId,
+            menuItemId,
+            menuItemTitleResourceId );
+    }
+
+
   ////////// AImageSource Method(s) //////////
 
   /*****************************************************

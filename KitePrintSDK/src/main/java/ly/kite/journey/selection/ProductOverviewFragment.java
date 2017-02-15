@@ -58,7 +58,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -111,8 +110,11 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
   static private final long       OPEN_CLOSE_ICON_ANIMATION_DELAY_MILLIS    = 250L;
   static private final long       OPEN_CLOSE_ICON_ANIMATION_DURATION_MILLIS = SLIDE_ANIMATION_DURATION_MILLIS - OPEN_CLOSE_ICON_ANIMATION_DELAY_MILLIS;
 
-  static private final float      OPEN_CLOSE_ICON_ROTATION_UP               = -180f;
-  static private final float      OPEN_CLOSE_ICON_ROTATION_DOWN             = 0f;
+  static private final float      CLOSE_ICON_ROTATION_UP                    = -180f;
+  static private final float      CLOSE_ICON_ROTATION_DOWN                  = 0f;
+
+  static private final float      OPEN_ICON_ROTATION_UP                     = 0f;
+  static private final float      OPEN_ICON_ROTATION_DOWN                   = 180f;
 
   static private final String     BUNDLE_KEY_EXPAND_SLIDING_DRAWER          = "expandSlidingDrawer";
 
@@ -139,7 +141,13 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
   private View                     mToggleDrawerView;
   private View                     mOpenDrawerView;
   private View                     mCloseDrawerView;
-  private ImageView                mOpenCloseDrawerIconImageView;
+
+  // We are sometimes supplied a close drawer icon and sometimes an open drawer icon. The layout file can
+  // use either the id open_drawer_icon_image_view or close_drawer_icon_image_view, and the code will do
+  // the correct thing.
+  private ImageView                mCloseDrawerIconImageView;
+  private ImageView                mOpenDrawerIconImageView;
+
   private TextView                 mProceedOverlayTextView;
   private TextView                 mCTABarRightTextView;
   private View                     mThemableDrawerStartView;
@@ -271,7 +279,8 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
     mToggleDrawerView                   = mContentView.findViewById( R.id.toggle_drawer_view );
     mOpenDrawerView                     = mContentView.findViewById( R.id.open_drawer_view );
     mCloseDrawerView                    = mContentView.findViewById( R.id.close_drawer_view );
-    mOpenCloseDrawerIconImageView       = (ImageView)mContentView.findViewById( R.id.open_close_drawer_icon_image_view );
+    mCloseDrawerIconImageView           = (ImageView)mContentView.findViewById( R.id.close_drawer_icon_image_view );
+    mOpenDrawerIconImageView            = (ImageView)mContentView.findViewById( R.id.open_drawer_icon_image_view );
     mProceedOverlayTextView             = (TextView)mContentView.findViewById( R.id.proceed_overlay_text_view );
     mThemableDrawerStartView            = mContentView.findViewById( R.id.themable_drawer_start_view );
     mNonThemableDrawerStartView         = mContentView.findViewById( R.id.non_themable_drawer_start_view );
@@ -407,7 +416,7 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
     // Now we have the catalogue, we can get try and get the
     // product from its id.
 
-    mProduct = catalogue.getProductById( mProductId );
+    mProduct = catalogue.findProductById( mProductId );
 
     if ( mProduct != null )
       {
@@ -566,7 +575,8 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
       mSlidingOverlayFrame.snapToExpandedState( mExpandSlidingDrawerAtStart );
       mSlidingOverlayFrame.setSlideAnimationDuration( SLIDE_ANIMATION_DURATION_MILLIS );
 
-      if ( mOpenCloseDrawerIconImageView != null ) mOpenCloseDrawerIconImageView.setRotation( mExpandSlidingDrawerAtStart ? OPEN_CLOSE_ICON_ROTATION_DOWN : OPEN_CLOSE_ICON_ROTATION_UP );
+      if ( mCloseDrawerIconImageView != null ) mCloseDrawerIconImageView.setRotation( mExpandSlidingDrawerAtStart ? CLOSE_ICON_ROTATION_DOWN : CLOSE_ICON_ROTATION_UP );
+      if ( mOpenDrawerIconImageView  != null ) mOpenDrawerIconImageView.setRotation(  mExpandSlidingDrawerAtStart ? OPEN_ICON_ROTATION_DOWN  : OPEN_ICON_ROTATION_UP );
       }
 
 
@@ -917,24 +927,33 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
     float overlaidComponentsInitialAlpha;
     float overlaidComponentsFinalAlpha;
 
-    float openCloseIconInitialRotation;
-    float openCloseIconFinalRotation;
+    float closeIconInitialRotation;
+    float closeIconFinalRotation;
+
+    float openIconInitialRotation;
+    float openIconFinalRotation;
 
     if ( sliderWillBeOpening )
       {
       overlaidComponentsInitialAlpha = 1f;
       overlaidComponentsFinalAlpha   = 0f;
 
-      openCloseIconInitialRotation   = OPEN_CLOSE_ICON_ROTATION_UP;
-      openCloseIconFinalRotation     = OPEN_CLOSE_ICON_ROTATION_DOWN;
+      closeIconInitialRotation       = CLOSE_ICON_ROTATION_UP;
+      closeIconFinalRotation         = CLOSE_ICON_ROTATION_DOWN;
+
+      openIconInitialRotation        = OPEN_ICON_ROTATION_UP;
+      openIconFinalRotation          = OPEN_ICON_ROTATION_DOWN;
       }
     else
       {
       overlaidComponentsInitialAlpha = 0f;
       overlaidComponentsFinalAlpha   = 1f;
 
-      openCloseIconInitialRotation   = OPEN_CLOSE_ICON_ROTATION_DOWN;
-      openCloseIconFinalRotation     = OPEN_CLOSE_ICON_ROTATION_UP;
+      closeIconInitialRotation       = CLOSE_ICON_ROTATION_DOWN;
+      closeIconFinalRotation         = CLOSE_ICON_ROTATION_UP;
+
+      openIconInitialRotation        = OPEN_ICON_ROTATION_DOWN;
+      openIconFinalRotation          = OPEN_ICON_ROTATION_UP;
       }
 
     if ( mOverlaidComponents != null )
@@ -948,18 +967,32 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
       mOverlaidComponents.startAnimation( overlaidComponentsAnimation );
       }
 
-    if ( mOpenCloseDrawerIconImageView != null )
+
+    // Create the open/close icon animation.
+    // The rotation is delayed, but will finish at the same time as the slide animation.
+
+    if ( mCloseDrawerIconImageView != null )
       {
-      // Create the open/close icon animation.
-      // The rotation is delayed, but will finish at the same time as the slide animation.
-      Animation openCloseIconAnimation = new RotateAnimation( openCloseIconInitialRotation, openCloseIconFinalRotation, mOpenCloseDrawerIconImageView.getWidth() * 0.5f, mOpenCloseDrawerIconImageView.getHeight() * 0.5f );
+      Animation openCloseIconAnimation = new RotateAnimation( closeIconInitialRotation, closeIconFinalRotation, mCloseDrawerIconImageView.getWidth() * 0.5f, mCloseDrawerIconImageView.getHeight() * 0.5f );
       openCloseIconAnimation.setStartOffset( OPEN_CLOSE_ICON_ANIMATION_DELAY_MILLIS );
       openCloseIconAnimation.setDuration( OPEN_CLOSE_ICON_ANIMATION_DURATION_MILLIS );
       openCloseIconAnimation.setFillAfter( true );
 
-      mOpenCloseDrawerIconImageView.setRotation( 0f );  // Clear any rotation already applied
-      mOpenCloseDrawerIconImageView.startAnimation( openCloseIconAnimation );
+      mCloseDrawerIconImageView.setRotation( 0f );  // Clear any rotation already applied
+      mCloseDrawerIconImageView.startAnimation( openCloseIconAnimation );
       }
+
+    if ( mOpenDrawerIconImageView != null )
+      {
+      Animation openCloseIconAnimation = new RotateAnimation( openIconInitialRotation, openIconFinalRotation, mOpenDrawerIconImageView.getWidth() * 0.5f, mOpenDrawerIconImageView.getHeight() * 0.5f );
+      openCloseIconAnimation.setStartOffset( OPEN_CLOSE_ICON_ANIMATION_DELAY_MILLIS );
+      openCloseIconAnimation.setDuration( OPEN_CLOSE_ICON_ANIMATION_DURATION_MILLIS );
+      openCloseIconAnimation.setFillAfter( true );
+
+      mOpenDrawerIconImageView.setRotation( 0f );  // Clear any rotation already applied
+      mOpenDrawerIconImageView.startAnimation( openCloseIconAnimation );
+      }
+
 
     mSlidingOverlayFrame.animateToExpandedState( sliderWillBeOpening );
     }
