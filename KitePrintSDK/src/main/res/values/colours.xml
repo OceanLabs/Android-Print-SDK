@@ -18,6 +18,8 @@
 
     <color name="labelled_image_label_shadow">#20000000</color>
 
+    <color name="placeholder_text">#ff7bddeb</color>
+
     <color name="prompt_text_frame_background">#f0ffffff</color>
     <color name="prompt_text_frame_text">#ff666666</color>
 
@@ -97,9 +99,11 @@
     <color name="progress_banner_left_filler">@android:color/transparent</color>
     <color name="progress_banner_right_filler">@android:color/transparent</color>
 
+    <color name="success_banner_text">#ff565656</color>
     <color name="success_banner_left_filler">@android:color/white</color>
     <color name="success_banner_right_filler">@android:color/white</color>
 
+    <color name="failure_banner_text">#ff565656</color>
     <color name="failure_banner_left_filler">@android:color/white</color>
     <color name="failure_banner_right_filler">@android:color/white</color>
 

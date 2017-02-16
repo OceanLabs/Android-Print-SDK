@@ -180,7 +180,7 @@
     <string name="destination_description_europe">Europa</string>
     <string name="destination_description_rest_of_world">der rest der Welt</string>
 
-    <string name="group_or_product_placeholder_image_url">https://s3.amazonaws.com/sdk-static/product_photography/placeholder.png</string>
+    <string name="placeholder_message">Weitere Artikel\nfolgen in Kürze!</string>
 
     <string name="product_quantity_format_string">Packung mit %d</string>
     <string name="product_size_format_string_float">%1$.1f x %2$.1f %3$s</string>

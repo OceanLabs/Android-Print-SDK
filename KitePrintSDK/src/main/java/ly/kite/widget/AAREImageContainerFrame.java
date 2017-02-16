@@ -521,6 +521,19 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
                 .onlyScaleDown()
                 .into( this, mPendingImageSource );
         }
+      else if ( mPendingImageSource instanceof Integer )
+        {
+        setExpectedKey( mPendingImageSource );
+
+        int drawableResourceId = ( (Integer)mPendingImageSource ).intValue();
+
+        ImageAgent.with( getContext() )
+                .load( drawableResourceId )
+                .reduceColourSpace()
+                .resize( mWidth, mHeight )
+                .onlyScaleDown()
+                .into( this, mPendingImageSource );
+        }
       }
     }
 

@@ -1,9 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ly.kite.widget.LabelledImageView
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/labelled_image_view"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    custom:aspectRatio="@dimen/group_or_product_image_aspect_ratio"
-    custom:showProgressSpinnerOnDownload="@bool/show_product_image_progress_spinner"/>
+    android:layout_height="wrap_content">
+    <ly.kite.widget.LabelledImageView
+        android:id="@+id/labelled_image_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        custom:aspectRatio="@dimen/group_or_product_image_aspect_ratio"
+        custom:showProgressSpinnerOnDownload="@bool/show_product_image_progress_spinner"/>
+    <ly.kite.widget.CustomTypefaceTextView
+        android:id="@+id/placeholder_text_view"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/placeholder_message"
+        android:textSize="@dimen/placeholder_text_size"
+        android:textColor="@color/placeholder_text"
+        android:textAllCaps="true"
+        android:lineSpacingMultiplier="1.5"
+        android:visibility="gone"/>
+</FrameLayout>

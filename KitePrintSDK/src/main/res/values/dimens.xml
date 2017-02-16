@@ -20,6 +20,8 @@
     <dimen name="empty_text_size">15sp</dimen>
     <dimen name="spinner_text_size">18sp</dimen>
 
+    <dimen name="placeholder_text_size">12sp</dimen>
+
     <dimen name="empty_text_top_padding">40dp</dimen>
 
     <dimen name="checkable_image_highlight_border_size">5dp</dimen>
@@ -190,5 +192,11 @@
 
     <dimen name="payment_item_text_size">16sp</dimen>
     <dimen name="price_field_width">100dp</dimen>
+
+    <dimen name="success_banner_height">109dp</dimen>
+    <dimen name="success_banner_text_size">16sp</dimen>
+
+    <dimen name="failure_banner_height">109dp</dimen>
+    <dimen name="failure_banner_text_size">14sp</dimen>
 
 </resources>
