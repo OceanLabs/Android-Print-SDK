@@ -81,10 +81,10 @@ public class PayPalCreditCardAgent implements ICreditCardAgent
 
   ////////// Member Variable(s) //////////
 
-  private Context                 mContext;
-  private DefaultPaymentFragment  mPaymentFragment;
-  private Order                   mOrder;
-  private SingleCurrencyAmounts mSingleCurrencyAmount;
+  private Context                mContext;
+  private APaymentFragment       mPaymentFragment;
+  private Order                  mOrder;
+  private SingleCurrencyAmounts  mSingleCurrencyAmount;
 
 
   ////////// Static Initialiser(s) //////////
@@ -117,7 +117,7 @@ public class PayPalCreditCardAgent implements ICreditCardAgent
    *
    *****************************************************/
   @Override
-  public void onPayClicked( Context context, DefaultPaymentFragment paymentFragment, Order order, SingleCurrencyAmounts singleCurrencyAmount )
+  public void onPayClicked( Context context, APaymentFragment paymentFragment, Order order, SingleCurrencyAmounts singleCurrencyAmount )
     {
     mContext              = context;
     mPaymentFragment      = paymentFragment;

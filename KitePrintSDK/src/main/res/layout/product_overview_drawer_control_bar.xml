@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <ImageView
-                android:id="@+id/open_close_drawer_icon_image_view"
+                android:id="@+id/close_drawer_icon_image_view"
                 android:layout_width="@dimen/product_overview_open_drawer_icon_size"
                 android:layout_height="@dimen/product_overview_open_drawer_icon_size"
                 android:src="@drawable/close_drawer_icon"

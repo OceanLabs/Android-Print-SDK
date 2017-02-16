@@ -20,6 +20,8 @@
     <dimen name="empty_text_size">15sp</dimen>
     <dimen name="spinner_text_size">18sp</dimen>
 
+    <dimen name="placeholder_text_size">12sp</dimen>
+
     <dimen name="empty_text_top_padding">40dp</dimen>
 
     <dimen name="checkable_image_highlight_border_size">5dp</dimen>
@@ -95,7 +97,8 @@
     <item name="image_selection_image_aspect_ratio" type="dimen" format="float">1.0</item>
     <dimen name="image_selection_thumbnail_size">360px</dimen>
 
-    <dimen name="image_check_size">28dp</dimen>
+    <dimen name="image_check_margin">2dp</dimen>
+    <dimen name="image_check_size">20dp</dimen>
 
     <dimen name="image_default_resize_size">100px</dimen>
     <dimen name="image_default_thumbnail_size">64px</dimen>
@@ -189,5 +192,11 @@
 
     <dimen name="payment_item_text_size">16sp</dimen>
     <dimen name="price_field_width">100dp</dimen>
+
+    <dimen name="success_banner_height">109dp</dimen>
+    <dimen name="success_banner_text_size">16sp</dimen>
+
+    <dimen name="failure_banner_height">109dp</dimen>
+    <dimen name="failure_banner_text_size">14sp</dimen>
 
 </resources>

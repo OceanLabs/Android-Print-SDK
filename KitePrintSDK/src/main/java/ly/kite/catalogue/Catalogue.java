@@ -85,7 +85,7 @@ public class Catalogue
   private HashMap<String,JSONObject>    mCustomDataTable;
   private ArrayList<String>             mPayPalSupportedCurrencyCodes;
 
-  private HashMap<String,ProductGroup>  mNameGroupTable;
+  private HashMap<String,ProductGroup>  mLabelGroupTable;
   private ArrayList<ProductGroup>       mGroupList;
   private HashMap<String,Product>       mIdProductTable;
   private HashMap<String,ProductGroup>  mProductIdGroupTable;
@@ -144,7 +144,7 @@ public class Catalogue
     setUserConfigData( null );
 
 
-    mNameGroupTable          = new HashMap<>();
+    mLabelGroupTable         = new HashMap<>();
     mGroupList               = new ArrayList<>();
     mIdProductTable          = new HashMap<>();
     mProductIdGroupTable     = new HashMap<>();
@@ -292,7 +292,7 @@ public class Catalogue
     {
     // See if we already have the product group. If not - create it now.
 
-    ProductGroup productGroup = mNameGroupTable.get( groupLabel );
+    ProductGroup productGroup = findGroupByLabel( groupLabel );
 
     if ( productGroup == null )
       {
@@ -305,7 +305,7 @@ public class Catalogue
         }
 
       mGroupList.add( productGroup );
-      mNameGroupTable.put( groupLabel, productGroup );
+      mLabelGroupTable.put( groupLabel, productGroup );
 
       productGroup.appendAllImages( mAllImagesURLList );
       }
@@ -397,13 +397,24 @@ public class Catalogue
 
   /*****************************************************
    *
+   * Returns the product group that has the supplied label.
+   *
+   *****************************************************/
+  public ProductGroup findGroupByLabel( String label )
+    {
+    return ( mLabelGroupTable.get( label ) );
+    }
+
+
+  /*****************************************************
+   *
    * Returns a list of products within the group specified
    * by the product group label.
    *
    *****************************************************/
   public ArrayList<Product> getProductsForGroup( String groupLabel )
     {
-    ProductGroup group = mNameGroupTable.get( groupLabel );
+    ProductGroup group = findGroupByLabel( groupLabel );
 
     if ( group != null ) return ( group.getProductList() );
 
@@ -416,7 +427,7 @@ public class Catalogue
    * Returns the product that has the supplied id.
    *
    *****************************************************/
-  public Product getProductById( String productId )
+  public Product findProductById( String productId )
     {
     // Check in both tables for the product
 
@@ -437,7 +448,7 @@ public class Catalogue
    * the supplied id.
    *
    *****************************************************/
-  public ProductGroup getGroupByProductId( String productId )
+  public ProductGroup getGroupForProductId( String productId )
     {
     return ( mProductIdGroupTable.get( productId ) );
     }
@@ -451,7 +462,7 @@ public class Catalogue
    *****************************************************/
   public void confirmProductIdExistsOrThrow( String productId )
     {
-    if ( getProductById( productId ) == null )
+    if ( findProductById( productId ) == null )
       {
       throw ( new IllegalStateException( "Product id " + productId + " not found in catalogue" ) );
       }
@@ -500,8 +511,8 @@ public class Catalogue
       {
       for ( String productId : productIds )
         {
-        Product      product      = getProductById( productId );
-        ProductGroup productGroup = getGroupByProductId( productId );
+        Product      product      = findProductById( productId );
+        ProductGroup productGroup = getGroupForProductId( productId );
 
         if ( product != null && productGroup != null )
           {

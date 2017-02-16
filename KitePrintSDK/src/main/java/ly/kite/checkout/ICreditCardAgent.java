@@ -73,7 +73,7 @@ public interface ICreditCardAgent
    * credit card payment button.
    *
    *****************************************************/
-  public void onPayClicked( Context context, DefaultPaymentFragment paymentFragment, Order order, SingleCurrencyAmounts singleCurrencyAmount );
+  public void onPayClicked( Context context, APaymentFragment paymentFragment, Order order, SingleCurrencyAmounts singleCurrencyAmount );
 
 
   /*****************************************************

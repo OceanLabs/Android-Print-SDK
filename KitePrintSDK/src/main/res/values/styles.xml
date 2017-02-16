@@ -104,6 +104,12 @@
         <item name="android:textSize">@dimen/form_field_entry_text_size</item>
     </style>
 
+    <style name="BasketShippingText"/>
+
+    <style name="ShippingAddressPickerButton"/>
+
+    <style name="ShippingEditText"/>
+
     <style name="SuccessBannerLeftFiller">
         <item name="android:background">@color/success_banner_left_filler</item>
     </style>

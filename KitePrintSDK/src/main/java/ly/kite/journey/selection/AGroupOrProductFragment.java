@@ -61,6 +61,7 @@ import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.IGroupOrProduct;
 import ly.kite.catalogue.ProductGroup;
 import ly.kite.image.ImageAgent;
+import ly.kite.image.ImageLoadRequest;
 import ly.kite.widget.AREImageView;
 import ly.kite.widget.HeaderFooterGridView;
 import ly.kite.widget.LabelledImageView;
@@ -230,8 +231,6 @@ abstract public class AGroupOrProductFragment extends AProductSelectionFragment 
 
     private int                              mActualItemCount;
     private int                              mApparentItemCount;
-    private String                           mPlaceholderImageURLString;
-    private URL                              mPlaceholderImageURL;
 
     private LayoutInflater                   mLayoutInflator;
 
@@ -254,19 +253,6 @@ abstract public class AGroupOrProductFragment extends AProductSelectionFragment 
       mLayoutInflator     = LayoutInflater.from( context );
 
       mActualItemCount    = mGroupOrProductList.size();
-
-
-      // Get the URL of the placeholder image
-
-      mPlaceholderImageURLString = context.getString( R.string.group_or_product_placeholder_image_url );
-
-      try
-        {
-        mPlaceholderImageURL = new URL( mPlaceholderImageURLString );
-        }
-      catch ( MalformedURLException mue )
-        {
-        }
       }
 
 
@@ -374,6 +360,7 @@ abstract public class AGroupOrProductFragment extends AProductSelectionFragment 
       {
       LabelledImageView  labelledImageView;
       AREImageView       areImageView;
+      TextView           placeholderTextView;
       TextView           labelTextView;
       TextView           descriptionTextView;
       FrameLayout        priceOverlayFrame;
@@ -386,6 +373,7 @@ abstract public class AGroupOrProductFragment extends AProductSelectionFragment 
         {
         this.labelledImageView    = (LabelledImageView)view.findViewById( R.id.labelled_image_view );
         this.areImageView         = (AREImageView)view.findViewById( R.id.are_image_view );
+        this.placeholderTextView  = (TextView)view.findViewById( R.id.placeholder_text_view );
         this.labelTextView        = (TextView)view.findViewById( R.id.label_text_view );
         this.descriptionTextView  = (TextView)view.findViewById( R.id.description_text_view );
         this.priceOverlayFrame    = (FrameLayout)view.findViewById( R.id.price_overlay_frame );
@@ -420,8 +408,9 @@ abstract public class AGroupOrProductFragment extends AProductSelectionFragment 
           }
 
 
+        boolean showPlaceholder = false;
 
-        URL imageURL;
+        Object  imageSourceObject;
 
         if ( groupOrProduct != null )
           {
@@ -464,7 +453,7 @@ abstract public class AGroupOrProductFragment extends AProductSelectionFragment 
             if ( this.priceTextView     != null ) this.priceTextView.setVisibility( View.GONE );
             }
 
-          imageURL = groupOrProduct.getDisplayImageURL();
+          imageSourceObject = groupOrProduct.getDisplayImageURL();
           }
         else
           {
@@ -476,25 +465,40 @@ abstract public class AGroupOrProductFragment extends AProductSelectionFragment 
           // Any price overlay should not be visible for a placeholder image
           if ( this.priceOverlayFrame != null ) this.priceOverlayFrame.setVisibility( View.GONE );
 
-          imageURL = mPlaceholderImageURL;
+          imageSourceObject = Integer.valueOf( R.drawable.placeholder );
+
+          showPlaceholder = true;
           }
 
 
         if ( this.labelledImageView != null )
           {
-          this.labelledImageView.requestScaledImageOnceSized( KiteSDK.IMAGE_CATEGORY_PRODUCT_ITEM, imageURL );
+          this.labelledImageView.requestScaledImageOnceSized( KiteSDK.IMAGE_CATEGORY_PRODUCT_ITEM, imageSourceObject );
           }
 
         if ( this.areImageView != null )
           {
-          ImageAgent.with( getActivity() )
-                  .load( imageURL, KiteSDK.IMAGE_CATEGORY_PRODUCT_ITEM )
-                  .reduceColourSpace()
-                  .resizeForIfSized( this.areImageView )
-                  .onlyScaleDown()
-                  .into( this.areImageView, imageURL );
+          ImageAgent imageAgent = ImageAgent.with( getActivity() );
+
+          ImageLoadRequest.Builder imageLoadRequestBuilder = null;
+
+          if      ( imageSourceObject instanceof URL     ) imageLoadRequestBuilder = imageAgent.load( (URL)imageSourceObject, KiteSDK.IMAGE_CATEGORY_PRODUCT_ITEM );
+          else if ( imageSourceObject instanceof Integer ) imageLoadRequestBuilder = imageAgent.load( (Integer)imageSourceObject );
+
+          if ( imageLoadRequestBuilder != null )
+            {
+            imageLoadRequestBuilder
+                    .reduceColourSpace()
+                    .resizeForIfSized( this.areImageView )
+                    .onlyScaleDown()
+                    .into( this.areImageView, imageSourceObject );
+            }
           }
 
+        if ( this.placeholderTextView != null )
+          {
+          this.placeholderTextView.setVisibility( showPlaceholder ? View.VISIBLE : View.GONE );
+          }
 
         // If there is an overlay indicator view, set its visibility according to any
         // product flag.

@@ -12,6 +12,8 @@
     <dimen name="empty_text_size">18sp</dimen>
     <dimen name="spinner_text_size">23sp</dimen>
 
+    <dimen name="placeholder_text_size">15sp</dimen>
+
     <dimen name="checkable_image_highlight_border_size">6dp</dimen>
 
     <dimen name="paging_dot_size">10dp</dimen>
@@ -132,5 +134,11 @@
     <dimen name="address_book_detail_text_size">18sp</dimen>
 
     <dimen name="payment_item_text_size">20sp</dimen>
+
+    <dimen name="success_banner_height">136dp</dimen>
+    <dimen name="success_banner_text_size">20sp</dimen>
+
+    <dimen name="failure_banner_height">136dp</dimen>
+    <dimen name="failure_banner_text_size">18sp</dimen>
 
 </resources>

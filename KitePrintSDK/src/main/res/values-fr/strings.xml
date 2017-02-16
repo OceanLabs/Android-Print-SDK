@@ -160,6 +160,9 @@
     <string name="destination_description_gbr">Royaume-Uni</string>
     <string name="destination_description_europe">Europe</string>
     <string name="destination_description_rest_of_world">Reste du monde</string>
+
+    <string name="placeholder_message">Plus d\'articles\nà venir</string>
+
     <string name="product_quantity_format_string">Lot de %d</string>
     <string name="product_free_shipping">gratuit</string>
     <string name="product_shipping_summary_format_string">Livraison: %s</string>

@@ -17,12 +17,25 @@
             android:layout_weight="0.3"
             android:layout_height="fill_parent"
             style="@style/FailureBannerLeftFiller"/>
-        <ly.kite.widget.VerticallyScalingImageView
+        <FrameLayout
             android:layout_width="0dp"
             android:layout_weight="0.4"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:src="@drawable/receipt_failure"/>
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/order_failure_banner"
+                android:scaleType="fitCenter"
+                android:adjustViewBounds="true"/>
+            <ly.kite.widget.CustomTypefaceTextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:textAllCaps="true"
+                android:text="@string/order_failure_banner_message"
+                android:textColor="@color/failure_banner_text"
+                android:textSize="@dimen/failure_banner_text_size"/>
+        </FrameLayout>
         <View
             android:layout_width="0dp"
             android:layout_weight="0.3"

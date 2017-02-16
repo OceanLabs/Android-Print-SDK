@@ -22,7 +22,7 @@
             android:layout_marginTop="@dimen/image_source_text_spacing"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/image_source_text"
+            android:textColor="@color/image_source_text_horizontal"
             android:textSize="@dimen/control_label_text_size"/>
 
     </LinearLayout>

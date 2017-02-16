@@ -161,6 +161,14 @@ abstract public class APaymentFragment extends AKiteFragment implements View.OnC
 
   /*****************************************************
    *
+   * Submits the order for printing.
+   *
+   *****************************************************/
+  abstract public void submitOrderForPrinting( String paymentId, String accountId, PaymentMethod paymentMethod );
+
+
+  /*****************************************************
+   *
    * Called just before the order is submitted.
    *
    *****************************************************/

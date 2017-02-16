@@ -1580,7 +1580,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
 
       // Look up the product from its id
 
-      Product product = catalogue.getProductById( productId );
+      Product product = catalogue.findProductById( productId );
 
       if ( product == null )
         {

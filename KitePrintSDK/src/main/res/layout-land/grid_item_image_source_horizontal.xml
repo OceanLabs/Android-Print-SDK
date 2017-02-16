@@ -23,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:gravity="center"
-            android:textColor="@color/image_source_text"
+            android:textColor="@color/image_source_text_horizontal"
             android:textSize="@dimen/control_label_text_size"/>
 
     </LinearLayout>

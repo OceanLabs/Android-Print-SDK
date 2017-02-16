@@ -5,14 +5,25 @@
     android:orientation="vertical"
     android:background="@android:color/white">
 
-    <ImageView
-        android:id="@+id/image_view_order_receipt_header"
-        android:layout_width="fill_parent"
+    <FrameLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0.0"
-        android:scaleType="centerInside"
-        android:adjustViewBounds="true"
-        android:src="@drawable/receipt_success"/>
+        android:layout_weight="0.0">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/order_success_banner"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"/>
+        <ly.kite.widget.CustomTypefaceTextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textAllCaps="true"
+            android:text="@string/order_success_banner_message"
+            android:textColor="@color/success_banner_text"
+            android:textSize="@dimen/success_banner_text_size"/>
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="fill_parent"

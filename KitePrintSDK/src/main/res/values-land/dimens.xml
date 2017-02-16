@@ -13,4 +13,10 @@
     <dimen name="basket_item_height">70dp</dimen>
     <dimen name="basket_item_image_width">60dp</dimen>
 
+    <dimen name="success_banner_height">55dp</dimen>
+    <dimen name="success_banner_text_size">10sp</dimen>
+
+    <dimen name="failure_banner_height">55dp</dimen>
+    <dimen name="failure_banner_text_size">8sp</dimen>
+
 </resources>
