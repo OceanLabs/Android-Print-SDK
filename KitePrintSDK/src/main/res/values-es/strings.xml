@@ -203,6 +203,9 @@
     <string name="destination_description_rest_of_world">Resto del mundo</string>
 
     <string name="placeholder_message">Más artículos\npróximamente!</string>
+    <string name="order_success_banner_message">Hemos recibido\nsu pedido</string>
+    <string name="order_failure_banner_message">Oops\nSAlgo salió mal\nPor favor, vuelva a intentarlo</string>
+    <string name="order_failure_message">Algo salió mal.\nPor favor, inténtelo de nuevo.</string>
 
     <string name="product_quantity_format_string">Paquete de %d</string>
     <string name="product_size_format_string_float">%1$.1f x %2$.1f %3$s</string>
@@ -290,8 +293,6 @@
     <string name="feedback_email_recipient">info@kite.ly</string>
     <string name="feedback_email_subject">Kite Android App Support</string>
     <string name="feedback_email_text">Por favor, indique su nombre completo:\n\nPor favor, proporcione cualquier código de cupón utilizado en su transacción:\n\n¿Cuál es su número de teléfono (en caso de que necesitamos llamar y discutir su problema)?\n\n¿Cuál es el problema que está Tener con la aplicación Kite Sample?\n\n¿Qué dispositivo Android (teléfono / tablet) está usando?\n\n================================\n\nGracias mucho.\nNos aseguraremos de volver a usted tan pronto como podamos.\nKite Team</string>
-
-    <string name="order_failure_message">Algo salió mal.\nPor favor, inténtelo de nuevo.</string>
 
     <string name="Card_Number">Número de tarjeta</string>
     <string name="Expires">Fecha de caducidad</string>

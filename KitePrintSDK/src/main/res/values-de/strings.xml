@@ -181,6 +181,9 @@
     <string name="destination_description_rest_of_world">der rest der Welt</string>
 
     <string name="placeholder_message">Weitere Artikel\nfolgen in Kürze!</string>
+    <string name="order_success_banner_message">Wir haben Ihre\nBestellung erhalten</string>
+    <string name="order_failure_banner_message">Oops\nEtwas ist schief gegangen\nBitte versuchen Sie es erneut</string>
+    <string name="order_failure_message">Etwas ist schief gegangen.\nVersuche es noch einmal.</string>
 
     <string name="product_quantity_format_string">Packung mit %d</string>
     <string name="product_size_format_string_float">%1$.1f x %2$.1f %3$s</string>
@@ -270,8 +273,6 @@
     <string name="feedback_email_recipient">info@kite.ly</string>
     <string name="feedback_email_subject">Kite Android App Support</string>
     <string name="feedback_email_text">Bitte teile uns dein Vor-und Nachnamen mit.\n\nBitte teile uns den Code mit den du bei deiner Bestellung angegeben hast.\n\nWie ist deine Telefonnummer, für den Fall das wir dich anrufen.\n\nWas ist das Problem das du mit dem Kite App hast.\n\nWelches Android Gerät (Phone/Tablet) benutzt du?\n\nVielen Dank\n\nWir werden so schnell wie möglich Kontakt mit dir aufnehmen.</string>
-
-    <string name="order_failure_message">Etwas ist schief gegangen.\nVersuche es noch einmal.</string>
 
     <string name="Card_Number">Kartennummer</string>
     <string name="Expires">Ablaufdatum</string>

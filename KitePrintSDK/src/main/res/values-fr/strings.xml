@@ -162,6 +162,9 @@
     <string name="destination_description_rest_of_world">Reste du monde</string>
 
     <string name="placeholder_message">Plus d\'articles\nà venir</string>
+    <string name="order_success_banner_message">Nous avons reçu\nvotre commande</string>
+    <string name="order_failure_banner_message">Oups\nUn problème est survenu\nVeuillez réessayer ci-dessous</string>
+    <string name="order_failure_message">Un problème est survenu.\nVeuillez réessayer.</string>
 
     <string name="product_quantity_format_string">Lot de %d</string>
     <string name="product_free_shipping">gratuit</string>
@@ -222,8 +225,6 @@
     <string name="send_email_chooser_title">Envoyer un message</string>
     <string name="feedback_email_subject">Assistance Kite App Android</string>
     <string name="feedback_email_text">Veuillez nous indiquer vos nom et prénom:\n\nVeuillez fournir un code de bon de réduction utilisé dans votre transaction:\n\nQuel est votre numéro de téléphone (au cas où nous aurions besoin de vous contacter)?\n\nQuel est le problème que vous rencontrez avec l\'application test Kite?\n\nQuel appareil Android (téléphone / tablette) utilisez-vous?\n\nMerci beaucoup. Nous ne manquerons pas de revenir vers vous dès que nous le pouvons.\nL\'équipe Kite></string>
-    <string name="order_failure_message">Un problème est survenu.\nVeuillez réessayer.</string>
-
     <string name="Card_Number">Numéro de carte</string>
     <string name="Expires">Expire</string>
     <string name="CVV">CVV</string>

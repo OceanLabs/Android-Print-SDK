@@ -175,6 +175,9 @@
     <string name="destination_description_rest_of_world">Resten af verden</string>
 
     <string name="placeholder_message">Flere elementer\nkommer snart!</string>
+    <string name="order_success_banner_message">Vi har modtaget\ndin bestilling</string>
+    <string name="order_failure_banner_message">Ups\nNoget gik galt\nPrøv igen nedenfor</string>
+    <string name="order_failure_message">Noget gik galt.\nPrøv venligst igen.</string>
 
     <string name="product_quantity_format_string">Pakke med %d</string>
     <string name="product_size_format_string_float">%1$.1f x %2$.1f %3$s</string>
@@ -263,8 +266,6 @@
     <string name="feedback_email_recipient">info@kite.ly</string>
     <string name="feedback_email_subject">Kite Android App Support</string>
     <string name="feedback_email_text">Fortæl os dit fulde navn:\n\nGiv enhver kupon kode, der bruges i din transaktion:\n\nHvad er dit telefonnummer (hvis vi har brug for at ringe og diskutere dit problem)?\n\nHvad er det problem, du har med Kite Sample app?\n\nHvilke Android-enhed (telefon / tablet) bruger du?\n\n================================\n\nMange tak.\nVi vil være sikker på at komme tilbage til dig lige så snart vi kan.\nKite Team</string>
-
-    <string name="order_failure_message">Noget gik galt.\nPrøv venligst igen.</string>
 
     <string name="Card_Number">Kortnummer</string>
     <string name="Expires">Udløber</string>

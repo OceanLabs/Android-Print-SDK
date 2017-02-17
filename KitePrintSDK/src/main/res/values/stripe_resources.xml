@@ -1,7 +1,0 @@
-<resources>
-
-    <!-- Uncomment or define in your app to use Stripe for credit card processing
-    <string name="credit_card_fragment_class_name">ly.kite.checkout.StripeCreditCardFragment</string>
-    -->
-
-</resources>
