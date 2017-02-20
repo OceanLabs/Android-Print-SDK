@@ -48,6 +48,8 @@ import java.util.List;
 
 import ly.kite.catalogue.Product;
 import ly.kite.ordering.ImageSpec;
+import ly.kite.util.Asset;
+import ly.kite.util.AssetFragment;
 
 /*****************************************************
  *
@@ -157,6 +159,30 @@ public class BasketItem
   public ArrayList<ImageSpec> getImageSpecList()
     {
     return ( mImageSpecList );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the image to be displayed as the basket item.
+   * Tries to find an image spec; if there is none, returns
+   * the product image.
+   *
+   *****************************************************/
+  public AssetFragment getDisplayAssetFragment()
+    {
+    if ( mImageSpecList != null )
+      {
+      for ( ImageSpec imageSpec : mImageSpecList )
+        {
+        if ( imageSpec != null )
+          {
+          return ( imageSpec.getAssetFragment() );
+          }
+        }
+      }
+
+    return ( null );
     }
 
 

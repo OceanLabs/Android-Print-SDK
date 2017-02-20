@@ -59,6 +59,7 @@ import java.util.List;
 
 import ly.kite.KiteSDK;
 import ly.kite.address.Address;
+import ly.kite.image.ImageLoadRequest;
 import ly.kite.journey.UserJourneyType;
 import ly.kite.ordering.OrderingDataAgent;
 import ly.kite.ordering.BasketItem;
@@ -74,6 +75,7 @@ import ly.kite.ordering.Job;
 import ly.kite.ordering.Order;
 import ly.kite.pricing.OrderPricing;
 import ly.kite.pricing.PricingAgent;
+import ly.kite.util.AssetFragment;
 
 
 ///// Class Declaration /////
@@ -957,8 +959,24 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
         mBasketItem = (BasketItem)getItem( position );
         mProduct    = mBasketItem.getProduct();
 
-        ImageAgent.with( BasketActivity.this )
-                .load( mProduct.getDisplayImageURL(), KiteSDK.IMAGE_CATEGORY_PRODUCT_ITEM )
+
+        // The image we display is either the first image spec we can find, or the product display
+        // image.
+
+        ImageLoadRequest.Builder imageLoadRequestBuilder;
+
+        AssetFragment assetFragment = mBasketItem.getDisplayAssetFragment();
+
+        if ( assetFragment != null )
+          {
+          imageLoadRequestBuilder = ImageAgent.with( BasketActivity.this ).load( assetFragment );
+          }
+        else
+          {
+          imageLoadRequestBuilder = ImageAgent.with( BasketActivity.this ).load( mProduct.getDisplayImageURL(), KiteSDK.IMAGE_CATEGORY_PRODUCT_ITEM );
+          }
+
+        imageLoadRequestBuilder
                 .reduceColourSpace()
                 .resizeForDimen( mProductImageView, R.dimen.basket_item_image_width, R.dimen.basket_item_height )
                 .onlyScaleDown()
