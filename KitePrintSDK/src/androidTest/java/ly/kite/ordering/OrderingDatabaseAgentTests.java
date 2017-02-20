@@ -39,7 +39,19 @@ package ly.kite.ordering;
 
 ///// Import(s) /////
 
+import android.graphics.RectF;
 import android.test.AndroidTestCase;
+
+import junit.framework.Assert;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import ly.kite.KiteTestCase;
+import ly.kite.catalogue.Catalogue;
+import ly.kite.catalogue.Product;
+import ly.kite.journey.UserJourneyType;
 
 
 ///// Class Declaration /////
@@ -49,7 +61,7 @@ import android.test.AndroidTestCase;
  * This class tests the ordering database agent.
  *
  *****************************************************/
-public class OrderingDatabaseAgentTests extends AndroidTestCase
+public class OrderingDatabaseAgentTests extends KiteTestCase
   {
   ////////// Static Constant(s) //////////
 
@@ -79,531 +91,105 @@ public class OrderingDatabaseAgentTests extends AndroidTestCase
 
   // TODO: Re-write these tests now that we have a different database structure
 
-//  /*****************************************************
-//   *
-//   * Asset list job tests
-//   *
-//   *****************************************************/
-//
-//  public void testAssetList1()
-//    {
-//    BasketDatabaseAgent databaseAgent = new BasketDatabaseAgent( getContext(), null );
-//
-//    databaseAgent.clear();
-//
-//    Asset asset = new Asset( "/data/data/ly.kite.sample/files/dummy_file_path.jpg" );
-//    Job   job   = Job.createPrintJob( Product.DUMMY_PRODUCT, asset );
-//
-//    databaseAgent.saveItem( job );
-//
-//    Order     loadedBasket = databaseAgent.loadBasket( Catalogue.DUMMY_CATALOGUE );
-//    List<Job> loadedJobs   = loadedBasket.getJobs();
-//
-//    Assert.assertEquals( 1, loadedJobs.size() );
-//
-//    Job loadedJob = loadedBasket.getJobs().get( 0 );
-//
-//    Assert.assertEquals( job, loadedJob );
-//    }
-//
-//
-//  public void testAssetList2()
-//    {
-//    BasketDatabaseAgent databaseAgent = new BasketDatabaseAgent( getContext(), null );
-//
-//    databaseAgent.clear();
-//
-//
-//    final List<Asset> assetList = new ArrayList<>();
-//
-//    assetList.add( new Asset( "/data/data/ly.kite.sample/files/file_path_1.jpg" ) );
-//    assetList.add( null );
-//    assetList.add( new Asset( "/data/data/ly.kite.sample/files/file_path_2.jpg" ) );
-//    assetList.add( new Asset( "/data/data/ly.kite.sample/files/file_path_3.jpg" ) );
-//    assetList.add( null );
-//    assetList.add( null );
-//
-//    Job job = Job.createPrintJob( Product.DUMMY_PRODUCT, assetList );
-//
-//
-//    databaseAgent.saveItem( job );
-//
-//
-//    Order     loadedBasket = databaseAgent.loadBasket( Catalogue.DUMMY_CATALOGUE );
-//    List<Job> loadedJobs   = loadedBasket.getJobs();
-//
-//    Assert.assertEquals( 1, loadedJobs.size() );
-//
-//    Job loadedJob = loadedBasket.getJobs().get( 0 );
-//
-//    Assert.assertEquals( job, loadedJob );
-//    }
-//
-//
-//  public void testAssetList3()
-//    {
-//    BasketDatabaseAgent databaseAgent = new BasketDatabaseAgent( getContext(), null );
-//
-//    databaseAgent.clear();
-//
-//
-//    HashMap<String,String> optionsMap = new HashMap<>();
-//
-//    optionsMap.put( "name1", "value1" );
-//    optionsMap.put( "name2", "value2" );
-//
-//
-//    List<Asset> assetList = new ArrayList<>();
-//
-//    assetList.add( null );
-//    assetList.add( new Asset( "/data/data/ly.kite.sample/files/file_path_1.jpg" ) );
-//    assetList.add( new Asset( "/data/data/ly.kite.sample/files/file_path_2.jpg" ) );
-//    assetList.add( null );
-//    assetList.add( new Asset( "/data/data/ly.kite.sample/files/file_path_3.jpg" ) );
-//    assetList.add( null );
-//
-//
-//    Job job = Job.createPrintJob( Product.DUMMY_PRODUCT, optionsMap, assetList );
-//
-//
-//    databaseAgent.saveItem( job );
-//
-//
-//    Order     loadedBasket = databaseAgent.loadBasket( Catalogue.DUMMY_CATALOGUE );
-//    List<Job> loadedJobs   = loadedBasket.getJobs();
-//
-//    Assert.assertEquals( 1, loadedJobs.size() );
-//
-//    Job loadedJob = loadedBasket.getJobs().get( 0 );
-//
-//    Assert.assertEquals( job, loadedJob );
-//    }
-//
-//
-//  /*****************************************************
-//   *
-//   * Greeting card job tests
-//   *
-//   *****************************************************/
-//
-//  public void testGreetingCard1()
-//    {
-//    BasketDatabaseAgent databaseAgent = new BasketDatabaseAgent( getContext(), null );
-//
-//    databaseAgent.clear();
-//
-//
-//    Asset asset1 = new Asset( "/data/data/ly.kite.sample/files/file_path_1.jpg" );
-//
-//    Job job = Job.createGreetingCardJob( Product.DUMMY_PRODUCT, asset1 );
-//
-//
-//    databaseAgent.saveItem( job );
-//
-//
-//    Order     loadedBasket = databaseAgent.loadBasket( Catalogue.DUMMY_CATALOGUE );
-//    List<Job> loadedJobs   = loadedBasket.getJobs();
-//
-//    Assert.assertEquals( 1, loadedJobs.size() );
-//
-//    Job loadedJob = loadedBasket.getJobs().get( 0 );
-//
-//    Assert.assertEquals( job, loadedJob );
-//    }
-//
-//
-//  public void testGreetingCard2()
-//    {
-//    BasketDatabaseAgent databaseAgent = new BasketDatabaseAgent( getContext(), null );
-//
-//    databaseAgent.clear();
-//
-//
-//    Asset asset1 = new Asset( "/data/data/ly.kite.sample/files/file_path_1.jpg" );
-//    Asset asset2 = new Asset( "/data/data/ly.kite.sample/files/file_path_2.jpg" );
-//    Asset asset3 = new Asset( "/data/data/ly.kite.sample/files/file_path_3.jpg" );
-//    Asset asset4 = new Asset( "/data/data/ly.kite.sample/files/file_path_4.jpg" );
-//
-//    Job job = Job.createGreetingCardJob( Product.DUMMY_PRODUCT, asset1, asset2, null, null );
-//
-//
-//    databaseAgent.saveItem( job );
-//
-//
-//    Order     loadedBasket = databaseAgent.loadBasket( Catalogue.DUMMY_CATALOGUE );
-//    List<Job> loadedJobs   = loadedBasket.getJobs();
-//
-//    Assert.assertEquals( 1, loadedJobs.size() );
-//
-//    Job loadedJob = loadedBasket.getJobs().get( 0 );
-//
-//    Assert.assertEquals( job, loadedJob );
-//    }
-//
-//
-//  public void testGreetingCard3()
-//    {
-//    BasketDatabaseAgent databaseAgent = new BasketDatabaseAgent( getContext(), null );
-//
-//    databaseAgent.clear();
-//
-//
-//    Asset asset1 = new Asset( "/data/data/ly.kite.sample/files/file_path_1.jpg" );
-//    Asset asset2 = new Asset( "/data/data/ly.kite.sample/files/file_path_2.jpg" );
-//    Asset asset3 = new Asset( "/data/data/ly.kite.sample/files/file_path_3.jpg" );
-//    Asset asset4 = new Asset( "/data/data/ly.kite.sample/files/file_path_4.jpg" );
-//
-//    Job job = Job.createGreetingCardJob( Product.DUMMY_PRODUCT, asset1, null, asset3, null );
-//
-//
-//    databaseAgent.saveItem( job );
-//
-//
-//    Order     loadedBasket = databaseAgent.loadBasket( Catalogue.DUMMY_CATALOGUE );
-//    List<Job> loadedJobs   = loadedBasket.getJobs();
-//
-//    Assert.assertEquals( 1, loadedJobs.size() );
-//
-//    Job loadedJob = loadedBasket.getJobs().get( 0 );
-//
-//    Assert.assertEquals( job, loadedJob );
-//    }
-//
-//
-//  public void testGreetingCard4()
-//    {
-//    BasketDatabaseAgent databaseAgent = new BasketDatabaseAgent( getContext(), null );
-//
-//    databaseAgent.clear();
-//
-//
-//    Asset asset1 = new Asset( "/data/data/ly.kite.sample/files/file_path_1.jpg" );
-//    Asset asset2 = new Asset( "/data/data/ly.kite.sample/files/file_path_2.jpg" );
-//    Asset asset3 = new Asset( "/data/data/ly.kite.sample/files/file_path_3.jpg" );
-//    Asset asset4 = new Asset( "/data/data/ly.kite.sample/files/file_path_4.jpg" );
-//
-//    Job job = Job.createGreetingCardJob( Product.DUMMY_PRODUCT, asset1, asset2, null, asset4 );
-//
-//
-//    databaseAgent.saveItem( job );
-//
-//
-//    Order     loadedBasket = databaseAgent.loadBasket( Catalogue.DUMMY_CATALOGUE );
-//    List<Job> loadedJobs   = loadedBasket.getJobs();
-//
-//    Assert.assertEquals( 1, loadedJobs.size() );
-//
-//    Job loadedJob = loadedBasket.getJobs().get( 0 );
-//
-//    Assert.assertEquals( job, loadedJob );
-//    }
-//
-//
-//  public void testGreetingCard5()
-//    {
-//    BasketDatabaseAgent databaseAgent = new BasketDatabaseAgent( getContext(), null );
-//
-//    databaseAgent.clear();
-//
-//
-//    Asset asset1 = new Asset( "/data/data/ly.kite.sample/files/file_path_1.jpg" );
-//    Asset asset2 = new Asset( "/data/data/ly.kite.sample/files/file_path_2.jpg" );
-//    Asset asset3 = new Asset( "/data/data/ly.kite.sample/files/file_path_3.jpg" );
-//    Asset asset4 = new Asset( "/data/data/ly.kite.sample/files/file_path_4.jpg" );
-//
-//    Job job = Job.createGreetingCardJob( Product.DUMMY_PRODUCT, asset1, asset2, asset3, asset4 );
-//
-//
-//    databaseAgent.saveItem( job );
-//
-//
-//    Order     loadedBasket = databaseAgent.loadBasket( Catalogue.DUMMY_CATALOGUE );
-//    List<Job> loadedJobs   = loadedBasket.getJobs();
-//
-//    Assert.assertEquals( 1, loadedJobs.size() );
-//
-//    Job loadedJob = loadedBasket.getJobs().get( 0 );
-//
-//    Assert.assertEquals( job, loadedJob );
-//    }
-//
-//
-//  /*****************************************************
-//   *
-//   * Photobook job tests
-//   *
-//   *****************************************************/
-//
-//  public void testPhotobook1()
-//    {
-//    BasketDatabaseAgent databaseAgent = new BasketDatabaseAgent( getContext(), null );
-//
-//    databaseAgent.clear();
-//
-//
-//    Asset frontCoverAsset = new Asset( "/data/data/ly.kite.sample/files/file_path.jpg" );
-//
-//
-//    final List<Asset> contentAssetList = new ArrayList<>();
-//
-//    contentAssetList.add( new Asset( "/data/data/ly.kite.sample/files/file_path_1.jpg" ) );
-//    contentAssetList.add( null );
-//    contentAssetList.add( new Asset( "/data/data/ly.kite.sample/files/file_path_2.jpg" ) );
-//    contentAssetList.add( new Asset( "/data/data/ly.kite.sample/files/file_path_3.jpg" ) );
-//    contentAssetList.add( null );
-//    contentAssetList.add( null );
-//
-//
-//    Job job = Job.createPhotobookJob( Product.DUMMY_PRODUCT, frontCoverAsset, contentAssetList );
-//
-//
-//    databaseAgent.saveItem( job );
-//
-//
-//    Order     loadedBasket = databaseAgent.loadBasket( Catalogue.DUMMY_CATALOGUE );
-//    List<Job> loadedJobs   = loadedBasket.getJobs();
-//
-//    Assert.assertEquals( 1, loadedJobs.size() );
-//
-//    Job loadedJob = loadedBasket.getJobs().get( 0 );
-//
-//    Assert.assertEquals( job, loadedJob );
-//    }
-//
-//
-//  public void testPhotobook2()
-//    {
-//    BasketDatabaseAgent databaseAgent = new BasketDatabaseAgent( getContext(), null );
-//
-//    databaseAgent.clear();
-//
-//
-//    Asset frontCoverAsset = null;
-//
-//
-//    final List<Asset> contentAssetList = new ArrayList<>();
-//
-//    contentAssetList.add( new Asset( "/data/data/ly.kite.sample/files/file_path_1.jpg" ) );
-//    contentAssetList.add( new Asset( "/data/data/ly.kite.sample/files/file_path_2.jpg" ) );
-//    contentAssetList.add( new Asset( "/data/data/ly.kite.sample/files/file_path_3.jpg" ) );
-//    contentAssetList.add( null );
-//    contentAssetList.add( null );
-//
-//
-//    Job job = Job.createPhotobookJob( Product.DUMMY_PRODUCT, frontCoverAsset, contentAssetList );
-//
-//
-//    databaseAgent.saveItem( job );
-//
-//
-//    Order     loadedBasket = databaseAgent.loadBasket( Catalogue.DUMMY_CATALOGUE );
-//    List<Job> loadedJobs   = loadedBasket.getJobs();
-//
-//    Assert.assertEquals( 1, loadedJobs.size() );
-//
-//    Job loadedJob = loadedBasket.getJobs().get( 0 );
-//
-//    Assert.assertEquals( job, loadedJob );
-//    }
-//
-//
-//  /*****************************************************
-//   *
-//   * Multiple jobs tests
-//   *
-//   *****************************************************/
-//
-//  public void testBasket1()
-//    {
-//    BasketDatabaseAgent databaseAgent = new BasketDatabaseAgent( getContext(), null );
-//
-//
-//    // Job 1 = photobook job
-//
-//    Asset frontCoverAsset = new Asset( "/data/data/ly.kite.sample/files/file_path.jpg" );
-//
-//    List<Asset> contentAssetList = new ArrayList<>();
-//
-//    contentAssetList.add( new Asset( "/data/data/ly.kite.sample/files/file_path_1.jpg" ) );
-//    contentAssetList.add( null );
-//    contentAssetList.add( new Asset( "/data/data/ly.kite.sample/files/file_path_2.jpg" ) );
-//    contentAssetList.add( new Asset( "/data/data/ly.kite.sample/files/file_path_3.jpg" ) );
-//    contentAssetList.add( null );
-//    contentAssetList.add( null );
-//
-//    Job job1 = Job.createPhotobookJob( Product.DUMMY_PRODUCT, frontCoverAsset, contentAssetList );
-//
-//
-//    // Job 2 = greeting card job
-//
-//    Asset asset1 = new Asset( "/data/data/ly.kite.sample/files/file_path_1.jpg" );
-//
-//    Job job2 = Job.createGreetingCardJob( Product.DUMMY_PRODUCT, asset1 );
-//
-//
-//    // Clear basket
-//
-//    databaseAgent.clear();
-//
-//    Order     loadedBasket = databaseAgent.loadBasket( Catalogue.DUMMY_CATALOGUE );
-//    List<Job> loadedJobs   = loadedBasket.getJobs();
-//
-//    Assert.assertEquals( 0, loadedJobs.size() );
-//
-//
-//    // Add 1st job
-//
-//    databaseAgent.saveItem( job1 );
-//
-//    loadedBasket = databaseAgent.loadBasket( Catalogue.DUMMY_CATALOGUE );
-//    loadedJobs   = loadedBasket.getJobs();
-//
-//    Assert.assertEquals( 1, loadedJobs.size() );
-//
-//    Job loadedJob1 = loadedBasket.getJobs().get( 0 );
-//
-//    Assert.assertEquals( job1, loadedJob1 );
-//
-//
-//    // Add 2nd job
-//
-//    databaseAgent.saveItem( job2 );
-//
-//    loadedBasket = databaseAgent.loadBasket( Catalogue.DUMMY_CATALOGUE );
-//    loadedJobs   = loadedBasket.getJobs();
-//
-//    Assert.assertEquals( 2, loadedJobs.size() );
-//
-//    loadedJob1 = loadedBasket.getJobs().get( 0 );
-//    Job loadedJob2 = loadedBasket.getJobs().get( 1 );
-//
-//    Assert.assertEquals( job1, loadedJob1 );
-//    Assert.assertEquals( job2, loadedJob2 );
-//    }
-//
-//
-//  public void testBasket2()
-//    {
-//    BasketDatabaseAgent databaseAgent = new BasketDatabaseAgent( getContext(), null );
-//
-//
-//    // Job 1 = asset list job
-//
-//    List<Asset> assetList = new ArrayList<>();
-//
-//    assetList.add( null );
-//    assetList.add( new Asset( "/data/data/ly.kite.sample/files/file_path_1.jpg" ) );
-//    assetList.add( new Asset( "/data/data/ly.kite.sample/files/file_path_2.jpg" ) );
-//    assetList.add( new Asset( "/data/data/ly.kite.sample/files/file_path_3.jpg" ) );
-//    assetList.add( null );
-//    assetList.add( null );
-//
-//    HashMap<String,String> optionsMap = new HashMap<>();
-//
-//    optionsMap.put( "colour", "red" );
-//    optionsMap.put( "size", "medium" );
-//
-//    Job job1 = Job.createPrintJob( Product.DUMMY_PRODUCT, optionsMap, assetList );
-//
-//
-//    // Job 2 = greeting card job
-//
-//    Asset asset1 = new Asset( "/data/data/ly.kite.sample/files/file_path_4.jpg" );
-//    Asset asset2 = new Asset( "/data/data/ly.kite.sample/files/file_path_5.jpg" );
-//    Asset asset3 = new Asset( "/data/data/ly.kite.sample/files/file_path_6.jpg" );
-//    Asset asset4 = new Asset( "/data/data/ly.kite.sample/files/file_path_7.jpg" );
-//
-//    Job job2 = Job.createGreetingCardJob( Product.DUMMY_PRODUCT, asset1, asset2, asset3, asset4 );
-//
-//
-//    // Job 3 = photobook job
-//
-//    Asset frontCoverAsset = new Asset( "/data/data/ly.kite.sample/files/file_path_8.jpg" );
-//
-//    List<Asset> contentAssetList = new ArrayList<>();
-//
-//    contentAssetList.add( new Asset( "/data/data/ly.kite.sample/files/file_path_9.jpg" ) );
-//    contentAssetList.add( null );
-//    contentAssetList.add( new Asset( "/data/data/ly.kite.sample/files/file_path_10.jpg" ) );
-//    contentAssetList.add( new Asset( "/data/data/ly.kite.sample/files/file_path_11.jpg" ) );
-//    contentAssetList.add( null );
-//    contentAssetList.add( null );
-//
-//    Job job3 = Job.createPhotobookJob( Product.DUMMY_PRODUCT, frontCoverAsset, contentAssetList );
-//
-//
-//    // Job 4 = postcard job
-//
-//    Asset frontImageAsset = new Asset( "/data/data/ly.kite.sample/files/file_path_12.jpg" );
-//    Asset backImageAsset  = new Asset( "/data/data/ly.kite.sample/files/file_path_14.jpg" );
-//
-//    Job job4 = Job.createPostcardJob( Product.DUMMY_PRODUCT, frontImageAsset, backImageAsset, "Hello", Address.getKiteTeamAddress() );
-//
-//
-//    // Clear basket
-//
-//    databaseAgent.clear();
-//
-//    Order     loadedBasket = databaseAgent.loadBasket( Catalogue.DUMMY_CATALOGUE );
-//    List<Job> loadedJobs   = loadedBasket.getJobs();
-//
-//    Assert.assertEquals( 0, loadedJobs.size() );
-//
-//
-//    // Jobs 1, 2
-//
-//    databaseAgent.saveItem( job1 );
-//    databaseAgent.saveItem( job2 );
-//
-//    loadedBasket = databaseAgent.loadBasket( Catalogue.DUMMY_CATALOGUE );
-//    loadedJobs   = loadedBasket.getJobs();
-//
-//    Assert.assertEquals( 2, loadedJobs.size() );
-//
-//    Job loadedJob1 = loadedBasket.getJobs().get( 0 );
-//    Job loadedJob2 = loadedBasket.getJobs().get( 1 );
-//
-//    Assert.assertEquals( job1, loadedJob1 );
-//    Assert.assertEquals( job2, loadedJob2 );
-//
-//
-//    // Job 3
-//
-//    databaseAgent.saveItem( job3 );
-//
-//    loadedBasket = databaseAgent.loadBasket( Catalogue.DUMMY_CATALOGUE );
-//    loadedJobs   = loadedBasket.getJobs();
-//
-//    Assert.assertEquals( 3, loadedJobs.size() );
-//
-//    loadedJob1 = loadedBasket.getJobs().get( 0 );
-//    loadedJob2 = loadedBasket.getJobs().get( 1 );
-//    Job loadedJob3 = loadedBasket.getJobs().get( 2 );
-//
-//    Assert.assertEquals( job1, loadedJob1 );
-//    Assert.assertEquals( job2, loadedJob2 );
-//    Assert.assertEquals( job3, loadedJob3 );
-//
-//
-//    // Job 4
-//
-//    databaseAgent.saveItem( job4 );
-//
-//    loadedBasket = databaseAgent.loadBasket( Catalogue.DUMMY_CATALOGUE );
-//    loadedJobs   = loadedBasket.getJobs();
-//
-//    Assert.assertEquals( 4, loadedJobs.size() );
-//
-//    loadedJob1 = loadedBasket.getJobs().get( 0 );
-//    loadedJob2 = loadedBasket.getJobs().get( 1 );
-//    loadedJob3 = loadedBasket.getJobs().get( 2 );
-//    Job loadedJob4 = loadedBasket.getJobs().get( 3 );
-//
-//    Assert.assertEquals( job1, loadedJob1 );
-//    Assert.assertEquals( job2, loadedJob2 );
-//    Assert.assertEquals( job3, loadedJob3 );
-//    Assert.assertEquals( job4, loadedJob4 );
-//    }
+  /*****************************************************
+   *
+   * Asset list job tests
+   *
+   *****************************************************/
+
+  public void testSaveClearSaveBasket()
+    {
+    OrderingDatabaseAgent databaseAgent = new OrderingDatabaseAgent( getContext(), null );
+
+    Product product = new Product( "product_id", "product_code", "Product Name", "Product Type", 0xff000000, UserJourneyType.RECTANGLE, 1 );
+
+    Catalogue catalogue = new Catalogue();
+    catalogue.addProduct( "Group Label", null, product );
+
+
+    databaseAgent.clearBasket( OrderingDataAgent.BASKET_ID_DEFAULT );
+
+
+    long itemId = OrderingDataAgent.CREATE_NEW_ITEM_ID;
+
+
+    HashMap<String,String> optionsMap = new HashMap<>();
+    optionsMap.put( "Parameter1", "Alpha" );
+    optionsMap.put( "Parameter2", "Bravo" );
+
+    RectF originalProportionalRectangle1 = new RectF( 0.0f, 0.0f, 1.0f, 1.0f );
+    RectF originalProportionalRectangle2 = new RectF( 0.3f, 0.25f, 0.8f, 0.75f );
+
+    ImageSpec originalImageSpec1 = new ImageSpec( createSessionAssetFile(), originalProportionalRectangle1, "First border text", 1 );
+    ImageSpec originalImageSpec2 = new ImageSpec( createSessionAssetFile(), originalProportionalRectangle2, "Second border text", 2 );
+
+    List<ImageSpec> originalImageSpecList = new ArrayList<>();
+    originalImageSpecList.add( originalImageSpec1 );
+    originalImageSpecList.add( originalImageSpec2 );
+
+
+    databaseAgent.saveDefaultBasketItem( itemId, product, optionsMap, originalImageSpecList, 1 );
+
+
+    List<BasketItem> basketItemList = databaseAgent.loadDefaultBasket( getContext(), catalogue );
+
+
+    Assert.assertEquals( 1, basketItemList.size() );
+
+    BasketItem basketItem = basketItemList.get( 0 );
+
+    List<ImageSpec> imageSpecList = basketItem.getImageSpecList();
+
+    Assert.assertEquals( 2, imageSpecList.size() );
+
+    ImageSpec imageSpec1 = imageSpecList.get( 0 );
+    Assert.assertEquals( "First border text", imageSpec1.getBorderText() );
+    Assert.assertEquals( 1, imageSpec1.getQuantity() );
+
+    ImageSpec imageSpec2 = imageSpecList.get( 1 );
+    Assert.assertEquals( "Second border text", imageSpec2.getBorderText() );
+    Assert.assertEquals( 2, imageSpec2.getQuantity() );
+
+
+    databaseAgent.clearBasket( OrderingDataAgent.BASKET_ID_DEFAULT );
+
+    basketItemList = databaseAgent.loadDefaultBasket( getContext(), catalogue );
+
+    Assert.assertEquals( 0, basketItemList.size() );
+
+
+    originalImageSpec1 = new ImageSpec( createSessionAssetFile(), originalProportionalRectangle1, null, 1 );
+    originalImageSpec2 = new ImageSpec( createSessionAssetFile(), originalProportionalRectangle2, "Third border text", 1 );
+
+    originalImageSpecList = new ArrayList<>();
+    originalImageSpecList.add( originalImageSpec1 );
+    originalImageSpecList.add( originalImageSpec2 );
+
+
+    databaseAgent.saveDefaultBasketItem( itemId, product, optionsMap, originalImageSpecList, 1 );
+
+
+    basketItemList = databaseAgent.loadDefaultBasket( getContext(), catalogue );
+
+
+    Assert.assertEquals( 1, basketItemList.size() );
+
+    basketItem = basketItemList.get( 0 );
+
+    imageSpecList = basketItem.getImageSpecList();
+
+    Assert.assertEquals( 2, imageSpecList.size() );
+
+    imageSpec1 = imageSpecList.get( 0 );
+    Assert.assertEquals( null, imageSpec1.getBorderText() );
+    Assert.assertEquals( 1, imageSpec1.getQuantity() );
+
+    imageSpec2 = imageSpecList.get( 1 );
+    Assert.assertEquals( "Third border text", imageSpec2.getBorderText() );
+    Assert.assertEquals( 1, imageSpec2.getQuantity() );
+    }
+
+
 
 
   ////////// Inner Class(es) //////////

@@ -560,15 +560,20 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
       }
 
 
-    // Delete rows in an order that is safe
+    // We don't want to duplicate (and risk messing up) the SQL, so select
+    // all the items from the basket, and use the delete item method to remove
+    // them one by one.
 
-    database.execSQL( "DELETE FROM " + TABLE_IMAGE_SPEC + " WHERE id IN ( SELECT iis.image_spec_id FROM Item i, ItemImageSpec iis WHERE i.basket_id = " + basketId + " AND iis.item_id = i.id )" );
-    database.execSQL( "DELETE FROM " + TABLE_ITEM_IMAGE_SPEC + " WHERE item_id IN ( SELECT id FROM Item WHERE basket_id = " + basketId + " )" );
-    //database.execSQL( "DELETE FROM " + TABLE_ADDRESS );
-    database.execSQL( "DELETE FROM " + TABLE_OPTION + " WHERE item_id IN ( SELECT id FROM Item WHERE basket_id = " + basketId + " )" );
-    database.execSQL( "DELETE FROM " + TABLE_ITEM   + " WHERE basket_id = " + basketId );
+    List<ContentValues> itemContentValuesList = selectBasketItems( basketId );
 
-    // Never delete the default basket - it must always stay reserved
+    for ( ContentValues contentValues : itemContentValuesList )
+      {
+      deleteItem( contentValues.getAsLong( "item_id" ) );
+      }
+
+
+    // Delete the actual basket entry, but never delete the default basket.
+
     if ( basketId != OrderingDataAgent.BASKET_ID_DEFAULT )
       {
       database.execSQL( "DELETE FROM " + TABLE_BASKET + " WHERE id = " + basketId );
