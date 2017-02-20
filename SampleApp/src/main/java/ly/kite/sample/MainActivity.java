@@ -402,7 +402,7 @@ public class MainActivity extends ADeepLinkableActivity
       @Override
       public void onCatalogueSuccess( Catalogue catalogue )
         {
-        Product product = catalogue.getProductById( PRODUCT_ID_POSTCARD );
+        Product product = catalogue.findProductById( PRODUCT_ID_POSTCARD );
 
         if ( product == null )
           {
