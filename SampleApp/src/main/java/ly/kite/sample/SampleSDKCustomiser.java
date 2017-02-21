@@ -107,6 +107,7 @@ public class SampleSDKCustomiser extends SDKCustomiser
   public AImageSource[] getImageSources()
     {
     return ( new AImageSource[] { new DeviceImageSource(), new InstagramImageSource(), new FromPhoneImageSource() } );
+    //return ( new AImageSource[] { new DeviceImageSource() } );
     }
 
 

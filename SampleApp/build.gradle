@@ -74,7 +74,7 @@ dependencies {
     compile project(':KitePrintSDK')
     //compile project(':KitePrintSDK-GCM')
     //compile 'ly.kite:kite-print-sdk:5.6.24'
-    //compile 'ly.kite:kite-print-sdk-gcm:5.6.23'
+    //compile 'ly.kite:kite-print-sdk-gcm:5.6.24'
 
     // Uncomment if you want Facebook support
     //compile project(':FacebookPhotoPicker')

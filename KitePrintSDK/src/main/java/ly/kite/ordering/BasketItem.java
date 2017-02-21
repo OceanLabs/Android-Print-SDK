@@ -177,7 +177,9 @@ public class BasketItem
         {
         if ( imageSpec != null )
           {
-          return ( imageSpec.getAssetFragment() );
+          AssetFragment assetFragment = imageSpec.getAssetFragment();
+
+          if ( assetFragment != null ) return ( assetFragment );
           }
         }
       }

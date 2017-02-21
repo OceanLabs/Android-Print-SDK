@@ -356,7 +356,7 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
 
       mAddImageIndex = imageIndex;
 
-      displayAddImagePopupMenu( view );
+      onAddImage( view );
       }
     }
 
