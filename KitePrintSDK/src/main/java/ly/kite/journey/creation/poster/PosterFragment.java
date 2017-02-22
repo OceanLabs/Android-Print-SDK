@@ -356,7 +356,7 @@ public class PosterFragment extends AProductCreationFragment implements PosterAd
 
       mAddImageIndex = imageIndex;
 
-      displayAddImagePopupMenu( view );
+      onAddImage( view );
       }
     }
 

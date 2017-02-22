@@ -63,7 +63,6 @@ import java.util.List;
 import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.image.IImageSizeConsumer;
-import ly.kite.journey.creation.photobook.PhotobookFragment;
 import ly.kite.ordering.ImageSpec;
 import ly.kite.util.Asset;
 import ly.kite.journey.AImageSource;
@@ -225,7 +224,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
     MenuItem addImageItem = menu.findItem( R.id.add_image_menu_item );
 
-    if ( addImageItem != null )
+    if ( addImageItem != null && checkDisplayMultipleImageSources( false ) )
       {
       SubMenu addPhotoSubMenu = addImageItem.getSubMenu();
 
@@ -246,6 +245,15 @@ abstract public class AProductCreationFragment extends    AKiteFragment
   @Override
   final public boolean onOptionsItemSelected( MenuItem item )
     {
+    // Intercept the add photo action, so we can launch directly
+    // into the picker if there is just one image source.
+
+    if ( item.getItemId() == R.id.add_image_menu_item )
+      {
+      if ( ! checkDisplayMultipleImageSources( true ) ) return ( false );
+      }
+
+
     // Check for add image
 
     if ( onCheckAddImageOptionItem( item, getMaxAddImageCount() ) )
@@ -311,7 +319,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
       {
       ///// Add photo /////
 
-      displayAddImagePopupMenu( view );
+      onAddImage( view );
       }
     }
 
@@ -353,6 +361,31 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
 
   ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Checks the number of image sources:
+   *   -  < 1, does nothing
+   *   - == 1, starts the picker for that image source
+   *   -  > 1, returns true
+   *
+   *****************************************************/
+  private boolean checkDisplayMultipleImageSources( boolean launchImagePicker )
+    {
+    // If there is one image source - go directly to the picker. Otherwise
+    // display a pop-up menu containing the sources.
+
+    ArrayList<AImageSource> imageSourceArrayList = KiteSDK.getInstance( mKiteActivity ).getAvailableImageSources();
+
+    int imageSourceCount = imageSourceArrayList.size();
+
+    if ( imageSourceCount > 1 ) return ( true );
+
+    if ( imageSourceCount == 1 && launchImagePicker ) imageSourceArrayList.get( 0 ).onPick( this, getMaxAddImageCount() );
+
+    return ( false );
+    }
+
 
   /*****************************************************
    *
@@ -417,19 +450,27 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
   /*****************************************************
    *
-   * Displays a pop-up menu to add an image, using the
-   * available image sources.
+   * If there are multiple image sources - displays a pop-up
+   * menu to add an image.
+   *
+   * If there is just one image image - launches the picker
+   * directly.
    *
    *****************************************************/
-  protected PopupMenu displayAddImagePopupMenu( View view )
+  protected PopupMenu onAddImage( View view )
     {
-    PopupMenu popupMenu = new PopupMenu( mKiteActivity, view );
-    popupMenu.inflate( R.menu.add_image_popup );
-    addImageSourceMenuItems( popupMenu.getMenu() );
-    popupMenu.setOnMenuItemClickListener( this );
-    popupMenu.show();
+    if ( checkDisplayMultipleImageSources( true ) )
+      {
+      PopupMenu popupMenu = new PopupMenu( mKiteActivity, view );
+      popupMenu.inflate( R.menu.add_image_popup );
+      addImageSourceMenuItems( popupMenu.getMenu() );
+      popupMenu.setOnMenuItemClickListener( this );
+      popupMenu.show();
 
-    return ( popupMenu );
+      return ( popupMenu );
+      }
+
+    return ( null );
     }
 
 

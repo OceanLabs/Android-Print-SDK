@@ -364,7 +364,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
 
       mAddImageIndex = imageIndex;
 
-      displayAddImagePopupMenu( view );
+      onAddImage( view );
       }
     }
 
