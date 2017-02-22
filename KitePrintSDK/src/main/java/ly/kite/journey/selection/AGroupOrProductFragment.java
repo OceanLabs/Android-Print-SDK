@@ -462,8 +462,10 @@ abstract public class AGroupOrProductFragment extends AProductSelectionFragment 
           if ( this.labelledImageView != null ) this.labelledImageView.setLabel( null );
           if ( this.labelTextView     != null ) this.labelTextView.setText( null );
 
-          // Any price overlay should not be visible for a placeholder image
+          // No prices should be visible for a placeholder image
           if ( this.priceOverlayFrame != null ) this.priceOverlayFrame.setVisibility( View.GONE );
+          if ( this.fromTextView      != null ) this.fromTextView.setVisibility( View.GONE );
+          if ( this.priceTextView     != null ) this.priceTextView.setVisibility( View.GONE );
 
           imageSourceObject = Integer.valueOf( R.drawable.placeholder );
 

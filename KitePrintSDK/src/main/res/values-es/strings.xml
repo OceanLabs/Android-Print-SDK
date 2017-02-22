@@ -156,7 +156,7 @@
     <string name="End_Session">Terminar sesión</string>
     <string name="Flip">Dar la vuelta</string>
     <string name="Free">Gratis</string>
-    <string name="ITEM">ÍT</string>
+    <string name="ITEM">ARTICULO</string>
     <string name="Keep">Guardar</string>
     <string name="Loading">Cargando</string>
     <string name="Loading_catalogue">Cargando catálogo</string>
@@ -273,7 +273,7 @@
     <string name="button_text_edit_address">Editar direcciónf</string>
     <string name="button_text_delete_address">Eliminar dirección</string>
 
-    <string name="address_edit_proceed_button_text">Salvar</string>
+    <string name="address_edit_proceed_button_text">Guardar</string>
 
     <string name="powered_by">Desarrollado por Kite.ly</string>
 
