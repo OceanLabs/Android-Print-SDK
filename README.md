@@ -146,6 +146,8 @@ Push notifications are a powerful marketing tool that if used effectively can in
 
 A guide to configuring push notifications in your app can be found [here](https://github.com/OceanLabs/Android-Print-SDK/blob/master/docs/push_notifications.md).
 
+## Open Source Acknowledgements
+The Android Print SDK uses software created by the Open Source community, you can find a full list of acknowledgements [here](https://kite.uservoice.com/knowledgebase/articles/1141681-open-source).
 
 ## License
 
