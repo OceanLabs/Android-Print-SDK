@@ -88,9 +88,9 @@ public class EditImageFragment extends AEditImageFragment
    * Creates a new instance of this fragment.
    *
    *****************************************************/
-  public static EditImageFragment newInstance( Product product, Asset imageAsset )
+  public static EditImageFragment newInstance( Product product, AssetFragment imageAssetFragment )
     {
-    return ( new EditImageFragment( product, imageAsset ) );
+    return ( new EditImageFragment( product, imageAssetFragment ) );
     }
 
 
@@ -102,9 +102,9 @@ public class EditImageFragment extends AEditImageFragment
 
 
   @SuppressLint("ValidFragment")
-  private EditImageFragment( Product product, Asset imageAsset )
+  private EditImageFragment( Product product, AssetFragment imageAssetFragment )
     {
-    super( product, imageAsset );
+    super( product, imageAssetFragment );
     }
 
 
@@ -179,7 +179,7 @@ public class EditImageFragment extends AEditImageFragment
       EditableMaskedImageView.BorderHighlight borderHighlight = userJourneyType.editBorderHighlight();
 
       mEditableImageContainerFrame
-              .setImage( mImageAsset )
+              .setImage( mUnmodifiedImageAssetFragment )
               .setMask( mProduct.getUserJourneyType().editMaskResourceId(), mProduct.getImageAspectRatio() )
               .setTranslucentBorderPixels( resources.getDimensionPixelSize( R.dimen.edit_image_translucent_border_size ) )
               .setBorderHighlight( borderHighlight, resources.getDimensionPixelSize( R.dimen.edit_image_border_highlight_size ) );
@@ -255,7 +255,7 @@ public class EditImageFragment extends AEditImageFragment
    *****************************************************/
   protected void onConfirm()
     {
-    returnEditedAsset();
+    returnEditedAssetFragment();
     }
 
 

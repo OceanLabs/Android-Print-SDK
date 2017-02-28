@@ -168,13 +168,13 @@ public class PhoneCaseFragment extends AEditImageFragment
     // If we haven't already got an image asset - look in the asset list. Always use the
     // last one in the list - the most recently selected.
 
-    if ( mImageAsset == null )
+    if ( mUnmodifiedImageAssetFragment == null )
       {
       int imageSpecCount = ( mImageSpecArrayList != null ? mImageSpecArrayList.size() : 0 );
 
       if ( imageSpecCount > 0 )
         {
-        mImageAsset = mImageSpecArrayList.get( imageSpecCount - 1 ).getAsset();
+        mUnmodifiedImageAssetFragment = mImageSpecArrayList.get( imageSpecCount - 1 ).getAssetFragment();
         }
       }
 
@@ -188,7 +188,7 @@ public class PhoneCaseFragment extends AEditImageFragment
       resources.getValue( R.dimen.edit_phone_case_anchor_point, anchorPointValue, true );
 
       mEditableImageContainerFrame
-              .setImage( mImageAsset )
+              .setImage( mUnmodifiedImageAssetFragment )
               .setMask( mProduct.getMaskURL(), mProduct.getMaskBleed() )
               .setUnderImages( mProduct.getUnderImageURLList() )
               .setOverImages( mProduct.getOverImageURLList() )
@@ -236,7 +236,7 @@ public class PhoneCaseFragment extends AEditImageFragment
   @Override
   protected void onConfirm()
     {
-    returnEditedAsset();
+    returnEditedAssetFragment();
     }
 
 

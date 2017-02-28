@@ -40,9 +40,7 @@ package ly.kite.journey.creation.reviewandedit;
 ///// Import(s) /////
 
 import android.annotation.SuppressLint;
-import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -51,7 +49,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import ly.kite.R;
-import ly.kite.catalogue.Bleed;
 import ly.kite.journey.creation.AEditImageFragment;
 import ly.kite.catalogue.Product;
 import ly.kite.util.Asset;
@@ -96,9 +93,9 @@ public class EditBorderTextImageFragment extends AEditImageFragment
    * Creates a new instance of this fragment.
    *
    *****************************************************/
-  public static EditBorderTextImageFragment newInstance( Product product, Asset imageAsset, String borderText )
+  public static EditBorderTextImageFragment newInstance( Product product, AssetFragment imageAssetFragment, String borderText )
     {
-    EditBorderTextImageFragment fragment = new EditBorderTextImageFragment( product, imageAsset );
+    EditBorderTextImageFragment fragment = new EditBorderTextImageFragment( product, imageAssetFragment );
 
     if ( borderText != null ) fragment.getArguments().putString( BUNDLE_KEY_BORDER_TEXT, borderText );
 
@@ -114,9 +111,9 @@ public class EditBorderTextImageFragment extends AEditImageFragment
 
 
   @SuppressLint("ValidFragment")
-  private EditBorderTextImageFragment( Product product, Asset imageAsset )
+  private EditBorderTextImageFragment( Product product, AssetFragment imageAssetFragment )
     {
-    super( product, imageAsset );
+    super( product, imageAssetFragment );
     }
 
 
@@ -200,13 +197,13 @@ public class EditBorderTextImageFragment extends AEditImageFragment
     // If we haven't already got an image asset - look in the asset list. Always use the
     // last one in the list - the most recently selected.
 
-    if ( mImageAsset == null )
+    if ( mUnmodifiedImageAssetFragment == null )
       {
       int imageSpecCount = ( mImageSpecArrayList != null ? mImageSpecArrayList.size() : 0 );
 
       if ( imageSpecCount > 0 )
         {
-        mImageAsset = mImageSpecArrayList.get( imageSpecCount - 1 ).getAsset();
+        mUnmodifiedImageAssetFragment = mImageSpecArrayList.get( imageSpecCount - 1 ).getAssetFragment();
         }
       }
 
@@ -214,7 +211,7 @@ public class EditBorderTextImageFragment extends AEditImageFragment
     if ( mEditableImageContainerFrame != null )
       {
       mEditableImageContainerFrame
-              .setImage( mImageAsset )
+              .setImage( mUnmodifiedImageAssetFragment )
               .setMask( R.drawable.filled_white_rectangle, mProduct.getImageAspectRatio() );
       }
     }
@@ -263,7 +260,7 @@ public class EditBorderTextImageFragment extends AEditImageFragment
   @Override
   protected void onConfirm()
     {
-    returnEditedAsset();
+    returnEditedAssetFragment();
     }
 
 
