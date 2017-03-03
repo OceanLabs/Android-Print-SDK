@@ -27,6 +27,8 @@
             android:textSize="@dimen/edit_border_text_size"
             android:hint="@string/edit_border_text_hint"
             android:background="@null"
-            android:singleLine="true"/>
+            android:maxLines="1"
+            android:ellipsize="end"
+            custom:customTypefaceAssetName="Amatic-Bold.ttf"/>
     </FrameLayout>
 </LinearLayout>

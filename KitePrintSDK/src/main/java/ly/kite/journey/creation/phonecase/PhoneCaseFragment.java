@@ -217,7 +217,7 @@ public class PhoneCaseFragment extends AEditImageFragment
    *
    *****************************************************/
   @Override
-  protected void onEditedAsset( AssetFragment assetFragment )
+  protected void onEditingComplete( AssetFragment assetFragment )
     {
     if ( assetFragment != null && mKiteActivity instanceof ICallback )
       {
@@ -227,17 +227,6 @@ public class PhoneCaseFragment extends AEditImageFragment
 
 
   ////////// Method(s) //////////
-
-  /*****************************************************
-   *
-   * Called when the Next button is clicked.
-   *
-   *****************************************************/
-  @Override
-  protected void onConfirm()
-    {
-    returnEditedAssetFragment();
-    }
 
 
   ////////// Inner Class(es) //////////

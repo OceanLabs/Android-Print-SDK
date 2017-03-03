@@ -114,6 +114,25 @@ public class Asset implements Parcelable
 
   /*****************************************************
    *
+   * Finds the first available asset in a list.
+   *
+   *****************************************************/
+  static public Asset findFirst( List<Asset> assetList )
+    {
+    if ( assetList != null )
+      {
+      for ( Asset asset : assetList )
+        {
+        if ( asset != null ) return ( asset );
+        }
+      }
+
+    return ( null );
+    }
+
+
+  /*****************************************************
+   *
    * Returns true if the asset is in the list.
    *
    *****************************************************/

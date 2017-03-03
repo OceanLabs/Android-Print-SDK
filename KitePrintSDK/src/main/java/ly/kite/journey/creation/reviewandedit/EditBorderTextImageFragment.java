@@ -51,7 +51,6 @@ import android.widget.EditText;
 import ly.kite.R;
 import ly.kite.journey.creation.AEditImageFragment;
 import ly.kite.catalogue.Product;
-import ly.kite.util.Asset;
 import ly.kite.util.AssetFragment;
 
 
@@ -237,11 +236,30 @@ public class EditBorderTextImageFragment extends AEditImageFragment
 
   /*****************************************************
    *
+   * Uses the supplied asset for the photo.
+   *
+   * For new images, we remove the previous border text.
+   *
+   *****************************************************/
+  @Override
+  protected void useAssetForImage( AssetFragment assetFragment, boolean imageIsNew )
+    {
+    super.useAssetForImage( assetFragment, imageIsNew );
+
+    if ( imageIsNew )
+      {
+      mBorderEditText.setText( null );
+      }
+    }
+
+
+  /*****************************************************
+   *
    * Called when an edited asset is returned.
    *
    *****************************************************/
   @Override
-  protected void onEditedAsset( AssetFragment assetFragment )
+  protected void onEditingComplete( AssetFragment assetFragment )
     {
     if ( assetFragment != null && mKiteActivity instanceof ICallback )
       {
@@ -251,17 +269,6 @@ public class EditBorderTextImageFragment extends AEditImageFragment
 
 
   ////////// Method(s) //////////
-
-  /*****************************************************
-   *
-   * Called when the Next button is clicked.
-   *
-   *****************************************************/
-  @Override
-  protected void onConfirm()
-    {
-    returnEditedAssetFragment();
-    }
 
 
   ////////// Inner Class(es) //////////

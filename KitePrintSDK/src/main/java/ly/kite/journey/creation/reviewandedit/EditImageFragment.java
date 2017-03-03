@@ -51,7 +51,6 @@ import android.view.ViewGroup;
 import ly.kite.R;
 import ly.kite.journey.UserJourneyType;
 import ly.kite.journey.creation.AEditImageFragment;
-import ly.kite.util.Asset;
 import ly.kite.catalogue.Product;
 import ly.kite.util.AssetFragment;
 import ly.kite.widget.EditableMaskedImageView;
@@ -223,7 +222,7 @@ public class EditImageFragment extends AEditImageFragment
    * Called when an edited asset is returned.
    *
    *****************************************************/
-  protected void onEditedAsset( AssetFragment assetFragment )
+  protected void onEditingComplete( AssetFragment assetFragment )
     {
     if ( assetFragment != null && mKiteActivity instanceof ICallback )
       {
@@ -245,17 +244,6 @@ public class EditImageFragment extends AEditImageFragment
       {
       ( (ICallback)mKiteActivity ).eiOnCancel();
       }
-    }
-
-
-  /*****************************************************
-   *
-   * Called when the confirm button is clicked.
-   *
-   *****************************************************/
-  protected void onConfirm()
-    {
-    returnEditedAssetFragment();
     }
 
 
