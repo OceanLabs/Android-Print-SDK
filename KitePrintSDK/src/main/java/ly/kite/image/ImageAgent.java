@@ -243,7 +243,8 @@ public class ImageAgent
 
   /*****************************************************
    *
-   * Returns a crop rectangle.
+   * Returns a proportional crop rectangle using the aspect
+   * ratio.
    *
    *****************************************************/
   static public RectF getProportionalCropRectangle( int originalWidth, int originalHeight, float croppedAspectRatio )
@@ -274,6 +275,23 @@ public class ImageAgent
 
 
     return ( proportionalCropRectangle );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a crop rectangle using the aspect ratio.
+   *
+   *****************************************************/
+  static public Rect getCropRectangle( int originalWidth, int originalHeight, float croppedAspectRatio )
+    {
+    RectF proportionalCropRectangle = getProportionalCropRectangle( originalWidth, originalHeight, croppedAspectRatio );
+
+    return ( new Rect(
+            (int)( originalWidth  * proportionalCropRectangle.left ),
+            (int)( originalHeight * proportionalCropRectangle.top ),
+            (int)( originalWidth  * proportionalCropRectangle.right ),
+            (int)( originalHeight * proportionalCropRectangle.bottom ) ) );
     }
 
 

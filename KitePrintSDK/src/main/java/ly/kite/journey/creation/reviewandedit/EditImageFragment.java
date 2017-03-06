@@ -51,7 +51,6 @@ import android.view.ViewGroup;
 import ly.kite.R;
 import ly.kite.journey.UserJourneyType;
 import ly.kite.journey.creation.AEditImageFragment;
-import ly.kite.util.Asset;
 import ly.kite.catalogue.Product;
 import ly.kite.util.AssetFragment;
 import ly.kite.widget.EditableMaskedImageView;
@@ -88,9 +87,9 @@ public class EditImageFragment extends AEditImageFragment
    * Creates a new instance of this fragment.
    *
    *****************************************************/
-  public static EditImageFragment newInstance( Product product, Asset imageAsset )
+  public static EditImageFragment newInstance( Product product, AssetFragment imageAssetFragment )
     {
-    return ( new EditImageFragment( product, imageAsset ) );
+    return ( new EditImageFragment( product, imageAssetFragment ) );
     }
 
 
@@ -102,9 +101,9 @@ public class EditImageFragment extends AEditImageFragment
 
 
   @SuppressLint("ValidFragment")
-  private EditImageFragment( Product product, Asset imageAsset )
+  private EditImageFragment( Product product, AssetFragment imageAssetFragment )
     {
-    super( product, imageAsset );
+    super( product, imageAssetFragment );
     }
 
 
@@ -179,7 +178,7 @@ public class EditImageFragment extends AEditImageFragment
       EditableMaskedImageView.BorderHighlight borderHighlight = userJourneyType.editBorderHighlight();
 
       mEditableImageContainerFrame
-              .setImage( mImageAsset )
+              .setImage( mUnmodifiedImageAssetFragment )
               .setMask( mProduct.getUserJourneyType().editMaskResourceId(), mProduct.getImageAspectRatio() )
               .setTranslucentBorderPixels( resources.getDimensionPixelSize( R.dimen.edit_image_translucent_border_size ) )
               .setBorderHighlight( borderHighlight, resources.getDimensionPixelSize( R.dimen.edit_image_border_highlight_size ) );
@@ -223,7 +222,7 @@ public class EditImageFragment extends AEditImageFragment
    * Called when an edited asset is returned.
    *
    *****************************************************/
-  protected void onEditedAsset( AssetFragment assetFragment )
+  protected void onEditingComplete( AssetFragment assetFragment )
     {
     if ( assetFragment != null && mKiteActivity instanceof ICallback )
       {
@@ -245,17 +244,6 @@ public class EditImageFragment extends AEditImageFragment
       {
       ( (ICallback)mKiteActivity ).eiOnCancel();
       }
-    }
-
-
-  /*****************************************************
-   *
-   * Called when the confirm button is clicked.
-   *
-   *****************************************************/
-  protected void onConfirm()
-    {
-    returnEditedAsset();
     }
 
 

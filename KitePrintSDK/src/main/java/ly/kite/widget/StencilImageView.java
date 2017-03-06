@@ -52,6 +52,8 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
+import ly.kite.image.ImageAgent;
+
 
 ///// Class Declaration /////
 
@@ -206,11 +208,10 @@ public class StencilImageView extends ImageView
       }
 
 
-    // Create the image that we will be drawing to a temporary canvas
+    // Create a bitmap and canvas for drawing the stencilled image
 
-    Bitmap blendBitmap = Bitmap.createBitmap( mViewWidth, mViewHeight, Bitmap.Config.ARGB_8888 );
-
-    Canvas blendCanvas = new Canvas( blendBitmap );
+    Bitmap blendedBitmap = Bitmap.createBitmap( mViewWidth, mViewHeight, Bitmap.Config.ARGB_8888 );
+    Canvas blendCanvas   = new Canvas( blendedBitmap );
 
     blendCanvas.drawColor( 0x00000000 );
 
@@ -220,18 +221,19 @@ public class StencilImageView extends ImageView
     mStencilDrawable.draw( blendCanvas );
 
 
-    // Draw the bitmap on the canvas using the stencil alpha
+    // Draw the bitmap on the canvas using the stencil alpha. Make sure the bitmap maintains its aspect
+    // ratio, but is cropped if necessary.
 
     Paint paint = new Paint();
     paint.setXfermode( new PorterDuffXfermode( PorterDuff.Mode.SRC_ATOP ) );
 
-    Rect sourceRect = new Rect( 0, 0, mOriginalImageBitmap.getWidth(), mOriginalImageBitmap.getHeight() );
+    Rect sourceRect = ImageAgent.getCropRectangle( mOriginalImageBitmap.getWidth(), mOriginalImageBitmap.getHeight(), (float)mViewWidth / (float)mViewHeight );
     Rect targetRect = new Rect( 0, 0, mViewWidth, mViewHeight );
 
     blendCanvas.drawBitmap( mOriginalImageBitmap, sourceRect, targetRect, paint );
 
 
-    super.setImageBitmap( blendBitmap );
+    super.setImageBitmap( blendedBitmap );
     }
 
 

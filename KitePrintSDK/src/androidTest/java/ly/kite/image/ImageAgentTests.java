@@ -40,6 +40,7 @@ package ly.kite.image;
 ///// Import(s) /////
 
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.graphics.RectF;
 
 import junit.framework.Assert;
@@ -102,6 +103,43 @@ public class ImageAgentTests extends TestCase
 
     Assert.assertEquals( "jskfh____k08723_______hjisdfh_h__", ImageAgent.toSafeString( "jskfh/?&^k08723/+[]{}£hjisdfh.h#@" ) );
     Assert.assertEquals( "abcedfghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_________________________________", ImageAgent.toSafeString( "abcedfghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"£$€%^&*()-_=+[]{};:'@#~,<.>/?\\|" ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Get crop rectangle tests.
+   *
+   *****************************************************/
+
+  public void testGetCropRectangle1()
+    {
+    Rect cropRectangle = ImageAgent.getCropRectangle( 12, 12, 1f );
+
+    Assert.assertEquals(  0, cropRectangle.left   );
+    Assert.assertEquals(  0, cropRectangle.top    );
+    Assert.assertEquals( 12, cropRectangle.right  );
+    Assert.assertEquals( 12, cropRectangle.bottom );
+    }
+
+  public void testGetCropRectangle2()
+    {
+    Rect cropRectangle = ImageAgent.getCropRectangle( 12, 12, 2f );
+
+    Assert.assertEquals(  0, cropRectangle.left   );
+    Assert.assertEquals(  3, cropRectangle.top    );
+    Assert.assertEquals( 12, cropRectangle.right  );
+    Assert.assertEquals(  9, cropRectangle.bottom );
+    }
+
+  public void testGetCropRectangle3()
+    {
+    Rect cropRectangle = ImageAgent.getCropRectangle( 12, 12, 0.5f );
+
+    Assert.assertEquals(  3, cropRectangle.left   );
+    Assert.assertEquals(  0, cropRectangle.top    );
+    Assert.assertEquals(  9, cropRectangle.right  );
+    Assert.assertEquals( 12, cropRectangle.bottom );
     }
 
 

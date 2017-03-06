@@ -78,10 +78,10 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String      LOG_TAG                = "AEditImageFragment";
+  static private final String      LOG_TAG                         = "AEditImageFragment";
 
-  static public  final String      BUNDLE_KEY_PRODUCT     = "product";
-  static private final String      BUNDLE_KEY_IMAGE_ASSET = "imageAsset";
+  static public  final String      BUNDLE_KEY_PRODUCT              = "product";
+  static private final String      BUNDLE_KEY_IMAGE_ASSET_FRAGMENT = "imageAssetFragment";
 
 
   ////////// Static Variable(s) //////////
@@ -91,14 +91,13 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
 
   protected Product                      mProduct;
 
-  protected Asset                        mImageAsset;
+  protected AssetFragment                mUnmodifiedImageAssetFragment;
+  protected Asset                        mModifiedAsset;
 
   protected EditableImageContainerFrame  mEditableImageContainerFrame;
   private   ProgressBar                  mProgressSpinner;
 
-  private   boolean                      mEditOperationInProgress;
-
-  protected Asset                        mLastEditedAsset;
+  private   boolean                      mTransformOperationInProgress;
 
 
   ////////// Static Initialiser(s) //////////
@@ -124,13 +123,13 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
    * Creates a new instance of this fragment.
    *
    *****************************************************/
-  protected AEditImageFragment( Product product, Asset imageAsset )
+  protected AEditImageFragment( Product product, AssetFragment imageAssetFragment )
     {
     Bundle arguments = new Bundle();
 
     arguments.putParcelable( BUNDLE_KEY_PRODUCT, product );
 
-    if ( imageAsset != null ) arguments.putParcelable( BUNDLE_KEY_IMAGE_ASSET, imageAsset );
+    if ( imageAssetFragment != null ) arguments.putParcelable( BUNDLE_KEY_IMAGE_ASSET_FRAGMENT, imageAssetFragment );
 
     setArguments( arguments );
     }
@@ -207,12 +206,12 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
 
     if ( savedInstanceState != null )
       {
-      mImageAsset = savedInstanceState.getParcelable( BUNDLE_KEY_IMAGE_ASSET );
+      mUnmodifiedImageAssetFragment = savedInstanceState.getParcelable( BUNDLE_KEY_IMAGE_ASSET_FRAGMENT );
       }
 
-    if ( mImageAsset == null )
+    if ( mUnmodifiedImageAssetFragment == null )
       {
-      mImageAsset = arguments.getParcelable( BUNDLE_KEY_IMAGE_ASSET );
+      mUnmodifiedImageAssetFragment = arguments.getParcelable( BUNDLE_KEY_IMAGE_ASSET_FRAGMENT );
       }
 
     }
@@ -343,9 +342,9 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
     // A different asset may have been selected by the user, which is why we save the most
     // recent version.
 
-    if ( mImageAsset != null )
+    if ( mUnmodifiedImageAssetFragment != null )
       {
-      outState.putParcelable( BUNDLE_KEY_IMAGE_ASSET, mImageAsset );
+      outState.putParcelable( BUNDLE_KEY_IMAGE_ASSET_FRAGMENT, mUnmodifiedImageAssetFragment );
       }
 
 
@@ -433,28 +432,26 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
   /*****************************************************
    *
    * Called with new picked assets. For editing single
-   * images, we don't need to create cropped versions of
-   * the images up front, so simply add the image to the
-   * list.
+   * images, we want to ensure the following:
+   *   - We don't need to create cropped versions of the
+   *     images up front
+   *   - We don't want to add the image to the original list
+   *     of assets because (a) if we cancel, we want the list
+   *     to stay as it was, and (b) we are going to replace
+   *     an image in the list anyway (and only the ProductCreationActivity
+   *     knows which one it is).
    *
    *****************************************************/
   @Override
   public void isacOnAssets( List<Asset> assetList )
     {
-    if ( assetList != null && assetList.size() > 0 )
+    Asset replacementAsset = Asset.findFirst( assetList );
+
+    if ( replacementAsset != null )
       {
-      // Add the assets to the shared list
-      for ( Asset asset : assetList )
-        {
-        mImageSpecArrayList.add( 0, new ImageSpec( asset ) );
-        }
+      mUnmodifiedImageAssetFragment = new AssetFragment( replacementAsset );
 
-
-      // Save the first asset and use it
-
-      mImageAsset = mImageSpecArrayList.get( 0 ).getAsset();
-
-      useAssetForImage( mImageAsset, true );
+      useAssetForImage( mUnmodifiedImageAssetFragment, true );
       }
     }
 
@@ -466,13 +463,13 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
    * Uses the supplied asset for the photo.
    *
    *****************************************************/
-  private void useAssetForImage( Asset asset, boolean imageIsNew )
+  protected void useAssetForImage( AssetFragment assetFragment, boolean imageIsNew )
     {
     if ( mEditableImageContainerFrame != null )
       {
       if ( imageIsNew ) mEditableImageContainerFrame.clearState();
 
-      mEditableImageContainerFrame.setAndLoadImage( asset );
+      mEditableImageContainerFrame.setAndLoadImage( assetFragment );
       }
     }
 
@@ -489,7 +486,7 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
     int itemId = item.getItemId();
 
 
-    if ( ! mEditOperationInProgress )
+    if ( !mTransformOperationInProgress )
       {
       if ( itemId == R.id.rotate_anticlockwise_menu_item )
         {
@@ -499,19 +496,19 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
           {
           ImageProcessingRequest.Builder builder;
 
-          if ( mLastEditedAsset != null )
+          if ( mModifiedAsset != null )
             {
             builder = ImageAgent.with( mKiteActivity )
-                    .transform( mLastEditedAsset );
+                    .transform( mModifiedAsset );
             }
           else
             {
             builder = ImageAgent.with( mKiteActivity )
-                    .transform( mImageAsset )
+                    .transform( mUnmodifiedImageAssetFragment.getAsset() )
                     .intoNewAsset();
             }
 
-          onEditOperationStarted();
+          onTransformOperationStarted();
 
           builder
                   .byRotatingAnticlockwise()
@@ -529,19 +526,19 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
           {
           ImageProcessingRequest.Builder builder;
 
-          if ( mLastEditedAsset != null )
+          if ( mModifiedAsset != null )
             {
             builder = ImageAgent.with( mKiteActivity )
-                    .transform( mLastEditedAsset );
+                    .transform( mModifiedAsset );
             }
           else
             {
             builder = ImageAgent.with( mKiteActivity )
-                    .transform( mImageAsset )
+                    .transform( mUnmodifiedImageAssetFragment.getAsset() )
                     .intoNewAsset();
             }
 
-          onEditOperationStarted();
+          onTransformOperationStarted();
 
           builder
                   .byFlippingHorizontally()
@@ -559,12 +556,13 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
 
   /*****************************************************
    *
-   * Called when an edit operation starts.
+   * Called when a transformation operation (flip / rotate)
+   * starts.
    *
    *****************************************************/
-  protected void onEditOperationStarted()
+  protected void onTransformOperationStarted()
     {
-    mEditOperationInProgress = true;
+    mTransformOperationInProgress = true;
 
     if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.VISIBLE );
     }
@@ -572,12 +570,13 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
 
   /*****************************************************
    *
-   * Called when an edit operation finishes.
+   * Called when a transformation operation (flip / rotate)
+   * finishes.
    *
    *****************************************************/
-  protected void onEditOperationEnded()
+  protected void onTransformOperationEnded()
     {
-    mEditOperationInProgress = false;
+    mTransformOperationInProgress = false;
 
     if ( mProgressSpinner != null ) mProgressSpinner.setVisibility( View.GONE );
     }
@@ -598,17 +597,20 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
    * Called when the confirm button is clicked.
    *
    *****************************************************/
-  abstract protected void onConfirm();
+  protected void onConfirm()
+    {
+    requestCompletedAssetFragment();
+    }
 
 
   /*****************************************************
    *
    * Called by child fragments when editing is complete.
-   * This may be asynchronous; the {@link #onEditedAsset(AssetFragment)}
+   * This may be asynchronous; the {@link #onEditingComplete(AssetFragment)}
    * method is called with the asset fragment.
    *
    *****************************************************/
-  protected void returnEditedAsset()
+  protected void requestCompletedAssetFragment()
     {
     if ( mEditableImageContainerFrame == null ) return;
 
@@ -627,9 +629,9 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
       }
 
 
-    Asset asset = ( mLastEditedAsset != null ? mLastEditedAsset : mImageAsset );
+    Asset asset = ( mModifiedAsset != null ? mModifiedAsset : mUnmodifiedImageAssetFragment.getAsset() );
 
-    onEditedAsset( new AssetFragment( asset, imageProportionalCropRectangle ) );
+    onEditingComplete( new AssetFragment( asset, imageProportionalCropRectangle ) );
     }
 
 
@@ -640,7 +642,7 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
    * this method.
    *
    *****************************************************/
-  abstract protected void onEditedAsset( AssetFragment assetFragment );
+  abstract protected void onEditingComplete( AssetFragment assetFragment );
 
 
   ////////// Inner Class(es) //////////
@@ -671,9 +673,9 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
     @Override
     public void ipcOnImageAvailable( Asset processedAsset )
       {
-      onEditOperationEnded();
+      onTransformOperationEnded();
 
-      mLastEditedAsset = processedAsset;
+      mModifiedAsset = processedAsset;
 
       if ( mEditableImageContainerFrame != null ) mEditableImageContainerFrame.setAndLoadImage( processedAsset );
       }
@@ -681,7 +683,7 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
     @Override
     public void ipcOnImageUnavailable()
       {
-      onEditOperationEnded();
+      onTransformOperationEnded();
       }
     }
 

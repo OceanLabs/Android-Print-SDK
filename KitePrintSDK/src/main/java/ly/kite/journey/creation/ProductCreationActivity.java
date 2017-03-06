@@ -738,7 +738,7 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
     // If the product supports border text - launch the border text image editor
     else if ( mProduct.flagIsSet( Product.Flag.SUPPORTS_TEXT_ON_BORDER ) )
       {
-      EditBorderTextImageFragment borderTextImageFragment = EditBorderTextImageFragment.newInstance( mProduct, imageSpec.getAsset(), imageSpec.getBorderText() );
+      EditBorderTextImageFragment borderTextImageFragment = EditBorderTextImageFragment.newInstance( mProduct, imageSpec.getAssetFragment(), imageSpec.getBorderText() );
 
       addFragment( borderTextImageFragment, EditBorderTextImageFragment.TAG );
       }
@@ -746,7 +746,7 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
     // Fall back to the standard image editor
     else
       {
-      EditImageFragment editImageFragment = EditImageFragment.newInstance( mProduct, imageSpec.getAsset() );
+      EditImageFragment editImageFragment = EditImageFragment.newInstance( mProduct, imageSpec.getAssetFragment() );
 
       addFragment( editImageFragment, EditImageFragment.TAG );
       }

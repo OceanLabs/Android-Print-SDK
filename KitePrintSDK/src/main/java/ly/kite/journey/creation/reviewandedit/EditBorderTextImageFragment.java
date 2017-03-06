@@ -40,9 +40,7 @@ package ly.kite.journey.creation.reviewandedit;
 ///// Import(s) /////
 
 import android.annotation.SuppressLint;
-import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -51,10 +49,8 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import ly.kite.R;
-import ly.kite.catalogue.Bleed;
 import ly.kite.journey.creation.AEditImageFragment;
 import ly.kite.catalogue.Product;
-import ly.kite.util.Asset;
 import ly.kite.util.AssetFragment;
 
 
@@ -96,9 +92,9 @@ public class EditBorderTextImageFragment extends AEditImageFragment
    * Creates a new instance of this fragment.
    *
    *****************************************************/
-  public static EditBorderTextImageFragment newInstance( Product product, Asset imageAsset, String borderText )
+  public static EditBorderTextImageFragment newInstance( Product product, AssetFragment imageAssetFragment, String borderText )
     {
-    EditBorderTextImageFragment fragment = new EditBorderTextImageFragment( product, imageAsset );
+    EditBorderTextImageFragment fragment = new EditBorderTextImageFragment( product, imageAssetFragment );
 
     if ( borderText != null ) fragment.getArguments().putString( BUNDLE_KEY_BORDER_TEXT, borderText );
 
@@ -114,9 +110,9 @@ public class EditBorderTextImageFragment extends AEditImageFragment
 
 
   @SuppressLint("ValidFragment")
-  private EditBorderTextImageFragment( Product product, Asset imageAsset )
+  private EditBorderTextImageFragment( Product product, AssetFragment imageAssetFragment )
     {
-    super( product, imageAsset );
+    super( product, imageAssetFragment );
     }
 
 
@@ -200,13 +196,13 @@ public class EditBorderTextImageFragment extends AEditImageFragment
     // If we haven't already got an image asset - look in the asset list. Always use the
     // last one in the list - the most recently selected.
 
-    if ( mImageAsset == null )
+    if ( mUnmodifiedImageAssetFragment == null )
       {
       int imageSpecCount = ( mImageSpecArrayList != null ? mImageSpecArrayList.size() : 0 );
 
       if ( imageSpecCount > 0 )
         {
-        mImageAsset = mImageSpecArrayList.get( imageSpecCount - 1 ).getAsset();
+        mUnmodifiedImageAssetFragment = mImageSpecArrayList.get( imageSpecCount - 1 ).getAssetFragment();
         }
       }
 
@@ -214,7 +210,7 @@ public class EditBorderTextImageFragment extends AEditImageFragment
     if ( mEditableImageContainerFrame != null )
       {
       mEditableImageContainerFrame
-              .setImage( mImageAsset )
+              .setImage( mUnmodifiedImageAssetFragment )
               .setMask( R.drawable.filled_white_rectangle, mProduct.getImageAspectRatio() );
       }
     }
@@ -240,11 +236,30 @@ public class EditBorderTextImageFragment extends AEditImageFragment
 
   /*****************************************************
    *
+   * Uses the supplied asset for the photo.
+   *
+   * For new images, we remove the previous border text.
+   *
+   *****************************************************/
+  @Override
+  protected void useAssetForImage( AssetFragment assetFragment, boolean imageIsNew )
+    {
+    super.useAssetForImage( assetFragment, imageIsNew );
+
+    if ( imageIsNew )
+      {
+      mBorderEditText.setText( null );
+      }
+    }
+
+
+  /*****************************************************
+   *
    * Called when an edited asset is returned.
    *
    *****************************************************/
   @Override
-  protected void onEditedAsset( AssetFragment assetFragment )
+  protected void onEditingComplete( AssetFragment assetFragment )
     {
     if ( assetFragment != null && mKiteActivity instanceof ICallback )
       {
@@ -254,17 +269,6 @@ public class EditBorderTextImageFragment extends AEditImageFragment
 
 
   ////////// Method(s) //////////
-
-  /*****************************************************
-   *
-   * Called when the Next button is clicked.
-   *
-   *****************************************************/
-  @Override
-  protected void onConfirm()
-    {
-    returnEditedAsset();
-    }
 
 
   ////////// Inner Class(es) //////////

@@ -1024,7 +1024,7 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
     mBlendToViewTargetRectF = new RectF( halfViewWidth - halfBlendWidth, halfViewHeight - halfBlendHeight, halfViewWidth + halfBlendWidth, halfViewHeight + halfBlendHeight );
 
 
-    // We can prepare any corener rectangles once we have the blend to view target rectangle
+    // We can prepare any corner rectangles once we have the blend to view target rectangle
     prepareCornerRectangles();
 
 
@@ -1147,7 +1147,21 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
 
   /*****************************************************
    *
-   * Restores the state to a bundle. We only try to restore
+   * Restores the state from the supplied parameters.
+   * There is no guarantee that they will be used.
+   *
+   *****************************************************/
+  public void restoreState( float imageProportionalCenterX, float imageProportionalCenterY, float imageScaleMultiplier )
+    {
+    mRestoredImageProportionalCenterX = imageProportionalCenterX;
+    mRestoredImageProportionalCenterY = imageProportionalCenterY;
+    mRestoredImageScaleMultiplier     = imageScaleMultiplier;
+    }
+
+
+  /*****************************************************
+   *
+   * Restores the state from a bundle. We only try to restore
    * the image scale factor and position, and there is
    * no guarantee that they will be used.
    *
@@ -1156,9 +1170,36 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
     {
     if ( inState != null )
       {
-      mRestoredImageProportionalCenterX = inState.getFloat( BUNDLE_KEY_IMAGE_CENTER_X );
-      mRestoredImageProportionalCenterY = inState.getFloat( BUNDLE_KEY_IMAGE_CENTER_Y );
-      mRestoredImageScaleMultiplier     = inState.getFloat( BUNDLE_KEY_IMAGE_SCALE_MULTIPLIER );
+      restoreState(
+              inState.getFloat( BUNDLE_KEY_IMAGE_CENTER_X ),
+              inState.getFloat( BUNDLE_KEY_IMAGE_CENTER_Y ),
+              inState.getFloat( BUNDLE_KEY_IMAGE_SCALE_MULTIPLIER ) );
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Restores the state from the supplied parameters.
+   * There is no guarantee that they will be used.
+   *
+   *****************************************************/
+  public void restoreState( RectF proportionalCropRectangle )
+    {
+    float cropRectangleWidth  = proportionalCropRectangle.width();
+    float cropRectangleHeight = proportionalCropRectangle.height();
+
+    if ( cropRectangleWidth > 0f && cropRectangleHeight > 0f )
+      {
+      float imageProportionCenterX    = ( proportionalCropRectangle.left + proportionalCropRectangle.right ) * 0.5f;
+      float imageProportionCenterY    = ( proportionalCropRectangle.top + proportionalCropRectangle.bottom ) * 0.5f;
+
+      float horizontalScaleMultiplier = 1.0f / cropRectangleWidth;
+      float verticalScaleMultiplier   = 1.0f / cropRectangleHeight;
+
+      float imageScaleMultiplier      = Math.min( horizontalScaleMultiplier, verticalScaleMultiplier );
+
+      restoreState( imageProportionCenterX, imageProportionCenterY, imageScaleMultiplier );
       }
     }
 

@@ -64,6 +64,7 @@ import ly.kite.catalogue.Bleed;
 import ly.kite.journey.AKiteActivity;
 import ly.kite.image.IImageConsumer;
 import ly.kite.image.ImageAgent;
+import ly.kite.util.AssetFragment;
 
 
 ///// Class Declaration /////
@@ -252,6 +253,21 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
 
   /*****************************************************
    *
+   * Sets the image asset.
+   *
+   *****************************************************/
+  public EditableImageContainerFrame setImage( AssetFragment imageAssetFragment )
+    {
+    setImage( imageAssetFragment.getAsset() );
+
+    mEditableMaskedImageView.restoreState( imageAssetFragment.getProportionalRectangle() );
+
+    return ( this );
+    }
+
+
+  /*****************************************************
+   *
    * Removes the current image from memory, sets the new
    * one, and loads it.
    *
@@ -275,6 +291,20 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
 
       loadImage();
       }
+    }
+
+
+  /*****************************************************
+   *
+   * Removes the current image from memory, sets the new
+   * one, and loads it.
+   *
+   *****************************************************/
+  public void setAndLoadImage( AssetFragment imageAssetFragment )
+    {
+    setAndLoadImage( imageAssetFragment.getAsset() );
+
+    mEditableMaskedImageView.restoreState( imageAssetFragment.getProportionalRectangle() );
     }
 
 
