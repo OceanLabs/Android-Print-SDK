@@ -2,7 +2,7 @@ machine:
   java:
     version: openjdk8
   pre:
-    - android update sdk -u -a -t 3
+    - echo "y" | android update sdk -u -a -t 3
 test:
   override:
     # Start the emulator
