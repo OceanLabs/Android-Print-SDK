@@ -2,7 +2,15 @@ machine:
   java:
     version: openjdk8
   pre:
-    - echo "y" | android update sdk -u -a -t 3
+    # This line updates / installs missing SDK components that don't seem to be
+    # up-to-date in the container used to build and test. The package numbers may
+    # change as new components are released. They can be listed with the following
+    # command:
+    #   android list sdk --all
+    # Currently we need the following:
+    #   3   : Android built tools 25.0.2
+    #   162 : Google support repository
+    - echo "y" | android update sdk -u -a -t 3,162
 test:
   override:
     # Start the emulator
