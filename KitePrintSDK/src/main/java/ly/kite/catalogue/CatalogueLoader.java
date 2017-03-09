@@ -527,7 +527,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
    * Parses a JSON products array.
    *
    ****************************************************/
-  private static void parseProducts( JSONArray productJSONArray, Catalogue catalogue )
+  static void parseProducts( JSONArray productJSONArray, Catalogue catalogue )
     {
     // Go through each JSON product
 
