@@ -28,28 +28,38 @@
     <string name="drawer_open">Zeichner geöffnet</string>
     <string name="drawer_closed">Zeichner geschlossen</string>
 
+    <string name="settings_title_show_notification_messages">Benachrichtigungsmeldungen</string>
+    <string name="settings_title_support">Kundendienst</string>
+    <string name="settings_title_privacy">Datenschutz-Bestimmungen</string>
+    <string name="settings_title_terms">Nutzungsbedingungen</string>
+    <string name="settings_title_legal">Rechtlich</string>
+    <string name="settings_title_licences">Open-Source-Lizenzen</string>
+    <string name="settings_summary_licences">Lizenzdetails für Open-Source-Software</string>
+    <string name="settings_title_build_version">Build Version</string>
+
+    <string name="license_title_picasso">Picasso</string>
+    <string name="license_url_picasso">https://raw.githubusercontent.com/square/picasso/picasso-parent-2.5.2/LICENSE.txt</string>
+    <string name="license_grid_view">GridView with Header and Footer</string>
+    <string name="license_url_grid_view">https://raw.githubusercontent.com/liaohuqiu/android-GridViewWithHeaderAndFooter/1.0.12/LICENSE.txt</string>
+
     <string name="alert_dialog_title_pack_not_full_format_string">Du hast %s ausgesucht</string>
     <string name="alert_dialog_message_pack_not_full_format_string" tools:ignore="PluralsCandidate">Du kannst für diesen Preis noch %s hinzufügen</string>
 
     <string name="alert_dialog_title_oops">Oops!</string>
     <string name="alert_dialog_message_pricing_format_string">Es gab ein Problem bei der Preisabfrage von Server:\n%s</string>
 
-    <string name="alert_dialog_title_no_intent">Interner Fehler</string>
+    <string name="alert_dialog_title_internal_error">Interner Fehler</string>
+
     <string name="alert_dialog_message_no_intent">Es gab einen Fehler.</string>
 
-    <string name="alert_dialog_title_no_arguments">Interner Fehler</string>
     <string name="alert_dialog_message_no_arguments">Es gab einen Fehler.</string>
 
-    <string name="alert_dialog_title_no_asset_list">Interner Fehler</string>
     <string name="alert_dialog_message_no_asset_list">Es gab einen Fehler.</string>
 
-    <string name="alert_dialog_title_no_asset">Interner Fehler</string>
     <string name="alert_dialog_message_no_asset">Es gab einen Fehler.</string>
 
-    <string name="alert_dialog_title_no_mask">Interner Fehler</string>
     <string name="alert_dialog_message_no_mask">Es gab einen Fehler.</string>
 
-    <string name="alert_dialog_title_no_product">Interner Fehler</string>
     <string name="alert_dialog_message_no_product">Es gab einen Fehler: Kein Produkt gefunden.  Für weitere Details überprüfe bitte Deine Anmeldung.</string>
 
     <string name="alert_dialog_title_error_retrieving_products">Fehler bei der Produktbeschaffung</string>
@@ -290,10 +300,7 @@
     <string name="order_submission_message_processed">bearbeitet</string>
 
     <string name="alert_dialog_title_order_submission_error">Übermittlungsfehler</string>
-    <string name="alert_dialog_title_order_timeout">zeit überschritten</string>
-    <string name="alert_dialog_message_order_timeout">Ihre Bestellung scheint noch nicht bearbeitet zu sein. Es kann sein das die server überlastet sind und die Zahlung noch ein wenig Zeit braucht.\n\nMöchtest du noch ein wenig warten, etwas anders tun oder möchtest du beenden?</string>
-    <string name="order_timeout_button_wait">warte</string>
-    <string name="order_timeout_button_give_up">beenden</string>
+    <string name="order_timeout_message">Ihre Bestellung scheint noch nicht bearbeitet zu sein. Es kann sein das die server überlastet sind und die Zahlung noch ein wenig Zeit braucht.\n\nBitte versuchen Sie es später noch einmal.</string>
 
     <string name="alert_dialog_title_order_cancelled">Bestellung storniert</string>
     <string name="alert_dialog_message_order_cancelled">Fehler - deine Bestellung wurde während der Übermittlung storniert.</string>

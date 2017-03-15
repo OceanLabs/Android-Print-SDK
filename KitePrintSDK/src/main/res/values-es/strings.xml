@@ -310,10 +310,7 @@
     <string name="order_submission_message_processed">Procesada</string>
 
     <string name="alert_dialog_title_order_submission_error">Error de envío de pedido</string>
-    <string name="alert_dialog_title_order_timeout">Tiempo de envío de la solicitud</string>
-    <string name="alert_dialog_message_order_timeout">Su pedido todavía no ha sido procesado. Es posible que los servidores estén actualmente ocupados y el pago esté tomando simplemente tiempo.\n\n¿Quieres esperar un poco más, o renunciar y hacer otra cosa?</string>
-    <string name="order_timeout_button_wait">Espere</string>
-    <string name="order_timeout_button_give_up">Rendirse</string>
+    <string name="order_timeout_message">Su pedido todavía no ha sido procesado. Es posible que los servidores estén actualmente ocupados y el pago esté tomando simplemente tiempo.\n\nPor favor, inténtelo de nuevo más tarde.</string>
 
     <string name="alert_dialog_title_order_cancelled">Orden cancelada</string>
     <string name="alert_dialog_message_order_cancelled">Algo ha fallado: su pedido parece haber sido cancelado durante la presentación.</string>

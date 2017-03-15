@@ -230,15 +230,14 @@ abstract public class AOrderSubmissionActivity extends AKiteActivity implements 
     {
     cleanUpAfterOrderSubmission();
 
-    displayModalDialog
-            (
-                    R.string.alert_dialog_title_order_timeout,
-                    R.string.alert_dialog_message_order_timeout,
-                    R.string.order_timeout_button_wait,
-                    new SubmitOrderRunnable( order ),
-                    R.string.order_timeout_button_give_up,
-                    null
-            );
+
+    // When the order times out, behave as we would with a failed order
+
+    Exception timeoutException = new Exception( getString( R.string.order_timeout_message ) );
+
+    order.setError( timeoutException );
+
+    onOrderFailureInt( order, timeoutException );
     }
 
 

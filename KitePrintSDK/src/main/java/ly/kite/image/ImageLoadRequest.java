@@ -110,8 +110,9 @@ public class ImageLoadRequest
   private boolean             mOnlyScaleDown;
   private Bitmap.Config       mBitmapConfig;
 
-  private int                 mOriginalWidth;
-  private int                 mOriginalHeight;
+  private Size                mOriginalSize;
+  //private int                 mOriginalWidth;
+  //private int                 mOriginalHeight;
   private Bitmap              mBitmap;
   private Exception           mException;
 
@@ -404,14 +405,16 @@ public class ImageLoadRequest
       {
       // First decode the bitmap to get its size
 
-      BitmapFactory.Options bitmapFactoryOptions = getBoundsBitmapOptions();
+      mOriginalSize = mSource.getSize( mApplicationContext );
 
-      mSource.load( mApplicationContext, bitmapFactoryOptions );
+      //BitmapFactory.Options bitmapFactoryOptions = getBoundsBitmapOptions();
 
-      mOriginalWidth  = bitmapFactoryOptions.outWidth;
-      mOriginalHeight = bitmapFactoryOptions.outHeight;
+      //mSource.load( mApplicationContext, bitmapFactoryOptions );
 
-      if ( KiteSDK.DEBUG_IMAGE_LOADING ) Log.d( LOG_TAG, "Original bitmap size = " + mOriginalWidth + " x " + mOriginalHeight );
+      //mOriginalWidth  = bitmapFactoryOptions.outWidth;
+      //mOriginalHeight = bitmapFactoryOptions.outHeight;
+
+      if ( KiteSDK.DEBUG_IMAGE_LOADING ) Log.d( LOG_TAG, "Original bitmap size = " + mOriginalSize.width + " x " + mOriginalSize.height );
 
 
       // If we only need to get the size, return now
@@ -421,9 +424,9 @@ public class ImageLoadRequest
       // If resizing has been requested, sub-sample the bitmap to just larger
       // than the resize dimensions.
 
-      int sampleSize = sampleSizeForResize( mOriginalWidth, mOriginalHeight, mResizeWidth, mResizeHeight );
+      int sampleSize = sampleSizeForResize( mOriginalSize.width, mOriginalSize.height, mResizeWidth, mResizeHeight );
 
-      if ( KiteSDK.DEBUG_IMAGE_LOADING ) Log.d( LOG_TAG, "Initial sample size = " + sampleSize );
+      if ( KiteSDK.DEBUG_IMAGE_LOADING ) Log.d( LOG_TAG, "Sample size for scaling to " + mResizeWidth + " x " + mResizeHeight + " = " + sampleSize );
 
 
       // Image loading *must* work. So even if colour space reduction or resizing hasn't
@@ -442,7 +445,7 @@ public class ImageLoadRequest
         }
       catch ( OutOfMemoryError oome )
         {
-        if ( KiteSDK.DEBUG_IMAGE_LOADING ) Log.d( LOG_TAG, "Got out of memory error" );
+        if ( KiteSDK.DEBUG_IMAGE_LOADING ) Log.d( LOG_TAG, "Caught out of memory error" );
 
         // Fall through
         }
@@ -534,7 +537,7 @@ public class ImageLoadRequest
 
     Bitmap bitmap = mSource.load( mApplicationContext, bitmapFactoryOptions );
 
-    if ( KiteSDK.DEBUG_IMAGE_LOADING ) Log.d( LOG_TAG, "Bitmap loaded: " + bitmap + ", config = " + bitmap.getConfig() );
+    if ( KiteSDK.DEBUG_IMAGE_LOADING ) Log.d( LOG_TAG, "Bitmap loaded: " + bitmap.getWidth() + " x " + bitmap.getHeight() + ", config = " + bitmap.getConfig() );
 
 
     // Apply any pre-resize transformation
@@ -544,6 +547,8 @@ public class ImageLoadRequest
       if ( KiteSDK.DEBUG_IMAGE_LOADING ) Log.d( LOG_TAG, "Applying pre-resize transformer: " + mPreResizeTransformer );
 
       bitmap = mPreResizeTransformer.getTransformedBitmap( bitmap );
+
+      if ( KiteSDK.DEBUG_IMAGE_LOADING ) Log.d( LOG_TAG, "Bitmap transformed: " + bitmap.getWidth() + " x " + bitmap.getHeight() );
       }
 
 
@@ -552,6 +557,8 @@ public class ImageLoadRequest
     if ( mResizeWidth > 0 && mResizeHeight > 0 )
       {
       bitmap = ImageAgent.scaleBitmap( bitmap, mResizeWidth, mResizeHeight, mOnlyScaleDown );
+
+      if ( KiteSDK.DEBUG_IMAGE_LOADING ) Log.d( LOG_TAG, "Bitmap scaled: " + bitmap.getWidth() + " x " + bitmap.getHeight() );
       }
 
 
@@ -562,6 +569,8 @@ public class ImageLoadRequest
       if ( KiteSDK.DEBUG_IMAGE_LOADING ) Log.d( LOG_TAG, "Applying post-resize transformer: " + mPostResizeTransformer );
 
       bitmap = mPostResizeTransformer.getTransformedBitmap( bitmap );
+
+      if ( KiteSDK.DEBUG_IMAGE_LOADING ) Log.d( LOG_TAG, "Bitmap transformed: " + bitmap.getWidth() + " x " + bitmap.getHeight() );
       }
 
 
@@ -580,7 +589,7 @@ public class ImageLoadRequest
     // Check for a size consumer
     if ( mImageSizeConsumer != null )
       {
-      if ( mException == null ) mImageSizeConsumer.onImageSizeAvailable( mOriginalWidth, mOriginalHeight );
+      if ( mException == null ) mImageSizeConsumer.onImageSizeAvailable( mOriginalSize.width, mOriginalSize.height );
       else                      mImageSizeConsumer.onImageSizeUnavailable( mException );
       }
 
@@ -594,6 +603,24 @@ public class ImageLoadRequest
 
 
   ////////// Inner Class(es) //////////
+
+  /*****************************************************
+   *
+   * A size.
+   *
+   *****************************************************/
+  private class Size
+    {
+    int width;
+    int height;
+
+    Size( int width, int height )
+      {
+      this.width  = width;
+      this.height = height;
+      }
+    }
+
 
   /*****************************************************
    *
@@ -618,6 +645,34 @@ public class ImageLoadRequest
 
     /*****************************************************
      *
+     * Returns the size of an image, keeping in consideration
+     * any rotation that is applied.
+     *
+     *****************************************************/
+    protected Size getRotatedImageSize( Context context, BitmapFactory.Options bitmapFactoryOptions, Uri uri )
+      {
+      int rotation = getRotationForImage( context, uri );
+
+      int width;
+      int height;
+
+      if ( rotation == 90 || rotation == 270 )
+        {
+        width  = bitmapFactoryOptions.outHeight;
+        height = bitmapFactoryOptions.outWidth;
+        }
+      else
+        {
+        width  = bitmapFactoryOptions.outWidth;
+        height = bitmapFactoryOptions.outHeight;
+        }
+
+      return ( new Size( width, height ) );
+      }
+
+
+    /*****************************************************
+     *
      * Performs any rotation to the image.
      *
      *****************************************************/
@@ -627,17 +682,30 @@ public class ImageLoadRequest
 
       if ( bitmap != null && rotation != 0 )
         {
-        // Perform the rotation by using a matrix to transform the bitmap
+        int targetWidth  = bitmap.getWidth();
+        int targetHeight = bitmap.getHeight();
+
+
+        // Transforming the bitmap with a rotational matrix
 
         Matrix matrix = new Matrix();
 
         matrix.preRotate( rotation );
 
-        bitmap = Bitmap.createBitmap( bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true );
+        bitmap = Bitmap.createBitmap( bitmap, 0, 0, targetWidth, targetHeight, matrix, true );
         }
 
       return ( bitmap );
       }
+
+
+    /*****************************************************
+     *
+     * Called to decode the image using the supplied options,
+     * on a background thread.
+     *
+     *****************************************************/
+    abstract Size getSize( Context context ) throws Exception;
 
 
     /*****************************************************
@@ -663,6 +731,17 @@ public class ImageLoadRequest
     BitmapBytesSource( byte[] bitmapBytes )
       {
       mSourceBitmapBytes = bitmapBytes;
+      }
+
+
+    @Override
+    Size getSize( Context context )
+      {
+      BitmapFactory.Options bitmapFactoryOptions = getBoundsBitmapOptions();
+
+      load( context, bitmapFactoryOptions );
+
+      return ( new Size( bitmapFactoryOptions.outWidth, bitmapFactoryOptions.outHeight ) );
       }
 
 
@@ -702,6 +781,13 @@ public class ImageLoadRequest
 
 
     @Override
+    Size getSize( Context context )
+      {
+      return ( new Size( mSourceBitmap.getWidth(), mSourceBitmap.getHeight() ) );
+      }
+
+
+    @Override
     Bitmap load( Context context, BitmapFactory.Options bitmapFactoryOptions )
       {
       // Pretend we decoded a bitmap
@@ -727,6 +813,17 @@ public class ImageLoadRequest
     FileSource( File file )
       {
       mSourceFile = file;
+      }
+
+
+    @Override
+    Size getSize( Context context )
+      {
+      BitmapFactory.Options bitmapFactoryOptions = getBoundsBitmapOptions();
+
+      BitmapFactory.decodeFile( mSourceFile.getPath(), bitmapFactoryOptions );
+
+      return ( getRotatedImageSize( context, bitmapFactoryOptions, Uri.fromFile( mSourceFile ) ) );
       }
 
 
@@ -827,6 +924,15 @@ public class ImageLoadRequest
       }
 
 
+    @Override
+    Size getSize( Context context )
+      {
+      // An image from a URL should have been downloaded first and then changed to a file load,
+      // so throw an exception if we are called.
+
+      throw ( new IllegalStateException( "Cannot decode an image from a URL - it should have been downloaded first" ) );
+      }
+
 
     @Override
     Bitmap load( Context context, BitmapFactory.Options bitmapFactoryOptions )
@@ -889,6 +995,17 @@ public class ImageLoadRequest
 
 
     @Override
+    Size getSize( Context context ) throws FileNotFoundException
+      {
+      BitmapFactory.Options bitmapFactoryOptions = getBoundsBitmapOptions();
+
+      load ( context, bitmapFactoryOptions );
+
+      return ( getRotatedImageSize( context, bitmapFactoryOptions, mSourceURI ) );
+      }
+
+
+    @Override
     Bitmap load( Context context, BitmapFactory.Options bitmapFactoryOptions ) throws FileNotFoundException
       {
       BufferedInputStream bis = new BufferedInputStream( context.getContentResolver().openInputStream( mSourceURI ) );
@@ -919,6 +1036,17 @@ public class ImageLoadRequest
     BitmapResourceSource( int resourceId )
       {
       mSourceResourceId = resourceId;
+      }
+
+
+    @Override
+    Size getSize( Context context )
+      {
+      BitmapFactory.Options bitmapFactoryOptions = getBoundsBitmapOptions();
+
+      load( context, getBoundsBitmapOptions() );
+
+      return ( new Size( bitmapFactoryOptions.outWidth, bitmapFactoryOptions.outHeight ) );
       }
 
 

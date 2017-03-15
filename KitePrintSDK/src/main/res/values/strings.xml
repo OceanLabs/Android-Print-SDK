@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <string name="title_kite_sdk">Kite SDK</string>
+    <string name="title_kite_sdk" translatable="false">Kite SDK</string>
 
     <string name="action_bar_typeface_asset_name" translatable="false"></string>
 
@@ -70,22 +70,22 @@
 
     <string name="alert_dialog_title_internal_error">Internal Error</string>
 
-    <string name="alert_dialog_title_no_intent">@string/alert_dialog_title_internal_error</string>
+    <string name="alert_dialog_title_no_intent" translatable="false">@string/alert_dialog_title_internal_error</string>
     <string name="alert_dialog_message_no_intent">There was an error: no intent was passed to the fragment. Please check the log for more details.</string>
 
-    <string name="alert_dialog_title_no_arguments">@string/alert_dialog_title_internal_error</string>
+    <string name="alert_dialog_title_no_arguments" translatable="false">@string/alert_dialog_title_internal_error</string>
     <string name="alert_dialog_message_no_arguments">There was an error: no arguments were passed to the fragment. Please check the log for more details.</string>
 
-    <string name="alert_dialog_title_no_asset_list">@string/alert_dialog_title_internal_error</string>
+    <string name="alert_dialog_title_no_asset_list" translatable="false">@string/alert_dialog_title_internal_error</string>
     <string name="alert_dialog_message_no_asset_list">There was an error: no asset list was found. Please check the log for more details.</string>
 
-    <string name="alert_dialog_title_no_asset">@string/alert_dialog_title_internal_error</string>
+    <string name="alert_dialog_title_no_asset" translatable="false">@string/alert_dialog_title_internal_error</string>
     <string name="alert_dialog_message_no_asset">There was an error: no asset was found. Please check the log for more details.</string>
 
-    <string name="alert_dialog_title_no_mask">@string/alert_dialog_title_internal_error</string>
+    <string name="alert_dialog_title_no_mask" translatable="false">@string/alert_dialog_title_internal_error</string>
     <string name="alert_dialog_message_no_mask">There was an error: no mask was found. Please check the log for more details.</string>
 
-    <string name="alert_dialog_title_no_product">@string/alert_dialog_title_internal_error</string>
+    <string name="alert_dialog_title_no_product" translatable="false">@string/alert_dialog_title_internal_error</string>
     <string name="alert_dialog_message_no_product">There was an error: no product was found. Please check the log for more details.</string>
 
     <string name="alert_dialog_title_error_retrieving_products">Error Retrieving Products</string>
@@ -126,7 +126,7 @@
 
     <string name="alert_dialog_message_connectivity">Please check your internet connectivity and then try again</string>
 
-    <string name="alert_dialog_title_processing">@string/Processing_</string>
+    <string name="alert_dialog_title_processing" translatable="false">@string/Processing_</string>
     <string name="alert_dialog_message_processing">One moment…</string>
 
     <string name="alert_dialog_title_end_customer_session">End Session</string>
@@ -151,7 +151,7 @@
     <string name="alert_dialog_item_pay_with_existing_card_format_string">Pay with card ending %1$s</string>
 
     <string name="log_out_warning">Automatically\nlogging you out in</string>
-    <string name="time_remaining_format_string">%1$s</string>
+    <string name="time_remaining_format_string" translatable="false">%1$s</string>
 
     <string name="progress_dialog_title_add_to_basket">Adding to basket</string>
     <string name="progress_dialog_title_updating_basket">Updating basket</string>
@@ -333,10 +333,7 @@
     <string name="order_submission_message_processed">Processed</string>
 
     <string name="alert_dialog_title_order_submission_error">Order Submission Error</string>
-    <string name="alert_dialog_title_order_timeout">Order Submission Timeout</string>
-    <string name="alert_dialog_message_order_timeout">Your order does not appear to have been processed yet. It may be that the servers are currently busy and the payment is simply taking time.\n\nWould you like to wait a little longer, or give up and do something else?</string>
-    <string name="order_timeout_button_wait">Wait</string>
-    <string name="order_timeout_button_give_up">Give up</string>
+    <string name="order_timeout_message">Your order does not appear to have been processed yet. It may be that the servers are currently busy and the payment is simply taking time.\n\nPlease try again later.</string>
 
     <string name="alert_dialog_title_order_cancelled">Order Cancelled</string>
     <string name="alert_dialog_message_order_cancelled">Something has gone wrong - your order appears to have been cancelled during submission.</string>

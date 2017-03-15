@@ -3,6 +3,11 @@
 
     <string name="unit_centimeters">centimeter</string>
     <string name="unit_inches">tommer</string>
+    <string name="unit_pixels">pixels</string>
+
+    <string name="unit_centimeters_short">cm</string>
+    <string name="unit_inches_short">tm</string>
+    <string name="unit_pixels_short">px</string>
 
     <string name="month_hint">MM</string>
     <string name="year_hint">ÅÅÅÅ</string>
@@ -14,7 +19,7 @@
     <string name="title_calendar">Kalender</string>
     <string name="title_poster">Poster</string>
     <string name="title_basket">Kurv</string>
-    <string name="title_payment_sandbox">Betaling (Snadbox))</string>
+    <string name="title_payment_sandbox">Betaling (Sandbox))</string>
     <string name="title_payment">Betaling</string>
     <string name="title_payment_source_sandbox">Betalingskilde (Sandbox)</string>
     <string name="title_payment_source">Betalingskilde</string>
@@ -23,28 +28,38 @@
     <string name="drawer_open">Skuffe åben</string>
     <string name="drawer_closed">Skuffe lukket</string>
 
+    <string name="settings_title_show_notification_messages">Notification meddelelser</string>
+    <string name="settings_title_support">Kunde support</string>
+    <string name="settings_title_privacy">Fortrolighedspolitik</string>
+    <string name="settings_title_terms">Betingelser for brug</string>
+    <string name="settings_title_legal">Gyldige</string>
+    <string name="settings_title_licences">Open source licenser</string>
+    <string name="settings_summary_licences">Licensbetingelser oplysninger om open source-software</string>
+    <string name="settings_title_build_version">Byg version</string>
+
+    <string name="license_title_picasso">Picasso</string>
+    <string name="license_url_picasso">https://raw.githubusercontent.com/square/picasso/picasso-parent-2.5.2/LICENSE.txt</string>
+    <string name="license_grid_view">GridView with Header and Footer</string>
+    <string name="license_url_grid_view">https://raw.githubusercontent.com/liaohuqiu/android-GridViewWithHeaderAndFooter/1.0.12/LICENSE.txt</string>
+
     <string name="alert_dialog_title_pack_not_full_format_string">Du har valgt %s</string>
     <string name="alert_dialog_message_pack_not_full_format_string" tools:ignore="PluralsCandidate">Du kan tilføje %d mere til den samme pris</string>
 
     <string name="alert_dialog_title_oops">Ups!</string>
     <string name="alert_dialog_message_pricing_format_string">Der opstod et problem med nedhentingen af priser fra serveren:\n%s</string>
 
-    <string name="alert_dialog_title_no_intent">Intern fejl</string>
+    <string name="alert_dialog_title_internal_error">Intern fejl</string>
+
     <string name="alert_dialog_message_no_intent">Der opstod en fejl: ingen intent blev fundet. Tjek venligst loggen for flere detaljer.</string>
 
-    <string name="alert_dialog_title_no_arguments">Intern fejl</string>
     <string name="alert_dialog_message_no_arguments">Der opstod en fejl: ingen parametre blev fundet. Tjek venligst loggen for flere detaljer.</string>
 
-    <string name="alert_dialog_title_no_asset_list">Intern fejl</string>
     <string name="alert_dialog_message_no_asset_list">Der opstod en fejl: ingen aktiverliste blev fundet. Tjek venligst loggen for flere detaljer.</string>
 
-    <string name="alert_dialog_title_no_asset">Intern fejl</string>
     <string name="alert_dialog_message_no_asset">Der opstod en fejl: ingen aktiver blev fundet. Tjek venligst loggen for flere detaljer.</string>
 
-    <string name="alert_dialog_title_no_mask">Intern fejl</string>
     <string name="alert_dialog_message_no_mask">Der opstod en fejl: ingen maske blev fundet. Tjek venligst loggen for flere detaljer.</string>
 
-    <string name="alert_dialog_title_no_product">Intern fejl</string>
     <string name="alert_dialog_message_no_product">Der opstod en fejl: produktet blev ikke fundet. Tjek venligst loggen for flere detaljer.</string>
 
     <string name="alert_dialog_title_error_retrieving_products">Fejl under henting af produkter</string>
@@ -283,10 +298,7 @@
     <string name="order_submission_message_processed">Forarbejdet</string>
 
     <string name="alert_dialog_title_order_submission_error">Ordreindsendelses fejl</string>
-    <string name="alert_dialog_title_order_timeout">Timeout i ordreindsendelse</string>
-    <string name="alert_dialog_message_order_timeout">Din ordre fremstår ikke som bearbejdet endnu. Det kan skyldes at serverne er travle og at betalingen derfor tager lang tid. Vil du vente lidt længere eller give op og gøre noget andet?</string>
-    <string name="order_timeout_button_wait">Vent</string>
-    <string name="order_timeout_button_give_up">Giv op</string>
+    <string name="order_timeout_message">Din ordre fremstår ikke som bearbejdet endnu. Det kan skyldes at serverne er travle og at betalingen derfor tager lang tid.\n\nPrøv igen senere.</string>
 
     <string name="alert_dialog_title_order_cancelled">Ordren er annulleret</string>
     <string name="alert_dialog_message_order_cancelled">Noget gik galt - din ordre ser ud til at være blevet annulleret under indsendelsen.</string>
