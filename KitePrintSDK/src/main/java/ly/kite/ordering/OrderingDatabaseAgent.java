@@ -550,33 +550,46 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
    *****************************************************/
   public void clearBasket( long basketId )
     {
-    SQLiteDatabase database = getWritableDatabase();
+    SQLiteDatabase database = null;
 
-    if ( database == null )
+    try
       {
-      Log.e( LOG_TAG, "Unable to get writable database" );
+      database = getWritableDatabase();
 
-      return;
+      if ( database == null )
+        {
+        Log.e( LOG_TAG, "Unable to get writable database" );
+
+        return;
+        }
+
+
+      // We don't want to duplicate (and risk messing up) the SQL, so select
+      // all the items from the basket, and use the delete item method to remove
+      // them one by one.
+
+      List<ContentValues> itemContentValuesList = selectBasketItems( basketId );
+
+      for ( ContentValues contentValues : itemContentValuesList )
+        {
+        deleteItem( database, contentValues.getAsLong( "item_id" ) );
+        }
+
+
+      // Delete the actual basket entry, but never delete the default basket.
+
+      if ( basketId != OrderingDataAgent.BASKET_ID_DEFAULT )
+        {
+        database.execSQL( "DELETE FROM " + TABLE_BASKET + " WHERE id = " + basketId );
+        }
       }
-
-
-    // We don't want to duplicate (and risk messing up) the SQL, so select
-    // all the items from the basket, and use the delete item method to remove
-    // them one by one.
-
-    List<ContentValues> itemContentValuesList = selectBasketItems( basketId );
-
-    for ( ContentValues contentValues : itemContentValuesList )
+    catch ( Exception e )
       {
-      deleteItem( contentValues.getAsLong( "item_id" ) );
+      Log.e( LOG_TAG, "Unable to clear basket", e );
       }
-
-
-    // Delete the actual basket entry, but never delete the default basket.
-
-    if ( basketId != OrderingDataAgent.BASKET_ID_DEFAULT )
+    finally
       {
-      database.execSQL( "DELETE FROM " + TABLE_BASKET + " WHERE id = " + basketId );
+      if ( database != null ) database.close();
       }
     }
 
@@ -2368,23 +2381,23 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
    * we don't need to specify the basket id as well.
    *
    *****************************************************/
-  public void deleteItem( long itemId )
+  public void deleteItem( SQLiteDatabase database, long itemId )
     {
     // Construct the delete SQL statements.
 
     String deleteImageSpecAdditionalParameterSQLString = "DELETE" +
-                                                          " FROM ImageSpecAdditionalParameter" +
-                                                          " WHERE image_spec_id IN ( SELECT image_spec_id" +
-                                                                                    " FROM ItemImageSpec" +
-                                                                                   " WHERE item_id = " + itemId +
-                                                                                  " )";
+            " FROM ImageSpecAdditionalParameter" +
+            " WHERE image_spec_id IN ( SELECT image_spec_id" +
+            " FROM ItemImageSpec" +
+            " WHERE item_id = " + itemId +
+            " )";
 
     String deleteImageSpecSQLString = "DELETE" +
-                                     " FROM ImageSpec" +
-                                    " WHERE id IN ( SELECT image_spec_id" +
-                                                    " FROM ItemImageSpec" +
-                                                   " WHERE item_id = " + itemId +
-                                                " )";
+            " FROM ImageSpec" +
+            " WHERE id IN ( SELECT image_spec_id" +
+            " FROM ItemImageSpec" +
+            " WHERE item_id = " + itemId +
+            " )";
 
     String deleteItemImageSpecSQLString = "DELETE FROM ItemImageSpec WHERE item_id = " + itemId;
 
@@ -2393,13 +2406,8 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
     String deleteItemSQLString          = "DELETE FROM Item WHERE id = " + itemId;
 
 
-    SQLiteDatabase database = null;
-
     try
       {
-      // Open the database
-      database = getWritableDatabase();
-
       // Execute the delete statements
       //database.execSQL( deleteAddressSQLString );
       database.execSQL( deleteImageSpecAdditionalParameterSQLString );
@@ -2412,12 +2420,35 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
       {
       Log.e( LOG_TAG, "Unable to delete item", exception );
       }
+    }
+
+
+  /*****************************************************
+   *
+   * Deletes an  item. Since item ids are unique across baskets,
+   * we don't need to specify the basket id as well.
+   *
+   *****************************************************/
+  public void deleteItem( long itemId )
+    {
+    SQLiteDatabase database = null;
+
+    try
+      {
+      // Open the database
+      database = getWritableDatabase();
+
+      deleteItem( database, itemId );
+      }
+    catch ( Exception exception )
+      {
+      Log.e( LOG_TAG, "Unable to delete item", exception );
+      }
     finally
       {
       // Make sure the database is closed
       if ( database != null ) database.close();
       }
-
     }
 
 
