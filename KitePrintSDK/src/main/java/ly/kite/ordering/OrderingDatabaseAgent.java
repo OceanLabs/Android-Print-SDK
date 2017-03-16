@@ -568,11 +568,14 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
       // all the items from the basket, and use the delete item method to remove
       // them one by one.
 
-      List<ContentValues> itemContentValuesList = selectBasketItems( basketId );
+      List<ContentValues> itemContentValuesList = selectBasketItems( database, basketId );
 
-      for ( ContentValues contentValues : itemContentValuesList )
+      if ( itemContentValuesList != null )
         {
-        deleteItem( database, contentValues.getAsLong( "item_id" ) );
+        for ( ContentValues contentValues : itemContentValuesList )
+          {
+          deleteItem( database, contentValues.getAsLong( "item_id" ) );
+          }
         }
 
 
@@ -1657,7 +1660,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
    * from selecting all items, indexed by item_id.
    * 
    *****************************************************/
-  List<ContentValues> selectBasketItems( long basketId )
+  List<ContentValues> selectBasketItems( SQLiteDatabase database, long basketId )
     {
     // Construct the SQL statement:
     StringBuilder sqlStringBuilder = new StringBuilder()
@@ -1669,15 +1672,11 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
             .append( " ORDER BY id");
 
 
-    // Initialise the database and cursor
-    SQLiteDatabase database = null;
+    // Initialise the cursor
     Cursor         cursor   = null;
 
     try
       {
-      // Open the database
-      database = getWritableDatabase();
-
       // Execute the query, and get a cursor for the result set
       cursor = database.rawQuery( sqlStringBuilder.toString(), null );
 
@@ -1714,11 +1713,39 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
       {
       // Make sure the cursor is closed
       if ( cursor != null ) cursor.close();
-    
+      }
+
+    }
+
+
+  /*****************************************************
+   *
+   * Returns a sparse array of content values resulting
+   * from selecting all items, indexed by item_id.
+   *
+   *****************************************************/
+  List<ContentValues> selectBasketItems( long basketId )
+    {
+    SQLiteDatabase database = null;
+
+    try
+      {
+      // Open the database
+      database = getWritableDatabase();
+
+      return ( selectBasketItems( database, basketId ) );
+      }
+    catch ( Exception exception )
+      {
+      Log.e( LOG_TAG, "Unable to select basket items", exception );
+      }
+    finally
+      {
       // Make sure the database is closed
       if ( database != null ) database.close();
       }
-    
+
+    return ( null );
     }
 
 
