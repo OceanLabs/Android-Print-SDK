@@ -156,8 +156,8 @@
     <string name="progress_dialog_title_add_to_basket">Adding to basket</string>
     <string name="progress_dialog_title_updating_basket">Updating basket</string>
 
-    <string name="button_symbol_increment">+</string>
-    <string name="button_symbol_decrement">-</string>
+    <string name="button_symbol_increment" translatable="false">+</string>
+    <string name="button_symbol_decrement" translatable="false">-</string>
 
     <string name="add_more">Add More</string>
     <string name="Cancel">Cancel</string>
@@ -224,8 +224,8 @@
     <string name="order_failure_message">Something went wrong.\nPlease try again.</string>
 
     <string name="product_quantity_format_string">Pack of %d</string>
-    <string name="product_size_format_string_float">%1$.1f x %2$.1f %3$s</string>
-    <string name="product_size_format_string_int">%1$.0f x %2$.0f %3$s</string>
+    <string name="product_size_format_string_float" translatable="false">%1$.1f x %2$.1f %3$s</string>
+    <string name="product_size_format_string_int" translatable="false">%1$.0f x %2$.0f %3$s</string>
 
     <string name="product_shipping_destination_format_string" translatable="false">%1$s:</string>
     <string name="product_free_shipping">free</string>
@@ -254,7 +254,7 @@
 
     <string name="image_source_prompt">Add photos by tapping\none of the options</string>
 
-    <string name="image_selection_title_format_string">%1$s - %2$d / %3$d</string>
+    <string name="image_selection_title_format_string" translatable="false">%1$s - %2$d / %3$d</string>
     <string name="image_selection_pack_title_format_string" tools:ignore="PluralsCandidate">#%1$d Pack of %2$d %3$s</string>
 
     <string name="image_selection_clear_photos_format_string">Clear %s</string>

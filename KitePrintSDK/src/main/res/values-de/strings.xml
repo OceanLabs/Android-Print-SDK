@@ -100,7 +100,6 @@
 
     <string name="alert_dialog_message_connectivity">Bitte überprüfe Deinen Internetanschluß und versuche es noch einmal</string>
 
-    <string name="alert_dialog_title_processing">@string/Processing_</string>
     <string name="alert_dialog_message_processing">Einen Moment…</string>
 
     <string name="alert_dialog_title_end_customer_session">Vorgang beenden</string>
@@ -114,6 +113,7 @@
 
     <string name="alert_dialog_message_uploading_images">Motive werden geladen</string>
 
+    <string name="alert_dialog_message_unable_to_store_card">Karte kann nicht gespeichert werden</string>
     <string name="alert_dialog_message_no_payment_id">Keine Zahlung ID in Zahlungsnachweis gefunden</string>
     <string name="alert_dialog_message_no_proof_of_payment">Kein Nachweis der Zahlung in der Zahlungsbestätigung</string>
     <string name="alert_dialog_message_no_paypal_confirmation">Keine Zahlungsbestätigung von PayPal erhalten</string>
@@ -124,13 +124,9 @@
     <string name="alert_dialog_item_pay_with_existing_card_format_string">Bitte mit der Karte mit der Endnummer %1$s bezahlen</string>
 
     <string name="log_out_warning">Automatische\nAn-und Abmeldung</string>
-    <string name="time_remaining_format_string">%1$s</string>
 
     <string name="progress_dialog_title_add_to_basket">dem Korb hinzufügen</string>
     <string name="progress_dialog_title_updating_basket">Korb updaten</string>
-
-    <string name="button_symbol_increment">+</string>
-    <string name="button_symbol_decrement">-</string>
 
     <string name="add_more">Füge mehr hinzu</string>
     <string name="Cancel">anullieren</string>
@@ -158,6 +154,7 @@
     <string name="ORDER_ID">Bestellnummer</string>
     <string name="Order_Summary">Bestell-Zusammenfassung</string>
     <string name="ORDER_SUMMARY">Bestell-Zusammenfassung</string>
+    <string name="Oops_">Oops!</string>
     <string name="Pay">bezahlen</string>
     <string name="Payment_Id">Zahlungsnummer</string>
     <string name="PAYMENT_ID">Zahlungsnummer</string>
@@ -196,8 +193,6 @@
     <string name="order_failure_message">Etwas ist schief gegangen.\nVersuche es noch einmal.</string>
 
     <string name="product_quantity_format_string">Packung mit %d</string>
-    <string name="product_size_format_string_float">%1$.1f x %2$.1f %3$s</string>
-    <string name="product_size_format_string_int">%1$.0f x %2$.0f %3$s</string>
 
     <string name="product_free_shipping">Kostenlos</string>
     <string name="product_shipping_summary_format_string">Versand: %s</string>
@@ -211,8 +206,6 @@
 
     <string name="image_selection_empty_message">Fügen Sie Fotos hinzu, indem\nSie die Symbole oben antippen</string>
 
-    <string name="phone_case_proceed_button_text">nächster Schritt</string>
-
     <string name="edit_border_text_hint">Addieren Sie Text hier</string>
 
     <string name="multi_page_instructions_html"><![CDATA[<b>Tippen</b> Sie Bild zu bearbeiten,<br><b>Halten</b> Sie neu zu ordnen.]]></string>
@@ -221,7 +214,6 @@
 
     <string name="image_source_prompt">füge Fotos hinzu iondem du auf folgende Optionen tippst</string>
 
-    <string name="image_selection_title_format_string">%1$s - %2$d / %3$d</string>
     <string name="image_selection_pack_title_format_string" tools:ignore="PluralsCandidate">#%1$d Pack of %2$d %3$s</string>
 
     <string name="image_selection_clear_photos_format_string">Leeren %s</string>

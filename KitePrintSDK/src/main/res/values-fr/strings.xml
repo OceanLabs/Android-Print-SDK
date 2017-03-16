@@ -45,7 +45,7 @@
     <string name="alert_dialog_message_pack_not_full_format_string">Vous pouvez en ajouter %d de plus pour le même prix</string>
 
     <string name="alert_dialog_title_oops">Oups!</string>
-    <string name="alert_dialog_message_pricing_format_string">Un problème est survenu, nous n\'avons pas pu récupérer le tarif &#224; partir du serveur: %s</string>
+    <string name="alert_dialog_message_pricing_format_string">Un problème est survenu, nous n\'avons pas pu récupérer le tarif à partir du serveur: %s</string>
 
     <string name="alert_dialog_title_internal_error">Erreur interne</string>
 
@@ -71,7 +71,7 @@
     <string name="alert_dialog_message_product_not_found">Aucun produit n\'a été trouvé. Veuillez consulter votre historique de commandes pour plus de détails.</string>
 
     <string name="alert_dialog_title_create_order">Lancer une commande</string>
-    <string name="alert_dialog_message_no_cropped_image_asset">Un probl&#232;me est survenu - Kite n\'a pas pu cr&#233;er d\'image recadr&#233;e.</string>
+    <string name="alert_dialog_message_no_cropped_image_asset">Un problème est survenu - Kite n\'a pas pu créer d\'image recadrée.</string>
 
     <string name="alert_dialog_title_load_image">Impossible de charger l\'image</string>
     <string name="alert_dialog_message_could_not_load_image">Une image n\'a pas pu être chargée. Veuillez vérifier votre connexion Internet, et vos identifiants d\'accès.</string>
@@ -109,11 +109,14 @@
     <string name="alert_dialog_message_connectivity">Veuillez vérifier votre connexion Internet et réessayez</string>
     <string name="alert_dialog_message_processing">Veuillez patienter…</string>
     <string name="alert_dialog_message_uploading_images">Images en cours de téléchargement</string>
-    <string name="alert_dialog_message_no_payment_id">Aucun n&#176; de paiement trouvé dans la preuve de paiement</string>
+
+    <string name="alert_dialog_message_unable_to_store_card">Unable to store card</string>
+    <string name="alert_dialog_message_no_payment_id">Aucun numéro de paiement trouvé dans la preuve de paiement</string>
     <string name="alert_dialog_message_no_proof_of_payment">Aucune preuve de paiement indiquée sur la confirmation de paiement</string>
-    <string name="alert_dialog_message_no_paypal_confirmation">Aucune confirmation de paiement re&#231;ue de PayPal</string>
+    <string name="alert_dialog_message_no_paypal_confirmation">Aucune confirmation de paiement reçue de PayPal</string>
     <string name="alert_dialog_message_card_expired">Désolé il semble que cette carte a expiré. Veuillez réessayer.</string>
     <string name="alert_dialog_message_card_not_recognised">Désolé, nous n\'avons pu reconnaître votre carte. Veuillez essayer de saisir manuellement les détails de votre carte si nécessaire.</string>
+
     <string name="alert_dialog_item_pay_with_new_card">Changer de carte bancaire</string>
     <string name="alert_dialog_item_pay_with_existing_card_format_string">Payer avec la carte se terminant par %1$s</string>
 
@@ -135,6 +138,7 @@
     <string name="Loading">Chargement</string>
     <string name="Loading_catalogue">Chargement du catalogue</string>
     <string name="Log_Out">Se déconnecter</string>
+    <string name="Next">Suivant</string>
     <string name="No_Results">Aucun résultat</string>
     <string name="Next_Customer">Prochain client</string>
     <string name="OK">OK</string>
@@ -142,6 +146,7 @@
     <string name="ORDER_ID">NUMÉRO DE COMMANDE</string>
     <string name="Order_Summary">Récapitulatif de la commande</string>
     <string name="ORDER_SUMMARY">RÉCAPITULATIF DE LA COMMANDE</string>
+    <string name="Oops_">Oups!</string>
     <string name="Pay">Payer</string>
     <string name="Payment_Id">Numéro de paiement</string>
     <string name="PAYMENT_ID">NUMÉRO DE PAIEMENT</string>
@@ -178,6 +183,7 @@
     <string name="order_failure_message">Un problème est survenu.\nVeuillez réessayer.</string>
 
     <string name="product_quantity_format_string">Lot de %d</string>
+
     <string name="product_free_shipping">gratuit</string>
     <string name="product_shipping_summary_format_string">Livraison: %s</string>
     <string name="product_free_worldwide_shipping">Livraison internationale gratuite</string>
@@ -186,8 +192,6 @@
     <string name="product_overview_start_button_text">Lancer la création</string>
 
     <string name="image_selection_empty_message">Ajouter des photos en appuyant sur\nles icônes ci-dessus</string>
-
-    <string name="phone_case_proceed_button_text">Suivant</string>
 
     <string name="edit_border_text_hint">Ajouter texte ici</string>
 
@@ -236,6 +240,7 @@
     <string name="send_email_chooser_title">Envoyer un message</string>
     <string name="feedback_email_subject">Assistance Kite App Android</string>
     <string name="feedback_email_text">Veuillez nous indiquer vos nom et prénom:\n\nVeuillez fournir un code de bon de réduction utilisé dans votre transaction:\n\nQuel est votre numéro de téléphone (au cas où nous aurions besoin de vous contacter)?\n\nQuel est le problème que vous rencontrez avec l\'application test Kite?\n\nQuel appareil Android (téléphone / tablette) utilisez-vous?\n\nMerci beaucoup. Nous ne manquerons pas de revenir vers vous dès que nous le pouvons.\nL\'équipe Kite></string>
+
     <string name="Card_Number">Numéro de carte</string>
     <string name="Expires">Expire</string>
     <string name="CVV">CVV</string>
@@ -291,7 +296,6 @@
         <item quantity="other">%d photos</item>
     </plurals>
     <string name="ITEM">ARTICLE</string>
-    <string name="Next">Suivant</string>
     <string name="PRICE">PRIX</string>
     <string name="QUANTITY">QUANTITÉ</string>
     <string name="Choose_Delivery_Address">Choisissez l\'adresse de livraison</string>
