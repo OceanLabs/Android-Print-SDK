@@ -70,8 +70,6 @@ abstract public class AOrderSubmissionActivity extends AKiteActivity implements 
 
   static private   final String  KEY_PREVIOUS_ORDER_ID = "ly.kite.previousOrderId";
 
-  static protected final long    NO_ORDER_ID           = -1;
-
 
   ////////// Static Variable(s) //////////
 
@@ -121,7 +119,7 @@ abstract public class AOrderSubmissionActivity extends AKiteActivity implements 
 
     if ( intent != null )
       {
-      mPreviousOrderId = intent.getLongExtra( KEY_PREVIOUS_ORDER_ID, -1 );
+      mPreviousOrderId = intent.getLongExtra( KEY_PREVIOUS_ORDER_ID, OrderingDataAgent.NO_ORDER_ID );
       }
 
 

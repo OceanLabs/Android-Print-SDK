@@ -41,8 +41,11 @@ package ly.kite;
 
 import android.content.Context;
 import android.graphics.RectF;
+import android.util.Log;
 
 import junit.framework.Assert;
+
+import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,6 +65,7 @@ import ly.kite.ordering.Job;
 import ly.kite.ordering.Order;
 import ly.kite.ordering.OrderingDataAgent;
 import ly.kite.ordering.PhotobookJob;
+import ly.kite.pricing.OrderPricing;
 import ly.kite.util.AssetFragment;
 import ly.kite.util.UploadableImage;
 
@@ -872,6 +876,75 @@ public class BasketOrderTests extends KiteTestCase
 
     Assert.assertEquals( "Alpha", imagesJob2.getProductOption( "Parameter1" ) );
     Assert.assertEquals( "Bravo", imagesJob2.getProductOption( "Parameter2" ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Successful order tests.
+   *
+   *****************************************************/
+
+  public void testSuccess1()
+    {
+    OrderingDataAgent orderingDataAgent = OrderingDataAgent.getInstance( getContext() );
+    Product product = new Product( "product_id", "product_code", "Product Name", "Product Type", 0xff000000, UserJourneyType.RECTANGLE, 2 );
+
+    Catalogue catalogue = new Catalogue();
+    catalogue.addProduct( "Group Label", null, product );
+
+    HashMap<String,String> optionsMap = new HashMap<>();
+    optionsMap.put( "Parameter1", "Alpha" );
+    optionsMap.put( "Parameter2", "Bravo" );
+
+    RectF originalProportionalRectangle1 = new RectF( 0.0f, 0.0f, 1.0f, 1.0f );
+    RectF originalProportionalRectangle2 = new RectF( 0.3f, 0.25f, 0.8f, 0.75f );
+
+    ImageSpec originalImageSpec1 = new ImageSpec( createSessionAssetFile(), originalProportionalRectangle1, null, 1 );
+    ImageSpec originalImageSpec2 = new ImageSpec( createSessionAssetFile(), originalProportionalRectangle2, "Second border text", 2 );
+
+    List<ImageSpec> originalImageSpecList = new ArrayList<>();
+    originalImageSpecList.add( null );
+    originalImageSpecList.add( originalImageSpec1 );
+    originalImageSpecList.add( null );
+    originalImageSpecList.add( null );
+    originalImageSpecList.add( originalImageSpec2 );
+
+
+    orderingDataAgent.clearDefaultBasket();
+
+    orderingDataAgent.addItemSynchronously( OrderingDataAgent.CREATE_NEW_ITEM_ID, product, optionsMap, originalImageSpecList, 3 );
+
+    List<BasketItem> basketItemList = orderingDataAgent.getAllItems( catalogue );
+
+    Address shippingAddress = Address.getKiteTeamAddress();
+
+    Order order = new Order( getContext(), basketItemList, shippingAddress, "info@kite.ly", "0123 456789", null );
+
+    List<Job> jobList = order.getJobs();
+
+
+    Assert.assertEquals( 2, jobList.size() );
+
+
+    try
+      {
+      order.setReceipt( "receipt" );
+      order.setOrderPricing( new OrderPricing( "{ total: { GBP : 23.50 }, total_shipping_cost: { GBP : 2.99 }, total_product_cost : { GBP : 23.50 }, line_items: [ ] }" ) );
+
+      orderingDataAgent.onOrderSuccess( OrderingDataAgent.NO_ORDER_ID, order );
+      }
+    catch ( JSONException je )
+      {
+      Log.e( LOG_TAG, "Unable to set order success", je );
+
+      Assert.fail( je.getMessage() );
+      }
+
+
+    basketItemList = orderingDataAgent.getAllItems( catalogue );
+
+    Assert.assertEquals( 0, basketItemList.size() );
     }
 
 

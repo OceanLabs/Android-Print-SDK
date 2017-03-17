@@ -66,6 +66,7 @@ public class OrderingDataAgent
 
   static public  final int     CREATE_NEW_ITEM_ID = -1;
   static public  final long    BASKET_ID_DEFAULT  = 0;
+  static public  final long    NO_ORDER_ID        = -1;
 
 
   ////////// Static Variable(s) //////////
