@@ -99,14 +99,14 @@ public class CatalogueLoaderTests extends KiteTestCase
                     "template_id:product1," +
                     "name:\"Product 1\"," +
                     "description:\"This is product 1\"," +
-                    //"images_per_page:1," +
-                    //"grid_count_x:1," +
-                    //"grid_count_y:1," +
+                    "images_per_page:1," +  // Optional
+                    "grid_count_x:1," +  // Optional
+                    "grid_count_y:1," +  // Optional
                     "cost:[" +
                          "{currency:\"GBP\",amount:2.00,formatted:\"£2.00\"}," +
                          "{currency:\"EUR\",amount:2.50,formatted:\"€2.50\"}" +
                          "]," +
-                    //"print_in_store:false," +
+                    "print_in_store:false," +  // Optional
                     "shipping_costs:{" +
                                    "GBR:{GBP:1.50,EUR:1.75}," +
                                    "europe:{GBP:2.00,EUR:2.25}" +
@@ -124,7 +124,7 @@ public class CatalogueLoaderTests extends KiteTestCase
                                  "inch:{width:10,height:10}" +
                                  "}," +
                             "image_aspect_ratio:1.0," +
-                            //"supports_text_on_border:false" +
+                            "supports_text_on_border:false," +  // Optional
                             "cover_photo_variants:[ { variant_id:\"default\", url:\"https://d2ilj0z99kr04x.cloudfront.net/static/homepage/images/how_it_works2.bc40a551a141.png\" } ]," +
                             "mask_url: \"https://d2ilj0z99kr04x.cloudfront.net/static/homepage/images/how_it_works2.bc40a551a141.png\"," +
                             "mask_bleed: [ 1, 1, 1, 1 ]," +
@@ -141,7 +141,7 @@ public class CatalogueLoaderTests extends KiteTestCase
       }
     catch ( JSONException je )
       {
-      Assert.fail();
+      Assert.fail( je.getMessage() );
       }
 
     Assert.assertEquals( 1, catalogue.getProductCount() );

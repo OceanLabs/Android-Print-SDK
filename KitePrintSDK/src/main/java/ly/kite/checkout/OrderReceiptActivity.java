@@ -45,6 +45,7 @@ import android.content.Intent;
 
 import ly.kite.ordering.Order;
 import ly.kite.R;
+import ly.kite.ordering.OrderingDataAgent;
 
 
 ///// Class Declaration /////
@@ -98,7 +99,7 @@ public class OrderReceiptActivity extends AReceiptActivity
    *****************************************************/
   static public void start( Context context, Order order )
     {
-    start( context, NO_ORDER_ID, order, false );
+    start( context, OrderingDataAgent.NO_ORDER_ID, order, false );
     }
 
 
@@ -122,7 +123,7 @@ public class OrderReceiptActivity extends AReceiptActivity
    *****************************************************/
   static public void startForResult( Activity activity, Order order, int requestCode )
     {
-    startForResult( activity, NO_ORDER_ID, order, requestCode );
+    startForResult( activity, OrderingDataAgent.NO_ORDER_ID, order, requestCode );
     }
 
 
