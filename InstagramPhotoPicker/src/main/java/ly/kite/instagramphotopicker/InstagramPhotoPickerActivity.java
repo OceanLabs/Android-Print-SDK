@@ -70,10 +70,13 @@ public class InstagramPhotoPickerActivity extends AImagePickerActivity implement
   @SuppressWarnings( "unused" )
   static private final String  LOG_TAG                           = "InstagramPhotoPicker...";
 
+  static private final boolean DEBUGGING_ENABLED                 = true;
+
   static private final String  INTENT_EXTRA_PREFIX               = "ly.kite.instagramimagepicker";
   static private final String  INTENT_EXTRA_NAME_CLIENT_ID       = INTENT_EXTRA_PREFIX + ".clientId";
   static private final String  INTENT_EXTRA_NAME_REDIRECT_URI    = INTENT_EXTRA_PREFIX + ".redirectUri";
-  static private final String  INTENT_EXTRA_NAME_MAX_IMAGE_COUNT = INTENT_EXTRA_PREFIX + ".maxImageCount";
+
+  static private final int     REQUEST_CODE_LOGIN                = 37;
 
 
   ////////// Static Variable(s) //////////
@@ -81,6 +84,8 @@ public class InstagramPhotoPickerActivity extends AImagePickerActivity implement
 
   ////////// Member Variable(s) //////////
 
+  private String                                mClientId;
+  private String                                mRedirectUri;
   private InstagramAgent                        mInstagramAgent;
 
   private Menu                                  mOptionsMenu;
@@ -167,13 +172,17 @@ public class InstagramPhotoPickerActivity extends AImagePickerActivity implement
       return;
       }
 
-    String clientId    = intent.getStringExtra( INTENT_EXTRA_NAME_CLIENT_ID );
-    String redirectUri = intent.getStringExtra( INTENT_EXTRA_NAME_REDIRECT_URI );
 
-    mInstagramAgent = InstagramAgent.getInstance( this, clientId, redirectUri );
+    mClientId    = intent.getStringExtra( INTENT_EXTRA_NAME_CLIENT_ID );
+    mRedirectUri = intent.getStringExtra( INTENT_EXTRA_NAME_REDIRECT_URI );
+
+    mInstagramAgent = InstagramAgent.getInstance( this, mClientId, mRedirectUri, this );
 
 
     super.onCreate( savedInstanceState );
+
+
+    setTitle( R.string.title_instagram_photo_picker );
     }
 
 
@@ -211,7 +220,7 @@ public class InstagramPhotoPickerActivity extends AImagePickerActivity implement
 
       checkLoggedInState();
 
-      mImagePickerGridView.reload();
+      finish();
 
       return ( true );
       }
@@ -242,13 +251,43 @@ public class InstagramPhotoPickerActivity extends AImagePickerActivity implement
   @Override
   protected void onActivityResult( final int requestCode, final int resultCode, final Intent data )
     {
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "onActivityResult( requestCode = " + requestCode + ", resultCode = " + resultCode + ", data = " + data + " )" );
+
     super.onActivityResult( requestCode, resultCode, data );
 
-    mInstagramAgent.onActivityResult( requestCode, resultCode, data );
+    if ( requestCode == REQUEST_CODE_LOGIN )
+      {
+      if ( resultCode == Activity.RESULT_OK )
+        {
+        String accessToken = InstagramLoginActivity.getAccessToken( data );
+
+        InstagramAgent.saveAccessToken( this, accessToken );
+
+        mImagePickerGridView.reload();
+        }
+      else if ( resultCode == Activity.RESULT_CANCELED )
+        {
+        finish();
+        }
+      }
     }
 
 
-  ////////// FacebookAgent.ICallback Method(s) //////////
+  ////////// InstagramAgent.ICallback Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called to restart.
+   *
+   *****************************************************/
+  @Override
+  public void iaRestart()
+    {
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "iaRestart()" );
+
+    mImagePickerGridView.reload();
+    }
+
 
   /*****************************************************
    *
@@ -258,6 +297,8 @@ public class InstagramPhotoPickerActivity extends AImagePickerActivity implement
   @Override
   public void iaOnPhotosSuccess( List<InstagramAgent.InstagramPhoto> photoList, boolean morePhotos )
     {
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "iaOnPhotosSuccess( photoList = " + ( photoList != null ? photoList : "null" ) + " ( " + ( photoList != null ? photoList.size() : "0" ) + " ), morePhotos = " + morePhotos + " )" );
+
     mImagePickerGridView.onFinishedLoading( photoList, morePhotos );
     }
 
@@ -294,6 +335,8 @@ public class InstagramPhotoPickerActivity extends AImagePickerActivity implement
   @Override
   public void iaOnCancel()
     {
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "iaOnCancel()" );
+
     finish();
     }
 
@@ -303,18 +346,35 @@ public class InstagramPhotoPickerActivity extends AImagePickerActivity implement
   @Override
   public void onSetDepth( int depth, String parentKey )
     {
-    setTitle( R.string.title_instagram_photo_picker );
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "onSetDepth( depth = " + depth + ", parentKey = " + parentKey + " )" );
 
-    mInstagramAgent.resetPhotos();
 
-    mInstagramAgent.getPhotos( this );
+    // If we don't already have an access token, launch the log-in
+    // activity.
+
+    String accessToken = mInstagramAgent.getAccessToken( this );
+
+    if ( DEBUGGING_ENABLED ) Log.d( LOG_TAG, "accessToken = " + accessToken );
+
+    if ( accessToken != null )
+      {
+      mInstagramAgent.resetPhotos();
+
+      mInstagramAgent.getPhotos();
+      }
+    else
+      {
+      InstagramLoginActivity.startLoginForResult( this, mClientId, mRedirectUri, REQUEST_CODE_LOGIN );
+
+      return;
+      }
     }
 
 
   @Override
   public void onLoadMoreItems( int depth, String parentKey )
     {
-    mInstagramAgent.getPhotos( this );
+    mInstagramAgent.getPhotos();
     }
 
 

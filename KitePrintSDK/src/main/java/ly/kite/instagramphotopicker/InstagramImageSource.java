@@ -43,7 +43,10 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -156,8 +159,6 @@ public class InstagramImageSource extends AImageSource
    *****************************************************/
   public void onPick( Fragment fragment, int maxImageCount )
     {
-    // TODO: Max image count is ignored for now
-
     // Clicking on the Instagram image source starts our Instagram image picker library
 
     KiteSDK kiteSDK = KiteSDK.getInstance( fragment.getActivity() );
@@ -165,7 +166,7 @@ public class InstagramImageSource extends AImageSource
     String instagramClientId    = kiteSDK.getInstagramClientId();
     String instagramRedirectURI = kiteSDK.getInstagramRedirectURI();
 
-    InstagramPhotoPicker.startPhotoPickerForResult( fragment, instagramClientId, instagramRedirectURI, getActivityRequestCode() );
+    InstagramPhotoPicker.startPhotoPickerForResult( fragment, instagramClientId, instagramRedirectURI, maxImageCount, getActivityRequestCode() );
     }
 
 
@@ -177,17 +178,24 @@ public class InstagramImageSource extends AImageSource
   @Override
   public void getAssetsFromPickerResult( Activity activity, Intent data, IAssetConsumer assetConsumer )
     {
-    InstagramPhoto instagramPhotos[] = InstagramPhotoPicker.getResultPhotos( data );
+    List<String> photoURLStringList = InstagramPhotoPicker.getResultPhotos( data );
 
-    if ( instagramPhotos != null )
+    if ( photoURLStringList != null )
       {
       // Create an asset list, populate it, and call back to the consumer immediately.
 
-      List<Asset> assetList = new ArrayList<>( instagramPhotos.length );
+      List<Asset> assetList = new ArrayList<>( photoURLStringList.size() );
 
-      for ( InstagramPhoto instagramPhoto : instagramPhotos )
+      for ( String urlString : photoURLStringList )
         {
-        assetList.add( new Asset( instagramPhoto.getFullURL() ) );
+        try
+          {
+          assetList.add( new Asset( new URL( urlString ) ) );
+          }
+        catch ( MalformedURLException mue )
+          {
+          Log.e( LOG_TAG, "Unable to create asset from Instagram photo URL: " + urlString, mue );
+          }
         }
 
       assetConsumer.isacOnAssets( assetList );
@@ -203,7 +211,7 @@ public class InstagramImageSource extends AImageSource
   @Override
   public void endCustomerSession( Context context )
     {
-    InstagramPhotoPicker.logout( context );
+    InstagramPhotoPicker.endCustomerSession( context );
     }
 
 

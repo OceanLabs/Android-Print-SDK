@@ -71,7 +71,7 @@ public class InstagramLoginActivity extends Activity
 
   static private final String LOG_TAG = "InstagramLoginActivity";
 
-  static private final boolean DEBUGGING_ENABLED = false;
+  static private final boolean DEBUGGING_ENABLED = true;
 
   static private final String EXTRA_PREFIX       = "ly.kite.instagramimagepicker";
 
@@ -211,6 +211,16 @@ public class InstagramLoginActivity extends Activity
 
     mWebView.restoreState( savedInstanceState );
     }
+
+
+  @Override
+  public void onBackPressed()
+    {
+    setResult( RESULT_CANCELED );
+
+    finish();
+    }
+
 
   private void gotAccessToken( final String instagramAccessToken )
     {
