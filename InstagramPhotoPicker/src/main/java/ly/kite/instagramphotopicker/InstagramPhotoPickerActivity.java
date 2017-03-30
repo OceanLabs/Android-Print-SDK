@@ -218,6 +218,8 @@ public class InstagramPhotoPickerActivity extends AImagePickerActivity implement
 
       mInstagramAgent.clearAccessToken( this );
 
+      InstagramLoginActivity.logOut( this );
+
       checkLoggedInState();
 
       finish();

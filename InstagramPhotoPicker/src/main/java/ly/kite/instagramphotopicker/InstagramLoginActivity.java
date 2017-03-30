@@ -42,6 +42,7 @@ package ly.kite.instagramphotopicker;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -49,6 +50,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.webkit.CookieManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -139,6 +141,18 @@ public class InstagramLoginActivity extends Activity
   static public String getAccessToken( Intent data )
     {
     return ( data.getStringExtra( EXTRA_ACCESS_TOKEN ) );
+    }
+
+
+  /*****************************************************
+   *
+   * Ensures that we are logged out, by clearing any
+   * cookies.
+   *
+   *****************************************************/
+  static public void logOut( Context context )
+    {
+    CookieManager.getInstance().removeAllCookie();
     }
 
 

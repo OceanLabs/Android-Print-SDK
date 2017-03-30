@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
+    <string name="powered_by">Desarrollado por Kite.ly</string>
+
     <string name="unit_centimeters">centímetros</string>
     <string name="unit_inches">pulgadas</string>
     <string name="unit_pixels">píxeles</string>
@@ -15,7 +17,7 @@
     <string name="title_choose_product_group">Imprenta</string>
     <string name="title_create_phone_case">Crear fundas para móviles</string>
     <string name="title_image_source">Elija Fotos</string>
-    <string name="title_photobook">Àlbum de foto</string>
+    <string name="title_photobook">Àlbum de fotos</string>
     <string name="title_calendar">Calendario</string>
     <string name="title_poster">Póster</string>
     <string name="title_basket">Cesta</string>
@@ -31,18 +33,18 @@
 
     <!-- These strings are not part of the SDK, but are frequently used by apps -->
 
-    <string name="settings_title_show_notification_messages">Notification Messages</string>
-    <string name="settings_title_support">Customer Support</string>
-    <string name="settings_title_privacy">Privacy Policy</string>
-    <string name="settings_title_terms">Terms of Use</string>
+    <string name="settings_title_show_notification_messages">Mensajes de notificación</string>
+    <string name="settings_title_support">Atención al cliente</string>
+    <string name="settings_title_privacy">Política de privacidad</string>
+    <string name="settings_title_terms">Condiciones de uso</string>
     <string name="settings_title_legal">Legal</string>
-    <string name="settings_title_licences">Open-source Licences</string>
-    <string name="settings_summary_licences">Licence details for open-source software</string>
-    <string name="settings_title_build_version">Build Version</string>
+    <string name="settings_title_licences">Licencias de Open-source</string>
+    <string name="settings_summary_licences">Detalles de la licencia para el software de Open-source</string>
+    <string name="settings_title_build_version">Versión</string>
 
     <string name="license_title_picasso">Picasso</string>
     <string name="license_url_picasso">https://raw.githubusercontent.com/square/picasso/picasso-parent-2.5.2/LICENSE.txt</string>
-    <string name="license_grid_view">GridView with Header and Footer</string>
+    <string name="license_grid_view">Cuadrícula con encabezado y pie de página</string>
     <string name="license_url_grid_view">https://raw.githubusercontent.com/liaohuqiu/android-GridViewWithHeaderAndFooter/1.0.12/LICENSE.txt</string>
 
 
@@ -158,7 +160,7 @@
     <string name="ORDER_ID">ID DE PEDIDO</string>
     <string name="Order_Summary">Resumen de pedido</string>
     <string name="ORDER_SUMMARY">RESUMEN DE PEDIDO</string>
-    <string name="Oops_">Oops!</string>
+    <string name="Oops_">¡Vaya!</string>
     <string name="Pay">Pagar</string>
     <string name="Payment_Id">ID de pago</string>
     <string name="PAYMENT_ID">ID DE PAGO</string>
@@ -191,7 +193,7 @@
     <string name="destination_description_europe">Europa</string>
     <string name="destination_description_rest_of_world">Resto del mundo</string>
 
-    <string name="placeholder_message">Más artículos\npróximamente!</string>
+    <string name="placeholder_message">¡Más artículos\npróximamente!</string>
     <string name="order_success_banner_message">Hemos recibido\nsu pedido</string>
     <string name="order_failure_banner_message">Oops\nSAlgo salió mal\nPor favor, vuelva a intentarlo</string>
     <string name="order_failure_message">Algo salió mal.\nPor favor, inténtelo de nuevo.</string>
@@ -261,13 +263,11 @@
 
     <string name="address_edit_proceed_button_text">Guardar</string>
 
-    <string name="powered_by">Desarrollado por Kite.ly</string>
-
     <string name="payment_promo_hint">Codigo promocional</string>
     <string name="payment_promo_button_text_apply">Aplicar</string>
     <string name="payment_promo_button_text_clear">Borrar</string>
     <string name="payment_credit_card_button_text">Tarjeta de crédito</string>
-    <string name="payment_credit_card_button_text_free">Realizar la compra gratis</string>
+    <string name="payment_credit_card_button_text_free">¡Realizar la compra gratis!</string>
     <string name="payment_paypal_button_text">PayPal</string>
 
     <string name="stripe_error_invalid_card_details">Detalles de la tarjeta no válida</string>
@@ -277,7 +277,7 @@
     <string name="send_email_chooser_title">Enviar correo electrónico</string>
 
     <string name="feedback_email_recipient">info@kite.ly</string>
-    <string name="feedback_email_subject">Kite Android App Support</string>
+    <string name="feedback_email_subject">Soporte de Kite Android App</string>
     <string name="feedback_email_text">Por favor, indique su nombre completo:\n\nPor favor, proporcione cualquier código de cupón utilizado en su transacción:\n\n¿Cuál es su número de teléfono (en caso de que necesitamos llamar y discutir su problema)?\n\n¿Cuál es el problema que está Tener con la aplicación Kite Sample?\n\n¿Qué dispositivo Android (teléfono / tablet) está usando?\n\n================================\n\nGracias mucho.\nNos aseguraremos de volver a usted tan pronto como podamos.\nKite Team</string>
 
     <string name="Card_Number">Número de tarjeta</string>
