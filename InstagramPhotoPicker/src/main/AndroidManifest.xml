@@ -1,0 +1,19 @@
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="ly.kite.instagramphotopicker">
+
+    <application>
+
+        <activity
+            android:name="ly.kite.instagramphotopicker.InstagramPhotoPickerActivity"
+            android:label="@string/title_instagram_photo_picker"
+            android:theme="@style/Theme.InstagramPhotoPicker"/>
+
+        <activity
+            android:name="ly.kite.instagramphotopicker.InstagramLoginActivity"
+            android:label="@string/title_instagram_login"
+            android:theme="@style/Theme.InstagramPhotoPicker"/>
+
+    </application>
+
+</manifest>
