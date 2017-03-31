@@ -88,7 +88,7 @@ public class InstagramAgent
   @SuppressWarnings("unused")
   static private final String  LOG_TAG                               = "InstagramAgent";
 
-  static private final boolean DEBUGGING_ENABLED                     = true;
+  static private final boolean DEBUGGING_ENABLED                     = false;
 
   static private final String  SHARED_PREFERENCES_NAME               = "instagram_prefs";
   static private final String  PREFERENCE_KEY_ACCESS_TOKEN           = "access_token";

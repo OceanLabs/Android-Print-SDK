@@ -129,7 +129,7 @@
     <string name="alert_dialog_item_pay_with_new_card">Pagar con tarjeta nueva</string>
     <string name="alert_dialog_item_pay_with_existing_card_format_string">Pagar con la tarjeta que termina %1$s</string>
 
-    <string name="log_out_warning">Automáticamente\nCerrando la sesión en</string>
+    <string name="log_out_warning">Desconectarse automaticamente despues de</string>
 
     <string name="progress_dialog_title_add_to_basket">Añadir a la cesta</string>
     <string name="progress_dialog_title_updating_basket">Actualización de la cesta</string>

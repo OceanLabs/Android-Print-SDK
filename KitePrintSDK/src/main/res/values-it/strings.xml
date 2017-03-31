@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <string name="title_kite_sdk">Kite SDK</string>
-
-    <string name="powered_by">Powered by Kite.ly</string>
+    <string name="powered_by">Realizzato da Kite.ly</string>
 
     <string name="unit_centimeters">centimetri</string>
     <string name="unit_inches">pollici</string>
@@ -50,7 +48,7 @@
     <string name="alert_dialog_title_pack_not_full_format_string">Hai selezionato %s</string>
     <string name="alert_dialog_message_pack_not_full_format_string" tools:ignore="PluralsCandidate">Puoi aggiungere %d in più per lo stesso prezzo</string>
 
-    <string name="alert_dialog_title_oops">Oops!</string>
+    <string name="alert_dialog_title_oops">@string/Oops_</string>
     <string name="alert_dialog_message_pricing_format_string">C\'è stato un problema nel recupero dei prezzi dal server:\n%s</string>
 
     <string name="alert_dialog_title_internal_error">Errore interno</string>
@@ -105,7 +103,6 @@
 
     <string name="alert_dialog_message_connectivity">Controlla la tua connessione a Internet e riprova</string>
 
-    <string name="alert_dialog_title_processing">@string/Processing_</string>
     <string name="alert_dialog_message_processing">Un momento…</string>
 
     <string name="alert_dialog_title_end_customer_session">Termina sessione</string>
@@ -128,14 +125,10 @@
     <string name="alert_dialog_item_pay_with_new_card">Paga con una nuova carta</string>
     <string name="alert_dialog_item_pay_with_existing_card_format_string">Paga con carta di credito che termina con %1$s</string>
 
-    <string name="log_out_warning">Stai effettuando automaticamente\n\nl\'accesso</string>
-    <string name="time_remaining_format_string">%1$s</string>
+    <string name="log_out_warning">Disconnetti automaticamente dopo</string>
 
     <string name="progress_dialog_title_add_to_basket">Inserimento nel carrello</string>
     <string name="progress_dialog_title_updating_basket">Aggiornamento del carrello</string>
-
-    <string name="button_symbol_increment">+</string>
-    <string name="button_symbol_decrement">-</string>
 
     <string name="add_more">Aggiungi altro</string>
     <string name="Cancel">Annulla</string>
@@ -163,7 +156,7 @@
     <string name="ORDER_ID">ID ORDINE</string>
     <string name="Order_Summary">Riepilogo ordine</string>
     <string name="ORDER_SUMMARY">RIEPILOGO ORDINE</string>
-    <string name="Oops_">Oops!</string>
+    <string name="Oops_">Ops!</string>
     <string name="Pay">Paga</string>
     <string name="Payment_Id">Id del Pagamento</string>
     <string name="PAYMENT_ID">ID DEL PAGAMENTO</string>
@@ -182,7 +175,7 @@
     <string name="Size">Dimensioni</string>
     <string name="Total">Totale</string>
 
-    <string name="image_source_device">Camera</string>
+    <string name="image_source_device">Macchina fotografica</string>
     <string name="image_source_instagram">Instagram</string>
     <string name="image_source_facebook">Facebook</string>
     <string name="image_source_from_phone">Carica da cellulare</string>
@@ -196,6 +189,9 @@
     <string name="destination_description_europe">Europa</string>
     <string name="destination_description_rest_of_world">Resto del mondo</string>
 
+    <string name="placeholder_message">Altri articoli\nProssimamente!</string>
+    <string name="order_success_banner_message">Abbiamo ricevuto\nil tuo ordine</string>
+    <string name="order_failure_banner_message">Spiacenti\nQualcosa è andato storto\nSi prega di riprovare</string>
     <string name="order_failure_message">Qualcosa è andato storto.\nRiprova</string>
 
     <string name="product_quantity_format_string">Pacchetto di %d</string>
@@ -295,19 +291,13 @@
     <string name="order_submission_message_processed">Processato</string>
 
     <string name="alert_dialog_title_order_submission_error">Errore nell\'invio dell\'ordine</string>
-    <string name="alert_dialog_title_order_timeout">Tempo scaduto per l\'invio dell\'ordine</string>
-    <string name="alert_dialog_message_order_timeout">Sembra che il tuo ordine non sia stato ancora processato. Potrebbe essere perché i server sono al momento occupati e il pagamento richiede un po\' più del previsto.\n\nSei disposto ad aspettare un po\' di più, oppure preferisci abbandonare?</string>
+    <string name="order_timeout_message">Il tuo ordine non sembra essere stato ancora elaborato. I server potrebbero essere occupati al momento e il pagamento sta solo impiegando più tempo.\n\nPer favore riprova più tardi.</string>
 
-    <string name="order_timeout_button_wait">Attendi</string>
-    <string name="order_timeout_button_give_up">Abbandona</string>
     <string name="alert_dialog_title_order_cancelled">Ordine annullato</string>
     <string name="alert_dialog_message_order_cancelled">Qualcosa è andato storto - sembra che il tuo ordine sia stato annullato durante l\'invio.</string>
+
     <string name="alert_dialog_message_server_offline_maintenance">Il server è al momento offline per manutenzione</string>
     <string name="alert_dialog_message_server_returned_html">Il server ha fornito una risposta non valida (HTML). Questo in genere succede quando il server non è disponibile.</string>
-
-    <string name="scan_qr_code">Scansiona QR code</string>
-    <string name="scan_qr_code_instructions">Scansiona il QR code tramite una\napp per lettura QR code sul tuo dispositivo</string>
-    <string name="scan_qr_code_alternate_instructions">In alternativa digita il seguente URL nella barra degli indirizzi del tuo browser mobile:</string>
 
     <string name="action_settings">Impostazioni</string>
     <string name="title_activity_checkout">Dettagli spedizione</string>
@@ -318,5 +308,27 @@
     <string name="title_activity_address_add">Inserisci indirizzo</string>
     <string name="title_activity_address_edit">Modifica indirizzo</string>
     <string name="action_save_address">Salva Indirizzo</string>
+
+    <string name="scan_qr_code">Scansiona QR code</string>
+    <string name="scan_qr_code_instructions">Scansiona il QR code tramite una\napp per lettura QR code sul tuo dispositivo</string>
+    <string name="scan_qr_code_alternate_instructions">In alternativa digita il seguente URL nella barra degli indirizzi del tuo browser mobile:</string>
+
+    <plurals name="Photo_plurals">
+        <item quantity="zero">%d Fotos</item>
+        <item quantity="one">%d Foto</item>
+        <item quantity="two">%d Fotos</item>
+        <item quantity="few">%d Fotos</item>
+        <item quantity="many">%d Fotos</item>
+        <item quantity="other">%d Fotos</item>
+    </plurals>
+
+    <plurals name="photo_plurals">
+        <item quantity="zero">%d fotos</item>
+        <item quantity="one">%d foto</item>
+        <item quantity="two">%d fotos</item>
+        <item quantity="few">%d fotos</item>
+        <item quantity="many">%d fotos</item>
+        <item quantity="other">%d fotos</item>
+    </plurals>
 
 </resources>

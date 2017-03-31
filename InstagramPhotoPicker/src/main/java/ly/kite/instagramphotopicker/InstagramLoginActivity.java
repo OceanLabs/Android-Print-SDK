@@ -73,7 +73,7 @@ public class InstagramLoginActivity extends Activity
 
   static private final String LOG_TAG = "InstagramLoginActivity";
 
-  static private final boolean DEBUGGING_ENABLED = true;
+  static private final boolean DEBUGGING_ENABLED = false;
 
   static private final String EXTRA_PREFIX       = "ly.kite.instagramimagepicker";
 

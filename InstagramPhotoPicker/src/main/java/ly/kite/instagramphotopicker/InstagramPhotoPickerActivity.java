@@ -70,7 +70,7 @@ public class InstagramPhotoPickerActivity extends AImagePickerActivity implement
   @SuppressWarnings( "unused" )
   static private final String  LOG_TAG                           = "InstagramPhotoPicker...";
 
-  static private final boolean DEBUGGING_ENABLED                 = true;
+  static private final boolean DEBUGGING_ENABLED                 = false;
 
   static private final String  INTENT_EXTRA_PREFIX               = "ly.kite.instagramimagepicker";
   static private final String  INTENT_EXTRA_NAME_CLIENT_ID       = INTENT_EXTRA_PREFIX + ".clientId";
