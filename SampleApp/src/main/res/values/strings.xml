@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="kite_sdk_sample_app_name">Kite.ly</string>
+    <string name="kite_sdk_sample_app_name" translatable="false">Kite.ly</string>
 
-    <string name="Sandbox">Sandbox</string>
-    <string name="Live">Live</string>
+    <string name="Sandbox" translatable="false">Sandbox</string>
+    <string name="Live" translatable="false">Live</string>
 
-    <string name="main_print_local_button_text">Print Local Photos</string>
-    <string name="main_print_remote_button_text">Print Pre-defined Photos</string>
-    <string name="main_print_postcard_button_text">Print Postcard</string>
-    <string name="main_order_history_button_text">Order History</string>
+    <string name="main_print_local_button_text" translatable="false">Print Local Photos</string>
+    <string name="main_print_remote_button_text" translatable="false">Print Pre-defined Photos</string>
+    <string name="main_print_postcard_button_text" translatable="false">Print Postcard</string>
+    <string name="main_order_history_button_text" translatable="false">Order History</string>
 
 </resources>

@@ -52,8 +52,8 @@ dependencies {
     compile 'com.paypal.sdk:paypal-android-sdk:2.13.3'
     compile 'com.stripe:stripe-android:1.0.4'
     compile 'ly.kite:photo-picker:1.1.4'
-    //compile 'ly.kite:instagram-photo-picker:1.2.5'
-    compile project(':InstagramPhotoPicker' )
+    //compile project(':InstagramPhotoPicker' )
+    compile 'ly.kite:instagram-photo-picker:5.7.0'
     compile 'com.google.zxing:core:3.2.1'
 }
 
