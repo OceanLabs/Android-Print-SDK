@@ -2,9 +2,10 @@
 <resources>
 
     <string name="title_instagram_photo_picker">Parcourir les photos Instagram</string>
+    <string name="title_instagram_login">S\'identifier</string>
 
-    <string name="title_instagram_alert_dialog">Erreur Instagram</string>
-    <string name="message_instagram_alert_dialog">Un probl&#232;me est survenu lors du t&#233;l&#233;chargement de vos photos Instagram:\n%1$s</string>
+    <string name="instagram_error_title">Erreur Instagram</string>
+    <string name="instagram_error_message">Un probl&#232;me est survenu lors du t&#233;l&#233;chargement de vos photos Instagram:\n%1$s</string>
 
     <string name="button_text_retry">R&#233;essayer</string>
     <string name="button_text_cancel">Annuler</string>

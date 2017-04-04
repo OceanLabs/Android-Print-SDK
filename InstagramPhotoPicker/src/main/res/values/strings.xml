@@ -4,8 +4,11 @@
     <string name="title_instagram_photo_picker">Instagram Photo Picker</string>
     <string name="title_instagram_login">Log In</string>
 
-    <string name="instagram_error">Instagram Error</string>
-    <string name="problem_loading_photos">There was a problem loading your Instagram photos:\n%1$s</string>
+    <string name="instagram_error_title">Instagram Error</string>
+    <string name="instagram_error_message">There was a problem loading your Instagram photos:\n%1$s</string>
+
+    <string name="instagram_alert_dialog_title" translatable="false">@string/instagram_error_title</string>
+    <string name="instagram_alert_dialog_message" translatable="false">@string/instagram_error_message</string>
 
     <string name="button_text_retry">Retry</string>
     <string name="button_text_cancel">Cancel</string>
