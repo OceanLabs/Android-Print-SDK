@@ -2,9 +2,10 @@
 <resources>
 
     <string name="title_instagram_photo_picker">Instagram fotovælger</string>
+    <string name="title_instagram_login">Log på</string>
 
-    <string name="title_instagram_alert_dialog">Instagram fejl</string>
-    <string name="message_instagram_alert_dialog">Der opstod en fejl ved indlæsningen af dine Instagram billeder:\n%1$s</string>
+    <string name="instagram_error_title">Instagram fejl</string>
+    <string name="instagram_error_message">Der opstod en fejl ved indlæsningen af dine Instagram billeder:\n%1$s</string>
 
     <string name="button_text_retry">Prøv igen</string>
     <string name="button_text_cancel">Annuler</string>

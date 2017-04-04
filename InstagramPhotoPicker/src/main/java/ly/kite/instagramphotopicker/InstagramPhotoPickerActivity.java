@@ -319,8 +319,8 @@ public class InstagramPhotoPickerActivity extends AImagePickerActivity implement
     CancelListener cancelListener = new CancelListener();
 
     new AlertDialog.Builder( this )
-        .setTitle( R.string.title_instagram_alert_dialog )
-        .setMessage( getString( R.string.message_instagram_alert_dialog, exception.toString() ) )
+        .setTitle( R.string.instagram_alert_dialog_title )
+        .setMessage( getString( R.string.instagram_alert_dialog_message, exception.toString() ) )
         .setPositiveButton( R.string.button_text_retry, retryListener )
         .setNegativeButton( R.string.button_text_cancel, cancelListener )
         .setOnCancelListener( cancelListener )
