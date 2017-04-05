@@ -99,7 +99,7 @@ public class InstagramPhotoPickerActivity extends AImagePickerActivity implement
   /*****************************************************
    *
    * Returns an intent to start this activity, with the max
-   * image coung added as an extra.
+   * image count added as an extra.
    *
    *****************************************************/
   static private Intent getIntent( Context context, String clientId, String redirectUri, int maxImageCount )
