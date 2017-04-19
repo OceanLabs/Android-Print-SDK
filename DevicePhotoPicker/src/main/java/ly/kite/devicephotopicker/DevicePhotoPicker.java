@@ -39,6 +39,7 @@ package ly.kite.devicephotopicker;
 
 ///// Import(s) /////
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -80,6 +81,17 @@ public class DevicePhotoPicker
    * Starts the photo picker.
    *
    *****************************************************/
+  static public void startPhotoPickerForResult( Activity activity, int maxImageCount, int activityRequestCode )
+    {
+    DevicePhotoPickerActivity.startForResult( activity, maxImageCount, activityRequestCode );
+    }
+
+
+  /*****************************************************
+   *
+   * Starts the photo picker.
+   *
+   *****************************************************/
   static public void startPhotoPickerForResult( Fragment fragment, int maxImageCount, int activityRequestCode )
     {
     DevicePhotoPickerActivity.startForResult( fragment, maxImageCount, activityRequestCode );
@@ -94,17 +106,6 @@ public class DevicePhotoPicker
   static public List<String> getResultPhotos( Intent data )
     {
     return ( DevicePhotoPickerActivity.getImageURLListFromResult( data ) );
-    }
-
-
-  /*****************************************************
-   *
-   * Ends a customer session.
-   *
-   *****************************************************/
-  static public void endCustomerSession( Context context )
-    {
-    // No customer session to end
     }
 
 
