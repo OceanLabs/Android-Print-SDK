@@ -42,6 +42,7 @@ package ly.kite.util;
 import android.graphics.Bitmap;
 import android.net.Uri;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -49,6 +50,7 @@ import java.util.ArrayList;
 import junit.framework.Assert;
 
 import ly.kite.KiteTestCase;
+import ly.kite.R;
 
 
 ///// Class Declaration /////
@@ -92,6 +94,7 @@ public class AssetTests extends KiteTestCase
   public void testCreateFromString()
     {
     Asset asset;
+
 
     asset = Asset.create( "http://psps.s3.amazonaws.com/sdk_static/1.jpg" );
 
@@ -138,6 +141,7 @@ public class AssetTests extends KiteTestCase
     {
     Asset asset;
 
+
     asset = Asset.create( new URL( "http://psps.s3.amazonaws.com/sdk_static/1.jpg" ) );
 
     Assert.assertEquals( Asset.Type.REMOTE_URL, asset.getType() );
@@ -170,6 +174,7 @@ public class AssetTests extends KiteTestCase
     {
     Asset asset;
 
+
     asset = Asset.create( Uri.parse( "http://psps.s3.amazonaws.com/sdk_static/1.jpg" ) );
 
     Assert.assertEquals( Asset.Type.REMOTE_URL, asset.getType() );
@@ -200,13 +205,35 @@ public class AssetTests extends KiteTestCase
 
   /*****************************************************
    *
+   * Create from File tests.
+   *
+   *****************************************************/
+
+  public void testCreateFromFile()
+    {
+    Asset asset;
+
+
+    File file = new File( "/storage/emulated/0/DCIM/Camera/IMG_20161219_094113.jpg" );
+
+    asset = Asset.create( file );
+
+    Assert.assertEquals( Asset.Type.IMAGE_FILE, asset.getType() );
+    Assert.assertEquals( "/storage/emulated/0/DCIM/Camera/IMG_20161219_094113.jpg", asset.getImageFilePath() );
+    Assert.assertEquals( "IMG_20161219_094113.jpg", asset.getImageFileName() );
+    }
+
+
+  /*****************************************************
+   *
    * Create from Bitmap tests.
    *
    *****************************************************/
 
-  public void testCreateFromBitmap() throws MalformedURLException
+  public void testCreateFromBitmap()
     {
     Asset asset;
+
 
     Bitmap bitmap = Bitmap.createBitmap( 24, 24, Bitmap.Config.ARGB_8888 );
 
@@ -214,6 +241,32 @@ public class AssetTests extends KiteTestCase
 
     Assert.assertEquals( Asset.Type.BITMAP, asset.getType() );
     Assert.assertTrue( asset.getBitmap() == bitmap );
+    }
+
+
+  /*****************************************************
+   *
+   * Create from Bitmap resource id tests.
+   *
+   *****************************************************/
+
+  public void testCreateFromBitmapResourceId()
+    {
+    Asset asset;
+
+
+    // Explicit Integer
+    asset = Asset.create( Integer.valueOf( R.drawable.placeholder ) );
+
+    Assert.assertEquals( Asset.Type.BITMAP_RESOURCE_ID, asset.getType() );
+    Assert.assertEquals( R.drawable.placeholder, asset.getBitmapResourceId() );
+
+
+    // Boxed Integer
+    asset = Asset.create( R.drawable.placeholder );
+
+    Assert.assertEquals( Asset.Type.BITMAP_RESOURCE_ID, asset.getType() );
+    Assert.assertEquals( R.drawable.placeholder, asset.getBitmapResourceId() );
     }
 
 

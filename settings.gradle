@@ -1,5 +1,6 @@
 include 'SampleApp'
 include 'ImagePicker'
+include 'DevicePhotoPicker'
 include 'InstagramPhotoPicker'
 include 'FacebookPhotoPicker'
 include 'KitePrintSDK'
