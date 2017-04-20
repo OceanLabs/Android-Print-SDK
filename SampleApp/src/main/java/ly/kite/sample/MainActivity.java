@@ -62,11 +62,11 @@ import ly.kite.app.ADeepLinkableActivity;
 import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.ICatalogueConsumer;
 import ly.kite.catalogue.Product;
+import ly.kite.devicephotopicker.DevicePhotoPicker;
+import ly.kite.journey.AImageSource;
+import ly.kite.journey.DeviceImageSource;
 import ly.kite.ordering.Job;
 import ly.kite.ordering.Order;
-import ly.kite.ordering.OrderingDataAgent;
-import ly.kite.photopicker.Photo;
-import ly.kite.photopicker.PhotoPicker;
 import ly.kite.util.Asset;
 import ly.kite.KiteSDK;
 
@@ -196,14 +196,7 @@ public class MainActivity extends ADeepLinkableActivity
 
       if ( resultCode == RESULT_OK )
         {
-        Photo[] photos = PhotoPicker.getResultPhotos( data );
-
-        ArrayList<Asset> assetArrayList = new ArrayList<Asset>();
-
-        for ( Photo photo : photos )
-          {
-          assetArrayList.add( new Asset( photo.getUri() ) );
-          }
+        ArrayList<Asset> assetArrayList = DeviceImageSource.getAssets( data );
 
         fullJourney( assetArrayList );
         }
@@ -225,7 +218,7 @@ public class MainActivity extends ADeepLinkableActivity
       public void run()
         {
         // Launch the picture selector
-        PhotoPicker.startPhotoPickerForResult( MainActivity.this, REQUEST_CODE_SELECT_PICTURE );
+        DevicePhotoPicker.startPhotoPickerForResult( MainActivity.this, AImageSource.UNLIMITED_IMAGES, REQUEST_CODE_SELECT_PICTURE );
         }
       });
     }
@@ -247,10 +240,10 @@ public class MainActivity extends ADeepLinkableActivity
 
     try
       {
-      assetArrayList.add( new Asset( new URL( "http://psps.s3.amazonaws.com/sdk_static/1.jpg" ) ) );
-      assetArrayList.add( new Asset( new URL( "http://psps.s3.amazonaws.com/sdk_static/2.jpg" ) ) );
-      assetArrayList.add( new Asset( new URL( "http://psps.s3.amazonaws.com/sdk_static/3.jpg" ) ) );
-      assetArrayList.add( new Asset( new URL( "http://psps.s3.amazonaws.com/sdk_static/4.jpg" ) ) );
+      assetArrayList.add( Asset.create( "http://psps.s3.amazonaws.com/sdk_static/1.jpg" ) );
+      assetArrayList.add( Asset.create( "http://psps.s3.amazonaws.com/sdk_static/2.jpg" ) );
+      assetArrayList.add( Asset.create( "http://psps.s3.amazonaws.com/sdk_static/3.jpg" ) );
+      assetArrayList.add( Asset.create( "http://psps.s3.amazonaws.com/sdk_static/4.jpg" ) );
       }
     catch ( Exception ex )
       {
