@@ -37,7 +37,7 @@ dependencies {
     compile 'com.facebook.android:facebook-android-sdk:4.7.0'
 
     //compile project(':ImagePicker')
-    compile 'ly.kite:image-picker:5.6.26'
+    compile 'ly.kite:image-picker:5.7.2'
 }
 
 // Uncomment before uploading archives
