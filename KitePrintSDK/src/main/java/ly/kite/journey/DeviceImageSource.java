@@ -39,6 +39,8 @@ package ly.kite.journey;
 
 ///// Import(s) /////
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,11 +49,12 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import ly.kite.R;
+import ly.kite.devicephotopicker.DevicePhotoPicker;
+import ly.kite.instagramphotopicker.InstagramPhotoPicker;
 import ly.kite.util.Asset;
-import ly.kite.photopicker.Photo;
-import ly.kite.photopicker.PhotoPicker;
 
 
 ///// Class Declaration /////
@@ -66,7 +69,7 @@ public class DeviceImageSource extends AImageSource
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String  LOG_TAG                                       = "DeviceImageSource";
+  static private final String  LOG_TAG  = "DeviceImageSource";
 
 
   ////////// Static Variable(s) //////////
@@ -79,6 +82,35 @@ public class DeviceImageSource extends AImageSource
 
 
   ////////// Static Method(s) //////////
+
+  /*****************************************************
+   *
+   * Returns any selected images as a list of assets.
+   *
+   *****************************************************/
+  static public ArrayList<Asset> getAssets( Intent data )
+    {
+    ArrayList<Asset> assetList = new ArrayList<>();
+
+    List<String> photoURLStringList = DevicePhotoPicker.getResultPhotos( data );
+
+    if ( photoURLStringList != null )
+      {
+      for ( String urlString : photoURLStringList )
+        {
+        try
+          {
+          assetList.add( Asset.create( new URL( urlString ) ) );
+          }
+        catch ( MalformedURLException mue )
+          {
+          Log.e( LOG_TAG, "Unable to create asset from device photo URL: " + urlString, mue );
+          }
+        }
+      }
+
+    return ( assetList );
+    }
 
 
   ////////// Constructor(s) //////////
@@ -165,37 +197,16 @@ public class DeviceImageSource extends AImageSource
 
   /*****************************************************
    *
-   * Adds any picked images to the supplied list. Note that
-   * the result might either be from the built-in single image
-   * picker, or the multiple photo picker.
+   * Returns picked photos as assets.
    *
    *****************************************************/
   @Override
   public void getAssetsFromPickerResult( Activity activity, Intent data, IAssetConsumer assetConsumer )
     {
-    if ( data != null )
+    ArrayList<Asset> assetList = getAssets( data );
+
+    if ( assetList.size() > 0 )
       {
-      List<Asset> assetList = new ArrayList<>();
-
-
-      try
-        {
-        Photo[] devicePhotos = PhotoPicker.getResultPhotos( data );
-
-        if ( devicePhotos != null )
-          {
-          for ( Photo devicePhoto : devicePhotos )
-            {
-            assetList.add( new Asset( devicePhoto.getUri() ) );
-            }
-          }
-        }
-      catch ( NullPointerException npe )
-        {
-        // Ignore
-        }
-
-
       assetConsumer.isacOnAssets( assetList );
       }
     }
@@ -224,8 +235,7 @@ public class DeviceImageSource extends AImageSource
       // (e.g.) Samsung S6, so we need to always use the photo picker (which returns file
       // paths) rather than the built-in gallery picker (which returns URIs).
 
-      // TODO: Max image count is ignored for now
-      PhotoPicker.startPhotoPickerForResult( mFragment, getActivityRequestCode() );
+      DevicePhotoPicker.startPhotoPickerForResult( mFragment, mMaxImageCount, getActivityRequestCode() );
       }
     }
 

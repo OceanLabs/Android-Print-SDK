@@ -46,8 +46,10 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -70,13 +72,23 @@ public class Asset implements Parcelable
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                       = "Asset";
+  static private final String  LOG_TAG                     = "Asset";
 
-  public  static final int     BITMAP_TO_JPEG_QUALITY        = 80;
+  static private final String  SOURCE_CONTENT              = "content";
+  static private final String  SOURCE_FILE                 = "file";
+  static private final String  SOURCE_HTTP                 = "http";
+  static private final String  SOURCE_HTTPS                = "https";
 
-  public  static final String  JPEG_FILE_SUFFIX_PRIMARY      = ".jpg";
-  public  static final String  JPEG_FILE_SUFFIX_SECONDARY    = ".jpeg";
-  public  static final String  PNG_FILE_SUFFIX               = ".png";
+  static private final String  SOURCE_PREFIX_CONTENT       = SOURCE_CONTENT + "://";
+  static private final String  SOURCE_PREFIX_FILE          = SOURCE_FILE    + "://";
+  static private final String  SOURCE_PREFIX_HTTP          = SOURCE_HTTP    + "://";
+  static private final String  SOURCE_PREFIX_HTTPS         = SOURCE_HTTPS   + "://";
+
+  static public  final int     BITMAP_TO_JPEG_QUALITY      = 80;
+
+  static public  final String  JPEG_FILE_SUFFIX_PRIMARY    = ".jpg";
+  static public  final String  JPEG_FILE_SUFFIX_SECONDARY  = ".jpeg";
+  static public  final String  PNG_FILE_SUFFIX             = ".png";
 
 
   ////////// Static Variable(s) //////////
@@ -111,6 +123,121 @@ public class Asset implements Parcelable
 
 
   ////////// Static Method(s) //////////
+
+  /*****************************************************
+   *
+   * Creates and returns a new asset corresponding to the
+   * supplied URL. If the protocol is "file", then a file-backed
+   * asset will be returned instead.
+   *
+   *****************************************************/
+  static public Asset create( Object object )
+    {
+    if ( object != null )
+      {
+
+      if ( object instanceof String )
+        {
+        ///// String /////
+
+        String string = (String)object;
+
+        if ( string.toLowerCase().startsWith( SOURCE_PREFIX_HTTP ) || string.toLowerCase().startsWith( SOURCE_PREFIX_HTTPS ) )
+          {
+          try
+            {
+            return ( new Asset( new URL( string ) ) );
+            }
+          catch ( MalformedURLException mue )
+            {
+            Log.e( LOG_TAG, "Unable to parse URL: " + string, mue );
+
+            // Fall through
+            }
+          }
+        else if ( string.toLowerCase().startsWith( SOURCE_PREFIX_FILE ) )
+          {
+          return ( new Asset( string.substring( SOURCE_PREFIX_FILE.length() ) ) );
+          }
+        else if ( string.toLowerCase().startsWith( SOURCE_PREFIX_CONTENT ) )
+          {
+          return ( new Asset( Uri.parse( string ) ) );
+          }
+        else if ( string.startsWith( "/" ) )
+          {
+          return ( new Asset( string ) );
+          }
+        }
+
+      else if ( object instanceof URL )
+        {
+        ///// URL /////
+
+        URL url = (URL)object;
+
+        String protocol = url.getProtocol();
+
+        if ( protocol != null )
+          {
+          if ( protocol.equalsIgnoreCase( SOURCE_FILE ) ) return ( new Asset( url.getPath() ) );
+          }
+
+        return ( new Asset( url ) );
+        }
+
+      else if ( object instanceof Uri )
+        {
+        ///// Uri /////
+
+        Uri uri = (Uri)object;
+
+        String scheme = uri.getScheme();
+
+        if ( scheme != null )
+          {
+          try
+            {
+            if      ( scheme.equalsIgnoreCase( SOURCE_FILE  ) ) return ( new Asset( uri.getPath() ) );
+            else if ( scheme.equalsIgnoreCase( SOURCE_HTTP  ) ) return ( new Asset( new URL( uri.toString() ) ) );
+            else if ( scheme.equalsIgnoreCase( SOURCE_HTTPS ) ) return ( new Asset( new URL( uri.toString() ) ) );
+            }
+          catch ( MalformedURLException mue )
+            {
+            // Fall through
+            }
+          }
+
+        return ( new Asset( uri ) );
+        }
+      else if ( object instanceof File )
+        {
+        ///// File /////
+
+        File file = (File)object;
+
+        return ( new Asset( file ) );
+        }
+      else if ( object instanceof Integer )
+        {
+        ///// Bitmap resource id /////
+
+        int resourceId = ( (Integer)object ).intValue();
+
+        return ( new Asset( resourceId ) );
+        }
+      else if ( object instanceof Bitmap )
+        {
+        ///// Bitmap /////
+
+        Bitmap bitmap = (Bitmap)object;
+
+        return ( new Asset( bitmap ) );
+        }
+      }
+
+    return ( null );
+    }
+
 
   /*****************************************************
    *
@@ -226,7 +353,7 @@ public class Asset implements Parcelable
     {
     // Check that we support the protocol
 
-    if ( ! url.getProtocol().equalsIgnoreCase( "http" ) && !url.getProtocol().equalsIgnoreCase( "https" ) )
+    if ( ! url.getProtocol().equalsIgnoreCase( "http" ) && ! url.getProtocol().equalsIgnoreCase( "https" ) )
       {
       throw new IllegalArgumentException( "Only HTTP and HTTPS URL schemes are supported" );
       }
