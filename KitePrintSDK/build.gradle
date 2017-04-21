@@ -51,12 +51,13 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.paypal.sdk:paypal-android-sdk:2.13.3'
     compile 'com.stripe:stripe-android:1.0.4'
-    compile project(':DevicePhotoPicker')
-    //compile 'ly.kite.device-photo-picker:5.7.+'
-    //compile 'ly.kite:photo-picker:1.1.4'
-    //compile project(':InstagramPhotoPicker' )
-    compile 'ly.kite:instagram-photo-picker:5.7.1'
     compile 'com.google.zxing:core:3.2.1'
+
+    //compile project(':DevicePhotoPicker')
+    compile 'ly.kite:device-photo-picker:5.7.2'
+
+    //compile project(':InstagramPhotoPicker' )
+    compile 'ly.kite:instagram-photo-picker:5.7.2'
 }
 
 // Exclude PayPal card scanning libs from package
