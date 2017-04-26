@@ -1,11 +1,11 @@
 /*****************************************************
  *
- * DelimitedStringBuilder.java
+ * NetUtilsTests.java
  *
  *
  * Modified MIT License
  *
- * Copyright (c) 2010-2016 Kite Tech Ltd. https://www.kite.ly
+ * Copyright (c) 2017 Kite Tech Ltd. https://www.kite.ly
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,31 +39,33 @@ package ly.kite.util;
 
 ///// Import(s) /////
 
+import junit.framework.Assert;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import ly.kite.KiteTestCase;
+
 
 ///// Class Declaration /////
 
 /*****************************************************
  *
- * This class is used to build a delimited string.
+ * This class tests the network utilities class.
  *
  *****************************************************/
-public class DelimitedStringBuilder
+public class NetUtilsTests extends KiteTestCase
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String  LOG_TAG = "DelimitedStringBuilder";
+  private static final String  LOG_TAG = "NetUtilsTests";
 
 
   ////////// Static Variable(s) //////////
 
 
   ////////// Member Variable(s) //////////
-
-  private String         mDelimiter;
-
-  private StringBuilder  mStringBuilder;
-  private boolean        mPrependDelimiter;
 
 
   ////////// Static Initialiser(s) //////////
@@ -74,56 +76,43 @@ public class DelimitedStringBuilder
 
   ////////// Constructor(s) //////////
 
-  public DelimitedStringBuilder( String delimiter )
-    {
-    if ( delimiter == null || delimiter.length() < 1 )
-      {
-      throw ( new IllegalArgumentException( "Non empty delimited must be supplied" ) );
-      }
-
-    mDelimiter        = delimiter;
-    mStringBuilder    = new StringBuilder();
-    mPrependDelimiter = false;
-    }
-
 
   ////////// Method(s) //////////
 
   /*****************************************************
    *
-   * Appends a string. A null is equivalent to an empty string.
+   * Tests
    *
    *****************************************************/
-  public DelimitedStringBuilder append( String string )
+
+  public void test1()
     {
-    if ( mPrependDelimiter ) mStringBuilder.append( mDelimiter );
-    else                     mPrependDelimiter = true;
+    URL url1 = null;
+    URL url2 = null;
+    URL url3 = null;
 
-    if ( string != null ) mStringBuilder.append( string );
+    try
+      {
+      url1 = new URL( "http://kite.ly/non-existent-path" );
+      url2 = new URL( "http://kite.ly/contact" );
+      url3 = new URL( "http://kite.ly/non-existent-path" );
+      }
+    catch ( MalformedURLException mue )
+      {
+      Assert.fail();
+      }
 
-    return ( this );
-    }
+    Assert.assertTrue( NetUtils.areBothNullOrEqual( null, null ) );
+    Assert.assertFalse( NetUtils.areBothNullOrEqual( url1, null ) );
+    Assert.assertFalse( NetUtils.areBothNullOrEqual( null, url2 ) );
 
-
-  /*****************************************************
-   *
-   * Returns the built string.
-   *
-   *****************************************************/
-  @Override
-  public String toString()
-    {
-    return ( mStringBuilder.toString() );
+    Assert.assertFalse( NetUtils.areBothNullOrEqual( url1, url2 ) );
+    Assert.assertFalse( NetUtils.areBothNullOrEqual( url2, url3 ) );
+    Assert.assertTrue( NetUtils.areBothNullOrEqual( url1, url3 ) );
     }
 
 
   ////////// Inner Class(es) //////////
-
-  /*****************************************************
-   *
-   * ...
-   *
-   *****************************************************/
 
   }
 

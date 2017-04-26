@@ -1,11 +1,11 @@
 /*****************************************************
  *
- * DelimitedStringBuilder.java
+ * DelimitedStringBuilderTests.java
  *
  *
  * Modified MIT License
  *
- * Copyright (c) 2010-2016 Kite Tech Ltd. https://www.kite.ly
+ * Copyright (c) 2017 Kite Tech Ltd. https://www.kite.ly
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,31 +39,30 @@ package ly.kite.util;
 
 ///// Import(s) /////
 
+import junit.framework.Assert;
+
+import ly.kite.KiteTestCase;
+
 
 ///// Class Declaration /////
 
 /*****************************************************
  *
- * This class is used to build a delimited string.
+ * This class tests the delimited string builder class.
  *
  *****************************************************/
-public class DelimitedStringBuilder
+public class DelimitedStringBuilderTests extends KiteTestCase
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  static private final String  LOG_TAG = "DelimitedStringBuilder";
+  private static final String  LOG_TAG = "DelimitedStringBuilderTests";
 
 
   ////////// Static Variable(s) //////////
 
 
   ////////// Member Variable(s) //////////
-
-  private String         mDelimiter;
-
-  private StringBuilder  mStringBuilder;
-  private boolean        mPrependDelimiter;
 
 
   ////////// Static Initialiser(s) //////////
@@ -74,56 +73,117 @@ public class DelimitedStringBuilder
 
   ////////// Constructor(s) //////////
 
-  public DelimitedStringBuilder( String delimiter )
-    {
-    if ( delimiter == null || delimiter.length() < 1 )
-      {
-      throw ( new IllegalArgumentException( "Non empty delimited must be supplied" ) );
-      }
-
-    mDelimiter        = delimiter;
-    mStringBuilder    = new StringBuilder();
-    mPrependDelimiter = false;
-    }
-
 
   ////////// Method(s) //////////
 
   /*****************************************************
    *
-   * Appends a string. A null is equivalent to an empty string.
+   * Constructor tests
    *
    *****************************************************/
-  public DelimitedStringBuilder append( String string )
+
+  public void testConstructor1()
     {
-    if ( mPrependDelimiter ) mStringBuilder.append( mDelimiter );
-    else                     mPrependDelimiter = true;
+    try
+      {
+      new DelimitedStringBuilder( null );
 
-    if ( string != null ) mStringBuilder.append( string );
+      Assert.fail();
+      }
+    catch ( IllegalArgumentException iae )
+      {
+      // Test passed
+      }
+    }
 
-    return ( this );
+  public void testConstructor2()
+    {
+    try
+      {
+      new DelimitedStringBuilder( "" );
+
+      Assert.fail();
+      }
+    catch ( IllegalArgumentException iae )
+      {
+      // Test passed
+      }
     }
 
 
   /*****************************************************
    *
-   * Returns the built string.
+   * Builder tests
    *
    *****************************************************/
-  @Override
-  public String toString()
+
+  public void test1()
     {
-    return ( mStringBuilder.toString() );
+    DelimitedStringBuilder builder = new DelimitedStringBuilder( "|" );
+
+    Assert.assertEquals( "", builder.toString() );
+    }
+
+  public void test2()
+    {
+    DelimitedStringBuilder builder = new DelimitedStringBuilder( "|" );
+
+    builder.append( "cat" );
+
+    Assert.assertEquals( "cat", builder.toString() );
+    }
+
+  public void test3()
+    {
+    DelimitedStringBuilder builder = new DelimitedStringBuilder( "|" );
+
+    builder.append( "the" );
+    builder.append( "cat" );
+
+    Assert.assertEquals( "the|cat", builder.toString() );
+    }
+
+  public void test4()
+    {
+    DelimitedStringBuilder builder = new DelimitedStringBuilder( "|" );
+
+    builder.append( "the" );
+    builder.append( "cat" );
+    builder.append( "sat" );
+    builder.append( "on" );
+    builder.append( "the" );
+    builder.append( "mat" );
+
+    Assert.assertEquals( "the|cat|sat|on|the|mat", builder.toString() );
+    }
+
+  public void test5()
+    {
+    DelimitedStringBuilder builder = new DelimitedStringBuilder( "blah" );
+
+    builder.append( "who" );
+    builder.append( "goes" );
+    builder.append( "there" );
+
+    Assert.assertEquals( "whoblahgoesblahthere", builder.toString() );
+    }
+
+  public void test6()
+    {
+    DelimitedStringBuilder builder = new DelimitedStringBuilder( "[]" );
+
+    builder.append( "one" );
+    builder.append( "" );
+    builder.append( "two" );
+    builder.append( null );
+    builder.append( "three" );
+    builder.append( "" );
+
+    Assert.assertEquals( "one[][]two[][]three[]", builder.toString() );
     }
 
 
   ////////// Inner Class(es) //////////
-
-  /*****************************************************
-   *
-   * ...
-   *
-   *****************************************************/
 
   }
 
