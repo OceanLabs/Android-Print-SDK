@@ -124,7 +124,7 @@ public class OrderPricing implements Parcelable
    * in all the line items.
    *
    *****************************************************/
-  static private boolean currencyCanBeUsed( List<LineItem> lineItemList, String currencyCode )
+  static boolean currencyCanBeUsed( List<LineItem> lineItemList, String currencyCode )
     {
     if ( lineItemList != null )
       {
@@ -149,7 +149,7 @@ public class OrderPricing implements Parcelable
    * currency amount is null.
    *
    *****************************************************/
-  static private boolean currencyCanBeUsed( MultipleCurrencyAmounts multipleCurrencyAmount, String currencyCode )
+  static boolean currencyCanBeUsed( MultipleCurrencyAmounts multipleCurrencyAmount, String currencyCode )
     {
     return ( multipleCurrencyAmount == null || multipleCurrencyAmount.contains( currencyCode ) );
     }
