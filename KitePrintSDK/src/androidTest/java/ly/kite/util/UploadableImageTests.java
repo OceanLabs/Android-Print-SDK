@@ -85,7 +85,7 @@ public class UploadableImageTests extends KiteTestCase
    *
    *****************************************************/
 
-  public void testAreBothNullOrEqua2()
+  public void testAreBothNullOrEqual1()
     {
     Asset asset1 = Asset.create( "/temp/image1.jpg" );
     Asset asset2 = Asset.create( "/temp/image2.jpg" );
