@@ -93,7 +93,8 @@ public class UploadableImage implements Parcelable
 
   /*****************************************************
    *
-   * Returns true if both the uploadable images are null, or equal.
+   * Returns true if both the uploadable images are null,
+   * or equal.
    *
    *****************************************************/
   static public boolean areBothNullOrEqual( UploadableImage uploadableImage1, UploadableImage uploadableImage2 )
@@ -208,6 +209,7 @@ public class UploadableImage implements Parcelable
     {
     return ( mAssetFragment );
     }
+
 
   /*****************************************************
    *
