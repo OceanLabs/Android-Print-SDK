@@ -41,9 +41,6 @@ package ly.kite.util;
 
 import junit.framework.Assert;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import ly.kite.KiteTestCase;
 
 
