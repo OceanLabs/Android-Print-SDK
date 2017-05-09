@@ -56,6 +56,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import ly.kite.KiteSDK;
+import ly.kite.analytics.Analytics;
 import ly.kite.journey.AImageSource;
 import ly.kite.journey.creation.AProductCreationFragment;
 import ly.kite.journey.creation.IUpdatedImageListener;
@@ -167,6 +168,11 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     setForwardsTextViewOnClickListener( this );
 
     mPhotobookView.setOnDragListener( this );
+
+    if ( savedInstanceState == null )
+      {
+      Analytics.getInstance( mKiteActivity ).trackPhotobookEditScreenViewed();
+      }
 
     return ( view );
     }

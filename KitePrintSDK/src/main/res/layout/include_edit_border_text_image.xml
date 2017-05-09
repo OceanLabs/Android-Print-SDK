@@ -29,6 +29,7 @@
             android:background="@null"
             android:maxLines="1"
             android:ellipsize="end"
+            android:singleLine="true"
             custom:customTypefaceAssetName="Amatic-Bold.ttf"/>
     </FrameLayout>
 </LinearLayout>

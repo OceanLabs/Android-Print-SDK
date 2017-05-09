@@ -86,6 +86,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
 
   static private final boolean DISPLAY_DEBUGGING                     = false;
   static private final boolean DISPLAY_PRE_CACHING_INFO              = false;
+  static private final boolean TEST_EMPTY_CATALOGUE                  = false;
 
   static public  final long    ANY_AGE_OK                            = -1;
 
@@ -685,6 +686,12 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
         else if ( ! ProductCreationActivity.isSupported( userJourneyType ) )
           {
           Log.i( LOG_TAG, "-- Product ( " + groupLabel + " / " + productName + " ) discarded: user journey type not supported: " + userJourneyType + " --" );
+
+          catalogue.addDiscardedProduct( product );
+          }
+        else if ( TEST_EMPTY_CATALOGUE )
+          {
+          Log.i( LOG_TAG, "-- Product ( " + groupLabel + " / " + productName + " ) discarded: testing empty catalogue --" );
 
           catalogue.addDiscardedProduct( product );
           }

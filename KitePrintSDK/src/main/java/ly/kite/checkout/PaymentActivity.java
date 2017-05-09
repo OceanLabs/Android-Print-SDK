@@ -54,7 +54,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -275,7 +274,7 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
 
     if ( savedInstanceState == null )
       {
-      Analytics.getInstance( this ).trackPaymentScreenViewed( mOrder );
+      Analytics.getInstance( this ).trackPaymentMethodScreenViewed( mOrder );
       }
 
 

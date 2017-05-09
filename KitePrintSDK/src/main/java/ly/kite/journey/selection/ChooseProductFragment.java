@@ -39,19 +39,16 @@ package ly.kite.journey.selection;
 
 ///// Import(s) /////
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import ly.kite.KiteSDK;
 import ly.kite.analytics.Analytics;
@@ -174,7 +171,7 @@ public class ChooseProductFragment extends AGroupOrProductFragment
 
     if ( savedInstanceState == null )
       {
-      Analytics.getInstance( mKiteActivity ).trackProductSelectionScreenViewed();
+      Analytics.getInstance( mKiteActivity ).trackProductListScreenViewed();
       }
 
     if ( mProductGroupLabel != null ) mKiteActivity.setTitle( mProductGroupLabel );

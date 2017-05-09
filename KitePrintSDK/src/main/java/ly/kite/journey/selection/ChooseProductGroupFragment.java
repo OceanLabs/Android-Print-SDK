@@ -133,7 +133,10 @@ public class ChooseProductGroupFragment extends AGroupOrProductFragment
 
     if ( savedInstanceState == null )
       {
-      Analytics.getInstance( mKiteActivity ).trackSDKLoaded( Analytics.ENTRY_POINT_JSON_PROPERTY_VALUE_HOME_SCREEN );
+      Analytics analytics = Analytics.getInstance( mKiteActivity );
+
+      analytics.trackSDKLoaded( Analytics.ENTRY_POINT_JSON_PROPERTY_VALUE_HOME_SCREEN );
+      analytics.trackCategoryListScreenViewed();
       }
 
     return ( view );

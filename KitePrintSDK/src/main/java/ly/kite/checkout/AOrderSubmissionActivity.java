@@ -176,7 +176,7 @@ abstract public class AOrderSubmissionActivity extends AKiteActivity implements 
       }
 
 
-    Analytics.getInstance( this ).trackOrderSubmission( order );
+    Analytics.getInstance( this ).trackPrintOrderSubmission( order );
 
     onOrderSuccessInt( order );
     }

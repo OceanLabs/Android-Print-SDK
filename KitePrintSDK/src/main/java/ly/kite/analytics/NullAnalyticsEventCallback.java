@@ -66,26 +66,47 @@ public class NullAnalyticsEventCallback implements IAnalyticsEventCallback
   public void onSDKLoaded(String entryPoint) {}
 
   @Override
-  public void onProductSelectionScreenViewed() {}
+  public void onCategoryListScreenViewed() {}
 
   @Override
-  public void onProductOverviewScreenViewed(Product product) {}
+  public void onProductListScreenViewed() {}
+
+  @Override
+  public void onProductDetailsScreenViewed( Product product) {}
 
   @Override
   public void onCreateProductScreenViewed(Product product) {}
 
   @Override
+  public void onPhotobookEditScreenViewed() {}
+
+  @Override
+  public void onImagePickerScreenViewed() {}
+
+  @Override
   public void onProductOrderReviewScreenViewed(Product product) {}
+
+  @Override
+  public void onBasketScreenViewed() {}
+
+  @Override
+  public void onContinueShoppingButtonTapped() {}
 
   @Override
   public void onShippingScreenViewed( Order printOrder, String variant, boolean showPhoneEntryField) {}
 
   @Override
-  public void onPaymentScreenViewed(Order printOrder) {}
+  public void onAddressSelectionScreenViewed() {}
+
+  @Override
+  public void onPaymentMethodScreenViewed( Order printOrder ) {}
+
+  @Override
+  public void onPaymentMethodSelected( String paymentMethod ) {}
 
   @Override
   public void onPaymentCompleted( Order printOrder, String paymentMethod) {}
 
   @Override
-  public void onOrderSubmission(Order printOrder) {}
+  public void onPrintOrderSubmission( Order printOrder) {}
   }
