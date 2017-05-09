@@ -59,6 +59,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import ly.kite.R;
+import ly.kite.analytics.Analytics;
 
 
 ///// Class Declaration /////
@@ -139,6 +140,12 @@ public class AddressBookActivity extends AAddressActivity
 
 
     updateScreen();
+
+
+    if ( savedInstanceState == null )
+      {
+      Analytics.getInstance( this ).trackAddressSelectionScreenViewed();
+      }
     }
 
 

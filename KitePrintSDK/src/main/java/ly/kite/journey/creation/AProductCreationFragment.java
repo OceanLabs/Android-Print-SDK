@@ -62,6 +62,7 @@ import java.util.List;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
+import ly.kite.analytics.Analytics;
 import ly.kite.image.IImageSizeConsumer;
 import ly.kite.ordering.ImageSpec;
 import ly.kite.util.Asset;
@@ -381,7 +382,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
     if ( imageSourceCount > 1 ) return ( true );
 
-    if ( imageSourceCount == 1 && launchImagePicker ) imageSourceArrayList.get( 0 ).onPick( this, getMaxAddImageCount() );
+    if ( imageSourceCount == 1 && launchImagePicker ) pickImage( imageSourceArrayList.get( 0 ), getMaxAddImageCount() );
 
     return ( false );
     }
@@ -794,6 +795,19 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
   /*****************************************************
    *
+   * Calls the supplied image pikcer.
+   *
+   *****************************************************/
+  private void pickImage( AImageSource imageSource, int maxImageCount )
+    {
+    imageSource.onPick( this, maxImageCount );
+
+    Analytics.getInstance( mKiteActivity ).trackImagePickerScreenViewed();
+    }
+
+
+  /*****************************************************
+   *
    * Called when an item in the options menu is selected.
    *
    *****************************************************/
@@ -808,7 +822,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
     if ( imageSource != null )
       {
-      imageSource.onPick( this, maxImageCount );
+      pickImage( imageSource, maxImageCount );
 
       return ( true );
       }

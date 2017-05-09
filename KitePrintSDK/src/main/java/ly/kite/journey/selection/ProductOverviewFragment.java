@@ -426,7 +426,7 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
         {
         mTrackAnalytics = false;
 
-        Analytics.getInstance( mKiteActivity ).trackProductOverviewScreenViewed( mProduct );
+        Analytics.getInstance( mKiteActivity ).trackProductDetailsScreenViewed( mProduct );
         }
       }
     }

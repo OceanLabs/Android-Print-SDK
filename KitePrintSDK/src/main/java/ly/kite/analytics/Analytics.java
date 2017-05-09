@@ -77,19 +77,33 @@ public class Analytics
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
-  private static final String  LOG_TAG                                       = "Analytics";
+  static private final String  LOG_TAG                                       = "Analytics";
 
-  private static final String SHARED_PREFERENCES_NAME                        = "kite_sdk_analytics_shared_prefs";
+  //private static final String SHARED_PREFERENCES_NAME                        = "kite_sdk_analytics_shared_prefs";
 
-  private static final String  EVENT_NAME_SDK_LOADED                         = "Kite Loaded";
-  private static final String  EVENT_NAME_PRODUCT_SELECTION_SCREEN_VIEWED    = "Product Selection Screen Viewed";
-  private static final String  EVENT_NAME_PRODUCT_OVERVIEW_SCREEN_VIEWED     = "Product Description Screen Viewed";
-  private static final String  EVENT_NAME_CREATE_PRODUCT_SCREEN_VIEWED       = "Review Screen Viewed";
-  private static final String  EVENT_NAME_PRODUCT_ORDER_REVIEW_SCREEN_VIEWED = "Product Order Review Screen";
-  private static final String  EVENT_NAME_SHIPPING_SCREEN_VIEWED             = "Shipping Screen Viewed";
-  private static final String  EVENT_NAME_CREATE_PAYMENT_SCREEN_VIEWED       = "Payment Screen Viewed";
-  private static final String  EVENT_NAME_PAYMENT_COMPLETED                  = "Payment Completed";
-  private static final String  EVENT_NAME_ORDER_SUBMISSION                   = "Print Order Submission";
+  static private final String  EVENT_NAME_SDK_LOADED                         = "Kite Loaded";
+  static private final String  EVENT_NAME_CATEGORY_LIST_SCREEN_VIEWED        = "Category List Screen Viewed";
+  static private final String  EVENT_NAME_PRODUCT_LIST_SCREEN_VIEWED         = "Product List Screen Viewed";
+  static private final String  EVENT_NAME_PRODUCT_DETAILS_SCREEN_VIEWED      = "Product Details Screen Viewed";
+  static private final String  EVENT_NAME_IMAGE_PICKER_SCREEN_VIEWED         = "Image Picker Screen Viewed";
+  static private final String  EVENT_NAME_PHOTOBOOK_EDIT_SCREEN_VIEWED       = "Photobook Edit Screen Viewed";
+  static private final String  EVENT_NAME_CREATE_PRODUCT_SCREEN_VIEWED       = "Review Screen Viewed";
+  static private final String  EVENT_NAME_PRODUCT_ORDER_REVIEW_SCREEN_VIEWED = "Product Order Review Screen";
+  static private final String  EVENT_NAME_BASKET_SCREEN_VIEWED               = "Basket Screen Viewed";
+  static private final String  EVENT_NAME_CONTINUE_SHOPPING_BUTTON_TAPPED    = "Continue Shopping Button Tapped";
+  static private final String  EVENT_NAME_ADDRESS_SELECTION_SCREEN_VIEWED    = "Address Selection Screen Viewed";
+  static private final String  EVENT_NAME_SHIPPING_SCREEN_VIEWED             = "Shipping Screen Viewed";
+  static private final String  EVENT_NAME_PAYMENT_METHOD_SCREEN_VIEWED       = "Payment Method Screen Viewed";
+  static private final String  EVENT_NAME_PAYMENT_COMPLETED                  = "Payment Completed";
+  static private final String  EVENT_NAME_PAYMENT_METHOD_SELECTED            = "Payment Method Selected";
+  static private final String  EVENT_NAME_PRINT_ORDER_SUBMISSION             = "Print Order Submission";
+
+  // These are unused on Android, but listed for reference
+  static private final String  EVENT_NAME_QUALITY_INFO_SCREEN_VIEWED         = "Quality Info Screen Viewed";
+  static private final String  EVENT_NAME_PRINT_AT_HOME_TAPPED               = "Print At Home Tapped";
+  static private final String  EVENT_NAME_DELIVERY_DETAILS_SCREEN_VIEWED     = "Delivery Details Screen Viewed";
+  static private final String  EVENT_NAME_EDIT_ADDRESS_SCREEN_VIEWED         = "Add/Edit Address Screen Viewed";
+  static private final String  EVENT_NAME_SEARCH_ADDRESS_SCREEN_VIEWED       = "Search Address Screen Viewed";
 
 
   private static final String  JSON_PROPERTY_NAME_EVENT                      = "event";
@@ -492,13 +506,28 @@ public class Analytics
 
   /*****************************************************
    *
+   * Called when the user enters the category (product
+   * group) list screen.
+   *
+   *****************************************************/
+  public void trackCategoryListScreenViewed()
+    {
+    trackEvent( EVENT_NAME_CATEGORY_LIST_SCREEN_VIEWED );
+
+    getEventCallback().onCategoryListScreenViewed();
+    }
+
+
+  /*****************************************************
+   *
    * Called when the user enters the product list screen.
    *
    *****************************************************/
-  public void trackProductSelectionScreenViewed()
+  public void trackProductListScreenViewed()
     {
-    trackEvent( EVENT_NAME_PRODUCT_SELECTION_SCREEN_VIEWED );
-    getEventCallback().onProductSelectionScreenViewed();
+    trackEvent( EVENT_NAME_PRODUCT_LIST_SCREEN_VIEWED );
+
+    getEventCallback().onProductListScreenViewed();
     }
 
 
@@ -507,7 +536,7 @@ public class Analytics
    * Called when the user enters the product overview screen.
    *
    *****************************************************/
-  public void trackProductOverviewScreenViewed( Product product )
+  public void trackProductDetailsScreenViewed( Product product )
     {
     JSONObject propertiesJSONObject = getPropertiesJSONObject();
 
@@ -520,8 +549,8 @@ public class Analytics
       Log.e( LOG_TAG, "Error setting JSON properties", je );
       }
 
-    trackEvent( EVENT_NAME_PRODUCT_OVERVIEW_SCREEN_VIEWED, propertiesJSONObject );
-    getEventCallback().onProductOverviewScreenViewed(product);
+    trackEvent( EVENT_NAME_PRODUCT_DETAILS_SCREEN_VIEWED, propertiesJSONObject );
+    getEventCallback().onProductDetailsScreenViewed(product);
     }
 
 
@@ -543,8 +572,36 @@ public class Analytics
       Log.e( LOG_TAG, "Error setting JSON properties", je );
       }
 
+
     trackEvent( EVENT_NAME_CREATE_PRODUCT_SCREEN_VIEWED, propertiesJSONObject );
+
     getEventCallback().onCreateProductScreenViewed(product);
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the user enters the photobook edit screen.
+   *
+   *****************************************************/
+  public void trackPhotobookEditScreenViewed()
+    {
+    trackEvent( EVENT_NAME_PHOTOBOOK_EDIT_SCREEN_VIEWED );
+
+    getEventCallback().onPhotobookEditScreenViewed();
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the user enters an image picker screen.
+   *
+   *****************************************************/
+  public void trackImagePickerScreenViewed()
+    {
+    trackEvent( EVENT_NAME_IMAGE_PICKER_SCREEN_VIEWED );
+
+    getEventCallback().onImagePickerScreenViewed();
     }
 
 
@@ -566,9 +623,38 @@ public class Analytics
       Log.e( LOG_TAG, "Error setting JSON properties", je );
       }
 
+
     trackEvent( EVENT_NAME_PRODUCT_ORDER_REVIEW_SCREEN_VIEWED, propertiesJSONObject );
+
     getEventCallback().onProductOrderReviewScreenViewed( product );
     }
+
+
+  /*****************************************************
+   *
+   * Called when the user enters the basket screen
+   *
+   *****************************************************/
+  public void trackBasketScreenViewed()
+    {
+    trackEvent( EVENT_NAME_BASKET_SCREEN_VIEWED );
+
+    getEventCallback().onBasketScreenViewed();
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the user taps the continue shopping button
+   *
+   *****************************************************/
+  public void trackContinueShoppingButtonTapped()
+    {
+    trackEvent( EVENT_NAME_CONTINUE_SHOPPING_BUTTON_TAPPED );
+
+    getEventCallback().onContinueShoppingButtonTapped();
+    }
+
 
   /*****************************************************
    *
@@ -598,17 +684,57 @@ public class Analytics
 
   /*****************************************************
    *
+   * Called when the user enters the address selection screen
+   *
+   *****************************************************/
+  public void trackAddressSelectionScreenViewed()
+    {
+    trackEvent( EVENT_NAME_ADDRESS_SELECTION_SCREEN_VIEWED );
+
+    getEventCallback().onAddressSelectionScreenViewed();
+    }
+
+
+  /*****************************************************
+   *
    * Called when the user enters the payment screen.
    *
    *****************************************************/
-  public void trackPaymentScreenViewed( Order printOrder )
+  public void trackPaymentMethodScreenViewed( Order printOrder )
     {
     JSONObject propertiesJSONObject = getPropertiesJSONObject();
 
     addToJSON( printOrder, propertiesJSONObject );
 
-    trackEvent( EVENT_NAME_CREATE_PAYMENT_SCREEN_VIEWED, propertiesJSONObject );
-    getEventCallback().onPaymentScreenViewed(printOrder);
+
+    trackEvent( EVENT_NAME_PAYMENT_METHOD_SCREEN_VIEWED, propertiesJSONObject );
+
+    getEventCallback().onPaymentMethodScreenViewed(printOrder);
+    }
+
+
+  /*****************************************************
+   *
+   * Called when the user selects a payment method
+   *
+   *****************************************************/
+  public void trackPaymentMethodSelected( String paymentMethod )
+    {
+    JSONObject propertiesJSONObject = getPropertiesJSONObject();
+
+    try
+      {
+      propertiesJSONObject.put( JSON_PROPERTY_NAME_PAYMENT_METHOD, paymentMethod );
+      }
+    catch ( JSONException je )
+      {
+      Log.e( LOG_TAG, "Error setting JSON properties", je );
+      }
+
+
+    trackEvent( EVENT_NAME_PAYMENT_METHOD_SELECTED, propertiesJSONObject );
+
+    getEventCallback().onPaymentMethodSelected( paymentMethod );
     }
 
 
@@ -632,7 +758,9 @@ public class Analytics
       Log.e( LOG_TAG, "Error setting JSON properties", je );
       }
 
+
     trackEvent( EVENT_NAME_PAYMENT_COMPLETED, propertiesJSONObject );
+
     getEventCallback().onPaymentCompleted(printOrder, paymentMethod);
     }
 
@@ -642,14 +770,14 @@ public class Analytics
    * Called when the order is submitted.
    *
    *****************************************************/
-  public void trackOrderSubmission( Order printOrder )
+  public void trackPrintOrderSubmission( Order printOrder )
     {
     JSONObject propertiesJSONObject = getPropertiesJSONObject();
 
     addToJSON( printOrder, propertiesJSONObject );
 
-    trackEvent( EVENT_NAME_ORDER_SUBMISSION, propertiesJSONObject );
-    getEventCallback().onOrderSubmission(printOrder);
+    trackEvent( EVENT_NAME_PRINT_ORDER_SUBMISSION, propertiesJSONObject );
+    getEventCallback().onPrintOrderSubmission(printOrder);
     }
 
 

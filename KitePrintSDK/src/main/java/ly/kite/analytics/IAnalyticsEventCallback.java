@@ -70,10 +70,18 @@ public interface IAnalyticsEventCallback
 
   /*****************************************************
    *
+   * Called when the user enters the category list screen.
+   *
+   *****************************************************/
+  void onCategoryListScreenViewed();
+
+
+  /*****************************************************
+   *
    * Called when the user enters the product list screen.
    *
    *****************************************************/
-  void onProductSelectionScreenViewed();
+  void onProductListScreenViewed();
 
 
   /*****************************************************
@@ -81,7 +89,7 @@ public interface IAnalyticsEventCallback
    * Called when the user enters the product overview screen.
    *
    *****************************************************/
-  void onProductOverviewScreenViewed( Product product );
+  void onProductDetailsScreenViewed( Product product );
 
 
   /*****************************************************
@@ -91,12 +99,46 @@ public interface IAnalyticsEventCallback
    *****************************************************/
   void onCreateProductScreenViewed( Product product );
 
+
+  /*****************************************************
+   *
+   * Called when the user enters the photobook edit screen
+   *
+   *****************************************************/
+  void onPhotobookEditScreenViewed();
+
+
+  /*****************************************************
+   *
+   * Called when the user enters an image picker screen
+   *
+   *****************************************************/
+  void onImagePickerScreenViewed();
+
+
   /*****************************************************
    *
    * Called when the user enters the photo review screen
    *
    *****************************************************/
   void onProductOrderReviewScreenViewed( Product product );
+
+
+  /*****************************************************
+   *
+   * Called when the user enters the basket screen
+   *
+   *****************************************************/
+  void onBasketScreenViewed();
+
+
+  /*****************************************************
+   *
+   * Called when the user taps the continue shopping button
+   *
+   *****************************************************/
+  void onContinueShoppingButtonTapped();
+
 
   /*****************************************************
    *
@@ -108,10 +150,26 @@ public interface IAnalyticsEventCallback
 
   /*****************************************************
    *
+   * Called when the user enters the address selection screen.
+   *
+   *****************************************************/
+  void onAddressSelectionScreenViewed();
+
+
+  /*****************************************************
+   *
    * Called when the user enters the payment screen.
    *
    *****************************************************/
-  void onPaymentScreenViewed( Order printOrder );
+  void onPaymentMethodScreenViewed( Order printOrder );
+
+
+  /*****************************************************
+   *
+   * Called when the user selects a payment method.
+   *
+   *****************************************************/
+  void onPaymentMethodSelected( String paymentMethod );
 
 
   /*****************************************************
@@ -127,7 +185,7 @@ public interface IAnalyticsEventCallback
    * Called when the order is submitted to Kite
    *
    *****************************************************/
-  void onOrderSubmission( Order printOrder );
+  void onPrintOrderSubmission( Order printOrder );
 
   }
 

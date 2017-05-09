@@ -59,6 +59,7 @@ import java.util.List;
 
 import ly.kite.KiteSDK;
 import ly.kite.address.Address;
+import ly.kite.analytics.Analytics;
 import ly.kite.image.ImageLoadRequest;
 import ly.kite.journey.UserJourneyType;
 import ly.kite.ordering.OrderingDataAgent;
@@ -269,6 +270,12 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
 
     if ( mContinueShoppingView != null ) mContinueShoppingView.setOnClickListener( this );
     if ( mPayAmountTextView    != null ) mPayAmountTextView.setOnClickListener( this );
+
+
+    if ( savedInstanceState == null )
+      {
+      Analytics.getInstance( this ).trackBasketScreenViewed();
+      }
     }
 
 
@@ -391,6 +398,8 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
   protected void onLeftClicked()
     {
     continueShopping();
+
+    Analytics.getInstance( this ).trackContinueShoppingButtonTapped();
     }
 
 
