@@ -60,6 +60,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import ly.kite.KiteSDK;
+import ly.kite.SecurePreferences;
 import ly.kite.address.Address;
 import ly.kite.address.Country;
 import ly.kite.catalogue.Catalogue;
@@ -111,6 +113,8 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
   static private final String ORDER_HISTORY_DATE_FORMAT                      = "dd MMMM yyyy";
 
   static private final String IMAGE_SPEC_ADDITIONAL_PARAMETER_NAME_BORDER_TEXT = "borderText";
+
+  static public String ENCRYPTION_KEY = null;    //changed by MainActivity in onCreate method to user details
 
   static private final String SQL_CREATE_ADDRESS_TABLE =
           "CREATE TABLE " + TABLE_ADDRESS +
@@ -369,8 +373,11 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
     {
     ContentValues contentValues = new ContentValues();
 
-    contentValues.put( "date",         getDateString() );  // e.g. 02 June 2016
-    contentValues.put( "description",  description );
+     //////// Encryption initialiser //////////
+    SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
+
+    contentValues.put( "date",         pref.encrypt(getDateString() ));  // e.g. 02 June 2016
+    contentValues.put( "description",  pref.encrypt(description ));
 
     return ( contentValues );
     }
@@ -387,9 +394,11 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
 
     ContentValues contentValues = getOrderContentValues( description );
 
-    contentValues.put( "pricing_json", pricingJSON );
-    contentValues.put( "receipt",      receipt );
+    //////// Encryption initialiser //////////
+    SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
 
+    contentValues.put( "pricing_json", pref.encrypt(pricingJSON) );
+    contentValues.put( "receipt",      pref.encrypt(receipt) );
 
     return ( insertOrder( contentValues ) );
     }
@@ -405,6 +414,9 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
   public long newOrder( long basketId, Order order )
     {
     ContentValues contentValues = getOrderContentValues( order.getItemsDescription() );
+
+    //////// Encryption initialiser //////////
+    SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
 
 
     // Create a shipping address
@@ -427,13 +439,12 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
 
 
     contentValues.put(              "basket_id",          basketId );
-    putStringOrNull( contentValues, "notification_email", order.getNotificationEmail() );
-    putStringOrNull( contentValues, "notification_phone", order.getNotificationPhoneNumber() );
-    putStringOrNull( contentValues, "user_data_json",     ( userData != null ? userData.toString() : null ) );
-    putStringOrNull( contentValues, "promo_code",         order.getPromoCode() );
-    putStringOrNull( contentValues, "pricing_json",       ( orderPricing != null ? orderPricing.getPricingJSONString() : null ) );
-    putStringOrNull( contentValues, "proof_of_payment",   order.getProofOfPayment() );
-
+    putStringOrNull( contentValues, "notification_email", pref.encrypt( order.getNotificationEmail() ));
+    putStringOrNull( contentValues, "notification_phone", pref.encrypt( order.getNotificationPhoneNumber()) );
+    putStringOrNull( contentValues, "user_data_json",     pref.encrypt( userData != null ? userData.toString() : null ) );
+    putStringOrNull( contentValues, "promo_code",         pref.encrypt( order.getPromoCode()) );
+    putStringOrNull( contentValues, "pricing_json",       pref.encrypt( orderPricing != null ? orderPricing.getPricingJSONString() : null ) );
+    putStringOrNull( contentValues, "proof_of_payment",   pref.encrypt( order.getProofOfPayment()) );
 
     long orderId = insertOrder( contentValues );
 
@@ -523,11 +534,14 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
         {
         // Create and try to insert the new parameters
 
+        //////// Encryption initialiser //////////
+        SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
+
         ContentValues contentValues = new ContentValues();
 
         contentValues.put( "order_id", orderId );
-        contentValues.put( "name",     name );
-        contentValues.put( "value",    additionalParametersMap.get( name ) );
+        contentValues.put( "name",     pref.encrypt(name) );
+        contentValues.put( "value",    pref.encrypt(additionalParametersMap.get( name )) );
 
         database.insert( TABLE_ORDER_ADDITIONAL_PARAMETER, null, contentValues );
         }
@@ -666,7 +680,6 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
 
 
     // Try to insert the new item
-
     basketId = database.insert( TABLE_BASKET, "dummy_column", contentValues );
 
     if ( basketId < 0 )
@@ -738,9 +751,12 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
 
     ContentValues contentValues = new ContentValues();
 
+      //////// Encryption initialiser //////////
+      SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
+
     if ( itemId >= 0 ) contentValues.put( "id", itemId );
     contentValues.put( "basket_id",      basketId );
-    contentValues.put( "product_id",     product.getId() );
+    contentValues.put( "product_id",     pref.encrypt(product.getId()) );
     contentValues.put( "order_quantity", orderQuantity );
 
 
@@ -862,9 +878,12 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
 
         ContentValues contentValues = new ContentValues();
 
+        //////// Encryption initialiser //////////
+        SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
+
         contentValues.put( "item_id", itemId );
-        contentValues.put( "name",    name );
-        contentValues.put( "value",   optionsMap.get( name ) );
+        contentValues.put( "name",    pref.encrypt(name) );
+        contentValues.put( "value",   pref.encrypt(optionsMap.get( name )) );
 
         database.insert( TABLE_OPTION, null, contentValues );
         }
@@ -944,8 +963,11 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
 
           ContentValues contentValues = new ContentValues();
 
+          //////// Encryption initialiser //////////
+          SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
+
           // If the asset isn't an image file, this should throw an exception, which is what we want.
-          contentValues.put( "image_file_name", asset.getImageFileName() );
+          contentValues.put( "image_file_name", pref.encrypt(asset.getImageFileName() ));
           contentValues.put( "left",            proportionalRectangle.left );
           contentValues.put( "top",             proportionalRectangle.top );
           contentValues.put( "right",           proportionalRectangle.right );
@@ -1058,9 +1080,13 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
     {
     ContentValues contentValues = new ContentValues();
 
+    //////// Encryption initialiser //////////
+    SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
+
     contentValues.put( "image_spec_id", imageSpecId );
-    contentValues.put( "name",          name );
-    contentValues.put( "value",         value );
+    contentValues.put( "name",          pref.encrypt(name) );
+    contentValues.put( "value",         pref.encrypt(value) );
+
 
 
     // Try to insert the new parameter
@@ -1106,13 +1132,16 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
 
     ContentValues contentValues = new ContentValues();
 
-    putStringOrNull( contentValues, "recipient_name",     address.getRecipientName() );
-    putStringOrNull( contentValues, "line1",              address.getLine1() );
-    putStringOrNull( contentValues, "line2",              address.getLine2() );
-    putStringOrNull( contentValues, "city",               address.getCity() );
-    putStringOrNull( contentValues, "state_or_county",    address.getStateOrCounty() );
-    putStringOrNull( contentValues, "zip_or_postal_code", address.getZipOrPostalCode() );
-    putStringOrNull( contentValues, "country_iso2_code",  address.getCountry().iso2Code() );
+    //////// Encryption initialiser //////////
+    SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
+
+    putStringOrNull( contentValues, "recipient_name",     pref.encrypt (address.getRecipientName() ));
+    putStringOrNull( contentValues, "line1",              pref.encrypt (address.getLine1() ));
+    putStringOrNull( contentValues, "line2",              pref.encrypt (address.getLine2() ));
+    putStringOrNull( contentValues, "city",               pref.encrypt (address.getCity()) );
+    putStringOrNull( contentValues, "state_or_county",    pref.encrypt (address.getStateOrCounty() ));
+    putStringOrNull( contentValues, "zip_or_postal_code", pref.encrypt (address.getZipOrPostalCode() ));
+    putStringOrNull( contentValues, "country_iso2_code",  pref.encrypt (address.getCountry().iso2Code() ));
 
 
     // Try to insert the new address
@@ -1227,23 +1256,26 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
 
       List<OrderHistoryItem> orderHistoryItemList = new ArrayList<>();
 
+      //////// Decryption initialiser //////////
+      SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
+
 
       // Process every row
 
       while ( cursor.moveToNext() )
         {
         long   orderId               = cursor.getLong( cursor.getColumnIndex( "id" ) );
-        String dateString            = cursor.getString( cursor.getColumnIndex( "date" ) );
-        String description           = cursor.getString( cursor.getColumnIndex( "description" ) );
+        String dateString            = pref.decrypt(cursor.getString( cursor.getColumnIndex( "date" )) );
+        String description           = pref.decrypt(cursor.getString( cursor.getColumnIndex( "description" ) ));
         Long   basketIdLong          = getLongOrNull( cursor, "basket_id" );
         Long   shippingAddressIdLong = getLongOrNull( cursor, "shipping_address_id" );
-        String notificationEmail     = getStringOrNull( cursor, "notification_email" );
-        String notificationPhone     = getStringOrNull( cursor, "notification_phone" );
-        String userDataJSON          = getStringOrNull( cursor, "user_data_json" );
-        String promoCode             = getStringOrNull( cursor, "promo_code" );
-        String pricingJSON           = getStringOrNull( cursor, "pricing_json" );
-        String proofOfPayment        = getStringOrNull( cursor, "proof_of_payment" );
-        String receipt               = getStringOrNull( cursor, "receipt" );
+        String notificationEmail     = pref.decrypt(getStringOrNull( cursor, "notification_email" ));
+        String notificationPhone     = pref.decrypt(getStringOrNull( cursor, "notification_phone" ));
+        String userDataJSON          = pref.decrypt(getStringOrNull( cursor, "user_data_json" ));
+        String promoCode             = pref.decrypt(getStringOrNull( cursor, "promo_code" ));
+        String pricingJSON           = pref.decrypt(getStringOrNull( cursor, "pricing_json" ));
+        String proofOfPayment        = pref.decrypt(getStringOrNull( cursor, "proof_of_payment" ));
+        String receipt               = pref.decrypt(getStringOrNull( cursor, "receipt" ));
 
 
         HashMap<String,String> additionalParametersMap = additionalParametersSparseArray.get( (int)orderId );
@@ -1369,6 +1401,9 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
    *****************************************************/
   SparseArray<HashMap<String,String>> selectAllAdditionalParameters()
     {
+    //////// Decryption initialiser //////////
+    SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
+
     // Construct the SQL statement:
     StringBuilder sqlStringBuilder = new StringBuilder()
             .append( "SELECT order_id," )
@@ -1405,8 +1440,8 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
         // Get the values from the cursor
 
         long   orderId = cursor.getLong  ( cursor.getColumnIndex( "order_id" ) );
-        String name    = cursor.getString( cursor.getColumnIndex( "name" ) );
-        String value   = cursor.getString( cursor.getColumnIndex( "value" ) );
+        String name    = pref.decrypt(cursor.getString( cursor.getColumnIndex( "name" ) ));
+        String value   = pref.decrypt(cursor.getString( cursor.getColumnIndex( "value" ) ));
 
 
         // If this is a new order, create a new map and insert it into the array
@@ -1487,14 +1522,18 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
         {
         // Get the values from the cursor
 
+        //////// Decryption initialiser //////////
+        SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
+
         long   addressId       = cursor.getLong  ( cursor.getColumnIndex( "id" ) );
-        String recipientName   = getStringOrNull( cursor, "recipient_name" );
-        String line1           = getStringOrNull( cursor, "line1" );
-        String line2           = getStringOrNull( cursor, "line2" );
-        String city            = getStringOrNull( cursor, "city" );
-        String stateOrCounty   = getStringOrNull( cursor, "state_or_county" );
-        String zipOrPostalCode = getStringOrNull( cursor, "zip_or_postal_code" );
-        String countryISO2Code = getStringOrNull( cursor, "country_iso2_code" );
+        String recipientName   =  pref.decrypt(getStringOrNull( cursor, "recipient_name" ));
+        String line1           =  pref.decrypt(getStringOrNull( cursor, "line1" ));
+        String line2           =  pref.decrypt(getStringOrNull( cursor, "line2" ));
+        String city            =  pref.decrypt(getStringOrNull( cursor, "city" ));
+        String stateOrCounty   =  pref.decrypt(getStringOrNull( cursor, "state_or_county" ));
+        String zipOrPostalCode =  pref.decrypt(getStringOrNull( cursor, "zip_or_postal_code" ));
+        String countryISO2Code =  pref.decrypt(getStringOrNull( cursor, "country_iso2_code" ));
+
 
 
         Address shippingAddress = new Address( recipientName, line1, line2, city, stateOrCounty, zipOrPostalCode, Country.getInstance( countryISO2Code ) );
@@ -1532,6 +1571,11 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
    *****************************************************/
   public List<BasketItem> loadBasket( Context context, long basketId, Catalogue catalogue )
     {
+
+    //////// Decryption initialiser //////////
+    SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
+
+
     // Get all the items
 
     List<ContentValues> itemContentValuesList = selectBasketItems( basketId );
@@ -1595,7 +1639,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
       // Get the base item details
 
       long   itemId        = itemContentValues.getAsLong( "item_id" );
-      String productId     = itemContentValues.getAsString( "product_id" );
+      String productId     = pref.decrypt(itemContentValues.getAsString( "product_id" ));
       int    orderQuantity = itemContentValues.getAsInteger( "order_quantity" );
 
 
@@ -1695,8 +1739,8 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
         long itemId = cursor.getLong(   cursor.getColumnIndex( "item_id" ) );
 
         contentValues.put( "item_id",        itemId );
-        contentValues.put( "product_id",     cursor.getString( cursor.getColumnIndex( "product_id" ) ) );
-        contentValues.put( "order_quantity", cursor.getInt   ( cursor.getColumnIndex( "order_quantity" ) ) );
+        contentValues.put( "product_id",     cursor.getString( cursor.getColumnIndex( "product_id" )  ) );
+        contentValues.put( "order_quantity", cursor.getInt( cursor.getColumnIndex( "order_quantity" ) ) );
 
         contentValuesList.add( contentValues );
         }
@@ -1791,13 +1835,16 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
 
       // Process every row; each row corresponds to an option
 
+      //////// Decryption initialiser //////////
+      SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
+
       while ( cursor.moveToNext() )
         {
         // Get the values from the cursor
 
         long   itemId = cursor.getLong  ( cursor.getColumnIndex( "item_id" ) );
-        String name   = cursor.getString( cursor.getColumnIndex( "name" ) );
-        String value  = cursor.getString( cursor.getColumnIndex( "value" ) );
+        String name   = pref.decrypt(cursor.getString( cursor.getColumnIndex( "name" ) ) );
+        String value  = pref.decrypt(cursor.getString( cursor.getColumnIndex( "value" ) ) );
 
 
         // If this is a new job, create a new options hash map and insert it into the array
@@ -1887,12 +1934,15 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
 
       // Process every row; each row corresponds to a single asset
 
+      //////// Decryption initialiser //////////
+      SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
+
       while ( cursor.moveToNext() )
         {
         // Get the values from the cursor
 
         long   imageSpecId   = cursor.getLong  ( cursor.getColumnIndex( "id" ) );
-        String imageFileName = cursor.getString( cursor.getColumnIndex( "image_file_name" ) );
+        String imageFileName = pref.decrypt(cursor.getString( cursor.getColumnIndex( "image_file_name" )) );
         float  left          = cursor.getFloat(  cursor.getColumnIndex( "left" ) );
         float  top           = cursor.getFloat(  cursor.getColumnIndex( "top" ) );
         float  right         = cursor.getFloat(  cursor.getColumnIndex( "right" ) );
@@ -1980,13 +2030,16 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
 
       // Process every row; each row corresponds to a single parameter
 
+      //////// Decryption initialiser //////////
+      SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
+
       while ( cursor.moveToNext() )
         {
         // Get the values from the cursor
 
         long   imageSpecId = cursor.getLong  ( cursor.getColumnIndex( "image_spec_id" ) );
-        String name        = cursor.getString( cursor.getColumnIndex( "name" ) );
-        String value       = cursor.getString( cursor.getColumnIndex( "value" ) );
+        String name        = pref.decrypt(cursor.getString( cursor.getColumnIndex( "name" )) );
+        String value       = pref.decrypt(cursor.getString( cursor.getColumnIndex( "value" )) );
 
         HashMap<String,String> parametersHashMap = imageSpecAdditionalParametersSparseArray.get( (int)imageSpecId );
 
