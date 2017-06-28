@@ -104,7 +104,7 @@ public class SecurePreferences {
     }
 
 
-    protected String encrypt(String value) throws SecurePreferencesException {
+    public String encrypt(String value) throws SecurePreferencesException {
         if(value == null)
             return null;
         byte[] secureValue;
@@ -118,7 +118,7 @@ public class SecurePreferences {
         return secureValueEncoded;
     }
 
-    protected String decrypt(String securedEncodedValue) {
+    public String decrypt(String securedEncodedValue) {
         if(securedEncodedValue == null)
             return null;
         byte[] securedValue = Base64.decode(securedEncodedValue, Base64.NO_WRAP);

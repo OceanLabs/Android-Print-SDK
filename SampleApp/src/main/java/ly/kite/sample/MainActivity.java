@@ -67,6 +67,7 @@ import ly.kite.journey.AImageSource;
 import ly.kite.journey.DeviceImageSource;
 import ly.kite.ordering.Job;
 import ly.kite.ordering.Order;
+import ly.kite.ordering.OrderingDatabaseAgent;
 import ly.kite.util.Asset;
 import ly.kite.KiteSDK;
 
@@ -152,6 +153,7 @@ public class MainActivity extends ADeepLinkableActivity
     super.onCreate( savedInstanceState );
 
     KiteSDK.ENCRYPTION_KEY = REPLACE_DETAILS_HERE;
+    OrderingDatabaseAgent.ENCRYPTION_KEY = REPLACE_DETAILS_HERE;
 
 
     // Uncomment to include Crashlytics (Fabric) crash reporting
