@@ -52,6 +52,8 @@ public class SecurePreferences {
     private final Cipher writer;
     private final Cipher reader;
 
+    private boolean encryptData=true;
+
     /**
      * This will initialize an instance of the SecurePreferences class
      * @param secureKey the key used for encryption, finding a good key scheme is hard.
@@ -61,19 +63,21 @@ public class SecurePreferences {
      * @throws SecurePreferencesException
      */
     public SecurePreferences(String secureKey) throws SecurePreferencesException {
+        if(secureKey.equals("off"))
+            encryptData = false;
+
         try {
             this.writer = Cipher.getInstance(TRANSFORMATION);
             this.reader = Cipher.getInstance(TRANSFORMATION);
 
             initCiphers(secureKey);
 
-        }
-        catch (GeneralSecurityException e) {
+        } catch (GeneralSecurityException e) {
+            throw new SecurePreferencesException(e);
+        } catch (UnsupportedEncodingException e) {
             throw new SecurePreferencesException(e);
         }
-        catch (UnsupportedEncodingException e) {
-            throw new SecurePreferencesException(e);
-        }
+
     }
 
     protected void initCiphers(String secureKey) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException,
@@ -87,7 +91,7 @@ public class SecurePreferences {
 
     protected IvParameterSpec getIv() {
         byte[] iv = new byte[writer.getBlockSize()];
-        System.arraycopy("CHANGE_ME_WITH_RANDOM CHARACTERS".getBytes(), 0, iv, 0, writer.getBlockSize());
+        System.arraycopy("CHANGE_ME_IF_YOU_WANT".getBytes(), 0, iv, 0, writer.getBlockSize());
         return new IvParameterSpec(iv);
     }
 
@@ -105,29 +109,35 @@ public class SecurePreferences {
 
 
     public String encrypt(String value) throws SecurePreferencesException {
-        if(value == null)
-            return null;
-        byte[] secureValue;
-        try {
-            secureValue = convert(writer, value.getBytes(CHARSET));
+        if(encryptData == false)
+            return value;
+        else {
+            if (value == null)
+                return null;
+            byte[] secureValue;
+            try {
+                secureValue = convert(writer, value.getBytes(CHARSET));
+            } catch (UnsupportedEncodingException e) {
+                throw new SecurePreferencesException(e);
+            }
+            String secureValueEncoded = Base64.encodeToString(secureValue, Base64.NO_WRAP);
+            return secureValueEncoded;
         }
-        catch (UnsupportedEncodingException e) {
-            throw new SecurePreferencesException(e);
-        }
-        String secureValueEncoded = Base64.encodeToString(secureValue, Base64.NO_WRAP);
-        return secureValueEncoded;
     }
 
     public String decrypt(String securedEncodedValue) {
-        if(securedEncodedValue == null)
-            return null;
-        byte[] securedValue = Base64.decode(securedEncodedValue, Base64.NO_WRAP);
-        byte[] value = convert(reader, securedValue);
-        try {
-            return new String(value, CHARSET);
-        }
-        catch (UnsupportedEncodingException e) {
-            throw new SecurePreferencesException(e);
+        if(encryptData==false)
+            return securedEncodedValue;
+        else {
+            if (securedEncodedValue == null)
+                return null;
+            byte[] securedValue = Base64.decode(securedEncodedValue, Base64.NO_WRAP);
+            byte[] value = convert(reader, securedValue);
+            try {
+                return new String(value, CHARSET);
+            } catch (UnsupportedEncodingException e) {
+                throw new SecurePreferencesException(e);
+            }
         }
     }
 
