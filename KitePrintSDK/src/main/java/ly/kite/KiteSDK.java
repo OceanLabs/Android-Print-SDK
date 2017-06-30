@@ -70,6 +70,7 @@ import ly.kite.catalogue.CatalogueLoader;
 import ly.kite.checkout.PaymentActivity;
 import ly.kite.journey.basket.BasketActivity;
 import ly.kite.ordering.Order;
+import ly.kite.ordering.OrderingDatabaseAgent;
 import ly.kite.payment.PayPalCard;
 import ly.kite.util.Asset;
 import ly.kite.journey.AImageSource;
@@ -88,9 +89,6 @@ import ly.kite.image.ImageAgent;
  *****************************************************/
 public class KiteSDK
   {
-
-    ///////// Encryption initialiser //////////
-    SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
 
     ////////// Static Constant(s) //////////
 
@@ -184,7 +182,7 @@ public class KiteSDK
 
   static public final int    ACTIVITY_REQUEST_CODE_FIRST                           = 10;
 
-    static public String ENCRYPTION_KEY = null;    //changed by MainActivity in onCreate method to user details
+  static public String ENCRYPTION_KEY = null;
 
   ////////// Static Variable(s) //////////
 
@@ -205,6 +203,17 @@ public class KiteSDK
 
 
   ////////// Static Method(s) //////////
+
+  /*****************************************************
+   *
+   * Sets the encryption key.
+   *
+   *****************************************************/
+
+   static public void setEncryptionKey(String encryptionKey) {
+     ENCRYPTION_KEY=encryptionKey;
+     OrderingDatabaseAgent.setEncryptionKey(encryptionKey);
+   }
 
   /*****************************************************
    *
@@ -332,13 +341,7 @@ public class KiteSDK
 
     String key = pref.encrypt(getParameterKey( prefix, name ));//Re-encrypt the key s.t. it will match the one stored in the preference files
 
-      // String used as defaultValue for sharedPreferences getString method
-      String temp="false";
-
-      if(defaultValue)
-        temp="true";
-
-    if( pref.decrypt(scope.sharedPreferences( context ).getString( key, temp )) == "false")
+    if( pref.decrypt(scope.sharedPreferences( context ).getString( key, ""+defaultValue )).equals("false"))
         return false;
       else
         return true;
@@ -359,10 +362,10 @@ public class KiteSDK
 
       scope.sharedPreferences( context )
       .edit()
-        .putString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_RECIPIENT),         pref.encrypt(address.getRecipientName()))
-        .putString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_LINE1),             pref.encrypt(address.getLine1() ))
-        .putString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_LINE2),             pref.encrypt(address.getLine2() ))
-        .putString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_CITY),              pref.encrypt(address.getCity()) )
+        .putString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_RECIPIENT),          pref.encrypt(address.getRecipientName()))
+        .putString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_LINE1),              pref.encrypt(address.getLine1() ))
+        .putString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_LINE2),              pref.encrypt(address.getLine2() ))
+        .putString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_CITY),               pref.encrypt(address.getCity()) )
         .putString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_STATE_OR_COUNTY),    pref.encrypt(address.getStateOrCounty() ))
         .putString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_ZIP_OR_POSTAL_CODE), pref.encrypt(address.getZipOrPostalCode() ))
         .putString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_COUNTRY_CODE),       pref.encrypt(address.getCountry().iso3Code() ))
@@ -532,6 +535,7 @@ public class KiteSDK
    *****************************************************/
   static public KiteSDK getInstance( Context context, String apiKey, IEnvironment environment )
     {
+      setEncryptionKey("off");
     if ( sKiteSDK != null )
       {
       sKiteSDK.setEnvironment( apiKey, environment );
@@ -544,8 +548,40 @@ public class KiteSDK
     return ( sKiteSDK );
     }
 
+    /*****************************************************
+     *
+     * Returns a singleton instance of the SDK with encryption options.
+     * Note that if there is already an instance of the SDK, it will
+     * be re-initialised with the supplied values.
+     *
+     *****************************************************/
+    static public KiteSDK getInstance( Context context, String apiKey, IEnvironment environment , boolean encryptData, String encryptionKey)
+    {
+      if(encryptData) {
+        if (encryptionKey == null)
+          setEncryptionKey(apiKey);
+        else
+          setEncryptionKey(encryptionKey);
+      }
+      else
+        setEncryptionKey("off");
 
-  /*****************************************************
+
+      if ( sKiteSDK != null )
+      {
+        sKiteSDK.setEnvironment( apiKey, environment );
+      }
+      else
+      {
+        sKiteSDK = new KiteSDK( context, apiKey, environment );
+      }
+
+      return ( sKiteSDK );
+    }
+
+
+
+    /*****************************************************
    *
    * Initialises the Kite SDK without returning an instance.
    *

@@ -152,10 +152,6 @@ public class MainActivity extends ADeepLinkableActivity
     {
     super.onCreate( savedInstanceState );
 
-    KiteSDK.ENCRYPTION_KEY = REPLACE_DETAILS_HERE;
-    OrderingDatabaseAgent.ENCRYPTION_KEY = REPLACE_DETAILS_HERE;
-
-
     // Uncomment to include Crashlytics (Fabric) crash reporting
     //Fabric.with( this, new Crashlytics() );
 

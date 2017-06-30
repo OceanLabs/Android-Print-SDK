@@ -114,7 +114,9 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
 
   static private final String IMAGE_SPEC_ADDITIONAL_PARAMETER_NAME_BORDER_TEXT = "borderText";
 
-  static public String ENCRYPTION_KEY = null;    //changed by MainActivity in onCreate method to user details
+  static private String ENCRYPTION_KEY = null;
+
+  static public void setEncryptionKey(String encryptionKey) { ENCRYPTION_KEY=encryptionKey; }
 
   static private final String SQL_CREATE_ADDRESS_TABLE =
           "CREATE TABLE " + TABLE_ADDRESS +
