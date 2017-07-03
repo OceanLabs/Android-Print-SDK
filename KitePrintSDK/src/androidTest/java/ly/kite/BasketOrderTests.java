@@ -579,7 +579,9 @@ public class BasketOrderTests extends KiteTestCase
     OrderingDataAgent orderingDataAgent = OrderingDataAgent.getInstance( getContext() );
     Product product = new Product( "product_id", "product_code", "Product Name", "Product Type", 0xff000000, UserJourneyType.PHOTOBOOK, 2 );
 
-    KiteSDK.setEncryptionKey("mnk45k3nk5jn4kjn534jkn5kjn34k5j34");
+    KiteSDK.IEnvironment environment;
+    environment = KiteSDK.DefaultEnvironment.TEST;
+    KiteSDK sdk = KiteSDK.getInstance(getContext(),"mnk45k3nk5jn4kjn534jkn5kjn34k5j34", environment,true,null);
 
     Catalogue catalogue = new Catalogue();
     catalogue.addProduct( "Group Label", null, product );

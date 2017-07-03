@@ -40,6 +40,7 @@ package ly.kite;
 ///// Import(s) /////
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Currency;
 import java.util.HashSet;
 import java.util.List;
@@ -414,9 +415,11 @@ public class KiteSDK
       //////// Encryption initialiser //////////
       SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
 
+      String set = stringSet.toString();//convert the stringSet to String for encryption
+
     scope.sharedPreferences( context )
             .edit()
-            .putStringSet( pref.encrypt(key), stringSet )
+            .putString( pref.encrypt(key), pref.encrypt(set) )
             .apply();
     }
 
@@ -435,8 +438,9 @@ public class KiteSDK
 
     HashSet<String> returnedStringSet = new HashSet<>();
 
-    Set<String> loadedStringSet = scope.sharedPreferences( context ).getStringSet( key, null );
+    String set = pref.decrypt(scope.sharedPreferences( context ).getString( key, null ));
 
+    Set<String> loadedStringSet = new HashSet<String>(Arrays.asList(set.split(" ")));//convert from String to Set <String> after decryption
 
     // We want to copy the strings into a new set, so they can be modified
     // if necessary.
@@ -2025,9 +2029,9 @@ public class KiteSDK
    *****************************************************/
   public static enum DefaultEnvironment implements IEnvironment
     {
-    TEST               ( "Test",    "https://api.kite.ly/v3.0",     ENVIRONMENT_TEST,    PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_HOST, PAYPAL_SANDBOX_CLIENT_ID, STRIPE_TEST_PUBLIC_KEY ),
-    STAGING_DO_NOT_USE ( "Staging", "https://staging.kite.ly/v3.0", ENVIRONMENT_STAGING, PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_HOST, PAYPAL_SANDBOX_CLIENT_ID, STRIPE_TEST_PUBLIC_KEY ), /* Private environment intended only for Kite / Ocean Labs use, hands off :) */
-    LIVE               ( "Live",    "https://api.kite.ly/v3.0",     ENVIRONMENT_LIVE,    PayPalConfiguration.ENVIRONMENT_PRODUCTION, PAYPAL_LIVE_API_HOST,    PAYPAL_LIVE_CLIENT_ID,    STRIPE_LIVE_PUBLIC_KEY );
+    TEST               ( "Test",    "https://api.kite.ly/v4.0",     ENVIRONMENT_TEST,    PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_HOST, PAYPAL_SANDBOX_CLIENT_ID, STRIPE_TEST_PUBLIC_KEY ),
+    STAGING_DO_NOT_USE ( "Staging", "https://staging.kite.ly/v4.0", ENVIRONMENT_STAGING, PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_HOST, PAYPAL_SANDBOX_CLIENT_ID, STRIPE_TEST_PUBLIC_KEY ), /* Private environment intended only for Kite / Ocean Labs use, hands off :) */
+    LIVE               ( "Live",    "https://api.kite.ly/v4.0",     ENVIRONMENT_LIVE,    PayPalConfiguration.ENVIRONMENT_PRODUCTION, PAYPAL_LIVE_API_HOST,    PAYPAL_LIVE_CLIENT_ID,    STRIPE_LIVE_PUBLIC_KEY );
 
 
     private Environment  mEnvironment;
