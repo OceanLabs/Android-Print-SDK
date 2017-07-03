@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Currency;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -412,14 +413,19 @@ public class KiteSDK
     {
     String key = getParameterKey( prefix, name );
 
-      //////// Encryption initialiser //////////
-      SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
+    //////// Encryption initialiser //////////
+    SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
 
-      String set = stringSet.toString();//convert the stringSet to String for encryption
+    Set<String> stringSetEncrypted = new HashSet<String>();
+    Iterator it = stringSet.iterator();
+
+    //encrypt each element from the Set and place it in a new set
+    for(int i=0; i<stringSet.size(); i++)
+       stringSetEncrypted.add(pref.encrypt(it.next().toString()));
 
     scope.sharedPreferences( context )
             .edit()
-            .putString( pref.encrypt(key), pref.encrypt(set) )
+            .putStringSet( pref.encrypt(key), stringSetEncrypted)
             .apply();
     }
 
@@ -431,23 +437,29 @@ public class KiteSDK
    *****************************************************/
   static private Set<String> getStringSetParameter( Context context, Scope scope, String prefix, String name )
     {
-      //////// Decryption initialiser //////////
-      SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
+    //////// Decryption initialiser //////////
+    SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
 
     String key = pref.encrypt(getParameterKey( prefix, name ));
 
     HashSet<String> returnedStringSet = new HashSet<>();
 
-    String set = pref.decrypt(scope.sharedPreferences( context ).getString( key, null ));
 
-    Set<String> loadedStringSet = new HashSet<String>(Arrays.asList(set.split(" ")));//convert from String to Set <String> after decryption
+    Set<String> loadedStringSet = scope.sharedPreferences( context ).getStringSet( key, null );
+    Set<String> DecryptedLoadedStringSet = new HashSet<>();
+
+    Iterator it = loadedStringSet.iterator();
+
+    //decrypt every element from the Set and place it the new set
+    for(int i=0; i<loadedStringSet.size(); i++)
+        DecryptedLoadedStringSet.add(pref.decrypt(it.next().toString()));
 
     // We want to copy the strings into a new set, so they can be modified
     // if necessary.
 
-    if ( loadedStringSet != null )
+    if ( DecryptedLoadedStringSet != null )
       {
-      for ( String string : loadedStringSet )
+      for ( String string : DecryptedLoadedStringSet )
         {
         returnedStringSet.add( string );
         }
