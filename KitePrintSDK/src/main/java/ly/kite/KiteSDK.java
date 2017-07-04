@@ -40,8 +40,10 @@ package ly.kite;
 ///// Import(s) /////
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Currency;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -70,6 +72,7 @@ import ly.kite.catalogue.CatalogueLoader;
 import ly.kite.checkout.PaymentActivity;
 import ly.kite.journey.basket.BasketActivity;
 import ly.kite.ordering.Order;
+import ly.kite.ordering.OrderingDatabaseAgent;
 import ly.kite.payment.PayPalCard;
 import ly.kite.util.Asset;
 import ly.kite.journey.AImageSource;
@@ -88,7 +91,8 @@ import ly.kite.image.ImageAgent;
  *****************************************************/
 public class KiteSDK
   {
-  ////////// Static Constant(s) //////////
+
+    ////////// Static Constant(s) //////////
 
   static private final String LOG_TAG                                              = "KiteSDK";
 
@@ -106,7 +110,7 @@ public class KiteSDK
   static public  final boolean DISPLAY_PRODUCTS                                    = false;
 
 
-  static public  final String SDK_VERSION                                          = "5.7.3";
+  static public  final String SDK_VERSION                                          = "5.7.4";
 
   static public  final String IMAGE_CATEGORY_APP                                   = "app";
   static public  final String IMAGE_CATEGORY_PRODUCT_ITEM                          = "product_item";
@@ -180,6 +184,7 @@ public class KiteSDK
 
   static public final int    ACTIVITY_REQUEST_CODE_FIRST                           = 10;
 
+  static public String ENCRYPTION_KEY = "TQdZ6I0KwWQjpNYyAbHGPYWRVMMcgUbWuE0JC0MA"; // use static encryption key for now.
 
   ////////// Static Variable(s) //////////
 
@@ -263,9 +268,12 @@ public class KiteSDK
     {
     String key = getParameterKey( prefix, name );
 
+      ///////// Encryption initialiser //////////
+      SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
+
     scope.sharedPreferences( context )
             .edit()
-            .putString( key, value )
+            .putString( pref.encrypt(key), pref.encrypt(value))
             .apply();
     }
 
@@ -277,9 +285,12 @@ public class KiteSDK
    *****************************************************/
   static private String getStringParameter( Context context, Scope scope, String prefix, String name, String defaultValue )
     {
-    String key = getParameterKey( prefix, name );
+      ///////// Decryption initialiser //////////
+      SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
 
-    return ( scope.sharedPreferences( context ).getString( key, defaultValue ) );
+    String key = pref.encrypt(getParameterKey( prefix, name ));//Re-encrypt the key s.t. it will match the one stored in the preference files
+
+    return pref.decrypt( scope.sharedPreferences( context ).getString( key, defaultValue ) );
     }
 
 
@@ -290,11 +301,21 @@ public class KiteSDK
    *****************************************************/
   static private void setParameter( Context context, Scope scope, String prefix, String name, boolean value )
     {
-    String key = getParameterKey( prefix, name );
+
+      //////// Encryption initialiser //////////
+      SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
+
+    String key = pref.encrypt(getParameterKey( prefix, name ));
+
+    // For storing bool value as encrypted string
+      String temp = "false";
+
+      if(value)
+        temp="true";
 
     scope.sharedPreferences( context )
       .edit()
-        .putBoolean( key, value )
+        .putString( key, pref.encrypt(temp) )
       .apply();
     }
 
@@ -306,9 +327,15 @@ public class KiteSDK
    *****************************************************/
   static private boolean getBooleanParameter( Context context, Scope scope, String prefix, String name, boolean defaultValue )
     {
-    String key = getParameterKey( prefix, name );
+      //////// Decryption initialiser //////////
+      SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
 
-    return ( scope.sharedPreferences( context ).getBoolean( key, defaultValue ) );
+    String key = pref.encrypt(getParameterKey( prefix, name ));//Re-encrypt the key s.t. it will match the one stored in the preference files
+
+    if( pref.decrypt(scope.sharedPreferences( context ).getString( key, ""+defaultValue )).equals("false"))
+        return false;
+      else
+        return true;
     }
 
 
@@ -321,15 +348,18 @@ public class KiteSDK
     {
     String key = getParameterKey( prefix, name );
 
-    scope.sharedPreferences( context )
+      ///////// Encryption initialiser //////////
+      SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
+
+      scope.sharedPreferences( context )
       .edit()
-        .putString( key + SHARED_PREFERENCES_KEY_SUFFIX_RECIPIENT,          address.getRecipientName() )
-        .putString( key + SHARED_PREFERENCES_KEY_SUFFIX_LINE1,              address.getLine1() )
-        .putString( key + SHARED_PREFERENCES_KEY_SUFFIX_LINE2,              address.getLine2() )
-        .putString( key + SHARED_PREFERENCES_KEY_SUFFIX_CITY,               address.getCity() )
-        .putString( key + SHARED_PREFERENCES_KEY_SUFFIX_STATE_OR_COUNTY,    address.getStateOrCounty() )
-        .putString( key + SHARED_PREFERENCES_KEY_SUFFIX_ZIP_OR_POSTAL_CODE, address.getZipOrPostalCode() )
-        .putString( key + SHARED_PREFERENCES_KEY_SUFFIX_COUNTRY_CODE,       address.getCountry().iso3Code() )
+        .putString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_RECIPIENT),          pref.encrypt(address.getRecipientName()))
+        .putString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_LINE1),              pref.encrypt(address.getLine1() ))
+        .putString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_LINE2),              pref.encrypt(address.getLine2() ))
+        .putString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_CITY),               pref.encrypt(address.getCity()) )
+        .putString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_STATE_OR_COUNTY),    pref.encrypt(address.getStateOrCounty() ))
+        .putString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_ZIP_OR_POSTAL_CODE), pref.encrypt(address.getZipOrPostalCode() ))
+        .putString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_COUNTRY_CODE),       pref.encrypt(address.getCountry().iso3Code() ))
       .apply();
     }
 
@@ -341,17 +371,21 @@ public class KiteSDK
    *****************************************************/
   static private Address getAddressParameter( Context context, Scope scope, String prefix, String name )
     {
+
+      //////// Decryption initialiser //////////
+      SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
+
     String key = getParameterKey( prefix, name );
 
     SharedPreferences sharedPreferences = scope.sharedPreferences( context );
 
-    String  recipient       = sharedPreferences.getString( key + SHARED_PREFERENCES_KEY_SUFFIX_RECIPIENT, null );
-    String  line1           = sharedPreferences.getString( key + SHARED_PREFERENCES_KEY_SUFFIX_LINE1, null );
-    String  line2           = sharedPreferences.getString( key + SHARED_PREFERENCES_KEY_SUFFIX_LINE2, null );
-    String  city            = sharedPreferences.getString( key + SHARED_PREFERENCES_KEY_SUFFIX_CITY, null );
-    String  stateOrCounty   = sharedPreferences.getString( key + SHARED_PREFERENCES_KEY_SUFFIX_STATE_OR_COUNTY, null );
-    String  zipOrPostalCode = sharedPreferences.getString( key + SHARED_PREFERENCES_KEY_SUFFIX_ZIP_OR_POSTAL_CODE, null );
-    Country country         = Country.getInstance( sharedPreferences.getString( key + SHARED_PREFERENCES_KEY_SUFFIX_COUNTRY_CODE, null ) );
+    String  recipient       = pref.decrypt(sharedPreferences.getString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_RECIPIENT), null ));
+    String  line1           = pref.decrypt(sharedPreferences.getString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_LINE1), null ));
+    String  line2           = pref.decrypt(sharedPreferences.getString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_LINE2), null ));
+    String  city            = pref.decrypt(sharedPreferences.getString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_CITY), null));
+    String  stateOrCounty   = pref.decrypt(sharedPreferences.getString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_STATE_OR_COUNTY), null ));
+    String  zipOrPostalCode = pref.decrypt(sharedPreferences.getString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_ZIP_OR_POSTAL_CODE), null ));
+    Country country         = Country.getInstance (pref.decrypt(( sharedPreferences.getString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_COUNTRY_CODE), null )) ));
 
     if ( recipient == null && line1 == null && line2 == null && city == null && stateOrCounty == null && zipOrPostalCode == null && country == null ) return ( null );
 
@@ -368,10 +402,27 @@ public class KiteSDK
     {
     String key = getParameterKey( prefix, name );
 
-    scope.sharedPreferences( context )
-            .edit()
-            .putStringSet( key, stringSet )
-            .apply();
+    //////// Encryption initialiser //////////
+    SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
+
+    if (stringSet == null) {
+      scope.sharedPreferences( context )
+              .edit()
+              .putStringSet( pref.encrypt(key), stringSet)
+              .apply();
+    } else {
+      Set<String> stringSetEncrypted = new HashSet<String>();
+      Iterator it = stringSet.iterator();
+
+      //encrypt each element from the Set and place it in a new set
+      for (int i = 0; i < stringSet.size(); i++)
+        stringSetEncrypted.add(pref.encrypt(it.next().toString()));
+
+      scope.sharedPreferences(context)
+              .edit()
+              .putStringSet(pref.encrypt(key), stringSetEncrypted)
+              .apply();
+    }
     }
 
 
@@ -382,26 +433,26 @@ public class KiteSDK
    *****************************************************/
   static private Set<String> getStringSetParameter( Context context, Scope scope, String prefix, String name )
     {
-    String key = getParameterKey( prefix, name );
+    //////// Decryption initialiser //////////
+    SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
 
+    String key = pref.encrypt(getParameterKey( prefix, name ));
     HashSet<String> returnedStringSet = new HashSet<>();
 
     Set<String> loadedStringSet = scope.sharedPreferences( context ).getStringSet( key, null );
 
+      // We want to copy the strings into a new set, so they can be modified
+      // if necessary.
 
-    // We want to copy the strings into a new set, so they can be modified
-    // if necessary.
-
-    if ( loadedStringSet != null )
+      if ( loadedStringSet != null )
       {
-      for ( String string : loadedStringSet )
+        for ( String string : loadedStringSet )
         {
-        returnedStringSet.add( string );
+          returnedStringSet.add(pref.decrypt(string));
         }
       }
 
-
-    return ( returnedStringSet );
+      return ( returnedStringSet );
     }
 
 
@@ -499,7 +550,7 @@ public class KiteSDK
     }
 
 
-  /*****************************************************
+    /*****************************************************
    *
    * Initialises the Kite SDK without returning an instance.
    *

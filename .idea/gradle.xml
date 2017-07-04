@@ -10,19 +10,16 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/DevicePhotoPicker" />
+            <option value="$PROJECT_DIR$/FacebookPhotoPicker" />
+            <option value="$PROJECT_DIR$/ImagePicker" />
+            <option value="$PROJECT_DIR$/InstagramPhotoPicker" />
             <option value="$PROJECT_DIR$/KitePrintSDK" />
             <option value="$PROJECT_DIR$/KitePrintSDK-GCM" />
             <option value="$PROJECT_DIR$/SampleApp" />
           </set>
         </option>
-        <option name="myModules">
-          <set>
-            <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/KitePrintSDK" />
-            <option value="$PROJECT_DIR$/KitePrintSDK-GCM" />
-            <option value="$PROJECT_DIR$/SampleApp" />
-          </set>
-        </option>
+        <option name="resolveModulePerSourceSet" value="false" />
       </GradleProjectSettings>
     </option>
   </component>
