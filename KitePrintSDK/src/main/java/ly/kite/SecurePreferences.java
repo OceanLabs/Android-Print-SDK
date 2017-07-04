@@ -49,10 +49,11 @@ public class SecurePreferences {
     private static final String SECRET_KEY_HASH_TRANSFORMATION = "SHA-256";
     private static final String CHARSET = "UTF-8";
 
-    private final Cipher writer;
-    private final Cipher reader;
+    private Cipher writer;
+    private Cipher reader;
 
     private boolean encryptData=true;
+    private final String secureKey;
 
     /**
      * This will initialize an instance of the SecurePreferences class
@@ -66,18 +67,20 @@ public class SecurePreferences {
         if(secureKey.equals("off"))
             encryptData = false;
 
+        this.secureKey = secureKey;
+        reset();
+    }
+
+    public void reset() {
         try {
             this.writer = Cipher.getInstance(TRANSFORMATION);
             this.reader = Cipher.getInstance(TRANSFORMATION);
-
-            initCiphers(secureKey);
-
+            initCiphers(this.secureKey);
         } catch (GeneralSecurityException e) {
             throw new SecurePreferencesException(e);
         } catch (UnsupportedEncodingException e) {
             throw new SecurePreferencesException(e);
         }
-
     }
 
     protected void initCiphers(String secureKey) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException,

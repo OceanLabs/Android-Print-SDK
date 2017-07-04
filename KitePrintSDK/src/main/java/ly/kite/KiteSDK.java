@@ -184,7 +184,7 @@ public class KiteSDK
 
   static public final int    ACTIVITY_REQUEST_CODE_FIRST                           = 10;
 
-  static public String ENCRYPTION_KEY = null;
+  static public String ENCRYPTION_KEY = "TQdZ6I0KwWQjpNYyAbHGPYWRVMMcgUbWuE0JC0MA"; // use static encryption key for now.
 
   ////////// Static Variable(s) //////////
 
@@ -205,17 +205,6 @@ public class KiteSDK
 
 
   ////////// Static Method(s) //////////
-
-  /*****************************************************
-   *
-   * Sets the encryption key.
-   *
-   *****************************************************/
-
-   static public void setEncryptionKey(String encryptionKey) {
-     ENCRYPTION_KEY=encryptionKey;
-     OrderingDatabaseAgent.setEncryptionKey(encryptionKey);
-   }
 
   /*****************************************************
    *
@@ -416,17 +405,24 @@ public class KiteSDK
     //////// Encryption initialiser //////////
     SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
 
-    Set<String> stringSetEncrypted = new HashSet<String>();
-    Iterator it = stringSet.iterator();
+    if (stringSet == null) {
+      scope.sharedPreferences( context )
+              .edit()
+              .putStringSet( pref.encrypt(key), stringSet)
+              .apply();
+    } else {
+      Set<String> stringSetEncrypted = new HashSet<String>();
+      Iterator it = stringSet.iterator();
 
-    //encrypt each element from the Set and place it in a new set
-    for(int i=0; i<stringSet.size(); i++)
-       stringSetEncrypted.add(pref.encrypt(it.next().toString()));
+      //encrypt each element from the Set and place it in a new set
+      for (int i = 0; i < stringSet.size(); i++)
+        stringSetEncrypted.add(pref.encrypt(it.next().toString()));
 
-    scope.sharedPreferences( context )
-            .edit()
-            .putStringSet( pref.encrypt(key), stringSetEncrypted)
-            .apply();
+      scope.sharedPreferences(context)
+              .edit()
+              .putStringSet(pref.encrypt(key), stringSetEncrypted)
+              .apply();
+    }
     }
 
 
@@ -441,32 +437,22 @@ public class KiteSDK
     SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
 
     String key = pref.encrypt(getParameterKey( prefix, name ));
-
     HashSet<String> returnedStringSet = new HashSet<>();
 
-
     Set<String> loadedStringSet = scope.sharedPreferences( context ).getStringSet( key, null );
-    Set<String> DecryptedLoadedStringSet = new HashSet<>();
 
-    Iterator it = loadedStringSet.iterator();
+      // We want to copy the strings into a new set, so they can be modified
+      // if necessary.
 
-    //decrypt every element from the Set and place it the new set
-    for(int i=0; i<loadedStringSet.size(); i++)
-        DecryptedLoadedStringSet.add(pref.decrypt(it.next().toString()));
-
-    // We want to copy the strings into a new set, so they can be modified
-    // if necessary.
-
-    if ( DecryptedLoadedStringSet != null )
+      if ( loadedStringSet != null )
       {
-      for ( String string : DecryptedLoadedStringSet )
+        for ( String string : loadedStringSet )
         {
-        returnedStringSet.add( string );
+          returnedStringSet.add(pref.decrypt(string));
         }
       }
 
-
-    return ( returnedStringSet );
+      return ( returnedStringSet );
     }
 
 
@@ -551,7 +537,6 @@ public class KiteSDK
    *****************************************************/
   static public KiteSDK getInstance( Context context, String apiKey, IEnvironment environment )
     {
-      setEncryptionKey("off");
     if ( sKiteSDK != null )
       {
       sKiteSDK.setEnvironment( apiKey, environment );
@@ -563,38 +548,6 @@ public class KiteSDK
 
     return ( sKiteSDK );
     }
-
-    /*****************************************************
-     *
-     * Returns a singleton instance of the SDK with encryption options.
-     * Note that if there is already an instance of the SDK, it will
-     * be re-initialised with the supplied values.
-     *
-     *****************************************************/
-    static public KiteSDK getInstance( Context context, String apiKey, IEnvironment environment , boolean encryptData, String encryptionKey)
-    {
-      if(encryptData) {
-        if (encryptionKey == null)
-          setEncryptionKey(apiKey);
-        else
-          setEncryptionKey(encryptionKey);
-      }
-      else
-        setEncryptionKey("off");
-
-
-      if ( sKiteSDK != null )
-      {
-        sKiteSDK.setEnvironment( apiKey, environment );
-      }
-      else
-      {
-        sKiteSDK = new KiteSDK( context, apiKey, environment );
-      }
-
-      return ( sKiteSDK );
-    }
-
 
 
     /*****************************************************
@@ -2041,9 +1994,9 @@ public class KiteSDK
    *****************************************************/
   public static enum DefaultEnvironment implements IEnvironment
     {
-    TEST               ( "Test",    "https://api.kite.ly/v4.0",     ENVIRONMENT_TEST,    PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_HOST, PAYPAL_SANDBOX_CLIENT_ID, STRIPE_TEST_PUBLIC_KEY ),
-    STAGING_DO_NOT_USE ( "Staging", "https://staging.kite.ly/v4.0", ENVIRONMENT_STAGING, PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_HOST, PAYPAL_SANDBOX_CLIENT_ID, STRIPE_TEST_PUBLIC_KEY ), /* Private environment intended only for Kite / Ocean Labs use, hands off :) */
-    LIVE               ( "Live",    "https://api.kite.ly/v4.0",     ENVIRONMENT_LIVE,    PayPalConfiguration.ENVIRONMENT_PRODUCTION, PAYPAL_LIVE_API_HOST,    PAYPAL_LIVE_CLIENT_ID,    STRIPE_LIVE_PUBLIC_KEY );
+    TEST               ( "Test",    "https://api.kite.ly/v3.0",     ENVIRONMENT_TEST,    PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_HOST, PAYPAL_SANDBOX_CLIENT_ID, STRIPE_TEST_PUBLIC_KEY ),
+    STAGING_DO_NOT_USE ( "Staging", "https://staging.kite.ly/v3.0", ENVIRONMENT_STAGING, PayPalConfiguration.ENVIRONMENT_SANDBOX,    PAYPAL_SANDBOX_API_HOST, PAYPAL_SANDBOX_CLIENT_ID, STRIPE_TEST_PUBLIC_KEY ), /* Private environment intended only for Kite / Ocean Labs use, hands off :) */
+    LIVE               ( "Live",    "https://api.kite.ly/v3.0",     ENVIRONMENT_LIVE,    PayPalConfiguration.ENVIRONMENT_PRODUCTION, PAYPAL_LIVE_API_HOST,    PAYPAL_LIVE_CLIENT_ID,    STRIPE_LIVE_PUBLIC_KEY );
 
 
     private Environment  mEnvironment;
