@@ -44,6 +44,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import org.json.JSONObject;
+
 import java.math.BigDecimal;
 import java.net.URL;
 import java.util.ArrayList;
@@ -120,6 +122,8 @@ public class Product implements IGroupOrProduct, Parcelable
 
   private MultipleCurrencyAmounts           mCost;
   private MultipleDestinationShippingCosts  mShippingCosts;
+  private String                            mShippingMethods;
+  private String                            mRegionMapping;
   private URL                               mHeroImageURL;
   private int                               mLabelColour;
   private ArrayList<URL>                    mImageURLList;
@@ -304,6 +308,8 @@ public class Product implements IGroupOrProduct, Parcelable
 
     mCost                       = (MultipleCurrencyAmounts) sourceParcel.readParcelable( MultipleCurrencyAmounts.class.getClassLoader() );
     mShippingCosts              = (MultipleDestinationShippingCosts) sourceParcel.readParcelable( MultipleDestinationShippingCosts.class.getClassLoader() );
+    mShippingMethods            = sourceParcel.readString();
+    mRegionMapping              = sourceParcel.readString();
     mHeroImageURL               = (URL)sourceParcel.readSerializable();
     mLabelColour                = sourceParcel.readInt();
 
@@ -361,6 +367,10 @@ public class Product implements IGroupOrProduct, Parcelable
 
     targetParcel.writeParcelable( mCost, flags );
     targetParcel.writeParcelable( mShippingCosts, flags );
+
+    targetParcel.writeString( mShippingMethods );
+    targetParcel.writeString( mRegionMapping );
+
     targetParcel.writeSerializable( mHeroImageURL );
     targetParcel.writeInt( mLabelColour );
 
@@ -655,6 +665,25 @@ public class Product implements IGroupOrProduct, Parcelable
     return ( this );
     }
 
+    Product setShippingMethods (String shippingMethods)
+    {
+      mShippingMethods= shippingMethods;
+
+      return (this);
+    }
+
+    /*****************************************************
+     *
+     * Sets the region mapping for shipping
+     *
+     *****************************************************/
+    Product setRegionMapping (String regionMapping)
+    {
+      mRegionMapping = regionMapping;
+
+      return (this);
+    }
+
 
   /*****************************************************
    *
@@ -665,6 +694,16 @@ public class Product implements IGroupOrProduct, Parcelable
     {
     return ( mShippingCosts );
     }
+
+    public String getShippingMethods() { return mShippingMethods; }
+
+  /*****************************************************
+   *
+   * Returns the region mapping for shipping
+   *
+   *****************************************************/
+
+  public String getRegionMapping() {return mRegionMapping;}
 
 
   /*****************************************************

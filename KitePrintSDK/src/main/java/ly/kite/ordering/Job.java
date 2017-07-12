@@ -42,6 +42,7 @@ public abstract class Job implements Parcelable
   private           long                     mId;  // The id from the basket database
   transient private Product                  mProduct;  // Stop the product being serialised
   private           int                      mOrderQuantity;
+  private           int                      mShippingMethod;
   private final     HashMap<String, String>  mOptionsMap;
 
 
@@ -298,6 +299,8 @@ public abstract class Job implements Parcelable
     mOrderQuantity = orderQuantity;
     }
 
+  public void setShippingMethod (int shippingMethod) {mShippingMethod = shippingMethod; }
+
 
   public int getOrderQuantity()
     {
@@ -313,22 +316,20 @@ public abstract class Job implements Parcelable
    *         may add further options if desired.
    *
    *****************************************************/
-  protected JSONObject addProductOptions( JSONObject jobJSONObject ) throws JSONException
-    {
+  protected JSONObject addProductOptions( JSONObject jobJSONObject ) throws JSONException {
     JSONObject optionsJSONObject = new JSONObject();
 
-    if ( mOptionsMap != null )
-      {
-      for ( String optionCode : mOptionsMap.keySet() )
-        {
-        optionsJSONObject.put( optionCode, mOptionsMap.get( optionCode ) );
-        }
+    if (mOptionsMap != null) {
+      for (String optionCode : mOptionsMap.keySet()) {
+        optionsJSONObject.put(optionCode, mOptionsMap.get(optionCode));
       }
-
-    jobJSONObject.put( JSON_NAME_OPTIONS, optionsJSONObject );
-
-    return ( optionsJSONObject );
     }
+
+    jobJSONObject.put(JSON_NAME_OPTIONS, optionsJSONObject);
+
+    return (optionsJSONObject);
+  }
+
 
 
   /*****************************************************

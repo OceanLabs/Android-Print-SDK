@@ -79,7 +79,7 @@ public class EncryptionTest extends AndroidTestCase{
             getContext().deleteDatabase("ordering.db");//delete test database in case of old/corrupted data
 
             OrderingDatabaseAgent databaseAgent = new OrderingDatabaseAgent(getContext(), null);
-            OrderingDatabaseAgent.setEncryptionKey(ENCRYPTION_KEY);
+            //OrderingDatabaseAgent.setEncryptionKey(ENCRYPTION_KEY);
 
             //generate address information
             Address adr = new Address();
@@ -202,7 +202,7 @@ public class EncryptionTest extends AndroidTestCase{
             getContext().deleteDatabase("ordering.db");//delete test database in case of old/corrupted data
 
             OrderingDatabaseAgent databaseAgent = new OrderingDatabaseAgent(getContext(), null);
-            OrderingDatabaseAgent.setEncryptionKey(ENCRYPTION_KEY);
+            //OrderingDatabaseAgent.setEncryptionKey(ENCRYPTION_KEY);
 
 
             String description = randomTextGenerator();
@@ -265,7 +265,7 @@ public class EncryptionTest extends AndroidTestCase{
             KiteSDK.IEnvironment environment;
             environment = KiteSDK.DefaultEnvironment.TEST;
 
-            KiteSDK sdk = KiteSDK.getInstance(getContext(), ENCRYPTION_KEY, environment,true,null);
+            KiteSDK sdk = KiteSDK.getInstance(getContext(), ENCRYPTION_KEY, environment);
 
             //generate keys
             String key1 = randomTextGenerator();
@@ -364,7 +364,7 @@ public class EncryptionTest extends AndroidTestCase{
             KiteSDK.IEnvironment environment;
             environment = KiteSDK.DefaultEnvironment.TEST;
 
-            KiteSDK sdk = KiteSDK.getInstance(getContext(), ENCRYPTION_KEY, environment, false, null);
+            KiteSDK sdk = KiteSDK.getInstance(getContext(), ENCRYPTION_KEY, environment);
 
             SharedPreferences prefs_app = context.getSharedPreferences("kite_app_session_shared_prefs", Context.MODE_PRIVATE);
             prefs_app.edit().clear().commit();//clear the information from this preference file

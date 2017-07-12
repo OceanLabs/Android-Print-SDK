@@ -59,9 +59,14 @@ import java.util.List;
 
 import ly.kite.KiteSDK;
 import ly.kite.address.Address;
+import ly.kite.address.Country;
 import ly.kite.analytics.Analytics;
+import ly.kite.catalogue.MultipleCurrencyAmounts;
+import ly.kite.catalogue.MultipleDestinationShippingCosts;
+import ly.kite.catalogue.SingleCurrencyAmounts;
 import ly.kite.image.ImageLoadRequest;
 import ly.kite.journey.UserJourneyType;
+import ly.kite.journey.shipping.ShippingMethod;
 import ly.kite.ordering.OrderingDataAgent;
 import ly.kite.ordering.BasketItem;
 import ly.kite.catalogue.Catalogue;
@@ -130,6 +135,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
   private TextView                mTotalPriceTextView;
   private View                    mContinueShoppingView;
   private TextView                mPayAmountTextView;
+  private TextView                mShippingTextView;
 
   private Catalogue               mCatalogue;
 
@@ -253,6 +259,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
     mTotalPriceTextView         = (TextView)findViewById( R.id.total_price_text_view );
     mContinueShoppingView       = findViewById( R.id.continue_shopping_view );
     mPayAmountTextView          = (TextView)findViewById( R.id.pay_amount_text_view );
+    mShippingTextView           = (TextView)findViewById(R.id.shipping_text_view);
 
     KiteSDK kiteSDK = KiteSDK.getInstance( this );
 
@@ -267,6 +274,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
 
 
     mDeliveryAddressTextView.setOnClickListener( this );
+    mShippingTextView.setOnClickListener( this );
 
     if ( mContinueShoppingView != null ) mContinueShoppingView.setOnClickListener( this );
     if ( mPayAmountTextView    != null ) mPayAmountTextView.setOnClickListener( this );
@@ -545,6 +553,25 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
 
       return;
       }
+    else if ( mShippingTextView !=null && view == mShippingTextView)
+    {
+      Intent intent = new Intent( this , ShippingMethod.class);
+
+      intent.putExtra("shippingCountry",mShippingAddress.getCountry().iso2Code());
+
+      int noOfItems = mBasketItemList.size();
+      intent.putExtra("noOfItems",noOfItems);
+      for(int i=0 ; i<mBasketItemList.size(); i++) {
+        intent.putExtra("productType"+i,mBasketItemList.get(i).getProduct().getUserJourneyType());
+        intent.putExtra("productName"+i,mBasketItemList.get(i).getProduct().getName());
+        intent.putExtra("product"+i,mBasketItemList.get(i).getProduct());
+        intent.putExtra("orderQuantity"+i,mBasketItemList.get(i).getOrderQuantity());
+        intent.putExtra("shippingMethods"+i,mBasketItemList.get(i).getProduct().getShippingMethods());
+        intent.putExtra("regionMapping"+i,mBasketItemList.get(i).getProduct().getRegionMapping());
+
+      }
+      startActivity(intent);
+    }
     else if ( mContinueShoppingView != null && view == mContinueShoppingView )
       {
       onLeftClicked();
@@ -758,7 +785,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
     {
     // Display the shipping & total prices
 
-    mTotalShippingPriceTextView.setText( orderPricing.getTotalShippingCost().getDefaultDisplayAmountWithFallback() );
+    //mTotalShippingPriceTextView.setText( orderPricing.getTotalShippingCost().getDefaultDisplayAmountWithFallback() );
 
 
     String displayTotalCost = orderPricing.getTotalCost().getDefaultDisplayAmountWithFallback();
@@ -1074,4 +1101,5 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
 
 
   }
+
 

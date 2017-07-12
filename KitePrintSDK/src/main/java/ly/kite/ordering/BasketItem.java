@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.Product;
 import ly.kite.ordering.ImageSpec;
 import ly.kite.util.Asset;
@@ -86,11 +87,14 @@ public class BasketItem
 
   public BasketItem( long id, Product product, int orderQuantity, HashMap<String,String> optionsMap, ArrayList<ImageSpec> imageSpecList )
     {
+      int i;
+      Catalogue catalogue;
     mId            = id;
     mProduct       = product;
     mOrderQuantity = orderQuantity;
     mOptionsMap    = optionsMap;
     mImageSpecList = imageSpecList;
+
     }
 
 

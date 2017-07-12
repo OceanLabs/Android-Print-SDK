@@ -41,6 +41,11 @@
             android:label="@string/title_activity_checkout"
             android:theme="@style/Theme.KiteSDK.Checkout"/>
 
+        <activity
+            android:name=".journey.shipping.ShippingMethod"
+            android:label="Shipping Method"
+            android:parentActivityName=".journey.basket.BasketActivity"
+            android:theme="@style/Theme.KiteSDK.Checkout"/>
 
         <activity
             android:name=".checkout.PaymentActivity"

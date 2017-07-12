@@ -3,6 +3,7 @@ package ly.kite.ordering;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.JsonToken;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -339,6 +340,8 @@ public class Order implements Parcelable /* , Serializable */
         // Add the jobs
 
         JSONArray jobs = new JSONArray();
+            JSONObject ceapa = new JSONObject();
+            String usturoi = ceapa.toString();
 
         json.put( "jobs", jobs );
 
@@ -350,7 +353,9 @@ public class Order implements Parcelable /* , Serializable */
 
           for ( int index = 0; index < orderQuantity; index ++ )
             {
-            jobs.put( job.getJSONRepresentation() );
+            ceapa = job.getJSONRepresentation();
+            ceapa.put("shipping_class",16);
+            jobs.put(ceapa);
             }
           }
 
@@ -510,6 +515,7 @@ public class Order implements Parcelable /* , Serializable */
             itemJSONObject.put( JSON_NAME_QUANTITY,     job.getQuantity() );
             itemJSONObject.put( JSON_NAME_TEMPLATE_ID,  job.getProductId() );
             itemJSONObject.put( JSON_NAME_COUNTRY_CODE, countryCode );
+            itemJSONObject.put( "shipping_class" , 16);
             }
           catch ( JSONException je )
             {

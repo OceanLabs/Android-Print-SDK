@@ -92,7 +92,7 @@
     <color name="basket_total_price_text">@color/basket_highlight</color>
 
     <color name="payment_promo_code_text_default">@android:color/black</color>
-    <color name="payment_promo_code_text_error">#ffff0000</color>
+    <color name="payment_promo_code_text_error">#ff0000</color>
     <color name="payment_paypal_button_text">#ff3a97b9</color>
     <color name="payment_credit_card_button_text">#ff86b612</color>
 
@@ -106,5 +106,13 @@
     <color name="failure_banner_text">#ff565656</color>
     <color name="failure_banner_left_filler">@android:color/white</color>
     <color name="failure_banner_right_filler">@android:color/white</color>
+
+    <color name="shipping_methods_title_text">#ff3b3b3b</color>
+    <color name="shipping_methods_title_background">#ffdbdbdb</color>
+    <color name="shipping_methods_price_text">#993b3b3b</color>
+    <color name="shipping_methods_class_text">#993b3b3b</color>
+    <color name="shipping_methods_time_text">#993b3b3b</color>
+    <color name="shipping_methods_background">#ffff</color>
+
 
 </resources>

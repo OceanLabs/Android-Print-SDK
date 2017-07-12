@@ -119,7 +119,7 @@ public class BasketOrderTests extends KiteTestCase
     {
     OrderingDataAgent orderingDataAgent = OrderingDataAgent.getInstance( getContext() );
 
-    KiteSDK.setEncryptionKey("mnk45k3nk5jn4kjn534jkn5kjn34k5j34");
+    //KiteSDK.setEncryptionKey("mnk45k3nk5jn4kjn534jkn5kjn34k5j34");
 
     Product product = new Product( "product_id", "product_code", "Product Name", "Product Type", 0xff000000, UserJourneyType.CALENDAR, 2 );
 
@@ -247,7 +247,7 @@ public class BasketOrderTests extends KiteTestCase
     OrderingDataAgent orderingDataAgent = OrderingDataAgent.getInstance( getContext() );
     Product product = new Product( "product_id", "product_code", "Product Name", "Product Type", 0xff000000, UserJourneyType.CIRCLE, 2 );
 
-    KiteSDK.setEncryptionKey("mnk45k3nk5jn4kjn534jkn5kjn34k5j34");
+    //KiteSDK.setEncryptionKey("mnk45k3nk5jn4kjn534jkn5kjn34k5j34");
 
     Catalogue catalogue = new Catalogue();
     catalogue.addProduct( "Group Label", null, product );
@@ -351,7 +351,7 @@ public class BasketOrderTests extends KiteTestCase
     OrderingDataAgent orderingDataAgent = OrderingDataAgent.getInstance( getContext() );
     Product product = new Product( "product_id", "product_code", "Product Name", "Product Type", 0xff000000, UserJourneyType.GREETINGCARD, 4 );
 
-    KiteSDK.setEncryptionKey("mnk45k3nk5jn4kjn534jkn5kjn34k5j34");
+    //KiteSDK.setEncryptionKey("mnk45k3nk5jn4kjn534jkn5kjn34k5j34");
 
     Catalogue catalogue = new Catalogue();
     catalogue.addProduct( "Group Label", null, product );
@@ -465,7 +465,7 @@ public class BasketOrderTests extends KiteTestCase
     OrderingDataAgent orderingDataAgent = OrderingDataAgent.getInstance( getContext() );
     Product product = new Product( "product_id", "product_code", "A Phone Case", "Phone Case", 0xff000000, UserJourneyType.PHONE_CASE, 1 );
 
-    KiteSDK.setEncryptionKey("mnk45k3nk5jn4kjn534jkn5kjn34k5j34");
+    //KiteSDK.setEncryptionKey("mnk45k3nk5jn4kjn534jkn5kjn34k5j34");
 
     Catalogue catalogue = new Catalogue();
     catalogue.addProduct( "Phone Cases", null, product );
@@ -581,7 +581,7 @@ public class BasketOrderTests extends KiteTestCase
 
     KiteSDK.IEnvironment environment;
     environment = KiteSDK.DefaultEnvironment.TEST;
-    KiteSDK sdk = KiteSDK.getInstance(getContext(),"mnk45k3nk5jn4kjn534jkn5kjn34k5j34", environment,true,null);
+    KiteSDK sdk = KiteSDK.getInstance(getContext(),"mnk45k3nk5jn4kjn534jkn5kjn34k5j34", environment);
 
     Catalogue catalogue = new Catalogue();
     catalogue.addProduct( "Group Label", null, product );
@@ -684,7 +684,7 @@ public class BasketOrderTests extends KiteTestCase
     OrderingDataAgent orderingDataAgent = OrderingDataAgent.getInstance( getContext() );
     Product product = new Product( "product_id", "product_code", "Product Name", "Product Type", 0xff000000, UserJourneyType.PHOTOBOOK, 2 );
 
-    KiteSDK.setEncryptionKey("mnk45k3nk5jn4kjn534jkn5kjn34k5j34");
+    //KiteSDK.setEncryptionKey("mnk45k3nk5jn4kjn534jkn5kjn34k5j34");
 
     Catalogue catalogue = new Catalogue();
     catalogue.addProduct( "Group Label", null, product );
@@ -806,7 +806,7 @@ public class BasketOrderTests extends KiteTestCase
     OrderingDataAgent orderingDataAgent = OrderingDataAgent.getInstance( getContext() );
     Product product = new Product( "product_id", "product_code", "Product Name", "Product Type", 0xff000000, UserJourneyType.RECTANGLE, 2 );
 
-    KiteSDK.setEncryptionKey("mnk45k3nk5jn4kjn534jkn5kjn34k5j34");
+    //KiteSDK.setEncryptionKey("mnk45k3nk5jn4kjn534jkn5kjn34k5j34");
 
     Catalogue catalogue = new Catalogue();
     catalogue.addProduct( "Group Label", null, product );
@@ -910,7 +910,7 @@ public class BasketOrderTests extends KiteTestCase
     OrderingDataAgent orderingDataAgent = OrderingDataAgent.getInstance( getContext() );
     Product product = new Product( "product_id", "product_code", "Product Name", "Product Type", 0xff000000, UserJourneyType.RECTANGLE, 2 );
 
-    KiteSDK.setEncryptionKey("mnk45k3nk5jn4kjn534jkn5kjn34k5j34");
+    //KiteSDK.setEncryptionKey("mnk45k3nk5jn4kjn534jkn5kjn34k5j34");
 
     Catalogue catalogue = new Catalogue();
     catalogue.addProduct( "Group Label", null, product );

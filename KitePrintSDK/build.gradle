@@ -58,6 +58,7 @@ dependencies {
 
     //compile project(':InstagramPhotoPicker' )
     compile 'ly.kite:instagram-photo-picker:5.7.2'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
 }
 
 // Exclude PayPal card scanning libs from package
