@@ -99,6 +99,7 @@ public class CatalogueLoaderTests extends KiteTestCase
                     "template_id:product1," +
                     "name:\"Product 1\"," +
                     "description:\"This is product 1\"," +
+                    "product_category:\"category1\","+
                     "images_per_page:1," +  // Optional
                     "grid_count_x:1," +  // Optional
                     "grid_count_y:1," +  // Optional
@@ -107,11 +108,23 @@ public class CatalogueLoaderTests extends KiteTestCase
                          "{currency:\"EUR\",amount:2.50,formatted:\"€2.50\"}" +
                          "]," +
                     "print_in_store:false," +  // Optional
-                    "shipping_costs:{" +
-                                   "GBR:{GBP:1.50,EUR:1.75}," +
-                                   "europe:{GBP:2.00,EUR:2.25}" +
-                                   "}," +
-                    "product:{" +
+                    "shipping_regions:{" +
+                                   "UK:{" +
+                                    "shipping_classes:["+
+                                      "{" +
+                                      "costs:[" +
+                                        "{ currency:\"GBP\" , \"amount\":\"3.64\" }" +
+                                      "]" +
+                                      "}" +
+                                    "]" +
+                                   "}" +
+                    "}," +
+
+                    "country_to_region_mapping:{" +
+                                    "GBR: \"UK\"" +
+                                    "},"+
+
+              "product:{" +
                             "ios_sdk_class_photo:\"https://d2ilj0z99kr04x.cloudfront.net/static/homepage/images/how_it_works2.bc40a551a141.png\"," +
                             "ios_sdk_label_color:[255,100,100]," +
                             "ios_sdk_product_class:\"Product group 1\"," +

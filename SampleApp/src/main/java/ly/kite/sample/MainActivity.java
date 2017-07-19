@@ -104,9 +104,9 @@ public class MainActivity extends ADeepLinkableActivity
    * Insert your Kite API keys here. These are found under your profile
    * by logging in to the developer portal at https://www.kite.ly
    **********************************************************************/
-  static private       String API_KEY_TEST                = "2408339a7bb4ce5fdb594d59c6a85444e7601ab7";
+  static private       String API_KEY_TEST                = REPLACE_DETAILS_HERE;
   static private       String API_KEY_STAGING             = REPLACE_DETAILS_HERE;
-  static private       String API_KEY_LIVE                = "2408339a7bb4ce5fdb594d59c6a85444e7601ab7";
+  static private       String API_KEY_LIVE                = REPLACE_DETAILS_HERE;
 
 
   /**********************************************************************
@@ -416,7 +416,8 @@ public class MainActivity extends ADeepLinkableActivity
                   frontImage,
                   backImage,
                   "Message to go on the back of the postcard",
-                  Address.getKiteTeamAddress() );
+                  Address.getKiteTeamAddress(),
+                  123);//default value
 
           Order order = new Order();
 

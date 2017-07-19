@@ -43,7 +43,7 @@
 
         <activity
             android:name=".journey.shipping.ShippingMethod"
-            android:label="Shipping Method"
+            android:label="ShippingMethod"
             android:parentActivityName=".journey.basket.BasketActivity"
             android:theme="@style/Theme.KiteSDK.Checkout"/>
 

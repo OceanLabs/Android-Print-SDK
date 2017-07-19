@@ -169,7 +169,8 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
                   "id              INTEGER  PRIMARY KEY," +
                   "basket_id       INTEGER  NOT NULL," +
                   "product_id      TEXT     NOT NULL," +
-                  "order_quantity  INT      NOT NULL" +
+                  "order_quantity  INT      NOT NULL," +
+                  "shipping_class  INT      NOT NULL"  +
                   " )";
 
   static private final String SQL_CREATE_ITEM_INDEX_1 =
@@ -614,11 +615,11 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
    * Saves an item to a basket.
    *
    *****************************************************/
-  public void saveDefaultBasketItem( long itemId, Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, int orderQuantity )
+  public void saveDefaultBasketItem( long itemId, Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, int orderQuantity , int ShippingClass)
     {
     // Create the item and product options
 
-    itemId = newBasketItem( itemId, OrderingDataAgent.BASKET_ID_DEFAULT, product, optionsMap, orderQuantity );
+    itemId = newBasketItem( itemId, OrderingDataAgent.BASKET_ID_DEFAULT, product, optionsMap, orderQuantity ,ShippingClass);
 
     if ( itemId < 0 ) return;
 
@@ -643,11 +644,11 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
    *         if the job could not be created.
    *
    *****************************************************/
-  private long newBasketItem( long itemId, long basketId, Product product, HashMap<String,String> optionsMap, int orderQuantity )
+  private long newBasketItem( long itemId, long basketId, Product product, HashMap<String,String> optionsMap, int orderQuantity ,int ShippingClass)
     {
     // Insert the item
 
-    itemId = insertBasketItem( itemId, basketId, product, orderQuantity );
+    itemId = insertBasketItem( itemId, basketId, product, orderQuantity, ShippingClass);
 
     if ( itemId < 0 ) return ( itemId );
 
@@ -732,7 +733,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
    *         if the item could not be created.
    *
    *****************************************************/
-  private long insertBasketItem( long itemId, long basketId, Product product, int orderQuantity )
+  private long insertBasketItem( long itemId, long basketId, Product product, int orderQuantity ,int shippingClass)
     {
     SQLiteDatabase database = getWritableDatabase();
 
@@ -756,6 +757,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
     contentValues.put( "basket_id",      basketId );
     contentValues.put( "product_id",     pref.encrypt(product.getId()) );
     contentValues.put( "order_quantity", orderQuantity );
+    contentValues.put( "shipping_class", shippingClass);
 
 
     // Try to insert the new item
@@ -1643,6 +1645,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
         long itemId = itemContentValues.getAsLong("item_id");
         String productId = pref.decrypt(itemContentValues.getAsString("product_id"));
         int orderQuantity = itemContentValues.getAsInteger("order_quantity");
+        int shippingClass = itemContentValues.getAsInteger("shipping_class");
 
 
         // Look up the product from its id
@@ -1675,7 +1678,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
 
         // Create a basket item and add it to our list
 
-        BasketItem basketItem = new BasketItem(itemId, product, orderQuantity, optionsMap, imageSpecList);
+        BasketItem basketItem = new BasketItem(itemId, product, orderQuantity, optionsMap, imageSpecList, shippingClass);
 
         basketItemList.add(basketItem);
       } catch (SecurePreferences.SecurePreferencesException ex) {
@@ -1714,7 +1717,8 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
     StringBuilder sqlStringBuilder = new StringBuilder()
             .append( "SELECT id                                      AS item_id," )
             .append(        "product_id                              AS product_id," )
-            .append(        "order_quantity                          AS order_quantity" )
+            .append(        "order_quantity                          AS order_quantity," )
+            .append(        "shipping_class                          AS shipping_class")
             .append( "  FROM Item" )
             .append( " WHERE basket_id = " ).append( basketId )
             .append( " ORDER BY id");
@@ -1745,6 +1749,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
         contentValues.put( "item_id",        itemId );
         contentValues.put( "product_id",     cursor.getString( cursor.getColumnIndex( "product_id" )  ) );
         contentValues.put( "order_quantity", cursor.getInt( cursor.getColumnIndex( "order_quantity" ) ) );
+        contentValues.put( "shipping_class", cursor.getInt( cursor.getColumnIndex( "shipping_class")));
 
         contentValuesList.add( contentValues );
         }
@@ -2396,6 +2401,62 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
     {
     return ( selectItemCount( OrderingDataAgent.BASKET_ID_DEFAULT ) );
     }
+
+  /*****************************************************
+   *
+   * Updates the shipping class for an item, then returns
+   * the new shipping class.
+   *
+   *****************************************************/
+  public int updateShippingClass(long itemId, int shippingClass) {
+    // Construct the update SQL statement:
+    StringBuilder updateSQLStringBuilder = new StringBuilder()
+            .append("UPDATE Item")
+            .append(" SET shipping_class =  ").append(shippingClass)
+            .append(" WHERE id = ").append(itemId);
+
+    // Construct the select SQL statement:
+    StringBuilder selectSQLStringBuilder = new StringBuilder()
+            .append("SELECT shipping_class")
+            .append("  FROM Item")
+            .append(" WHERE id = ").append(itemId);
+
+
+    // Initialise the database and cursor
+    SQLiteDatabase database = null;
+    Cursor cursor = null;
+
+    try {
+      // Open the database
+      database = getWritableDatabase();
+
+      // Execute the update query
+      database.execSQL(updateSQLStringBuilder.toString());
+
+      // Execute the select query, and get a cursor for the result set
+      cursor = database.rawQuery(selectSQLStringBuilder.toString(), null);
+
+
+      // Get the new order quantity
+
+      if (cursor.moveToFirst()) {
+        return (cursor.getInt(cursor.getColumnIndex("shipping_class")));
+      }
+
+      return (0);
+    } catch (Exception exception) {
+      Log.e(LOG_TAG, "Unable to update shipping class", exception);
+
+      return (0);
+    } finally {
+      // Make sure the cursor is closed
+      if (cursor != null) cursor.close();
+
+      // Make sure the database is closed
+      if (database != null) database.close();
+    }
+
+  }
 
 
   /*****************************************************

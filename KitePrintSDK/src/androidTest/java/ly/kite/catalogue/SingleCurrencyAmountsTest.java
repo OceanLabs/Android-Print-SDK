@@ -261,7 +261,8 @@ public class SingleCurrencyAmountsTest extends TestCase
     Locale locale = new Locale( "sv", "SE" );
 
     // The Unicode non-breaking space is used instead of the ASCII space
-    Assert.assertEquals( "4,79\u00a0kr", amount.getDisplayAmountForLocale( locale ) );
+
+      Assert.assertEquals( "4:79\u00A0kr", amount.getDisplayAmountForLocale( locale ) );
     }
 
   public void testDisplayAmount4()

@@ -120,6 +120,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
   static private final String  JSON_NAME_MASK_URL                    = "mask_url";
   static private final String  JSON_NAME_OPTIONS                     = "options";
   static private final String  JSON_NAME_OPTION_NAME                 = "name";
+  static private final String  JSON_NAME_CATEGORY                    = "product_category";
   static private final String  JSON_NAME_OPTION_CODE                 = "code";
   static private final String  JSON_NAME_HIGHLIGHTS_URL              = "product_highlights_url";
   static private final String  JSON_NAME_PAYPAL_SUPPORTED_CURRENCIES = "paypal_supported_currencies";
@@ -275,6 +276,8 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
 
         return shippingCostArray;
     }
+
+
 
 
   /****************************************************
@@ -568,6 +571,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
         String                           productId          = productJSONObject.getString( JSON_NAME_PRODUCT_ID );
         String                           productName        = productJSONObject.getString( JSON_NAME_PRODUCT_NAME );
         String                           productDescription = productJSONObject.getString( JSON_NAME_DESCRIPTION );
+        String                           productCategory    = productJSONObject.getString( JSON_NAME_CATEGORY );
         int                              imagesPerPage      = productJSONObject.optInt( JSON_NAME_IMAGES_PER_PAGE, DEFAULT_IMAGES_PER_PAGE );
         int                              gridCountX         = productJSONObject.optInt( JSON_NAME_GRID_COUNT_X, DEFAULT_GRID_SIZE );
         int                              gridCountY         = productJSONObject.optInt( JSON_NAME_GRID_COUNT_Y, DEFAULT_GRID_SIZE );
@@ -652,6 +656,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
                 .setGridSize( gridCountX, gridCountY )
                 .setCost( cost )
                 .setDescription( productDescription )
+                .setCategory( productCategory )
                 .setShippingCosts( shippingCosts )
                 .setShippingMethods( shippingMethods )
                 .setRegionMapping ( regionMapping )

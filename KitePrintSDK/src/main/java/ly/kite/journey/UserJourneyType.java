@@ -76,9 +76,9 @@ public enum UserJourneyType
               }
 
             @Override
-            public void addJobsToOrder( Context context, Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, Order order )
+            public void addJobsToOrder( Context context, Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, Order order,int shippingClass )
               {
-              addJobsToOrder( context, product, orderQuantity, optionsMap, imageSpecList, true, order );
+              addJobsToOrder( context, product, orderQuantity, optionsMap, imageSpecList, true, order,shippingClass );
               }
             },
 
@@ -133,7 +133,7 @@ public enum UserJourneyType
               }
 
             @Override
-            public void addJobsToOrder( Context context, Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, Order order )
+            public void addJobsToOrder( Context context, Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, Order order,int shippingClass )
               {
               for ( ImageSpec imageSpec : imageSpecList )
                 {
@@ -142,10 +142,11 @@ public enum UserJourneyType
                   AssetFragment assetFragment = imageSpec.getAssetFragment();
                   int           quantity      = imageSpec.getQuantity();
 
+
                   // Create a new job for each image
                   for ( int index = 0; index < quantity; index++ )
                     {
-                    order.addJob( Job.createGreetingCardJob( product, orderQuantity, optionsMap, assetFragment ) );
+                    order.addJob( Job.createGreetingCardJob( product, orderQuantity, optionsMap, assetFragment ,shippingClass) );
                     }
                   }
                 }
@@ -189,7 +190,7 @@ public enum UserJourneyType
 
             // Photobooks have their own job
             @Override
-            public void addJobsToOrder( Context context, Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, Order order )
+            public void addJobsToOrder( Context context, Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, Order order,int shippingClass)
               {
               // Flatten the images into a single list. We shouldn't technically need to do this, as
               // the Photobook UI only supplies image specs with a quantity of 1. Perform this step, though,
@@ -233,7 +234,7 @@ public enum UserJourneyType
                 pageIndex ++;
                 }
 
-              order.addJob( Job.createPhotobookJob( product, orderQuantity, optionsMap, frontCoverAssetFragment, contentAssetFragmentList ) );
+              order.addJob( Job.createPhotobookJob( product, orderQuantity, optionsMap, frontCoverAssetFragment, contentAssetFragmentList ,shippingClass) );
               }
             },
 
@@ -257,9 +258,9 @@ public enum UserJourneyType
               }
 
             @Override
-            public void addJobsToOrder( Context context, Product product, int orderQuantity, HashMap<String, String> optionsMap, List<ImageSpec> imageSpecList, Order order )
+            public void addJobsToOrder( Context context, Product product, int orderQuantity, HashMap<String, String> optionsMap, List<ImageSpec> imageSpecList, Order order,int shippingClass )
               {
-              addJobsToOrder( context, product, orderQuantity, optionsMap, imageSpecList, true, order );
+              addJobsToOrder( context, product, orderQuantity, optionsMap, imageSpecList, true, order,shippingClass );
               }
             },
 
@@ -466,7 +467,7 @@ public enum UserJourneyType
    * job.
    *
    *****************************************************/
-  static void addJobsToOrder( Context context, Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, boolean nullImagesAreBlank, Order order )
+  static void addJobsToOrder( Context context, Product product, int orderQuantity ,HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, boolean nullImagesAreBlank, Order order, int shippingClass )
     {
     // Split the images into a list for each separate job
     List<List<ImageSpec>> imageSpecLists = splitImagesIntoJobs( imageSpecList, product, nullImagesAreBlank );
@@ -474,7 +475,7 @@ public enum UserJourneyType
     // Go through each list of images and create a job for it.
     for ( List<ImageSpec> jobImageSpecList : imageSpecLists )
       {
-      order.addJob( Job.createPrintJob( product, orderQuantity, optionsMap, jobImageSpecList, nullImagesAreBlank ) );
+      order.addJob( Job.createPrintJob( product, orderQuantity, optionsMap, jobImageSpecList, nullImagesAreBlank ,shippingClass) );
       }
     }
 
@@ -487,9 +488,9 @@ public enum UserJourneyType
    * job.
    *
    *****************************************************/
-  public void addJobsToOrder( Context context, Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, Order order )
+  public void addJobsToOrder( Context context, Product product, int orderQuantity, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, Order order ,int shippingClass)
     {
-    addJobsToOrder( context, product, orderQuantity, optionsMap, imageSpecList, false, order );
+    addJobsToOrder( context, product, orderQuantity, optionsMap, imageSpecList, false, order ,shippingClass);
     }
 
 

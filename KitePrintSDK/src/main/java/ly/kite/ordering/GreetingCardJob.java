@@ -55,9 +55,9 @@ public class GreetingCardJob extends Job
     }
 
 
-  public GreetingCardJob( long jobId, Product product, int orderQuantity, HashMap<String,String> optionsMap, Object frontImage, Object backImage, Object insideLeftImage, Object insideRightImage )
+  public GreetingCardJob( long jobId, Product product, int orderQuantity, HashMap<String,String> optionsMap, Object frontImage, Object backImage, Object insideLeftImage, Object insideRightImage, int shippingClass )
     {
-    super( jobId, product, orderQuantity, optionsMap );
+    super( jobId, product, orderQuantity, optionsMap ,shippingClass);
 
     mFrontUploadableImage       = singleUploadableImageFrom( frontImage );
     mBackUploadableImage        = singleUploadableImageFrom( backImage );
@@ -65,9 +65,9 @@ public class GreetingCardJob extends Job
     mInsideRightUploadableImage = singleUploadableImageFrom( insideRightImage );
     }
 
-  public GreetingCardJob( Product product, int orderQuantity, HashMap<String,String> optionsMap, Object frontImage, Object backImage, Object insideLeftImage, Object insideRightImage )
+  public GreetingCardJob( Product product, int orderQuantity, HashMap<String,String> optionsMap, Object frontImage, Object backImage, Object insideLeftImage, Object insideRightImage, int shippingClass)
     {
-    this( 0, product, orderQuantity, optionsMap, frontImage, backImage, insideLeftImage, insideRightImage );
+    this( 0, product, orderQuantity, optionsMap, frontImage, backImage, insideLeftImage, insideRightImage, shippingClass);
     }
 
 

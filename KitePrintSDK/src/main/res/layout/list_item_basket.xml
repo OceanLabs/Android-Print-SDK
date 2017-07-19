@@ -58,20 +58,29 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
             <ly.kite.widget.CustomTypefaceTextView
                 android:id="@+id/product_name_text_view"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:singleLine="true"
                 android:textSize="@dimen/basket_item_product_label_size"
-                android:textStyle="bold"
-                android:singleLine="true"/>
+                android:textStyle="bold"/>
+
+            <ly.kite.widget.CustomTypefaceTextView
+                android:id="@+id/product_category_text_view"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/basket_item_product_label_size"
+                android:textStyle="italic"/>
+
             <ly.kite.widget.CustomTypefaceTextView
                 android:id="@+id/edit_label_text_view"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/basket_item_product_label_size"
-                android:textColor="@color/basket_light"
-                android:text="@string/Edit"/>
+                android:text="@string/Edit"
+                android:textColor="@color/basket_order_edit_text"
+                android:textSize="@dimen/basket_item_product_label_size"/>
         </LinearLayout>
     </FrameLayout>
 

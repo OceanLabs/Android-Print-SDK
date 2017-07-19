@@ -146,7 +146,7 @@ public class BasketOrderTests extends KiteTestCase
 
     orderingDataAgent.clearDefaultBasket();
 
-    orderingDataAgent.addItemSynchronously( OrderingDataAgent.CREATE_NEW_ITEM_ID, product, optionsMap, originalImageSpecList, 3 );
+    orderingDataAgent.addItemSynchronously( OrderingDataAgent.CREATE_NEW_ITEM_ID, product, optionsMap, originalImageSpecList, 3, 123 );
 
     List<BasketItem> basketItemList = orderingDataAgent.getAllItems( catalogue );
 
@@ -272,7 +272,7 @@ public class BasketOrderTests extends KiteTestCase
 
     orderingDataAgent.clearDefaultBasket();
 
-    orderingDataAgent.addItemSynchronously( OrderingDataAgent.CREATE_NEW_ITEM_ID, product, optionsMap, originalImageSpecList, 3 );
+    orderingDataAgent.addItemSynchronously( OrderingDataAgent.CREATE_NEW_ITEM_ID, product, optionsMap, originalImageSpecList, 3, 123 );
 
     List<BasketItem> basketItemList = orderingDataAgent.getAllItems( catalogue );
 
@@ -376,7 +376,7 @@ public class BasketOrderTests extends KiteTestCase
 
     orderingDataAgent.clearDefaultBasket();
 
-    orderingDataAgent.addItemSynchronously( OrderingDataAgent.CREATE_NEW_ITEM_ID, product, optionsMap, originalImageSpecList, 3 );
+    orderingDataAgent.addItemSynchronously( OrderingDataAgent.CREATE_NEW_ITEM_ID, product, optionsMap, originalImageSpecList, 3, 123 );
 
     List<BasketItem> basketItemList = orderingDataAgent.getAllItems( catalogue );
 
@@ -490,7 +490,7 @@ public class BasketOrderTests extends KiteTestCase
 
     orderingDataAgent.clearDefaultBasket();
 
-    orderingDataAgent.addItemSynchronously( OrderingDataAgent.CREATE_NEW_ITEM_ID, product, optionsMap, originalImageSpecList, 3 );
+    orderingDataAgent.addItemSynchronously( OrderingDataAgent.CREATE_NEW_ITEM_ID, product, optionsMap, originalImageSpecList, 3, 123 );
 
     List<BasketItem> basketItemList = orderingDataAgent.getAllItems( catalogue );
 
@@ -610,7 +610,7 @@ public class BasketOrderTests extends KiteTestCase
 
     orderingDataAgent.clearDefaultBasket();
 
-    orderingDataAgent.addItemSynchronously( OrderingDataAgent.CREATE_NEW_ITEM_ID, product, optionsMap, originalImageSpecList, 3 );
+    orderingDataAgent.addItemSynchronously( OrderingDataAgent.CREATE_NEW_ITEM_ID, product, optionsMap, originalImageSpecList, 3, 123 );
 
     List<BasketItem> basketItemList = orderingDataAgent.getAllItems( catalogue );
 
@@ -714,7 +714,7 @@ public class BasketOrderTests extends KiteTestCase
 
     orderingDataAgent.clearDefaultBasket();
 
-    orderingDataAgent.addItemSynchronously( OrderingDataAgent.CREATE_NEW_ITEM_ID, product, optionsMap, originalImageSpecList, 3 );
+    orderingDataAgent.addItemSynchronously( OrderingDataAgent.CREATE_NEW_ITEM_ID, product, optionsMap, originalImageSpecList, 3, 123 );
 
     List<BasketItem> basketItemList = orderingDataAgent.getAllItems( catalogue );
 
@@ -831,7 +831,7 @@ public class BasketOrderTests extends KiteTestCase
 
     orderingDataAgent.clearDefaultBasket();
 
-    orderingDataAgent.addItemSynchronously( OrderingDataAgent.CREATE_NEW_ITEM_ID, product, optionsMap, originalImageSpecList, 3 );
+    orderingDataAgent.addItemSynchronously( OrderingDataAgent.CREATE_NEW_ITEM_ID, product, optionsMap, originalImageSpecList, 3, 123 );
 
     List<BasketItem> basketItemList = orderingDataAgent.getAllItems( catalogue );
 
@@ -935,7 +935,7 @@ public class BasketOrderTests extends KiteTestCase
 
     orderingDataAgent.clearDefaultBasket();
 
-    orderingDataAgent.addItemSynchronously( OrderingDataAgent.CREATE_NEW_ITEM_ID, product, optionsMap, originalImageSpecList, 3 );
+    orderingDataAgent.addItemSynchronously( OrderingDataAgent.CREATE_NEW_ITEM_ID, product, optionsMap, originalImageSpecList, 3, 123 );
 
     List<BasketItem> basketItemList = orderingDataAgent.getAllItems( catalogue );
 

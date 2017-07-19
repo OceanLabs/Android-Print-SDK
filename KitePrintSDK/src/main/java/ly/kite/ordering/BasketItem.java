@@ -75,6 +75,7 @@ public class BasketItem
   private int                     mOrderQuantity;
   private HashMap<String,String>  mOptionsMap;
   private ArrayList<ImageSpec>    mImageSpecList;
+  private int                     mShippingClass;
 
 
   ////////// Static Initialiser(s) //////////
@@ -85,7 +86,7 @@ public class BasketItem
 
   ////////// Constructor(s) //////////
 
-  public BasketItem( long id, Product product, int orderQuantity, HashMap<String,String> optionsMap, ArrayList<ImageSpec> imageSpecList )
+  public BasketItem( long id, Product product, int orderQuantity, HashMap<String,String> optionsMap, ArrayList<ImageSpec> imageSpecList , int shippingClass)
     {
       int i;
       Catalogue catalogue;
@@ -94,6 +95,7 @@ public class BasketItem
     mOrderQuantity = orderQuantity;
     mOptionsMap    = optionsMap;
     mImageSpecList = imageSpecList;
+    mShippingClass = shippingClass;
 
     }
 
@@ -131,6 +133,23 @@ public class BasketItem
     {
     mOrderQuantity = orderQuantity;
     }
+
+
+  /*****************************************************
+   *
+   * Sets the shipping class.
+   *
+   *****************************************************/
+
+  public void setShippingClass (int shippingClass)  { mShippingClass = shippingClass; }
+
+  /*****************************************************
+   *
+   * Returns the shipping class.
+   *
+   *****************************************************/
+
+  public int getShippingClass () { return (mShippingClass); }
 
 
   /*****************************************************
