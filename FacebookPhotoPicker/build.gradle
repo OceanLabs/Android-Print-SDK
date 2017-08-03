@@ -30,6 +30,8 @@ android {
         }
     }
 
+    resourcePrefix 'kitesdk_'
+
 }
 
 dependencies {

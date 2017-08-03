@@ -43,6 +43,9 @@ android {
             testCoverageEnabled true
         }
     }
+
+    resourcePrefix 'kitesdk_'
+
 }
 
 dependencies {
