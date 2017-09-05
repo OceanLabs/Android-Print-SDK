@@ -42,6 +42,8 @@ package ly.kite.journey.creation.photobook;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.Spanned;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -795,7 +797,13 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
     {
     InstructionsViewHolder( View view )
       {
-      super( view );
+          super(view);
+          TextView instructions= (TextView) view.findViewById(R.id.photobook_instructions_text_view);
+
+          String htmlInstructions = view.getResources().getString(R.string.multi_page_instructions_html);
+          Spanned htmlAsSpanned = Html.fromHtml(htmlInstructions);
+
+          instructions.setText(htmlAsSpanned);
       }
     }
 

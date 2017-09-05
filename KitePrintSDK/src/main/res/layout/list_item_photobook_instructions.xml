@@ -5,12 +5,12 @@
     android:layout_height="wrap_content">
 
     <ly.kite.widget.CustomTypefaceTextView
+        android:id="@+id/photobook_instructions_text_view"
         android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="@dimen/photobook_instructions_text_padding"
         android:gravity="center"
-        android:textSize="@dimen/photobook_instructions_text_size"
-        android:text="@string/multi_page_instructions_html"/>
+        android:textSize="@dimen/photobook_instructions_text_size"/>
 
 </FrameLayout>
