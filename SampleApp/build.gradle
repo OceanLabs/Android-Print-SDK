@@ -28,13 +28,13 @@ apply plugin: 'com.android.application'
 //apply plugin: 'io.fabric'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    compileSdkVersion 26
+    buildToolsVersion '26.0.1'
     defaultConfig {
         applicationId "ly.kite.sample"
 
         minSdkVersion 14  // Change the min version to 15 if including Facebook support
-        targetSdkVersion 25
+        targetSdkVersion 26
 
         versionCode 300
         versionName '3.0'

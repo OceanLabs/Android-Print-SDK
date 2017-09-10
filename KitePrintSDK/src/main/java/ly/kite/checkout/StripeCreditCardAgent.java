@@ -51,7 +51,6 @@ import com.stripe.android.Stripe;
 import com.stripe.android.TokenCallback;
 import com.stripe.android.model.Card;
 import com.stripe.android.model.Token;
-import com.stripe.exception.AuthenticationException;
 
 import ly.kite.KiteSDK;
 import ly.kite.app.IndeterminateProgressDialogFragment;
@@ -234,20 +233,7 @@ public class StripeCreditCardAgent extends ACreditCardDialogFragment implements 
 
     String stripePublicKey = KiteSDK.getInstance( mContext ).getStripePublicKey();
 
-    Stripe stripe = null;
-
-    try
-      {
-      stripe = new Stripe( stripePublicKey );
-      }
-    catch ( AuthenticationException ae )
-      {
-      Log.e( TAG, "Unable to create Stripe object", ae );
-
-      onDisplayError( getString( R.string.stripe_error_create_object ) + ": " + ae.getMessage() );
-
-      return;
-      }
+    Stripe stripe = stripe = new Stripe( mContext, stripePublicKey );
 
 
     onClearError();
@@ -261,7 +247,7 @@ public class StripeCreditCardAgent extends ACreditCardDialogFragment implements 
 
   ////////// Inner Class(es) //////////
 
-  private class StripeTokenCallback extends TokenCallback
+  private class StripeTokenCallback implements TokenCallback
     {
     public void onSuccess( final Token token )
       {
