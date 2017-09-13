@@ -110,7 +110,7 @@ public class KiteSDK
   static public  final boolean DISPLAY_PRODUCTS                                    = false;
 
 
-  static public  final String SDK_VERSION                                          = "5.7.5";
+  static public  final String SDK_VERSION                                          = "5.7.6";
 
   static public  final String IMAGE_CATEGORY_APP                                   = "app";
   static public  final String IMAGE_CATEGORY_PRODUCT_ITEM                          = "product_item";
@@ -829,6 +829,7 @@ public class KiteSDK
     }
 
 
+  /*****************************************************
   /*****************************************************
    *
    * Returns true if we have Instagram credentials.
