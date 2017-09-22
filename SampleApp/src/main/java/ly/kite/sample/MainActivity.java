@@ -416,7 +416,8 @@ public class MainActivity extends ADeepLinkableActivity
                   frontImage,
                   backImage,
                   "Message to go on the back of the postcard",
-                  Address.getKiteTeamAddress() );
+                  Address.getKiteTeamAddress(),
+                  123);//default value
 
           Order order = new Order();
 

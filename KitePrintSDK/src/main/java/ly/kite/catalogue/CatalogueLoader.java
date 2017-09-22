@@ -120,6 +120,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
   static private final String  JSON_NAME_MASK_URL                    = "mask_url";
   static private final String  JSON_NAME_OPTIONS                     = "options";
   static private final String  JSON_NAME_OPTION_NAME                 = "name";
+  static private final String  JSON_NAME_CATEGORY                    = "product_category";
   static private final String  JSON_NAME_OPTION_CODE                 = "code";
   static private final String  JSON_NAME_HIGHLIGHTS_URL              = "product_highlights_url";
   static private final String  JSON_NAME_PAYPAL_SUPPORTED_CURRENCIES = "paypal_supported_currencies";
@@ -138,7 +139,8 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
   static private final String  JSON_NAME_PRODUCT_TYPE                = "ios_sdk_product_type";
   static private final String  JSON_NAME_PRODUCT_UI_CLASS            = "ios_sdk_ui_class";
   static private final String  JSON_NAME_RIGHT                       = "right";
-  static private final String  JSON_NAME_SHIPPING_COSTS              = "shipping_costs";
+  static private final String  JSON_NAME_SHIPPING_COSTS              = "shipping_regions";
+  static private final String  JSON_REGION_MAPPING                   = "country_to_region_mapping";
   static private final String  JSON_NAME_SUPPORTED_OPTIONS           = "supported_options";
   static private final String  JSON_NAME_SUPPORTS_TEXT_ON_BORDER     = "supports_text_on_border";
   static private final String  JSON_NAME_TOP                         = "top";
@@ -232,9 +234,9 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
    * Parses a JSON shipping cost.
    *
    ****************************************************/
-  private static MultipleCurrencyAmounts parseShippingCost( JSONObject shippingCostJSONObject ) throws JSONException
+  private static MultipleCurrencyAmounts parseShippingCost( JSONArray shippingCostJSONObject ) throws JSONException
     {
-    return ( new MultipleCurrencyAmounts( shippingCostJSONObject ) );
+    return ( new MultipleCurrencyAmounts( shippingCostJSONObject) );
     }
 
 
@@ -248,7 +250,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
     MultipleDestinationShippingCosts shippingCosts = new MultipleDestinationShippingCosts();
 
 
-    // The JSON shipping costs are not an array, so we need to iterate through the keys (which are the destination codes
+    // The JSON shipping costs are not an array, so we need to iterate through the keys (which are the destination codes)
 
     Iterator<String> destinationCodeIterator = shippingCostsJSONObject.keys();
 
@@ -256,12 +258,26 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
       {
       String destinationCode = destinationCodeIterator.next();
 
-      shippingCosts.add( destinationCode, parseShippingCost( shippingCostsJSONObject.getJSONObject( destinationCode ) ) );
+      JSONArray testd = MultipleShippingMethods(shippingCostsJSONObject,destinationCode);
+
+      shippingCosts.add( destinationCode, parseShippingCost( testd));//shippingCostsJSONObject.getJSONObject( destinationCode ) ) );
       }
 
 
     return ( shippingCosts );
     }
+
+
+    private static JSONArray MultipleShippingMethods(JSONObject multipleShippingMethodsJSONObject,String destinationCode) throws JSONException {
+
+        JSONArray shippingRegions = multipleShippingMethodsJSONObject.getJSONObject(destinationCode).getJSONArray("shipping_classes");
+        JSONObject ship1 = shippingRegions.getJSONObject(0);
+        JSONArray shippingCostArray = ship1.getJSONArray("costs");
+
+        return shippingCostArray;
+    }
+
+
 
 
   /****************************************************
@@ -555,13 +571,15 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
         String                           productId          = productJSONObject.getString( JSON_NAME_PRODUCT_ID );
         String                           productName        = productJSONObject.getString( JSON_NAME_PRODUCT_NAME );
         String                           productDescription = productJSONObject.getString( JSON_NAME_DESCRIPTION );
+        String                           productCategory    = productJSONObject.getString( JSON_NAME_CATEGORY );
         int                              imagesPerPage      = productJSONObject.optInt( JSON_NAME_IMAGES_PER_PAGE, DEFAULT_IMAGES_PER_PAGE );
         int                              gridCountX         = productJSONObject.optInt( JSON_NAME_GRID_COUNT_X, DEFAULT_GRID_SIZE );
         int                              gridCountY         = productJSONObject.optInt( JSON_NAME_GRID_COUNT_Y, DEFAULT_GRID_SIZE );
         MultipleCurrencyAmounts          cost               = parseCost( productJSONObject.getJSONArray( JSON_NAME_COST ) );
         boolean                          printInStore       = productJSONObject.optBoolean( JSON_NAME_PRINT_IN_STORE, false );
         MultipleDestinationShippingCosts shippingCosts      = parseShippingCosts( productJSONObject.getJSONObject( JSON_NAME_SHIPPING_COSTS ) );
-
+        String                           shippingMethods    = (productJSONObject.getJSONObject (JSON_NAME_SHIPPING_COSTS).toString());
+        String                           regionMapping      = productJSONObject.getJSONObject(JSON_REGION_MAPPING).toString();
 
         // Get the product detail
 
@@ -638,7 +656,10 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
                 .setGridSize( gridCountX, gridCountY )
                 .setCost( cost )
                 .setDescription( productDescription )
+                .setCategory( productCategory )
                 .setShippingCosts( shippingCosts )
+                .setShippingMethods( shippingMethods )
+                .setRegionMapping ( regionMapping )
                 .setImageURLs( coverPhotoURL, imageURLList )
                 .setLabelColour( labelColour )
                 .setMask( maskURL, maskBleed )

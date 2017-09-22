@@ -1,5 +1,6 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical">
@@ -92,119 +93,188 @@
 
         <FrameLayout
             android:layout_width="0dp"
-            android:layout_weight="0.5"
             android:layout_height="fill_parent"
+            android:layout_weight="0.5"
             android:background="@color/basket_order_background"
-            android:padding="@dimen/basket_order_frame_padding"
             android:orientation="vertical">
 
             <LinearLayout
-                android:layout_gravity="bottom"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:orientation="vertical">
 
-                <LinearLayout
-                    android:layout_width="fill_parent"
+                <RelativeLayout
+                    android:id="@+id/delivery_address_relative_layout"
+                    android:layout_width="match_parent"
                     android:layout_height="@dimen/basket_order_frame_item_height"
+                    android:clickable="true"
                     android:orientation="horizontal">
+
                     <ImageView
+                        android:id="@+id/delivery_address_image_view"
                         android:layout_width="wrap_content"
                         android:layout_height="fill_parent"
-                        android:layout_weight="0.0"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginLeft="15dp"
+                        android:layout_weight="1.0"
                         android:src="@drawable/ic_delivery"/>
+
                     <ly.kite.widget.CustomTypefaceTextView
                         android:id="@+id/delivery_address_text_view"
-                        android:layout_marginLeft="@dimen/basket_order_item_text_margin"
                         android:layout_width="wrap_content"
-                        android:layout_weight="1.0"
                         android:layout_height="fill_parent"
+                        android:layout_marginLeft="@dimen/basket_order_item_text_margin"
+                        android:layout_toLeftOf="@+id/delivery_address_edit_text"
+                        android:layout_toRightOf="@+id/delivery_address_image_view"
+                        android:layout_weight="1.0"
+                        android:ellipsize="end"
                         android:gravity="left|center_vertical"
+                        android:maxLines="1"
                         android:text="@string/Choose_Delivery_Address"
+                        android:textColor="@color/basket_order_text_colour"
                         android:textSize="@dimen/basket_order_item_text_size"
-                        android:textStyle="bold"
-                        android:singleLine="true"/>
-                    <View
+                        android:textStyle="bold"/>
+
+                    <ly.kite.widget.CustomTypefaceTextView
+                        android:id="@+id/delivery_address_edit_text"
                         android:layout_width="@dimen/basket_price_column_width"
-                        android:layout_height="fill_parent"/>
-                </LinearLayout>
+                        android:layout_height="fill_parent"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="1dp"
+                        android:layout_weight="1.0"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:maxLines="1"
+                        android:text="@string/Edit_upper"
+                        android:textColor="@color/basket_order_edit_text"
+                        android:textSize="14sp"/>
+
+                </RelativeLayout>
 
                 <LinearLayout
                     android:layout_width="fill_parent"
                     android:layout_height="2dp"
                     android:orientation="horizontal">
+
                     <View
-                        android:layout_width="wrap_content"
-                        android:layout_weight="1.0"
+                        android:layout_width="match_parent"
                         android:layout_height="fill_parent"
-                        android:background="@color/basket_order_delivery_underline"/>
-                    <View
-                        android:layout_width="@dimen/basket_price_column_width"
-                        android:layout_height="fill_parent"/>
+                        android:background="@color/basket_order_separator"/>
                 </LinearLayout>
 
-                <LinearLayout
+                <RelativeLayout
+                    android:id="@+id/shipping_relative_layout"
                     android:layout_width="fill_parent"
                     android:layout_height="@dimen/basket_order_frame_item_height"
+                    android:clickable="true"
                     android:orientation="horizontal">
+
                     <ImageView
+                        android:id="@+id/shipping_image_view"
                         android:layout_width="wrap_content"
                         android:layout_height="fill_parent"
-                        android:layout_weight="0.0"
-                        android:src="@drawable/ic_shipping"/>
-                    <ly.kite.widget.CustomTypefaceTextView
-                        style="@style/BasketShippingText"
-                        android:layout_marginLeft="@dimen/basket_order_item_text_margin"
-                        android:layout_width="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginLeft="15dp"
                         android:layout_weight="1.0"
+                        android:src="@drawable/ic_shipping"/>
+
+                    <ly.kite.widget.CustomTypefaceTextView
+                        android:id="@+id/shipping_text_view"
+                        style="@style/BasketShippingText"
+                        android:layout_width="wrap_content"
                         android:layout_height="fill_parent"
+                        android:layout_marginLeft="@dimen/basket_order_item_text_margin"
+                        android:layout_toRightOf="@+id/shipping_image_view"
+                        android:layout_weight="1.0"
                         android:gravity="left|center_vertical"
                         android:text="@string/Shipping"
+                        android:textColor="@color/basket_order_text_colour"
                         android:textSize="@dimen/basket_order_item_text_size"
                         android:textStyle="bold"/>
+
+                    <ly.kite.widget.CustomTypefaceTextView
+                        android:id="@+id/shipping_address_edit_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+
+                        android:layout_marginRight="1dp"
+                        android:layout_toLeftOf="@+id/total_shipping_price_text_view"
+                        android:layout_toRightOf="@+id/shipping_text_view"
+                        android:layout_weight="1.0"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:maxLines="1"
+                        android:text="@string/Edit_upper"
+                        android:textColor="@color/basket_order_edit_text"
+                        android:textSize="14sp"/>
+
                     <ly.kite.widget.CustomTypefaceTextView
                         android:id="@+id/total_shipping_price_text_view"
                         style="@style/BasketShippingText"
                         android:layout_width="@dimen/basket_price_column_width"
                         android:layout_height="fill_parent"
-                        android:gravity="right|center_vertical"
-                        android:textSize="@dimen/basket_item_price_size"/>
-                </LinearLayout>
+                        android:layout_alignParentRight="true"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:textSize="@dimen/basket_item_price_size"
+                        android:textStyle="bold"/>
+                </RelativeLayout>
 
                 <LinearLayout
                     android:layout_width="fill_parent"
                     android:layout_height="1dp"
                     android:orientation="horizontal">
+
                     <View
-                        android:layout_width="wrap_content"
-                        android:layout_weight="1.0"
-                        android:layout_height="fill_parent"/>
-                    <View
-                        android:layout_width="@dimen/basket_price_column_width"
+                        android:layout_width="match_parent"
                         android:layout_height="fill_parent"
-                        android:background="@color/basket_order_total_separator"/>
+                        android:background="@color/basket_order_separator"/>
                 </LinearLayout>
 
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="fill_parent"
                     android:layout_height="@dimen/basket_order_frame_item_height"
                     android:orientation="horizontal">
-                    <View
+
+                    <ly.kite.widget.CustomTypefaceTextView
+                        android:id="@+id/total_price_text"
                         android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:layout_alignParentLeft="true"
                         android:layout_weight="1.0"
-                        android:layout_height="fill_parent"/>
+                        android:background="@color/basket_total_price_background"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:paddingLeft="15dp"
+                        android:text="@string/Total_basket"
+                        android:textColor="@color/basket_order_text_colour"
+                        android:textSize="18sp"
+                        android:textStyle="bold"/>
+
+                    <ly.kite.widget.CustomTypefaceTextView
+                        android:id="@+id/total_price_no_of_items"
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:layout_toLeftOf="@+id/total_price_text_view"
+                        android:layout_toRightOf="@+id/total_price_text"
+                        android:layout_weight="1.0"
+                        android:background="@color/basket_total_price_background"
+                        android:gravity="left|center_vertical"
+                        android:textColor="@color/basket_order_text_colour"
+                        android:textSize="18sp"
+                        />
+
                     <ly.kite.widget.CustomTypefaceTextView
                         android:id="@+id/total_price_text_view"
                         android:layout_width="@dimen/basket_price_column_width"
                         android:layout_height="fill_parent"
-                        android:gravity="right|center_vertical"
-                        android:textColor="@color/basket_total_price_text"
+                        android:layout_alignParentRight="true"
+                        android:maxLines="1"
+                        android:background="@color/basket_total_price_background"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:textColor="@color/basket_order_text_colour"
                         android:textSize="@dimen/basket_total_price_size"
                         android:textStyle="bold"/>
-                </LinearLayout>
+                </RelativeLayout>
 
             </LinearLayout>
-
         </FrameLayout>
 
     </LinearLayout>

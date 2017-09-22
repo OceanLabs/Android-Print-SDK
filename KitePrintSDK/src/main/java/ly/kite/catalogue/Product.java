@@ -49,7 +49,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -112,6 +111,7 @@ public class Product implements IGroupOrProduct, Parcelable
   private String                            mCode;
   private String                            mName;
   private String                            mDescription;
+  private String                            mCategory;
   private String                            mType;
   private UserJourneyType                   mUserJourneyType;
   private int                               mQuantityPerSheet;
@@ -120,6 +120,9 @@ public class Product implements IGroupOrProduct, Parcelable
 
   private MultipleCurrencyAmounts           mCost;
   private MultipleDestinationShippingCosts  mShippingCosts;
+  private String                            mShippingMethods;
+  private int                               mDefaultShippingClass;
+  private String                            mRegionMapping;
   private URL                               mHeroImageURL;
   private int                               mLabelColour;
   private ArrayList<URL>                    mImageURLList;
@@ -293,6 +296,7 @@ public class Product implements IGroupOrProduct, Parcelable
     mCode                       = sourceParcel.readString();
     mName                       = sourceParcel.readString();
     mDescription                = sourceParcel.readString();
+    mCategory                   = sourceParcel.readString();
     mType                       = sourceParcel.readString();
 
     String userJourneyString    = sourceParcel.readString();
@@ -304,6 +308,9 @@ public class Product implements IGroupOrProduct, Parcelable
 
     mCost                       = (MultipleCurrencyAmounts) sourceParcel.readParcelable( MultipleCurrencyAmounts.class.getClassLoader() );
     mShippingCosts              = (MultipleDestinationShippingCosts) sourceParcel.readParcelable( MultipleDestinationShippingCosts.class.getClassLoader() );
+    mShippingMethods            = sourceParcel.readString();
+    mDefaultShippingClass       = sourceParcel.readInt();
+    mRegionMapping              = sourceParcel.readString();
     mHeroImageURL               = (URL)sourceParcel.readSerializable();
     mLabelColour                = sourceParcel.readInt();
 
@@ -353,6 +360,7 @@ public class Product implements IGroupOrProduct, Parcelable
     targetParcel.writeString( mCode );
     targetParcel.writeString( mName );
     targetParcel.writeString( mDescription );
+    targetParcel.writeString( mCategory );
     targetParcel.writeString( mType );
     targetParcel.writeString( mUserJourneyType != null ? mUserJourneyType.name() : null );
     targetParcel.writeInt( mQuantityPerSheet );
@@ -361,6 +369,11 @@ public class Product implements IGroupOrProduct, Parcelable
 
     targetParcel.writeParcelable( mCost, flags );
     targetParcel.writeParcelable( mShippingCosts, flags );
+
+    targetParcel.writeString( mShippingMethods );
+    targetParcel.writeInt( mDefaultShippingClass );
+    targetParcel.writeString( mRegionMapping );
+
     targetParcel.writeSerializable( mHeroImageURL );
     targetParcel.writeInt( mLabelColour );
 
@@ -432,7 +445,6 @@ public class Product implements IGroupOrProduct, Parcelable
     {
     return ( mLabelColour );
     }
-
 
   /*****************************************************
    *
@@ -522,6 +534,28 @@ public class Product implements IGroupOrProduct, Parcelable
   public void setQuantityPerSheet( int quantityPerSheet )
     {
     mQuantityPerSheet = quantityPerSheet;
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the product category
+   *
+   *****************************************************/
+    public String getCategory() {
+      return (mCategory);
+    }
+
+
+  /*****************************************************
+  *
+  * Sets the product category
+  *
+  *****************************************************/
+    public Product setCategory(String category) {
+      mCategory = category;
+
+      return (this);
     }
 
 
@@ -648,13 +682,45 @@ public class Product implements IGroupOrProduct, Parcelable
    * Sets the shipping costs.
    *
    *****************************************************/
-  Product setShippingCosts( MultipleDestinationShippingCosts shippingCosts )
-    {
+  Product setShippingCosts(MultipleDestinationShippingCosts shippingCosts)
+  {
     mShippingCosts = shippingCosts;
 
-    return ( this );
-    }
+    return (this);
+  }
 
+  /*****************************************************
+   *
+   * Sets the shipping infomation for shipping
+   *
+   *****************************************************/
+  Product setShippingMethods(String shippingMethods) {
+    mShippingMethods = shippingMethods;
+
+    return (this);
+  }
+
+  /*****************************************************
+   *
+   * Sets the default shipping class for shipping
+   *
+   *****************************************************/
+  Product setDefaultShippingClass(int shippingClass) {
+    mDefaultShippingClass = shippingClass;
+
+    return (this);
+  }
+
+  /*****************************************************
+   *
+   * Sets the region mapping for shipping
+   *
+   *****************************************************/
+  Product setRegionMapping(String regionMapping) {
+    mRegionMapping = regionMapping;
+
+    return (this);
+  }
 
   /*****************************************************
    *
@@ -665,6 +731,22 @@ public class Product implements IGroupOrProduct, Parcelable
     {
     return ( mShippingCosts );
     }
+
+  /*****************************************************
+   *
+   * Returns the shipping information
+   *
+   *****************************************************/
+
+  public String getShippingMethods() { return mShippingMethods; }
+
+  /*****************************************************
+   *
+   * Returns the region mapping for shipping
+   *
+   *****************************************************/
+
+  public String getRegionMapping() {return mRegionMapping;}
 
 
   /*****************************************************

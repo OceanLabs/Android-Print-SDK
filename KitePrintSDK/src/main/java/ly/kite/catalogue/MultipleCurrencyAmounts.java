@@ -46,6 +46,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -180,8 +181,7 @@ public class MultipleCurrencyAmounts implements Parcelable
         {
         String currencyCode = currencyIterator.next();
 
-
-        // The amount might be a simple decimal value, or another JSON object in the form:
+            // The amount might be a simple decimal value, or another JSON object in the form:
         //   {"amount":"0.00000"}
 
         BigDecimal amountBigDecimal;
@@ -214,6 +214,44 @@ public class MultipleCurrencyAmounts implements Parcelable
         }
       }
     }
+
+  /*****************************************************
+  *
+  * Creates a multiple currency amount from a JSONArray.
+  *
+  *****************************************************/
+
+  public MultipleCurrencyAmounts (JSONArray jsonArray) throws JSONException {
+      this();
+      JSONObject temp;
+      String currencyCode = null;
+
+      for(int i=0;i<jsonArray.length();i++) {
+          temp = jsonArray.getJSONObject(i);
+          currencyCode = temp.getString("currency");
+
+          BigDecimal amountBigDecimal;
+          BigDecimal originalAmountBigDecimal = null;
+
+          try
+          {
+              amountBigDecimal = new BigDecimal(temp.getString("amount"));
+          }
+          catch ( NumberFormatException nfe ) {
+              JSONObject amountJSONObject = temp.getJSONObject("amount");
+
+              amountBigDecimal = new BigDecimal(amountJSONObject.getString(JSON_NAME_AMOUNT));
+
+
+              // Check for an original amount
+
+              String originalAmountString = amountJSONObject.optString(JSON_NAME_ORIGINAL_AMOUNT, null);
+
+              originalAmountBigDecimal = ( originalAmountString != null ? new BigDecimal( originalAmountString ) : null );
+          }
+          add( new SingleCurrencyAmounts( Currency.getInstance( currencyCode ), amountBigDecimal, originalAmountBigDecimal ) );
+      }
+  }
 
 
   /*****************************************************

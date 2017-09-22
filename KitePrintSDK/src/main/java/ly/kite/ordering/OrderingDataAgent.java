@@ -147,10 +147,10 @@ public class OrderingDataAgent
    * been added to the basket.
    *
    *****************************************************/
-  public void addItem( long itemId, Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, int orderQuantity, IAddListener addListener )
+  public void addItem( long itemId, Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, int orderQuantity, IAddListener addListener , int shippingClass)
     {
     // Create an add item task and start it
-    new AddItemTask( itemId, product, optionsMap, imageSpecList, orderQuantity, addListener ).execute();
+    new AddItemTask( itemId, product, optionsMap, imageSpecList, orderQuantity, addListener ,shippingClass).execute();
     }
 
 
@@ -163,9 +163,9 @@ public class OrderingDataAgent
    * been added to the basket.
    *
    *****************************************************/
-  public void addItem( Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, int orderQuantity, IAddListener addListener )
+  public void addItem( Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, int orderQuantity, IAddListener addListener,int shippingClass )
     {
-    addItem( CREATE_NEW_ITEM_ID, product, optionsMap, imageSpecList, orderQuantity, addListener );
+    addItem( CREATE_NEW_ITEM_ID, product, optionsMap, imageSpecList, orderQuantity, addListener, shippingClass);
     }
 
 
@@ -178,9 +178,9 @@ public class OrderingDataAgent
    * been added to the basket.
    *
    *****************************************************/
-  public void addItem( Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, IAddListener addListener )
+  public void addItem( Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, IAddListener addListener,int shippingClass )
     {
-    addItem( product, optionsMap, imageSpecList, 1, addListener );
+    addItem( product, optionsMap, imageSpecList, 1, addListener, shippingClass );
     }
 
 
@@ -189,13 +189,13 @@ public class OrderingDataAgent
    * Replaces an item in the default basket.
    *
    *****************************************************/
-  public void replaceItem( long itemId, Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, int orderQuantity, IAddListener addListener )
+  public void replaceItem( long itemId, Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, int orderQuantity, IAddListener addListener, int shippingClass)
     {
     // Delete the item and add a new one
 
     mOrderingDatabaseAgent.deleteItem( itemId );
 
-    addItem( itemId, product, optionsMap, imageSpecList, orderQuantity, addListener );
+    addItem( itemId, product, optionsMap, imageSpecList, orderQuantity, addListener, shippingClass );
     }
 
 
@@ -206,7 +206,7 @@ public class OrderingDataAgent
    * the AddItemTask.
    *
    *****************************************************/
-  public void addItemSynchronously( long itemId, Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, int orderQuantity )
+  public void addItemSynchronously( long itemId, Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, int orderQuantity, int shippingClass)
     {
     // We need to create a basket item per <mProduct.getQuantityPerSheet()> images, i.e.
     // split the images into multiple jobs.
@@ -225,7 +225,7 @@ public class OrderingDataAgent
           itemImageSpecList = AssetHelper.createAsBasketAssets( mApplicationContext, BASKET_ID_DEFAULT, itemImageSpecList );
 
           // Create or replace the basket item
-          mOrderingDatabaseAgent.saveDefaultBasketItem( itemId, product, optionsMap, itemImageSpecList, orderQuantity );
+          mOrderingDatabaseAgent.saveDefaultBasketItem( itemId, product, optionsMap, itemImageSpecList, orderQuantity,shippingClass);
 
           // If we were supplied an item id then this is an update. However, if more images were
           // subsequently added whilst editing the item - additional jobs are inserted as new ones.
@@ -257,8 +257,18 @@ public class OrderingDataAgent
     return ( mOrderingDatabaseAgent.selectItemCount() );
     }
 
-
   /*****************************************************
+   *
+   * Updates the shipping class
+   *
+   *****************************************************/
+    public int changeShippingClass( long itemId ,int shippingClass)
+    {
+      return ( mOrderingDatabaseAgent.updateShippingClass( itemId, shippingClass ) );
+    }
+
+
+    /*****************************************************
    *
    * Increments the order quantity for a basket item.
    *
@@ -396,9 +406,10 @@ public class OrderingDataAgent
     private List<ImageSpec>         mImageSpecList;
     private int                     mOrderQuantity;
     private IAddListener            mAddListener;
+    private int                     mShippingClass;
 
 
-    AddItemTask( long itemId, Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, int orderQuantity, IAddListener addListener )
+    AddItemTask( long itemId, Product product, HashMap<String,String> optionsMap, List<ImageSpec> imageSpecList, int orderQuantity, IAddListener addListener ,int shippingClass)
       {
       mItemId        = itemId;
       mProduct       = product;
@@ -406,13 +417,14 @@ public class OrderingDataAgent
       mImageSpecList = imageSpecList;
       mOrderQuantity = orderQuantity;
       mAddListener   = addListener;
+      mShippingClass = shippingClass;
       }
 
 
     @Override
     protected Void doInBackground( Void... params )
       {
-      addItemSynchronously( mItemId, mProduct, mOptionsMap, mImageSpecList, mOrderQuantity );
+      addItemSynchronously( mItemId, mProduct, mOptionsMap, mImageSpecList, mOrderQuantity, mShippingClass );
 
       return ( null );
       }

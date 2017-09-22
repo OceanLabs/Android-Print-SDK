@@ -128,7 +128,7 @@ public class OrderingDatabaseAgentTests extends KiteTestCase
     originalImageSpecList.add( originalImageSpec2 );
 
 
-    databaseAgent.saveDefaultBasketItem( itemId, product, optionsMap, originalImageSpecList, 1 );
+    databaseAgent.saveDefaultBasketItem( itemId, product, optionsMap, originalImageSpecList, 1, 123 );
 
 
     List<BasketItem> basketItemList = databaseAgent.loadDefaultBasket( getContext(), catalogue );
@@ -166,7 +166,7 @@ public class OrderingDatabaseAgentTests extends KiteTestCase
     originalImageSpecList.add( originalImageSpec2 );
 
 
-    databaseAgent.saveDefaultBasketItem( itemId, product, optionsMap, originalImageSpecList, 1 );
+    databaseAgent.saveDefaultBasketItem( itemId, product, optionsMap, originalImageSpecList, 1, 123 );
 
 
     basketItemList = databaseAgent.loadDefaultBasket( getContext(), catalogue );

@@ -1,5 +1,5 @@
 <merge>
 
-    <include layout="@layout/include_cta_bar_divided"/>
+    <include layout="@layout/include_cta_bar_basket"/>
 
 </merge>

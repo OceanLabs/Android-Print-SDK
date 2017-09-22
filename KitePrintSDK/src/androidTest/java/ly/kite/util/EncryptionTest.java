@@ -25,7 +25,7 @@ import ly.kite.ordering.OrderingDatabaseAgent;
 public class EncryptionTest extends AndroidTestCase{
 
 
-    String ENCRYPTION_KEY = "5743h4j5bjhb34h5bhg3463";//random encryption key
+    String ENCRYPTION_KEY = KiteSDK.ENCRYPTION_KEY;//"5743h4j5bjhb34h5bhg3463";//random encryption key
 
     SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
     String test_text = "TestText";
@@ -79,7 +79,7 @@ public class EncryptionTest extends AndroidTestCase{
             getContext().deleteDatabase("ordering.db");//delete test database in case of old/corrupted data
 
             OrderingDatabaseAgent databaseAgent = new OrderingDatabaseAgent(getContext(), null);
-            OrderingDatabaseAgent.setEncryptionKey(ENCRYPTION_KEY);
+            //OrderingDatabaseAgent.setEncryptionKey(ENCRYPTION_KEY);
 
             //generate address information
             Address adr = new Address();
@@ -202,7 +202,7 @@ public class EncryptionTest extends AndroidTestCase{
             getContext().deleteDatabase("ordering.db");//delete test database in case of old/corrupted data
 
             OrderingDatabaseAgent databaseAgent = new OrderingDatabaseAgent(getContext(), null);
-            OrderingDatabaseAgent.setEncryptionKey(ENCRYPTION_KEY);
+            //OrderingDatabaseAgent.setEncryptionKey(ENCRYPTION_KEY);
 
 
             String description = randomTextGenerator();
@@ -265,7 +265,7 @@ public class EncryptionTest extends AndroidTestCase{
             KiteSDK.IEnvironment environment;
             environment = KiteSDK.DefaultEnvironment.TEST;
 
-            KiteSDK sdk = KiteSDK.getInstance(getContext(), ENCRYPTION_KEY, environment,true,null);
+            KiteSDK sdk = KiteSDK.getInstance(getContext(), ENCRYPTION_KEY, environment);
 
             //generate keys
             String key1 = randomTextGenerator();
@@ -355,6 +355,7 @@ public class EncryptionTest extends AndroidTestCase{
      *                                                                         *
      **************************************************************************/
 
+    /*
     public void testInactiveEncryption()
     {
         int noOfRuns = 10;
@@ -364,7 +365,7 @@ public class EncryptionTest extends AndroidTestCase{
             KiteSDK.IEnvironment environment;
             environment = KiteSDK.DefaultEnvironment.TEST;
 
-            KiteSDK sdk = KiteSDK.getInstance(getContext(), ENCRYPTION_KEY, environment, false, null);
+            KiteSDK sdk = KiteSDK.getInstance(getContext(), ENCRYPTION_KEY, environment);
 
             SharedPreferences prefs_app = context.getSharedPreferences("kite_app_session_shared_prefs", Context.MODE_PRIVATE);
             prefs_app.edit().clear().commit();//clear the information from this preference file
@@ -374,11 +375,12 @@ public class EncryptionTest extends AndroidTestCase{
             //place information into kite_app_session_shared_prefs.xml by means of KiteSDK
             sdk.setAppParameter(context, KiteSDK.Scope.APP_SESSION, "text", stringExample);
             //directly read the info earlier placed into the .xml file and compare it to the original string
-            Assert.assertEquals(prefs_app.getString("app_text", "defaultValue"), stringExample);
+            Assert.assertEquals(prefs_app.getString("app_text", stringExample), stringExample);
 
             noOfRuns--;
         }
     }
+    /*
 
 
     /**************************************************************************

@@ -37,9 +37,9 @@ public class PostcardJob extends Job
   private Address          mAddress;
 
 
-  public PostcardJob( long jobId, Product product, int orderQuantity, HashMap<String, String> optionsMap, Object frontImage, Object backImage, String message, Address address )
+  public PostcardJob( long jobId, Product product, int orderQuantity, HashMap<String, String> optionsMap, Object frontImage, Object backImage, String message, Address address, int shippingClass )
     {
-    super( jobId, product, orderQuantity, optionsMap );
+    super( jobId, product, orderQuantity, optionsMap, shippingClass );
 
     mFrontUploadableImage = singleUploadableImageFrom( frontImage );
     mBackUploadableImage  = singleUploadableImageFrom( backImage );
@@ -47,9 +47,9 @@ public class PostcardJob extends Job
     mAddress              = address;
     }
 
-  public PostcardJob( Product product, int orderQuantity, HashMap<String, String> optionsMap, Object frontImage, Object backImage, String message, Address address )
+  public PostcardJob( Product product, int orderQuantity, HashMap<String, String> optionsMap, Object frontImage, Object backImage, String message, Address address, int shippingClass )
     {
-    this( 0, product, orderQuantity, optionsMap, frontImage, backImage, message, address );
+    this( 0, product, orderQuantity, optionsMap, frontImage, backImage, message, address, shippingClass );
     }
 
 

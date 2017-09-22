@@ -99,16 +99,16 @@ public class PhotobookJob extends ImagesJob
 
   ////////// Constructor(s) //////////
 
-  public PhotobookJob( long jobId, Product product, int orderQuantity, HashMap<String,String> optionsMap, Object frontCoverImage, List<?> contentObjectList )
+  public PhotobookJob( long jobId, Product product, int orderQuantity, HashMap<String,String> optionsMap, Object frontCoverImage, List<?> contentObjectList, int shippingClass )
     {
-    super( jobId, product, orderQuantity, optionsMap, contentObjectList, 0, true );
+    super( jobId, product, orderQuantity, optionsMap, contentObjectList, 0, true, shippingClass);
 
     mFrontCoverUploadableImage = singleUploadableImageFrom( frontCoverImage );
     }
 
-  public PhotobookJob( Product product, int orderQuantity, HashMap<String,String> optionsMap, Object frontCoverImage, List<?> contentObjectList )
+  public PhotobookJob( Product product, int orderQuantity, HashMap<String,String> optionsMap, Object frontCoverImage, List<?> contentObjectList, int shippingClass )
     {
-    this( 0, product, orderQuantity, optionsMap, frontCoverImage, contentObjectList );
+    this( 0, product, orderQuantity, optionsMap, frontCoverImage, contentObjectList, shippingClass );
     }
 
   protected PhotobookJob( Parcel parcel )

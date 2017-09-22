@@ -134,7 +134,7 @@ public class OrderingDataAgentTests extends KiteTestCase
     imageSpecList.add( new ImageSpec( new Asset( "/tmp/image1.jpg" ) ) );
 
 
-    dataAgent.addItemSynchronously( OrderingDataAgent.CREATE_NEW_ITEM_ID, product, null, imageSpecList, 1 );
+    dataAgent.addItemSynchronously( OrderingDataAgent.CREATE_NEW_ITEM_ID, product, null, imageSpecList, 1, 123 );
 
 
     basketItemList = dataAgent.getAllItems( catalogue );
@@ -167,7 +167,7 @@ public class OrderingDataAgentTests extends KiteTestCase
     imageSpecList.add( new ImageSpec( asset ) );
 
 
-    dataAgent.addItemSynchronously( OrderingDataAgent.CREATE_NEW_ITEM_ID, product, null, imageSpecList, 1 );
+    dataAgent.addItemSynchronously( OrderingDataAgent.CREATE_NEW_ITEM_ID, product, null, imageSpecList, 1, 123 );
 
 
     List<BasketItem>basketItemList = dataAgent.getAllItems( catalogue );

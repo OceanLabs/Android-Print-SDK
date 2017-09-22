@@ -3,6 +3,7 @@ package ly.kite.ordering;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.JsonToken;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -49,6 +50,7 @@ public class Order implements Parcelable /* , Serializable */
     static private final String JSON_NAME_QUANTITY     = "quantity";
     static private final String JSON_NAME_TEMPLATE_ID  = "template_id";
     static private final String JSON_NAME_COUNTRY_CODE = "country_code";
+    static private final String JSON_NAME_SHIPPING_CLASS = "shipping_class";
 
 
     // These values are used to build the order
@@ -104,7 +106,7 @@ public class Order implements Parcelable /* , Serializable */
           Product product       = basketItem.getProduct();
           int     orderQuantity = basketItem.getOrderQuantity();
 
-          product.getUserJourneyType().addJobsToOrder( context, product, orderQuantity, basketItem.getOptionsMap(), basketItem.getImageSpecList(), this );
+          product.getUserJourneyType().addJobsToOrder( context, product, orderQuantity, basketItem.getOptionsMap(), basketItem.getImageSpecList(), this, basketItem.getShippingClass());
           }
         }
 
@@ -339,6 +341,7 @@ public class Order implements Parcelable /* , Serializable */
         // Add the jobs
 
         JSONArray jobs = new JSONArray();
+        JSONObject tempJobs = new JSONObject();
 
         json.put( "jobs", jobs );
 
@@ -350,7 +353,9 @@ public class Order implements Parcelable /* , Serializable */
 
           for ( int index = 0; index < orderQuantity; index ++ )
             {
-            jobs.put( job.getJSONRepresentation() );
+            tempJobs = job.getJSONRepresentation();
+            tempJobs.put(JSON_NAME_SHIPPING_CLASS,job.getShippingClass());
+            jobs.put(tempJobs);
             }
           }
 
@@ -393,7 +398,7 @@ public class Order implements Parcelable /* , Serializable */
           builder.append( "\"currency\": \"" ).append( orderTotalCost.getCurrencyCode() ).append( "\"" ).append( "," );
           builder.append( String.format( Locale.ENGLISH, "\"amount\": %.2f", orderTotalCost.getAmount().floatValue() ) ); // Local.ENGLISH to force . separator instead of comma
           builder.append( "}" );
-          JSONObject customerPayment = new JSONObject( builder.toString() );
+          JSONObject customerPayment = new JSONObject(builder.toString() );
           json.put( "customer_payment", customerPayment );
           }
 
@@ -488,7 +493,7 @@ public class Order implements Parcelable /* , Serializable */
      *   ]
      *
      *****************************************************/
-    public JSONArray asBasketJSONArray( String countryCode )
+    public JSONArray asBasketJSONArray( String countryCode)
       {
       JSONArray jsonArray = new JSONArray();
 
@@ -510,6 +515,7 @@ public class Order implements Parcelable /* , Serializable */
             itemJSONObject.put( JSON_NAME_QUANTITY,     job.getQuantity() );
             itemJSONObject.put( JSON_NAME_TEMPLATE_ID,  job.getProductId() );
             itemJSONObject.put( JSON_NAME_COUNTRY_CODE, countryCode );
+            itemJSONObject.put( JSON_NAME_SHIPPING_CLASS, job.getShippingClass());
             }
           catch ( JSONException je )
             {

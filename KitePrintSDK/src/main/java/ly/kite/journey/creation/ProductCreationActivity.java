@@ -833,13 +833,13 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
       {
       showProgressDialog( R.string.progress_dialog_title_updating_basket );
 
-      orderingDataAgent.replaceItem( mBasketItemId, mProduct, mOptionMap, imageSpecList, mOrderQuantity, this );
+      orderingDataAgent.replaceItem( mBasketItemId, mProduct, mOptionMap, imageSpecList, mOrderQuantity, this , 123);//123 for N/A , will  be set right in ShippingMethod
       }
     else
       {
       showProgressDialog( R.string.progress_dialog_title_add_to_basket );
 
-      orderingDataAgent.addItem( mProduct, mOptionMap, imageSpecList, this );
+      orderingDataAgent.addItem( mProduct, mOptionMap, imageSpecList, this ,123);//123 for N/A , will  be set right in ShippingMethod
       }
 
     }
