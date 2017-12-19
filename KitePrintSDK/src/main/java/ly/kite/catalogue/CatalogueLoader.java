@@ -148,6 +148,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
   static private final String  JSON_NAME_VALUE_CODE                  = "code";
   static private final String  JSON_NAME_VARIANT_ID                  = "variant_id";
   static private final String  JSON_NAME_WIDTH                       = "width";
+  static private final String JSON_NAME_CATEGORY = "product_category";
 
   static private final int     DEFAULT_IMAGES_PER_PAGE               = 1;
   static private final int     DEFAULT_GRID_SIZE                     = 1;
@@ -555,6 +556,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
         String                           productId          = productJSONObject.getString( JSON_NAME_PRODUCT_ID );
         String                           productName        = productJSONObject.getString( JSON_NAME_PRODUCT_NAME );
         String                           productDescription = productJSONObject.getString( JSON_NAME_DESCRIPTION );
+        String productCategory = productJSONObject.getString(JSON_NAME_CATEGORY);
         int                              imagesPerPage      = productJSONObject.optInt( JSON_NAME_IMAGES_PER_PAGE, DEFAULT_IMAGES_PER_PAGE );
         int                              gridCountX         = productJSONObject.optInt( JSON_NAME_GRID_COUNT_X, DEFAULT_GRID_SIZE );
         int                              gridCountY         = productJSONObject.optInt( JSON_NAME_GRID_COUNT_Y, DEFAULT_GRID_SIZE );
@@ -577,7 +579,15 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
         UserJourneyType        userJourneyType      = parseUserJourneyType( productDetailJSONObject.getString( JSON_NAME_PRODUCT_UI_CLASS ) );
         String                 productCode          = productDetailJSONObject.getString( JSON_NAME_PRODUCT_CODE );
         MultipleUnitSize       size                 = parseProductSize( productDetailJSONObject.getJSONObject( JSON_NAME_PRODUCT_SIZE ) );
-        float                  imageAspectRatio     = (float)productDetailJSONObject.optDouble( JSON_NAME_IMAGE_ASPECT_RATIO, Product.DEFAULT_IMAGE_ASPECT_RATIO );
+        //float                  imageAspectRatio     = (float)productDetailJSONObject.optDouble( JSON_NAME_IMAGE_ASPECT_RATIO, Product.DEFAULT_IMAGE_ASPECT_RATIO );
+        float imageAspectRatio = (float) productDetailJSONObject.optDouble(JSON_NAME_IMAGE_ASPECT_RATIO, Product.DEFAULT_IMAGE_ASPECT_RATIO);
+        if (productCategory.equals("Posters")) {
+          if (productType.contains("Collage")) {
+            imageAspectRatio = 1f;
+          } else {
+            imageAspectRatio = 0.707f;
+          }
+        }
         boolean                supportsTextOnBorder = productDetailJSONObject.optBoolean( JSON_NAME_SUPPORTS_TEXT_ON_BORDER, false );
 
 
