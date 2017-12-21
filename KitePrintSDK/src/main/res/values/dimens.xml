@@ -115,10 +115,10 @@
     <dimen name="photobook_front_cover_width">150dp</dimen>
     <dimen name="photobook_front_cover_height">150dp</dimen>
 
-    <dimen name="photobook_front_cover_padding_left">14dp</dimen>
+    <dimen name="photobook_front_cover_padding_left">20dp</dimen>
     <dimen name="photobook_front_cover_padding_top">12dp</dimen>
-    <dimen name="photobook_front_cover_padding_right">14dp</dimen>
-    <dimen name="photobook_front_cover_padding_bottom">16dp</dimen>
+    <dimen name="photobook_front_cover_padding_right">10dp</dimen>
+    <dimen name="photobook_front_cover_padding_bottom">12dp</dimen>
 
     <dimen name="photobook_instructions_text_size">18sp</dimen>
     <dimen name="photobook_instructions_text_padding">10dp</dimen>
@@ -127,9 +127,9 @@
     <dimen name="photobook_content_width">290dp</dimen>
     <dimen name="photobook_content_height">145dp</dimen>
 
-    <dimen name="photobook_content_padding_top">5dp</dimen>
-    <dimen name="photobook_content_padding_bottom">9dp</dimen>
-    <dimen name="photobook_content_padding_outside">13dp</dimen>
+    <dimen name="photobook_content_padding_top">4dp</dimen>
+    <dimen name="photobook_content_padding_bottom">4dp</dimen>
+    <dimen name="photobook_content_padding_outside">10dp</dimen>
     <dimen name="photobook_content_padding_inside">0dp</dimen>
 
     <dimen name="photobook_drag_distance">5dp</dimen>

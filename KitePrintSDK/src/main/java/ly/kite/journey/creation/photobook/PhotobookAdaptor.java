@@ -604,7 +604,7 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
         Resources resources = mActivity.getResources();
 
         //check if the page already contains an asset
-        //border is covered by the image so it should be used only for empty pages ; alpha is useless for empty pages
+        //border is covered by the image so it should be used only for empty pages ; falpha is useless for empty pages
         if(mImageSpecArrayList.get(assetIndex) != null) {
           newHighlightedCheckableImage.setAlpha(0.3f);
         } else {
@@ -682,6 +682,7 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
     int                           imageIndex;
 
     FrameLayout                   mainLayout;
+    FrameLayout                   imageFrameLayout;
     CheckableImageContainerFrame  checkableImageContainerFrame;
     ImageView                     addImageView;
     View                          imageGridView;
@@ -695,6 +696,7 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
       this.imageIndex                   = -1;
 
       this.mainLayout                   = (FrameLayout)view.findViewById( R.id.front_cover_main_layout );
+      this.imageFrameLayout             = (FrameLayout)view.findViewById( R.id.cover_frame_layout );
       this.checkableImageContainerFrame = (CheckableImageContainerFrame)view.findViewById( R.id.checkable_image_container_frame );
       this.addImageView                 = (ImageView)view.findViewById( R.id.add_image_view );
       this.imageGridView                = view.findViewById( R.id.image_grid );
@@ -709,7 +711,14 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
       params.width = (int) width;
       this.mainLayout.setLayoutParams(params);
 
-      this.checkableImageContainerFrame.setOnClickListener( this );
+      //compute padding parameters
+      int topPadding = (int) ((height * 10) / 100);
+      int bottomPadding = (int) ((height * 10) / 100);
+      int leftPadding = (int) ((width * 14) / 100);
+      int rightPadding = (int) ((width * 6) / 100);
+      imageFrameLayout.setPadding(leftPadding, topPadding, rightPadding, bottomPadding);
+
+      this.checkableImageContainerFrame.setOnClickListener(this);
       this.checkableImageContainerFrame.setOnLongClickListener( this );
       }
 
@@ -887,9 +896,9 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
       this.mainLayout.setLayoutParams(params);
 
       //compute padding parameters
-      int topPadding = (int) ((height * 3.45)/100);
-      int bottomPadding = (int) ((height * 6.6)/100);
-      int outsidePadding = (int) ((width * 4.48)/100);
+      int topPadding = (int) ((height * 2.6)/100);
+      int bottomPadding = (int) ((height * 2.6)/100);
+      int outsidePadding = (int) ((width * 4)/100);
       leftFrameLayout.setPadding(outsidePadding, topPadding, 0, bottomPadding);
       rightFrameLayout.setPadding(0,topPadding, outsidePadding, bottomPadding);
 
