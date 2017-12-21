@@ -5,13 +5,15 @@
     android:layout_height="wrap_content">
 
     <FrameLayout
+        android:id="@+id/front_cover_main_layout"
         android:layout_gravity="center"
         android:layout_width="@dimen/photobook_front_cover_width"
         android:layout_height="@dimen/photobook_front_cover_height">
+
         <ImageView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:scaleType="centerCrop"
+            android:scaleType="fitXY"
             android:src="@drawable/photobook_frontcover"/>
         <FrameLayout
             android:layout_width="fill_parent"
