@@ -56,6 +56,7 @@ import java.util.Iterator;
 
 import ly.kite.R;
 import ly.kite.ordering.ImageSpec;
+import ly.kite.widget.AREFrameLayout;
 import ly.kite.widget.CheckableImageContainerFrame;
 
 
@@ -93,6 +94,8 @@ public class PosterAdaptor extends RecyclerView.Adapter
 
   private int                                        mCurrentlyHighlightedAssetIndex;
 
+  private float mImageAspectRatio;
+
 
   ////////// Static Initialiser(s) //////////
 
@@ -102,11 +105,13 @@ public class PosterAdaptor extends RecyclerView.Adapter
 
   ////////// Constructor(s) //////////
 
-  PosterAdaptor( Activity activity, ArrayList<ImageSpec> imageSpecArrayList, IListener listener )
+  PosterAdaptor( Activity activity, ArrayList<ImageSpec> imageSpecArrayList, float aspectRatio, IListener listener )
     {
     mActivity                   = activity;
     mImageSpecArrayList         = imageSpecArrayList;
     mListener                   = listener;
+
+    mImageAspectRatio = aspectRatio;
 
     mLayoutInflator             = activity.getLayoutInflater();
 
@@ -401,6 +406,7 @@ public class PosterAdaptor extends RecyclerView.Adapter
     int                           imageIndex;
     CheckableImageContainerFrame  checkableImageContainerFrame;
     ImageView                     addImageView;
+    AREFrameLayout                mFrameLayout;
 
     ImageViewHolder( View view )
       {
@@ -408,6 +414,8 @@ public class PosterAdaptor extends RecyclerView.Adapter
 
       this.checkableImageContainerFrame = (CheckableImageContainerFrame)view.findViewById( R.id.checkable_image_container_frame );
       this.addImageView                 = (ImageView)view.findViewById( R.id.add_image_view );
+      this.mFrameLayout = (AREFrameLayout) view.findViewById(R.id.poster_item_frame_layout);
+      mFrameLayout.setAspectRatio(mImageAspectRatio);
 
       this.checkableImageContainerFrame.setOnClickListener( this );
       this.checkableImageContainerFrame.setOnLongClickListener( this );

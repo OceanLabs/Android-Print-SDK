@@ -448,6 +448,10 @@ abstract public class AProductCreationFragment extends    AKiteFragment
       }
     }
 
+  public float getPosterAspectRatio() {
+    return mProduct.getImageAspectRatio();
+  }
+
 
   /*****************************************************
    *

@@ -44,18 +44,21 @@ import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spanned;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Locale;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
@@ -116,6 +119,7 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
 
   private int                                        mCurrentlyHighlightedAssetIndex;
 
+  private float                                      mAspectRatio;
 
   ////////// Static Initialiser(s) //////////
 
@@ -138,6 +142,8 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
     mVisibleCheckableImageArray = new SparseArray<>();
 
     mSelectedAssetIndexHashSet  = new HashSet<>();
+
+    mAspectRatio = product.getImageAspectRatio();
 
     if ( mFrontCoverIsSummary = KiteSDK.getInstance( activity ).getCustomiser().photobookFrontCoverIsSummary() )
       {
@@ -163,9 +169,9 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
     // The number of rows is the sum of the following:
     //   - Front cover
     //   - Instructions
-    //   - Images per page / 2, rounded up
+    //   - (Images per page / 2, rounded up ) + 1 (for blank pages at start/end of book)
 
-    return ( 2 + ( ( mProduct.getQuantityPerSheet() + 1 ) / 2 ) );
+    return ( 2 + ( ( mProduct.getQuantityPerSheet() + 1 ) / 2 ) ) + 1;
     }
 
 
@@ -352,7 +358,7 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
    *****************************************************/
   private void bindContent( ContentViewHolder viewHolder, int position )
     {
-    if ( viewHolder.leftAssetIndex >= 0 )
+    if ( viewHolder.leftAssetIndex >= 0)
       {
       mVisibleCheckableImageSet.remove( viewHolder.leftCheckableImageContainerFrame );
       mVisibleCheckableImageArray.remove( viewHolder.leftAssetIndex );
@@ -364,62 +370,61 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
       mVisibleCheckableImageArray.remove( viewHolder.rightAssetIndex );
       }
 
-
-    // Calculate the indexes for the list view position
-    int leftIndex  = mFrontCoverPlaceableImageCount + ( ( position - CONTENT_START_POSITION ) * 2 );
+    // Calculate the indexes for the list view position (the first image from content (left image) is the cover one , but we don't display it)
+    int leftIndex  = mFrontCoverPlaceableImageCount + ( ( position - CONTENT_START_POSITION ) * 2 ) - 1;
     int rightIndex = leftIndex + 1;
-
 
     viewHolder.leftAssetIndex = leftIndex;
 
     mVisibleCheckableImageSet.add( viewHolder.leftCheckableImageContainerFrame );
     mVisibleCheckableImageArray.put( viewHolder.leftAssetIndex, viewHolder.leftCheckableImageContainerFrame );
 
-    viewHolder.leftTextView.setText( String.format( "%02d", leftIndex ) );
-
-    ImageSpec leftImageSpec = getImageSpecAt( leftIndex );
-
-    if ( leftImageSpec != null )
-      {
-      viewHolder.leftAddImageView.setVisibility( View.INVISIBLE );
-
-      AssetFragment leftAssetFragment = leftImageSpec.getAssetFragment();
-
-      if ( mInSelectionMode )
-        {
-        if ( mSelectedAssetIndexHashSet.contains( viewHolder.leftAssetIndex ) )
-          {
-          viewHolder.leftCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.CHECKED );
-          }
-        else
-          {
-          viewHolder.leftCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_VISIBLE );
-          }
-        }
-      else
-        {
-        viewHolder.leftCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE );
-        }
-
-      if ( leftAssetFragment != null )
-        {
-        viewHolder.leftCheckableImageContainerFrame.clearForNewImage( leftAssetFragment );
-
-        //AssetHelper.requestImage( mActivity, leftEditedAsset, viewHolder.leftCheckableImageContainerFrame );
-        ImageAgent.with( mActivity )
-                .load( leftAssetFragment )
-                .resizeForDimen( viewHolder.leftCheckableImageContainerFrame, R.dimen.image_default_resize_size, R.dimen.image_default_resize_size )
-                .onlyScaleDown()
-                .reduceColourSpace()
-                .into( viewHolder.leftCheckableImageContainerFrame, leftAssetFragment );
-        }
-      }
-    else
-      {
-      viewHolder.leftAddImageView.setVisibility( View.VISIBLE );
-      viewHolder.leftCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE );
+    //first page is blank
+    if (leftIndex == 0) {
+      //remove page count , and remove/hide checkableFrame (no onClick action)
+      viewHolder.leftTextView.setText(" ");
+      viewHolder.leftAddImageView.setVisibility(View.GONE);
       viewHolder.leftCheckableImageContainerFrame.clear();
+      viewHolder.leftCheckableImageContainerFrame.setVisibility(View.GONE);
+
+    } else {
+      viewHolder.leftTextView.setText(String.format("%02d", leftIndex));
+      viewHolder.leftCheckableImageContainerFrame.setVisibility(View.VISIBLE);
+
+      ImageSpec leftImageSpec = getImageSpecAt(leftIndex);
+
+      if (leftImageSpec != null) {
+        viewHolder.leftAddImageView.setVisibility(View.INVISIBLE);
+
+        AssetFragment leftAssetFragment = leftImageSpec.getAssetFragment();
+
+        if (mInSelectionMode) {
+          if (mSelectedAssetIndexHashSet.contains(viewHolder.leftAssetIndex)) {
+            viewHolder.leftCheckableImageContainerFrame.setState(CheckableImageContainerFrame.State.CHECKED);
+          } else {
+            viewHolder.leftCheckableImageContainerFrame.setState(CheckableImageContainerFrame.State.UNCHECKED_VISIBLE);
+          }
+        } else {
+          viewHolder.leftCheckableImageContainerFrame.setState(CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE);
+        }
+
+        if (leftAssetFragment != null) {
+          viewHolder.leftCheckableImageContainerFrame.clearForNewImage(leftAssetFragment);
+
+          //AssetHelper.requestImage( mActivity, leftEditedAsset, viewHolder.leftCheckableImageContainerFrame );
+          ImageAgent.with(mActivity)
+              .load(leftAssetFragment)
+              .resizeForDimen(viewHolder.leftCheckableImageContainerFrame, R.dimen.image_default_resize_size, R.dimen.image_default_resize_size)
+              .onlyScaleDown()
+              .reduceColourSpace()
+              .into(viewHolder.leftCheckableImageContainerFrame, leftAssetFragment);
+        }
+      } else {
+        viewHolder.leftAddImageView.setVisibility(View.VISIBLE);
+        viewHolder.leftCheckableImageContainerFrame.setState(CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE);
+        viewHolder.leftCheckableImageContainerFrame.clear();
       }
+    }
 
 
     viewHolder.rightAssetIndex = rightIndex;
@@ -427,50 +432,52 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
     mVisibleCheckableImageSet.add( viewHolder.rightCheckableImageContainerFrame );
     mVisibleCheckableImageArray.put( viewHolder.rightAssetIndex, viewHolder.rightCheckableImageContainerFrame );
 
-    viewHolder.rightTextView.setText( String.format( "%02d", rightIndex ) );
+    //last page is also blank (index is out of bounds by 1 with the imageSpecArrayList)
+    if (rightIndex == mImageSpecArrayList.size()) {
+        //remove page count , and remove/hide checkableFrame (no onClick action)
+        viewHolder.rightTextView.setText(" ");
+        viewHolder.rightAddImageView.setVisibility(View.GONE);
+        viewHolder.rightCheckableImageContainerFrame.clear();
+        viewHolder.rightCheckableImageContainerFrame.setVisibility(View.GONE);
 
-    ImageSpec rightImageSpec = getImageSpecAt( rightIndex );
+      } else {
 
-    if ( rightImageSpec != null )
-      {
-      viewHolder.rightAddImageView.setVisibility( View.INVISIBLE );
+      viewHolder.rightTextView.setText(String.format("%02d", rightIndex));
+      viewHolder.rightCheckableImageContainerFrame.setVisibility(View.VISIBLE);
 
-      AssetFragment rightAssetFragment = rightImageSpec.getAssetFragment();
+      ImageSpec rightImageSpec = getImageSpecAt(rightIndex);
 
-      if ( mInSelectionMode )
-        {
-        if ( mSelectedAssetIndexHashSet.contains( viewHolder.rightAssetIndex ) )
-          {
-          viewHolder.rightCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.CHECKED );
+      if (rightImageSpec != null) {
+        viewHolder.rightAddImageView.setVisibility(View.INVISIBLE);
+
+        AssetFragment rightAssetFragment = rightImageSpec.getAssetFragment();
+
+        if (mInSelectionMode) {
+          if (mSelectedAssetIndexHashSet.contains(viewHolder.rightAssetIndex)) {
+            viewHolder.rightCheckableImageContainerFrame.setState(CheckableImageContainerFrame.State.CHECKED);
+          } else {
+            viewHolder.rightCheckableImageContainerFrame.setState(CheckableImageContainerFrame.State.UNCHECKED_VISIBLE);
           }
-        else
-          {
-          viewHolder.rightCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_VISIBLE );
-          }
-        }
-      else
-        {
-        viewHolder.rightCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE );
+        } else {
+          viewHolder.rightCheckableImageContainerFrame.setState(CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE);
         }
 
-      if ( rightAssetFragment != null )
-        {
-        viewHolder.rightCheckableImageContainerFrame.clearForNewImage( rightAssetFragment );
+        if (rightAssetFragment != null) {
+          viewHolder.rightCheckableImageContainerFrame.clearForNewImage(rightAssetFragment);
 
-        ImageAgent.with( mActivity )
-                .load( rightAssetFragment )
-                .resizeForDimen( viewHolder.rightCheckableImageContainerFrame, R.dimen.image_default_resize_size, R.dimen.image_default_resize_size )
-                .onlyScaleDown()
-                .reduceColourSpace()
-                .into( viewHolder.rightCheckableImageContainerFrame, rightAssetFragment );
+          ImageAgent.with(mActivity)
+              .load(rightAssetFragment)
+              .resizeForDimen(viewHolder.rightCheckableImageContainerFrame, R.dimen.image_default_resize_size, R.dimen.image_default_resize_size)
+              .onlyScaleDown()
+              .reduceColourSpace()
+              .into(viewHolder.rightCheckableImageContainerFrame, rightAssetFragment);
         }
+      } else {
+        viewHolder.rightAddImageView.setVisibility(View.VISIBLE);
+        viewHolder.rightCheckableImageContainerFrame.setState(CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE);
+        viewHolder.rightCheckableImageContainerFrame.clear();
       }
-    else
-      {
-      viewHolder.rightAddImageView.setVisibility( View.VISIBLE );
-      viewHolder.rightCheckableImageContainerFrame.setState( CheckableImageContainerFrame.State.UNCHECKED_INVISIBLE );
-      viewHolder.rightCheckableImageContainerFrame.clear();
-      }
+    }
     }
 
 
@@ -596,9 +603,15 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
         {
         Resources resources = mActivity.getResources();
 
-        newHighlightedCheckableImage.setHighlightBorderSizePixels( resources.getDimensionPixelSize( R.dimen.checkable_image_highlight_border_size ) );
-        newHighlightedCheckableImage.setHighlightBorderColour( resources.getColor( R.color.photobook_target_image_highlight ) );
-        newHighlightedCheckableImage.setHighlightBorderShowing( true );
+        //check if the page already contains an asset
+        //border is covered by the image so it should be used only for empty pages ; falpha is useless for empty pages
+        if(mImageSpecArrayList.get(assetIndex) != null) {
+          newHighlightedCheckableImage.setAlpha(0.3f);
+        } else {
+          newHighlightedCheckableImage.setHighlightBorderSizePixels(resources.getDimensionPixelSize(R.dimen.checkable_image_highlight_border_size));
+          newHighlightedCheckableImage.setHighlightBorderColour(resources.getColor(R.color.photobook_target_image_highlight));
+          newHighlightedCheckableImage.setHighlightBorderShowing(true);
+        }
 
         mCurrentlyHighlightedAssetIndex = assetIndex;
         }
@@ -620,6 +633,7 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
       if ( currentlyHighlightedCheckableImage != null )
         {
         currentlyHighlightedCheckableImage.setHighlightBorderShowing( false );
+        currentlyHighlightedCheckableImage.setAlpha(1f);
         }
 
       mCurrentlyHighlightedAssetIndex = -1;
@@ -667,6 +681,8 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
     {
     int                           imageIndex;
 
+    FrameLayout                   mainLayout;
+    FrameLayout                   imageFrameLayout;
     CheckableImageContainerFrame  checkableImageContainerFrame;
     ImageView                     addImageView;
     View                          imageGridView;
@@ -679,13 +695,30 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
 
       this.imageIndex                   = -1;
 
+      this.mainLayout                   = (FrameLayout)view.findViewById( R.id.front_cover_main_layout );
+      this.imageFrameLayout             = (FrameLayout)view.findViewById( R.id.cover_frame_layout );
       this.checkableImageContainerFrame = (CheckableImageContainerFrame)view.findViewById( R.id.checkable_image_container_frame );
       this.addImageView                 = (ImageView)view.findViewById( R.id.add_image_view );
       this.imageGridView                = view.findViewById( R.id.image_grid );
 
       this.imageGridViewHolder          = new ImageGridViewHolder( this.imageGridView );
 
-      this.checkableImageContainerFrame.setOnClickListener( this );
+      //set layout size according to the aspect ratio
+      float height = view.getResources().getDimension(R.dimen.photobook_front_cover_height);
+      float width  = height * mAspectRatio;
+      ViewGroup.LayoutParams params = mainLayout.getLayoutParams();
+      params.height = (int) height;
+      params.width = (int) width;
+      this.mainLayout.setLayoutParams(params);
+
+      //compute padding parameters
+      int topPadding = (int) ((height * 10) / 100);
+      int bottomPadding = (int) ((height * 10) / 100);
+      int leftPadding = (int) ((width * 14) / 100);
+      int rightPadding = (int) ((width * 6) / 100);
+      imageFrameLayout.setPadding(leftPadding, topPadding, rightPadding, bottomPadding);
+
+      this.checkableImageContainerFrame.setOnClickListener(this);
       this.checkableImageContainerFrame.setOnLongClickListener( this );
       }
 
@@ -819,6 +852,10 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
     int                           leftAssetIndex;
     int                           rightAssetIndex;
 
+    FrameLayout                   mainLayout;
+    FrameLayout                   leftFrameLayout;
+    FrameLayout                   rightFrameLayout;
+
     CheckableImageContainerFrame  leftCheckableImageContainerFrame;
     CheckableImageContainerFrame  rightCheckableImageContainerFrame;
 
@@ -836,6 +873,10 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
       this.leftAssetIndex                    = -1;
       this.rightAssetIndex                   = -1;
 
+      this.mainLayout                        = (FrameLayout) view.findViewById(R.id.main_layout_content);
+      this.leftFrameLayout                   = (FrameLayout) view.findViewById(R.id.left_frame_layout);
+      this.rightFrameLayout                  = (FrameLayout) view.findViewById(R.id.right_frame_layout);
+
       this.leftCheckableImageContainerFrame  = (CheckableImageContainerFrame)view.findViewById( R.id.left_checkable_image_container_frame );
       this.rightCheckableImageContainerFrame = (CheckableImageContainerFrame)view.findViewById( R.id.right_checkable_image_container_frame );
 
@@ -845,6 +886,21 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
       this.leftTextView                      = (TextView)view.findViewById( R.id.left_text_view );
       this.rightTextView                     = (TextView)view.findViewById( R.id.right_text_view );
 
+      //set main layout size according to the aspect ratio
+      float height = view.getResources().getDimension(R.dimen.photobook_content_height);
+      float width  = view.getResources().getDimension(R.dimen.photobook_content_width);
+      height = height/mAspectRatio;
+      ViewGroup.LayoutParams params = mainLayout.getLayoutParams();
+      params.height = (int) height;
+      params.width = (int) width;
+      this.mainLayout.setLayoutParams(params);
+
+      //compute padding parameters
+      int topPadding = (int) ((height * 2.6)/100);
+      int bottomPadding = (int) ((height * 2.6)/100);
+      int outsidePadding = (int) ((width * 4)/100);
+      leftFrameLayout.setPadding(outsidePadding, topPadding, 0, bottomPadding);
+      rightFrameLayout.setPadding(0,topPadding, outsidePadding, bottomPadding);
 
       leftCheckableImageContainerFrame.setOnClickListener( this );
       leftCheckableImageContainerFrame.setOnLongClickListener( this );

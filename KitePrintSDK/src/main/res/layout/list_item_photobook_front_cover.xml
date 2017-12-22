@@ -5,33 +5,40 @@
     android:layout_height="wrap_content">
 
     <FrameLayout
+        android:id="@+id/front_cover_main_layout"
         android:layout_gravity="center"
         android:layout_width="@dimen/photobook_front_cover_width"
         android:layout_height="@dimen/photobook_front_cover_height">
+
         <ImageView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:scaleType="centerCrop"
+            android:scaleType="fitXY"
             android:src="@drawable/photobook_frontcover"/>
+
         <FrameLayout
+            android:id="@+id/cover_frame_layout"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
+            android:paddingBottom="@dimen/photobook_front_cover_padding_bottom"
             android:paddingLeft="@dimen/photobook_front_cover_padding_left"
-            android:paddingTop="@dimen/photobook_front_cover_padding_top"
             android:paddingRight="@dimen/photobook_front_cover_padding_right"
-            android:paddingBottom="@dimen/photobook_front_cover_padding_bottom">
+            android:paddingTop="@dimen/photobook_front_cover_padding_top">
+
             <ly.kite.widget.CheckableImageContainerFrame
                 android:id="@+id/checkable_image_container_frame"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:scaleType="centerCrop"/>
+
             <ImageView
                 android:id="@+id/add_image_view"
-                android:layout_gravity="center"
                 android:layout_width="@dimen/multi_page_add_image_size"
                 android:layout_height="@dimen/multi_page_add_image_size"
+                android:layout_gravity="center"
                 android:src="@drawable/multi_page_add_image"
                 android:visibility="invisible"/>
+
             <include layout="@layout/include_9x9_image_grid"/>
         </FrameLayout>
     </FrameLayout>

@@ -125,6 +125,9 @@ public class AREFrameLayout extends FrameLayout
 
   ////////// Method(s) //////////
 
+  public void setAspectRatio(float aspectRatio) {
+    mAspectRatioEnforcer.setAspectRatio(aspectRatio);
+  }
   /*****************************************************
    *
    * Initialises this view.
