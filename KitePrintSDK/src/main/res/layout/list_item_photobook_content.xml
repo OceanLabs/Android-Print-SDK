@@ -12,71 +12,87 @@
         android:orientation="vertical">
 
         <FrameLayout
-            android:layout_gravity="center"
+            android:id="@+id/main_layout_content"
             android:layout_width="@dimen/photobook_content_width"
-            android:layout_height="@dimen/photobook_content_height">
+            android:layout_height="@dimen/photobook_content_height"
+            android:layout_gravity="center"
+            >
+
             <ImageView
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:scaleType="centerCrop"
-                android:src="@drawable/photobook_content_bottom"/>
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:src="@drawable/photobook_content_base"/>
+
             <ImageView
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:scaleType="centerCrop"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
                 android:src="@drawable/photobook_content_middle"/>
+
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:orientation="horizontal">
+
                 <FrameLayout
+                    android:id="@+id/left_frame_layout"
                     android:layout_width="0dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="0.5"
-                    android:layout_height="fill_parent"
-                    android:paddingTop="@dimen/photobook_content_padding_top"
                     android:paddingBottom="@dimen/photobook_content_padding_bottom"
                     android:paddingLeft="@dimen/photobook_content_padding_outside"
-                    android:paddingRight="@dimen/photobook_content_padding_inside">
+                    android:paddingRight="@dimen/photobook_content_padding_inside"
+                    android:paddingTop="@dimen/photobook_content_padding_top">
+
                     <ly.kite.widget.CheckableImageContainerFrame
                         android:id="@+id/left_checkable_image_container_frame"
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
                         android:scaleType="centerCrop"/>
+
                     <ImageView
                         android:id="@+id/left_add_image_view"
-                        android:layout_gravity="center"
                         android:layout_width="@dimen/multi_page_add_image_size"
                         android:layout_height="@dimen/multi_page_add_image_size"
+                        android:layout_gravity="center"
+                        android:scaleType="fitXY"
                         android:src="@drawable/multi_page_add_image"
                         android:visibility="invisible"/>
                 </FrameLayout>
+
                 <FrameLayout
+                    android:id="@+id/right_frame_layout"
                     android:layout_width="0dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="0.5"
-                    android:layout_height="fill_parent"
-                    android:paddingTop="@dimen/photobook_content_padding_top"
                     android:paddingBottom="@dimen/photobook_content_padding_bottom"
                     android:paddingLeft="@dimen/photobook_content_padding_inside"
-                    android:paddingRight="@dimen/photobook_content_padding_outside">
+                    android:paddingRight="@dimen/photobook_content_padding_outside"
+                    android:paddingTop="@dimen/photobook_content_padding_top">
+
                     <ly.kite.widget.CheckableImageContainerFrame
                         android:id="@+id/right_checkable_image_container_frame"
-                        android:layout_width="fill_parent"
+                        android:layout_width="match_parent"
                         android:layout_height="fill_parent"
                         android:scaleType="centerCrop"/>
+
                     <ImageView
                         android:id="@+id/right_add_image_view"
-                        android:layout_gravity="center"
                         android:layout_width="@dimen/multi_page_add_image_size"
                         android:layout_height="@dimen/multi_page_add_image_size"
+                        android:layout_gravity="center"
+                        android:scaleType="fitXY"
                         android:src="@drawable/multi_page_add_image"
                         android:visibility="invisible"/>
                 </FrameLayout>
             </LinearLayout>
+
             <ImageView
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:scaleType="centerCrop"
-                android:src="@drawable/photobook_content_top"/>
+                android:src="@drawable/photobook_content_shadow_dark"/>
         </FrameLayout>
 
         <LinearLayout

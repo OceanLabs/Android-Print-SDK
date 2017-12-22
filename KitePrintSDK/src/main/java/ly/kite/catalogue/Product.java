@@ -789,6 +789,10 @@ public class Product implements IGroupOrProduct, Parcelable
     return ( mImageAspectRatio >= KiteSDK.FLOAT_ZERO_THRESHOLD ? mImageAspectRatio : DEFAULT_IMAGE_ASPECT_RATIO );
     }
 
+  public String getType () {
+    return mType;
+  }
+
 
   /*****************************************************
    *
