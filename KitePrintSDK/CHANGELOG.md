@@ -1,3 +1,6 @@
+## 5.8.1
+- Fixed: Unsupported currency error for ISO 3166 country:en
+
 ## 5.8.0
 - Added: Photobook page numbers are now displayed on the product title
 - Fixed: Landscape and portrait photobooks no longer appear square
