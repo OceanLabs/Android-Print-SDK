@@ -1,4 +1,5 @@
 ## 5.8.1
+- Fixed: The phonecase edit screen 'next' button is now displayed properly in landscape
 - Fixed: Unsupported currency error for ISO 3166 country:en
 
 ## 5.8.0
