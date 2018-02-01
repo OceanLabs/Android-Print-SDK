@@ -544,9 +544,13 @@ public class MultipleCurrencyAmounts implements Parcelable
       }
     else
       {
-      currency = Currency.getInstance( locale );
+        try {
+          currency = Currency.getInstance(locale);
+        } catch (IllegalArgumentException e) {
+          //fallback to US$
+          currency = Currency.getInstance(Locale.US);
+        }
       }
-
 
     // Get the single currency amounts
 
@@ -591,7 +595,12 @@ public class MultipleCurrencyAmounts implements Parcelable
       }
     else
       {
-      currency = Currency.getInstance( locale );
+        try {
+          currency = Currency.getInstance(locale);
+        } catch (IllegalArgumentException e) {
+          //fallback to US$
+          currency = Currency.getInstance(Locale.US);
+        }
       }
 
 

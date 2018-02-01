@@ -110,7 +110,7 @@ public class KiteSDK
   static public  final boolean DISPLAY_PRODUCTS                                    = false;
 
 
-  static public  final String SDK_VERSION                                          = "5.8.0";
+  static public  final String SDK_VERSION                                          = "5.8.1";
 
   static public  final String IMAGE_CATEGORY_APP                                   = "app";
   static public  final String IMAGE_CATEGORY_PRODUCT_ITEM                          = "product_item";
@@ -1184,9 +1184,14 @@ public class KiteSDK
       }
     catch ( Exception e )
       {
+
       // This may happen if there's a problem with the locale:
       //   - There is no locale
       //   - The country is invalid or doesn't have a currency associated with it (e.g. fa_FA)
+
+        //fallback to US$
+        Currency currency = Currency.getInstance(Locale.US);
+        setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_LOCKED_CURRENCY_CODE, currency.getCurrencyCode() );
 
       Log.e( LOG_TAG, "Unable to determine default currency", e );
       }
