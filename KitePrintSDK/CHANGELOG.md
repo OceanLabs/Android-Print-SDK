@@ -1,4 +1,7 @@
-## 5.8.1
+### 5.8.2
+- Fixed: nullPointerException on Country.getInstance now defaults to USA when country is returned null
+
+### 5.8.1
 - Fixed: The phonecase edit screen 'next' button is now displayed properly in landscape
 - Fixed: Unsupported currency error for ISO 3166 country:en
 
