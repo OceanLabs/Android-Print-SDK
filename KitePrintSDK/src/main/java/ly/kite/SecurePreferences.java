@@ -52,7 +52,7 @@ public class SecurePreferences {
     private Cipher writer;
     private Cipher reader;
 
-    private boolean encryptData=true;
+    public static boolean encryptData = true;
     private final String secureKey;
 
     /**

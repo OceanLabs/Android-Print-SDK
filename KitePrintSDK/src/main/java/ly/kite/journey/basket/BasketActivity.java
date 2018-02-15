@@ -617,18 +617,16 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
    *****************************************************/
   private void onGotBasket()
     {
-    // Set up the adaptor
-
-    mBasketAdaptor = new BasketAdaptor();
-
-    mListView.setAdapter( mBasketAdaptor );
-
-
     // If there are no items in the basket - show the empty text
 
     if ( mBasketItemList != null && mBasketItemList.size() > 0 )
       {
       mBasketEmptyTextView.setVisibility( View.GONE );
+      // Set up the adaptor
+
+      mBasketAdaptor = new BasketAdaptor();
+      mListView.setAdapter( mBasketAdaptor );
+
       }
     else
       {
