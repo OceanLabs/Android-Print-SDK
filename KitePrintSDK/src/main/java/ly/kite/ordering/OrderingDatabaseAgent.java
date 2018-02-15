@@ -401,6 +401,195 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
     return ( insertOrder( contentValues ) );
     }
 
+  /*****************************************************
+   *
+   * Updates information for a order item (due to lack of encryption)
+   *
+   *****************************************************/
+  private void updateOrderHistoryItem (OrderHistoryItem orderHistoryItem) {
+    SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
+
+    StringBuilder sqlStringBuilder = new StringBuilder()
+        .append( "UPDATE " ).append( TABLE_ORDER )
+        .append(   " SET date                = '" ).append( pref.encrypt(orderHistoryItem.getDateString())).append("',")
+        .append(        "description         = '" ).append( pref.encrypt(orderHistoryItem.getDescription())).append("',")
+        .append(        "notification_email  = '" ).append( pref.encrypt(orderHistoryItem.getNotificationEmail())).append("',")
+        .append(        "notification_phone  = '" ).append( pref.encrypt(orderHistoryItem.getNotificationPhone())).append("',")
+        .append(        "user_data_json      = '" ).append( pref.encrypt(orderHistoryItem.getUserDataJSON())).append("',")
+        .append(        "promo_code          = '" ).append( pref.encrypt(orderHistoryItem.getPromoCode())).append("',")
+        .append(        "proof_of_payment    = '" ).append( pref.encrypt(orderHistoryItem.getProofOfPayment())).append("',")
+        .append(        "pricing_json        = '" ).append( pref.encrypt(orderHistoryItem.getPricingJSON())).append("',")
+        .append(        "receipt             = '" ).append( pref.encrypt(orderHistoryItem.getReceipt())).append( "'" )
+        .append( " WHERE id = " ).append( orderHistoryItem.getOrderId() );
+
+    SQLiteDatabase database = getWritableDatabase();
+
+    if ( database == null )
+    {
+      Log.e( LOG_TAG, "Unable to get writable database" );
+
+      return;
+    }
+    database.execSQL( sqlStringBuilder.toString() );
+    database.close();
+  }
+
+  /*****************************************************
+   *
+   * Updates information for a order item (due to lack of encryption)
+   *
+   *****************************************************/
+  private void updateOrderAdditionalParameters(HashMap<String,String> additionalParametersMap, Long orderId) {
+    SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
+
+    String sqlDelete = "DELETE FROM " + TABLE_ORDER_ADDITIONAL_PARAMETER + " WHERE order_id = " + orderId;
+
+    SQLiteDatabase database = getWritableDatabase();
+
+    if (database == null) {
+      Log.e(LOG_TAG, "Unable to get writable database");
+      return;
+    }
+    database.execSQL(sqlDelete);
+    for ( String name : additionalParametersMap.keySet() ) {
+      ContentValues contentValues = new ContentValues();
+
+      contentValues.put("order_id", orderId);
+      contentValues.put("name", pref.encrypt(name));
+      contentValues.put("value", pref.encrypt(additionalParametersMap.get(name)));
+      database.insert( TABLE_ORDER_ADDITIONAL_PARAMETER, null, contentValues );
+    }
+    database.close();
+  }
+
+  /*****************************************************
+   *
+   * Updates information for a order item (due to lack of encryption)
+   *
+   *****************************************************/
+  private void updateAddress(Long addressId, Address address) {
+    SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
+
+    StringBuilder sqlStringBuilder = new StringBuilder()
+        .append( "UPDATE " ).append( TABLE_ADDRESS )
+        .append(   " SET recipient_name      = '" ).append( pref.encrypt(address.getRecipientName())).append("',")
+        .append(        "line1               = '" ).append( pref.encrypt(address.getLine1())).append("',")
+        .append(        "line2               = '" ).append( pref.encrypt(address.getLine2())).append("',")
+        .append(        "city                = '" ).append( pref.encrypt(address.getCity())).append("',")
+        .append(        "state_or_county     = '" ).append( pref.encrypt(address.getStateOrCounty())).append("',")
+        .append(        "zip_or_postal_code  = '" ).append( pref.encrypt(address.getZipOrPostalCode())).append("',")
+        .append(        "country_iso2_code   = '" ).append( pref.encrypt(address.getCountry().iso2Code())).append("'")
+        .append( " WHERE id = " ).append( addressId );
+
+    SQLiteDatabase database = getWritableDatabase();
+
+    if ( database == null )
+    {
+      Log.e( LOG_TAG, "Unable to get writable database" );
+
+      return;
+    }
+    database.execSQL( sqlStringBuilder.toString() );
+    database.close();
+  }
+
+  /*****************************************************
+   *
+   * Updates basket item
+   *
+   *****************************************************/
+  public void updateItem( long itemId, String productId)
+  {
+    SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
+    SQLiteDatabase database = getWritableDatabase();
+
+    if ( database == null )
+    {
+      Log.e( LOG_TAG, "Unable to get writable database" );
+       return;
+    }
+
+    database.execSQL( "UPDATE " + TABLE_ITEM + " SET product_id = '" +  pref.encrypt(productId) + "' WHERE id = " + itemId );
+
+    database.close();
+    }
+
+   /*****************************************************
+    *
+    * Updates basket option
+    *
+    *****************************************************/
+    public void updateBasketOption( long itemId, String name, String value)
+    {
+      SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
+
+      StringBuilder sqlStringBuilder = new StringBuilder()
+          .append( "UPDATE " ).append( TABLE_OPTION )
+          .append(   " SET name                = '" ).append( pref.encrypt(name)).append("',")
+          .append(        "value               = '" ).append( pref.encrypt(value)).append("'")
+          .append( " WHERE item_id = " ).append( itemId );
+
+      SQLiteDatabase database = getWritableDatabase();
+
+      if ( database == null )
+      {
+        Log.e( LOG_TAG, "Unable to get writable database" );
+        return;
+      }
+
+      database.execSQL( sqlStringBuilder .toString());
+
+      database.close();
+    }
+   /*****************************************************
+    *
+    * Updates image spec
+    *
+    *****************************************************/
+    public void updateImageSpec( long id, String image_file_name)
+    {
+      SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
+      SQLiteDatabase database = getWritableDatabase();
+
+      if ( database == null )
+      {
+        Log.e( LOG_TAG, "Unable to get writable database" );
+        return;
+      }
+
+      database.execSQL( "UPDATE " + TABLE_IMAGE_SPEC + " SET image_file_name = '" +  pref.encrypt(image_file_name) + "' WHERE id = " + id );
+
+      database.close();
+    }
+
+  /*****************************************************
+   *
+   * Updates image spec additional parameters
+   *
+   *****************************************************/
+  public void updateImageSpecAdditionalParams(HashMap<String,String> additionalParametersMap, Long id)
+  {
+    SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
+
+    String sqlDelete = "DELETE FROM " + TABLE_IMAGE_SPEC_ADDITIONAL_PARAMETER + " WHERE image_spec_id  = " + id;
+
+    SQLiteDatabase database = getWritableDatabase();
+
+    if (database == null) {
+      Log.e(LOG_TAG, "Unable to get writable database");
+      return;
+    }
+    database.execSQL(sqlDelete);
+    for ( String name : additionalParametersMap.keySet() ) {
+      ContentValues contentValues = new ContentValues();
+
+      contentValues.put("image_spec_id", id);
+      contentValues.put("name", pref.encrypt(name));
+      contentValues.put("value", pref.encrypt(additionalParametersMap.get(name)));
+      database.insert( TABLE_IMAGE_SPEC_ADDITIONAL_PARAMETER, null, contentValues );
+    }
+    database.close();
+  }
 
   /*****************************************************
    *
@@ -1214,6 +1403,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
    *****************************************************/
   List<OrderHistoryItem> loadOrderHistory( Context context, Catalogue catalogue )
     {
+    boolean hasToBeEncrypted = false;
     // Get all the shipping addresses
     SparseArray<Address> shippingAddressSparseArray = selectAllShippingAddresses();
 
@@ -1238,7 +1428,6 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
             .append( "  FROM _Order" )
             .append( " ORDER BY id" );
 
-
     // Initialise the database and cursor
     SQLiteDatabase database = null;
     Cursor         cursor   = null;
@@ -1262,21 +1451,53 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
 
       while ( cursor.moveToNext() )
         {
+          long orderId;
+          String dateString;
+          String description;
+          Long basketIdLong = null;
+          Long shippingAddressIdLong = null;
+          String notificationEmail = null;
+          String notificationPhone = null;
+          String userDataJSON = null;
+          String promoCode = null;
+          String pricingJSON;
+          String proofOfPayment = null;
+          String receipt = null;
+
           try {
-            long orderId = cursor.getLong(cursor.getColumnIndex("id"));
-            String dateString = pref.decrypt(cursor.getString(cursor.getColumnIndex("date")));
-            String description = pref.decrypt(cursor.getString(cursor.getColumnIndex("description")));
-            Long basketIdLong = getLongOrNull(cursor, "basket_id");
-            Long shippingAddressIdLong = getLongOrNull(cursor, "shipping_address_id");
-            String notificationEmail = pref.decrypt(getStringOrNull(cursor, "notification_email"));
-            String notificationPhone = pref.decrypt(getStringOrNull(cursor, "notification_phone"));
-            String userDataJSON = pref.decrypt(getStringOrNull(cursor, "user_data_json"));
-            String promoCode = pref.decrypt(getStringOrNull(cursor, "promo_code"));
-            String pricingJSON = pref.decrypt(getStringOrNull(cursor, "pricing_json"));
-            String proofOfPayment = pref.decrypt(getStringOrNull(cursor, "proof_of_payment"));
-            String receipt = pref.decrypt(getStringOrNull(cursor, "receipt"));
+            orderId = cursor.getLong(cursor.getColumnIndex("id"));
+            dateString = pref.decrypt(cursor.getString(cursor.getColumnIndex("date")));
+            description = pref.decrypt(cursor.getString(cursor.getColumnIndex("description")));
+            pricingJSON = pref.decrypt(getStringOrNull(cursor, "pricing_json"));
 
-
+            try {
+              receipt = pref.decrypt(getStringOrNull(cursor, "receipt"));
+              proofOfPayment = pref.decrypt(getStringOrNull(cursor, "proof_of_payment"));
+              basketIdLong = getLongOrNull(cursor, "basket_id");
+              shippingAddressIdLong = getLongOrNull(cursor, "shipping_address_id");
+              notificationEmail = pref.decrypt(getStringOrNull(cursor, "notification_email"));
+              notificationPhone = pref.decrypt(getStringOrNull(cursor, "notification_phone"));
+              userDataJSON = pref.decrypt(getStringOrNull(cursor, "user_data_json"));
+              promoCode = pref.decrypt(getStringOrNull(cursor, "promo_code"));
+            } catch (Exception e) {
+              //in case receipt failes , but proof of payment is still stored
+              proofOfPayment = pref.decrypt(getStringOrNull(cursor, "proof_of_payment"));
+            }
+          } catch (Exception ex){
+            hasToBeEncrypted = true;
+            orderId = cursor.getLong(cursor.getColumnIndex("id"));
+            dateString = cursor.getString(cursor.getColumnIndex("date"));
+            description = cursor.getString(cursor.getColumnIndex("description"));
+            basketIdLong = getLongOrNull(cursor, "basket_id");
+            shippingAddressIdLong = getLongOrNull(cursor, "shipping_address_id");
+            notificationEmail = getStringOrNull(cursor, "notification_email");
+            notificationPhone = getStringOrNull(cursor, "notification_phone");
+            userDataJSON = getStringOrNull(cursor, "user_data_json");
+            promoCode = getStringOrNull(cursor, "promo_code");
+            pricingJSON = getStringOrNull(cursor, "pricing_json");
+            proofOfPayment = getStringOrNull(cursor, "proof_of_payment");
+            receipt = getStringOrNull(cursor, "receipt");
+          }
             HashMap<String, String> additionalParametersMap = additionalParametersSparseArray.get((int) orderId);
             Address shippingAddress = (shippingAddressIdLong != null ? shippingAddressSparseArray.get(shippingAddressIdLong.intValue()) : null);
 
@@ -1295,14 +1516,12 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
                     proofOfPayment,
                     receipt);
 
+          if(hasToBeEncrypted && SecurePreferences.encryptData) {
+            updateOrderHistoryItem(orderHistoryItem);
+          }
 
             orderHistoryItemList.add(orderHistoryItem);
-          } catch (SecurePreferences.SecurePreferencesException ex) {
-            pref.reset();
-            continue; // Encryption key may have changed, hence we can't decode previous data - we'll just have to skip it.
-          }
         }
-
 
       // Now we need to go back through the orders, and load any baskets. In the future, for performance
       // reasons, we may have to do something different here. This will become pretty slow as the number
@@ -1319,7 +1538,6 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
           orderHistoryItem.setBasket( basketItemList );
           }
         }
-
 
       return ( orderHistoryItemList );
       }
@@ -1437,15 +1655,26 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
 
 
       // Process every row; each row corresponds to an additional parameter
-
+      ArrayList<Long> toBeEncrypted = new ArrayList<>();
       while ( cursor.moveToNext() )
         {
         // Get the values from the cursor
 
         long   orderId = cursor.getLong  ( cursor.getColumnIndex( "order_id" ) );
-        String name    = pref.decrypt(cursor.getString( cursor.getColumnIndex( "name" ) ));
-        String value   = pref.decrypt(cursor.getString( cursor.getColumnIndex( "value" ) ));
 
+        String name;
+        String value;
+
+        try {
+          name = pref.decrypt(cursor.getString(cursor.getColumnIndex("name")));
+          value = pref.decrypt(cursor.getString(cursor.getColumnIndex("value")));
+        } catch (Exception e) {
+          if(!toBeEncrypted.contains(orderId)) {
+            toBeEncrypted.add(orderId);
+          }
+          name = cursor.getString(cursor.getColumnIndex("name"));
+          value = cursor.getString(cursor.getColumnIndex("value"));
+        }
 
         // If this is a new order, create a new map and insert it into the array
 
@@ -1458,11 +1687,15 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
           additionalParametersSparseArray.put( (int)orderId, additionalParametersMap );
           }
 
-
         additionalParametersMap.put( name, value );
         }
-
-
+      if(SecurePreferences.encryptData) {
+        for (int i = 0; i < toBeEncrypted.size(); i++) {
+          Long key = toBeEncrypted.get(i);
+          additionalParametersMap = additionalParametersSparseArray.get(key.intValue());
+          updateOrderAdditionalParameters(additionalParametersMap, key);
+        }
+      }
       return ( additionalParametersSparseArray );
       }
     catch ( Exception exception )
@@ -1525,22 +1758,45 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
         {
         // Get the values from the cursor
 
+        boolean hasToBeEncrypted = false;
         //////// Decryption initialiser //////////
         SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
 
-        long   addressId       = cursor.getLong  ( cursor.getColumnIndex( "id" ) );
-        String recipientName   =  pref.decrypt(getStringOrNull( cursor, "recipient_name" ));
-        String line1           =  pref.decrypt(getStringOrNull( cursor, "line1" ));
-        String line2           =  pref.decrypt(getStringOrNull( cursor, "line2" ));
-        String city            =  pref.decrypt(getStringOrNull( cursor, "city" ));
-        String stateOrCounty   =  pref.decrypt(getStringOrNull( cursor, "state_or_county" ));
-        String zipOrPostalCode =  pref.decrypt(getStringOrNull( cursor, "zip_or_postal_code" ));
-        String countryISO2Code =  pref.decrypt(getStringOrNull( cursor, "country_iso2_code" ));
+        long   addressId;
+        String recipientName;
+        String line1;
+        String line2;
+        String city;
+        String stateOrCounty;
+        String zipOrPostalCode;
+        String countryISO2Code;
 
-
+        try {
+          addressId = cursor.getLong(cursor.getColumnIndex("id"));
+          recipientName = pref.decrypt(getStringOrNull(cursor, "recipient_name"));
+          line1 = pref.decrypt(getStringOrNull(cursor, "line1"));
+          line2 = pref.decrypt(getStringOrNull(cursor, "line2"));
+          city = pref.decrypt(getStringOrNull(cursor, "city"));
+          stateOrCounty = pref.decrypt(getStringOrNull(cursor, "state_or_county"));
+          zipOrPostalCode = pref.decrypt(getStringOrNull(cursor, "zip_or_postal_code"));
+          countryISO2Code = pref.decrypt(getStringOrNull(cursor, "country_iso2_code"));
+        } catch (Exception e) {
+          hasToBeEncrypted = true;
+          addressId = cursor.getLong(cursor.getColumnIndex("id"));
+          recipientName = getStringOrNull(cursor, "recipient_name");
+          line1 = getStringOrNull(cursor, "line1");
+          line2 = getStringOrNull(cursor, "line2");
+          city = getStringOrNull(cursor, "city");
+          stateOrCounty = getStringOrNull(cursor, "state_or_county");
+          zipOrPostalCode = getStringOrNull(cursor, "zip_or_postal_code");
+          countryISO2Code = getStringOrNull(cursor, "country_iso2_code");
+        }
 
         Address shippingAddress = new Address( recipientName, line1, line2, city, stateOrCounty, zipOrPostalCode, Country.getInstance( countryISO2Code ) );
 
+        if(hasToBeEncrypted && SecurePreferences.encryptData) {
+          updateAddress(addressId, shippingAddress);
+        }
         shippingAddressSparseArray.put( (int)addressId, shippingAddress );
         }
 
@@ -1639,9 +1895,16 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
     for ( ContentValues itemContentValues : itemContentValuesList )
       {
       // Get the base item details
-      try {
         long itemId = itemContentValues.getAsLong("item_id");
-        String productId = pref.decrypt(itemContentValues.getAsString("product_id"));
+        String productId;
+        try {
+          productId = pref.decrypt(itemContentValues.getAsString("product_id"));
+        } catch (Exception e) {
+          productId = itemContentValues.getAsString("product_id");
+          if(SecurePreferences.encryptData) {
+            updateItem(itemId, productId);
+          }
+        }
         int orderQuantity = itemContentValues.getAsInteger("order_quantity");
 
 
@@ -1678,10 +1941,6 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
         BasketItem basketItem = new BasketItem(itemId, product, orderQuantity, optionsMap, imageSpecList);
 
         basketItemList.add(basketItem);
-      } catch (SecurePreferences.SecurePreferencesException ex) {
-        pref.reset();
-        continue;
-      }
       }
 
 
@@ -1847,8 +2106,18 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
         // Get the values from the cursor
 
         long   itemId = cursor.getLong  ( cursor.getColumnIndex( "item_id" ) );
-        String name   = pref.decrypt(cursor.getString( cursor.getColumnIndex( "name" ) ) );
-        String value  = pref.decrypt(cursor.getString( cursor.getColumnIndex( "value" ) ) );
+        String name;
+        String value;
+        try {
+          name = pref.decrypt(cursor.getString(cursor.getColumnIndex("name")));
+          value = pref.decrypt(cursor.getString(cursor.getColumnIndex("value")));
+        } catch (Exception e) {
+          name = cursor.getString(cursor.getColumnIndex("name"));
+          value = cursor.getString(cursor.getColumnIndex("value"));
+          if(SecurePreferences.encryptData) {
+            updateBasketOption(itemId, name, value);
+          }
+        }
 
 
         // If this is a new job, create a new options hash map and insert it into the array
@@ -1944,9 +2213,16 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
       while ( cursor.moveToNext() )
         {
         // Get the values from the cursor
-        try {
           long imageSpecId = cursor.getLong(cursor.getColumnIndex("id"));
-          String imageFileName = pref.decrypt(cursor.getString(cursor.getColumnIndex("image_file_name")));
+          String imageFileName;
+          try {
+             imageFileName = pref.decrypt(cursor.getString(cursor.getColumnIndex("image_file_name")));
+          } catch (Exception e) {
+            imageFileName = cursor.getString(cursor.getColumnIndex("image_file_name"));
+            if(SecurePreferences.encryptData) {
+              updateImageSpec(imageSpecId, imageFileName);
+            }
+          }
           float left = cursor.getFloat(cursor.getColumnIndex("left"));
           float top = cursor.getFloat(cursor.getColumnIndex("top"));
           float right = cursor.getFloat(cursor.getColumnIndex("right"));
@@ -1968,10 +2244,6 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
 
 
           imageSpecSparseArray.put((int) imageSpecId, imageSpec);
-        } catch (SecurePreferences.SecurePreferencesException ex) {
-          pref.reset();
-          continue;
-        }
         }
 
 
@@ -2040,13 +2312,24 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
       //////// Decryption initialiser //////////
       SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
 
+      ArrayList<Long> toBeEncrypted = new ArrayList<>();
       while ( cursor.moveToNext() )
         {
         // Get the values from the cursor
 
         long   imageSpecId = cursor.getLong  ( cursor.getColumnIndex( "image_spec_id" ) );
-        String name        = pref.decrypt(cursor.getString( cursor.getColumnIndex( "name" )) );
-        String value       = pref.decrypt(cursor.getString( cursor.getColumnIndex( "value" )) );
+        String name;
+        String value;
+        try {
+          name = pref.decrypt(cursor.getString(cursor.getColumnIndex("name")));
+          value = pref.decrypt(cursor.getString(cursor.getColumnIndex("value")));
+        } catch (Exception e) {
+          if(!toBeEncrypted.contains(imageSpecId)) {
+            toBeEncrypted.add(imageSpecId);
+          }
+          name = cursor.getString(cursor.getColumnIndex("name"));
+          value = cursor.getString(cursor.getColumnIndex("value"));
+        }
 
         HashMap<String,String> parametersHashMap = imageSpecAdditionalParametersSparseArray.get( (int)imageSpecId );
 
@@ -2060,6 +2343,13 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
         parametersHashMap.put( name, value );
         }
 
+       if(SecurePreferences.encryptData) {
+         for (int i = 0; i < toBeEncrypted.size(); i++) {
+           Long key = toBeEncrypted.get(i);
+           HashMap<String,String> parametersHashMap = imageSpecAdditionalParametersSparseArray.get(key.intValue());
+           updateOrderAdditionalParameters(parametersHashMap, key);
+         }
+       }
 
       return ( imageSpecAdditionalParametersSparseArray );
       }
@@ -2321,7 +2611,6 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
     return ( imageSpecIdLong != null ? imageSpecSparseArray.get( imageSpecIdLong.intValue() ) : null );
     }
 
-
   /*****************************************************
    *
    * Returns an address for the address id.
@@ -2537,6 +2826,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
       if ( database != null ) database.close();
       }
     }
+
 
 
   ////////// Inner Class(es) //////////

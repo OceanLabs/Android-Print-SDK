@@ -258,6 +258,18 @@ public class KiteSDK
             .apply();
     }
 
+  /*****************************************************
+   *
+   * Clears a parameter for a particular scope.
+   *
+   *****************************************************/
+   static private void removeParameter (Context context, Scope scope, String key) {
+     scope.sharedPreferences( context )
+         .edit()
+         .remove( key )
+         .apply();
+   }
+
 
   /*****************************************************
    *
@@ -268,7 +280,7 @@ public class KiteSDK
     {
     String key = getParameterKey( prefix, name );
 
-      ///////// Encryption initialiser //////////
+      ///////// Encryption initializer //////////
       SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
 
     scope.sharedPreferences( context )
@@ -285,12 +297,45 @@ public class KiteSDK
    *****************************************************/
   static private String getStringParameter( Context context, Scope scope, String prefix, String name, String defaultValue )
     {
-      ///////// Decryption initialiser //////////
-      SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
+    ///////// Decryption initializer //////////
+    SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
 
-    String key = pref.encrypt(getParameterKey( prefix, name ));//Re-encrypt the key s.t. it will match the one stored in the preference files
+    String keyOriginal = getParameterKey( prefix, name );
+    String keyEncrypted = pref.encrypt(keyOriginal);//Re-encrypt the key s.t. it will match the one stored in the preference files
 
-    return pref.decrypt( scope.sharedPreferences( context ).getString( key, defaultValue ) );
+    String notAvailable = "N/A";
+
+    try {
+      String result =  pref.decrypt(scope.sharedPreferences(context).getString(keyEncrypted, notAvailable));
+      if(result != null && !result.equals(notAvailable)) {
+        return  result;
+      }
+    } catch (Exception e) {
+    }
+
+    try {
+      String result = pref.decrypt(scope.sharedPreferences(context).getString(keyOriginal, notAvailable));
+      if(result != null && !result.equals(notAvailable)) {
+        //un-ecrypted/corrupted, must replace with encrypted info
+        if(SecurePreferences.encryptData) {
+          removeParameter(context, scope, keyOriginal);
+          setParameter(context, scope, prefix, name, result);
+        }
+        return  result;
+      }
+    } catch (Exception e) {
+    }
+
+    String result = scope.sharedPreferences(context).getString(keyOriginal, notAvailable);
+    if(!result.equals(notAvailable)) {
+      //un-ecrypted/corrupted, must replace with encrypted info
+      if(SecurePreferences.encryptData) {
+        removeParameter(context, scope, keyOriginal);
+        setParameter(context, scope, prefix, name, result);
+      }
+      return  result;
+    }
+    return defaultValue;
     }
 
 
@@ -302,16 +347,17 @@ public class KiteSDK
   static private void setParameter( Context context, Scope scope, String prefix, String name, boolean value )
     {
 
-      //////// Encryption initialiser //////////
-      SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
+    //////// Encryption initializer //////////
+    SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
 
     String key = pref.encrypt(getParameterKey( prefix, name ));
 
     // For storing bool value as encrypted string
-      String temp = "false";
+    String temp = "false";
 
-      if(value)
-        temp="true";
+    if(value) {
+      temp = "true";
+    }
 
     scope.sharedPreferences( context )
       .edit()
@@ -325,18 +371,43 @@ public class KiteSDK
    * Returns a boolean parameter.
    *
    *****************************************************/
-  static private boolean getBooleanParameter( Context context, Scope scope, String prefix, String name, boolean defaultValue )
-    {
-      //////// Decryption initialiser //////////
-      SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
+  static private boolean getBooleanParameter( Context context, Scope scope, String prefix, String name, boolean defaultValue ) {
+    //////// Decryption initializer //////////
+    SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
+    String keyOriginal = getParameterKey(prefix, name);
+    String keyEncrypted = pref.encrypt(keyOriginal);//Re-encrypt the key s.t. it will match the one stored in the preference files
 
-    String key = pref.encrypt(getParameterKey( prefix, name ));//Re-encrypt the key s.t. it will match the one stored in the preference files
+    String notAvailable = "N/A";
 
-    if( pref.decrypt(scope.sharedPreferences( context ).getString( key, ""+defaultValue )).equals("false"))
-        return false;
-      else
-        return true;
+    try {
+      String boolAsString = pref.decrypt(scope.sharedPreferences(context).getString(keyEncrypted, notAvailable));
+      if (boolAsString != null && !boolAsString.equals(notAvailable)) {
+        return boolAsString.equals("true");
+      }
+    } catch (Exception e) {
     }
+    //un-ecrypted/corrupted, must replace with encrypted info
+    try {
+      String boolAsString = pref.decrypt(scope.sharedPreferences(context).getString(keyOriginal, notAvailable));
+      if (boolAsString != null && !boolAsString.equals(notAvailable)) {
+        //un-ecrypted/corrupted, must replace with encrypted info
+        if(SecurePreferences.encryptData) {
+          removeParameter(context, scope, keyOriginal);
+          setParameter(context, scope, prefix, name, boolAsString.equals("true"));
+        }
+        return boolAsString.equals("true");
+      }
+    } catch (Exception e) {
+    }
+
+    String boolAsString = scope.sharedPreferences(context).getString(keyOriginal, notAvailable);
+    //un-ecrypted/corrupted, must replace with encrypted info
+    if(SecurePreferences.encryptData && !boolAsString.equals(notAvailable)) {
+      removeParameter(context, scope, keyOriginal);
+      setParameter(context, scope, prefix, name, boolAsString.equals("true"));
+    }
+    return boolAsString.equals("true");
+  }
 
 
   /*****************************************************
@@ -348,7 +419,7 @@ public class KiteSDK
     {
     String key = getParameterKey( prefix, name );
 
-      ///////// Encryption initialiser //////////
+      ///////// Encryption initializer //////////
       SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
 
       scope.sharedPreferences( context )
@@ -371,26 +442,121 @@ public class KiteSDK
    *****************************************************/
   static private Address getAddressParameter( Context context, Scope scope, String prefix, String name )
     {
-
-      //////// Decryption initialiser //////////
-      SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
+    //////// Decryption initializer //////////
+    SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
 
     String key = getParameterKey( prefix, name );
 
     SharedPreferences sharedPreferences = scope.sharedPreferences( context );
 
-    String  recipient       = pref.decrypt(sharedPreferences.getString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_RECIPIENT), null ));
-    String  line1           = pref.decrypt(sharedPreferences.getString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_LINE1), null ));
-    String  line2           = pref.decrypt(sharedPreferences.getString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_LINE2), null ));
-    String  city            = pref.decrypt(sharedPreferences.getString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_CITY), null));
-    String  stateOrCounty   = pref.decrypt(sharedPreferences.getString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_STATE_OR_COUNTY), null ));
-    String  zipOrPostalCode = pref.decrypt(sharedPreferences.getString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_ZIP_OR_POSTAL_CODE), null ));
-    Country country         = Country.getInstance (pref.decrypt(( sharedPreferences.getString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_COUNTRY_CODE), null )) ));
+    String  recipient;
+    String  line1;
+    String  line2;
+    String  city;
+    String  stateOrCounty;
+    String  zipOrPostalCode;
+    Country country;
 
-    if ( recipient == null && line1 == null && line2 == null && city == null && stateOrCounty == null && zipOrPostalCode == null && country == null ) return ( null );
+    int score1 = 0;
+    int score2 = 0;
+    int score3;
 
-    return ( new Address( recipient, line1, line2, city, stateOrCounty, zipOrPostalCode, country ) );
+    Address address1 = null;
+    Address address2 = null;
+    Address address3 = null;
+
+    boolean hasToBeEncrypted = false;
+
+    try {
+      recipient = pref.decrypt(sharedPreferences.getString(pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_RECIPIENT), null));
+      line1 = pref.decrypt(sharedPreferences.getString(pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_LINE1), null));
+      line2 = pref.decrypt(sharedPreferences.getString(pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_LINE2), null));
+      city = pref.decrypt(sharedPreferences.getString(pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_CITY), null));
+      stateOrCounty = pref.decrypt(sharedPreferences.getString(pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_STATE_OR_COUNTY), null));
+      zipOrPostalCode = pref.decrypt(sharedPreferences.getString(pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_ZIP_OR_POSTAL_CODE), null));
+      country = Country.getInstance(pref.decrypt((sharedPreferences.getString(pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_COUNTRY_CODE), null))));
+      String[] addressInfo = {recipient, line1, line2, city, stateOrCounty, zipOrPostalCode};
+      score1 = addressCompleteness(addressInfo, country);
+      if(score1 > 0) {
+        address1 = new Address( recipient, line1, line2, city, stateOrCounty, zipOrPostalCode, country );
+      }
+    } catch (Exception e ) {
     }
+
+    try {
+      recipient = pref.decrypt(sharedPreferences.getString(key + SHARED_PREFERENCES_KEY_SUFFIX_RECIPIENT, null));
+      line1 = pref.decrypt(sharedPreferences.getString(key + SHARED_PREFERENCES_KEY_SUFFIX_LINE1, null));
+      line2 = pref.decrypt(sharedPreferences.getString(key + SHARED_PREFERENCES_KEY_SUFFIX_LINE2, null));
+      city = pref.decrypt(sharedPreferences.getString(key + SHARED_PREFERENCES_KEY_SUFFIX_CITY, null));
+      stateOrCounty = pref.decrypt(sharedPreferences.getString(key + SHARED_PREFERENCES_KEY_SUFFIX_STATE_OR_COUNTY, null));
+      zipOrPostalCode = pref.decrypt(sharedPreferences.getString(key + SHARED_PREFERENCES_KEY_SUFFIX_ZIP_OR_POSTAL_CODE, null));
+      country = Country.getInstance(pref.decrypt(sharedPreferences.getString(key + SHARED_PREFERENCES_KEY_SUFFIX_COUNTRY_CODE, null)));
+      String[] addressInfo = {recipient, line1, line2, city, stateOrCounty, zipOrPostalCode};
+      score2 = addressCompleteness(addressInfo, country);
+      if(score2 > 0) {
+        address2 = new Address( recipient, line1, line2, city, stateOrCounty, zipOrPostalCode, country );
+      }
+    } catch (Exception e) {
+    }
+
+    recipient = sharedPreferences.getString(key + SHARED_PREFERENCES_KEY_SUFFIX_RECIPIENT, null);
+    line1 = sharedPreferences.getString(key + SHARED_PREFERENCES_KEY_SUFFIX_LINE1, null);
+    line2 = sharedPreferences.getString(key + SHARED_PREFERENCES_KEY_SUFFIX_LINE2, null);
+    city = sharedPreferences.getString(key + SHARED_PREFERENCES_KEY_SUFFIX_CITY, null);
+    stateOrCounty = sharedPreferences.getString(key + SHARED_PREFERENCES_KEY_SUFFIX_STATE_OR_COUNTY, null);
+    zipOrPostalCode = sharedPreferences.getString(key + SHARED_PREFERENCES_KEY_SUFFIX_ZIP_OR_POSTAL_CODE, null);
+    country = Country.getInstance(sharedPreferences.getString(key + SHARED_PREFERENCES_KEY_SUFFIX_COUNTRY_CODE, null));
+
+    String[] addressInfo = {recipient, line1, line2, city, stateOrCounty, zipOrPostalCode};
+    score3 = addressCompleteness(addressInfo, country);
+    if(score3 > 0) {
+      address3 = new Address( recipient, line1, line2, city, stateOrCounty, zipOrPostalCode, country );
+    }
+
+    if ( address1 == null && address2 == null && address3 == null ) return ( null );
+
+    Address result;
+    if(score1 >= score2) {
+      if(score1 >= score3) {
+        result =  address1;
+      } else {
+        hasToBeEncrypted = true;
+        result = address3;
+      }
+    } else {
+      hasToBeEncrypted = true;
+      if(score3 >= score2) {
+        result =  address3;
+      } else {
+        result =  address2;
+      }
+    }
+
+    if(hasToBeEncrypted) {
+      clearAddressParameter(context, scope, prefix, name);
+      setParameter(context, scope, prefix, name, result);
+    }
+    return  result;
+    }
+
+  /*****************************************************
+  *
+  * Returns the number of completed lines from an address
+  *
+  *****************************************************/
+  private static int addressCompleteness(String[] addressInfo, Country country) {
+    int result = 0;
+    if(country != null) {
+      result++;
+    }
+
+    for(int i = 0; i < addressInfo.length; i++) {
+      if(addressInfo[i] != null) {
+        result ++;
+      }
+    }
+    return result;
+  }
 
 
   /*****************************************************
@@ -402,7 +568,7 @@ public class KiteSDK
     {
     String key = getParameterKey( prefix, name );
 
-    //////// Encryption initialiser //////////
+    //////// Encryption initializer //////////
     SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
 
     if (stringSet == null) {
@@ -433,26 +599,50 @@ public class KiteSDK
    *****************************************************/
   static private Set<String> getStringSetParameter( Context context, Scope scope, String prefix, String name )
     {
-    //////// Decryption initialiser //////////
+    //////// Decryption initializer //////////
     SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
 
-    String key = pref.encrypt(getParameterKey( prefix, name ));
+    String originalKey = getParameterKey( prefix, name );
+    String encryptedKey = pref.encrypt(originalKey);
     HashSet<String> returnedStringSet = new HashSet<>();
 
-    Set<String> loadedStringSet = scope.sharedPreferences( context ).getStringSet( key, null );
 
-      // We want to copy the strings into a new set, so they can be modified
-      // if necessary.
-
-      if ( loadedStringSet != null )
-      {
-        for ( String string : loadedStringSet )
-        {
-          returnedStringSet.add(pref.decrypt(string));
-        }
+    Set<String> loadedStringSet;
+    loadedStringSet = scope.sharedPreferences( context ).getStringSet( encryptedKey, null );
+    boolean hasToBeEncypted = false;
+    //It might be the case of un-encypted data being available
+    if(loadedStringSet == null) {
+      loadedStringSet = scope.sharedPreferences( context ).getStringSet( originalKey, null );
+      if(loadedStringSet != null) {
+        hasToBeEncypted = true;
       }
+    }
 
-      return ( returnedStringSet );
+    // We want to copy the strings into a new set, so they can be modified
+    // if necessary.
+
+    if ( loadedStringSet != null )
+    {
+      for ( String string : loadedStringSet )
+      {
+        String info = null;
+        try {
+          info = pref.decrypt(string);
+        } catch (Exception e) {
+        }
+        if(info == null) {
+          info = string;
+        }
+        returnedStringSet.add(info);
+      }
+    }
+
+    if (hasToBeEncypted) {
+        removeParameter(context, scope, originalKey);
+        setParameter(context, scope, prefix, name, returnedStringSet);
+    }
+
+    return ( returnedStringSet );
     }
 
 
