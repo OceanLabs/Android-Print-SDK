@@ -280,13 +280,14 @@ public class KiteSDK
     {
     String key = getParameterKey( prefix, name );
 
-      ///////// Encryption initializer //////////
-      SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
+    ///////// Encryption initializer //////////
+    SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
 
     scope.sharedPreferences( context )
             .edit()
             .putString( pref.encrypt(key), pref.encrypt(value))
             .apply();
+    pref.reset();
     }
 
 
@@ -315,6 +316,7 @@ public class KiteSDK
 
     try {
       String result = pref.decrypt(scope.sharedPreferences(context).getString(keyOriginal, notAvailable));
+      pref.reset();
       if(result != null && !result.equals(notAvailable)) {
         //un-ecrypted/corrupted, must replace with encrypted info
         if(SecurePreferences.encryptData) {
@@ -325,6 +327,7 @@ public class KiteSDK
       }
     } catch (Exception e) {
     }
+    pref.reset();
 
     String result = scope.sharedPreferences(context).getString(keyOriginal, notAvailable);
     if(!result.equals(notAvailable)) {
@@ -363,6 +366,8 @@ public class KiteSDK
       .edit()
         .putString( key, pref.encrypt(temp) )
       .apply();
+
+    pref.reset();
     }
 
 
@@ -389,6 +394,7 @@ public class KiteSDK
     //un-ecrypted/corrupted, must replace with encrypted info
     try {
       String boolAsString = pref.decrypt(scope.sharedPreferences(context).getString(keyOriginal, notAvailable));
+      pref.reset();
       if (boolAsString != null && !boolAsString.equals(notAvailable)) {
         //un-ecrypted/corrupted, must replace with encrypted info
         if(SecurePreferences.encryptData) {
@@ -399,6 +405,7 @@ public class KiteSDK
       }
     } catch (Exception e) {
     }
+
 
     String boolAsString = scope.sharedPreferences(context).getString(keyOriginal, notAvailable);
     //un-ecrypted/corrupted, must replace with encrypted info
@@ -432,6 +439,7 @@ public class KiteSDK
         .putString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_ZIP_OR_POSTAL_CODE), pref.encrypt(address.getZipOrPostalCode() ))
         .putString( pref.encrypt(key + SHARED_PREFERENCES_KEY_SUFFIX_COUNTRY_CODE),       pref.encrypt(address.getCountry().iso3Code() ))
       .apply();
+      pref.reset();
     }
 
 
@@ -532,6 +540,7 @@ public class KiteSDK
       }
     }
 
+    pref.reset();
     if(hasToBeEncrypted) {
       clearAddressParameter(context, scope, prefix, name);
       setParameter(context, scope, prefix, name, result);
@@ -588,6 +597,7 @@ public class KiteSDK
               .edit()
               .putStringSet(pref.encrypt(key), stringSetEncrypted)
               .apply();
+      pref.reset();
     }
     }
 
@@ -637,6 +647,7 @@ public class KiteSDK
       }
     }
 
+    pref.reset();
     if (hasToBeEncypted) {
         removeParameter(context, scope, originalKey);
         setParameter(context, scope, prefix, name, returnedStringSet);
