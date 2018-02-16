@@ -1,3 +1,6 @@
+### 5.8.3
+- Fixed: Previous versions of the sdk that stored unencrypted data should now be compatible with current versions of the sdk and encrypt the existing data
+
 ### 5.8.2
 - Fixed: nullPointerException on Country.getInstance now defaults to USA when country is returned null
 
