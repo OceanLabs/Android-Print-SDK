@@ -377,6 +377,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
     contentValues.put( "date",         pref.encrypt(getDateString() ));  // e.g. 02 June 2016
     contentValues.put( "description",  pref.encrypt(description ));
 
+    pref.reset();
     return ( contentValues );
     }
 
@@ -398,6 +399,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
     contentValues.put( "pricing_json", pref.encrypt(pricingJSON) );
     contentValues.put( "receipt",      pref.encrypt(receipt) );
 
+    pref.reset();
     return ( insertOrder( contentValues ) );
     }
 
@@ -406,7 +408,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
    * Updates information for a order item (due to lack of encryption)
    *
    *****************************************************/
-  private void updateOrderHistoryItem (OrderHistoryItem orderHistoryItem) {
+  private void updateOrderHistoryItem (OrderHistoryItem orderHistoryItem, SQLiteDatabase database) {
     SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
 
     StringBuilder sqlStringBuilder = new StringBuilder()
@@ -422,8 +424,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
         .append(        "receipt             = '" ).append( pref.encrypt(orderHistoryItem.getReceipt())).append( "'" )
         .append( " WHERE id = " ).append( orderHistoryItem.getOrderId() );
 
-    SQLiteDatabase database = getWritableDatabase();
-
+    pref.reset();
     if ( database == null )
     {
       Log.e( LOG_TAG, "Unable to get writable database" );
@@ -431,7 +432,6 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
       return;
     }
     database.execSQL( sqlStringBuilder.toString() );
-    database.close();
   }
 
   /*****************************************************
@@ -439,12 +439,10 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
    * Updates information for a order item (due to lack of encryption)
    *
    *****************************************************/
-  private void updateOrderAdditionalParameters(HashMap<String,String> additionalParametersMap, Long orderId) {
+  private void updateOrderAdditionalParameters(HashMap<String,String> additionalParametersMap, Long orderId, SQLiteDatabase database) {
     SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
 
     String sqlDelete = "DELETE FROM " + TABLE_ORDER_ADDITIONAL_PARAMETER + " WHERE order_id = " + orderId;
-
-    SQLiteDatabase database = getWritableDatabase();
 
     if (database == null) {
       Log.e(LOG_TAG, "Unable to get writable database");
@@ -459,7 +457,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
       contentValues.put("value", pref.encrypt(additionalParametersMap.get(name)));
       database.insert( TABLE_ORDER_ADDITIONAL_PARAMETER, null, contentValues );
     }
-    database.close();
+    pref.reset();
   }
 
   /*****************************************************
@@ -467,7 +465,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
    * Updates information for a order item (due to lack of encryption)
    *
    *****************************************************/
-  private void updateAddress(Long addressId, Address address) {
+  private void updateAddress(Long addressId, Address address, SQLiteDatabase database) {
     SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
 
     StringBuilder sqlStringBuilder = new StringBuilder()
@@ -481,8 +479,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
         .append(        "country_iso2_code   = '" ).append( pref.encrypt(address.getCountry().iso2Code())).append("'")
         .append( " WHERE id = " ).append( addressId );
 
-    SQLiteDatabase database = getWritableDatabase();
-
+    pref.reset();
     if ( database == null )
     {
       Log.e( LOG_TAG, "Unable to get writable database" );
@@ -490,7 +487,6 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
       return;
     }
     database.execSQL( sqlStringBuilder.toString() );
-    database.close();
   }
 
   /*****************************************************
@@ -500,7 +496,6 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
    *****************************************************/
   public void updateItem( long itemId, String productId)
   {
-    SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
     SQLiteDatabase database = getWritableDatabase();
 
     if ( database == null )
@@ -509,9 +504,12 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
        return;
     }
 
-    database.execSQL( "UPDATE " + TABLE_ITEM + " SET product_id = '" +  pref.encrypt(productId) + "' WHERE id = " + itemId );
+    SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
 
+    database.execSQL( "UPDATE " + TABLE_ITEM + " SET product_id = '" +  pref.encrypt(productId) + "' WHERE id = " + itemId );
     database.close();
+
+    pref.reset();
     }
 
    /*****************************************************
@@ -519,7 +517,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
     * Updates basket option
     *
     *****************************************************/
-    public void updateBasketOption( long itemId, String name, String value)
+    public void updateBasketOption( long itemId, String name, String value, SQLiteDatabase database)
     {
       SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
 
@@ -529,8 +527,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
           .append(        "value               = '" ).append( pref.encrypt(value)).append("'")
           .append( " WHERE item_id = " ).append( itemId );
 
-      SQLiteDatabase database = getWritableDatabase();
-
+      pref.reset();
       if ( database == null )
       {
         Log.e( LOG_TAG, "Unable to get writable database" );
@@ -538,28 +535,23 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
       }
 
       database.execSQL( sqlStringBuilder .toString());
-
-      database.close();
     }
    /*****************************************************
     *
     * Updates image spec
     *
     *****************************************************/
-    public void updateImageSpec( long id, String image_file_name)
+    public void updateImageSpec( long id, String image_file_name, SQLiteDatabase database)
     {
-      SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
-      SQLiteDatabase database = getWritableDatabase();
-
       if ( database == null )
       {
         Log.e( LOG_TAG, "Unable to get writable database" );
         return;
       }
 
+      SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
       database.execSQL( "UPDATE " + TABLE_IMAGE_SPEC + " SET image_file_name = '" +  pref.encrypt(image_file_name) + "' WHERE id = " + id );
-
-      database.close();
+      pref.reset();
     }
 
   /*****************************************************
@@ -567,28 +559,26 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
    * Updates image spec additional parameters
    *
    *****************************************************/
-  public void updateImageSpecAdditionalParams(HashMap<String,String> additionalParametersMap, Long id)
+  public void updateImageSpecAdditionalParams(HashMap<String,String> additionalParametersMap, Long id, SQLiteDatabase database)
   {
-    SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
 
     String sqlDelete = "DELETE FROM " + TABLE_IMAGE_SPEC_ADDITIONAL_PARAMETER + " WHERE image_spec_id  = " + id;
-
-    SQLiteDatabase database = getWritableDatabase();
 
     if (database == null) {
       Log.e(LOG_TAG, "Unable to get writable database");
       return;
     }
+
+    SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
     database.execSQL(sqlDelete);
     for ( String name : additionalParametersMap.keySet() ) {
       ContentValues contentValues = new ContentValues();
-
       contentValues.put("image_spec_id", id);
       contentValues.put("name", pref.encrypt(name));
       contentValues.put("value", pref.encrypt(additionalParametersMap.get(name)));
       database.insert( TABLE_IMAGE_SPEC_ADDITIONAL_PARAMETER, null, contentValues );
     }
-    database.close();
+    pref.reset();
   }
 
   /*****************************************************
@@ -648,7 +638,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
         }
       }
 
-
+    pref.reset();
     return ( orderId );
     }
 
@@ -713,6 +703,8 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
       }
 
 
+    //////// Encryption initialiser //////////
+    SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
     try
       {
       // Go through each of the options
@@ -721,8 +713,6 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
         {
         // Create and try to insert the new parameters
 
-        //////// Encryption initialiser //////////
-        SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
 
         ContentValues contentValues = new ContentValues();
 
@@ -739,6 +729,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
       }
     finally
       {
+      pref.reset();
       if ( database != null ) database.close();
       }
     }
@@ -938,14 +929,13 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
 
     ContentValues contentValues = new ContentValues();
 
-      //////// Encryption initialiser //////////
-      SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
+    //////// Encryption initialiser //////////
+    SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
 
     if ( itemId >= 0 ) contentValues.put( "id", itemId );
     contentValues.put( "basket_id",      basketId );
     contentValues.put( "product_id",     pref.encrypt(product.getId()) );
     contentValues.put( "order_quantity", orderQuantity );
-
 
     // Try to insert the new item
 
@@ -968,7 +958,8 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
       }
     finally
       {
-      if ( database != null ) database.close();
+        pref.reset();
+        if ( database != null ) database.close();
       }
     }
 
@@ -1054,6 +1045,8 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
       return;
       }
 
+    //////// Encryption initialiser //////////
+    SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
 
     try
       {
@@ -1064,9 +1057,6 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
         // Create and try to insert the new option
 
         ContentValues contentValues = new ContentValues();
-
-        //////// Encryption initialiser //////////
-        SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
 
         contentValues.put( "item_id", itemId );
         contentValues.put( "name",    pref.encrypt(name) );
@@ -1081,6 +1071,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
       }
     finally
       {
+      pref.reset();
       if ( database != null ) database.close();
       }
     }
@@ -1127,6 +1118,8 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
     // Create a return array
     long[] imageSpecIds = new long[ imageSpecs.length ];
 
+    //////// Encryption initialiser //////////
+    SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
 
     try
       {
@@ -1150,11 +1143,8 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
 
           ContentValues contentValues = new ContentValues();
 
-          //////// Encryption initialiser //////////
-          SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
-
           // If the asset isn't an image file, this should throw an exception, which is what we want.
-          contentValues.put( "image_file_name", pref.encrypt(asset.getImageFileName() ));
+          contentValues.put( "image_file_name", pref.encrypt(asset.getImageFileName()));
           contentValues.put( "left",            proportionalRectangle.left );
           contentValues.put( "top",             proportionalRectangle.top );
           contentValues.put( "right",           proportionalRectangle.right );
@@ -1201,6 +1191,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
       }
     finally
       {
+      pref.reset();
       if ( database != null ) database.close();
       }
     }
@@ -1274,7 +1265,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
     contentValues.put( "name",          pref.encrypt(name) );
     contentValues.put( "value",         pref.encrypt(value) );
 
-
+    pref.reset();
 
     // Try to insert the new parameter
 
@@ -1330,7 +1321,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
     putStringOrNull( contentValues, "zip_or_postal_code", pref.encrypt (address.getZipOrPostalCode() ));
     putStringOrNull( contentValues, "country_iso2_code",  pref.encrypt (address.getCountry().iso2Code() ));
 
-
+    pref.reset();
     // Try to insert the new address
 
     try
@@ -1403,13 +1394,11 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
    *****************************************************/
   List<OrderHistoryItem> loadOrderHistory( Context context, Catalogue catalogue )
     {
-    boolean hasToBeEncrypted = false;
     // Get all the shipping addresses
     SparseArray<Address> shippingAddressSparseArray = selectAllShippingAddresses();
 
     // Get all the additional parameters
     SparseArray<HashMap<String,String>> additionalParametersSparseArray = selectAllAdditionalParameters();
-
 
     // Construct the SQL statement:
     StringBuilder sqlStringBuilder = new StringBuilder()
@@ -1444,13 +1433,14 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
       List<OrderHistoryItem> orderHistoryItemList = new ArrayList<>();
 
       //////// Decryption initialiser //////////
-      SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
 
 
       // Process every row
 
       while ( cursor.moveToNext() )
         {
+          SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
+          boolean hasToBeEncrypted = false;
           long orderId;
           String dateString;
           String description;
@@ -1469,20 +1459,28 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
             dateString = pref.decrypt(cursor.getString(cursor.getColumnIndex("date")));
             description = pref.decrypt(cursor.getString(cursor.getColumnIndex("description")));
             pricingJSON = pref.decrypt(getStringOrNull(cursor, "pricing_json"));
-
+            basketIdLong = getLongOrNull(cursor, "basket_id");
+            shippingAddressIdLong = getLongOrNull(cursor, "shipping_address_id");
+            //the following ones can cause a false result so they will be treated separately
             try {
               receipt = pref.decrypt(getStringOrNull(cursor, "receipt"));
+            } catch (Exception e) {}
+            try {
               proofOfPayment = pref.decrypt(getStringOrNull(cursor, "proof_of_payment"));
-              basketIdLong = getLongOrNull(cursor, "basket_id");
-              shippingAddressIdLong = getLongOrNull(cursor, "shipping_address_id");
+            } catch (Exception e) {}
+            try {
               notificationEmail = pref.decrypt(getStringOrNull(cursor, "notification_email"));
+            } catch (Exception e) {}
+            try {
               notificationPhone = pref.decrypt(getStringOrNull(cursor, "notification_phone"));
+            } catch (Exception e) {}
+            try {
               userDataJSON = pref.decrypt(getStringOrNull(cursor, "user_data_json"));
+            } catch (Exception e) {}
+            try {
               promoCode = pref.decrypt(getStringOrNull(cursor, "promo_code"));
-            } catch (Exception e) {
-              //in case receipt failes , but proof of payment is still stored
-              proofOfPayment = pref.decrypt(getStringOrNull(cursor, "proof_of_payment"));
-            }
+            } catch (Exception e) {}
+
           } catch (Exception ex){
             hasToBeEncrypted = true;
             orderId = cursor.getLong(cursor.getColumnIndex("id"));
@@ -1516,11 +1514,12 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
                     proofOfPayment,
                     receipt);
 
+          pref.reset();
           if(hasToBeEncrypted && SecurePreferences.encryptData) {
-            updateOrderHistoryItem(orderHistoryItem);
+            updateOrderHistoryItem(orderHistoryItem, database);
           }
 
-            orderHistoryItemList.add(orderHistoryItem);
+          orderHistoryItemList.add(orderHistoryItem);
         }
 
       // Now we need to go back through the orders, and load any baskets. In the future, for performance
@@ -1622,9 +1621,6 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
    *****************************************************/
   SparseArray<HashMap<String,String>> selectAllAdditionalParameters()
     {
-    //////// Decryption initialiser //////////
-    SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
-
     // Construct the SQL statement:
     StringBuilder sqlStringBuilder = new StringBuilder()
             .append( "SELECT order_id," )
@@ -1637,6 +1633,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
     // Initialise the database and cursor
     SQLiteDatabase database = null;
     Cursor         cursor   = null;
+    SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
 
     try
       {
@@ -1689,11 +1686,12 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
 
         additionalParametersMap.put( name, value );
         }
+      pref.reset();
       if(SecurePreferences.encryptData) {
         for (int i = 0; i < toBeEncrypted.size(); i++) {
           Long key = toBeEncrypted.get(i);
           additionalParametersMap = additionalParametersSparseArray.get(key.intValue());
-          updateOrderAdditionalParameters(additionalParametersMap, key);
+          updateOrderAdditionalParameters(additionalParametersMap, key, database);
         }
       }
       return ( additionalParametersSparseArray );
@@ -1759,8 +1757,6 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
         // Get the values from the cursor
 
         boolean hasToBeEncrypted = false;
-        //////// Decryption initialiser //////////
-        SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
 
         long   addressId;
         String recipientName;
@@ -1772,6 +1768,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
         String countryISO2Code;
 
         try {
+          SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
           addressId = cursor.getLong(cursor.getColumnIndex("id"));
           recipientName = pref.decrypt(getStringOrNull(cursor, "recipient_name"));
           line1 = pref.decrypt(getStringOrNull(cursor, "line1"));
@@ -1780,6 +1777,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
           stateOrCounty = pref.decrypt(getStringOrNull(cursor, "state_or_county"));
           zipOrPostalCode = pref.decrypt(getStringOrNull(cursor, "zip_or_postal_code"));
           countryISO2Code = pref.decrypt(getStringOrNull(cursor, "country_iso2_code"));
+          pref.reset();
         } catch (Exception e) {
           hasToBeEncrypted = true;
           addressId = cursor.getLong(cursor.getColumnIndex("id"));
@@ -1795,7 +1793,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
         Address shippingAddress = new Address( recipientName, line1, line2, city, stateOrCounty, zipOrPostalCode, Country.getInstance( countryISO2Code ) );
 
         if(hasToBeEncrypted && SecurePreferences.encryptData) {
-          updateAddress(addressId, shippingAddress);
+          updateAddress(addressId, shippingAddress, database);
         }
         shippingAddressSparseArray.put( (int)addressId, shippingAddress );
         }
@@ -1830,10 +1828,6 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
    *****************************************************/
   public List<BasketItem> loadBasket( Context context, long basketId, Catalogue catalogue )
     {
-
-    //////// Decryption initialiser //////////
-    SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
-
     // Get all the items
 
     List<ContentValues> itemContentValuesList = selectBasketItems( basketId );
@@ -1898,7 +1892,9 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
         long itemId = itemContentValues.getAsLong("item_id");
         String productId;
         try {
+          SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
           productId = pref.decrypt(itemContentValues.getAsString("product_id"));
+          pref.reset();
         } catch (Exception e) {
           productId = itemContentValues.getAsString("product_id");
           if(SecurePreferences.encryptData) {
@@ -2098,9 +2094,6 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
 
       // Process every row; each row corresponds to an option
 
-      //////// Decryption initialiser //////////
-      SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
-
       while ( cursor.moveToNext() )
         {
         // Get the values from the cursor
@@ -2109,13 +2102,15 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
         String name;
         String value;
         try {
+          SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
           name = pref.decrypt(cursor.getString(cursor.getColumnIndex("name")));
           value = pref.decrypt(cursor.getString(cursor.getColumnIndex("value")));
+          pref.reset();
         } catch (Exception e) {
           name = cursor.getString(cursor.getColumnIndex("name"));
           value = cursor.getString(cursor.getColumnIndex("value"));
           if(SecurePreferences.encryptData) {
-            updateBasketOption(itemId, name, value);
+            updateBasketOption(itemId, name, value, database);
           }
         }
 
@@ -2207,20 +2202,20 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
 
       // Process every row; each row corresponds to a single asset
 
-      //////// Decryption initialiser //////////
-      SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
-
       while ( cursor.moveToNext() )
         {
         // Get the values from the cursor
           long imageSpecId = cursor.getLong(cursor.getColumnIndex("id"));
           String imageFileName;
           try {
-             imageFileName = pref.decrypt(cursor.getString(cursor.getColumnIndex("image_file_name")));
+            //////// Decryption initialiser //////////
+            SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
+            imageFileName = pref.decrypt(cursor.getString(cursor.getColumnIndex("image_file_name")));
+            pref.reset();
           } catch (Exception e) {
             imageFileName = cursor.getString(cursor.getColumnIndex("image_file_name"));
             if(SecurePreferences.encryptData) {
-              updateImageSpec(imageSpecId, imageFileName);
+              updateImageSpec(imageSpecId, imageFileName, database);
             }
           }
           float left = cursor.getFloat(cursor.getColumnIndex("left"));
@@ -2309,9 +2304,6 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
 
       // Process every row; each row corresponds to a single parameter
 
-      //////// Decryption initialiser //////////
-      SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
-
       ArrayList<Long> toBeEncrypted = new ArrayList<>();
       while ( cursor.moveToNext() )
         {
@@ -2321,8 +2313,10 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
         String name;
         String value;
         try {
+          SecurePreferences pref = new SecurePreferences(KiteSDK.ENCRYPTION_KEY);
           name = pref.decrypt(cursor.getString(cursor.getColumnIndex("name")));
           value = pref.decrypt(cursor.getString(cursor.getColumnIndex("value")));
+          pref.reset();
         } catch (Exception e) {
           if(!toBeEncrypted.contains(imageSpecId)) {
             toBeEncrypted.add(imageSpecId);
@@ -2347,7 +2341,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
          for (int i = 0; i < toBeEncrypted.size(); i++) {
            Long key = toBeEncrypted.get(i);
            HashMap<String,String> parametersHashMap = imageSpecAdditionalParametersSparseArray.get(key.intValue());
-           updateOrderAdditionalParameters(parametersHashMap, key);
+           updateImageSpecAdditionalParams(parametersHashMap, key, database);
          }
        }
 
