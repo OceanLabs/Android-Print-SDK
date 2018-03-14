@@ -296,6 +296,15 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
       return;
       }
 
+    // Get and verify the city
+
+    String city = mAddressCityEditText.getText().toString();
+
+    if ( city.trim().length() == 0 )
+    {
+      displayModalDialog( R.string.alert_dialog_title_oops, R.string.alert_dialog_message_no_city, R.string.OK, null, 0, null );
+      return;
+    }
 
     // Get and verify the post code
 

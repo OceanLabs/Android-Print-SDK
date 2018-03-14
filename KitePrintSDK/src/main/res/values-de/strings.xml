@@ -90,6 +90,7 @@
     <string name="alert_dialog_message_no_line1">Bitte fülle Zeile 1 der Adresse aus.</string>
     <string name="alert_dialog_message_no_postal_code">Bitte gib die Postleitzahl ein.</string>
     <string name="alert_dialog_message_no_email_address">Bitte gib deine E-Mail-Adresse ein.</string>
+    <string name="alert_dialog_message_no_city">Bitte geben Du Ihre Stadt.</string>
 
     <string name="alert_dialog_title_invalid_delivery_address">Ungültige Lieferadresse</string>
     <string name="alert_dialog_message_invalid_delivery_address">Bitte eine Lieferadresse auswählen.</string>
