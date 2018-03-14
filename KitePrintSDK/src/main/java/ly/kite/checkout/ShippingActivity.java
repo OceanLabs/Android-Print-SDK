@@ -322,7 +322,11 @@ public class ShippingActivity extends AShippingActivity implements View.OnClickL
    *****************************************************/
   private void onShippingAddress( Address shippingAddress )
     {
-    mAddressPickerButton.setText( shippingAddress.toMultiLineText() );
+    if(shippingAddress != null && shippingAddress.isFilledIn()) {
+      mAddressPickerButton.setText(shippingAddress.toMultiLineText());
+    } else {
+      mAddressPickerButton.setText( getString(R.string.shipping_delivery_address_button_text));
+    }
     }
 
 

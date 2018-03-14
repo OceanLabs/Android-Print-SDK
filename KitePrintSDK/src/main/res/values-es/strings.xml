@@ -94,6 +94,7 @@
     <string name="alert_dialog_message_no_line1">Por favor, rellene la línea 1 de la dirección</string>
     <string name="alert_dialog_message_no_postal_code">Introduzca su código postal</string>
     <string name="alert_dialog_message_no_email_address">Por favor introduzca un correo eléctronico</string>
+    <string name="alert_dialog_message_no_city">Por favor, ingrese su ciudad</string>
 
     <string name="alert_dialog_title_invalid_delivery_address">Dirección de entrega no válida</string>
     <string name="alert_dialog_message_invalid_delivery_address">Por favor, elija una dirección de entrega</string>

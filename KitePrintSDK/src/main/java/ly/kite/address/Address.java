@@ -416,6 +416,26 @@ public class Address implements Parcelable
              Country.areBothNullOrEqual( mCountry, otherAddress.mCountry ) );
     }
 
+    public boolean isFilledIn() {
+      if(mRecipientName == null || mRecipientName.length() < 1) {
+        return false;
+      }
+
+      if(mLine1 == null || mLine1.length() < 1) {
+        return false;
+      }
+
+      if(mCity == null || mCity.length() < 1) {
+        return false;
+      }
+
+      if(mZIPOrPostalCode == null || mZIPOrPostalCode.length() < 1) {
+        return false;
+      }
+
+      return true;
+    }
+
 
   ////////// Inner Class(es) //////////
 

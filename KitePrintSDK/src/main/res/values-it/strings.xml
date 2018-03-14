@@ -91,6 +91,7 @@
     <string name="alert_dialog_message_no_line1">Compila la Riga 1 dell\'indirizzo</string>
     <string name="alert_dialog_message_no_postal_code">Inserisci il tuo codice postale</string>
     <string name="alert_dialog_message_no_email_address">Inserisci un indirizzo email</string>
+    <string name="alert_dialog_message_no_city">Si prega di compilare nella tua città</string>
 
     <string name="alert_dialog_title_invalid_delivery_address">Indirizzo di consegna non valido</string>
     <string name="alert_dialog_message_invalid_delivery_address">Scegli un indirizzo di consegna</string>

@@ -423,7 +423,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
 
     // Make sure we have a shipping address
 
-    if ( mShippingAddress == null )
+    if ( mShippingAddress == null || !mShippingAddress.isFilledIn())
       {
       showErrorDialog( R.string.alert_dialog_title_invalid_delivery_address, R.string.alert_dialog_message_invalid_delivery_address );
 
@@ -697,7 +697,11 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
    *****************************************************/
   private void onShippingAddress()
     {
-    mDeliveryAddressTextView.setText( mShippingAddress.toSingleLineText() );
+    if(mShippingAddress != null && mShippingAddress.isFilledIn()) {
+      mDeliveryAddressTextView.setText(mShippingAddress.toSingleLineText());
+    } else {
+      mDeliveryAddressTextView.setText(getString(R.string.shipping_delivery_address_button_text));
+    }
 
     checkRequestPrices();
     }

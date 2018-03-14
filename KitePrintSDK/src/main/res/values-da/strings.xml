@@ -88,6 +88,7 @@
     <string name="alert_dialog_message_no_line1">Udfyld venligst linje 1 i adressen</string>
     <string name="alert_dialog_message_no_postal_code">Udfyld venligst dit postnummer / ZIP kode</string>
     <string name="alert_dialog_message_no_email_address">Indtast venligst en e-mail adresse</string>
+    <string name="alert_dialog_message_no_city">Udfyld venligst din by</string>
 
     <string name="alert_dialog_title_invalid_delivery_address">Ugyldig leveringsadresse</string>
     <string name="alert_dialog_message_invalid_delivery_address">Vælg venligst en leveringsadresse</string>

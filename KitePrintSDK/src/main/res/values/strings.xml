@@ -114,6 +114,7 @@
     <string name="alert_dialog_message_no_line1">Please fill in Line 1 of the address</string>
     <string name="alert_dialog_message_no_postal_code">Please fill in your Postcode / ZIP code</string>
     <string name="alert_dialog_message_no_email_address">Please enter an email address</string>
+    <string name="alert_dialog_message_no_city">Please fill in your city</string>
 
     <string name="alert_dialog_title_invalid_delivery_address">Invalid Delivery Address</string>
     <string name="alert_dialog_message_invalid_delivery_address">Please choose a delivery address</string>
