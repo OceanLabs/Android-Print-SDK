@@ -1,3 +1,6 @@
+### 5.8.4
+- Added: Check for address required fields and alert message when trying to proceed to checkout without filling in an address
+
 ### 5.8.3
 - Fixed: Previous versions of the sdk that stored unencrypted data should now be compatible with current versions of the sdk and encrypt the existing data
 
