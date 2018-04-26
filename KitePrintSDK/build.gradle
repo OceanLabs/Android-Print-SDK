@@ -54,10 +54,10 @@ dependencies {
     compile 'com.google.zxing:core:3.2.1'
 
     //compile project(':DevicePhotoPicker')
-    compile 'ly.kite:device-photo-picker:5.7.2'
+    compile 'ly.kite:device-photo-picker:5.8.5'
 
     //compile project(':InstagramPhotoPicker' )
-    compile 'ly.kite:instagram-photo-picker:5.7.2'
+    compile 'ly.kite:instagram-photo-picker:5.8.5'
 }
 
 // Exclude PayPal card scanning libs from package
