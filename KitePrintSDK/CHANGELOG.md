@@ -1,3 +1,6 @@
+### 5.8.5
+- Added: Dutch!
+
 ### 5.8.4
 - Added: Check for address required fields and alert message when trying to proceed to checkout without filling in an address
 
