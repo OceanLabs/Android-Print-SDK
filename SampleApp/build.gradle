@@ -7,10 +7,11 @@ buildscript {
         // Uncomment to include Crashlytics (Fabric) crash reporting
         //maven { url 'https://maven.fabric.io/public' }
 
+        google()
     }
     dependencies {
 
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.1.1'
 
         // Uncomment to include Crashlytics (Fabric) crash reporting
         //classpath 'io.fabric.tools:gradle:1.+'
