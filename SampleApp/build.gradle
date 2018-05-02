@@ -7,10 +7,11 @@ buildscript {
         // Uncomment to include Crashlytics (Fabric) crash reporting
         //maven { url 'https://maven.fabric.io/public' }
 
+        google()
     }
     dependencies {
 
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.1.2'
 
         // Uncomment to include Crashlytics (Fabric) crash reporting
         //classpath 'io.fabric.tools:gradle:1.+'
@@ -28,13 +29,13 @@ apply plugin: 'com.android.application'
 //apply plugin: 'io.fabric'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.3'
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "ly.kite.sample"
 
         minSdkVersion 14  // Change the min version to 15 if including Facebook support
-        targetSdkVersion 25
+        targetSdkVersion 27
 
         versionCode 300
         versionName '3.0'
