@@ -321,8 +321,10 @@ public class PosterFragment extends AProductCreationFragment implements PosterAd
         else
           {
           //retrieve preview image and add it to ImageSpec list
-          Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage(mKiteActivity, ViewToBitmap.getFullBitmap(mPosterView));
-          mImageSpecArrayList.get(0).setPreviewImage(bitmap);
+          Bitmap originalBitmap = ViewToBitmap.getFullBitmap(mPosterView);
+          Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace(originalBitmap);
+          Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, cleanBitmap );
+          mImageSpecArrayList.get(0).setPreviewImage( bitmap );
 
           ( (ICallback)mKiteActivity ).posterOnNext();
           }
@@ -723,7 +725,10 @@ public class PosterFragment extends AProductCreationFragment implements PosterAd
     @Override
     public void run()
       {
-      Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage(mKiteActivity, ViewToBitmap.getFullBitmap(mPosterView));
+      Bitmap originalBitmap = ViewToBitmap.getFullBitmap(mPosterView);
+      Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace(originalBitmap);
+      Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, cleanBitmap );
+
       mImageSpecArrayList.get(0).setPreviewImage(bitmap);
 
       ( (ICallback)mKiteActivity ).posterOnNext();

@@ -47,30 +47,30 @@
 
         <ly.kite.widget.CustomTypefaceButton
             android:id="@+id/decrease_button"
+            android:layout_width="@dimen/cta_button_height"
+            android:layout_height="@dimen/cta_button_height"
+            android:layout_marginBottom="2dp"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="2dp"
-            android:layout_marginBottom="2dp"
-            android:layout_width="@dimen/cta_button_height"
             android:layout_weight="0.0"
-            android:layout_height="@dimen/cta_button_height"
             android:background="@android:color/white"
             android:gravity="center"
-            android:textColor="@color/review_and_crop_quantity_highlight"
             android:text="@string/button_symbol_decrement"
+            android:textColor="@color/review_and_crop_quantity_highlight"
             android:textSize="@dimen/review_and_crop_plus_minus_text_size"/>
 
         <ly.kite.widget.CustomTypefaceButton
             android:id="@+id/increase_button"
+            android:layout_width="@dimen/cta_button_height"
+            android:layout_height="@dimen/cta_button_height"
+            android:layout_marginBottom="2dp"
             android:layout_marginLeft="1px"
             android:layout_marginTop="2dp"
-            android:layout_marginBottom="2dp"
-            android:layout_width="@dimen/cta_button_height"
             android:layout_weight="0.0"
-            android:layout_height="@dimen/cta_button_height"
             android:background="@android:color/white"
             android:gravity="center"
-            android:textColor="@color/review_and_crop_quantity_highlight"
             android:text="@string/button_symbol_increment"
+            android:textColor="@color/review_and_crop_quantity_highlight"
             android:textSize="@dimen/review_and_crop_plus_minus_text_size"/>
 
         <ly.kite.widget.CustomTypefaceButton

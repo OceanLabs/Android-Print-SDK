@@ -21,17 +21,20 @@
         android:layout_marginRight="@dimen/basket_item_image_margin"
         android:layout_width="@dimen/basket_item_image_width"
         android:layout_height="fill_parent">
+
         <ImageView
             android:id="@+id/product_image_view"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:scaleType="fitCenter"/>
+
         <TextView
             android:id="@+id/quantity_text_view"
-            android:layout_gravity="top|right"
-            android:layout_margin="@dimen/basket_item_quantity_margin"
             android:layout_width="@dimen/basket_item_quantity_view_size"
             android:layout_height="@dimen/basket_item_quantity_view_size"
+            android:layout_gravity="top|right"
+            android:layout_margin="@dimen/basket_item_quantity_margin"
+            android:alpha="0.8"
             android:background="@android:color/white"
             android:gravity="center"
             android:textColor="@android:color/black"

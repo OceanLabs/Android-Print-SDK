@@ -43,6 +43,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.ActionMode;
@@ -64,6 +65,7 @@ import ly.kite.ordering.ImageSpec;
 import ly.kite.util.Asset;
 import ly.kite.catalogue.Product;
 import ly.kite.R;
+import ly.kite.util.ViewToBitmap;
 import ly.kite.widget.ExtendedRecyclerView;
 
 
@@ -332,6 +334,12 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
           }
         else
           {
+          // Get the cover view as preview image
+          Bitmap originalBitmap = ViewToBitmap.getItemBitmap( mPhotobookView, 0 );
+          Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace(originalBitmap);
+          Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, cleanBitmap );
+          mImageSpecArrayList.get(0).setPreviewImage( bitmap );
+
           ( (ICallback)mKiteActivity ).pbOnNext();
           }
         }
@@ -736,6 +744,12 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     @Override
     public void run()
       {
+      // Get the cover view as preview image
+      Bitmap originalBitmap = ViewToBitmap.getItemBitmap( mPhotobookView, 0 );
+      Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace(originalBitmap);
+      Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, cleanBitmap );
+      mImageSpecArrayList.get(0).setPreviewImage( bitmap );
+
       ( (ICallback)mKiteActivity ).pbOnNext();
       }
     }
