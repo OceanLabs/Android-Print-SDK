@@ -25,7 +25,7 @@
             android:id="@+id/product_image_view"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:scaleType="centerCrop"/>
+            android:scaleType="fitCenter"/>
         <TextView
             android:id="@+id/quantity_text_view"
             android:layout_gravity="top|right"

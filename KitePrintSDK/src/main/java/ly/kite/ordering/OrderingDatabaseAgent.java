@@ -47,6 +47,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Bitmap;
 import android.graphics.RectF;
 import android.util.Log;
 import android.util.SparseArray;
@@ -70,6 +71,7 @@ import ly.kite.pricing.OrderPricing;
 import ly.kite.util.Asset;
 import ly.kite.util.AssetFragment;
 import ly.kite.util.AssetHelper;
+import ly.kite.util.BitmapDBConverter;
 
 
 ///// Class Declaration /////
@@ -86,11 +88,12 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
   static private final String LOG_TAG                                        = "OrderingDatabaseAgent";
 
   static private final String DATABASE_NAME                                  = "ordering.db";
-  static private final int    DATABASE_VERSION                               = 3;
+  static private final int    DATABASE_VERSION                               = 4;
 
   static private final String TABLE_ADDRESS                                  = "Address";
   static private final String TABLE_BASKET                                   = "Basket";
   static private final String TABLE_IMAGE_SPEC                               = "ImageSpec";
+  static private final String TABLE_IMAGE_PREVIEW                            = "ImagePreview";
   static private final String TABLE_IMAGE_SPEC_ADDITIONAL_PARAMETER          = "ImageSpecAdditionalParameter";
   static private final String TABLE_ITEM                                     = "Item";
   static private final String TABLE_ITEM_IMAGE_SPEC                          = "ItemImageSpec";
@@ -160,6 +163,13 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
                   "right           REAL     NOT NULL," +
                   "bottom          REAL     NOT NULL," +
                   "quantity        INTEGER  NOT NULL" +
+                  " )";
+
+  static private final String SQL_CREATE_IMAGE_PREVIEW_TABLE =
+          "CREATE TABLE " + TABLE_IMAGE_PREVIEW +
+                  " ( " +
+                  "id              INTEGER  PRIMARY KEY," +
+                  "imageBytes      BLOB     NULL" +
                   " )";
 
 
@@ -308,6 +318,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
     database.execSQL( SQL_CREATE_ITEM_IMAGE_SPEC_INDEX_1 );
     database.execSQL( SQL_CREATE_OPTION_INDEX_1 );
     database.execSQL( SQL_CREATE_ORDER_ADDITIONAL_PARAMETER_INDEX_1 );
+    database.execSQL( SQL_CREATE_IMAGE_PREVIEW_TABLE );
 
 
     // Reserve the default basket id
@@ -327,6 +338,11 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
       {
       database.execSQL( SQL_CREATE_IMAGE_SPEC_ADDITIONAL_PARAMETER_TABLE );
       database.execSQL( SQL_CREATE_IMAGE_SPEC_ADDITIONAL_PARAMETER_INDEX_1 );
+      database.execSQL( SQL_CREATE_IMAGE_PREVIEW_TABLE );
+      }
+    else if ( oldVersionNumber == 3 && newVersionNumber == 4 )
+      {
+      database.execSQL( SQL_CREATE_IMAGE_PREVIEW_TABLE );
       }
     else
       {
@@ -340,6 +356,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
       database.execSQL( SQL_DROP_ITEM_TABLE );
       database.execSQL( SQL_DROP_ORDER_TABLE );
       database.execSQL( SQL_DROP_BASKET_TABLE );
+      database.execSQL( SQL_CREATE_IMAGE_PREVIEW_TABLE );
 
       onCreate( database );
       }
@@ -802,6 +819,13 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
 
     if ( itemId < 0 ) return;
 
+    // Save preview image if available
+
+    Asset asset = imageSpecList.get(0).getAsset();
+    if( asset != null && asset.hasPreviewImage())
+      {
+        insertPreviewImage(itemId, asset.getPreviewBitmap());
+      }
 
     // Create the image specs
 
@@ -1285,6 +1309,46 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
       Log.e( LOG_TAG, "Unable to insert new image spec parameter", exception );
 
       return ( -1 );
+      }
+    }
+
+  /*****************************************************
+   *
+   * Inserts a preview image
+   *
+   *****************************************************/
+  private void insertPreviewImage(long itemId, Bitmap bitmap)
+    {
+
+    final SQLiteDatabase database = getWritableDatabase();
+
+    if (database == null)
+      {
+      Log.e(LOG_TAG, "Unable to get writable database");
+
+      return;
+      }
+
+    try
+      {
+      //Convert bitmap to byte array
+      byte[] imageBytes = BitmapDBConverter.getBytesFromBitmap(bitmap);
+
+      // Create and try to insert the new item image spec
+      final ContentValues contentValues = new ContentValues();
+
+      contentValues.put("id", itemId);
+      contentValues.put("imageBytes", imageBytes);
+
+      database.insert(TABLE_IMAGE_PREVIEW, null, contentValues);
+      }
+    catch (Exception exception)
+      {
+      Log.e(LOG_TAG, "Unable to insert new preview image", exception);
+      }
+    finally
+      {
+      if (database != null) database.close();
       }
     }
 
@@ -1931,6 +1995,10 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
           if (imageSpec != null) imageSpec.setCroppedForProductId(productId);
         }
 
+        // Get preview image
+        Bitmap previewImage = selectPreviewImage(itemId);
+        // Add it to image spec list
+        imageSpecList.get(0).setPreviewImage(previewImage);
 
         // Create a basket item and add it to our list
 
@@ -2018,6 +2086,52 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
       if ( cursor != null ) cursor.close();
       }
 
+    }
+
+  /*****************************************************
+   *
+   * Returns the preview image if available
+   *
+   *****************************************************/
+  Bitmap selectPreviewImage(long itemId)
+    {
+    // Construct the SQL statement:
+    final StringBuilder sqlStringBuilder = new StringBuilder()
+                .append("SELECT imageBytes")
+                .append("  FROM ").append(TABLE_IMAGE_PREVIEW)
+                .append(" WHERE id = ").append(itemId);
+
+    SQLiteDatabase database = null;
+    Cursor cursor = null;
+
+    try
+      {
+      // Open the database
+      database = getWritableDatabase();
+      // Execute the query, and get a cursor for the result set
+      cursor = database.rawQuery(sqlStringBuilder.toString(), null);
+
+      if( cursor != null && cursor.moveToFirst() )
+        {
+        int index = cursor.getColumnIndex("imageBytes");
+        byte[] bytes = cursor.getBlob(index);
+        if (bytes != null) return BitmapDBConverter.getBitmapFromBytes(bytes);
+        }
+        return null;
+      }
+    catch (Exception exception)
+      {
+      Log.e(LOG_TAG, "Unable to get preview image", exception);
+      return null;
+      }
+    finally
+      {
+      // Make sure the cursor is closed
+      if (cursor != null) cursor.close();
+
+      // Make sure the database is closed
+      if (database != null) database.close();
+      }
     }
 
 
@@ -2789,6 +2903,18 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
     catch ( Exception exception )
       {
       Log.e( LOG_TAG, "Unable to delete item", exception );
+      }
+
+    //Remove the preview image
+    final String deleteImagePreviewSQLString = "DELETE FROM ImagePreview WHERE id = " + itemId;
+
+    try
+      {
+      database.execSQL(deleteImagePreviewSQLString);
+      }
+    catch (Exception e)
+      {
+      Log.i(LOG_TAG, "Unable to delete preview image", e);
       }
     }
 

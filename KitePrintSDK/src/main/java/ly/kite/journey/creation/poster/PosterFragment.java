@@ -39,6 +39,7 @@ package ly.kite.journey.creation.poster;
 
 ///// Import(s) /////
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.view.ActionMode;
@@ -63,6 +64,7 @@ import ly.kite.journey.creation.AProductCreationFragment;
 import ly.kite.journey.creation.IUpdatedImageListener;
 import ly.kite.ordering.ImageSpec;
 import ly.kite.util.Asset;
+import ly.kite.util.ViewToBitmap;
 import ly.kite.widget.ExtendedRecyclerView;
 
 
@@ -318,6 +320,10 @@ public class PosterFragment extends AProductCreationFragment implements PosterAd
           }
         else
           {
+          //retrieve preview image and add it to ImageSpec list
+          Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage(mKiteActivity, ViewToBitmap.getFullBitmap(mPosterView));
+          mImageSpecArrayList.get(0).setPreviewImage(bitmap);
+
           ( (ICallback)mKiteActivity ).posterOnNext();
           }
         }
@@ -717,6 +723,9 @@ public class PosterFragment extends AProductCreationFragment implements PosterAd
     @Override
     public void run()
       {
+      Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage(mKiteActivity, ViewToBitmap.getFullBitmap(mPosterView));
+      mImageSpecArrayList.get(0).setPreviewImage(bitmap);
+
       ( (ICallback)mKiteActivity ).posterOnNext();
       }
     }

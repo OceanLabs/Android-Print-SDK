@@ -783,5 +783,9 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
     public void onLoadError();
     }
 
+    public Bitmap getPreviewBitmap() {
+      return mEditableMaskedImageView.getPreviewBitmap();
+    }
+
   }
 
