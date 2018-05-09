@@ -232,7 +232,6 @@ public class StencilImageView extends ImageView
 
     blendCanvas.drawBitmap( mOriginalImageBitmap, sourceRect, targetRect, paint );
 
-
     super.setImageBitmap( blendedBitmap );
     }
 

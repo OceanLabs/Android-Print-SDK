@@ -199,4 +199,6 @@
     <dimen name="failure_banner_height">109dp</dimen>
     <dimen name="failure_banner_text_size">14sp</dimen>
 
+    <dimen name="product_preview_size">200px</dimen>
+
 </resources>

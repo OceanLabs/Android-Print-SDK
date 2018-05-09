@@ -41,6 +41,7 @@ package ly.kite.journey.creation.phonecase;
 
 import android.annotation.SuppressLint;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -53,6 +54,7 @@ import ly.kite.R;
 import ly.kite.journey.creation.AEditImageFragment;
 import ly.kite.catalogue.Product;
 import ly.kite.util.AssetFragment;
+import ly.kite.util.ViewToBitmap;
 
 
 ///// Class Declaration /////
@@ -219,6 +221,14 @@ public class PhoneCaseFragment extends AEditImageFragment
   @Override
   protected void onEditingComplete( AssetFragment assetFragment )
     {
+    // Fetch the preview image and resize it
+    Bitmap originalBitmap = mEditableImageContainerFrame.getPreviewBitmap();
+    Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace(originalBitmap);
+    Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, cleanBitmap );
+    mImageSpecArrayList.get(0).setPreviewImage( bitmap );
+
+    assetFragment.setAssetPreviewBitmap(ViewToBitmap.resizeAsPreviewImage(mKiteActivity, bitmap));
+
     if ( assetFragment != null && mKiteActivity instanceof ICallback )
       {
       ( (ICallback)mKiteActivity ).pcOnCreated( assetFragment );

@@ -475,6 +475,17 @@ public class ImageSpec implements Parcelable
              StringUtils.areBothNullOrEqual( mCroppedForProductId, otherImageSpec.mCroppedForProductId ) );
     }
 
+  /*****************************************************
+   *
+   * Sets the preview image
+   *
+   *****************************************************/
+  public void setPreviewImage(Bitmap bitmap)
+    {
+      if(bitmap != null) {
+        mAssetFragment.setAssetPreviewBitmap(bitmap);
+      }
+    }
 
   ////////// Inner Class(es) //////////
 

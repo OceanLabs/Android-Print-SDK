@@ -43,6 +43,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.ActionMode;
@@ -63,6 +64,7 @@ import ly.kite.ordering.ImageSpec;
 import ly.kite.util.Asset;
 import ly.kite.catalogue.Product;
 import ly.kite.R;
+import ly.kite.util.ViewToBitmap;
 import ly.kite.widget.ExtendedRecyclerView;
 
 
@@ -318,6 +320,12 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
           }
         else
           {
+          // Get the first view (January page) as preview image
+          Bitmap originalBitmap = ViewToBitmap.getItemBitmap( mCalendarView, 0 );
+          Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace(originalBitmap);
+          Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, cleanBitmap );
+          mImageSpecArrayList.get(0).setPreviewImage( bitmap );
+
           ( (ICallback)mKiteActivity ).calOnNext();
           }
         }
@@ -735,6 +743,12 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
     @Override
     public void run()
       {
+      // Get the first view (January page) as preview image
+      Bitmap originalBitmap = ViewToBitmap.getItemBitmap( mCalendarView, 0 );
+      Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace(originalBitmap);
+      Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, cleanBitmap );
+      mImageSpecArrayList.get(0).setPreviewImage( bitmap );
+
       ( (ICallback)mKiteActivity ).calOnNext();
       }
     }

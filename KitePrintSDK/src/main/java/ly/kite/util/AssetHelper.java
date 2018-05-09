@@ -668,7 +668,13 @@ public class AssetHelper
 
       transferBytes( sourceStream, targetStream );
 
-      return ( new Asset( basketAssetFile ) );
+      Asset result = new Asset(basketAssetFile);
+      //add preview image if available
+      if(sourceAsset.hasPreviewImage())
+        {
+          result.setPreviewBitmap(sourceAsset.getPreviewBitmap());
+        }
+      return result;
       }
     catch ( IOException ioe )
       {

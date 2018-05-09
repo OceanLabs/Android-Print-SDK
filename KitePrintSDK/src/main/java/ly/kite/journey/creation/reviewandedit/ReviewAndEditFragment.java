@@ -42,6 +42,7 @@ package ly.kite.journey.creation.reviewandedit;
 
 ///// Class Declaration /////
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.LayoutInflater;
@@ -57,6 +58,7 @@ import ly.kite.journey.creation.AProductCreationFragment;
 import ly.kite.catalogue.Product;
 import ly.kite.journey.creation.IUpdatedImageListener;
 import ly.kite.ordering.ImageSpec;
+import ly.kite.util.ViewToBitmap;
 
 /*****************************************************
  *
@@ -299,6 +301,12 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements I
           }
         else
           {
+           //Get preview image
+           Bitmap originalBitmap = ViewToBitmap.getItemBitmap(mGridView, 0);
+           Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace(mKiteActivity, originalBitmap, true);
+           Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, cleanBitmap );
+           mImageSpecArrayList.get(0).setPreviewImage( bitmap );
+
           ( (ICallback) mKiteActivity ).reOnConfirm();
           }
         }
@@ -373,6 +381,12 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements I
     @Override
     public void run()
       {
+      //Get preview image
+      Bitmap originalBitmap = ViewToBitmap.getItemBitmap(mGridView, 0);
+      Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace(mKiteActivity, originalBitmap, true);
+      Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, cleanBitmap );
+      mImageSpecArrayList.get(0).setPreviewImage( bitmap );
+
       ( (ICallback)mKiteActivity ).reOnConfirm();
       }
     }

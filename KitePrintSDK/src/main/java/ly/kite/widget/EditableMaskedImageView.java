@@ -490,6 +490,9 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
    *****************************************************/
   private void initialise( Context context )
     {
+    //must be enabled in order to temp. cache canvas bitmap
+    this.setDrawingCacheEnabled(true);
+
     mImageToBlendPaint = new Paint();
     mImageToBlendPaint.setXfermode( new PorterDuffXfermode( PorterDuff.Mode.SRC_ATOP ) );
     mImageToBlendPaint.setAntiAlias( true );
@@ -1378,6 +1381,10 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
       invalidate();
       }
 
+    }
+
+    public Bitmap getPreviewBitmap() {
+      return this.getDrawingCache();
     }
 
   }

@@ -114,6 +114,7 @@ public class Asset implements Parcelable
   private URL        mRemoteURL;
   private int        mBitmapResourceId;
   private Bitmap     mBitmap;
+  private Bitmap     mPreviewBitmap;
   private String     mImageFilePath;
   private byte[]     mImageBytes;
   private MIMEType   mMIMEType;
@@ -627,6 +628,17 @@ public class Asset implements Parcelable
 
   /*****************************************************
    *
+   * Returns the product preview image
+   *
+   *****************************************************/
+  public Bitmap getPreviewBitmap()
+    {
+      return mPreviewBitmap;
+    }
+
+
+  /*****************************************************
+   *
    * Returns the image file name.
    *
    * @throw IllegalStateException if the asset was not
@@ -678,6 +690,15 @@ public class Asset implements Parcelable
     return ( mMIMEType );
     }
 
+  /*****************************************************
+   *
+   * Sets the product preview image
+   *
+   *****************************************************/
+  public void setPreviewBitmap(Bitmap bitmap)
+    {
+      this.mPreviewBitmap = bitmap;
+    }
 
   /*****************************************************
    *
@@ -759,6 +780,15 @@ public class Asset implements Parcelable
     throw ( new IllegalStateException( "Invalid asset type: " + mType ) );
     }
 
+  /*****************************************************
+   *
+   * Checks if there is preview image available
+   *
+   *****************************************************/
+  public Boolean hasPreviewImage()
+    {
+      return mPreviewBitmap != null;
+    }
 
   /*****************************************************
    *
