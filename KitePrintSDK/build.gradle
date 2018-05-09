@@ -24,7 +24,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 27
         versionName '1.0'
-        versionCode 103
+        versionCode 104
     }
 
     sourceSets {
