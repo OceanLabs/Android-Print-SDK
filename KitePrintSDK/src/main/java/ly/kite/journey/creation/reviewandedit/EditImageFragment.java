@@ -142,6 +142,8 @@ public class EditImageFragment extends AEditImageFragment
       {
       setBackwardsTextViewVisibility( View.VISIBLE );
       setBackwardsTextViewText( backwardsText );
+      setBackwardsTextViewEnabled(true);
+      setBackwardsTextViewOnClickListener(this);
       }
     else
       {
