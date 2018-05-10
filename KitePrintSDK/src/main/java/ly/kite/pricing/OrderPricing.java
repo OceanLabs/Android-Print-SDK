@@ -612,5 +612,14 @@ public class OrderPricing implements Parcelable
 
     }
 
+    /*****************************************************
+     *
+     * Check for free checkout
+     *
+     *****************************************************/
+    public boolean isCheckoutFree() {
+      return mTotalCost.getDefaultAmountWithFallback().isZero();
+    }
+
   }
 

@@ -606,7 +606,13 @@ public class Order implements Parcelable /* , Serializable */
       sanitisedOrder.setPromoCode( getPromoCode() );
 
       sanitisedOrder.setOrderPricing( getOrderPricing() );
-      sanitisedOrder.setProofOfPayment( getProofOfPayment() );
+
+      // Do not set proof of payment for free checkout(full discount) as it will crash the app
+      if(!getOrderPricing().isCheckoutFree())
+        {
+        sanitisedOrder.setProofOfPayment(getProofOfPayment());
+        }
+
       sanitisedOrder.setReceipt( getReceipt() );
 
 
