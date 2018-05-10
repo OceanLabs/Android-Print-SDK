@@ -70,6 +70,15 @@
                     android:text="@string/shipping_phone_reason"
                     android:textSize="@dimen/explanation_text_size"/>
 
+                <ly.kite.widget.CustomTypefaceTextView
+                    android:id="@+id/privacy_terms_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:padding="@dimen/privacy_terms_text_padding"
+                    android:textSize="@dimen/privacy_terms_text_size"/>
+
             </LinearLayout>
 
         </LinearLayout>

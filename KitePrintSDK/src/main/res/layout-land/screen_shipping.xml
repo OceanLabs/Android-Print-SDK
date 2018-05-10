@@ -30,15 +30,31 @@
                     android:paddingLeft="@dimen/activity_horizontal_margin"
                     android:paddingRight="@dimen/activity_horizontal_margin">
 
-                    <ly.kite.widget.CustomTypefaceButton
-                        android:id="@+id/address_picker_button"
-                        style="@style/ShippingAddressPickerButton"
-                        android:layout_gravity="top"
+                    <LinearLayout
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/shipping_delivery_address_button_text"
-                        android:onClick="onChooseDeliveryAddressButtonClicked"
-                        android:textSize="@dimen/delivery_address_button_text_size"/>
+                        android:orientation="vertical">
+
+                        <ly.kite.widget.CustomTypefaceButton
+                            android:id="@+id/address_picker_button"
+                            style="@style/ShippingAddressPickerButton"
+                            android:layout_gravity="top"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/shipping_delivery_address_button_text"
+                            android:onClick="onChooseDeliveryAddressButtonClicked"
+                            android:textSize="@dimen/delivery_address_button_text_size"/>
+
+                        <ly.kite.widget.CustomTypefaceTextView
+                            android:id="@+id/privacy_terms_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:padding="@dimen/privacy_terms_text_padding"
+                            android:textSize="@dimen/privacy_terms_text_size"/>
+
+                    </LinearLayout>
 
                 </FrameLayout>
 

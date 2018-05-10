@@ -129,6 +129,8 @@
     <dimen name="basket_total_price_size">22sp</dimen>
 
     <dimen name="delivery_address_button_text_size">18sp</dimen>
+    <dimen name="privacy_terms_text_size">14sp</dimen>
+    <dimen name="privacy_terms_text_padding">32dp</dimen>
 
     <dimen name="address_book_title_text_size">18sp</dimen>
     <dimen name="address_book_detail_text_size">18sp</dimen>
