@@ -43,6 +43,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Parcelable;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.Spannable;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.URLSpan;
+import android.text.style.UnderlineSpan;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -203,6 +210,24 @@ public class ShippingActivity extends AShippingActivity implements View.OnClickL
 
     mForwardsTextView.setText( R.string.shipping_proceed_button_text );
 
+
+    // Set up Privacy Policy and Terms of Use links
+
+    TextView mPrivacyTermsTextView = findViewById(R.id.privacy_terms_text);
+
+    String html = getString(R.string.privacy_terms_text_html, getResources().getString(R.string.url_terms_of_use), getResources().getString(R.string.url_privacy_policy));
+    Spannable result = (Spannable) Html.fromHtml(html);
+
+    for (URLSpan u: result.getSpans(0, result.length(), URLSpan.class)) {
+      result.setSpan(new UnderlineSpan() {
+        public void updateDrawState(TextPaint tp) {
+          tp.setUnderlineText(false);
+        }
+      }, result.getSpanStart(u), result.getSpanEnd(u), 0);
+    }
+
+    mPrivacyTermsTextView.setText(result);
+    mPrivacyTermsTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
     // Display any values
 
