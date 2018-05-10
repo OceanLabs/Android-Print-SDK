@@ -603,17 +603,23 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
         {
         Resources resources = mActivity.getResources();
 
-        //check if the page already contains an asset
-        //border is covered by the image so it should be used only for empty pages ; falpha is useless for empty pages
-        if(mImageSpecArrayList.get(assetIndex) != null) {
-          newHighlightedCheckableImage.setAlpha(0.3f);
-        } else {
-          newHighlightedCheckableImage.setHighlightBorderSizePixels(resources.getDimensionPixelSize(R.dimen.checkable_image_highlight_border_size));
-          newHighlightedCheckableImage.setHighlightBorderColour(resources.getColor(R.color.photobook_target_image_highlight));
-          newHighlightedCheckableImage.setHighlightBorderShowing(true);
-        }
-
-        mCurrentlyHighlightedAssetIndex = assetIndex;
+        //don't take into account the last empty page
+        if(assetIndex < mImageSpecArrayList.size())
+          {
+          //check if the page already contains an asset
+          //border is covered by the image so it should be used only for empty pages ; alpha is useless for empty pages
+          if (mImageSpecArrayList.get(assetIndex) != null)
+            {
+            newHighlightedCheckableImage.setAlpha(0.3f);
+            }
+          else
+            {
+            newHighlightedCheckableImage.setHighlightBorderSizePixels(resources.getDimensionPixelSize(R.dimen.checkable_image_highlight_border_size));
+            newHighlightedCheckableImage.setHighlightBorderColour(resources.getColor(R.color.photobook_target_image_highlight));
+            newHighlightedCheckableImage.setHighlightBorderShowing(true);
+            }
+          mCurrentlyHighlightedAssetIndex = assetIndex;
+          }
         }
       }
     }
