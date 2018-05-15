@@ -1998,7 +1998,9 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
         // Get preview image
         Bitmap previewImage = selectPreviewImage(itemId);
         // Add it to image spec list
-        imageSpecList.get(0).setPreviewImage(previewImage);
+        if(imageSpecList.size() > 0) {
+          imageSpecList.get(0).setPreviewImage(previewImage);
+        }
 
         // Create a basket item and add it to our list
 

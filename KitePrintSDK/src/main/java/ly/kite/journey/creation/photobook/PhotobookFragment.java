@@ -359,7 +359,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
   public void onClickImage( int imageIndex, View view )
     {
     // Determine whether the click is on a filled, or blank, page.
-    if ( mImageSpecArrayList.get( imageIndex) != null )
+    if ( imageIndex < mImageSpecArrayList.size() && mImageSpecArrayList.get( imageIndex) != null)
       {
       ///// Filled page /////
 
@@ -481,7 +481,6 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
       // Get the location
       float x = event.getX();
       float y = event.getY();
-
 
       // Get the asset that we are currently dragged over
 
@@ -678,7 +677,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
       {
       // Make sure we haven't dropped the image back on itself
 
-      if ( dropImageIndex != mDraggedImageIndex )
+      if ( dropImageIndex != mDraggedImageIndex && mDraggedImageIndex < mImageSpecArrayList.size() && dropImageIndex < mImageSpecArrayList.size())
         {
         // Simply swap the two positions
 
