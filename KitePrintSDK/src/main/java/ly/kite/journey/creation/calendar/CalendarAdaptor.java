@@ -234,6 +234,7 @@ public class CalendarAdaptor extends RecyclerView.Adapter
 
           ImageAgent.with( mActivity )
                   .load( assetFragment )
+                  .setHighPriority( true )
                   .resizeForDimen( checkableImageContainerFrame, R.dimen.image_default_resize_size, R.dimen.image_default_resize_size )
                   .onlyScaleDown()
                   .reduceColourSpace()

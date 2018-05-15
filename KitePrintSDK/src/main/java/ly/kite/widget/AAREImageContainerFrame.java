@@ -490,6 +490,7 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
 
         ImageAgent.with( getContext() )
                 .load( requestAssetFragment )
+                .setHighPriority( true )
                 .reduceColourSpace()
                 .resize( mWidth, mHeight )
                 .onlyScaleDown()
@@ -503,6 +504,7 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
 
         ImageAgent.with( getContext() )
                 .load( requestAsset )
+                .setHighPriority( true )
                 .reduceColourSpace()
                 .resize( mWidth, mHeight )
                 .onlyScaleDown()
@@ -529,6 +531,7 @@ abstract public class AAREImageContainerFrame extends FrameLayout implements IIm
 
         ImageAgent.with( getContext() )
                 .load( drawableResourceId )
+                .setHighPriority( true )
                 .reduceColourSpace()
                 .resize( mWidth, mHeight )
                 .onlyScaleDown()
