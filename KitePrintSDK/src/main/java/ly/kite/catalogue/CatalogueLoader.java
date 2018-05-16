@@ -586,18 +586,13 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
         if (userJourneyType.equals(UserJourneyType.POSTER)) {
           //For picture collages on posters the aspect ration of each image should be one (square images)
           //For ordinary posters the aspect ratio should be 0.707 (portrait ration)
-          imageAspectRatio = productType.contains("Collage")? 1f : 0.707f;
+          imageAspectRatio = ( gridCountX > 1 || gridCountY > 1 ) ? 1f : 0.707f;
         } else if (userJourneyType.equals(UserJourneyType.PHOTOBOOK)) {
           //Add image count to title (there are multiple products with the same name but different image count)
           productName += " (" + imagesPerPage + ")";
-          //Types of photo-books by layout: Square (1.0) , Landscape (1.33333...) and Portrait(0.75)
-          if(productType.contains("Landscape")) {
-            imageAspectRatio = 1.33333f;
-          } else if(productType.contains("Portrait")) {
-            imageAspectRatio = 0.75f;
-          } else {
-            imageAspectRatio = 1.0f;
-          }
+          //Determine photo-books layout by size
+          SingleUnitSize sizeInCM = size.get(UnitOfLength.CENTIMETERS);
+          imageAspectRatio = sizeInCM.getWidth() / sizeInCM.getHeight();
         }
 
         boolean                supportsTextOnBorder = productDetailJSONObject.optBoolean( JSON_NAME_SUPPORTS_TEXT_ON_BORDER, false );
