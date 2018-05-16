@@ -46,7 +46,8 @@
             android:name=".checkout.PaymentActivity"
             android:label="@string/title_activity_payment"
             android:theme="@style/Theme.KiteSDK.Payment"
-            android:windowSoftInputMode="stateHidden|adjustPan"/>
+            android:windowSoftInputMode="stateHidden|adjustPan"
+            android:configChanges="screenSize|orientation|screenLayout|navigation"/>
 
 
         <activity
