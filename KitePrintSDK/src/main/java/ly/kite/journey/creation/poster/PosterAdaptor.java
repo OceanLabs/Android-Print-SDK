@@ -81,6 +81,7 @@ public class PosterAdaptor extends RecyclerView.Adapter
   ////////// Member Variable(s) //////////
 
   private Activity                                   mActivity;
+  private PosterFragment                             mPosterFragment;
   private ArrayList<ImageSpec>                       mImageSpecArrayList;
   private IListener                                  mListener;
 
@@ -105,9 +106,10 @@ public class PosterAdaptor extends RecyclerView.Adapter
 
   ////////// Constructor(s) //////////
 
-  PosterAdaptor( Activity activity, ArrayList<ImageSpec> imageSpecArrayList, float aspectRatio, IListener listener )
+  PosterAdaptor( Activity activity, PosterFragment posterFragment ,ArrayList<ImageSpec> imageSpecArrayList, float aspectRatio, IListener listener )
     {
     mActivity                   = activity;
+    mPosterFragment             = posterFragment;
     mImageSpecArrayList         = imageSpecArrayList;
     mListener                   = listener;
 
@@ -196,7 +198,7 @@ public class PosterAdaptor extends RecyclerView.Adapter
         }
 
 
-      imageSpec.loadThumbnail( mActivity, checkableImageContainerFrame );
+      imageSpec.loadThumbnail( mActivity, checkableImageContainerFrame, mPosterFragment.isPosterCollage());
       }
     else
       {

@@ -637,7 +637,7 @@ public class PosterFragment extends AProductCreationFragment implements PosterAd
    *****************************************************/
   private void setUpPosterView()
     {
-    mPosterAdaptor = new PosterAdaptor( mKiteActivity, mImageSpecArrayList, getPosterAspectRatio(), this );
+    mPosterAdaptor = new PosterAdaptor( mKiteActivity, this , mImageSpecArrayList, getPosterAspectRatio(), this );
 
     mPosterView.setAdapter( mPosterAdaptor );
 

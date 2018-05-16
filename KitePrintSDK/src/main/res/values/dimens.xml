@@ -101,7 +101,7 @@
     <dimen name="image_check_size">20dp</dimen>
 
     <dimen name="image_default_resize_size">320px</dimen>
-    <dimen name="image_default_thumbnail_size">320px</dimen>
+    <dimen name="image_default_thumbnail_size">200px</dimen>
 
     <dimen name="page_number_text_inset">10dp</dimen>
     <dimen name="page_number_text_size">14sp</dimen>
@@ -202,5 +202,6 @@
     <dimen name="failure_banner_text_size">14sp</dimen>
 
     <dimen name="product_preview_size">200px</dimen>
+    <dimen name="single_image_poster_size">800px</dimen>
 
 </resources>
