@@ -322,6 +322,11 @@ public class MainActivity extends ADeepLinkableActivity
     kiteSDK.setCustomiser( SampleSDKCustomiser.class );
 
 
+    // Set Kite analytics, by default this is off
+
+    kiteSDK.setKiteAnalyticsEnabled(false);
+
+
     return ( kiteSDK );
     }
 

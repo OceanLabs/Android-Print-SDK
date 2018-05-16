@@ -127,32 +127,16 @@ public class Analytics
   private static final String  JSON_PROPERTY_NAME_ENTRY_POINT              = "Entry Point";
   private static final String  JSON_PROPERTY_NAME_PRODUCT_NAME             = "Product Name";
 
-  private static final String  JSON_PROPERTY_NAME_EMAIL                    = "email";
-  private static final String  JSON_PROPERTY_NAME_PHONE                    = "phone";
-
   private static final String  JSON_PROPERTY_NAME_PAYMENT_METHOD           = "Payment Method";
-  private static final String  JSON_PROPERTY_NAME_PRINT_ORDER_ID           = "Print Order Id";
   private static final String  JSON_PROPERTY_NAME_PRINT_SUBMISSION_SUCCESS = "Print Submission Success";
   private static final String  JSON_PROPERTY_NAME_PRINT_SUBMISSION_ERROR   = "Print Submission Error";
   private static final String  JSON_PROPERTY_NAME_PRODUCT                  = "Product";
-  private static final String  JSON_PROPERTY_NAME_PROOF_OF_PAYMENT         = "Proof of Payment";
-  private static final String  JSON_PROPERTY_NAME_SHIPPING_EMAIL           = "Shipping Email";
-  private static final String  JSON_PROPERTY_NAME_SHIPPING_PHONE           = "Shipping Phone";
   private static final String  JSON_PROPERTY_NAME_SHIPPING_SCREEN_VARIANT  = "Shipping Screen Variant";
   private static final String  JSON_PROPERTY_NAME_SHOW_PHONE_ENTRY_FIELD   = "Showing Phone Entry Field";
   private static final String  JSON_PROPERTY_NAME_VOUCHER_CODE             = "Voucher Code";
 
   private static final String  JSON_PROPERTY_NAME_COST                     = "Cost";
   private static final String  JSON_PROPERTY_NAME_JOB_COUNT                = "Job Count";
-  private static final String  JSON_PROPERTY_NAME_SHIPPING_RECIPIENT       = "Shipping Recipient";
-  private static final String  JSON_PROPERTY_NAME_SHIPPING_LINE_1          = "Shipping Line 1";
-  private static final String  JSON_PROPERTY_NAME_SHIPPING_LINE_2          = "Shipping Line 2";
-  private static final String  JSON_PROPERTY_NAME_SHIPPING_CITY            = "Shipping City";
-  private static final String  JSON_PROPERTY_NAME_SHIPPING_COUNTY          = "Shipping County";
-  private static final String  JSON_PROPERTY_NAME_SHIPPING_POSTCODE        = "Shipping Postcode";
-  private static final String  JSON_PROPERTY_NAME_SHIPPING_COUNTRY         = "Shipping Country";
-  private static final String  JSON_PROPERTY_NAME_SHIPPING_COUNTRY_CODE2   = "Shipping Country Code2";
-  private static final String  JSON_PROPERTY_NAME_SHIPPING_COUNTRY_CODE3   = "Shipping Country Code3";
 
   public  static final String  ENTRY_POINT_JSON_PROPERTY_VALUE_HOME_SCREEN = "Home Screen";
 
@@ -245,25 +229,17 @@ public class Analytics
 
       jsonObject.put( JSON_PROPERTY_NAME_PRODUCT, productNameJSONArray );
 
-
-      // Proof of payment
-
-      jsonObject.put( JSON_PROPERTY_NAME_PROOF_OF_PAYMENT, printOrder.getProofOfPayment() );
-
-
       ///// Print submission /////
 
       Exception lastPrintSubmissionError = printOrder.getLastPrintSubmissionError();
-      String receipt = printOrder.getReceipt();
 
       if ( lastPrintSubmissionError != null )
         {
         jsonObject.put( JSON_PROPERTY_NAME_PRINT_SUBMISSION_SUCCESS, JSON_PROPERTY_VALUE_FALSE );
         jsonObject.put( JSON_PROPERTY_NAME_PRINT_SUBMISSION_ERROR, lastPrintSubmissionError.toString() );
         }
-      else if ( receipt != null )
+      else
         {
-        jsonObject.put( JSON_PROPERTY_NAME_PRINT_ORDER_ID, receipt );
         jsonObject.put( JSON_PROPERTY_NAME_PRINT_SUBMISSION_SUCCESS, JSON_PROPERTY_VALUE_TRUE );
         jsonObject.put( JSON_PROPERTY_NAME_PRINT_SUBMISSION_ERROR, JSON_PROPERTY_VALUE_FALSE );
         }
@@ -274,50 +250,6 @@ public class Analytics
       String promoCode = printOrder.getPromoCode();
 
       if ( promoCode != null ) jsonObject.put( JSON_PROPERTY_NAME_VOUCHER_CODE, promoCode );
-
-
-      ///// User data /////
-
-      JSONObject userDataJSONObject = printOrder.getUserData();
-
-      if ( userDataJSONObject != null )
-        {
-        String email = userDataJSONObject.optString( JSON_PROPERTY_NAME_EMAIL, null );
-        String phone = userDataJSONObject.optString( JSON_PROPERTY_NAME_PHONE, null );
-
-        if ( email != null ) jsonObject.put( JSON_PROPERTY_NAME_SHIPPING_EMAIL, email );
-        if ( phone != null ) jsonObject.put( JSON_PROPERTY_NAME_SHIPPING_PHONE, phone );
-        }
-
-
-      ///// Shipping address /////
-
-      Address shippingAddress = printOrder.getShippingAddress();
-
-      if ( shippingAddress != null )
-        {
-        jsonObject.put( JSON_PROPERTY_NAME_SHIPPING_RECIPIENT, nonNullString( shippingAddress.getRecipientName() ) );
-        jsonObject.put( JSON_PROPERTY_NAME_SHIPPING_LINE_1,    nonNullString( shippingAddress.getLine1() ) );
-        jsonObject.put( JSON_PROPERTY_NAME_SHIPPING_LINE_2,    nonNullString( shippingAddress.getLine2() ) );
-        jsonObject.put( JSON_PROPERTY_NAME_SHIPPING_CITY,      nonNullString( shippingAddress.getCity() ) );
-        jsonObject.put( JSON_PROPERTY_NAME_SHIPPING_COUNTY,    nonNullString( shippingAddress.getStateOrCounty() ) );
-        jsonObject.put( JSON_PROPERTY_NAME_SHIPPING_POSTCODE,  nonNullString( shippingAddress.getZipOrPostalCode() ) );
-
-        Country country = shippingAddress.getCountry();
-
-        if ( country != null )
-          {
-          jsonObject.put( JSON_PROPERTY_NAME_SHIPPING_COUNTRY,       nonNullString( country.displayName() ) );
-          jsonObject.put( JSON_PROPERTY_NAME_SHIPPING_COUNTRY_CODE2, nonNullString( country.iso2Code() ) );
-          jsonObject.put( JSON_PROPERTY_NAME_SHIPPING_COUNTRY_CODE3, nonNullString( country.iso3Code() ) );
-          }
-        else
-          {
-          jsonObject.put( JSON_PROPERTY_NAME_SHIPPING_COUNTRY,       "" );
-          jsonObject.put( JSON_PROPERTY_NAME_SHIPPING_COUNTRY_CODE2, "" );
-          jsonObject.put( JSON_PROPERTY_NAME_SHIPPING_COUNTRY_CODE3, "" );
-          }
-        }
 
 
       ///// Cost /////

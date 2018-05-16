@@ -132,6 +132,8 @@ public class KiteSDK
   static private final String PARAMETER_NAME_ENVIRONMENT_NAME                      = "environment_name";
   static private final String PARAMETER_NAME_API_ENDPOINT                          = "api_endpoint";
 
+  static private final String PARAMETER_NAME_KITE_ANALYTICS_ENABLED                = "analytics_enabled";
+
   static private final String PARAMETER_NAME_PAYMENT_ACTIVITY_ENVIRONMENT          = "payment_activity_environment";
   static private final String PARAMETER_NAME_PAYPAL_ENVIRONMENT                    = "paypal_environment";
   static private final String PARAMETER_NAME_PAYPAL_API_HOST                       = "paypal_api_host";
@@ -1012,6 +1014,30 @@ public class KiteSDK
       }
 
     return ( mCustomiser );
+    }
+
+    /*****************************************************
+     *
+     * Enables the inbuilt Kite analytics. By default this
+     * is set to false.
+     *
+     *****************************************************/
+    public KiteSDK setKiteAnalyticsEnabled( Boolean enabled )
+    {
+      setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_KITE_ANALYTICS_ENABLED, enabled );
+
+      return ( this );
+    }
+
+
+    /*****************************************************
+     *
+     * Returns true if the Kite analytics has been enabled.
+     *
+     *****************************************************/
+    public Boolean getKiteAnalyticsEnabled()
+    {
+      return ( getBooleanSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_KITE_ANALYTICS_ENABLED, false ) );
     }
 
 
