@@ -44,6 +44,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 
 import ly.kite.R;
 import ly.kite.api.OrderState;
@@ -70,12 +71,16 @@ public class OrderSubmissionFragment extends ARetainedDialogFragment implements 
 
   ////////// Static Variable(s) //////////
 
-
   ////////// Member Variable(s) //////////
 
   private OrderSubmitter  mOrderSubmitter;
 
   private ProgressDialog  mProgressDialog;
+
+  ////////// Interface(s) //////////
+  public interface OrderSubmissionListener<T> {
+    void onTrigger(T arg);
+  }
 
 
   ////////// Static Initialiser(s) //////////
@@ -89,15 +94,26 @@ public class OrderSubmissionFragment extends ARetainedDialogFragment implements 
    * submits the order.
    *
    *****************************************************/
-  static public OrderSubmissionFragment start( Activity activity, Order order )
+  static public void start( final AOrderSubmissionActivity activity, final Order order , final OrderSubmissionListener<OrderSubmissionFragment> onGotFragment)
     {
-    OrderSubmissionFragment orderSubmissionFragment = new OrderSubmissionFragment();
 
-    orderSubmissionFragment.show( activity.getFragmentManager(), TAG );
+      new Handler().post(new Runnable()
+        {
+        public void run()
+          {
+          OrderSubmissionFragment orderSubmissionFragment = new OrderSubmissionFragment();
 
-    orderSubmissionFragment.submit( activity, order );
+          // When the app runs in background "show" causes the app to crash , so check before
+          if( !activity.isRunningInBackground() )
+            {
+            orderSubmissionFragment.show( activity.getFragmentManager() , TAG );
+            }
 
-    return ( orderSubmissionFragment );
+          orderSubmissionFragment.submit( activity, order );
+
+          onGotFragment.onTrigger ( orderSubmissionFragment );
+        }
+      });
     }
 
 
@@ -111,7 +127,6 @@ public class OrderSubmissionFragment extends ARetainedDialogFragment implements 
     return ( (OrderSubmissionFragment) find( activity, TAG, OrderSubmissionFragment.class ) );
     }
 
-
   ////////// Constructor(s) //////////
 
   public OrderSubmissionFragment()
@@ -119,8 +134,7 @@ public class OrderSubmissionFragment extends ARetainedDialogFragment implements 
     super( IOrderSubmissionResultListener.class );
     }
 
-
-  ////////// DialogFragment Method(s) //////////
+    ////////// DialogFragment Method(s) //////////
 
   /*****************************************************
    *
