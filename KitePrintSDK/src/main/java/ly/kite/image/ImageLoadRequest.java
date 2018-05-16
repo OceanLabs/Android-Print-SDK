@@ -115,6 +115,7 @@ public class ImageLoadRequest
   //private int                 mOriginalHeight;
   private Bitmap              mBitmap;
   private Exception           mException;
+  private boolean             mIsHighPriority = false;
 
 
   ////////// Static Initialiser(s) //////////
@@ -281,6 +282,16 @@ public class ImageLoadRequest
     return ( 0 );
     }
 
+
+  /*****************************************************
+   *
+   * Returns TRUE is it should be treated as high priority
+   *
+   *****************************************************/
+  public boolean getPriority()
+    {
+    return mIsHighPriority;
+    }
 
   /*****************************************************
    *
@@ -908,7 +919,14 @@ public class ImageLoadRequest
 
         mSource = newSource;
 
-        return ( newSource.load() );
+          if ( mIsHighPriority )
+            {
+            return ( BitmapFactory.decodeFile(imageFilePath) );
+            }
+          else
+            {
+            return ( newSource.load() );
+            }
         }
       else
         {
@@ -1564,6 +1582,30 @@ public class ImageLoadRequest
     public Builder transformAfterResize( IImageTransformer transformer )
       {
       mPostResizeTransformer = transformer;
+
+      return ( this );
+      }
+
+
+    /*****************************************************
+     *
+     * Sets priority
+     *
+     * @param isHighPriority has the following effects:
+     *    TRUE - loads images almost instantaneously but
+     *           is resource hungry , useful for editor reloading.
+     *           Slows down scrolling views dramatically , leading to a
+     *           laggy experience
+     *
+     *    FALSE (default) - best for loading multiple images especially
+     *                     for scrolling views , images load slower but
+     *                     it provides a fluent experience
+     *
+     *
+     *****************************************************/
+    public Builder setHighPriority( boolean isHighPriority )
+      {
+      mIsHighPriority = isHighPriority;
 
       return ( this );
       }

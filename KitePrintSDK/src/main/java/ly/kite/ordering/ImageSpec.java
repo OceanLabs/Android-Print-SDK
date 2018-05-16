@@ -426,6 +426,7 @@ public class ImageSpec implements Parcelable
 
       ImageAgent.with( context )
               .load( mAssetFragment )
+              .setHighPriority( true  )
               .resizeForDimen( checkableImageContainerFrame, R.dimen.image_default_thumbnail_size, R.dimen.image_default_thumbnail_size )
               .onlyScaleDown()
               .reduceColourSpace()
