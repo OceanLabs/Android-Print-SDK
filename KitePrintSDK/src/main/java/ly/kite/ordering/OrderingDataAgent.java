@@ -342,31 +342,34 @@ public class OrderingDataAgent
    *****************************************************/
   public long onOrderFailure( long previousOrderId, Order order )
     {
-    if ( previousOrderId >= 0 )
-      {
+      //Do not store failed order in order history , instead do NOT clear the basket s.t. the user
+      //can go back and change details (ex: payment details)
+      return ( mOrderingDatabaseAgent.selectBasketIdForOrder( previousOrderId ) );
+//    if ( previousOrderId >= 0 )
+//      {
       // If the order has already failed at least once, and fails
       // again - we don't need to do anything to it.
       // TODO: Do we need to update the date?
       // So simply retrieve the basket id and return it.
 
-      return ( mOrderingDatabaseAgent.selectBasketIdForOrder( previousOrderId ) );
-      }
-    else
-      {
+//      return ( mOrderingDatabaseAgent.selectBasketIdForOrder( previousOrderId ) );
+//      }
+//    else
+//      {
       // Get a new basket id
-      long newBasketId = mOrderingDatabaseAgent.insertBasket( -1 );
-
-
-      // Move items and assets from the default basket to the new basket
-
-      AssetHelper.moveBasket( mApplicationContext, BASKET_ID_DEFAULT, newBasketId );
-
-      mOrderingDatabaseAgent.updateBasket( BASKET_ID_DEFAULT, newBasketId );
-
-
-      // Create the new order on the database, and return its id
-      return ( mOrderingDatabaseAgent.newOrder( newBasketId, order ) );
-      }
+//      long newBasketId = mOrderingDatabaseAgent.insertBasket( -1 );
+//
+//
+//      // Move items and assets from the default basket to the new basket
+//
+//      AssetHelper.moveBasket( mApplicationContext, BASKET_ID_DEFAULT, newBasketId );
+//
+//      //mOrderingDatabaseAgent.updateBasket( BASKET_ID_DEFAULT, newBasketId );
+//
+//
+//      // Create the new order on the database, and return its id
+//      return ( mOrderingDatabaseAgent.newOrder( newBasketId, order ) );
+//      }
     }
 
 
