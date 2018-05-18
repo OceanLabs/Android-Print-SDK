@@ -205,6 +205,7 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
 
     mEditableMaskedImageView = (EditableMaskedImageView)view.findViewById( R.id.editable_image_view );
     mProgressSpinner         = (ProgressBar)view.findViewById( R.id.progress_bar );
+    mProgressSpinner.setVisibility(VISIBLE);
     }
 
 
@@ -489,6 +490,7 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
 
     ImageAgent.with( getContext() )
             .load( mImageAsset )
+            .setHighPriority( true )
             .reduceColourSpace()
             .resizeForIfSized( mEditableMaskedImageView )
             .onlyScaleDown()
@@ -781,6 +783,10 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
     {
     public void onLoadComplete();
     public void onLoadError();
+    }
+
+    public Bitmap getPreviewBitmap() {
+      return mEditableMaskedImageView.getPreviewBitmap();
     }
 
   }

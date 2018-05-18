@@ -39,6 +39,7 @@ package ly.kite.util;
 
 ///// Import(s) /////
 
+import android.graphics.Bitmap;
 import android.graphics.RectF;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -245,6 +246,36 @@ public class AssetFragment implements Parcelable
 
     return ( mAsset.equals( otherAssetFragment.mAsset ) &&
             mProportionalRectangle.equals( otherAssetFragment.mProportionalRectangle ) );
+    }
+
+  /*****************************************************
+   *
+   * Sets the asset preview image
+   *
+   *****************************************************/
+  public void setAssetPreviewBitmap(Bitmap bitmap)
+    {
+      mAsset.setPreviewBitmap(bitmap);
+    }
+
+  /*****************************************************
+   *
+   * Returns the asset preview image
+   *
+   *****************************************************/
+  public Bitmap getAssetPreviewBitmap()
+    {
+      return mAsset.getPreviewBitmap();
+    }
+
+  /*****************************************************
+   *
+   * Checks if there is a preview image available
+   *
+   *****************************************************/
+  public Boolean hasAssetPreviewBitmap()
+    {
+      return mAsset.hasPreviewImage();
     }
 
 

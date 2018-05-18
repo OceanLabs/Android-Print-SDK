@@ -237,6 +237,20 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
     }
 
+  /*****************************************************
+   *
+   * Returns TRUE if the poster is a collage scenario
+   * and FALSE for single image posters
+   *
+   *****************************************************/
+  public boolean isPosterCollage()
+    {
+    if( mProduct.getGridCountX() > 1 || mProduct.getGridCountY() > 1 )
+      {
+      return true;
+      }
+      return false;
+    }
 
   /*****************************************************
    *

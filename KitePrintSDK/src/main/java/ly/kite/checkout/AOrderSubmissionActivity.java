@@ -41,6 +41,7 @@ package ly.kite.checkout;
 
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 
 import ly.kite.R;
@@ -72,6 +73,9 @@ abstract public class AOrderSubmissionActivity extends AKiteActivity implements 
 
 
   ////////// Static Variable(s) //////////
+
+  static private boolean mRunsInBackground = false;
+  static private boolean mHasConfigurationChanged = false;
 
 
   ////////// Member Variable(s) //////////
@@ -130,8 +134,31 @@ abstract public class AOrderSubmissionActivity extends AKiteActivity implements 
     mOrderSubmissionFragment = OrderSubmissionFragment.findFragment( this );
     }
 
+  @Override
+  protected void onResume()
+    {
+     super.onResume();
+     mRunsInBackground = false;
+     if( mOrderSubmissionFragment != null && !mHasConfigurationChanged)
+      {
+       mOrderSubmissionFragment.show(getFragmentManager(), "OrderSubmissionFragment");
+      }
+    }
 
-  ////////// OrderSubmitter.IProgressListener Method(s) //////////
+  @Override
+  protected void onPause()
+    {
+    super.onPause();
+    mRunsInBackground = true;
+    }
+
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    mHasConfigurationChanged = true;
+  }
+
+    ////////// OrderSubmitter.IProgressListener Method(s) //////////
 
   /*****************************************************
    *
@@ -259,7 +286,12 @@ abstract public class AOrderSubmissionActivity extends AKiteActivity implements 
       }
 
     // Submit the order using the order submission fragment
-    mOrderSubmissionFragment = OrderSubmissionFragment.start( this, order );
+    OrderSubmissionFragment.start(this, order, new OrderSubmissionFragment.OrderSubmissionListener<OrderSubmissionFragment>() {
+      @Override
+      public void onTrigger(OrderSubmissionFragment result) {
+        mOrderSubmissionFragment = result;
+      }
+    });
     }
 
 
@@ -320,10 +352,25 @@ abstract public class AOrderSubmissionActivity extends AKiteActivity implements 
 
     if ( mOrderSubmissionFragment != null )
       {
-      mOrderSubmissionFragment.dismiss();
+      // Make sure it's not running in background , as it will crash
+      if ( !mRunsInBackground ) {
+        mOrderSubmissionFragment.dismiss();
+      }
 
       mOrderSubmissionFragment = null;
       }
+    }
+
+  /*****************************************************
+   *
+   * Returns the running mode of the activity/app
+   *  TRUE when app is in background
+   *  FALSE when app is in foreground
+   *
+   *****************************************************/
+    public boolean isRunningInBackground()
+    {
+      return mRunsInBackground;
     }
 
 

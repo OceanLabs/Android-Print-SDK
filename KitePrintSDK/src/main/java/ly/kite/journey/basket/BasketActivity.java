@@ -978,20 +978,25 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
 
         AssetFragment assetFragment = mBasketItem.getDisplayAssetFragment();
 
-        if ( assetFragment != null )
+       //check if there is a preview image available
+        if(assetFragment!= null && assetFragment.hasAssetPreviewBitmap())
           {
-          imageLoadRequestBuilder = ImageAgent.with( BasketActivity.this ).load( assetFragment );
+          mProductImageView.setImageBitmap(assetFragment.getAssetPreviewBitmap());
           }
         else
           {
-          imageLoadRequestBuilder = ImageAgent.with( BasketActivity.this ).load( mProduct.getDisplayImageURL(), KiteSDK.IMAGE_CATEGORY_PRODUCT_ITEM );
+          if (assetFragment != null) {
+            imageLoadRequestBuilder = ImageAgent.with(BasketActivity.this).load(assetFragment);
+          } else {
+            imageLoadRequestBuilder = ImageAgent.with(BasketActivity.this).load(mProduct.getDisplayImageURL(), KiteSDK.IMAGE_CATEGORY_PRODUCT_ITEM);
           }
 
-        imageLoadRequestBuilder
-                .reduceColourSpace()
-                .resizeForDimen( mProductImageView, R.dimen.basket_item_image_width, R.dimen.basket_item_height )
-                .onlyScaleDown()
-                .into( mProductImageView );
+          imageLoadRequestBuilder
+              .reduceColourSpace()
+              .resizeForDimen(mProductImageView, R.dimen.basket_item_image_width, R.dimen.basket_item_height)
+              .onlyScaleDown()
+              .into(mProductImageView);
+          }
 
         setQuantityDependentText();
 

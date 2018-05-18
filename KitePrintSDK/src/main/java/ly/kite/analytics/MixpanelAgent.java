@@ -51,6 +51,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
+import ly.kite.KiteSDK;
 import ly.kite.util.HTTPJSONRequest;
 
 
@@ -147,6 +148,11 @@ public class MixpanelAgent implements HTTPJSONRequest.IJSONResponseListener
    *****************************************************/
   public void trackEvent( JSONObject eventJSONObject )
     {
+
+    // If analytics hasn't been turned on, no events are sent
+
+    if (!KiteSDK.getInstance(mContext).getKiteAnalyticsEnabled()) { return; }
+
     // The JSON needs to be encoded as Base64
 
     byte[] jsonBytes = eventJSONObject.toString().getBytes();

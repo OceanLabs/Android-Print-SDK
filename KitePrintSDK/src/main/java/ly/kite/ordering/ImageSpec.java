@@ -406,7 +406,7 @@ public class ImageSpec implements Parcelable
    * Loads a thumbnail image into an image consumer.
    *
    *****************************************************/
-  public void loadThumbnail( Context context, CheckableImageContainerFrame checkableImageContainerFrame )
+  public void loadThumbnail( Context context, CheckableImageContainerFrame checkableImageContainerFrame , boolean isPosterCollage)
     {
     // If we already have a thumbnail -  load it
     if ( mThumbnailAsset != null )
@@ -424,9 +424,16 @@ public class ImageSpec implements Parcelable
       {
       checkableImageContainerFrame.clearForNewImage( mAssetFragment );
 
+      int dimensId = R.dimen.image_default_thumbnail_size;
+      if(!isPosterCollage)
+        {
+        dimensId = R.dimen.single_image_poster_size;
+        }
+
       ImageAgent.with( context )
               .load( mAssetFragment )
-              .resizeForDimen( checkableImageContainerFrame, R.dimen.image_default_thumbnail_size, R.dimen.image_default_thumbnail_size )
+              .setHighPriority( true  )
+              .resizeForDimen( checkableImageContainerFrame, dimensId, dimensId )
               .onlyScaleDown()
               .reduceColourSpace()
               .transformAfterResize( new ThumbnailProxy( context ) )
@@ -475,6 +482,17 @@ public class ImageSpec implements Parcelable
              StringUtils.areBothNullOrEqual( mCroppedForProductId, otherImageSpec.mCroppedForProductId ) );
     }
 
+  /*****************************************************
+   *
+   * Sets the preview image
+   *
+   *****************************************************/
+  public void setPreviewImage(Bitmap bitmap)
+    {
+      if(bitmap != null) {
+        mAssetFragment.setAssetPreviewBitmap(bitmap);
+      }
+    }
 
   ////////// Inner Class(es) //////////
 

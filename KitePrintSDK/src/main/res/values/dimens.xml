@@ -101,7 +101,7 @@
     <dimen name="image_check_size">20dp</dimen>
 
     <dimen name="image_default_resize_size">320px</dimen>
-    <dimen name="image_default_thumbnail_size">320px</dimen>
+    <dimen name="image_default_thumbnail_size">200px</dimen>
 
     <dimen name="page_number_text_inset">10dp</dimen>
     <dimen name="page_number_text_size">14sp</dimen>
@@ -186,6 +186,8 @@
     <dimen name="basket_total_price_size">17sp</dimen>
 
     <dimen name="delivery_address_button_text_size">15sp</dimen>
+    <dimen name="privacy_terms_text_size">12sp</dimen>
+    <dimen name="privacy_terms_text_padding">32dp</dimen>
 
     <dimen name="address_book_title_text_size">15sp</dimen>
     <dimen name="address_book_detail_text_size">15sp</dimen>
@@ -198,5 +200,8 @@
 
     <dimen name="failure_banner_height">109dp</dimen>
     <dimen name="failure_banner_text_size">14sp</dimen>
+
+    <dimen name="product_preview_size">200px</dimen>
+    <dimen name="single_image_poster_size">800px</dimen>
 
 </resources>

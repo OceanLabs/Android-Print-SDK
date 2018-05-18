@@ -301,6 +301,10 @@
 
     <string name="address_edit_proceed_button_text">Save</string>
 
+    <string name="privacy_terms_text_html" translatable="false">"<![CDATA[Kite's <a href="%s">Terms of Service</a> &amp; <a href="%s">Privacy Policy</a>]]>"</string>
+    <string name="url_privacy_policy" translatable="false">"https://www.kite.ly/privacy-policy/"</string>
+    <string name="url_terms_of_use" translatable="false">"https://www.kite.ly/terms-and-conditions/"</string>
+
     <string name="payment_promo_hint">Promotional code</string>
     <string name="payment_promo_button_text_apply">Apply</string>
     <string name="payment_promo_button_text_clear">Clear</string>

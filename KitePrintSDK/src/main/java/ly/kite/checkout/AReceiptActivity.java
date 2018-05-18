@@ -252,8 +252,14 @@ abstract public class AReceiptActivity extends AOrderSubmissionActivity implemen
     {
     if ( item.getItemId() == android.R.id.home )
       {
-      onHome();
-
+      if(mOrderSuccess)
+        {
+        onHome();
+        }
+      else
+        {
+        onBackPressed();
+        }
       return ( true );
       }
 

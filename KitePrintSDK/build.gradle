@@ -2,9 +2,10 @@ buildscript {
     repositories {
         mavenCentral()
         jcenter()
+        google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.1.2'
     }
 }
 
@@ -15,15 +16,15 @@ repositories {
 }
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
     useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 25
+        targetSdkVersion 27
         versionName '1.0'
-        versionCode 103
+        versionCode 106
     }
 
     sourceSets {
@@ -45,9 +46,9 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:25.0.2'
-    compile 'com.android.support:appcompat-v7:25.0.2'
-    compile 'com.android.support:recyclerview-v7:25.0.2'
+    compile 'com.android.support:support-v4:27.1.1'
+    compile 'com.android.support:appcompat-v7:27.1.1'
+    compile 'com.android.support:recyclerview-v7:27.1.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.paypal.sdk:paypal-android-sdk:2.13.3'
     compile 'com.stripe:stripe-android:4.1.3'

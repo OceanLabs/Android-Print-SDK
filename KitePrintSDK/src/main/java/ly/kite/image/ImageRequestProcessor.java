@@ -143,7 +143,16 @@ public class ImageRequestProcessor
 
     mLoaderTask = new LoaderTask();
 
-    mLoaderTask.executeOnExecutor( AsyncTask.SERIAL_EXECUTOR );
+    //For high priority don't queue the image response, directly fetch it
+    if(request.getPriority())
+      {
+      mLoaderTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+      }
+    else
+      {
+      mLoaderTask.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+      }
+
     }
 
 
