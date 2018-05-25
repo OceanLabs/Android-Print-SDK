@@ -80,9 +80,11 @@ public class InstagramPhotoPicker
    * Starts the Instagram photo picker.
    *
    *****************************************************/
-  static public void startPhotoPickerForResult( Fragment fragment, String clientId, String redirectUri, int maxImageCount, int activityRequestCode )
+  static public void startPhotoPickerForResult( Fragment fragment, String clientId, String redirectUri, int addedAssetCount,
+                                                boolean supportsMultiplePacks, int packSize, int maxImageCount, int activityRequestCode )
     {
-    InstagramPhotoPickerActivity.startForResult( fragment, clientId, redirectUri, maxImageCount, activityRequestCode );
+    InstagramPhotoPickerActivity.startForResult( fragment, clientId, redirectUri, addedAssetCount,
+            supportsMultiplePacks, packSize, maxImageCount, activityRequestCode );
     }
 
 
