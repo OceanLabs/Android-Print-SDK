@@ -25,12 +25,8 @@ import ly.kite.ordering.OrderingDatabaseAgent;
 public class EncryptionTest extends AndroidTestCase{
 
 
-    String ENCRYPTION_KEY = "5743h4j5bjhb34h5bhg3463";//random encryption key
+    private String ENCRYPTION_KEY = "5743h4j5bjhb34h5bhg3463";//random encryption key
 
-    SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
-    String test_text = "TestText";
-    String encryptedText = pref.encrypt(test_text);
-    String decryptedText = pref.decrypt(encryptedText);
 
     //created for testing the encryption/decryption with multiple string combinations
     public static String randomTextGenerator() {
@@ -55,14 +51,27 @@ public class EncryptionTest extends AndroidTestCase{
      *           Test if encryption input is different from output             *
      *                                                                         *
      **************************************************************************/
-    public void testEncryption1() { Assert.assertNotSame(test_text,encryptedText); }
+    public void testEncryption1()
+        {
+        SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
+        String test_text       = "TestText";
+        String encryptedText   = pref.encrypt(test_text);
+        Assert.assertNotSame(test_text,encryptedText);
+        }
 
      /**************************************************************************
      *                                                                         *
      *          Test if decryption outputs the correct information             *
      *                                                                         *
      **************************************************************************/
-    public void testEncryption2() { Assert.assertEquals(test_text, decryptedText); }
+    public void testEncryption2()
+        {
+        SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
+        String test_text       = "TestText";
+        String encryptedText   = pref.encrypt(test_text);
+        String decryptedText   = pref.decrypt(encryptedText);
+        Assert.assertEquals(test_text, decryptedText);
+        }
 
 
      /**************************************************************************
@@ -79,7 +88,8 @@ public class EncryptionTest extends AndroidTestCase{
             getContext().deleteDatabase("ordering.db");//delete test database in case of old/corrupted data
 
             OrderingDatabaseAgent databaseAgent = new OrderingDatabaseAgent(getContext(), null);
-            OrderingDatabaseAgent.setEncryptionKey(ENCRYPTION_KEY);
+
+            SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
 
             //generate address information
             Address adr = new Address();
@@ -202,7 +212,7 @@ public class EncryptionTest extends AndroidTestCase{
             getContext().deleteDatabase("ordering.db");//delete test database in case of old/corrupted data
 
             OrderingDatabaseAgent databaseAgent = new OrderingDatabaseAgent(getContext(), null);
-            OrderingDatabaseAgent.setEncryptionKey(ENCRYPTION_KEY);
+//            OrderingDatabaseAgent.setEncryptionKey(ENCRYPTION_KEY);
 
 
             String description = randomTextGenerator();
@@ -226,6 +236,7 @@ public class EncryptionTest extends AndroidTestCase{
             //reset cursor
             cursor = database.rawQuery("SELECT * FROM _Order", null);
 
+            SecurePreferences pref = new SecurePreferences(ENCRYPTION_KEY);
             while (cursor.moveToNext()) {
                 Assert.assertEquals("receipt not decrypted correctly",
                         pref.decrypt(cursor.getString(cursor.getColumnIndex("receipt"))), receipt);
@@ -265,7 +276,7 @@ public class EncryptionTest extends AndroidTestCase{
             KiteSDK.IEnvironment environment;
             environment = KiteSDK.DefaultEnvironment.TEST;
 
-            KiteSDK sdk = KiteSDK.getInstance(getContext(), ENCRYPTION_KEY, environment,true,null);
+            KiteSDK sdk = KiteSDK.getInstance(getContext());
 
             //generate keys
             String key1 = randomTextGenerator();
@@ -364,7 +375,8 @@ public class EncryptionTest extends AndroidTestCase{
             KiteSDK.IEnvironment environment;
             environment = KiteSDK.DefaultEnvironment.TEST;
 
-            KiteSDK sdk = KiteSDK.getInstance(getContext(), ENCRYPTION_KEY, environment, false, null);
+            KiteSDK sdk = KiteSDK.getInstance(getContext(),"pretend_key" ,environment);
+            KiteSDK.ENCRYPTION_KEY = "off";
 
             SharedPreferences prefs_app = context.getSharedPreferences("kite_app_session_shared_prefs", Context.MODE_PRIVATE);
             prefs_app.edit().clear().commit();//clear the information from this preference file
@@ -379,28 +391,4 @@ public class EncryptionTest extends AndroidTestCase{
             noOfRuns--;
         }
     }
-
-
-    /**************************************************************************
-    *                                                                         *
-    * Test encryption and decryption with multiple randomly generated strings *
-    *                                                                         *
-    **************************************************************************/
-
-    public  void testRawEncryption()
-    {
-        int noOfRuns = 10000;
-
-        while(noOfRuns > 0) {
-            String text = randomTextGenerator();
-            String encryptedText = pref.encrypt(text);
-            String decryptedText = pref.decrypt(encryptedText);
-
-            Assert.assertNotSame("Encryption failed",text, encryptedText);
-            Assert.assertEquals( "Decryption failed",text, decryptedText);
-
-            noOfRuns--;
-        }
-    }
-
 }

@@ -4,11 +4,11 @@ machine:
   pre:
     # This line updates / installs missing SDK components that don't seem to be
     # up-to-date in the container used to build and test.
-    - echo "y" | android update sdk -u -a -t "build-tools-25.0.2","extra-android-m2repository"
+    - echo "y" | android update sdk -u -a -t "build-tools-27.0.3","extra-android-m2repository"
 test:
   override:
     # Start the emulator
-    - emulator -avd circleci-android22 -no-audio -no-window:
+    - emulator -avd circleci-android27 -no-audio -no-window:
         background: true
         parallel: true
     # The emulator takes about 4 1/2 minutes to boot, so wait until it's ready before

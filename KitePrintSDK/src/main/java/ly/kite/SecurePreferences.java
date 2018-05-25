@@ -64,7 +64,7 @@ public class SecurePreferences {
      * @throws SecurePreferencesException
      */
     public SecurePreferences(String secureKey) throws SecurePreferencesException {
-        if(secureKey.equals("off"))
+        if(secureKey.toLowerCase().equals("off"))
             encryptData = false;
 
         this.secureKey = secureKey;
