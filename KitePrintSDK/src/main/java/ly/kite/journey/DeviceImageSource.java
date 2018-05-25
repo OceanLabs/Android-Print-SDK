@@ -53,7 +53,6 @@ import android.util.Log;
 
 import ly.kite.R;
 import ly.kite.devicephotopicker.DevicePhotoPicker;
-import ly.kite.instagramphotopicker.InstagramPhotoPicker;
 import ly.kite.util.Asset;
 
 
@@ -189,9 +188,9 @@ public class DeviceImageSource extends AImageSource
    *
    *****************************************************/
   @Override
-  public void onPick( Fragment fragment, int maxImageCount )
+  public void onPick( Fragment fragment, int addedAssetCount, boolean supportsMultiplePacks, int packSize, int maxImageCount )
     {
-    requestPermission( Manifest.permission.READ_EXTERNAL_STORAGE, new StartPickerRunnable( fragment, maxImageCount ) );
+    requestPermission( Manifest.permission.READ_EXTERNAL_STORAGE, new StartPickerRunnable( fragment, addedAssetCount, supportsMultiplePacks, packSize, maxImageCount ) );
     }
 
 
@@ -222,9 +221,9 @@ public class DeviceImageSource extends AImageSource
    *****************************************************/
   private class StartPickerRunnable extends AStartPickerRunnable
     {
-    StartPickerRunnable( Fragment fragment, int maxImageCount )
+    StartPickerRunnable( Fragment fragment, int addedAssetCount, boolean supportsMultiplePacks, int packSize, int maxImageCount )
       {
-      super( fragment, maxImageCount );
+      super( fragment, addedAssetCount, supportsMultiplePacks, packSize, maxImageCount );
       }
 
 
@@ -235,7 +234,7 @@ public class DeviceImageSource extends AImageSource
       // (e.g.) Samsung S6, so we need to always use the photo picker (which returns file
       // paths) rather than the built-in gallery picker (which returns URIs).
 
-      DevicePhotoPicker.startPhotoPickerForResult( mFragment, mMaxImageCount, getActivityRequestCode() );
+      DevicePhotoPicker.startPhotoPickerForResult( mFragment, mAddedAssetCount, mSupportsMultiplePacks, mPackSize, mMaxImageCount, getActivityRequestCode() );
       }
     }
 

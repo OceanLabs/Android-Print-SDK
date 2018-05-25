@@ -1044,6 +1044,36 @@ public class Product implements IGroupOrProduct, Parcelable
     return ( shippingCostList );
     }
 
+  /*****************************************************
+   *
+   * Returns TRUE if the product gets split into multiple
+   * packs if more images that a pack contains are added
+   *
+   *****************************************************/
+  public boolean hasMultiplePackSupport()
+    {
+    switch (mUserJourneyType)
+      {
+      case PHOTOBOOK:
+        return false;
+
+      case POSTER:
+        return false;
+
+      case CALENDAR:
+        return false;
+
+      case PHONE_CASE:
+        return false;
+
+      case GREETINGCARD:
+        return true;
+
+      default:
+        return true;
+      }
+    }
+
 
   /*****************************************************
    *

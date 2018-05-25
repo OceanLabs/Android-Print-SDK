@@ -218,7 +218,7 @@ public class MainActivity extends ADeepLinkableActivity
       public void run()
         {
         // Launch the picture selector
-        DevicePhotoPicker.startPhotoPickerForResult( MainActivity.this, AImageSource.UNLIMITED_IMAGES, REQUEST_CODE_SELECT_PICTURE );
+        DevicePhotoPicker.startPhotoPickerForResult( MainActivity.this, 0, false, 0, AImageSource.UNLIMITED_IMAGES, REQUEST_CODE_SELECT_PICTURE );
         }
       });
     }

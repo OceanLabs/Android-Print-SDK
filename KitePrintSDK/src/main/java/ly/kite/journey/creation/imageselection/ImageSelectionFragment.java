@@ -431,7 +431,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
       AImageSource imageSource = (AImageSource)mImageSourceGridView.getItemAtPosition( position );
 
-      imageSource.onPick( this, false );
+      imageSource.onPick( this, getTotalImagesUsedCount(), mProduct.hasMultiplePackSupport(), mProduct.getQuantityPerSheet(), position );
       }
     }
 

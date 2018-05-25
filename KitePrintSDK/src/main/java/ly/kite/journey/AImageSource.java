@@ -264,7 +264,7 @@ abstract public class AImageSource
    * Called when this image source is clicked.
    *
    *****************************************************/
-  abstract public void onPick( Fragment fragment, int maxImageCount );
+  abstract public void onPick( Fragment fragment, int addedAssetCount, boolean supportsMultiplePacks, int packSize, int maxImageCount );
 
 
   /*****************************************************
@@ -272,9 +272,9 @@ abstract public class AImageSource
    * Called when this image source is clicked.
    *
    *****************************************************/
-  public void onPick( Fragment fragment )
+  public void onPick( Fragment fragment , boolean supportsMultiplePacks, int packSize, int maxImageCount )
     {
-    onPick( fragment, UNLIMITED_IMAGES );
+    onPick( fragment, UNLIMITED_IMAGES, supportsMultiplePacks, packSize, maxImageCount );
     }
 
 
@@ -283,9 +283,9 @@ abstract public class AImageSource
    * Called when this image source is clicked.
    *
    *****************************************************/
-  public void onPick( Fragment fragment, boolean selectSingleImage )
+  public void onPick( Fragment fragment, boolean selectSingleImage, boolean supportsMultiplePacks, int packSize, int maxImageCount )
     {
-    onPick( fragment, ( selectSingleImage ? 1 : UNLIMITED_IMAGES ) );
+    onPick( fragment, ( selectSingleImage ? 1 : UNLIMITED_IMAGES ), supportsMultiplePacks, packSize, maxImageCount );
     }
 
 
@@ -378,11 +378,17 @@ abstract public class AImageSource
     {
     protected Fragment  mFragment;
     protected int       mMaxImageCount;
+    protected int       mAddedAssetCount;
+    protected int       mPackSize;
+    protected boolean   mSupportsMultiplePacks;
 
-    AStartPickerRunnable( Fragment fragment, int maxImageCount )
+    AStartPickerRunnable( Fragment fragment, int addedAssetCount, boolean supportsMultiplePacks, int packSize, int maxImageCount )
       {
-      mFragment      = fragment;
-      mMaxImageCount = maxImageCount;
+      mFragment              = fragment;
+      mMaxImageCount         = maxImageCount;
+      mAddedAssetCount       = addedAssetCount;
+      mPackSize              = packSize;
+      mSupportsMultiplePacks = supportsMultiplePacks;
       }
 
     Activity getActivity()
