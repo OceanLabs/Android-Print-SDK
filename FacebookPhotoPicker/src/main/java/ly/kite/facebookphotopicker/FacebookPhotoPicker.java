@@ -82,9 +82,10 @@ public class FacebookPhotoPicker
    * Starts the Facebook photo picker.
    *
    *****************************************************/
-  static public void startPhotoPickerForResult( Fragment fragment, int maxImageCount, int activityRequestCode )
+  static public void startPhotoPickerForResult( Fragment fragment, int addedAssetCount, boolean supportsMultiplePacks,
+                                                int packSize, int maxImageCount, int activityRequestCode )
     {
-    FacebookPhotoPickerActivity.startForResult( fragment, maxImageCount, activityRequestCode );
+    FacebookPhotoPickerActivity.startForResult( fragment, addedAssetCount,supportsMultiplePacks, packSize, maxImageCount ,activityRequestCode );
     }
 
 
