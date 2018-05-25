@@ -122,7 +122,7 @@ public class OrderingDataAgentTests extends KiteTestCase
 
     List<BasketItem> basketItemList = dataAgent.getAllItems( null );
 
-    Assert.assertNotSame( 0, basketItemList.size() );
+    Assert.assertEquals( 0, basketItemList.size() );
 
 
     Product product = new Product( "product_id", "product_code", "Rectangular Product", "Product type", 0xff000000, UserJourneyType.RECTANGLE, 2 );
