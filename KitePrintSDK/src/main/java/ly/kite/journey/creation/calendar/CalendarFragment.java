@@ -324,7 +324,15 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
           Bitmap originalBitmap = ViewToBitmap.getItemBitmap( mCalendarView, 0 );
           Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace(originalBitmap);
           Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, cleanBitmap );
-          mImageSpecArrayList.get(0).setPreviewImage( bitmap );
+          //Store preview in the first non-null imageSpec element
+          for( int index = 0; index < mImageSpecArrayList.size(); index++ )
+            {
+            if (mImageSpecArrayList.get( index ) != null )
+              {
+              mImageSpecArrayList.get( index ).setPreviewImage( bitmap );
+              break;
+              }
+            }
 
           ( (ICallback)mKiteActivity ).calOnNext();
           }
@@ -747,8 +755,15 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
       Bitmap originalBitmap = ViewToBitmap.getItemBitmap( mCalendarView, 0 );
       Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace(originalBitmap);
       Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, cleanBitmap );
-      mImageSpecArrayList.get(0).setPreviewImage( bitmap );
-
+      //Store preview in the first non-null imageSpec element
+      for( int index = 0; index < mImageSpecArrayList.size(); index++ )
+        {
+        if (mImageSpecArrayList.get( index ) != null )
+          {
+          mImageSpecArrayList.get( index ).setPreviewImage( bitmap );
+          break;
+          }
+        }
       ( (ICallback)mKiteActivity ).calOnNext();
       }
     }

@@ -338,7 +338,15 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
           Bitmap originalBitmap = ViewToBitmap.getItemBitmap( mPhotobookView, 0 );
           Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace(originalBitmap);
           Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, cleanBitmap );
-          mImageSpecArrayList.get(0).setPreviewImage( bitmap );
+          //Store preview in the first non-null imageSpec element
+          for( int index = 0; index < mImageSpecArrayList.size(); index++ )
+            {
+            if ( mImageSpecArrayList.get( index ) != null )
+              {
+              mImageSpecArrayList.get( index ).setPreviewImage( bitmap );
+              break;
+              }
+          }
 
           ( (ICallback)mKiteActivity ).pbOnNext();
           }
@@ -747,8 +755,15 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
       Bitmap originalBitmap = ViewToBitmap.getItemBitmap( mPhotobookView, 0 );
       Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace(originalBitmap);
       Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, cleanBitmap );
-      mImageSpecArrayList.get(0).setPreviewImage( bitmap );
-
+      //Store preview in the first non-null imageSpec element
+        for( int index = 0; index < mImageSpecArrayList.size(); index++ )
+          {
+          if ( mImageSpecArrayList.get(index) != null )
+            {
+            mImageSpecArrayList.get( index ).setPreviewImage( bitmap );
+            break;
+            }
+          }
       ( (ICallback)mKiteActivity ).pbOnNext();
       }
     }
