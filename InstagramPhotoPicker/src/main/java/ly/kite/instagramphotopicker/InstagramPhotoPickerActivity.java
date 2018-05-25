@@ -90,6 +90,12 @@ public class InstagramPhotoPickerActivity extends AImagePickerActivity implement
 
   private Menu                                  mOptionsMenu;
 
+  private static int                            mAddedAssetCount;
+  private static int                            mPackSize;
+  private static int                            mSelectedImageCount;
+  private static int                            mMaxImageCount;
+  private static boolean                        mSupportsMultiplePacks;
+
 
   ////////// Static Initialiser(s) //////////
 
@@ -102,14 +108,25 @@ public class InstagramPhotoPickerActivity extends AImagePickerActivity implement
    * image count added as an extra.
    *
    *****************************************************/
-  static private Intent getIntent( Context context, String clientId, String redirectUri, int maxImageCount )
+  static private Intent getIntent( Context context, String clientId, String redirectUri, int addedAssetCount,
+                                   boolean supportsMultiplePacks, int packSize, int maxImageCount )
     {
     Intent intent = new Intent( context, InstagramPhotoPickerActivity.class );
 
     intent.putExtra( INTENT_EXTRA_NAME_CLIENT_ID, clientId );
     intent.putExtra( INTENT_EXTRA_NAME_REDIRECT_URI, redirectUri );
 
-    addExtras( intent, maxImageCount );
+    mMaxImageCount         = maxImageCount;
+    mPackSize              = packSize;
+    mAddedAssetCount       = addedAssetCount;
+    mSupportsMultiplePacks = supportsMultiplePacks;
+    mSelectedImageCount    = 0;
+
+    if( supportsMultiplePacks )
+      {
+      mMaxImageCount = 0;
+      }
+    addExtras( intent, mMaxImageCount );
 
     return ( intent );
     }
@@ -121,9 +138,10 @@ public class InstagramPhotoPickerActivity extends AImagePickerActivity implement
    * activity.
    *
    *****************************************************/
-  static public void startForResult( Activity activity, String clientId, String redirectUri, int maxImageCount, int activityRequestCode )
+  static public void startForResult( Activity activity, String clientId, String redirectUri, int addedAssetCount, boolean supportsMultiplePacks,
+                                     int packSize, int maxImageCount, int activityRequestCode )
     {
-    Intent intent = getIntent( activity, clientId, redirectUri, maxImageCount );
+    Intent intent = getIntent( activity, clientId, redirectUri, addedAssetCount, supportsMultiplePacks, packSize, maxImageCount );
 
     activity.startActivityForResult( intent, activityRequestCode );
     }
@@ -135,9 +153,10 @@ public class InstagramPhotoPickerActivity extends AImagePickerActivity implement
    * fragment.
    *
    *****************************************************/
-  static public void startForResult( Fragment fragment, String clientId, String redirectUri, int maxImageCount, int activityRequestCode )
+  static public void startForResult( Fragment fragment, String clientId, String redirectUri, int addedAssetCount, boolean supportsMultiplePacks,
+                                     int packSize, int maxImageCount, int activityRequestCode )
     {
-    Intent intent = getIntent( fragment.getActivity(), clientId, redirectUri, maxImageCount );
+    Intent intent = getIntent( fragment.getActivity(), clientId, redirectUri, addedAssetCount, supportsMultiplePacks, packSize, maxImageCount );
 
     fragment.startActivityForResult( intent, activityRequestCode );
     }
@@ -342,6 +361,18 @@ public class InstagramPhotoPickerActivity extends AImagePickerActivity implement
     finish();
     }
 
+  /*****************************************************
+   *
+   * Called when the selected image count changes
+   *
+   *****************************************************/
+  @Override
+  public void onSelectedItemsChanged(int selectedItemsCount)
+    {
+      mSelectedImageCount = selectedItemsCount;
+      setToolbarName();
+    }
+
 
   ////////// AImagePickerActivity Method(s) //////////
 
@@ -363,6 +394,8 @@ public class InstagramPhotoPickerActivity extends AImagePickerActivity implement
       mInstagramAgent.resetPhotos();
 
       mInstagramAgent.getPhotos();
+
+      setToolbarName();
       }
     else
       {
@@ -382,6 +415,40 @@ public class InstagramPhotoPickerActivity extends AImagePickerActivity implement
 
 
   ////////// Method(s) //////////
+
+  /*****************************************************
+   *
+   * Sets the toolbar name taking containing the number
+   * of selected pictures
+   *
+   *****************************************************/
+  public void setToolbarName()
+    {
+    String defaultTitle = getResources().getString( R.string.title_instagram_photo_picker );
+    if( mPackSize == 1 || ( mMaxImageCount == 0 && !mSupportsMultiplePacks ))
+      {
+      setTitle( defaultTitle );
+      }
+    else
+      {
+      int totalImagesUsed = mSelectedImageCount;
+      int outOf = mMaxImageCount;
+
+      if ( mSupportsMultiplePacks )
+        {
+        totalImagesUsed += mAddedAssetCount;
+        if( totalImagesUsed > 0 )
+          {
+          outOf = (int) (Math.ceil((double) totalImagesUsed / mPackSize) * mPackSize);
+          }
+          else
+          {
+          outOf = mPackSize;
+          }
+        }
+        setTitle( "[" + totalImagesUsed + "/" + outOf + "] " + defaultTitle );
+      }
+    }
 
   /*****************************************************
    *
