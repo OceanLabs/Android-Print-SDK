@@ -324,8 +324,15 @@ public class PosterFragment extends AProductCreationFragment implements PosterAd
           Bitmap originalBitmap = ViewToBitmap.getFullBitmap(mPosterView);
           Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace(originalBitmap);
           Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, cleanBitmap );
-          mImageSpecArrayList.get(0).setPreviewImage( bitmap );
-
+          //Store preview in the first non-null imageSpec element
+          for( int index = 0; index < mImageSpecArrayList.size(); index++ )
+            {
+            if (mImageSpecArrayList.get( index ) != null )
+              {
+              mImageSpecArrayList.get( index ).setPreviewImage( bitmap );
+              break;
+              }
+            }
           ( (ICallback)mKiteActivity ).posterOnNext();
           }
         }
@@ -729,8 +736,15 @@ public class PosterFragment extends AProductCreationFragment implements PosterAd
       Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace(originalBitmap);
       Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, cleanBitmap );
 
-      mImageSpecArrayList.get(0).setPreviewImage(bitmap);
-
+      //Store preview in the first non-null imageSpec element
+      for( int index = 0; index < mImageSpecArrayList.size(); index++ )
+        {
+        if (mImageSpecArrayList.get( index ) != null )
+          {
+          mImageSpecArrayList.get( index ).setPreviewImage( bitmap );
+          break;
+          }
+        }
       ( (ICallback)mKiteActivity ).posterOnNext();
       }
     }

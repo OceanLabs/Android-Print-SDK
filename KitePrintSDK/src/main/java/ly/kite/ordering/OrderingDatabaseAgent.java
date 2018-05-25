@@ -821,10 +821,17 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
 
     // Save preview image if available
 
-    Asset asset = imageSpecList.get(0).getAsset();
-    if( asset != null && asset.hasPreviewImage())
+    for( int index = 0; index < imageSpecList.size(); index++ )
       {
-        insertPreviewImage(itemId, asset.getPreviewBitmap());
+      if ( imageSpecList.get( index ) != null )
+        {
+        Asset asset = imageSpecList.get( index ).getAsset();
+        if ( asset != null && asset.hasPreviewImage() )
+          {
+          insertPreviewImage( itemId, asset.getPreviewBitmap() );
+          break;
+          }
+        }
       }
 
     // Create the image specs
@@ -1998,10 +2005,14 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
         // Get preview image
         Bitmap previewImage = selectPreviewImage(itemId);
         // Add it to image spec list
-        if(imageSpecList.size() > 0) {
-          imageSpecList.get(0).setPreviewImage(previewImage);
-        }
-
+        for( int index = 0; index < imageSpecList.size(); index++ )
+          {
+          if ( imageSpecList.get( index ) != null )
+            {
+            imageSpecList.get( index ).setPreviewImage( previewImage );
+            break;
+            }
+          }
         // Create a basket item and add it to our list
 
         BasketItem basketItem = new BasketItem(itemId, product, orderQuantity, optionsMap, imageSpecList);
