@@ -16,9 +16,6 @@ jobs:
           name: Download Dependencies
           command: ./gradlew androidDependencies
       - run:
-          name: Run UnitTests
-          command: ./gradlew test --no-daemon
-      - run:
           name: Setup emulator
           command: sdkmanager "system-images;android-22;default;armeabi-v7a" && echo "no" | avdmanager create avd -n test -k "system-images;android-22;default;armeabi-v7a"
       - run:
@@ -33,6 +30,10 @@ jobs:
             # unlock the emulator screen
             sleep 30
             adb shell input keyevent 82
+
+      - run:
+          name: Run UnitTests
+          command: ./gradlew createDebugCoverageReport
       - run:
           name: CodeCov upload
           command: bash <(curl -s https://codecov.io/bash)
