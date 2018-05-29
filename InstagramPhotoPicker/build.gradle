@@ -1,6 +1,5 @@
 buildscript {
     repositories {
-        mavenCentral()
         jcenter()
         google()
     }
@@ -26,10 +25,10 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    //compile project(':ImagePicker')
-    compile 'ly.kite:image-picker:5.8.5'
+    //api project(':ImagePicker')
+    api 'ly.kite:image-picker:5.8.5'
 }
 
 // Uncomment before uploading archives
