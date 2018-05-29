@@ -262,6 +262,8 @@ public class MainActivity extends ADeepLinkableActivity
     {
     KiteSDK kiteSDK = configureSDK();
 
+    if ( kiteSDK == null ) return;
+
     kiteSDK.startOrderHistory( this );
     }
 
