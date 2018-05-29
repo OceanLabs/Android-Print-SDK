@@ -553,10 +553,10 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
         boolean                          active             = productJSONObject.optBoolean( JSON_NAME_ACTIVE,         false );
         boolean                          productActive      = productJSONObject.optBoolean( JSON_NAME_PRODUCT_ACTIVE, false );
 
-        String                           productId          = productJSONObject.getString( JSON_NAME_PRODUCT_ID );
+        String                           productId          = productJSONObject .getString( JSON_NAME_PRODUCT_ID );
         String                           productName        = productJSONObject.getString( JSON_NAME_PRODUCT_NAME );
         String                           productDescription = productJSONObject.getString( JSON_NAME_DESCRIPTION );
-        String productCategory = productJSONObject.getString(JSON_NAME_CATEGORY);
+        String                           productCategory    = productJSONObject.getString(JSON_NAME_CATEGORY);
         int                              imagesPerPage      = productJSONObject.optInt( JSON_NAME_IMAGES_PER_PAGE, DEFAULT_IMAGES_PER_PAGE );
         int                              gridCountX         = productJSONObject.optInt( JSON_NAME_GRID_COUNT_X, DEFAULT_GRID_SIZE );
         int                              gridCountY         = productJSONObject.optInt( JSON_NAME_GRID_COUNT_Y, DEFAULT_GRID_SIZE );
