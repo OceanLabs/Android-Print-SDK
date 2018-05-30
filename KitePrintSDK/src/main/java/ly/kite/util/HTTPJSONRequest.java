@@ -151,11 +151,11 @@ public class HTTPJSONRequest extends HTTPRequest
           {
           if ( bodyJSONString.contains( "Offline for Maintenance" ) )
             {
-            throw ( new KiteSDKException( mApplicationContext.getString( R.string.alert_dialog_message_server_offline_maintenance ) ) );
+            throw ( new KiteSDKException( mApplicationContext.getString( R.string.kitesdk_alert_dialog_message_server_offline_maintenance) ) );
             }
           else
             {
-            throw ( new KiteSDKException( mApplicationContext.getString( R.string.alert_dialog_message_server_returned_html ) ) );
+            throw ( new KiteSDKException( mApplicationContext.getString( R.string.kitesdk_alert_dialog_message_server_returned_html) ) );
             }
           }
         else

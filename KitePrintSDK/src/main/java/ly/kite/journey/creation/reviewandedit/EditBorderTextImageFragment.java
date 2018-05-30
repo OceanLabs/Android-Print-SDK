@@ -175,7 +175,7 @@ public class EditBorderTextImageFragment extends AEditImageFragment
     setBackwardsTextViewVisibility( View.GONE );
 
     setForwardsTextViewVisibility( View.VISIBLE );
-    setForwardsTextViewText( R.string.edit_border_text_image_forwards_button_text );
+    setForwardsTextViewText( R.string.kitesdk_edit_border_text_image_forwards_button_text);
 
 
     return ( view );

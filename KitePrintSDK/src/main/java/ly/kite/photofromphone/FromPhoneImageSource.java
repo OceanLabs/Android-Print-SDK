@@ -83,9 +83,9 @@ public class FromPhoneImageSource extends AImageSource
     {
     super( R.color.image_source_background_from_phone,
             R.drawable.ic_image_source_device,
-            R.string.image_source_from_phone,
+            R.string.kitesdk_image_source_from_phone,
             R.id.upload_image_from_phone,
-            R.string.upload_photo_from_phone );
+            R.string.kitesdk_upload_photo_from_phone);
     }
 
 

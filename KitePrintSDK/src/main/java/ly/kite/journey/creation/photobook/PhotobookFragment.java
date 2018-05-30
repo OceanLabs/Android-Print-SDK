@@ -166,7 +166,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     mPhotobookView.setLayoutManager( new LinearLayoutManager( mKiteActivity ) );
 
     // Set up the forwards button
-    setForwardsTextViewText( R.string.Next );
+    setForwardsTextViewText( R.string.kitesdk_Next);
     setForwardsTextViewOnClickListener( this );
 
     mPhotobookView.setOnDragListener( this );
@@ -230,7 +230,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
     super.onTop();
 
 
-    mKiteActivity.setTitle( R.string.title_photobook );
+    mKiteActivity.setTitle( R.string.kitesdk_title_photobook);
 
     setUpPhotobookView();
     }
@@ -310,7 +310,7 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
 
       if ( mImageSpecArrayList.isEmpty() )
         {
-        mKiteActivity.displayModalDialog(R.string.alert_dialog_title_oops, R.string.alert_dialog_message_no_images_selected, R.string.OK, null, 0, null);
+        mKiteActivity.displayModalDialog(R.string.kitesdk_alert_dialog_title_oops, R.string.kitesdk_alert_dialog_message_no_images_selected, R.string.kitesdk_OK, null, 0, null);
         }
       else if ( mKiteActivity instanceof ICallback )
         {

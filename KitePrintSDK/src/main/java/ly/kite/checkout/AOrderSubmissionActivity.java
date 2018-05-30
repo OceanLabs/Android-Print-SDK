@@ -191,9 +191,9 @@ abstract public class AOrderSubmissionActivity extends AKiteActivity implements 
 
         displayModalDialog
                 (
-                        R.string.alert_dialog_title_order_cancelled,
-                        R.string.alert_dialog_message_order_cancelled,
-                        R.string.OK,
+                        R.string.kitesdk_alert_dialog_title_order_cancelled,
+                        R.string.kitesdk_alert_dialog_message_order_cancelled,
+                        R.string.kitesdk_OK,
                         null,
                         NO_BUTTON,
                         null
@@ -258,7 +258,7 @@ abstract public class AOrderSubmissionActivity extends AKiteActivity implements 
 
     // When the order times out, behave as we would with a failed order
 
-    Exception timeoutException = new Exception( getString( R.string.order_timeout_message ) );
+    Exception timeoutException = new Exception( getString( R.string.kitesdk_order_timeout_message) );
 
     order.setError( timeoutException );
 

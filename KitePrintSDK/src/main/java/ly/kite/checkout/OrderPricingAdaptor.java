@@ -155,10 +155,10 @@ public class OrderPricingAdaptor extends BaseAdapter
       }
     else
       {
-      shippingCostString = mContext.getString( R.string.Free );
+      shippingCostString = mContext.getString( R.string.kitesdk_Free);
       }
 
-    mItemList.add( new Item( mContext.getString( R.string.Shipping ), shippingCostString, false ) );
+    mItemList.add( new Item( mContext.getString( R.string.kitesdk_Shipping), shippingCostString, false ) );
 
 
     ///// Promo code
@@ -172,7 +172,7 @@ public class OrderPricingAdaptor extends BaseAdapter
       if ( promoDiscountInSingleCurrency != null &&
            promoDiscountInSingleCurrency.getAmount().compareTo( BigDecimal.ZERO ) > 0 )
         {
-        mItemList.add( new Item( mContext.getString( R.string.Promotional_Discount ), promoDiscountInSingleCurrency.getDisplayAmountForLocale( defaultLocale ), false ) );
+        mItemList.add( new Item( mContext.getString( R.string.kitesdk_Promotional_Discount), promoDiscountInSingleCurrency.getDisplayAmountForLocale( defaultLocale ), false ) );
         }
       }
 
@@ -185,7 +185,7 @@ public class OrderPricingAdaptor extends BaseAdapter
       {
       SingleCurrencyAmounts totalCostInSingleCurrency = totalCost.getAmountsWithFallback( preferredCurrencyCode );
 
-      mItemList.add( new Item( mContext.getString( R.string.Total ), totalCostInSingleCurrency.getDisplayAmountForLocale( defaultLocale ), true ) );
+      mItemList.add( new Item( mContext.getString( R.string.kitesdk_Total), totalCostInSingleCurrency.getDisplayAmountForLocale( defaultLocale ), true ) );
       }
 
     }

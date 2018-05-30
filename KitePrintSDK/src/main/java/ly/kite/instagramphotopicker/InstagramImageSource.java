@@ -89,9 +89,9 @@ public class InstagramImageSource extends AImageSource
     {
     super( R.color.image_source_background_instagram,
            R.drawable.ic_image_source_instagram,
-           R.string.image_source_instagram,
+           R.string.kitesdk_image_source_instagram,
            R.id.add_image_from_instagram,
-           R.string.select_photo_from_instagram );
+           R.string.kitesdk_select_photo_from_instagram);
     }
 
 

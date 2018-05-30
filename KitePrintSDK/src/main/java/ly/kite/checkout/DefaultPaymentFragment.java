@@ -45,7 +45,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.paypal.android.sdk.payments.PayPalPayment;
@@ -173,7 +172,7 @@ public class DefaultPaymentFragment extends APaymentFragment
       {
       if ( mPayPalTextView != null )
         {
-        mPayPalTextView.setText( R.string.payment_paypal_button_text );
+        mPayPalTextView.setText( R.string.kitesdk_payment_paypal_button_text);
         mPayPalTextView.setTextColor( getResources().getColor( R.color.payment_paypal_button_text ) );
 
         mPayPalTextView.setOnClickListener( this );
@@ -203,7 +202,7 @@ public class DefaultPaymentFragment extends APaymentFragment
       mChangeableCreditCardTextView.setTextColor( getResources().getColor( R.color.payment_credit_card_button_text ) );
       }
 
-    mCreditCardTextView.setText( R.string.payment_credit_card_button_text );
+    mCreditCardTextView.setText( R.string.kitesdk_payment_credit_card_button_text);
 
     mCreditCardTextView.setOnClickListener( this );
 
@@ -243,7 +242,7 @@ public class DefaultPaymentFragment extends APaymentFragment
       if ( mPayPalTextView != null ) mPayPalTextView.setVisibility( View.GONE );
       if ( mPayPalView     != null ) mPayPalView.setVisibility( View.GONE );
 
-      mCreditCardTextView.setText( R.string.payment_credit_card_button_text_free );
+      mCreditCardTextView.setText( R.string.kitesdk_payment_credit_card_button_text_free);
       mCreditCardTextView.setOnClickListener( new View.OnClickListener()
         {
         @Override
@@ -258,7 +257,7 @@ public class DefaultPaymentFragment extends APaymentFragment
       if ( mPayPalTextView != null ) mPayPalTextView.setVisibility( View.VISIBLE );
       if ( mPayPalView     != null ) mPayPalView.setVisibility( View.VISIBLE );
 
-      mCreditCardTextView.setText( R.string.payment_credit_card_button_text );
+      mCreditCardTextView.setText( R.string.kitesdk_payment_credit_card_button_text);
       mCreditCardTextView.setOnClickListener( this );
       }
     }
@@ -319,12 +318,12 @@ public class DefaultPaymentFragment extends APaymentFragment
                 }
               else
                 {
-                showErrorDialog( R.string.alert_dialog_message_no_payment_id );
+                showErrorDialog( R.string.kitesdk_alert_dialog_message_no_payment_id);
                 }
               }
             else
               {
-              showErrorDialog( R.string.alert_dialog_message_no_proof_of_payment );
+              showErrorDialog( R.string.kitesdk_alert_dialog_message_no_proof_of_payment);
               }
 
             }
@@ -335,7 +334,7 @@ public class DefaultPaymentFragment extends APaymentFragment
           }
         else
           {
-          showErrorDialog( R.string.alert_dialog_message_no_paypal_confirmation );
+          showErrorDialog( R.string.kitesdk_alert_dialog_message_no_paypal_confirmation);
           }
         }
 

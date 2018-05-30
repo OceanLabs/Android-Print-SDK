@@ -189,7 +189,7 @@ public class LogOutDialogFragment extends DialogFragment implements View.OnClick
 
     if ( activity != null )
       {
-      mTimeRemainingTextView.setText( activity.getString( R.string.time_remaining_format_string, mTimeRemainingMillis / 1000 ) );
+      mTimeRemainingTextView.setText( activity.getString( R.string.kitesdk_time_remaining_format_string, mTimeRemainingMillis / 1000 ) );
       }
     }
 

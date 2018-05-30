@@ -53,9 +53,9 @@ import ly.kite.R;
  *****************************************************/
 public enum UnitOfLength
   {
-  CENTIMETERS ( R.string.unit_centimeters, R.string.unit_centimeters_short ),
-  INCHES      ( R.string.unit_inches,      R.string.unit_inches_short      ),
-  PIXELS      ( R.string.unit_pixels,      R.string.unit_pixels_short      );
+  CENTIMETERS ( R.string.kitesdk_unit_centimeters, R.string.kitesdk_unit_centimeters_short),
+  INCHES      ( R.string.kitesdk_unit_inches,      R.string.kitesdk_unit_inches_short),
+  PIXELS      ( R.string.kitesdk_unit_pixels,      R.string.kitesdk_unit_pixels_short);
 
 
   private int  mPluralResourceId;

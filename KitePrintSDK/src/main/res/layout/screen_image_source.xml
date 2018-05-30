@@ -15,7 +15,7 @@
             android:layout_marginBottom="@dimen/image_source_prompt_margin"
             android:gravity="center"
             android:textSize="@dimen/prompt_text_size"
-            android:text="@string/image_source_prompt"
+            android:text="@string/kitesdk_image_source_prompt"
             android:textColor="@color/prompt_text"/>
 
         <GridView

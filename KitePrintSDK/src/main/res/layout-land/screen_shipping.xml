@@ -41,7 +41,7 @@
                             android:layout_gravity="top"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/shipping_delivery_address_button_text"
+                            android:text="@string/kitesdk_shipping_delivery_address_button_text"
                             android:onClick="onChooseDeliveryAddressButtonClicked"
                             android:textSize="@dimen/delivery_address_button_text_size"/>
 
@@ -76,7 +76,7 @@
                             style="@style/ShippingEditText"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="@string/shipping_email_hint_text"
+                            android:hint="@string/kitesdk_shipping_email_hint_text"
                             android:inputType="textEmailAddress"
                             android:maxLines="1"
                             android:ellipsize="end"/>
@@ -85,7 +85,7 @@
                             android:layout_marginTop="@dimen/activity_vertical_margin"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/shipping_email_reason"
+                            android:text="@string/kitesdk_shipping_email_reason"
                             android:textSize="@dimen/explanation_text_size"/>
 
                         <ly.kite.widget.CustomTypefaceEditText
@@ -94,7 +94,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/activity_vertical_margin"
-                            android:hint="@string/shipping_phone_hint_text"
+                            android:hint="@string/kitesdk_shipping_phone_hint_text"
                             android:inputType="phone"
                             android:maxLines="1"
                             android:ellipsize="end"/>
@@ -104,7 +104,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/activity_vertical_margin"
-                            android:text="@string/shipping_phone_reason"
+                            android:text="@string/kitesdk_shipping_phone_reason"
                             android:textSize="@dimen/explanation_text_size"/>
 
                     </LinearLayout>

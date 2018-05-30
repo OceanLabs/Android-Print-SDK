@@ -55,7 +55,7 @@
             android:layout_weight="0.0"
             android:background="@android:color/white"
             android:gravity="center"
-            android:text="@string/button_symbol_decrement"
+            android:text="@string/kitesdk_button_symbol_decrement"
             android:textColor="@color/review_and_crop_quantity_highlight"
             android:textSize="@dimen/review_and_crop_plus_minus_text_size"/>
 
@@ -69,7 +69,7 @@
             android:layout_weight="0.0"
             android:background="@android:color/white"
             android:gravity="center"
-            android:text="@string/button_symbol_increment"
+            android:text="@string/kitesdk_button_symbol_increment"
             android:textColor="@color/review_and_crop_quantity_highlight"
             android:textSize="@dimen/review_and_crop_plus_minus_text_size"/>
 
@@ -80,7 +80,7 @@
             android:layout_weight="1.0"
             android:layout_height="fill_parent"
             style="@style/KiteSDKCTAButton.ReviewAndCrop"
-            android:text="@string/Edit"/>
+            android:text="@string/kitesdk_Edit"/>
 
 
     </LinearLayout>

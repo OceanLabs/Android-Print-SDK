@@ -44,7 +44,6 @@ import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spanned;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,7 +57,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Locale;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
@@ -843,7 +841,7 @@ public class PhotobookAdaptor extends RecyclerView.Adapter
           super(view);
           TextView instructions= (TextView) view.findViewById(R.id.photobook_instructions_text_view);
 
-          String htmlInstructions = view.getResources().getString(R.string.multi_page_instructions_html);
+          String htmlInstructions = view.getResources().getString(R.string.kitesdk_multi_page_instructions_html);
           Spanned htmlAsSpanned = Html.fromHtml(htmlInstructions);
 
           instructions.setText(htmlAsSpanned);

@@ -19,7 +19,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:textAllCaps="true"
-            android:text="@string/order_failure_banner_message"
+            android:text="@string/kitesdk_order_failure_banner_message"
             android:textColor="@color/failure_banner_text"
             android:textSize="@dimen/failure_banner_text_size"/>
     </FrameLayout>
@@ -39,7 +39,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.0"
-            android:text="@string/Payment_Id"
+            android:text="@string/kitesdk_Payment_Id"
             android:textColor="#515151"
             android:textSize="16sp"/>
 
@@ -66,7 +66,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.0"
             android:background="#ffe34b"
-            android:text="@string/Retry"
+            android:text="@string/kitesdk_Retry"
             android:textColor="#515151"
             android:textSize="@dimen/control_label_text_size"/>
 

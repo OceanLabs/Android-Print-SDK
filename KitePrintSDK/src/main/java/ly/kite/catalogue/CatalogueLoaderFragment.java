@@ -204,7 +204,7 @@ public class CatalogueLoaderFragment extends ARetainedDialogFragment implements 
       mProgressDialog.setProgressStyle( ProgressDialog.STYLE_HORIZONTAL );
       mProgressDialog.setProgressPercentFormat( null );
       mProgressDialog.setProgressNumberFormat( null );   // Don't display the "N/100" text
-      mProgressDialog.setTitle( R.string.Loading_catalogue );
+      mProgressDialog.setTitle( R.string.kitesdk_Loading_catalogue);
       }
 
     setCancelable( true );

@@ -31,7 +31,7 @@
                     android:layout_height="fill_parent"
                     android:padding="@dimen/basket_item_heading_padding"
                     android:gravity="center"
-                    android:text="@string/QUANTITY"
+                    android:text="@string/kitesdk_QUANTITY"
                     android:textSize="@dimen/basket_item_heading_text_size"/>
                 <ly.kite.widget.CustomTypefaceTextView
                     android:layout_width="wrap_content"
@@ -39,14 +39,14 @@
                     android:layout_height="fill_parent"
                     android:padding="@dimen/basket_item_heading_padding"
                     android:gravity="center"
-                    android:text="@string/ITEM"
+                    android:text="@string/kitesdk_ITEM"
                     android:textSize="@dimen/basket_item_heading_text_size"/>
                 <ly.kite.widget.CustomTypefaceTextView
                     android:layout_width="@dimen/basket_price_column_width"
                     android:layout_height="fill_parent"
                     android:padding="@dimen/basket_item_heading_padding"
                     android:gravity="center"
-                    android:text="@string/PRICE"
+                    android:text="@string/kitesdk_PRICE"
                     android:textSize="@dimen/basket_item_heading_text_size"/>
             </LinearLayout>
 
@@ -67,7 +67,7 @@
                     android:layout_gravity="center"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/basket_empty"
+                    android:text="@string/kitesdk_basket_empty"
                     android:visibility="gone"/>
                 <ProgressBar
                     android:id="@+id/progress_spinner"
@@ -120,7 +120,7 @@
                         android:layout_weight="1.0"
                         android:layout_height="fill_parent"
                         android:gravity="left|center_vertical"
-                        android:text="@string/Choose_Delivery_Address"
+                        android:text="@string/kitesdk_Choose_Delivery_Address"
                         android:textSize="@dimen/basket_order_item_text_size"
                         android:textStyle="bold"
                         android:singleLine="true"/>
@@ -159,7 +159,7 @@
                         android:layout_weight="1.0"
                         android:layout_height="fill_parent"
                         android:gravity="left|center_vertical"
-                        android:text="@string/Shipping"
+                        android:text="@string/kitesdk_Shipping"
                         android:textSize="@dimen/basket_order_item_text_size"
                         android:textStyle="bold"/>
                     <ly.kite.widget.CustomTypefaceTextView
