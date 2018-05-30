@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="title_device_photo_picker">"Bibliotheek"</string>
+    <string name="kitesdk_title_device_photo_picker">"Bibliotheek"</string>
 
 </resources>

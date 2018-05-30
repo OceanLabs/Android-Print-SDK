@@ -6,7 +6,7 @@
 
         <activity
             android:name="ly.kite.devicephotopicker.DevicePhotoPickerActivity"
-            android:label="@string/title_device_photo_picker"
+            android:label="@string/kitesdk_title_device_photo_picker"
             android:theme="@style/Theme.DevicePhotoPicker"/>
 
     </application>
