@@ -6,12 +6,12 @@
 
         <activity
             android:name="ly.kite.instagramphotopicker.InstagramPhotoPickerActivity"
-            android:label="@string/title_instagram_photo_picker"
+            android:label="@string/kitesdk_title_instagram_photo_picker"
             android:theme="@style/Theme.InstagramPhotoPicker"/>
 
         <activity
             android:name="ly.kite.instagramphotopicker.InstagramLoginActivity"
-            android:label="@string/title_instagram_login"
+            android:label="@string/kitesdk_title_instagram_login"
             android:theme="@style/Theme.InstagramPhotoPicker"/>
 
     </application>
