@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="title_facebook_photo_picker">Parcourir les photos Facebook</string>
+    <string name="kitesdk_title_facebook_photo_picker">Parcourir les photos Facebook</string>
 
-    <string name="title_facebook_alert_dialog">Erreur Facebook</string>
-    <string name="message_facebook_alert_dialog">Un probl&#232;me est survenu lors du t&#233;l&#233;chargement de vos photos Facebook:\n%1$s</string>
+    <string name="kitesdk_title_facebook_alert_dialog">Erreur Facebook</string>
+    <string name="kitesdk_message_facebook_alert_dialog">Un probl&#232;me est survenu lors du t&#233;l&#233;chargement de vos photos Facebook:\n%1$s</string>
 
-    <string name="button_text_retry">R&#233;essayer</string>
-    <string name="button_text_cancel">Annuler</string>
+    <string name="kitesdk_button_text_retry">R&#233;essayer</string>
+    <string name="kitesdk_button_text_cancel">Annuler</string>
 
 </resources>
