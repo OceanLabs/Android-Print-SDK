@@ -29,9 +29,6 @@ android {
             res { srcDir 'src/main/res' }
         }
     }
-
-    resourcePrefix 'kitesdk_'
-
 }
 
 dependencies {
