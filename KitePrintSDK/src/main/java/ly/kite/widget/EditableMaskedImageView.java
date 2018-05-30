@@ -124,6 +124,7 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
   // ... likewise for over images.
   private Bitmap[]              mOverImageArray;
   private Rect[]                mOverImageSourceRectArray;
+  private String                mMaskBlendMode;
 
   private int                   mTranslucentBorderSizeInPixels;
   private Paint                 mTranslucentPaint;
@@ -160,6 +161,7 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
 
   private Paint                 mImageToBlendPaint;
   private Paint                 mDefaultPaint;
+  private Paint                 mMultiplyPaint;
 
   private Bitmap                mBlendBitmap;
   private Canvas                mBlendCanvas;
@@ -308,7 +310,14 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
 
           if ( overImage != null )
             {
-            canvas.drawBitmap( overImage, mOverImageSourceRectArray[ overImageIndex ], mBlendToViewTargetRectF, mDefaultPaint );
+            if ( mMaskBlendMode != null && mMaskBlendMode.equals( "MULTIPLY" ) )
+              {
+              canvas.drawBitmap(overImage, mOverImageSourceRectArray[overImageIndex], mBlendToViewTargetRectF, mMultiplyPaint);
+              }
+            else
+              {
+              canvas.drawBitmap(overImage, mOverImageSourceRectArray[overImageIndex], mBlendToViewTargetRectF, mDefaultPaint);
+              }
             }
           }
         }
@@ -499,6 +508,8 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
     mImageToBlendPaint.setFilterBitmap( true );
 
     mDefaultPaint = new Paint();
+    mMultiplyPaint = new Paint();
+    mMultiplyPaint.setXfermode( new PorterDuffXfermode( PorterDuff.Mode.MULTIPLY ) );
 
     mTranslucentPaint = new Paint();
     mTranslucentPaint.setAlpha( TRANSLUCENT_ALPHA );
@@ -595,6 +606,18 @@ public class EditableMaskedImageView extends View implements GestureDetector.OnG
     calculateSizes();
 
     invalidate();
+    }
+
+  /*****************************************************
+   *
+   * Adds the mask blend mode
+   *
+   *****************************************************/
+    public void setMaskBlendMode( String maskBlendMode )
+    {
+      mMaskBlendMode = maskBlendMode;
+
+      invalidate();
     }
 
 

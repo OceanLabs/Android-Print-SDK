@@ -192,6 +192,7 @@ public class PhoneCaseFragment extends AEditImageFragment
       mEditableImageContainerFrame
               .setImage( mUnmodifiedImageAssetFragment )
               .setMask( mProduct.getMaskURL(), mProduct.getMaskBleed() )
+              .setMaskBlendMode( mProduct.getMaskBlendMode() )
               .setUnderImages( mProduct.getUnderImageURLList() )
               .setOverImages( mProduct.getOverImageURLList() )
               .setAnchorPoint( anchorPointValue.getFloat() );
