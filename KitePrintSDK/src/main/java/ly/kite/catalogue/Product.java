@@ -131,6 +131,7 @@ public class Product implements IGroupOrProduct, Parcelable
 
   private ArrayList<URL>                    mUnderImageURLList;
   private ArrayList<URL>                    mOverImageURLList;
+  private String                            mMaskBlendMode;
 
   private List<ProductOption>               mOptionList;
 
@@ -317,6 +318,7 @@ public class Product implements IGroupOrProduct, Parcelable
 
     mUnderImageURLList          = readURLList( sourceParcel );
     mOverImageURLList           = readURLList( sourceParcel );
+    mMaskBlendMode              = sourceParcel.readString();
 
     mOptionList                 = new ArrayList<>();
     sourceParcel.readList( mOptionList, ProductOption.class.getClassLoader() );
@@ -375,6 +377,7 @@ public class Product implements IGroupOrProduct, Parcelable
 
     writeToParcel( mUnderImageURLList, targetParcel );
     writeToParcel( mOverImageURLList,  targetParcel );
+    targetParcel.writeString( mMaskBlendMode );
 
     targetParcel.writeList( mOptionList );
 
@@ -844,6 +847,18 @@ public class Product implements IGroupOrProduct, Parcelable
     return ( this );
     }
 
+  /*****************************************************
+   *
+   * Adds the mask blend mode
+   *
+   *****************************************************/
+  Product setMaskBlendMode( String maskBlendMode )
+    {
+      mMaskBlendMode = maskBlendMode;
+
+      return ( this );
+    }
+
 
   /*****************************************************
    *
@@ -853,6 +868,16 @@ public class Product implements IGroupOrProduct, Parcelable
   public ArrayList<URL> getOverImageURLList()
     {
     return ( mOverImageURLList );
+    }
+
+  /*****************************************************
+   *
+   * Returns the mask blend mode
+   *
+   *****************************************************/
+  public String getMaskBlendMode()
+    {
+      return ( mMaskBlendMode );
     }
 
 

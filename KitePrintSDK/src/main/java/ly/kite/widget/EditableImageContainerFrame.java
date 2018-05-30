@@ -97,6 +97,7 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
 
   private ArrayList<URL>           mUnderImageURLList;
   private ArrayList<URL>           mOverImageURLList;
+  private String                   mMaskBlendMode;
 
   private Object                   mExpectedImageKey;
   private Object                   mExpectedMaskKey;
@@ -392,6 +393,18 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
     return ( this );
     }
 
+  /*****************************************************
+   *
+   * Sets the mask blend mode
+   *
+   *****************************************************/
+  public EditableImageContainerFrame setMaskBlendMode( String maskBlendMode )
+    {
+      mMaskBlendMode = maskBlendMode;
+
+      return ( this );
+    }
+
 
   /*****************************************************
    *
@@ -657,7 +670,11 @@ public class EditableImageContainerFrame extends FrameLayout implements IImageCo
 
           mExpectedUnderImageKeys[ underImageIndex ] = null;
 
-          if ( bitmap != null ) mEditableMaskedImageView.setUnderImage( underImageIndex, bitmap );
+          if ( bitmap != null )
+            {
+            mEditableMaskedImageView.setMaskBlendMode( mMaskBlendMode );
+            mEditableMaskedImageView.setUnderImage( underImageIndex, bitmap );
+            }
           }
         }
       }

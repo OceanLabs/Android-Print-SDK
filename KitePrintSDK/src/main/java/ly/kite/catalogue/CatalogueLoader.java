@@ -148,7 +148,8 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
   static private final String  JSON_NAME_VALUE_CODE                  = "code";
   static private final String  JSON_NAME_VARIANT_ID                  = "variant_id";
   static private final String  JSON_NAME_WIDTH                       = "width";
-  static private final String JSON_NAME_CATEGORY                     = "product_category";
+  static private final String  JSON_NAME_CATEGORY                    = "product_category";
+  static private final String  JSON_NAME_BLEND_MODE                  = "mask_blend_mode";
 
   static private final int     DEFAULT_IMAGES_PER_PAGE               = 1;
   static private final int     DEFAULT_GRID_SIZE                     = 1;
@@ -633,6 +634,8 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
         String backgroundImageURLString = productDetailJSONObject.optString( JSON_NAME_BACKGROUND_IMAGE_URL, null );
         String highlightImageURLString  = productDetailJSONObject.optString( JSON_NAME_HIGHLIGHTS_URL,       null );
 
+        // Get mask blend mode
+        String maskBlendMode = productDetailJSONObject.optString( JSON_NAME_BLEND_MODE, null );
 
         // Get any product options
 
@@ -658,6 +661,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
                 .setImageURLs( coverPhotoURL, imageURLList )
                 .setLabelColour( labelColour )
                 .setMask( maskURL, maskBleed )
+                .setMaskBlendMode( maskBlendMode )
                 .setSize( size )
                 .setCreationImage( imageAspectRatio, imageBorder )
                 .setProductOptions( productOptionList )
