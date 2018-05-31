@@ -54,7 +54,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import ly.kite.journey.AImageSource;
@@ -165,7 +164,7 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
     mCalendarView.setLayoutManager( new LinearLayoutManager( mKiteActivity ) );
 
     // Set up the forwards button
-    setForwardsTextViewText( R.string.Next );
+    setForwardsTextViewText( R.string.kitesdk_Next);
     setForwardsTextViewOnClickListener( this );
 
     mCalendarView.setOnDragListener( this );
@@ -214,7 +213,7 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
     super.onTop();
 
 
-    mKiteActivity.setTitle( R.string.title_calendar );
+    mKiteActivity.setTitle( R.string.kitesdk_title_calendar);
 
     setUpCalendarView();
     }
@@ -296,7 +295,7 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
 
       if ( mImageSpecArrayList.isEmpty() )
         {
-        mKiteActivity.displayModalDialog(R.string.alert_dialog_title_oops, R.string.alert_dialog_message_no_images_selected, R.string.OK, null, 0, null);
+        mKiteActivity.displayModalDialog(R.string.kitesdk_alert_dialog_title_oops, R.string.kitesdk_alert_dialog_message_no_images_selected, R.string.kitesdk_OK, null, 0, null);
         }
       else if ( mKiteActivity instanceof ICallback )
         {

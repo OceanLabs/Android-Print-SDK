@@ -91,7 +91,7 @@ abstract public class AStandardHomeActivity extends AHomeActivity
 
 
     // Set up the drawer toggle
-    mDrawerToggle = new ActionBarDrawerToggle( this, mDrawerLayout, R.string.drawer_open, R.string.drawer_closed );
+    mDrawerToggle = new ActionBarDrawerToggle( this, mDrawerLayout, R.string.kitesdk_drawer_open, R.string.kitesdk_drawer_closed);
     mDrawerLayout.setDrawerListener( mDrawerToggle );
 
 

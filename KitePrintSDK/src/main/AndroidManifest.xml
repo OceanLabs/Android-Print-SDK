@@ -38,13 +38,13 @@
 
         <activity
             android:name=".checkout.ShippingActivity"
-            android:label="@string/title_activity_checkout"
+            android:label="@string/kitesdk_title_activity_checkout"
             android:theme="@style/Theme.KiteSDK.Checkout"/>
 
 
         <activity
             android:name=".checkout.PaymentActivity"
-            android:label="@string/title_activity_payment"
+            android:label="@string/kitesdk_title_activity_payment"
             android:theme="@style/Theme.KiteSDK.Payment"
             android:windowSoftInputMode="stateHidden|adjustPan"
             android:configChanges="screenSize|orientation|screenLayout|navigation"/>
@@ -52,22 +52,22 @@
 
         <activity
             android:name=".checkout.OrderReceiptActivity"
-            android:label="@string/title_activity_order_receipt"
+            android:label="@string/kitesdk_title_activity_order_receipt"
             android:theme="@style/Theme.KiteSDK.OrderReceipt"/>
 
         <activity
             android:name=".journey.ordering.OrderHistoryActivity"
-            android:label="@string/title_order_history"
+            android:label="@string/kitesdk_title_order_history"
             android:theme="@style/Theme.KiteSDK.OrderHistory"/>
 
         <activity
             android:name=".address.AddressBookActivity"
-            android:label="@string/title_activity_address_book"
+            android:label="@string/kitesdk_title_activity_address_book"
             android:theme="@style/Theme.KiteSDK.AddressBook"/>
 
         <activity
             android:name=".address.AddressEditActivity"
-            android:label="@string/title_activity_address_edit"
+            android:label="@string/kitesdk_title_activity_address_edit"
             android:theme="@style/Theme.KiteSDK.AddressEdit"
             android:windowSoftInputMode="adjustResize"/>
 

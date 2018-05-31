@@ -35,7 +35,7 @@
         android:id="@+id/prompt_text_frame"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        custom:promptText="@string/edit_image_prompt_text"
+        custom:promptText="@string/kitesdk_edit_image_prompt_text"
         android:layerType="hardware"/>
 
 </FrameLayout>

@@ -29,7 +29,6 @@ android {
             res { srcDir 'src/main/res' }
         }
     }
-
 }
 
 dependencies {

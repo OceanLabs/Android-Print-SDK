@@ -39,7 +39,6 @@ package ly.kite.checkout;
 
 ///// Import(s) /////
 
-import android.app.DialogFragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -347,7 +346,7 @@ abstract public class ACreditCardDialogFragment extends ARetainedDialogFragment 
 
     if ( ! StringUtils.isDigitString( cardNumberString ) )
       {
-      onDisplayError( R.string.card_error_invalid_number );
+      onDisplayError( R.string.kitesdk_card_error_invalid_number);
 
       return ( false );
       }
@@ -357,7 +356,7 @@ abstract public class ACreditCardDialogFragment extends ARetainedDialogFragment 
 
     if ( ! StringUtils.isDigitString( expiryMonthString ) )
       {
-      onDisplayError( R.string.card_error_invalid_expiry_date );
+      onDisplayError( R.string.kitesdk_card_error_invalid_expiry_date);
 
       return ( false );
       }
@@ -367,7 +366,7 @@ abstract public class ACreditCardDialogFragment extends ARetainedDialogFragment 
 
     if ( ! StringUtils.isDigitString( expiryYearString ) )
       {
-      onDisplayError( R.string.card_error_invalid_expiry_date );
+      onDisplayError( R.string.kitesdk_card_error_invalid_expiry_date);
 
       return ( false );
       }
@@ -377,7 +376,7 @@ abstract public class ACreditCardDialogFragment extends ARetainedDialogFragment 
 
     if ( ! StringUtils.isDigitString( cvvString ) )
       {
-      onDisplayError( R.string.card_error_invalid_cvv );
+      onDisplayError( R.string.kitesdk_card_error_invalid_cvv);
 
       return ( false );
       }

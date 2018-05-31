@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="title_instagram_login">"Aanmelden"</string>
+    <string name="kitesdk_title_instagram_login">"Aanmelden"</string>
 
-    <string name="instagram_error_title">"Oeps"</string>
-    <string name="instagram_error_message">"Er is iets misgegaan. Probeer het opnieuw:\n%1$s"</string>
+    <string name="kitesdk_instagram_error_title">"Oeps"</string>
+    <string name="kitesdk_instagram_error_message">"Er is iets misgegaan. Probeer het opnieuw:\n%1$s"</string>
 
-    <string name="button_text_retry">"Opnieuw"</string>
-    <string name="button_text_cancel">"Annuleren"</string>
+    <string name="kitesdk_button_text_retry">"Opnieuw"</string>
+    <string name="kitesdk_button_text_cancel">"Annuleren"</string>
 </resources>

@@ -33,7 +33,7 @@
             android:background="@android:color/white"
             android:paddingTop="@dimen/empty_text_top_padding"
             android:gravity="top|center_horizontal"
-            android:text="@string/image_selection_empty_message"
+            android:text="@string/kitesdk_age_selection_empty_message"
             android:textSize="@dimen/empty_text_size"
             android:visibility="gone"/>
 

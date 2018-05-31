@@ -20,7 +20,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:textAllCaps="true"
-            android:text="@string/order_success_banner_message"
+            android:text="@string/kitesdk_order_success_banner_message"
             android:textColor="@color/success_banner_text"
             android:textSize="@dimen/success_banner_text_size"/>
     </FrameLayout>
@@ -49,7 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.0"
             android:padding="10dp"
-            android:text="@string/Order_Id"
+            android:text="@string/kitesdk_Order_Id"
             android:textColor="#515151"
             android:textSize="16sp"/>
 
@@ -71,7 +71,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.0"
             android:background="#ffe34b"
-            android:text="@string/Continue_Shopping"
+            android:text="@string/kitesdk_Continue_Shopping"
             android:textColor="#515151"
             android:textSize="@dimen/control_label_text_size"/>
 

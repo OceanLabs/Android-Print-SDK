@@ -56,7 +56,6 @@ import ly.kite.image.ImageAgent;
 import ly.kite.image.ImageProcessingRequest;
 import ly.kite.journey.AImageSource;
 import ly.kite.journey.AKiteActivity;
-import ly.kite.ordering.ImageSpec;
 import ly.kite.util.Asset;
 import ly.kite.catalogue.Product;
 import ly.kite.util.AssetFragment;
@@ -168,11 +167,11 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
       Log.e( LOG_TAG, "No arguments found" );
 
       mKiteActivity.displayModalDialog(
-              R.string.alert_dialog_title_no_arguments,
-              R.string.alert_dialog_message_no_arguments,
+              R.string.kitesdk_alert_dialog_title_no_arguments,
+              R.string.kitesdk_alert_dialog_message_no_arguments,
               AKiteActivity.NO_BUTTON,
               null,
-              R.string.Cancel,
+              R.string.kitesdk_Cancel,
               mKiteActivity.new FinishRunnable()
       );
 
@@ -189,11 +188,11 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
       Log.e( LOG_TAG, "No product found" );
 
       mKiteActivity.displayModalDialog(
-              R.string.alert_dialog_title_product_not_found,
-              R.string.alert_dialog_message_product_not_found,
+              R.string.kitesdk_alert_dialog_title_product_not_found,
+              R.string.kitesdk_alert_dialog_message_product_not_found,
               AKiteActivity.NO_BUTTON,
               null,
-              R.string.Cancel,
+              R.string.kitesdk_Cancel,
               mKiteActivity.new FinishRunnable()
       );
 
@@ -240,7 +239,7 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
 
 
     setForwardsTextViewVisibility( View.VISIBLE );
-    setForwardsTextViewText( R.string.edit_image_forwards_button_text );
+    setForwardsTextViewText( R.string.kitesdk_edit_image_forwards_button_text);
     setForwardsTextViewBold( true );
 
     // The confirm button is not enabled until both image and mask are loaded
@@ -418,11 +417,11 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
   public void onLoadError()
     {
     mKiteActivity.displayModalDialog(
-            R.string.alert_dialog_title_load_image,
-            R.string.alert_dialog_message_could_not_load_image,
-            R.string.Retry,
+            R.string.kitesdk_alert_dialog_title_load_image,
+            R.string.kitesdk_alert_dialog_message_could_not_load_image,
+            R.string.kitesdk_Retry,
             new LoadAllImagesRunnable(),
-            R.string.Cancel,
+            R.string.kitesdk_Cancel,
             mKiteActivity.new FinishRunnable() );
     }
 

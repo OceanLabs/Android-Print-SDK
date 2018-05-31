@@ -150,7 +150,7 @@ public class PhoneCaseFragment extends AEditImageFragment
     setBackwardsTextViewVisibility( View.GONE );
 
     setForwardsTextViewVisibility( View.VISIBLE );
-    setForwardsTextViewText( R.string.phone_case_proceed_button_text );
+    setForwardsTextViewText( R.string.kitesdk_phone_case_proceed_button_text);
 
     return ( view );
     }

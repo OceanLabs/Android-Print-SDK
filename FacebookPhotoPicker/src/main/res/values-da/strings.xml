@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="title_facebook_photo_picker">Facebook fotovælger</string>
+    <string name="kitesdk_title_facebook_photo_picker">Facebook fotovælger</string>
 
-    <string name="app_name">@string/title_facebook_photo_picker</string>
+    <string name="kitesdk_app_name">@string/kitesdk_title_facebook_photo_picker</string>
 
-    <string name="title_facebook_alert_dialog">Facebook fejl</string>
-    <string name="message_facebook_alert_dialog">Der opstod en fejl ved indlæsningen af dine Facebook billeder:\n%1$s</string>
+    <string name="kitesdk_title_facebook_alert_dialog">Facebook fejl</string>
+    <string name="kitesdk_message_facebook_alert_dialog">Der opstod en fejl ved indlæsningen af dine Facebook billeder:\n%1$s</string>
 
-    <string name="button_text_retry">Prøv igen</string>
-    <string name="button_text_cancel">Annuler</string>
+    <string name="kitesdk_button_text_retry">Prøv igen</string>
+    <string name="kitesdk_button_text_cancel">Annuler</string>
 
 </resources>

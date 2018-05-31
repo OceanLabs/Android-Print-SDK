@@ -159,9 +159,9 @@ public class SingleDestinationShippingCost implements Parcelable
    *****************************************************/
   public String getDestinationDescription( Context context )
     {
-    if ( Country.UK.usesISOCode( mDestinationCode )                   ) return ( context.getString( R.string.destination_description_gbr ) );
-    if ( DESTINATION_CODE_EUROPE.equals( mDestinationCode )        ) return ( context.getString( R.string.destination_description_europe ) );
-    if ( DESTINATION_CODE_REST_OF_WORLD.equals( mDestinationCode ) ) return ( context.getString( R.string.destination_description_rest_of_world ) );
+    if ( Country.UK.usesISOCode( mDestinationCode )                   ) return ( context.getString( R.string.kitesdk_destination_description_gbr) );
+    if ( DESTINATION_CODE_EUROPE.equals( mDestinationCode )        ) return ( context.getString( R.string.kitesdk_destination_description_europe) );
+    if ( DESTINATION_CODE_REST_OF_WORLD.equals( mDestinationCode ) ) return ( context.getString( R.string.kitesdk_destination_description_rest_of_world) );
 
     return ( mDestinationCode );
     }

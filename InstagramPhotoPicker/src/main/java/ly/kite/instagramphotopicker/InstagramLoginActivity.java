@@ -258,7 +258,7 @@ public class InstagramLoginActivity extends Activity
   private final String getLoginErrorMessage( Uri uri )
     {
     // Default message
-    String errorMessage = getString( R.string.instagram_error_title );
+    String errorMessage = getString( R.string.kitesdk_instagram_error_title);
 
     String errorReason = uri.getQueryParameter( "error_reason" );
 
@@ -288,10 +288,10 @@ public class InstagramLoginActivity extends Activity
   private void showErrorDialog( String message )
     {
     AlertDialog.Builder builder = new AlertDialog.Builder( this );
-    builder.setTitle( R.string.instagram_alert_dialog_title );
+    builder.setTitle( R.string.kitesdk_instagram_alert_dialog_title);
     builder.setMessage( message );
-    builder.setPositiveButton( R.string.button_text_retry, null );
-    builder.setNegativeButton( R.string.button_text_cancel, new CancelButtonClickListener() );
+    builder.setPositiveButton( R.string.kitesdk_button_text_retry, null );
+    builder.setNegativeButton( R.string.kitesdk_button_text_cancel, new CancelButtonClickListener() );
     builder.show();
     }
 

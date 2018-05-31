@@ -282,7 +282,7 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
 
     Resources resources = getResources();
 
-    String typefaceAssetName = getString( R.string.action_bar_typeface_asset_name );
+    String typefaceAssetName = getString( R.string.kitesdk_action_bar_typeface_asset_name);
     float  textSize          = resources.getDimension( R.dimen.action_bar_text_size );
 
     if ( typefaceAssetName != null && ! typefaceAssetName.trim().equals( "" ) )
@@ -1086,7 +1086,7 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
             (
             title,
             message,
-            R.string.OK,
+            R.string.kitesdk_OK,
             null,
             NO_BUTTON,
             null
@@ -1101,7 +1101,7 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
    *****************************************************/
   public void showErrorDialog( String message )
     {
-    showErrorDialog( getString( R.string.alert_dialog_title_oops ), message );
+    showErrorDialog( getString( R.string.kitesdk_alert_dialog_title_oops), message );
     }
 
 
@@ -1147,11 +1147,11 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
     {
     displayModalDialog
             (
-            R.string.alert_dialog_title_end_customer_session,
-            R.string.alert_dialog_message_end_customer_session,
-            R.string.End_Session,
+            R.string.kitesdk_alert_dialog_title_end_customer_session,
+            R.string.kitesdk_alert_dialog_message_end_customer_session,
+            R.string.kitesdk_End_Session,
             new EndCustomerSessionRunnable(),
-            R.string.Cancel,
+            R.string.kitesdk_Cancel,
             null
             );
     }

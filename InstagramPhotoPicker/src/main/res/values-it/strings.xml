@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <resources>
 
-    <string name="title_instagram_photo_picker">Scegli foto Instagram</string>
-    <string name="title_instagram_login">Accesso</string>
+    <string name="kitesdk_title_instagram_photo_picker">Scegli foto Instagram</string>
+    <string name="kitesdk_title_instagram_login">Accesso</string>
 
-    <string name="instagram_error_title">Errore Instagram</string>
-    <string name="instagram_error_message">C\'è stato un problema durante il caricamento foto Instagram:\n%1$s</string>
+    <string name="kitesdk_instagram_error_title">Errore Instagram</string>
+    <string name="kitesdk_instagram_error_message">C\'è stato un problema durante il caricamento foto Instagram:\n%1$s</string>
 
-    <string name="button_text_retry">Riprova</string>
-    <string name="button_text_cancel">Annulla</string>
+    <string name="kitesdk_button_text_retry">Riprova</string>
+    <string name="kitesdk_button_text_cancel">Annulla</string>
 
 </resources>
