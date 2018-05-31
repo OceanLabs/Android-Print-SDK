@@ -30,7 +30,11 @@ android {
     sourceSets {
         main {
             manifest { srcFile 'src/main/AndroidManifest.xml' }
-            java { srcDir 'src/main/java' }
+            java {
+                srcDir 'src/main/java'
+                // Comment the next line if you are including Facebook
+                exclude '**/FacebookImageSource.java'
+            }
             res { srcDir 'src/main/res' }
         }
     }

@@ -46,9 +46,7 @@ android {
             java {
                 // Comment the next line if you are including push messaging
                 exclude '**/GCMListenerService.java'
-
-                // Comment the next line if you are including Facebook
-                exclude '**/FacebookImageSource.java'
+                //For facebook check KitePrintSDK gradle
             }
         }
     }
