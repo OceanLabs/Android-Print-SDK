@@ -350,6 +350,8 @@ public enum Country
     {
     // Try and find the country in the look-up table we built in the
     // static initialiser
+    if (isoCode != null && isoCode.equals("LG")){ isoCode = "ES"; }
+
     Country country =  sCodeCountryTable.get( isoCode );
     if(country == null) {
       return Country.USA;
@@ -368,6 +370,11 @@ public enum Country
     if ( locale == null )
       {
       throw ( new IllegalArgumentException( "Please provide a non null locale" ) );
+      }
+
+    if (locale.getCountry().equals("LG"))
+      {
+        locale = new Locale(locale.getLanguage(), "ES");
       }
 
     Country country =  Country.getInstance( locale.getISO3Country() );
