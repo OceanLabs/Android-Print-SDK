@@ -1,6 +1,5 @@
 buildscript {
     repositories {
-        mavenCentral()
         jcenter()
         google()
     }
@@ -32,12 +31,12 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    compile 'com.facebook.android:facebook-android-sdk:4.7.0'
+    implementation 'com.facebook.android:facebook-android-sdk:4.7.0'
 
-    //compile project(':ImagePicker')
-    compile 'ly.kite:image-picker:5.8.5'
+    //implementation project(':ImagePicker')
+    implementation 'ly.kite:image-picker:5.8.5'
 }
 
 // Uncomment before uploading archives
