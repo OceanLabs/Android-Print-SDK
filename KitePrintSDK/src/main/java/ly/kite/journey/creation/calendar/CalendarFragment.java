@@ -54,7 +54,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import ly.kite.journey.AImageSource;
@@ -186,6 +185,19 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
 
     // Make sure we have cropped versions of all assets
     requestCroppedAssets();
+    }
+
+
+  /*****************************************************
+   *
+   * Called to find out the number of images we
+   * already selected
+   *
+   *****************************************************/
+  @Override
+  protected int getNumberOfImagesUsed()
+    {
+    return ( getTotalImagesUsedCount() );
     }
 
 

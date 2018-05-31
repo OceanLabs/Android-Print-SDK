@@ -50,7 +50,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import java.util.HashSet;
@@ -188,6 +187,19 @@ public class PosterFragment extends AProductCreationFragment implements PosterAd
     requestCroppedAssets();
     }
 
+
+  /*****************************************************
+   *
+   * Called to find out the maximum number of images we
+   * want to select.
+   *
+   *****************************************************/
+  @Override
+  protected int getNumberOfImagesUsed()
+    {
+    // Limit the number of images selectable, if the image source supports it.x
+    return ( getTotalImagesUsedCount() );
+    }
 
   /*****************************************************
    *

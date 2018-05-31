@@ -34,7 +34,7 @@
 
 ///// Package Declaration /////
 
-package ly.kite.sample;
+package ly.kite.facebookphotopicker;
 
 
 ///// Import(s) /////
@@ -88,11 +88,11 @@ public class FacebookImageSource extends AImageSource
 
   public FacebookImageSource()
     {
-    super( R.color.image_source_background_facebook,
-            R.drawable.ic_add_facebook_white,
-            R.string.image_source_facebook,
-            R.id.add_image_from_facebook,
-            R.string.select_photo_from_facebook );
+    super( ly.kite.R.color.image_source_background_facebook,
+            ly.kite.R.drawable.ic_image_source_facebook,
+            ly.kite.R.string.image_source_facebook,
+            ly.kite.R.id.add_image_from_facebook,
+            ly.kite.R.string.select_photo_from_facebook );
     }
 
 
@@ -115,9 +115,9 @@ public class FacebookImageSource extends AImageSource
    * images.
    *
    *****************************************************/
-  public void onPick( Fragment fragment, int maxImageCount )
+  public void onPick( Fragment fragment, int addedAssetCount, boolean supportsMultiplePacks, int packSize, int maxImageCount  )
     {
-    FacebookPhotoPicker.startPhotoPickerForResult( fragment, maxImageCount, getActivityRequestCode() );
+    FacebookPhotoPicker.startPhotoPickerForResult( fragment, addedAssetCount, supportsMultiplePacks, packSize, maxImageCount, getActivityRequestCode() );
     }
 
 

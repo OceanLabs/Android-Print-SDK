@@ -289,12 +289,37 @@ abstract public class AEditImageFragment extends AProductCreationFragment implem
 
   /*****************************************************
    *
+   * Returns the number of images added.
+   *
+   *****************************************************/
+  @Override
+  protected int getNumberOfImagesUsed()
+    {
+    return ( AImageSource.SINGLE_IMAGE );
+    }
+
+
+  /*****************************************************
+   *
    * Returns the maximum number of images required when
    * adding images.
    *
    *****************************************************/
   @Override
   protected int getMaxAddImageCount()
+    {
+    return ( AImageSource.SINGLE_IMAGE );
+    }
+
+
+    /*****************************************************
+   *
+   * Returns the maximum number of images required when
+   * adding images.
+   *
+   *****************************************************/
+   @Override
+    protected int getRemainingImageCapacity( int index )
     {
     return ( AImageSource.SINGLE_IMAGE );
     }

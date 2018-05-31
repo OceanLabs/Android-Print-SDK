@@ -207,6 +207,18 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
 
   /*****************************************************
    *
+   * Called to find out the number of images we
+   * already added
+   *
+   *****************************************************/
+  @Override
+  protected int getNumberOfImagesUsed()
+    {
+    return ( getTotalImagesUsedCount());
+    }
+
+  /*****************************************************
+   *
    * Called to find out the maximum number of images we
    * want to select.
    *

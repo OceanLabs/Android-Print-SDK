@@ -62,6 +62,17 @@ import ly.kite.imagepicker.AImagePickerActivity;
 import ly.kite.imagepicker.IImagePickerItem;
 import ly.kite.imagepicker.ISelectableItem;
 
+////////// Interface(s) //////////
+
+/*****************************************************
+ *
+ * This interface is used to trigger toolbar title changes
+ *
+ *****************************************************/
+interface TitleInterface
+{
+  void onTitleUpdate( int selectedItemsCount );
+}
 
 ///// Class Declaration /////
 
@@ -70,7 +81,7 @@ import ly.kite.imagepicker.ISelectableItem;
  * This activity is the Facebook photo picker.
  *
  *****************************************************/
-public class DevicePhotoPickerActivity extends AImagePickerActivity
+public class DevicePhotoPickerActivity extends AImagePickerActivity implements TitleInterface
   {
   ////////// Static Constant(s) //////////
 
@@ -89,6 +100,12 @@ public class DevicePhotoPickerActivity extends AImagePickerActivity
 
   ////////// Static Variable(s) //////////
 
+  private static int     mAddedAssetCount;
+  private static int     mPackSize;
+  private static int     mSelectedImageCount;
+  private static int     mMaxImageCount;
+  private static boolean mSupportsMultiplePacks;
+  private static String  mSelectedBucketName;
 
   ////////// Member Variable(s) //////////
 
@@ -101,14 +118,21 @@ public class DevicePhotoPickerActivity extends AImagePickerActivity
   /*****************************************************
    *
    * Returns an intent to start this activity, with the max
-   * image count added as an extra.
+   * image count ,multiple pack support and pack size
+   * added as extras.
    *
    *****************************************************/
-  static private Intent getIntent( Context context, int maxImageCount )
+  static private Intent getIntent( Context context, int addedAssetCount, boolean supportsMultiplePacks, int packSize, int maxImageCount )
     {
     Intent intent = new Intent( context, DevicePhotoPickerActivity.class );
 
-    addExtras( intent, maxImageCount );
+    mAddedAssetCount       = addedAssetCount;
+    mPackSize              = packSize;
+    mSupportsMultiplePacks = supportsMultiplePacks;
+    mMaxImageCount         = maxImageCount;
+    mSelectedImageCount    = 0;
+
+    addExtras( intent, mMaxImageCount );
 
     return ( intent );
     }
@@ -120,9 +144,10 @@ public class DevicePhotoPickerActivity extends AImagePickerActivity
    * activity.
    *
    *****************************************************/
-  static public void startForResult( Activity activity, int maxImageCount, int activityRequestCode )
+  static public void startForResult( Activity activity, int addedAssetCount, boolean supportsMultiplePacks,
+                                     int packSize, int maxImageCount, int activityRequestCode )
     {
-    Intent intent = getIntent( activity, maxImageCount );
+    Intent intent = getIntent( activity, addedAssetCount, supportsMultiplePacks, packSize, maxImageCount );
 
     activity.startActivityForResult( intent, activityRequestCode );
     }
@@ -134,9 +159,10 @@ public class DevicePhotoPickerActivity extends AImagePickerActivity
    * fragment.
    *
    *****************************************************/
-  static public void startForResult( Fragment fragment, int maxImageCount, int activityRequestCode )
+  static public void startForResult( Fragment fragment, int addedAssetCount, boolean supportsMultiplePacks,
+                                     int packSize, int maxImageCount, int activityRequestCode )
     {
-    Intent intent = getIntent( fragment.getActivity(), maxImageCount );
+    Intent intent = getIntent( fragment.getActivity(), addedAssetCount, supportsMultiplePacks, packSize, maxImageCount );
 
     fragment.startActivityForResult( intent, activityRequestCode );
     }
@@ -175,7 +201,7 @@ public class DevicePhotoPickerActivity extends AImagePickerActivity
     super.onCreate( savedInstanceState );
 
 
-    setTitle( R.string.title_device_photo_picker );
+    setDefaultToolbarName();
     }
 
 
@@ -201,6 +227,8 @@ public class DevicePhotoPickerActivity extends AImagePickerActivity
       {
       ///// Root /////
 
+      setDefaultToolbarName();
+
       List<Bucket> bucketList = queryBuckets();
 
       mImagePickerGridView.onFinishedLoading( bucketList, false );
@@ -215,7 +243,80 @@ public class DevicePhotoPickerActivity extends AImagePickerActivity
     }
 
 
+  /*****************************************************
+   *
+   * Sets the toolbar name taking containing the number
+   * of selected pictures and the default title
+   *
+   *****************************************************/
+  public void setDefaultToolbarName()
+    {
+    String defaultTitle = getResources().getString( R.string.title_device_photo_picker );
+    if (mPackSize == 1 || (mMaxImageCount == 0 && !mSupportsMultiplePacks))
+      {
+        setTitle( defaultTitle );
+      }
+    else
+      {
+      int totalImagesUsed = mSelectedImageCount;
+      int outOf = mMaxImageCount;
+
+      if ( mSupportsMultiplePacks )
+        {
+        totalImagesUsed += mAddedAssetCount;
+        if( totalImagesUsed > 0 )
+          {
+        outOf = (int) (Math.ceil((double) totalImagesUsed / mPackSize) * mPackSize);
+          }
+        else
+          {
+          outOf = mPackSize;
+          }
+        }
+      setTitle( "[" + totalImagesUsed + "/" + outOf + "] " + defaultTitle );
+      }
+   }
+  /*****************************************************
+   *
+   * Sets the toolbar name taking containing the number
+   * of selected pictures and bucket name
+   *
+   *****************************************************/
+  public void setToolbarName()
+    {
+    if( mPackSize == 1 || ( mMaxImageCount == 0 && !mSupportsMultiplePacks ))
+      {
+      setTitle( mSelectedBucketName );
+      }
+    else
+      {
+      int totalImagesUsed = mSelectedImageCount;
+      int outOf = mMaxImageCount;
+
+      if ( mSupportsMultiplePacks )
+        {
+        totalImagesUsed += mAddedAssetCount;
+        if( totalImagesUsed > 0 )
+          {
+          outOf = (int) (Math.ceil((double) totalImagesUsed / mPackSize) * mPackSize);
+          }
+        else
+          {
+          outOf = mPackSize;
+          }
+        }
+        setTitle( "[" + totalImagesUsed + "/" + outOf + "] " + mSelectedBucketName );
+      }
+    }
+
   ////////// Method(s) //////////
+
+  @Override
+  public void onTitleUpdate(int selectedImageCount)
+    {
+    mSelectedImageCount = selectedImageCount;
+    setToolbarName();
+    }
 
   /*****************************************************
    *
@@ -303,6 +404,7 @@ public class DevicePhotoPickerActivity extends AImagePickerActivity
   private List<Image> queryImages( String bucketId )
     {
     ImageListBuilder listBuilder = new ImageListBuilder();
+    listBuilder.setInterface( this );
 
     queryImages( bucketId, listBuilder );
 
@@ -360,16 +462,26 @@ public class DevicePhotoPickerActivity extends AImagePickerActivity
   private class ImageListBuilder implements IImageReceiver
     {
     ArrayList<Image> mImageList;
+    TitleInterface   mInterface;
 
     ImageListBuilder()
       {
       mImageList = new ArrayList<>();
       }
 
+    public void setInterface( TitleInterface titleInterface )
+      {
+      this.mInterface = titleInterface;
+      }
+
     @Override
     public void newImage( int id, String bucketId, String bucketDisplayName, String imageURLString )
       {
-      mImageList.add( new Image( id, imageURLString ) );
+      Image newImage = new Image( id, imageURLString );
+      newImage.setInterface( mInterface );
+      mImageList.add( newImage );
+      mSelectedBucketName = bucketDisplayName;
+      setToolbarName();
       }
 
     List<Image> getImageList()
@@ -439,7 +551,6 @@ public class DevicePhotoPickerActivity extends AImagePickerActivity
   private static class Image implements IImagePickerItem, ISelectableItem
     {
     ////////// Static Variable(s) //////////
-
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator()
       {
       public Image createFromParcel( Parcel in )
@@ -456,6 +567,7 @@ public class DevicePhotoPickerActivity extends AImagePickerActivity
 
     private int     mId;
     private String  mImageURLString;
+    private TitleInterface mInterface;
 
 
     Image( int id, String imageURLString )
@@ -470,6 +582,10 @@ public class DevicePhotoPickerActivity extends AImagePickerActivity
       mImageURLString = sourceParcel.readString();
       }
 
+    public void setInterface( TitleInterface titleInterface )
+      {
+      this.mInterface = titleInterface;
+      }
 
     ////////// Parcelable Method(s) //////////
 
@@ -534,6 +650,7 @@ public class DevicePhotoPickerActivity extends AImagePickerActivity
     @Override
     public int getSelectedCount( LinkedHashMap<String, ISelectableItem> selectableItemTable )
       {
+      mInterface.onTitleUpdate( selectableItemTable.size() );
       return ( selectableItemTable.containsKey( String.valueOf( mId ) ) ? 1 : 0 );
       }
     }
