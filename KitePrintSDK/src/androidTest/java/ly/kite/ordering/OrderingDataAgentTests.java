@@ -125,7 +125,7 @@ public class OrderingDataAgentTests extends KiteTestCase
     Assert.assertEquals( 0, basketItemList.size() );
 
 
-    Product product = new Product( "product_id", "product_code", "Rectangular Product", "Product type", 0xff000000, UserJourneyType.RECTANGLE, 2 );
+    Product product = new Product( "product_id", "product_code", "Rectangular Product", "Product type","Product category", 0xff000000, UserJourneyType.RECTANGLE, 2 );
 
     Catalogue catalogue = new Catalogue();
     catalogue.addProduct( "group_label", null, product );
@@ -157,7 +157,7 @@ public class OrderingDataAgentTests extends KiteTestCase
     dataAgent.clearDefaultBasket();
 
 
-    Product product = new Product( "product_id", "product_code", "Rectangular Product", "Product type", 0xff000000, UserJourneyType.RECTANGLE, 2 );
+    Product product = new Product( "product_id", "product_code", "Rectangular Product","Product category", "Product type", 0xff000000, UserJourneyType.RECTANGLE, 2 );
 
     Catalogue catalogue = new Catalogue();
     catalogue.addProduct( "group_label", null, product );

@@ -1606,7 +1606,6 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
                 if ( product != null )
                   {
                   //If product is found replace the item's description
-                  String productDisplayName = product.getDisplayName();
                   //Check if quantity is already in the tile , so it resets to one
                   String newDescription;
                   if( quantity == product.getQuantityPerSheet() )
