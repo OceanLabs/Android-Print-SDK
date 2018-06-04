@@ -52,6 +52,7 @@ import android.graphics.RectF;
 import android.util.Log;
 import android.util.SparseArray;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
@@ -113,7 +114,9 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
   static private final String SQL_DROP_ORDER_TABLE                           = "DROP TABLE " + TABLE_ORDER;
   static private final String SQL_DROP_ORDER_ADDITIONAL_PARAMETER_TABLE      = "DROP TABLE " + TABLE_ORDER_ADDITIONAL_PARAMETER;
 
-  static private final String ORDER_HISTORY_DATE_FORMAT                      = "dd MMMM yyyy";
+  static private final String ORDER_HISTORY_OLD_DATE_FORMAT                      = "dd MMMM yyyy";
+  static private final String ORDER_HISTORY_NEW_DATE_FORMAT                      = "dd/MM/yyyy";
+
 
   static private final String IMAGE_SPEC_ADDITIONAL_PARAMETER_NAME_BORDER_TEXT = "borderText";
 
@@ -372,7 +375,7 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
    *****************************************************/
   private String getDateString()
     {
-    SimpleDateFormat dateFormat = new SimpleDateFormat( ORDER_HISTORY_DATE_FORMAT, Locale.getDefault() );
+    SimpleDateFormat dateFormat = new SimpleDateFormat( ORDER_HISTORY_NEW_DATE_FORMAT );
 
     return ( dateFormat.format( new Date() ) );
     }
@@ -1569,6 +1572,104 @@ public class OrderingDatabaseAgent extends SQLiteOpenHelper
           }
             HashMap<String, String> additionalParametersMap = additionalParametersSparseArray.get((int) orderId);
             Address shippingAddress = (shippingAddressIdLong != null ? shippingAddressSparseArray.get(shippingAddressIdLong.intValue()) : null);
+
+            try
+              {
+              //Convert new format to Date type
+              SimpleDateFormat newDateFormat = new SimpleDateFormat( ORDER_HISTORY_NEW_DATE_FORMAT );
+              Date date = newDateFormat.parse( dateString );
+
+              //Convert format to old format for display purposes
+              SimpleDateFormat dateFormatForDisplay = new SimpleDateFormat( ORDER_HISTORY_OLD_DATE_FORMAT, Locale.getDefault() );
+              dateString = dateFormatForDisplay.format( date ).toString();
+              }
+            catch (Exception e)
+              {
+                //fall through
+              }
+
+            //Try to get localised product name
+            boolean hasInformationChanged = false;
+            String newOrderDescription = "";
+            try
+              {
+              JSONObject pricingJSONObject = new JSONObject( pricingJSON );
+              JSONArray lineItems = pricingJSONObject.getJSONArray( "line_items" );
+              //Go through all items from this specific order
+              for ( int index = 0; index < lineItems.length(); index++ )
+                {
+                JSONObject item = lineItems.getJSONObject( index );
+                String templateId = item.getString( "template_id" );
+                int quantity = item.getInt( "quantity" );
+                //Try searching for the product in the localised catalogue
+                Product product = catalogue.findProductById( templateId );
+                if ( product != null )
+                  {
+                  //If product is found replace the item's description
+                  String productDisplayName = product.getDisplayName();
+                  //Check if quantity is already in the tile , so it resets to one
+                  String newDescription;
+                  if( quantity == product.getQuantityPerSheet() )
+                    {
+                    newDescription = 1 + " x " + product.getDisplayName();
+                    }
+                  else
+                    {
+                    newDescription = quantity + " x " + product.getDisplayName();
+                    }
+                  item.put( "description", newDescription );
+                  //Replace item in line items array
+                  lineItems.put( index, item );
+                  hasInformationChanged = true;
+                  //limit preview description to 5 items
+                  if( index <= 5 )
+                    {
+                    if( index == 5 )
+                      {
+                      //end list with ... if there are over 5 items in the order
+                      newOrderDescription = newOrderDescription.concat( "..." );
+                      }
+                    else
+                      {
+                      newOrderDescription = newOrderDescription.concat ( newDescription + "\n" );
+                      }
+                    }
+                  }
+                else
+                  {
+                  //fallback , use old description
+                  //limit preview description to 5 items
+                  if( index <= 5 )
+                    {
+                    if( index == 5 )
+                      {
+                      //end list with ... if there are over 5 items in the order
+                      newOrderDescription = newOrderDescription.concat( "..." );
+                      }
+                    else
+                      {
+                      newOrderDescription = newOrderDescription.concat ( item.getString( "description" ) + "/n" );
+                      }
+                    }
+                  }
+                //Rebuild pricingJSON string only if details have changed
+                if (hasInformationChanged)
+                  {
+                  pricingJSONObject.put( "line_items", lineItems );
+                  pricingJSON = pricingJSONObject.toString();
+                  }
+                //Replace order description
+                if( newOrderDescription != null )
+                  {
+                  description = newOrderDescription;
+                  }
+                }
+              }
+            catch ( Exception e )
+              {
+              Log.e( LOG_TAG, "Could not replace order history item title" );
+              }
+
 
             OrderHistoryItem orderHistoryItem = new OrderHistoryItem(
                     orderId,
