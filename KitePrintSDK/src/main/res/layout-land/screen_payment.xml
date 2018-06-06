@@ -51,6 +51,11 @@
                 android:paddingLeft="@dimen/activity_horizontal_margin"
                 android:paddingRight="@dimen/activity_horizontal_margin">
 
+                <FrameLayout
+                    android:id="@+id/payment_fragment_container"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"/>
+
                 <LinearLayout
                     android:id="@+id/container_promo_code"
                     android:layout_gravity="bottom"
@@ -82,12 +87,6 @@
             </FrameLayout>
 
         </LinearLayout>
-
-        <FrameLayout
-            android:id="@+id/payment_fragment_container"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.0"/>
 
     </LinearLayout>
 
