@@ -45,6 +45,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.paypal.android.sdk.payments.PayPalPayment;
@@ -87,14 +89,12 @@ public class DefaultPaymentFragment extends APaymentFragment
 
   ////////// Member Variable(s) //////////
 
+  private boolean           mGooglePayAvailable;
   private boolean           mPayPalAvailable;
 
-  private TextView          mPayPalTextView;
-  private View              mPayPalView;
-
-  private TextView          mChangeableCreditCardTextView;
-  private TextView          mFixedCreditCardTextView;
-  private TextView          mCreditCardTextView;
+  private ImageButton       mGooglePayButton;
+  private ImageButton       mPayPalButton;
+  private Button            mCreditCardButton;
 
   private ICreditCardAgent  mCreditCardAgent;
 
@@ -143,72 +143,34 @@ public class DefaultPaymentFragment extends APaymentFragment
     {
     View view = layoutInflater.inflate( R.layout.fragment_default_payment, container, false );
 
-
-    mPayPalTextView = (TextView)view.findViewById( R.id.paypal_text_view );
-
-    if ( mPayPalTextView == null ) mPayPalTextView = (TextView)view.findViewById( R.id.cta_bar_left_text_view );
-
-    mPayPalView = view.findViewById( R.id.paypal_view );
+    mGooglePayButton =  view.findViewById( R.id.google_pay_button );
+    mPayPalButton = view.findViewById( R.id.paypal_button );
+    mCreditCardButton = view.findViewById( R.id.credit_card_button );
 
 
-    mChangeableCreditCardTextView = (TextView)view.findViewById( R.id.credit_card_text_view );
+    // Determine what payment options are available
 
-    if ( mChangeableCreditCardTextView == null ) mChangeableCreditCardTextView = (TextView)view.findViewById( R.id.cta_bar_right_text_view );
-
-    mFixedCreditCardTextView = (TextView)view.findViewById( R.id.fixed_credit_card_text_view );
-
-
-    if ( mChangeableCreditCardTextView != null ) mCreditCardTextView = mChangeableCreditCardTextView;
-    else                                         mCreditCardTextView = mFixedCreditCardTextView;
-
-
-    // Determine if PayPal payments are available
+    mGooglePayAvailable = false;
     mPayPalAvailable = KiteSDK.getInstance( getActivity() ).getPayPalPaymentsAvailable();
 
 
     // Set up the buttons
 
-    if ( mPayPalAvailable )
-      {
-      if ( mPayPalTextView != null )
-        {
-        mPayPalTextView.setText( R.string.kitesdk_payment_paypal_button_text);
-        mPayPalTextView.setTextColor( getResources().getColor( R.color.payment_paypal_button_text ) );
+    if ( mGooglePayAvailable ){
+      mGooglePayButton.setOnClickListener( this );
+    } else {
+      mGooglePayButton.setVisibility( View.GONE );
+    }
 
-        mPayPalTextView.setOnClickListener( this );
-        }
+    if ( mPayPalAvailable ){
+      mPayPalButton.setOnClickListener( this );
+    } else {
+      mPayPalButton.setVisibility( View.GONE );
+    }
 
-      if ( mPayPalView != null )
-        {
-        mPayPalView.setOnClickListener( this );
-        }
-      }
-    else
-      {
-      if ( mPayPalTextView != null )
-        {
-        mPayPalTextView.setVisibility( View.GONE );
-        }
-
-      if ( mPayPalView != null )
-        {
-        mPayPalView.setVisibility( View.GONE );
-        }
-      }
-
-
-    if ( mChangeableCreditCardTextView != null )
-      {
-      mChangeableCreditCardTextView.setTextColor( getResources().getColor( R.color.payment_credit_card_button_text ) );
-      }
-
-    mCreditCardTextView.setText( R.string.kitesdk_payment_credit_card_button_text);
-
-    mCreditCardTextView.setOnClickListener( this );
-
+    mCreditCardButton.setOnClickListener( this );
 
     getPaymentActivity().onPaymentFragmentReady();
-
 
     return ( view );
     }
@@ -222,10 +184,10 @@ public class DefaultPaymentFragment extends APaymentFragment
   @Override
   public void onEnableButtons( boolean enabled )
     {
-    if ( mPayPalTextView != null ) mPayPalTextView.setEnabled( enabled && mPayPalAvailable );
-    if ( mPayPalView     != null ) mPayPalView.setEnabled( enabled && mPayPalAvailable );
+    if ( mGooglePayButton != null ) mGooglePayButton.setEnabled( enabled && mGooglePayAvailable );
+    if ( mPayPalButton    != null ) mPayPalButton.setEnabled( enabled && mPayPalAvailable );
 
-    mCreditCardTextView.setEnabled( enabled );
+    mCreditCardButton.setEnabled( enabled );
     }
 
 
@@ -239,11 +201,11 @@ public class DefaultPaymentFragment extends APaymentFragment
     {
     if ( free )
       {
-      if ( mPayPalTextView != null ) mPayPalTextView.setVisibility( View.GONE );
-      if ( mPayPalView     != null ) mPayPalView.setVisibility( View.GONE );
+      if ( mGooglePayButton   != null ) mGooglePayButton.setVisibility( View.GONE );
+      if ( mPayPalButton      != null ) mPayPalButton.setVisibility( View.GONE );
 
-      mCreditCardTextView.setText( R.string.kitesdk_payment_credit_card_button_text_free);
-      mCreditCardTextView.setOnClickListener( new View.OnClickListener()
+      mCreditCardButton.setText( R.string.kitesdk_payment_credit_card_button_text_free);
+      mCreditCardButton.setOnClickListener( new View.OnClickListener()
         {
         @Override
         public void onClick( View view )
@@ -251,14 +213,6 @@ public class DefaultPaymentFragment extends APaymentFragment
           submitOrderForPrinting( null, null, PaymentMethod.FREE );
           }
         } );
-      }
-    else
-      {
-      if ( mPayPalTextView != null ) mPayPalTextView.setVisibility( View.VISIBLE );
-      if ( mPayPalView     != null ) mPayPalView.setVisibility( View.VISIBLE );
-
-      mCreditCardTextView.setText( R.string.kitesdk_payment_credit_card_button_text);
-      mCreditCardTextView.setOnClickListener( this );
       }
     }
 
@@ -273,20 +227,13 @@ public class DefaultPaymentFragment extends APaymentFragment
     {
     // Both payment methods depend on us having the order price
 
-    if ( mOrderPricing != null )
-      {
-      if ( ( mPayPalTextView != null && view == mPayPalTextView ) ||
-           ( mPayPalView     != null && view == mPayPalView     ) )
-        {
-        onPayPalClicked( view );
-
-        return;
-        }
-      else if ( view == mCreditCardTextView )
-        {
-        onCreditCardClicked( view );
-
-        return;
+    if ( mOrderPricing != null ) {
+      if ( mGooglePayButton != null && view == mGooglePayButton ) {
+          onGooglePayClicked( view );
+        } else if ( mPayPalButton != null && view == mPayPalButton ) {
+          onPayPalClicked( view );
+        } else if (view == mCreditCardButton) {
+          onCreditCardClicked( view );
         }
       }
     }
@@ -445,6 +392,14 @@ public class DefaultPaymentFragment extends APaymentFragment
       }
     }
 
+  /*****************************************************
+   *
+   * Called when pay by Google Pay is clicked.
+   *
+   *****************************************************/
+  public void onGooglePayClicked(View view) {
+
+  }
 
   /*****************************************************
    *
