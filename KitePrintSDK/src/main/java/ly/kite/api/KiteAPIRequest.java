@@ -106,7 +106,7 @@ public class KiteAPIRequest extends HTTPJSONRequest
     KiteSDK kiteSDK = KiteSDK.getInstance( mApplicationContext );
 
     setHeader( "Authorization", "ApiKey " + kiteSDK.getAPIKey() + ":" );
-    setHeader( "User-Agent", "Kite SDK Android v" + BuildConfig.VERSION_NAME );
+    setHeader( "User-Agent", "Kite SDK Android v" + KiteSDK.SDK_VERSION );
     setHeader( "X-App-Package", mApplicationContext.getPackageName() );
     setHeader( "X-App-Name", mApplicationContext.getString( mApplicationContext.getApplicationInfo().labelRes ) );
     setHeader( "X-Person-UUID", kiteSDK.getUniqueUserId() );
