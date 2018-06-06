@@ -42,14 +42,11 @@
             android:label="@string/kitesdk_title_activity_checkout"
             android:theme="@style/Theme.KiteSDK.Checkout"/>
 
-
         <activity
             android:name=".checkout.PaymentActivity"
             android:label="@string/kitesdk_title_activity_payment"
             android:theme="@style/Theme.KiteSDK.Payment"
-            android:windowSoftInputMode="stateHidden|adjustPan"
-            android:configChanges="screenSize|orientation|screenLayout|navigation"/>
-
+            android:windowSoftInputMode="stateHidden|adjustPan"/>
 
         <activity
             android:name=".checkout.OrderReceiptActivity"
