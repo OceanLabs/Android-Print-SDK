@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="kitesdk_title_facebook_photo_picker">"Facebook"</string>
+
     <string name="kitesdk_title_facebook_alert_dialog">"Oops"</string>
     <string name="kitesdk_message_facebook_alert_dialog">"Si è verificato un errore. Riprova:\n%1$s"</string>
 
