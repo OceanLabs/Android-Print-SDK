@@ -653,7 +653,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
 
         // Create the product and display it
 
-        Product product = new Product( productId, productCode, productName, productType, labelColour, userJourneyType, imagesPerPage )
+        Product product = new Product( productId, productCode, productName, productType, productCategory, labelColour, userJourneyType, imagesPerPage )
                 .setGridSize( gridCountX, gridCountY )
                 .setCost( cost )
                 .setDescription( productDescription )

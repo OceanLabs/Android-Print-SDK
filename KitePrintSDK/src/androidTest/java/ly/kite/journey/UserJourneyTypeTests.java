@@ -158,7 +158,7 @@ public class UserJourneyTypeTests extends KiteTestCase
 
   public void testSplitIntoJobs1()
     {
-    Product product = new Product( "product_id", "product_code", "Test product", "Product type", 0xffffffff, UserJourneyType.RECTANGLE, 2 );
+    Product product = new Product( "product_id", "product_code", "Test product", "Product type","Product category",0xffffffff, UserJourneyType.RECTANGLE, 2 );
 
 
     ArrayList<ImageSpec> imageSpecList = new ArrayList<>();
@@ -181,7 +181,7 @@ public class UserJourneyTypeTests extends KiteTestCase
 
   public void testSplitIntoJobs2()
     {
-    Product product = new Product( "product_id", "product_code", "Test product", "Product type", 0xffffffff, UserJourneyType.RECTANGLE, 2 );
+    Product product = new Product( "product_id", "product_code", "Test product", "Product type", "Product category", 0xffffffff, UserJourneyType.RECTANGLE, 2 );
 
 
     ArrayList<ImageSpec> imageSpecList = new ArrayList<>();
@@ -208,7 +208,7 @@ public class UserJourneyTypeTests extends KiteTestCase
 
   public void testSplitIntoJobs3()
     {
-    Product product = new Product( "product_id", "product_code", "Test product", "Product type", 0xffffffff, UserJourneyType.RECTANGLE, 2 );
+    Product product = new Product( "product_id", "product_code", "Test product", "Product type","Product category", 0xffffffff, UserJourneyType.RECTANGLE, 2 );
 
 
     ArrayList<ImageSpec> imageSpecList = new ArrayList<>();
@@ -237,7 +237,7 @@ public class UserJourneyTypeTests extends KiteTestCase
 
   public void testSplitIntoJobs4()
     {
-    Product product = new Product( "product_id", "product_code", "Test product", "Product type", 0xffffffff, UserJourneyType.RECTANGLE, 2 );
+    Product product = new Product( "product_id", "product_code", "Test product", "Product type", "Product category" ,0xffffffff, UserJourneyType.RECTANGLE, 2 );
 
 
     ArrayList<ImageSpec> imageSpecList = new ArrayList<>();
@@ -278,7 +278,7 @@ public class UserJourneyTypeTests extends KiteTestCase
 
   public void testToDBItems1()
     {
-    Product product = new Product( "product_id", "product_code", "Test product", "Product type", 0xffffffff, UserJourneyType.GREETINGCARD, 1 );
+    Product product = new Product( "product_id", "product_code", "Test product", "Product type", "Product category", 0xffffffff, UserJourneyType.GREETINGCARD, 1 );
 
     ArrayList<ImageSpec> imageSpecList = new ArrayList<>();
 

@@ -122,7 +122,8 @@ public class OrderPricingAdaptor extends BaseAdapter
 
 
     Locale defaultLocale         = Locale.getDefault();
-    String preferredCurrencyCode = KiteSDK.getInstance( mContext ).getLockedCurrencyCode();
+    String currencyUsed          = mPricing.getCurrencyUsed();
+    String preferredCurrencyCode = currencyUsed != null ? currencyUsed : KiteSDK.getInstance( mContext ).getLockedCurrencyCode();
 
 
     ///// Line items
@@ -135,7 +136,7 @@ public class OrderPricingAdaptor extends BaseAdapter
 
       MultipleCurrencyAmounts itemCost = lineItem.getProductCost();
 
-      String itemCostString = itemCost.getDefaultDisplayAmountWithFallback();
+      String itemCostString = itemCost.getAmountsWithFallback( preferredCurrencyCode ).getDisplayAmountForLocale( defaultLocale );
 
       mItemList.add( new Item( description, itemCostString, false ) );
       }

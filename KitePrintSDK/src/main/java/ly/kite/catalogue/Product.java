@@ -74,7 +74,7 @@ public class Product implements IGroupOrProduct, Parcelable
   static private final String       LOG_TAG                           = "Product";
 
   // Dummy product - used for testing
-  static public  final Product      DUMMY_PRODUCT                     = new Product( "product_id", "product_code", "Product Name", "Product type", 0xffff0000, UserJourneyType.RECTANGLE, 1 );
+  static public  final Product      DUMMY_PRODUCT                     = new Product( "product_id", "product_code", "Product Name", "Product type","Product category", 0xffff0000, UserJourneyType.RECTANGLE, 1 );
 
   static public  final float        MINIMUM_SENSIBLE_SIZE_CENTIMETERS = 0.5f;
   static public  final float        MINIMUM_SENSIBLE_SIZE_INCHES      = 0.2f;
@@ -113,6 +113,7 @@ public class Product implements IGroupOrProduct, Parcelable
   private String                            mName;
   private String                            mDescription;
   private String                            mType;
+  private String                            mCategory;
   private UserJourneyType                   mUserJourneyType;
   private int                               mQuantityPerSheet;
   private int                               mGridCountX;
@@ -271,7 +272,7 @@ public class Product implements IGroupOrProduct, Parcelable
     }
 
 
-  public Product( String productId, String productCode, String productName, String productType, int labelColour, UserJourneyType userJourneyType, int quantityPerSheet )
+  public Product( String productId, String productCode, String productName, String productType, String productCategory, int labelColour, UserJourneyType userJourneyType, int quantityPerSheet )
     {
     this();
 
@@ -279,6 +280,7 @@ public class Product implements IGroupOrProduct, Parcelable
     mCode             = productCode;
     mName             = productName;
     mType             = productType;
+    mCategory         = productCategory;
     mLabelColour      = labelColour;
     mUserJourneyType  = userJourneyType;
     mQuantityPerSheet = quantityPerSheet;
@@ -295,6 +297,7 @@ public class Product implements IGroupOrProduct, Parcelable
     mName                       = sourceParcel.readString();
     mDescription                = sourceParcel.readString();
     mType                       = sourceParcel.readString();
+    mCategory                   = sourceParcel.readString();
 
     String userJourneyString    = sourceParcel.readString();
     mUserJourneyType            = (userJourneyString != null ? UserJourneyType.valueOf( userJourneyString ) : null);
@@ -356,6 +359,7 @@ public class Product implements IGroupOrProduct, Parcelable
     targetParcel.writeString( mName );
     targetParcel.writeString( mDescription );
     targetParcel.writeString( mType );
+    targetParcel.writeString( mCategory );
     targetParcel.writeString( mUserJourneyType != null ? mUserJourneyType.name() : null );
     targetParcel.writeInt( mQuantityPerSheet );
     targetParcel.writeInt( mGridCountX );
@@ -635,6 +639,22 @@ public class Product implements IGroupOrProduct, Parcelable
 
   /*****************************************************
    *
+   * Returns the name and category in one string
+   *
+   *****************************************************/
+  public String getDisplayName()
+    {
+      // If name already contains the category don't add it
+      if( mName.contains( mCategory ) )
+        {
+        return mName;
+        }
+      return mName + " ( " + mCategory + " )";
+    }
+
+
+  /*****************************************************
+   *
    * Sets the cost.
    *
    *****************************************************/
@@ -792,9 +812,25 @@ public class Product implements IGroupOrProduct, Parcelable
     return ( mImageAspectRatio >= KiteSDK.FLOAT_ZERO_THRESHOLD ? mImageAspectRatio : DEFAULT_IMAGE_ASPECT_RATIO );
     }
 
-  public String getType () {
+  /*****************************************************
+   *
+   * Returns the product type
+   *
+   *****************************************************/
+  public String getType ()
+    {
     return mType;
-  }
+    }
+
+  /*****************************************************
+   *
+   * Returns the product category
+   *
+   *****************************************************/
+  public String getCategory ()
+    {
+    return mCategory;
+    }
 
 
   /*****************************************************
@@ -1086,6 +1122,7 @@ public class Product implements IGroupOrProduct, Parcelable
     stringBuilder.append( "Name               : " ).append( mName ).append( "\n" );
     stringBuilder.append( "Description        : " ).append( mDescription ).append( "\n" );
     stringBuilder.append( "Type               : " ).append( mType ).append( "\n" );
+    stringBuilder.append( "Category           : " ).append( mCategory ).append( "\n" );
     stringBuilder.append( "User Journey Type  : " ).append( mUserJourneyType.name() ).append( "\n" );
     stringBuilder.append( "Quantity Per Sheet : " ).append( mQuantityPerSheet ).append( "\n" );
     stringBuilder.append( "Hero Image URL     : " ).append( mHeroImageURL.toString() ).append( "\n" );
