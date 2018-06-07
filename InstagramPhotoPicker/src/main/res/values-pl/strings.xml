@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="kitesdk_title_instagram_photo_picker">"Instagram"</string>
+    <string name="kitesdk_title_instagram_login">"Zaloguj się"</string>
+
+    <string name="kitesdk_instagram_error_title">"Ups"</string>
+    <string name="kitesdk_instagram_error_message">"Coś poszło nie tak. Spróbuj ponownie:\n%1$s"</string>
+
+    <string name="kitesdk_button_text_retry">"Spróbuj ponownie"</string>
+    <string name="kitesdk_button_text_cancel">"Anuluj"</string>
+</resources>
