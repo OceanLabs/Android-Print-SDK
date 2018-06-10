@@ -39,13 +39,10 @@ package ly.kite.checkout;
 
 ///// Import(s) /////
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.stripe.android.Stripe;
 import com.stripe.android.TokenCallback;
@@ -53,7 +50,6 @@ import com.stripe.android.model.Card;
 import com.stripe.android.model.Token;
 
 import ly.kite.KiteSDK;
-import ly.kite.app.IndeterminateProgressDialogFragment;
 import ly.kite.R;
 import ly.kite.app.RetainedFragmentHelper;
 import ly.kite.catalogue.SingleCurrencyAmounts;
@@ -189,21 +185,21 @@ public class StripeCreditCardAgent extends ACreditCardDialogFragment implements 
 
       if ( ! card.validateNumber() )
         {
-        onDisplayError( R.string.card_error_invalid_number );
+        onDisplayError( R.string.kitesdk_card_error_invalid_number);
 
         return ( null );
         }
 
       if ( ! card.validateExpiryDate() )
         {
-        onDisplayError( R.string.card_error_invalid_expiry_date );
+        onDisplayError( R.string.kitesdk_card_error_invalid_expiry_date);
 
         return ( null );
         }
 
       if ( ! card.validateCVC() )
         {
-        onDisplayError( R.string.card_error_invalid_cvv );
+        onDisplayError( R.string.kitesdk_card_error_invalid_cvv);
 
         return ( null );
         }
@@ -213,7 +209,7 @@ public class StripeCreditCardAgent extends ACreditCardDialogFragment implements 
       }
     catch ( Exception exception )
       {
-      onDisplayError( getString( R.string.stripe_error_invalid_card_details ) + ": " + exception.getMessage() );
+      onDisplayError( getString( R.string.kitesdk_stripe_error_invalid_card_details) + ": " + exception.getMessage() );
       }
 
     return ( null );
@@ -284,7 +280,7 @@ public class StripeCreditCardAgent extends ACreditCardDialogFragment implements 
       // so we need to be careful that the getString call doesn't fail.
       try
         {
-        onDisplayError( mResources.getString( R.string.stripe_error_retrieve_token ) + ": " + exception.getMessage() );
+        onDisplayError( mResources.getString( R.string.kitesdk_stripe_error_retrieve_token) + ": " + exception.getMessage() );
         }
       catch ( Exception ignore )
         {

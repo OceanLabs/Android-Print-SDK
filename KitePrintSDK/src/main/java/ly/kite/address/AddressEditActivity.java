@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -117,15 +116,15 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
       }
 
 
-    setTitle( R.string.title_activity_address_edit );
+    setTitle( R.string.kitesdk_title_activity_address_edit);
 
     if ( mAddress != null )
       {
-      setTitle( R.string.title_activity_address_edit );
+      setTitle( R.string.kitesdk_title_activity_address_edit);
       }
     else
       {
-      setTitle( R.string.title_activity_address_add );
+      setTitle( R.string.kitesdk_title_activity_address_add);
 
       mAddress = new Address();
       mAddress.setCountry( Country.getInstance( Locale.getDefault() ) );
@@ -195,7 +194,7 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
 
     if ( mForwardsTextView != null )
       {
-      mForwardsTextView.setText( R.string.address_edit_proceed_button_text );
+      mForwardsTextView.setText( R.string.kitesdk_address_edit_proceed_button_text);
 
       mForwardsTextView.setOnClickListener( this );
       }
@@ -279,7 +278,7 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
 
     if ( recipient.trim().length() == 0 )
       {
-      displayModalDialog( R.string.alert_dialog_title_oops, R.string.alert_dialog_message_no_recipient, R.string.OK, null, 0, null );
+      displayModalDialog( R.string.kitesdk_alert_dialog_title_oops, R.string.kitesdk_alert_dialog_message_no_recipient, R.string.kitesdk_OK, null, 0, null );
 
       return;
       }
@@ -291,7 +290,7 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
 
     if ( line1.trim().length() == 0 )
       {
-      displayModalDialog( R.string.alert_dialog_title_oops, R.string.alert_dialog_message_no_line1, R.string.OK, null, 0, null );
+      displayModalDialog( R.string.kitesdk_alert_dialog_title_oops, R.string.kitesdk_alert_dialog_message_no_line1, R.string.kitesdk_OK, null, 0, null );
 
       return;
       }
@@ -302,7 +301,7 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
 
     if ( city.trim().length() == 0 )
     {
-      displayModalDialog( R.string.alert_dialog_title_oops, R.string.alert_dialog_message_no_city, R.string.OK, null, 0, null );
+      displayModalDialog( R.string.kitesdk_alert_dialog_title_oops, R.string.kitesdk_alert_dialog_message_no_city, R.string.kitesdk_OK, null, 0, null );
       return;
     }
 
@@ -312,7 +311,7 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
 
     if ( postalCode.trim().length() == 0 )
       {
-      displayModalDialog( R.string.alert_dialog_title_oops, R.string.alert_dialog_message_no_postal_code, R.string.OK, null, 0, null );
+      displayModalDialog( R.string.kitesdk_alert_dialog_title_oops, R.string.kitesdk_alert_dialog_message_no_postal_code, R.string.kitesdk_OK, null, 0, null );
       return;
       }
 
@@ -327,7 +326,7 @@ public class AddressEditActivity extends AAddressActivity implements View.OnClic
 
       if ( emailAddress.trim().length() < 1 )
         {
-        displayModalDialog( R.string.alert_dialog_title_oops, R.string.alert_dialog_message_no_email_address, R.string.OK, null, NO_BUTTON, null );
+        displayModalDialog( R.string.kitesdk_alert_dialog_title_oops, R.string.kitesdk_alert_dialog_message_no_email_address, R.string.kitesdk_OK, null, NO_BUTTON, null );
 
         return;
         }

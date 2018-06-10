@@ -1,293 +1,292 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <string name="powered_by">"Powered by Kite.ly"</string>
+    <string name="kitesdk_powered_by">"Powered by Kite.ly"</string>
 
-    <string name="unit_centimeters">"centimeters"</string>
-    <string name="unit_inches">"inches"</string>
-    <string name="unit_pixels">"pixels"</string>
-
-    <string name="unit_centimeters_short">"cm"</string>
-    <string name="unit_inches_short">"in"</string>
-    <string name="unit_pixels_short">"px"</string>
-
-    <string name="month_hint">"mm"</string>
-    <string name="year_hint">"jj"</string>
-
-    <string name="title_choose_product_group">"Printshop"</string>
-    <string name="title_create_phone_case">"Telefoonhoesje"</string>
-    <string name="title_image_source">"Toegang tot foto's"</string>
-    <string name="title_photobook">"Fotoalbum"</string>
-    <string name="title_calendar">"Calendar"</string>
-    <string name="title_poster">"Poster"</string>
-    <string name="title_basket">"Winkelmandje"</string>
-    <string name="title_payment_sandbox">"Betaling (TEST)"</string>
-    <string name="title_payment">"Betaling"</string>
-    <string name="title_payment_source_sandbox">"Betaling (TEST)"</string>
-    <string name="title_payment_source">"Betaling"</string>
-    <string name="title_order_history">"Bestelgeschiedenis"</string>
-
-    <string name="settings_title_show_notification_messages">"Berichten"</string>
-    <string name="settings_title_support">"Klantondersteuning"</string>
-    <string name="settings_title_privacy">"Privacybeleid"</string>
-    <string name="settings_title_terms">"Algemene voorwaarden"</string>
-    <string name="settings_title_legal">"Juridisch"</string>
-    <string name="settings_title_licences">"Open source licenties"</string>
-    <string name="settings_summary_licences">"Open source licenties"</string>
-    <string name="settings_title_build_version">"Versie"</string>
-
-    <string name="alert_dialog_title_pack_not_full_format_string">"Je hebt %s geselecteerd."</string>
-    <string name="alert_dialog_message_pack_not_full_format_string" tools:ignore="PluralsCandidate">"Je kunt %d meer voor dezelfde prijs toevoegen."</string>
-
-    <string name="alert_dialog_title_oops">"Oeps!"</string>
-    <string name="alert_dialog_message_pricing_format_string">"Er ging iets mis:\n%s"</string>
-
-    <string name="alert_dialog_title_error_retrieving_products">"Oeps!"</string>
-    <string name="alert_dialog_message_error_retrieving_products">"De internetverbinding lijkt offline te zijn."</string>
-
-    <string name="alert_dialog_title_product_not_found">"Oeps!"</string>
-    <string name="alert_dialog_message_product_not_found">"De internetverbinding lijkt offline te zijn."</string>
-
-    <string name="alert_dialog_title_delete_photo">"Foto verwijderen?"</string>
-    <string name="alert_dialog_message_delete_photo">"Weet je zeker dat je deze foto wilt verwijderen?"</string>
-    <string name="alert_dialog_delete_photo_cancel_text">"Houd"</string>
-    <string name="alert_dialog_delete_photo_confirm_text">"Verwijderen"</string>
-
-    <string name="alert_dialog_message_no_images_selected">"Selecteer een paar afbeeldingen."</string>
-
-    <string name="alert_dialog_message_no_recipient">"Voer de naam van de ontvanger in."</string>
-    <string name="alert_dialog_message_no_line1">"Vul regel 1 van het adres in."</string>
-    <string name="alert_dialog_message_no_postal_code">"Vul je postcode in."</string>
-    <string name="alert_dialog_message_no_email_address">"Voer een e-mailadres in."</string>
-    <string name="alert_dialog_message_no_city">"Vul je woonplaats in."</string>
-
-    <string name="alert_dialog_title_invalid_delivery_address">"Ongeldig bezorgadres"</string>
-    <string name="alert_dialog_message_invalid_delivery_address">"Kies een bezorgadres."</string>
-
-    <string name="alert_dialog_title_invalid_email_address">"Ongeldig e-mailadres"</string>
-    <string name="alert_dialog_message_invalid_email_address">"Voer een geldig e-mailadres in."</string>
-
-    <string name="alert_dialog_title_invalid_phone_number">"Ongeldig telefoonnummer"</string>
-    <string name="alert_dialog_message_invalid_phone_number">"Voer een geldig telefoonnummer in."</string>
-
-    <string name="alert_dialog_message_connectivity">"De internetverbinding lijkt offline te zijn."</string>
-
-    <string name="alert_dialog_message_processing">"Een ogenblik geduld…"</string>
-
-    <string name="alert_dialog_title_end_customer_session">"Sessie beëindigen"</string>
-    <string name="alert_dialog_message_end_customer_session">"Weet je zeker dat je de sessie wilt beëindigen?"</string>
-
-    <string name="alert_dialog_title_remove_item">"Item verwijderen"</string>
-    <string name="alert_dialog_message_remove_item">"Bevestig dat je dit item uit je mandje wilt verwijderen."</string>
-
-    <string name="alert_dialog_title_empty_basket">"Winkelmandje leegmaken"</string>
-    <string name="alert_dialog_message_empty_basket">"Je winkelmandje is momenteel leeg Voeg een item toe voordat je doorgaat om af te rekenen."</string>
-
-    <string name="alert_dialog_message_uploading_images">"Foto's uploaden"</string>
-
-    <string name="alert_dialog_message_unable_to_store_card">"Kan kaart niet opslaan"</string>
-    <string name="alert_dialog_message_no_payment_id">"Geen betalings-id gevonden in bewijs van betaling"</string>
-    <string name="alert_dialog_message_no_proof_of_payment">"Geen bewijs van betaling gevonden in betalingsbevestiging"</string>
-    <string name="alert_dialog_message_no_paypal_confirmation">"Geen betalingsbevestiging ontvangen van PayPal"</string>
-    <string name="alert_dialog_message_card_expired">"Het lijkt erop dat deze kaart verlopen is. Probeer het opnieuw."</string>
-    <string name="alert_dialog_message_card_not_recognised">"De kaart is helaas niet herkend. Probeer indien nodig de kaartgegevens handmatig in te voeren."</string>
-
-    <string name="alert_dialog_item_pay_with_new_card">"Betalen met nieuwe kaart"</string>
-    <string name="alert_dialog_item_pay_with_existing_card_format_string">"Betalen met kaart met eindcijfers %1$s"</string>
-
-    <string name="log_out_warning">"Je wordt\nautomatisch afgemeld"</string>
-
-    <string name="progress_dialog_title_add_to_basket">"Toevoegen aan winkelmandje"</string>
-    <string name="progress_dialog_title_updating_basket">"Winkelmandje bijwerken"</string>
-
-    <string name="add_more">"Meer toevoegen"</string>
-    <string name="Cancel">"Annuleren"</string>
-    <string name="Choose_Delivery_Address">"Bezorgadres kiezen"</string>
-    <string name="Continue_Shopping">"Doorgaan met winkelen"</string>
-    <string name="Country">"Land"</string>
-    <string name="Description">"Beschrijving"</string>
-    <string name="Details">"Details"</string>
-    <string name="Done">"Klaar"</string>
-    <string name="Edit">"Bewerken"</string>
-    <string name="Email">"E-mail"</string>
-    <string name="End_Session">"Sessie beëindigen"</string>
-    <string name="Flip">"Kantelen"</string>
-    <string name="Free">"Gratis"</string>
-    <string name="ITEM">"ITEM"</string>
-    <string name="Keep">"Houd"</string>
-    <string name="Loading">"Laden"</string>
-    <string name="Loading_catalogue">"Bezig met laden van catalogus"</string>
-    <string name="Log_Out">"Afmelden"</string>
-    <string name="Next">"Volgende"</string>
-    <string name="Next_Customer">"Volgende"</string>
-    <string name="No_Results">"Geen resultaten"</string>
-    <string name="OK">"OK"</string>
-    <string name="Order_Id">"Bestelnummer"</string>
-    <string name="ORDER_ID">"BESTELNUMMER"</string>
-    <string name="Order_Summary">"Overzicht van bestelling"</string>
-    <string name="ORDER_SUMMARY">"OVERZICHT VAN BESTELLING"</string>
-    <string name="Oops_">Oops!</string>
-    <string name="Pay">"Betalen"</string>
-    <string name="Payment_Id">"Betalings-id"</string>
-    <string name="PAYMENT_ID">"BETALINGS-ID"</string>
-    <string name="PRICE">"PRIJS"</string>
-    <string name="print_these">"Deze afdrukken"</string>
-    <string name="Processing_">"Verwerking…"</string>
-    <string name="Promotional_Discount">"Tijdelijke korting"</string>
-    <string name="Remove">"Verwijderen"</string>
-    <string name="Rotate">"Roteren"</string>
-    <string name="Quantity">"Hoeveelheid"</string>
-    <string name="QUANTITY">"HOEVEELHEID"</string>
-    <string name="Retry">"Opnieuw"</string>
-    <string name="Save">"Opslaan"</string>
-    <string name="Select_Image">"Afbeelding selecteren"</string>
-    <string name="Shipping">"Verzending"</string>
-    <string name="Size">"Grootte"</string>
-    <string name="Total">"Totaal"</string>
-
-    <string name="image_source_device">"Camera"</string>
-    <string name="image_source_instagram">"Instagram"</string>
-    <string name="image_source_facebook">"Facebook"</string>
-    <string name="image_source_from_phone">"Uploaden vanaf telefoon"</string>
-
-    <string name="select_photo_from_device">"Foto van camera kiezen"</string>
-    <string name="select_photo_from_instagram">"Instagram-foto kiezen"</string>
-    <string name="select_photo_from_facebook">"Facebook-foto kiezen"</string>
-    <string name="upload_photo_from_phone">"Foto uploaden vanaf je telefoon"</string>
-
-    <string name="destination_description_gbr">"VK"</string>
-    <string name="destination_description_europe">"Europa"</string>
-    <string name="destination_description_rest_of_world">"Wereldwijd"</string>
-
-    <string name="placeholder_message">"Binnenkort meer\nartikelen!"</string>
-
-    <string name="order_success_banner_message">"We hebben je\nbestelling ontvangen"</string>
-    <string name="order_failure_banner_message">"Er is iets misgegaan.\nProbeer het opnieuw."</string>
-    <string name="order_failure_message">"Er is iets misgegaan.\nProbeer het opnieuw."</string>
-
-    <string name="product_quantity_format_string">"Pack met %d"</string>
-
-    <string name="product_free_shipping">"Gratis"</string>
-    <string name="product_shipping_summary_format_string">"Vanaf: %s"</string>
-
-    <string name="product_free_worldwide_shipping">"Gratis wereldwijde verzending"</string>
-
-    <string name="product_overview_guarantee_title">"Kwaliteitsgarantie"</string>
-    <string name="product_overview_guarantee_text" formatted="false">"Wij zijn ervan overtuigd dat je meer dan tevreden zult zijn met de producten van Canon. Je krijgt van Canon het aankoopbedrag volledig terug als je niet 100% tevreden bent, zelfs als je gewoon alleen een slechte dag hebt."</string>
-
-    <string name="product_overview_start_button_text">"Aan de slag"</string>
+    <string name="kitesdk_unit_centimeters">"centimeters"</string>
+    <string name="kitesdk_unit_inches">"inches"</string>
+    <string name="kitesdk_unit_pixels">"pixels"</string>
+
+    <string name="kitesdk_unit_centimeters_short">"cm"</string>
+    <string name="kitesdk_unit_inches_short">"in"</string>
+    <string name="kitesdk_unit_pixels_short">"px"</string>
+
+    <string name="kitesdk_month_hint">"mm"</string>
+    <string name="kitesdk_year_hint">"jj"</string>
+
+    <string name="kitesdk_title_create_phone_case">"Telefoonhoesje"</string>
+    <string name="kitesdk_title_image_source">"Toegang tot foto's"</string>
+    <string name="kitesdk_title_photobook">"Fotoalbum"</string>
+    <string name="kitesdk_title_calendar">"Calendar"</string>
+    <string name="kitesdk_title_poster">"Poster"</string>
+    <string name="kitesdk_title_basket">"Winkelmandje"</string>
+    <string name="kitesdk_title_payment_sandbox">"Betaling (TEST)"</string>
+    <string name="kitesdk_title_payment">"Betaling"</string>
+    <string name="kitesdk_title_payment_source_sandbox">"Betaling (TEST)"</string>
+    <string name="kitesdk_title_payment_source">"Betaling"</string>
+    <string name="kitesdk_title_order_history">"Bestelgeschiedenis"</string>
+
+    <string name="kitesdk_settings_title_show_notification_messages">"Berichten"</string>
+    <string name="kitesdk_settings_title_support">"Klantondersteuning"</string>
+    <string name="kitesdk_settings_title_privacy">"Privacybeleid"</string>
+    <string name="kitesdk_settings_title_terms">"Algemene voorwaarden"</string>
+    <string name="kitesdk_settings_title_legal">"Juridisch"</string>
+    <string name="kitesdk_settings_title_licences">"Open source licenties"</string>
+    <string name="kitesdk_settings_summary_licences">"Open source licenties"</string>
+    <string name="kitesdk_settings_title_build_version">"Versie"</string>
+
+    <string name="kitesdk_alert_dialog_title_pack_not_full_format_string">"Je hebt %s geselecteerd."</string>
+    <string name="kitesdk_alert_dialog_message_pack_not_full_format_string" tools:ignore="PluralsCandidate">"Je kunt %d meer voor dezelfde prijs toevoegen."</string>
+
+    <string name="kitesdk_alert_dialog_title_oops">"Oeps!"</string>
+    <string name="kitesdk_alert_dialog_message_pricing_format_string">"Er ging iets mis:\n%s"</string>
+
+    <string name="kitesdk_alert_dialog_title_error_retrieving_products">"Oeps!"</string>
+    <string name="kitesdk_alert_dialog_message_error_retrieving_products">"De internetverbinding lijkt offline te zijn."</string>
+
+    <string name="kitesdk_alert_dialog_title_product_not_found">"Oeps!"</string>
+    <string name="kitesdk_alert_dialog_message_product_not_found">"De internetverbinding lijkt offline te zijn."</string>
+
+    <string name="kitesdk_alert_dialog_title_delete_photo">"Foto verwijderen?"</string>
+    <string name="kitesdk_alert_dialog_message_delete_photo">"Weet je zeker dat je deze foto wilt verwijderen?"</string>
+    <string name="kitesdk_alert_dialog_delete_photo_cancel_text">"Houd"</string>
+    <string name="kitesdk_alert_dialog_delete_photo_confirm_text">"Verwijderen"</string>
+
+    <string name="kitesdk_alert_dialog_message_no_images_selected">"Selecteer een paar afbeeldingen."</string>
+
+    <string name="kitesdk_alert_dialog_message_no_recipient">"Voer de naam van de ontvanger in."</string>
+    <string name="kitesdk_alert_dialog_message_no_line1">"Vul regel 1 van het adres in."</string>
+    <string name="kitesdk_alert_dialog_message_no_postal_code">"Vul je postcode in."</string>
+    <string name="kitesdk_alert_dialog_message_no_email_address">"Voer een e-mailadres in."</string>
+    <string name="kitesdk_alert_dialog_message_no_city">"Vul je woonplaats in."</string>
+
+    <string name="kitesdk_alert_dialog_title_invalid_delivery_address">"Ongeldig bezorgadres"</string>
+    <string name="kitesdk_alert_dialog_message_invalid_delivery_address">"Kies een bezorgadres."</string>
+
+    <string name="kitesdk_alert_dialog_title_invalid_email_address">"Ongeldig e-mailadres"</string>
+    <string name="kitesdk_alert_dialog_message_invalid_email_address">"Voer een geldig e-mailadres in."</string>
+
+    <string name="kitesdk_alert_dialog_title_invalid_phone_number">"Ongeldig telefoonnummer"</string>
+    <string name="kitesdk_alert_dialog_message_invalid_phone_number">"Voer een geldig telefoonnummer in."</string>
+
+    <string name="kitesdk_alert_dialog_message_connectivity">"De internetverbinding lijkt offline te zijn."</string>
+
+    <string name="kitesdk_alert_dialog_message_processing">"Een ogenblik geduld…"</string>
+
+    <string name="kitesdk_alert_dialog_title_end_customer_session">"Sessie beëindigen"</string>
+    <string name="kitesdk_alert_dialog_message_end_customer_session">"Weet je zeker dat je de sessie wilt beëindigen?"</string>
+
+    <string name="kitesdk_alert_dialog_title_remove_item">"Item verwijderen"</string>
+    <string name="kitesdk_alert_dialog_message_remove_item">"Bevestig dat je dit item uit je mandje wilt verwijderen."</string>
+
+    <string name="kitesdk_alert_dialog_title_empty_basket">"Winkelmandje leegmaken"</string>
+    <string name="kitesdk_alert_dialog_message_empty_basket">"Je winkelmandje is momenteel leeg Voeg een item toe voordat je doorgaat om af te rekenen."</string>
+
+    <string name="kitesdk_alert_dialog_message_uploading_images">"Foto's uploaden"</string>
+
+    <string name="kitesdk_alert_dialog_message_unable_to_store_card">"Kan kaart niet opslaan"</string>
+    <string name="kitesdk_alert_dialog_message_no_payment_id">"Geen betalings-id gevonden in bewijs van betaling"</string>
+    <string name="kitesdk_alert_dialog_message_no_proof_of_payment">"Geen bewijs van betaling gevonden in betalingsbevestiging"</string>
+    <string name="kitesdk_alert_dialog_message_no_paypal_confirmation">"Geen betalingsbevestiging ontvangen van PayPal"</string>
+    <string name="kitesdk_alert_dialog_message_card_expired">"Het lijkt erop dat deze kaart verlopen is. Probeer het opnieuw."</string>
+    <string name="kitesdk_alert_dialog_message_card_not_recognised">"De kaart is helaas niet herkend. Probeer indien nodig de kaartgegevens handmatig in te voeren."</string>
+
+    <string name="kitesdk_alert_dialog_item_pay_with_new_card">"Betalen met nieuwe kaart"</string>
+    <string name="kitesdk_alert_dialog_item_pay_with_existing_card_format_string">"Betalen met kaart met eindcijfers %1$s"</string>
+
+    <string name="kitesdk_log_out_warning">"Je wordt\nautomatisch afgemeld"</string>
+
+    <string name="kitesdk_progress_dialog_title_add_to_basket">"Toevoegen aan winkelmandje"</string>
+    <string name="kitesdk_progress_dialog_title_updating_basket">"Winkelmandje bijwerken"</string>
+
+    <string name="kitesdk_add_more">"Meer toevoegen"</string>
+    <string name="kitesdk_Cancel">"Annuleren"</string>
+    <string name="kitesdk_Choose_Delivery_Address">"Bezorgadres kiezen"</string>
+    <string name="kitesdk_Continue_Shopping">"Doorgaan met winkelen"</string>
+    <string name="kitesdk_Country">"Land"</string>
+    <string name="kitesdk_Description">"Beschrijving"</string>
+    <string name="kitesdk_Details">"Details"</string>
+    <string name="kitesdk_Done">"Klaar"</string>
+    <string name="kitesdk_Edit">"Bewerken"</string>
+    <string name="kitesdk_Email">"E-mail"</string>
+    <string name="kitesdk_End_Session">"Sessie beëindigen"</string>
+    <string name="kitesdk_Flip">"Kantelen"</string>
+    <string name="kitesdk_Free">"Gratis"</string>
+    <string name="kitesdk_ITEM">"ITEM"</string>
+    <string name="kitesdk_Keep">"Houd"</string>
+    <string name="kitesdk_Loading">"Laden"</string>
+    <string name="kitesdk_Loading_catalogue">"Bezig met laden van catalogus"</string>
+    <string name="kitesdk_Log_Out">"Afmelden"</string>
+    <string name="kitesdk_Next">"Volgende"</string>
+    <string name="kitesdk_Next_Customer">"Volgende"</string>
+    <string name="kitesdk_No_Results">"Geen resultaten"</string>
+    <string name="kitesdk_OK">"OK"</string>
+    <string name="kitesdk_Order_Id">"Bestelnummer"</string>
+    <string name="kitesdk_ORDER_ID">"BESTELNUMMER"</string>
+    <string name="kitesdk_Order_Summary">"Overzicht van bestelling"</string>
+    <string name="kitesdk_ORDER_SUMMARY">"OVERZICHT VAN BESTELLING"</string>
+    <string name="kitesdk_Oops_">Oops!</string>
+    <string name="kitesdk_Pay">"Betalen"</string>
+    <string name="kitesdk_Payment_Id">"Betalings-id"</string>
+    <string name="kitesdk_PAYMENT_ID">"BETALINGS-ID"</string>
+    <string name="kitesdk_PRICE">"PRIJS"</string>
+    <string name="kitesdk_print_these">"Deze afdrukken"</string>
+    <string name="kitesdk_Processing_">"Verwerking…"</string>
+    <string name="kitesdk_Promotional_Discount">"Tijdelijke korting"</string>
+    <string name="kitesdk_Remove">"Verwijderen"</string>
+    <string name="kitesdk_Rotate">"Roteren"</string>
+    <string name="kitesdk_Quantity">"Hoeveelheid"</string>
+    <string name="kitesdk_QUANTITY">"HOEVEELHEID"</string>
+    <string name="kitesdk_Retry">"Opnieuw"</string>
+    <string name="kitesdk_Save">"Opslaan"</string>
+    <string name="kitesdk_Select_Image">"Afbeelding selecteren"</string>
+    <string name="kitesdk_Shipping">"Verzending"</string>
+    <string name="kitesdk_Size">"Grootte"</string>
+    <string name="kitesdk_Total">"Totaal"</string>
+
+    <string name="kitesdk_image_source_device">"Camera"</string>
+    <string name="kitesdk_image_source_instagram">"Instagram"</string>
+    <string name="kitesdk_image_source_facebook">"Facebook"</string>
+    <string name="kitesdk_image_source_from_phone">"Uploaden vanaf telefoon"</string>
+
+    <string name="kitesdk_select_photo_from_device">"Foto van camera kiezen"</string>
+    <string name="kitesdk_select_photo_from_instagram">"Instagram-foto kiezen"</string>
+    <string name="kitesdk_select_photo_from_facebook">"Facebook-foto kiezen"</string>
+    <string name="kitesdk_upload_photo_from_phone">"Foto uploaden vanaf je telefoon"</string>
+
+    <string name="kitesdk_destination_description_gbr">"VK"</string>
+    <string name="kitesdk_destination_description_europe">"Europa"</string>
+    <string name="kitesdk_destination_description_rest_of_world">"Wereldwijd"</string>
+
+    <string name="kitesdk_placeholder_message">"Binnenkort meer\nartikelen!"</string>
+
+    <string name="kitesdk_order_success_banner_message">"We hebben je\nbestelling ontvangen"</string>
+    <string name="kitesdk_order_failure_banner_message">"Er is iets misgegaan.\nProbeer het opnieuw."</string>
+    <string name="kitesdk_order_failure_message">"Er is iets misgegaan.\nProbeer het opnieuw."</string>
+
+    <string name="kitesdk_product_quantity_format_string">"Pack met %d"</string>
+
+    <string name="kitesdk_product_free_shipping">"Gratis"</string>
+    <string name="kitesdk_product_shipping_summary_format_string">"Vanaf: %s"</string>
+
+    <string name="kitesdk_product_free_worldwide_shipping">"Gratis wereldwijde verzending"</string>
+
+    <string name="kitesdk_product_overview_guarantee_title">"Kwaliteitsgarantie"</string>
+    <string name="kitesdk_product_overview_guarantee_text" formatted="false">"Wij zijn ervan overtuigd dat je meer dan tevreden zult zijn met de producten van Canon. Je krijgt van Canon het aankoopbedrag volledig terug als je niet 100% tevreden bent, zelfs als je gewoon alleen een slechte dag hebt."</string>
+
+    <string name="kitesdk_product_overview_start_button_text">"Aan de slag"</string>
 
-    <string name="image_selection_empty_message">"Foto's toevoegen door op de\npictogrammen hierboven te tikken"</string>
-
-    <string name="edit_border_text_hint">"Hier tekst toevoegen"</string>
-
-    <string name="multi_page_instructions_html">"<![CDATA[<b>Tik</b> op de afbeelding om te bewerken.<br><b>Houd</b> ingedrukt om opnieuw te bestellen.]]>"</string>
-
-    <string name="address_book_empty">"Adresboek leeg"</string>
-
-    <string name="image_source_prompt">"Voeg foto's toe door op een van de opties te tikken"</string>
-
-    <string name="image_selection_pack_title_format_string" tools:ignore="PluralsCandidate">"#%1$d set van %2$d %3$s"</string>
-
-    <string name="image_selection_clear_photos_format_string">"%s wissen"</string>
-
-    <string name="edit_image_prompt_text">"De foto verplaatsen"</string>
-
-    <string name="image_selection_proceed_button_text">"Controleren en bewerken"</string>
-
-    <string name="review_and_edit_title_format_string">"%1$d / %2$d"</string>
-    <string name="review_and_edit_proceed_button_text">"Bevestigen"</string>
-
-    <string name="edit_image_title">"Afbeelding bewerken"</string>
-
-    <string name="basket_empty">"Winkelwagentje is leeg"</string>
-    <string name="basket_left_button_text">"Doorgaan met winkelen"</string>
-    <string name="basket_right_button_text">"Afrekenen"</string>
-
-    <string name="address_hint_text_recipient">"Naam"</string>
-    <string name="address_hint_text_line_1">"Adresregel 1"</string>
-    <string name="address_hint_text_line_2">"Adresregel 2"</string>
-    <string name="address_hint_text_city">"Stad"</string>
-    <string name="address_hint_text_county_or_state">"Woonplaats"</string>
-    <string name="address_hint_text_postcode_or_zip">"Postcode"</string>
-
-    <string name="shipping_delivery_address_button_text">"Bezorgadres kiezen"</string>
-    <string name="shipping_phone_hint_text">"Telefoon"</string>
-    <string name="shipping_email_reason">"Je e-mailadres is vereist zodat Canon updates van orderbevestigingen kan sturen."</string>
-    <string name="shipping_phone_reason">"Je telefoonnummer is vereist voor het geval er leveringsproblemen zijn."</string>
-    <string name="shipping_proceed_button_text">@string/Done</string>
-
-    <string name="address_search_prompt">"Zoeken naar bovenstaande adressen"</string>
-
-    <string name="address_search_hint_format_string">"%1$s zoeken"</string>
-    <string name="address_search_empty_results">"Zoeken naar bovenstaande adressen"</string>
-    <string name="address_search_dialog_title">"Details ophalen"</string>
-    <string name="address_search_dialog_message">"Adresgegevens ophalen"</string>
-    <string name="address_search_no_results">"Geen resultaten gevonden"</string>
-
-    <string name="button_text_edit_address">"Adres bewerken"</string>
-    <string name="button_text_delete_address">"Adres verwijderen"</string>
-
-    <string name="address_edit_proceed_button_text">"Besparen"</string>
-
-    <string name="payment_promo_hint">"Promotiecode"</string>
-    <string name="payment_promo_button_text_apply">"Toepassen"</string>
-    <string name="payment_promo_button_text_clear">"Wissen"</string>
-    <string name="payment_credit_card_button_text">"Creditcard"</string>
-    <string name="payment_credit_card_button_text_free">"Gratis!"</string>
-    <string name="payment_paypal_button_text">"PayPal"</string>
-
-    <string name="stripe_error_invalid_card_details">"Ongeldige kaartgegevens"</string>
-    <string name="stripe_error_create_object">"Kan Stripe-token niet ophalen"</string>
-    <string name="stripe_error_retrieve_token">"Kan Stripe-token niet ophalen"</string>
-
-    <string name="send_email_chooser_title">"E-mail verzenden"</string>
-
-    <string name="Card_Number">"Kaartnummer"</string>
-    <string name="Expires">"Vervalt"</string>
-    <string name="CVV">"CVV"</string>
-
-    <string name="card_error_invalid_number">"Ongeldig kaartnummer"</string>
-    <string name="card_error_invalid_expiry_date">"Ongeldige vervaldatum"</string>
-    <string name="card_error_invalid_cvv">"Ongeldige verificatiewaarde"</string>
-
-    <string name="order_submission_message_uploading">"Afbeeldingen uploaden"</string>
-    <string name="order_submission_message_posted">"Gepost"</string>
-    <string name="order_submission_message_received">"Ontvangen"</string>
-    <string name="order_submission_message_accepted">"Geaccepteerd"</string>
-    <string name="order_submission_message_validated">"Gevalideerd"</string>
-    <string name="order_submission_message_processed">"Verwerkt"</string>
-
-
-    <string name="alert_dialog_title_order_submission_error">"Fout bij indienen van bestelling"</string>
-    <string name="order_timeout_message">"Je bestelling is blijkbaar nog niet verwerkt. Het kan zijn dat de servers momenteel bezet zijn en dat de betaling gewoon wat langer duurt.\n\nProbeer het later opnieuw."</string>
-
-    <string name="alert_dialog_title_order_cancelled">"Bestelling geannuleerd"</string>
-    <string name="alert_dialog_message_order_cancelled">"Er is iets misgegaan; je bestelling lijkt te zijn geannuleerd tijdens het indienen."</string>
-
-    <string name="alert_dialog_message_server_offline_maintenance">"De server is momenteel offline voor onderhoud."</string>
-    <string name="alert_dialog_message_server_returned_html">"De server heeft een ongeldige (HTML-)respons geretourneerd. Dit gebeurt meestal wanneer de server niet beschikbaar is."</string>
-
-    <string name="scan_qr_code">"Scan QR-code"</string>
-    <string name="scan_qr_code_instructions">"Scan de QR-code met een\nQR reader-app op je apparaat."</string>
-    <string name="scan_qr_code_alternate_instructions">"Je kunt ook de volgende URL in de adresbalk van je mobiele browser typen:"</string>
-
-
-
-
-
-    <string name="action_settings">"Instellingen"</string>
-    <string name="title_activity_checkout">"Verzending"</string>
-    <string name="title_activity_order_receipt">"Kassabon"</string>
-    <string name="title_activity_payment">"Betaling"</string>
-    <string name="title_activity_address_book">"Adresboek"</string>
-
-    <string name="add_address">"Adres toevoegen"</string>
-    <string name="title_activity_address_add">"Adres invoeren"</string>
-    <string name="title_activity_address_edit">"Adres bewerken"</string>
-    <string name="action_save_address">"Adres opslaan"</string>
-
-    <plurals name="Photo_plurals">
+    <string name="kitesdk_age_selection_empty_message">"Foto's toevoegen door op de\npictogrammen hierboven te tikken"</string>
+
+    <string name="kitesdk_edit_border_text_hint">"Hier tekst toevoegen"</string>
+
+    <string name="kitesdk_multi_page_instructions_html">"<![CDATA[<b>Tik</b> op de afbeelding om te bewerken.<br><b>Houd</b> ingedrukt om opnieuw te bestellen.]]>"</string>
+
+    <string name="kitesdk_address_book_empty">"Adresboek leeg"</string>
+
+    <string name="kitesdk_image_source_prompt">"Voeg foto's toe door op een van de opties te tikken"</string>
+
+    <string name="kitesdk_image_selection_pack_title_format_string" tools:ignore="PluralsCandidate">"#%1$d set van %2$d %3$s"</string>
+
+    <string name="kitesdk_image_selection_clear_photos_format_string">"%s wissen"</string>
+
+    <string name="kitesdk_edit_image_prompt_text">"De foto verplaatsen"</string>
+
+    <string name="kitesdk_image_selection_proceed_button_text">"Controleren en bewerken"</string>
+
+    <string name="kitesdk_review_and_edit_title_format_string">"%1$d / %2$d"</string>
+    <string name="kitesdk_review_and_edit_proceed_button_text">"Bevestigen"</string>
+
+    <string name="kitesdk_edit_image_title">"Afbeelding bewerken"</string>
+
+    <string name="kitesdk_basket_empty">"Winkelwagentje is leeg"</string>
+    <string name="kitesdk_basket_left_button_text">"Doorgaan met winkelen"</string>
+    <string name="kitesdk_basket_right_button_text">"Afrekenen"</string>
+
+    <string name="kitesdk_address_hint_text_recipient">"Naam"</string>
+    <string name="kitesdk_address_hint_text_line_1">"Adresregel 1"</string>
+    <string name="kitesdk_address_hint_text_line_2">"Adresregel 2"</string>
+    <string name="kitesdk_address_hint_text_city">"Stad"</string>
+    <string name="kitesdk_address_hint_text_county_or_state">"Woonplaats"</string>
+    <string name="kitesdk_address_hint_text_postcode_or_zip">"Postcode"</string>
+
+    <string name="kitesdk_shipping_delivery_address_button_text">"Bezorgadres kiezen"</string>
+    <string name="kitesdk_shipping_phone_hint_text">"Telefoon"</string>
+    <string name="kitesdk_shipping_email_reason">"Je e-mailadres is vereist zodat Canon updates van orderbevestigingen kan sturen."</string>
+    <string name="kitesdk_shipping_phone_reason">"Je telefoonnummer is vereist voor het geval er leveringsproblemen zijn."</string>
+    <string name="kitesdk_shipping_proceed_button_text">@string/kitesdk_Done</string>
+
+    <string name="kitesdk_address_search_prompt">"Zoeken naar bovenstaande adressen"</string>
+
+    <string name="kitesdk_address_search_hint_format_string">"%1$s zoeken"</string>
+    <string name="kitesdk_address_search_empty_results">"Zoeken naar bovenstaande adressen"</string>
+    <string name="kitesdk_address_search_dialog_title">"Details ophalen"</string>
+    <string name="kitesdk_address_search_dialog_message">"Adresgegevens ophalen"</string>
+    <string name="kitesdk_address_search_no_results">"Geen resultaten gevonden"</string>
+
+    <string name="kitesdk_button_text_edit_address">"Adres bewerken"</string>
+    <string name="kitesdk_button_text_delete_address">"Adres verwijderen"</string>
+
+    <string name="kitesdk_address_edit_proceed_button_text">"Besparen"</string>
+
+    <string name="kitesdk_payment_promo_hint">"Promotiecode"</string>
+    <string name="kitesdk_payment_promo_button_text_apply">"Toepassen"</string>
+    <string name="kitesdk_payment_promo_button_text_clear">"Wissen"</string>
+    <string name="kitesdk_payment_credit_card_button_text">"Creditcard"</string>
+    <string name="kitesdk_payment_credit_card_button_text_free">"Gratis!"</string>
+    <string name="kitesdk_payment_paypal_button_text">"PayPal"</string>
+
+    <string name="kitesdk_stripe_error_invalid_card_details">"Ongeldige kaartgegevens"</string>
+    <string name="kitesdk_stripe_error_create_object">"Kan Stripe-token niet ophalen"</string>
+    <string name="kitesdk_stripe_error_retrieve_token">"Kan Stripe-token niet ophalen"</string>
+
+    <string name="kitesdk_send_email_chooser_title">"E-mail verzenden"</string>
+
+    <string name="kitesdk_Card_Number">"Kaartnummer"</string>
+    <string name="kitesdk_Expires">"Vervalt"</string>
+    <string name="kitesdk_CVV">"CVV"</string>
+
+    <string name="kitesdk_card_error_invalid_number">"Ongeldig kaartnummer"</string>
+    <string name="kitesdk_card_error_invalid_expiry_date">"Ongeldige vervaldatum"</string>
+    <string name="kitesdk_card_error_invalid_cvv">"Ongeldige verificatiewaarde"</string>
+
+    <string name="kitesdk_order_submission_message_uploading">"Afbeeldingen uploaden"</string>
+    <string name="kitesdk_order_submission_message_posted">"Gepost"</string>
+    <string name="kitesdk_order_submission_message_received">"Ontvangen"</string>
+    <string name="kitesdk_order_submission_message_accepted">"Geaccepteerd"</string>
+    <string name="kitesdk_order_submission_message_validated">"Gevalideerd"</string>
+    <string name="kitesdk_order_submission_message_processed">"Verwerkt"</string>
+
+
+    <string name="kitesdk_alert_dialog_title_order_submission_error">"Fout bij indienen van bestelling"</string>
+    <string name="kitesdk_order_timeout_message">"Je bestelling is blijkbaar nog niet verwerkt. Het kan zijn dat de servers momenteel bezet zijn en dat de betaling gewoon wat langer duurt.\n\nProbeer het later opnieuw."</string>
+
+    <string name="kitesdk_alert_dialog_title_order_cancelled">"Bestelling geannuleerd"</string>
+    <string name="kitesdk_alert_dialog_message_order_cancelled">"Er is iets misgegaan; je bestelling lijkt te zijn geannuleerd tijdens het indienen."</string>
+
+    <string name="kitesdk_alert_dialog_message_server_offline_maintenance">"De server is momenteel offline voor onderhoud."</string>
+    <string name="kitesdk_alert_dialog_message_server_returned_html">"De server heeft een ongeldige (HTML-)respons geretourneerd. Dit gebeurt meestal wanneer de server niet beschikbaar is."</string>
+
+    <string name="kitesdk_scan_qr_code">"Scan QR-code"</string>
+    <string name="kitesdk_scan_qr_code_instructions">"Scan de QR-code met een\nQR reader-app op je apparaat."</string>
+    <string name="kitesdk_scan_qr_code_alternate_instructions">"Je kunt ook de volgende URL in de adresbalk van je mobiele browser typen:"</string>
+
+
+
+
+
+    <string name="kitesdk_action_settings">"Instellingen"</string>
+    <string name="kitesdk_title_activity_checkout">"Verzending"</string>
+    <string name="kitesdk_title_activity_order_receipt">"Kassabon"</string>
+    <string name="kitesdk_title_activity_payment">"Betaling"</string>
+    <string name="kitesdk_title_activity_address_book">"Adresboek"</string>
+
+    <string name="kitesdk_add_address">"Adres toevoegen"</string>
+    <string name="kitesdk_title_activity_address_add">"Adres invoeren"</string>
+    <string name="kitesdk_title_activity_address_edit">"Adres bewerken"</string>
+    <string name="kitesdk_action_save_address">"Adres opslaan"</string>
+
+    <plurals name="kitesdk_Photo_plurals">
         <item quantity="zero">"%d foto's"</item>
         <item quantity="one">"%d foto"</item>
         <item quantity="two">"%d foto's"</item>
@@ -296,7 +295,7 @@
         <item quantity="other">"%d foto's"</item>
     </plurals>
 
-    <plurals name="photo_plurals">
+    <plurals name="kitesdk_photo_plurals">
         <item quantity="zero">"%d foto's"</item>
         <item quantity="one">"%d foto"</item>
         <item quantity="two">"%d foto's"</item>

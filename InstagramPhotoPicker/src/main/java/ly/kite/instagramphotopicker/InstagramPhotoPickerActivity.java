@@ -182,7 +182,7 @@ public class InstagramPhotoPickerActivity extends AImagePickerActivity implement
     super.onCreate( savedInstanceState );
 
 
-    setTitle( R.string.title_instagram_photo_picker );
+    setTitle( R.string.kitesdk_title_instagram_photo_picker);
     }
 
 
@@ -319,10 +319,10 @@ public class InstagramPhotoPickerActivity extends AImagePickerActivity implement
     CancelListener cancelListener = new CancelListener();
 
     new AlertDialog.Builder( this )
-        .setTitle( R.string.instagram_alert_dialog_title )
-        .setMessage( getString( R.string.instagram_alert_dialog_message, exception.toString() ) )
-        .setPositiveButton( R.string.button_text_retry, retryListener )
-        .setNegativeButton( R.string.button_text_cancel, cancelListener )
+        .setTitle( R.string.kitesdk_instagram_alert_dialog_title)
+        .setMessage( getString( R.string.kitesdk_instagram_alert_dialog_message, exception.toString() ) )
+        .setPositiveButton( R.string.kitesdk_button_text_retry, retryListener )
+        .setNegativeButton( R.string.kitesdk_button_text_cancel, cancelListener )
         .setOnCancelListener( cancelListener )
         .create()
       .show();

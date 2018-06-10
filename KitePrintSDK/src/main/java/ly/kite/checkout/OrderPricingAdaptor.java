@@ -122,7 +122,8 @@ public class OrderPricingAdaptor extends BaseAdapter
 
 
     Locale defaultLocale         = Locale.getDefault();
-    String preferredCurrencyCode = KiteSDK.getInstance( mContext ).getLockedCurrencyCode();
+    String currencyUsed          = mPricing.getCurrencyUsed();
+    String preferredCurrencyCode = currencyUsed != null ? currencyUsed : KiteSDK.getInstance( mContext ).getLockedCurrencyCode();
 
 
     ///// Line items
@@ -135,7 +136,7 @@ public class OrderPricingAdaptor extends BaseAdapter
 
       MultipleCurrencyAmounts itemCost = lineItem.getProductCost();
 
-      String itemCostString = itemCost.getDefaultDisplayAmountWithFallback();
+      String itemCostString = itemCost.getAmountsWithFallback( preferredCurrencyCode ).getDisplayAmountForLocale( defaultLocale );
 
       mItemList.add( new Item( description, itemCostString, false ) );
       }
@@ -155,10 +156,10 @@ public class OrderPricingAdaptor extends BaseAdapter
       }
     else
       {
-      shippingCostString = mContext.getString( R.string.Free );
+      shippingCostString = mContext.getString( R.string.kitesdk_Free);
       }
 
-    mItemList.add( new Item( mContext.getString( R.string.Shipping ), shippingCostString, false ) );
+    mItemList.add( new Item( mContext.getString( R.string.kitesdk_Shipping), shippingCostString, false ) );
 
 
     ///// Promo code
@@ -172,7 +173,7 @@ public class OrderPricingAdaptor extends BaseAdapter
       if ( promoDiscountInSingleCurrency != null &&
            promoDiscountInSingleCurrency.getAmount().compareTo( BigDecimal.ZERO ) > 0 )
         {
-        mItemList.add( new Item( mContext.getString( R.string.Promotional_Discount ), promoDiscountInSingleCurrency.getDisplayAmountForLocale( defaultLocale ), false ) );
+        mItemList.add( new Item( mContext.getString( R.string.kitesdk_Promotional_Discount), promoDiscountInSingleCurrency.getDisplayAmountForLocale( defaultLocale ), false ) );
         }
       }
 
@@ -185,7 +186,7 @@ public class OrderPricingAdaptor extends BaseAdapter
       {
       SingleCurrencyAmounts totalCostInSingleCurrency = totalCost.getAmountsWithFallback( preferredCurrencyCode );
 
-      mItemList.add( new Item( mContext.getString( R.string.Total ), totalCostInSingleCurrency.getDisplayAmountForLocale( defaultLocale ), true ) );
+      mItemList.add( new Item( mContext.getString( R.string.kitesdk_Total), totalCostInSingleCurrency.getDisplayAmountForLocale( defaultLocale ), true ) );
       }
 
     }

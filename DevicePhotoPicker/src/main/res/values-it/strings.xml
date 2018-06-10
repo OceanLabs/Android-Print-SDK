@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <resources>
 
-    <string name="title_device_photo_picker">Scegli foto</string>
+    <string name="kitesdk_title_device_photo_picker">Scegli foto</string>
 
 </resources>

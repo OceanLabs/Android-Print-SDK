@@ -136,7 +136,7 @@ public class EditImageFragment extends AEditImageFragment
 
     // Set the text of the backwards (cancel) button. If it is blank - hide the button.
 
-    String backwardsText = getString( R.string.edit_image_backwards_button_text );
+    String backwardsText = getString( R.string.kitesdk_edit_image_backwards_button_text);
 
     if ( backwardsText != null && backwardsText.trim().length() > 0 )
       {
@@ -152,7 +152,7 @@ public class EditImageFragment extends AEditImageFragment
 
 
     setForwardsTextViewVisibility( View.VISIBLE );
-    setForwardsTextViewText( R.string.edit_image_forwards_button_text );
+    setForwardsTextViewText( R.string.kitesdk_edit_image_forwards_button_text);
     setForwardsTextViewBold( true );
 
     return ( view );
@@ -215,7 +215,7 @@ public class EditImageFragment extends AEditImageFragment
     {
     super.onTop();
 
-    mKiteActivity.setTitle( R.string.edit_image_title );
+    mKiteActivity.setTitle( R.string.kitesdk_edit_image_title);
     }
 
 

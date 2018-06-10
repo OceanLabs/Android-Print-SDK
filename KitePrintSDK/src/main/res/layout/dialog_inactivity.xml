@@ -17,7 +17,7 @@
         android:textSize="@dimen/inactivity_warning_description_text_size"
         android:textStyle="bold"
         android:textColor="@color/prompt_text"
-        android:text="@string/log_out_warning"/>
+        android:text="@string/kitesdk_log_out_warning"/>
 
     <FrameLayout
         android:layout_width="fill_parent"
@@ -47,7 +47,7 @@
             android:background="@drawable/inactivity_warning_log_out_button_background"
             android:padding="10dp"
             android:textColor="@android:color/white"
-            android:text="@string/Log_Out"/>
+            android:text="@string/kitesdk_Log_Out"/>
         <ly.kite.widget.CustomTypefaceButton
             android:id="@+id/cancel_button"
             android:layout_marginTop="10dp"
@@ -57,7 +57,7 @@
             android:background="@drawable/inactivity_warning_cancel_button_background"
             android:padding="10dp"
             android:textColor="@android:color/white"
-            android:text="@string/Cancel"/>
+            android:text="@string/kitesdk_Cancel"/>
     </LinearLayout>
 
 </LinearLayout>

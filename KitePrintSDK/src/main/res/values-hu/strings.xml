@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <string name="kitesdk_powered_by">"A szolgáltatás a Kite.ly motorjával fut."</string>
+
+    <string name="kitesdk_unit_centimeters">"centiméter"</string>
+    <string name="kitesdk_unit_inches">"hüvelyk"</string>
+    <string name="kitesdk_unit_pixels">"pixel"</string>
+
+    <string name="kitesdk_unit_centimeters_short">"cm"</string>
+    <string name="kitesdk_unit_inches_short">"in"</string>
+    <string name="kitesdk_unit_pixels_short">"px"</string>
+
+    <string name="kitesdk_month_hint">"HH"</string> 
+    <string name="kitesdk_year_hint">"ÉÉÉÉ"</string> 
+
+    <string name="kitesdk_title_create_phone_case">"Snap tokok"</string>
+    <string name="kitesdk_title_image_source">"Fényképek elérése"</string>
+    <string name="kitesdk_title_photobook">"Fotóalbumhoz"</string>
+    <string name="kitesdk_title_calendar">"Naptár"</string>
+    <string name="kitesdk_title_poster">"Poszter"</string>
+    <string name="kitesdk_title_basket">"Kosár"</string>
+    <string name="kitesdk_title_payment_sandbox">"Fizetés (TESZT)"</string>
+    <string name="kitesdk_title_payment">"Fizetés"</string>
+    <string name="kitesdk_title_payment_source_sandbox">"Fizetés (TESZT)"</string>
+    <string name="kitesdk_title_payment_source">"Fizetés"</string>
+    <string name="kitesdk_title_order_history">"Rendeléstörténet"</string>
+
+    <string name="kitesdk_settings_title_show_notification_messages">"Üzenetek"</string>
+    <string name="kitesdk_settings_title_support">"Támogatás"</string>
+    <string name="kitesdk_settings_title_privacy">"Adatvédelmi szabályzat"</string>
+    <string name="kitesdk_settings_title_terms">"Általános szerződéses feltételek"</string>
+    <string name="kitesdk_settings_title_legal">"Jogi információk"</string>
+    <string name="kitesdk_settings_title_licences">"Nyílt forráskódú licencek"</string>
+    <string name="kitesdk_settings_summary_licences">"Nyílt forráskódú licencek"</string>
+    <string name="kitesdk_settings_title_build_version">"Verzió"</string>
+
+    <string name="kitesdk_alert_dialog_title_pack_not_full_format_string">"%s fotó kiválasztása"</string>
+    <string name="kitesdk_alert_dialog_message_pack_not_full_format_string" tools:ignore="PluralsCandidate">"%d további hozzáadása lehetséges ezen az áron"</string>
+
+    <string name="kitesdk_alert_dialog_title_oops">"Hoppá!"</string>
+    <string name="kitesdk_alert_dialog_message_pricing_format_string">"Probléma lépett fel a kérelmével:\n%s"</string>
+
+    <string name="kitesdk_alert_dialog_title_error_retrieving_products">"Hoppá!"</string>
+    <string name="kitesdk_alert_dialog_message_error_retrieving_products">"Úgy tűnik, nincs internetkapcsolat."</string>
+
+    <string name="kitesdk_alert_dialog_title_product_not_found">"Hoppá!"</string>
+    <string name="kitesdk_alert_dialog_message_product_not_found">"Úgy tűnik, nincs internetkapcsolat."</string>
+
+    <string name="kitesdk_alert_dialog_title_delete_photo">"Törlöd a fotót?"</string>
+    <string name="kitesdk_alert_dialog_message_delete_photo">"Biztosan törlöd ezt a fényképet?"</string>
+    <string name="kitesdk_alert_dialog_delete_photo_cancel_text">"Tartás"</string>
+    <string name="kitesdk_alert_dialog_delete_photo_confirm_text">"Törlés"</string>
+
+    <string name="kitesdk_alert_dialog_message_no_images_selected">"Kérlek válassz ki néhány képet."</string>
+
+    <string name="kitesdk_alert_dialog_message_no_recipient">"Add meg a címzett nevét."</string>
+    <string name="kitesdk_alert_dialog_message_no_line1">"Töltsd ki a cím 1. sorát."</string>
+    <string name="kitesdk_alert_dialog_message_no_postal_code">"Add meg az irányítószámot."</string>
+    <string name="kitesdk_alert_dialog_message_no_email_address">"Adj meg egy e-mail-címet."</string>
+    <string name="kitesdk_alert_dialog_message_no_city">"Add meg a várost."</string>
+
+    <string name="kitesdk_alert_dialog_title_invalid_delivery_address">"Érvénytelen szállítási cím"</string>
+    <string name="kitesdk_alert_dialog_message_invalid_delivery_address">"Válassz ki egy szállítási címet."</string>
+
+    <string name="kitesdk_alert_dialog_title_invalid_email_address">"Érvénytelen e-mail cím"</string>
+    <string name="kitesdk_alert_dialog_message_invalid_email_address">"Érvényes e-mail címet adj meg."</string>
+
+    <string name="kitesdk_alert_dialog_title_invalid_phone_number">"Érvénytelen telefonszám"</string>
+    <string name="kitesdk_alert_dialog_message_invalid_phone_number">"Érvényes telefonszámot adj meg."</string>
+
+    <string name="kitesdk_alert_dialog_message_connectivity">"Úgy tűnik, nincs internetkapcsolat."</string>
+
+    <string name="kitesdk_alert_dialog_message_processing">"Egy pillanat..."</string>
+
+    <string name="kitesdk_alert_dialog_title_end_customer_session">"Munkamenet befejezése"</string>
+    <string name="kitesdk_alert_dialog_message_end_customer_session">"Biztosan befejezed ezt a munkamenetet?"</string>
+
+    <string name="kitesdk_alert_dialog_title_remove_item">"Tétel eltávolítása"</string>
+    <string name="kitesdk_alert_dialog_message_remove_item">"Erősítsd meg, hogy valóban el szeretnéd távolítani a tételt a kosárból."</string>
+
+    <string name="kitesdk_alert_dialog_title_empty_basket">"Üres kosár"</string>
+    <string name="kitesdk_alert_dialog_message_empty_basket">"A kosarad jelenleg üres. A kifizetést megelőzően adj hozzá egy tételt."</string>
+
+    <string name="kitesdk_alert_dialog_message_uploading_images">"Kép feltöltése"</string>
+
+    <string name="kitesdk_alert_dialog_message_unable_to_store_card">"A kártya tárolása nem lehetséges"</string>
+    <string name="kitesdk_alert_dialog_message_no_payment_id">"A fizetési bizonylaton nem található fizetési azonosító"</string>
+    <string name="kitesdk_alert_dialog_message_no_proof_of_payment">"A fizetést megerősítő dokumentumon nem található fizetési bizonylat"</string>
+    <string name="kitesdk_alert_dialog_message_no_paypal_confirmation">"A PayPaltól nem érkezett fizetést megerősítő dokumentum"</string>
+    <string name="kitesdk_alert_dialog_message_card_expired">"Sajnáljuk, de a kártyád valószínűleg lejárt. Próbáld meg újra."</string>
+    <string name="kitesdk_alert_dialog_message_card_not_recognised">"Sajnáljuk, de a kártyádat nem tudtuk felismerni. Szükség esetén a kártyád adatait próbáld meg manuálisan megadni."</string>
+
+    <string name="kitesdk_alert_dialog_item_pay_with_new_card">"Fizetés új kártyával"</string>
+    <string name="kitesdk_alert_dialog_item_pay_with_existing_card_format_string">"Fizetés %1$s számjegyekkel végződő kártyával"</string>
+
+    <string name="kitesdk_log_out_warning">"Automatikus\nkijelentkeztetés"</string>
+
+    <string name="kitesdk_progress_dialog_title_add_to_basket">"Kosárhoz ad"</string>
+    <string name="kitesdk_progress_dialog_title_updating_basket">"Kosár frissítése"</string>
+
+    <string name="kitesdk_add_more">"Továbbiak hozzáadása"</string>
+    <string name="kitesdk_Cancel">"Mégse"</string>
+    <string name="kitesdk_Choose_Delivery_Address">"Szállítási cím kiválasztása"</string>
+    <string name="kitesdk_Continue_Shopping">"Vásárlás folytatása"</string>
+    <string name="kitesdk_Country">"Ország"</string>
+    <string name="kitesdk_Description">"Termékleírás"</string>
+    <string name="kitesdk_Details">"Részletek"</string>
+    <string name="kitesdk_Done">"Kész"</string>
+    <string name="kitesdk_Edit">"Szerkesztés"</string>
+    <string name="kitesdk_Email">"E-mail"</string>
+    <string name="kitesdk_End_Session">"Munkamenet befejezése"</string>
+    <string name="kitesdk_Flip">"Tükrözés"</string>
+    <string name="kitesdk_Free">"Ingyenes"</string>
+    <string name="kitesdk_ITEM">"TÉTEL"</string>
+    <string name="kitesdk_Keep">"Megtartás"</string>
+    <string name="kitesdk_Loading">"Betöltés"</string>
+    <string name="kitesdk_Loading_catalogue">"Katalógus betöltése"</string>
+    <string name="kitesdk_Log_Out">"Kijelentkezés"</string>
+    <string name="kitesdk_Next">"Tovább"</string>
+    <string name="kitesdk_Next_Customer">"Tovább"</string>
+    <string name="kitesdk_No_Results">"Nincs találat"</string>
+    <string name="kitesdk_OK">"OK"</string>
+    <string name="kitesdk_Order_Id">"Rendelési azonosító"</string>
+    <string name="kitesdk_ORDER_ID">"Megrendelés azonosítója"</string>
+    <string name="kitesdk_Order_Summary">"Megrendelés összesítése"</string>
+    <string name="kitesdk_ORDER_SUMMARY">"MEGRENDELÉS ÖSSZESÍTÉSE"</string>
+    <string name="kitesdk_Oops_">"Hoppá!"</string>
+    <string name="kitesdk_Pay">"Fizetés"</string>
+    <string name="kitesdk_Payment_Id">"Fizetési azonosító"</string>
+    <string name="kitesdk_PAYMENT_ID">"FIZETÉSI AZONOÍTÓ"</string>
+    <string name="kitesdk_PRICE">"ÁR"</string>
+    <string name="kitesdk_print_these">"Ezek kinyomtatása"</string>
+    <string name="kitesdk_Processing_">"Feldolgozás…"</string>
+    <string name="kitesdk_Promotional_Discount">"Promóciós kedvezmény"</string>
+    <string name="kitesdk_Remove">"Eltávolítás"</string>
+    <string name="kitesdk_Rotate">"Forgatás"</string>
+    <string name="kitesdk_Quantity">"Mennyiség"</string>
+    <string name="kitesdk_QUANTITY">"MENNYISÉG"</string>
+    <string name="kitesdk_Retry">"Újrapróbálkozás"</string>
+    <string name="kitesdk_Save">"Mentés"</string>
+    <string name="kitesdk_Select_Image">"Kép kiválasztása"</string>
+    <string name="kitesdk_Shipping">"Szállítás"</string>
+    <string name="kitesdk_Size">"Méret"</string>
+    <string name="kitesdk_Total">"Összesen"</string>
+
+    <string name="kitesdk_image_source_device">"Fényképezőgép"</string>
+    <string name="kitesdk_image_source_instagram">"Instagram"</string>
+    <string name="kitesdk_image_source_facebook">"Facebook"</string>
+    <string name="kitesdk_image_source_from_phone">"Feltöltés telefonból"</string>
+
+    <string name="kitesdk_select_photo_from_device">"Fényképezőgéppel készített fotó kiválasztása"</string>
+    <string name="kitesdk_select_photo_from_instagram">"Instagram-fotó kiválasztása"</string>
+    <string name="kitesdk_select_photo_from_facebook">"Facebook-fotó kiválasztása"</string>
+    <string name="kitesdk_upload_photo_from_phone">"Telefonnal készített fotó feltöltése"</string>
+
+    <string name="kitesdk_destination_description_gbr">"Egyesült Királyság"</string>
+    <string name="kitesdk_destination_description_europe">"Európa"</string>
+    <string name="kitesdk_destination_description_rest_of_world">"A világ többi része"</string>
+
+    <string name="kitesdk_placeholder_message">"További tételek\nhamarosan!"</string>
+
+    <string name="kitesdk_order_success_banner_message">"Megkaptuk\nrendelésed"</string>
+    <string name="kitesdk_order_failure_banner_message">"Hiba történt.\nKérlek próbáld újra."</string>
+    <string name="kitesdk_order_failure_message">"Hiba történt.\nPróbáld meg újra."</string>
+
+    <string name="kitesdk_product_quantity_format_string">"Csomag tartalma: %d"</string>
+
+    <string name="kitesdk_product_free_shipping">"Ingyenes"</string>
+    <string name="kitesdk_product_shipping_summary_format_string">"%s ártól"</string>
+
+    <string name="kitesdk_product_free_worldwide_shipping">"Ingyenes szállítás világszerte"</string>
+
+    <string name="kitesdk_product_overview_guarantee_title">"Minőséggarancia"</string>
+    <string name="kitesdk_product_overview_guarantee_text" formatted="false">"Bízunk benne, hogy termékeinkkel több leszel mint elégedett. Azonban a biztonság kedvéért teljes körű visszatérítést biztosítunk, ha nem lennél maximálisan elégedett – akkor is, ha éppen csak rossz napod van."</string>
+
+    <string name="kitesdk_product_overview_start_button_text">"Kezdj alkotni"</string>
+
+    <string name="kitesdk_image_selection_empty_message">"A fenti ikonok megérintésével adj\nhozzá fényképeket"</string>
+
+    <string name="kitesdk_edit_border_text_hint">"Szöveget ide írj"</string>
+
+    <string name="kitesdk_multi_page_instructions_html">"<![CDATA[A szerkesztéshez <b>érintsd meg</b> a képet.<br>Az újrarendezéshez <b>tartsd lenyomva</b>.]]>"</string>
+
+    <string name="kitesdk_address_book_empty">"A címjegyzék üres"</string>
+
+    <string name="kitesdk_image_source_prompt">"Az opciók egyikének megérintésével adj hozzá fényképeket"</string>
+
+    <string name="kitesdk_image_selection_pack_title_format_string" tools:ignore="PluralsCandidate">"#%1$d/%2$d csomag %3$s"</string>
+
+    <string name="kitesdk_image_selection_clear_photos_format_string">"%s törlése"</string>
+
+    <string name="kitesdk_edit_image_prompt_text">"Fotó újrapozicionálása"</string>
+
+    <string name="kitesdk_image_selection_proceed_button_text">"Áttekintés és szerkesztés"</string>
+
+    <string name="kitesdk_review_and_edit_title_format_string">"%1$d / %2$d"</string>
+    <string name="kitesdk_review_and_edit_proceed_button_text">"Megerősítés"</string>
+
+    <string name="kitesdk_edit_image_title">"Kép szerkesztése"</string>
+
+    <string name="kitesdk_basket_empty">"A kosár tartalma üres"</string>
+    <string name="kitesdk_basket_left_button_text">"Vásárlás folytatása"</string>
+    <string name="kitesdk_basket_right_button_text">"Fizetés"</string>
+
+    <string name="kitesdk_address_hint_text_recipient">"Név"</string>
+    <string name="kitesdk_address_hint_text_line_1">"1. címsor"</string>
+    <string name="kitesdk_address_hint_text_line_2">"2. címsor"</string>
+    <string name="kitesdk_address_hint_text_city">"Település"</string>
+    <string name="kitesdk_address_hint_text_county_or_state">"Megye/tagállam"</string>
+    <string name="kitesdk_address_hint_text_postcode_or_zip">"Irányítószám"</string>
+
+    <string name="kitesdk_shipping_delivery_address_button_text">Szállítási cím kiválasztása</string>
+    <string name="kitesdk_shipping_phone_hint_text">"Telefon"</string>
+    <string name="kitesdk_shipping_email_reason">"A rendelés megerősítésére vonatkozó friss információk elküldéséhez add meg az e-mail címedet."</string>
+    <string name="kitesdk_shipping_phone_reason">"Add meg a telefonszámodat, ha a kiszállítás során probléma merülne fel."</string>
+
+    <string name="kitesdk_address_search_prompt">"Keresés a fenti címek között"</string>
+
+    <string name="kitesdk_address_search_hint_format_string">"%1$s keresése"</string>
+    <string name="kitesdk_address_search_empty_results">"Keresés a fenti címek között"</string>
+    <string name="kitesdk_address_search_dialog_title">"Adatok beszerzése"</string>
+    <string name="kitesdk_address_search_dialog_message">"Címadatok beszerzése"</string>
+    <string name="kitesdk_address_search_no_results">"Nincs találat"</string>
+
+    <string name="kitesdk_button_text_edit_address">"Cím szerkesztése"</string>
+    <string name="kitesdk_button_text_delete_address">"Cím törlése"</string>
+
+    <string name="kitesdk_address_edit_proceed_button_text">"Mentés"</string>
+
+    <string name="kitesdk_payment_promo_hint">"Promóciós kód"</string>
+    <string name="kitesdk_payment_promo_button_text_apply">"Alkalmaz"</string>
+    <string name="kitesdk_payment_promo_button_text_clear">"Törlés"</string>
+    <string name="kitesdk_payment_credit_card_button_text">"Hitelkártya"</string>
+    <string name="kitesdk_payment_credit_card_button_text_free">"Ingyenes"</string>
+    <string name="kitesdk_payment_paypal_button_text">"PayPal"</string>
+
+    <string name="kitesdk_stripe_error_invalid_card_details">"Érvénytelen kártyaadatok"</string>
+    <string name="kitesdk_stripe_error_create_object">"Stripe token lekérése nem lehetséges"</string>
+    <string name="kitesdk_stripe_error_retrieve_token">"Stripe token lekérése nem lehetséges"</string>
+
+    <string name="kitesdk_send_email_chooser_title">"E-mail küldése"</string>
+
+    <string name="kitesdk_Card_Number">"Kártya száma"</string>
+    <string name="kitesdk_Expires">"Lejár"</string>
+    <string name="kitesdk_CVV">"CVV"</string>
+
+    <string name="kitesdk_card_error_invalid_number">"Érvénytelen kártyaszám"</string>
+    <string name="kitesdk_card_error_invalid_expiry_date">"Érvénytelen lejárati dátum"</string>
+    <string name="kitesdk_card_error_invalid_cvv">"Érvénytelen ellenőrzési érték"</string>
+
+    <string name="kitesdk_order_submission_message_uploading">"Képek feltöltése"</string>
+    <string name="kitesdk_order_submission_message_posted">"Feladva"</string>
+    <string name="kitesdk_order_submission_message_received">"Átvéve"</string>
+    <string name="kitesdk_order_submission_message_accepted">"Elfogadva"</string>
+    <string name="kitesdk_order_submission_message_validated">"Ellenőrizve"</string>
+    <string name="kitesdk_order_submission_message_processed">"Feldolgozva"</string>
+
+
+    <string name="kitesdk_alert_dialog_title_order_submission_error">"Rendelésküldési hiba"</string>
+    <string name="kitesdk_order_timeout_message">"Úgy tűnik, a rendelésed még nincs feldolgozva. Előfordulhat, hogy a kiszolgálók jelenleg foglaltak, a fizetés pedig egyszerűen több időt vesz igénybe. Próbáld meg később."</string>
+
+    <string name="kitesdk_alert_dialog_title_order_cancelled">"A rendelés törölve"</string>
+    <string name="kitesdk_alert_dialog_message_order_cancelled">"Valami nem stimmel – úgy tűnik, a rendelésed az elküldés során törlődött."</string>
+
+    <string name="kitesdk_alert_dialog_message_server_offline_maintenance">"A kiszolgáló karbantartás miatt jelenleg offline."</string>
+    <string name="kitesdk_alert_dialog_message_server_returned_html">"A kiszolgáló érvénytelen (HTML) választ küldött. Ez általában akkor fordul elő, amikor a kiszolgáló nem érhető el."</string>
+
+    <string name="kitesdk_scan_qr_code">"QR-kód beolvasása"</string>
+    <string name="kitesdk_scan_qr_code_instructions">"Az eszközödön található QR-kód olvasó alkalmazás\nsegítségével olvasd be a QR-kódot."</string>
+    <string name="kitesdk_scan_qr_code_alternate_instructions">"Alternatív megoldásként írd be az alábbi URL-címet mobileszközöd böngészőjének címsorába:"</string>
+
+    <string name="kitesdk_action_settings">"Beállítások"</string>
+    <string name="kitesdk_title_activity_checkout">"Szállítás"</string>
+    <string name="kitesdk_title_activity_order_receipt">"Nyugta"</string>
+    <string name="kitesdk_title_activity_payment">"Fizetés"</string>
+    <string name="kitesdk_title_activity_address_book">"Címjegyzék"</string>
+
+    <string name="kitesdk_add_address">"Cím hozzáadása"</string>
+    <string name="kitesdk_title_activity_address_add">"Cím hozzáadása"</string>
+    <string name="kitesdk_title_activity_address_edit">"Cím szerkesztése"</string>
+    <string name="kitesdk_action_save_address">"Cím mentése"</string>
+
+    <plurals name="kitesdk_Photo_plurals">
+        <item quantity="zero">"%d fénykép"</item>
+        <item quantity="one">"%d fénykép"</item>
+        <item quantity="two">"%d fénykép"</item>
+        <item quantity="few">"%d fénykép"</item>
+        <item quantity="many">"%d fénykép"</item>
+        <item quantity="other">"%d fénykép"</item>
+    </plurals>
+
+    <plurals name="kitesdk_photo_plurals">
+        <item quantity="zero">"%d fénykép"</item>
+        <item quantity="one">"%d fénykép"</item>
+        <item quantity="two">"%d fénykép"</item>
+        <item quantity="few">"%d fénykép"</item>
+        <item quantity="many">"%d fénykép"</item>
+        <item quantity="other">"%d fénykép"</item>
+    </plurals>
+
+</resources>

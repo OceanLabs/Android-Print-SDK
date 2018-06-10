@@ -133,14 +133,14 @@ public class PayPalCreditCardAgent implements ICreditCardAgent
 
       if ( KiteSDK.getInstance( context ).getPayPalEnvironment().equals( PayPalConfiguration.ENVIRONMENT_SANDBOX ) )
         {
-        builder.setTitle( R.string.title_payment_source_sandbox );
+        builder.setTitle( R.string.kitesdk_title_payment_source_sandbox);
         }
       else
         {
-        builder.setTitle( R.string.title_payment_source );
+        builder.setTitle( R.string.kitesdk_title_payment_source);
         }
 
-      builder.setItems( new String[]{ context.getString( R.string.alert_dialog_item_pay_with_new_card ), context.getString( R.string.alert_dialog_item_pay_with_existing_card_format_string, lastUsedCard.getLastFour() ) }, new DialogInterface.OnClickListener()
+      builder.setItems( new String[]{ context.getString( R.string.kitesdk_alert_dialog_item_pay_with_new_card), context.getString( R.string.kitesdk_alert_dialog_item_pay_with_existing_card_format_string, lastUsedCard.getLastFour() ) }, new DialogInterface.OnClickListener()
         {
         @Override
         public void onClick( DialogInterface dialogInterface, int itemIndex )
@@ -183,7 +183,7 @@ public class PayPalCreditCardAgent implements ICreditCardAgent
 
         if ( !scanResult.isExpiryValid() )
           {
-          mPaymentFragment.showErrorDialog( R.string.alert_dialog_message_card_expired );
+          mPaymentFragment.showErrorDialog( R.string.kitesdk_alert_dialog_message_card_expired);
 
           return;
           }
@@ -197,15 +197,15 @@ public class PayPalCreditCardAgent implements ICreditCardAgent
 
         if ( card.getCardType() == PayPalCard.CardType.UNSUPPORTED )
           {
-          mPaymentFragment.showErrorDialog( R.string.alert_dialog_message_card_not_recognised );
+          mPaymentFragment.showErrorDialog( R.string.kitesdk_alert_dialog_message_card_not_recognised);
 
           return;
           }
 
         final ProgressDialog dialog = new ProgressDialog( mContext );
         dialog.setCancelable( false );
-        dialog.setTitle( R.string.alert_dialog_title_processing );
-        dialog.setMessage( mContext.getString( R.string.alert_dialog_message_processing ) );
+        dialog.setTitle( R.string.kitesdk_alert_dialog_title_processing);
+        dialog.setMessage( mContext.getString( R.string.kitesdk_alert_dialog_message_processing) );
         dialog.show();
         card.storeCard( KiteSDK.getInstance( mContext ), new PayPalCardVaultStorageListener()
           {
@@ -222,7 +222,7 @@ public class PayPalCreditCardAgent implements ICreditCardAgent
             {
             if ( dialog.isShowing() ) dialog.dismiss();
 
-            mPaymentFragment.showErrorDialog( R.string.alert_dialog_message_unable_to_store_card, ex.getMessage() );
+            mPaymentFragment.showErrorDialog( R.string.kitesdk_alert_dialog_message_unable_to_store_card, ex.getMessage() );
             }
           } );
 
@@ -255,8 +255,8 @@ public class PayPalCreditCardAgent implements ICreditCardAgent
     {
     final ProgressDialog dialog = new ProgressDialog( mContext );
     dialog.setCancelable( false );
-    dialog.setTitle( R.string.alert_dialog_title_processing );
-    dialog.setMessage( mContext.getString( R.string.alert_dialog_message_processing ) );
+    dialog.setTitle( R.string.kitesdk_alert_dialog_title_processing);
+    dialog.setMessage( mContext.getString( R.string.kitesdk_alert_dialog_message_processing) );
     dialog.show();
 
     card.authoriseCard( KiteSDK.getInstance( mContext ),

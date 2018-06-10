@@ -43,7 +43,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -153,7 +152,7 @@ public class ChooseProductGroupFragment extends AGroupOrProductFragment
     {
     super.onTop();
 
-    mKiteActivity.setTitle( R.string.title_choose_product_group );
+    mKiteActivity.setTitle( R.string.kitesdk_title_choose_product_group);
     }
 
 

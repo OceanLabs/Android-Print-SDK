@@ -50,7 +50,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import java.util.HashSet;
@@ -165,7 +164,7 @@ public class PosterFragment extends AProductCreationFragment implements PosterAd
     mPosterView.setLayoutManager( gridLayoutManager );
 
     // Set up the forwards button
-    setForwardsTextViewText( R.string.Next );
+    setForwardsTextViewText( R.string.kitesdk_Next);
     setForwardsTextViewOnClickListener( this );
 
     mPosterView.setOnDragListener( this );
@@ -214,7 +213,7 @@ public class PosterFragment extends AProductCreationFragment implements PosterAd
     super.onTop();
 
 
-    mKiteActivity.setTitle( R.string.title_poster );
+    mKiteActivity.setTitle( R.string.kitesdk_title_poster);
 
     setUpPosterView();
     }
@@ -296,7 +295,7 @@ public class PosterFragment extends AProductCreationFragment implements PosterAd
 
       if ( mImageSpecArrayList.isEmpty() )
         {
-        mKiteActivity.displayModalDialog(R.string.alert_dialog_title_oops, R.string.alert_dialog_message_no_images_selected, R.string.OK, null, 0, null);
+        mKiteActivity.displayModalDialog(R.string.kitesdk_alert_dialog_title_oops, R.string.kitesdk_alert_dialog_message_no_images_selected, R.string.kitesdk_OK, null, 0, null);
         }
       else if ( mKiteActivity instanceof ICallback )
         {
@@ -324,8 +323,15 @@ public class PosterFragment extends AProductCreationFragment implements PosterAd
           Bitmap originalBitmap = ViewToBitmap.getFullBitmap(mPosterView);
           Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace(originalBitmap);
           Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, cleanBitmap );
-          mImageSpecArrayList.get(0).setPreviewImage( bitmap );
-
+          //Store preview in the first non-null imageSpec element
+          for( int index = 0; index < mImageSpecArrayList.size(); index++ )
+            {
+            if (mImageSpecArrayList.get( index ) != null )
+              {
+              mImageSpecArrayList.get( index ).setPreviewImage( bitmap );
+              break;
+              }
+            }
           ( (ICallback)mKiteActivity ).posterOnNext();
           }
         }
@@ -729,8 +735,15 @@ public class PosterFragment extends AProductCreationFragment implements PosterAd
       Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace(originalBitmap);
       Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, cleanBitmap );
 
-      mImageSpecArrayList.get(0).setPreviewImage(bitmap);
-
+      //Store preview in the first non-null imageSpec element
+      for( int index = 0; index < mImageSpecArrayList.size(); index++ )
+        {
+        if (mImageSpecArrayList.get( index ) != null )
+          {
+          mImageSpecArrayList.get( index ).setPreviewImage( bitmap );
+          break;
+          }
+        }
       ( (ICallback)mKiteActivity ).posterOnNext();
       }
     }

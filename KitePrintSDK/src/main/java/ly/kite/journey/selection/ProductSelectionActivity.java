@@ -554,11 +554,11 @@ public class ProductSelectionActivity extends AKiteActivity implements ICatalogu
       // Display an error dialog
       displayModalDialog
               (
-                      R.string.alert_dialog_title_error_retrieving_products,
-                      R.string.alert_dialog_message_error_retrieving_products,
-                      R.string.Retry,
+                      R.string.kitesdk_alert_dialog_title_error_retrieving_products,
+                      R.string.kitesdk_alert_dialog_message_error_retrieving_products,
+                      R.string.kitesdk_Retry,
                       new RequestCatalogueRunnable(),
-                      R.string.Cancel,
+                      R.string.kitesdk_Cancel,
                       new FinishRunnable()
               );
       }

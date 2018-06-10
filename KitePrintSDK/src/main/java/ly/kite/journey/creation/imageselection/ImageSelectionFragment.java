@@ -52,7 +52,6 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -264,7 +263,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
       }
 
 
-    setForwardsTextViewText( R.string.image_selection_proceed_button_text );
+    setForwardsTextViewText( R.string.kitesdk_image_selection_proceed_button_text);
     }
 
 
@@ -487,7 +486,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
 
       if ( mImageSpecArrayList.isEmpty() )
         {
-        mKiteActivity.displayModalDialog(R.string.alert_dialog_title_oops, R.string.alert_dialog_message_no_images_selected, R.string.OK, null, 0, null);
+        mKiteActivity.displayModalDialog(R.string.kitesdk_alert_dialog_title_oops, R.string.kitesdk_alert_dialog_message_no_images_selected, R.string.kitesdk_OK, null, 0, null);
         }
       else if ( mKiteActivity instanceof ICallback )
         {
@@ -625,7 +624,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
     int quantityPerPack = mProduct.getQuantityPerSheet();
     int numberOfPacks   = ( numberOfImages + ( quantityPerPack - 1 ) ) / quantityPerPack;
 
-    mKiteActivity.setTitle( getString( R.string.image_selection_title_format_string, mProduct.getName(), numberOfImages, ( numberOfPacks * quantityPerPack ) ) );
+    mKiteActivity.setTitle( getString( R.string.kitesdk_image_selection_title_format_string, mProduct.getName(), numberOfImages, ( numberOfPacks * quantityPerPack ) ) );
     }
 
 
@@ -636,7 +635,7 @@ public class ImageSelectionFragment extends AProductCreationFragment implements 
    *****************************************************/
   private void setClearPhotosButtonText()
     {
-    String buttonText = getString( R.string.image_selection_clear_photos_format_string, getResources().getQuantityString( R.plurals.Photo_plurals, mUncheckedImagesCount, mUncheckedImagesCount ) );
+    String buttonText = getString( R.string.kitesdk_image_selection_clear_photos_format_string, getResources().getQuantityString( R.plurals.kitesdk_Photo_plurals, mUncheckedImagesCount, mUncheckedImagesCount ) );
 
     mClearPhotosButton.setText( buttonText );
     }

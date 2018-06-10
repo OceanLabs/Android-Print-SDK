@@ -33,7 +33,7 @@
                     android:gravity="start"
                     android:textSize="@dimen/product_overview_detail_title"
                     android:textStyle="bold"
-                    android:text="@string/Description"/>
+                    android:text="@string/kitesdk_Description"/>
                 <ly.kite.widget.CustomTypefaceTextView
                     android:id="@+id/description_text_view"
                     android:layout_width="fill_parent"
@@ -57,7 +57,7 @@
                     android:gravity="start"
                     android:textSize="@dimen/product_overview_detail_title"
                     android:textStyle="bold"
-                    android:text="@string/Size"/>
+                    android:text="@string/kitesdk_Size"/>
                 <ly.kite.widget.CustomTypefaceTextView
                     android:id="@+id/size_text_view"
                     android:layout_width="fill_parent"
@@ -82,7 +82,7 @@
                     android:gravity="start"
                     android:textSize="@dimen/product_overview_detail_title"
                     android:textStyle="bold"
-                    android:text="@string/Quantity"/>
+                    android:text="@string/kitesdk_Quantity"/>
                 <ly.kite.widget.CustomTypefaceTextView
                     android:id="@+id/quantity_text_view"
                     android:layout_width="fill_parent"
@@ -101,7 +101,7 @@
                 android:gravity="start"
                 android:textSize="@dimen/product_overview_detail_title"
                 android:textStyle="bold"
-                android:text="@string/Shipping"/>
+                android:text="@string/kitesdk_Shipping"/>
 
             <ly.kite.widget.CustomTypefaceTextView
                 android:id="@+id/shipping_text_view"
@@ -120,14 +120,14 @@
                 android:gravity="start"
                 android:textSize="@dimen/product_overview_detail_title"
                 android:textStyle="bold"
-                android:text="@string/product_overview_guarantee_title"/>
+                android:text="@string/kitesdk_product_overview_guarantee_title"/>
 
             <ly.kite.widget.CustomTypefaceTextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:gravity="start"
                 android:textSize="@dimen/product_overview_detail_text"
-                android:text="@string/product_overview_guarantee_text"/>
+                android:text="@string/kitesdk_product_overview_guarantee_text"/>
 
             <View
                 android:layout_width="fill_parent"

@@ -134,7 +134,7 @@ public class CustomTypefaceSetter
     // 3
     if ( customTypeface == null )
       {
-      customTypeface = loadTypeface( context, resources.getString( R.string.custom_typeface_file_name ) );
+      customTypeface = loadTypeface( context, resources.getString( R.string.kitesdk_custom_typeface_file_name) );
       }
 
 

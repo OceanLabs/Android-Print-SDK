@@ -97,6 +97,7 @@ public class CatalogueLoaderTests extends KiteTestCase
                     "active:true," +
                     "product_active:true," +
                     "template_id:product1," +
+                    "product_category:Prints," +
                     "name:\"Product 1\"," +
                     "description:\"This is product 1\"," +
                     "images_per_page:1," +  // Optional

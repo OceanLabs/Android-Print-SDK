@@ -25,7 +25,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:textSize="@dimen/edit_border_text_size"
-            android:hint="@string/edit_border_text_hint"
+            android:hint="@string/kitesdk_edit_border_text_hint"
             android:background="@null"
             android:maxLines="1"
             android:ellipsize="end"

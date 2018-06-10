@@ -153,8 +153,8 @@ public class OrderSubmissionFragment extends ARetainedDialogFragment implements 
       mProgressDialog.setIndeterminate( false );
       mProgressDialog.setProgressStyle( ProgressDialog.STYLE_HORIZONTAL );
       mProgressDialog.setProgressNumberFormat( null );   // Don't display the "N/100" text
-      mProgressDialog.setTitle( R.string.alert_dialog_title_processing );
-      mProgressDialog.setMessage( getString( R.string.alert_dialog_message_processing ) );
+      mProgressDialog.setTitle( R.string.kitesdk_alert_dialog_title_processing);
+      mProgressDialog.setMessage( getString( R.string.kitesdk_alert_dialog_message_processing) );
       mProgressDialog.setMax( 100 );
       }
 
@@ -186,7 +186,7 @@ public class OrderSubmissionFragment extends ARetainedDialogFragment implements 
         progressDialog.setIndeterminate( false );
         progressDialog.setProgress( primaryProgressPercent );
         progressDialog.setSecondaryProgress( secondaryProgressPercent );
-        progressDialog.setMessage( getString( R.string.order_submission_message_uploading ) );
+        progressDialog.setMessage( getString( R.string.kitesdk_order_submission_message_uploading) );
         break;
 
       // The progress bar becomes indeterminate once the images have been uploaded
@@ -194,19 +194,19 @@ public class OrderSubmissionFragment extends ARetainedDialogFragment implements 
       case POSTED:
         progressDialog.setIndeterminate( true );
         progressDialog.setProgressPercentFormat( null );
-        progressDialog.setMessage( getString( R.string.order_submission_message_posted ) );
+        progressDialog.setMessage( getString( R.string.kitesdk_order_submission_message_posted) );
         break;
 
       case RECEIVED:
         progressDialog.setIndeterminate( true );
         progressDialog.setProgressPercentFormat( null );
-        progressDialog.setMessage( getString( R.string.order_submission_message_received ) );
+        progressDialog.setMessage( getString( R.string.kitesdk_order_submission_message_received) );
         break;
 
       case ACCEPTED:
         progressDialog.setIndeterminate( true );
         progressDialog.setProgressPercentFormat( null );
-        progressDialog.setMessage( getString( R.string.order_submission_message_accepted ) );
+        progressDialog.setMessage( getString( R.string.kitesdk_order_submission_message_accepted) );
         break;
 
       // We shouldn't get any other states, but if we do - display its name

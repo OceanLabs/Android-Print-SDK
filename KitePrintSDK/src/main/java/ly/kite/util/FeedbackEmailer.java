@@ -79,12 +79,12 @@ public class FeedbackEmailer
    *****************************************************/
   static public void sendEmail( Context context )
     {
-    Intent emailIntent = new Intent( Intent.ACTION_SENDTO, Uri.fromParts( "mailto", context.getString( R.string.feedback_email_recipient ), null ) );
+    Intent emailIntent = new Intent( Intent.ACTION_SENDTO, Uri.fromParts( "mailto", context.getString( R.string.kitesdk_feedback_email_recipient), null ) );
 
-    emailIntent.putExtra( Intent.EXTRA_SUBJECT, context.getString( R.string.feedback_email_subject ) );
-    emailIntent.putExtra( Intent.EXTRA_TEXT, context.getString( R.string.feedback_email_text ) );
+    emailIntent.putExtra( Intent.EXTRA_SUBJECT, context.getString( R.string.kitesdk_feedback_email_subject) );
+    emailIntent.putExtra( Intent.EXTRA_TEXT, context.getString( R.string.kitesdk_feedback_email_text) );
 
-    context.startActivity( Intent.createChooser( emailIntent, context.getString( R.string.send_email_chooser_title ) ) );
+    context.startActivity( Intent.createChooser( emailIntent, context.getString( R.string.kitesdk_send_email_chooser_title) ) );
     }
 
 

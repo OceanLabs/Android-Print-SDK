@@ -1,321 +1,320 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <string name="unit_centimeters">centimeter</string>
-    <string name="unit_inches">tommer</string>
-    <string name="unit_pixels">pixels</string>
+    <string name="kitesdk_unit_centimeters">centimeter</string>
+    <string name="kitesdk_unit_inches">tommer</string>
+    <string name="kitesdk_unit_pixels">pixels</string>
 
-    <string name="unit_centimeters_short">cm</string>
-    <string name="unit_inches_short">tm</string>
-    <string name="unit_pixels_short">px</string>
+    <string name="kitesdk_unit_centimeters_short">cm</string>
+    <string name="kitesdk_unit_inches_short">tm</string>
+    <string name="kitesdk_unit_pixels_short">px</string>
 
-    <string name="month_hint">MM</string>
-    <string name="year_hint">ÅÅÅÅ</string>
+    <string name="kitesdk_month_hint">MM</string>
+    <string name="kitesdk_year_hint">ÅÅÅÅ</string>
 
-    <string name="title_choose_product_group">Trykkeri</string>
-    <string name="title_create_phone_case">Lav mobiletui</string>
-    <string name="title_image_source">Vælg billeder</string>
-    <string name="title_photobook">Fotobog</string>
-    <string name="title_calendar">Kalender</string>
-    <string name="title_poster">Poster</string>
-    <string name="title_basket">Kurv</string>
-    <string name="title_payment_sandbox">Betaling (Sandbox))</string>
-    <string name="title_payment">Betaling</string>
-    <string name="title_payment_source_sandbox">Betalingskilde (Sandbox)</string>
-    <string name="title_payment_source">Betalingskilde</string>
-    <string name="title_order_history">Ordrehistorik</string>
+    <string name="kitesdk_title_create_phone_case">Lav mobiletui</string>
+    <string name="kitesdk_title_image_source">Vælg billeder</string>
+    <string name="kitesdk_title_photobook">Fotobog</string>
+    <string name="kitesdk_title_calendar">Kalender</string>
+    <string name="kitesdk_title_poster">Poster</string>
+    <string name="kitesdk_title_basket">Kurv</string>
+    <string name="kitesdk_title_payment_sandbox">Betaling (Sandbox))</string>
+    <string name="kitesdk_title_payment">Betaling</string>
+    <string name="kitesdk_title_payment_source_sandbox">Betalingskilde (Sandbox)</string>
+    <string name="kitesdk_title_payment_source">Betalingskilde</string>
+    <string name="kitesdk_title_order_history">Ordrehistorik</string>
 
-    <string name="drawer_open">Skuffe åben</string>
-    <string name="drawer_closed">Skuffe lukket</string>
+    <string name="kitesdk_drawer_open">Skuffe åben</string>
+    <string name="kitesdk_drawer_closed">Skuffe lukket</string>
 
-    <string name="settings_title_show_notification_messages">Notification meddelelser</string>
-    <string name="settings_title_support">Kunde support</string>
-    <string name="settings_title_privacy">Fortrolighedspolitik</string>
-    <string name="settings_title_terms">Betingelser for brug</string>
-    <string name="settings_title_legal">Gyldige</string>
-    <string name="settings_title_licences">Open source licenser</string>
-    <string name="settings_summary_licences">Licensbetingelser oplysninger om open source-software</string>
-    <string name="settings_title_build_version">Byg version</string>
+    <string name="kitesdk_settings_title_show_notification_messages">Notification meddelelser</string>
+    <string name="kitesdk_settings_title_support">Kunde support</string>
+    <string name="kitesdk_settings_title_privacy">Fortrolighedspolitik</string>
+    <string name="kitesdk_settings_title_terms">Betingelser for brug</string>
+    <string name="kitesdk_settings_title_legal">Gyldige</string>
+    <string name="kitesdk_settings_title_licences">Open source licenser</string>
+    <string name="kitesdk_settings_summary_licences">Licensbetingelser oplysninger om open source-software</string>
+    <string name="kitesdk_settings_title_build_version">Byg version</string>
 
-    <string name="license_title_picasso">Picasso</string>
-    <string name="license_url_picasso">https://raw.githubusercontent.com/square/picasso/picasso-parent-2.5.2/LICENSE.txt</string>
-    <string name="license_grid_view">GridView with Header and Footer</string>
-    <string name="license_url_grid_view">https://raw.githubusercontent.com/liaohuqiu/android-GridViewWithHeaderAndFooter/1.0.12/LICENSE.txt</string>
+    <string name="kitesdk_license_title_picasso">Picasso</string>
+    <string name="kitesdk_license_url_picasso">https://raw.githubusercontent.com/square/picasso/picasso-parent-2.5.2/LICENSE.txt</string>
+    <string name="kitesdk_license_grid_view">GridView with Header and Footer</string>
+    <string name="kitesdk_license_url_grid_view">https://raw.githubusercontent.com/liaohuqiu/android-GridViewWithHeaderAndFooter/1.0.12/LICENSE.txt</string>
 
-    <string name="alert_dialog_title_pack_not_full_format_string">Du har valgt %s</string>
-    <string name="alert_dialog_message_pack_not_full_format_string" tools:ignore="PluralsCandidate">Du kan tilføje %d mere til den samme pris</string>
+    <string name="kitesdk_alert_dialog_title_pack_not_full_format_string">Du har valgt %s</string>
+    <string name="kitesdk_alert_dialog_message_pack_not_full_format_string" tools:ignore="PluralsCandidate">Du kan tilføje %d mere til den samme pris</string>
 
-    <string name="alert_dialog_title_oops">Ups!</string>
-    <string name="alert_dialog_message_pricing_format_string">Der opstod et problem med nedhentingen af priser fra serveren:\n%s</string>
+    <string name="kitesdk_alert_dialog_title_oops">Ups!</string>
+    <string name="kitesdk_alert_dialog_message_pricing_format_string">Der opstod et problem med nedhentingen af priser fra serveren:\n%s</string>
 
-    <string name="alert_dialog_title_internal_error">Intern fejl</string>
+    <string name="kitesdk_alert_dialog_title_internal_error">Intern fejl</string>
 
-    <string name="alert_dialog_message_no_intent">Der opstod en fejl: ingen intent blev fundet. Tjek venligst loggen for flere detaljer.</string>
-
-    <string name="alert_dialog_message_no_arguments">Der opstod en fejl: ingen parametre blev fundet. Tjek venligst loggen for flere detaljer.</string>
-
-    <string name="alert_dialog_message_no_asset_list">Der opstod en fejl: ingen aktiverliste blev fundet. Tjek venligst loggen for flere detaljer.</string>
-
-    <string name="alert_dialog_message_no_asset">Der opstod en fejl: ingen aktiver blev fundet. Tjek venligst loggen for flere detaljer.</string>
-
-    <string name="alert_dialog_message_no_mask">Der opstod en fejl: ingen maske blev fundet. Tjek venligst loggen for flere detaljer.</string>
-
-    <string name="alert_dialog_message_no_product">Der opstod en fejl: produktet blev ikke fundet. Tjek venligst loggen for flere detaljer.</string>
-
-    <string name="alert_dialog_title_error_retrieving_products">Fejl under henting af produkter</string>
-    <string name="alert_dialog_message_error_retrieving_products">Der opstod en fejl under hentning af produkterne. Tjek venligst internetforbindelsen eller loggen for flere detaljer.</string>
-
-    <string name="alert_dialog_title_no_product_group_label">Ingen produktgruppe</string>
-    <string name="alert_dialog_message_no_product_group_label">Der opstod en fejl: ingen produktgruppe blev fundet. Tjek venligst loggen for flere detaljer.</string>
-
-    <string name="alert_dialog_title_product_not_found">Produktet blev ikke fundet</string>
-    <string name="alert_dialog_message_product_not_found">Intet produkt blev fundet. Tjek venligst loggen for flere detaljer.</string>
-
-    <string name="alert_dialog_title_create_order">Opret ordre</string>
-    <string name="alert_dialog_message_no_cropped_image_asset">Der opstod en fejl: det beskårne billede blev ikke opret.</string>
-
-    <string name="alert_dialog_title_load_image">Kunne ikke indlæse billede</string>
-    <string name="alert_dialog_message_could_not_load_image">Billedet kunne ikke indlæses. Tjek venligst internetforbindelsen eller loggen for flere detaljer.</string>
-
-    <string name="alert_dialog_title_delete_photo">Slet billede?</string>
-    <string name="alert_dialog_message_delete_photo">Er du sikker på, at du vil slette dette billede?</string>
-    <string name="alert_dialog_delete_photo_cancel_text">Behold</string>
-    <string name="alert_dialog_delete_photo_confirm_text">Slet</string>
-
-    <string name="alert_dialog_message_no_images_selected">Slet venligst nogle billeder først.</string>
-
-    <string name="alert_dialog_message_no_recipient">Indtast venligst en modtagers navn</string>
-    <string name="alert_dialog_message_no_line1">Udfyld venligst linje 1 i adressen</string>
-    <string name="alert_dialog_message_no_postal_code">Udfyld venligst dit postnummer / ZIP kode</string>
-    <string name="alert_dialog_message_no_email_address">Indtast venligst en e-mail adresse</string>
-    <string name="alert_dialog_message_no_city">Udfyld venligst din by</string>
-
-    <string name="alert_dialog_title_invalid_delivery_address">Ugyldig leveringsadresse</string>
-    <string name="alert_dialog_message_invalid_delivery_address">Vælg venligst en leveringsadresse</string>
-
-    <string name="alert_dialog_title_invalid_email_address">Ugyldig e-mail adresse</string>
-    <string name="alert_dialog_message_invalid_email_address">Indtast veligst en gyldig e-mail adresse</string>
-
-    <string name="alert_dialog_title_invalid_phone_number">Ugyldigt telefonnummer</string>
-    <string name="alert_dialog_message_invalid_phone_number">Indtast venligst et gyldigt telefonnummer</string>
-
-    <string name="alert_dialog_message_connectivity">Tjek venligst internetforbindelsen og prøv igen</string>
-
-    <string name="alert_dialog_message_processing">Et øjeblik…</string>
-
-    <string name="alert_dialog_title_end_customer_session">Afslut session</string>
-    <string name="alert_dialog_message_end_customer_session">Er du sikker på, at du vil afslutte sessionen?</string>
-
-    <string name="alert_dialog_title_remove_item">Fjern vare</string>
-    <string name="alert_dialog_message_remove_item">Bekræft venligst at du ønsker at fjerne denne vare fra kurven.</string>
-
-    <string name="alert_dialog_title_empty_basket">Tom kurv</string>
-    <string name="alert_dialog_message_empty_basket">Din kurv er i øjeblikket tom. Tilføj venligst en vare før du går videre til kassen.</string>
-
-    <string name="alert_dialog_message_uploading_images">Overførsel af billeder.</string>
-
-    <string name="alert_dialog_message_unable_to_store_card">Kan ikke gemme kort</string>
-    <string name="alert_dialog_message_no_payment_id">Der blev ikke fundet noget id til bevis af betaling</string>
-    <string name="alert_dialog_message_no_proof_of_payment">Der blev ikke fundet noget bevis for betaling i betalingsbekræftelsen</string>
-    <string name="alert_dialog_message_no_paypal_confirmation">Ingen betalingsbekræftelse er modtaget fra PayPal</string>
-    <string name="alert_dialog_message_card_expired">Beklager, det ser ud som om, at kortet er udløbet. Prøv venligst igen.</string>
-    <string name="alert_dialog_message_card_not_recognised">Beklager, vi kunne ikke genkende dit kort. Prøv venligst igen manuelt, hvis det er nødvendigt.</string>
-
-    <string name="alert_dialog_item_pay_with_new_card">Betal med nyt kort</string>
-    <string name="alert_dialog_item_pay_with_existing_card_format_string">Betal med kort der ender på %1$s</string>
-
-    <string name="log_out_warning">Du vil blive logget ud automatisk om</string>
-
-    <string name="progress_dialog_title_add_to_basket">Tilføjer til kurv</string>
-    <string name="progress_dialog_title_updating_basket">Opdaterer kurv</string>
-
-    <string name="add_more">Tilføj mere</string>
-    <string name="Cancel">Fortryd</string>
-    <string name="Choose_Delivery_Address">Vælg leveringsadresse</string>
-    <string name="Continue_Shopping">Fortsæt indkøb</string>
-    <string name="Next_Customer">Næste kunde</string>
-    <string name="Country">Land</string>
-    <string name="Description">Beskrivelse</string>
-    <string name="Details">Detaljer</string>
-    <string name="Done">Færdig</string>
-    <string name="Edit">Rediger</string>
-    <string name="Email">E-mail</string>
-    <string name="End_Session">Afslut session</string>
-    <string name="Flip">Vend</string>
-    <string name="Free">Gratis</string>
-    <string name="ITEM">VARE</string>
-    <string name="Keep">Behold</string>
-    <string name="Loading">Loading</string>
-    <string name="Loading_catalogue">Loading katalog</string>
-    <string name="Log_Out">Log ud</string>
-    <string name="Next">Næste</string>
-    <string name="No_Results">Ingen resultater</string>
-    <string name="OK">OK</string>
-    <string name="Order_Id">Ordre Id</string>
-    <string name="ORDER_ID">ORDRE ID</string>
-    <string name="Order_Summary">Ordre opsumering</string>
-    <string name="ORDER_SUMMARY">ORDRE OPSUMERING</string>
-    <string name="Oops_">Ups!</string>
-    <string name="Pay">Betal</string>
-    <string name="Payment_Id">Betalings Id</string>
-    <string name="PAYMENT_ID">BETALINGS ID</string>
-    <string name="PRICE">PRIS</string>
-    <string name="print_these">Print disse</string>
-    <string name="Processing_">Arbejder…</string>
-    <string name="Promotional_Discount">Promotions rabat</string>
-    <string name="Remove">Fjern</string>
-    <string name="Rotate">Roter</string>
-    <string name="Quantity">Antal</string>
-    <string name="QUANTITY">ANTAL</string>
-    <string name="Retry">Forsøg igen</string>
-    <string name="Save">Gem</string>
-    <string name="Select_Image">Vælg billede</string>
-    <string name="Shipping">Forsendelse</string>
-    <string name="Size">Størrelse</string>
-    <string name="Total">Total</string>
-
-    <string name="image_source_device">Kamera</string>
-    <string name="image_source_instagram">Instagram</string>
-    <string name="image_source_facebook">Facebook</string>
-    <string name="image_source_from_phone">Upload fra telefon</string>
-
-    <string name="select_photo_from_device">Vælg foto fra kamera</string>
-    <string name="select_photo_from_instagram">Vælg foto fra Instagram</string>
-    <string name="select_photo_from_facebook">Vælg foto fra Facebook</string>
-    <string name="upload_photo_from_phone">Upload foto fra telefon</string>
-
-    <string name="destination_description_gbr">UK</string>
-    <string name="destination_description_europe">Europa</string>
-    <string name="destination_description_rest_of_world">Resten af verden</string>
-
-    <string name="placeholder_message">Flere elementer\nkommer snart!</string>
-    <string name="order_success_banner_message">Vi har modtaget\ndin bestilling</string>
-    <string name="order_failure_banner_message">Ups\nNoget gik galt\nPrøv igen nedenfor</string>
-    <string name="order_failure_message">Noget gik galt.\nPrøv venligst igen.</string>
-
-    <string name="product_quantity_format_string">Pakke med %d</string>
-    <string name="product_overview_guarantee_text" formatted="false">Vi er overbeviste om, at du vil være mere end tilfreds med vores produkter. Men bare i tilfælde, tilbyder vi en fuld refusion, hvis du ikke er 100% tilfredse - selv om det er bare en dårlig dag.</string>
-
-    <string name="product_free_shipping">gratis</string>
-    <string name="product_shipping_summary_format_string">Forsendelse: %s</string>
-
-    <string name="product_free_worldwide_shipping">Fri forsendelse til hele verden</string>
-
-    <string name="product_overview_guarantee_title">Kviltetsgaranti</string>
-
-    <string name="product_overview_start_button_text">Begynd at skabe</string>
-
-    <string name="image_selection_empty_message">Tilføj billeder ved at trykke\npå ikonerne ovenfor</string>
-
-    <string name="edit_border_text_hint">Tilføj tekst her</string>
-
-    <string name="multi_page_instructions_html"><![CDATA[<b>Klik</b> på billedet for at redigere,<br><b>Hold</b> for at genbestille.]]></string>
-
-    <string name="address_book_empty">Adressebogen er tom</string>
-
-    <string name="image_source_prompt">Tilføj billeder ved at klikke på en af mulighederne</string>
-
-    <string name="image_selection_pack_title_format_string" tools:ignore="PluralsCandidate">#%1$d Pakke med %2$d %3$s</string>
-
-    <string name="image_selection_clear_photos_format_string">Fjern %s</string>
-
-    <string name="edit_image_prompt_text">Flyt billedet</string>
-
-    <string name="image_selection_proceed_button_text">Gennemgang &amp; redigere</string>
-
-    <string name="review_and_edit_title_format_string">%1$d / %2$d</string>
-    <string name="review_and_edit_proceed_button_text">Bekræft</string>
-
-    <string name="edit_image_title">Rediger billede</string>
-
-    <string name="basket_empty">Kurven er tom</string>
-    <string name="basket_left_button_text">Fortsæt indkøb</string>
-    <string name="basket_right_button_text">Tjek ud</string>
-
-    <string name="address_hint_text_recipient">Navn</string>
-    <string name="address_hint_text_line_1">Linje 1</string>
-    <string name="address_hint_text_line_2">Linje 2</string>
-    <string name="address_hint_text_city">By</string>
-    <string name="address_hint_text_county_or_state">Region</string>
-    <string name="address_hint_text_postcode_or_zip">Postnummer</string>
-
-    <string name="shipping_delivery_address_button_text">Vælg leveringsadresse</string>
-    <string name="shipping_phone_hint_text">Telefonnummer</string>
-    <string name="shipping_email_reason">Din e-mail er påkrævet, så vi kan sende dig ordrebekræftelses opdateringer.</string>
-    <string name="shipping_phone_reason">Dit telefonnummer er påkrævet i tilfælde af, at der skulle opstå problemer med leveringen.</string>
-    <string name="shipping_proceed_button_text">@string/Done</string>
-
-    <string name="address_search_prompt">Søg efter ovenstående adresse</string>
-
-    <string name="address_search_hint_format_string">Søg %1$s</string>
-    <string name="address_search_empty_results">Søg efter ovenstående adresse</string>
-    <string name="address_search_dialog_title">Henter detaljer</string>
-    <string name="address_search_dialog_message">Henter adressedetaljer</string>
-    <string name="address_search_no_results">Ingen resultater fundet</string>
-
-    <string name="button_text_edit_address">Rediger adresse</string>
-    <string name="button_text_delete_address">Slet adresses</string>
-
-    <string name="address_edit_proceed_button_text">Gem</string>
-
-    <string name="powered_by">drevet af Kite.ly</string>
-
-    <string name="payment_promo_hint">Tilbudskode</string>
-    <string name="payment_promo_button_text_apply">Tilføj</string>
-    <string name="payment_promo_button_text_clear">Slet</string>
-    <string name="payment_credit_card_button_text">Kreditkort</string>
-    <string name="payment_credit_card_button_text_free">Bestil gratis!</string>
-    <string name="payment_paypal_button_text">PayPal</string>
-
-    <string name="stripe_error_invalid_card_details">Ugyldige kortoplysninger</string>
-    <string name="stripe_error_create_object">Kan ikke oprette Stripe objekt</string>
-    <string name="stripe_error_retrieve_token">Kan ikke hente Stripe token</string>
-
-    <string name="send_email_chooser_title">Send e-maill</string>
-
-    <string name="feedback_email_recipient">info@kite.ly</string>
-    <string name="feedback_email_subject">Kite Android App Support</string>
-    <string name="feedback_email_text">Fortæl os dit fulde navn:\n\nGiv enhver kupon kode, der bruges i din transaktion:\n\nHvad er dit telefonnummer (hvis vi har brug for at ringe og diskutere dit problem)?\n\nHvad er det problem, du har med Kite Sample app?\n\nHvilke Android-enhed (telefon / tablet) bruger du?\n\n================================\n\nMange tak.\nVi vil være sikker på at komme tilbage til dig lige så snart vi kan.\nKite Team</string>
-
-    <string name="Card_Number">Kortnummer</string>
-    <string name="Expires">Udløber</string>
-    <string name="CVV">CVV</string>
-
-    <string name="card_error_invalid_number">Ugyldigt kortnummer</string>
-    <string name="card_error_invalid_expiry_date">Ugyldig udløbsdato</string>
-    <string name="card_error_invalid_cvv">Ugyldig CVV</string>
-
-    <string name="order_submission_message_uploading">Uploader billeder</string>
-    <string name="order_submission_message_posted">Uploadet</string>
-    <string name="order_submission_message_received">Modtaget</string>
-    <string name="order_submission_message_accepted">Accepteret</string>
-    <string name="order_submission_message_validated">Valideret</string>
-    <string name="order_submission_message_processed">Forarbejdet</string>
-
-    <string name="alert_dialog_title_order_submission_error">Ordreindsendelses fejl</string>
-    <string name="order_timeout_message">Din ordre fremstår ikke som bearbejdet endnu. Det kan skyldes at serverne er travle og at betalingen derfor tager lang tid.\n\nPrøv igen senere.</string>
-
-    <string name="alert_dialog_title_order_cancelled">Ordren er annulleret</string>
-    <string name="alert_dialog_message_order_cancelled">Noget gik galt - din ordre ser ud til at være blevet annulleret under indsendelsen.</string>
-
-    <string name="alert_dialog_message_server_offline_maintenance">Serveren er i øjeblikket offline til vedligeholdelse.</string>
-    <string name="alert_dialog_message_server_returned_html">Serveren returnerede et ugyldigt (HTML) svar. Dette sker normalt, når serveren ikke er tilgængelig.</string>
-
-    <string name="scan_qr_code">Scan QR-koden</string>
-    <string name="scan_qr_code_instructions">Venligst scanne QR-koden ved hjælp af et \nQR læser app på din enhed.</string>
-    <string name="scan_qr_code_alternate_instructions">Alternativt skrive følgende URL i din mobiltelefon browserens adresselinje:</string>
-
-    <string name="action_settings">Indstillinger</string>
-    <string name="title_activity_checkout">Forsendelses detaljer</string>
-    <string name="title_activity_order_receipt">Ordremodtagelse</string>
-    <string name="title_activity_payment">Betaling</string>
-    <string name="title_activity_address_book">Adressebog</string>
-    <string name="add_address">Tilføj adresse</string>
-    <string name="title_activity_address_add">Opret adresse</string>
-    <string name="title_activity_address_edit">Rediger adresse</string>
-    <string name="action_save_address">Gem adresse</string>
-
-    <plurals name="Photo_plurals">
+    <string name="kitesdk_alert_dialog_message_no_intent">Der opstod en fejl: ingen intent blev fundet. Tjek venligst loggen for flere detaljer.</string>
+
+    <string name="kitesdk_alert_dialog_message_no_arguments">Der opstod en fejl: ingen parametre blev fundet. Tjek venligst loggen for flere detaljer.</string>
+
+    <string name="kitesdk_alert_dialog_message_no_asset_list">Der opstod en fejl: ingen aktiverliste blev fundet. Tjek venligst loggen for flere detaljer.</string>
+
+    <string name="kitesdk_alert_dialog_message_no_asset">Der opstod en fejl: ingen aktiver blev fundet. Tjek venligst loggen for flere detaljer.</string>
+
+    <string name="kitesdk_alert_dialog_message_no_mask">Der opstod en fejl: ingen maske blev fundet. Tjek venligst loggen for flere detaljer.</string>
+
+    <string name="kitesdk_alert_dialog_message_no_product">Der opstod en fejl: produktet blev ikke fundet. Tjek venligst loggen for flere detaljer.</string>
+
+    <string name="kitesdk_alert_dialog_title_error_retrieving_products">Fejl under henting af produkter</string>
+    <string name="kitesdk_alert_dialog_message_error_retrieving_products">Der opstod en fejl under hentning af produkterne. Tjek venligst internetforbindelsen eller loggen for flere detaljer.</string>
+
+    <string name="kitesdk_alert_dialog_title_no_product_group_label">Ingen produktgruppe</string>
+    <string name="kitesdk_alert_dialog_message_no_product_group_label">Der opstod en fejl: ingen produktgruppe blev fundet. Tjek venligst loggen for flere detaljer.</string>
+
+    <string name="kitesdk_alert_dialog_title_product_not_found">Produktet blev ikke fundet</string>
+    <string name="kitesdk_alert_dialog_message_product_not_found">Intet produkt blev fundet. Tjek venligst loggen for flere detaljer.</string>
+
+    <string name="kitesdk_alert_dialog_title_create_order">Opret ordre</string>
+    <string name="kitesdk_alert_dialog_message_no_cropped_image_asset">Der opstod en fejl: det beskårne billede blev ikke opret.</string>
+
+    <string name="kitesdk_alert_dialog_title_load_image">Kunne ikke indlæse billede</string>
+    <string name="kitesdk_alert_dialog_message_could_not_load_image">Billedet kunne ikke indlæses. Tjek venligst internetforbindelsen eller loggen for flere detaljer.</string>
+
+    <string name="kitesdk_alert_dialog_title_delete_photo">Slet billede?</string>
+    <string name="kitesdk_alert_dialog_message_delete_photo">Er du sikker på, at du vil slette dette billede?</string>
+    <string name="kitesdk_alert_dialog_delete_photo_cancel_text">Behold</string>
+    <string name="kitesdk_alert_dialog_delete_photo_confirm_text">Slet</string>
+
+    <string name="kitesdk_alert_dialog_message_no_images_selected">Slet venligst nogle billeder først.</string>
+
+    <string name="kitesdk_alert_dialog_message_no_recipient">Indtast venligst en modtagers navn</string>
+    <string name="kitesdk_alert_dialog_message_no_line1">Udfyld venligst linje 1 i adressen</string>
+    <string name="kitesdk_alert_dialog_message_no_postal_code">Udfyld venligst dit postnummer / ZIP kode</string>
+    <string name="kitesdk_alert_dialog_message_no_email_address">Indtast venligst en e-mail adresse</string>
+    <string name="kitesdk_alert_dialog_message_no_city">Udfyld venligst din by</string>
+
+    <string name="kitesdk_alert_dialog_title_invalid_delivery_address">Ugyldig leveringsadresse</string>
+    <string name="kitesdk_alert_dialog_message_invalid_delivery_address">Vælg venligst en leveringsadresse</string>
+
+    <string name="kitesdk_alert_dialog_title_invalid_email_address">Ugyldig e-mail adresse</string>
+    <string name="kitesdk_alert_dialog_message_invalid_email_address">Indtast veligst en gyldig e-mail adresse</string>
+
+    <string name="kitesdk_alert_dialog_title_invalid_phone_number">Ugyldigt telefonnummer</string>
+    <string name="kitesdk_alert_dialog_message_invalid_phone_number">Indtast venligst et gyldigt telefonnummer</string>
+
+    <string name="kitesdk_alert_dialog_message_connectivity">Tjek venligst internetforbindelsen og prøv igen</string>
+
+    <string name="kitesdk_alert_dialog_message_processing">Et øjeblik…</string>
+
+    <string name="kitesdk_alert_dialog_title_end_customer_session">Afslut session</string>
+    <string name="kitesdk_alert_dialog_message_end_customer_session">Er du sikker på, at du vil afslutte sessionen?</string>
+
+    <string name="kitesdk_alert_dialog_title_remove_item">Fjern vare</string>
+    <string name="kitesdk_alert_dialog_message_remove_item">Bekræft venligst at du ønsker at fjerne denne vare fra kurven.</string>
+
+    <string name="kitesdk_alert_dialog_title_empty_basket">Tom kurv</string>
+    <string name="kitesdk_alert_dialog_message_empty_basket">Din kurv er i øjeblikket tom. Tilføj venligst en vare før du går videre til kassen.</string>
+
+    <string name="kitesdk_alert_dialog_message_uploading_images">Overførsel af billeder.</string>
+
+    <string name="kitesdk_alert_dialog_message_unable_to_store_card">Kan ikke gemme kort</string>
+    <string name="kitesdk_alert_dialog_message_no_payment_id">Der blev ikke fundet noget id til bevis af betaling</string>
+    <string name="kitesdk_alert_dialog_message_no_proof_of_payment">Der blev ikke fundet noget bevis for betaling i betalingsbekræftelsen</string>
+    <string name="kitesdk_alert_dialog_message_no_paypal_confirmation">Ingen betalingsbekræftelse er modtaget fra PayPal</string>
+    <string name="kitesdk_alert_dialog_message_card_expired">Beklager, det ser ud som om, at kortet er udløbet. Prøv venligst igen.</string>
+    <string name="kitesdk_alert_dialog_message_card_not_recognised">Beklager, vi kunne ikke genkende dit kort. Prøv venligst igen manuelt, hvis det er nødvendigt.</string>
+
+    <string name="kitesdk_alert_dialog_item_pay_with_new_card">Betal med nyt kort</string>
+    <string name="kitesdk_alert_dialog_item_pay_with_existing_card_format_string">Betal med kort der ender på %1$s</string>
+
+    <string name="kitesdk_log_out_warning">Du vil blive logget ud automatisk om</string>
+
+    <string name="kitesdk_progress_dialog_title_add_to_basket">Tilføjer til kurv</string>
+    <string name="kitesdk_progress_dialog_title_updating_basket">Opdaterer kurv</string>
+
+    <string name="kitesdk_add_more">Tilføj mere</string>
+    <string name="kitesdk_Cancel">Fortryd</string>
+    <string name="kitesdk_Choose_Delivery_Address">Vælg leveringsadresse</string>
+    <string name="kitesdk_Continue_Shopping">Fortsæt indkøb</string>
+    <string name="kitesdk_Next_Customer">Næste kunde</string>
+    <string name="kitesdk_Country">Land</string>
+    <string name="kitesdk_Description">Beskrivelse</string>
+    <string name="kitesdk_Details">Detaljer</string>
+    <string name="kitesdk_Done">Færdig</string>
+    <string name="kitesdk_Edit">Rediger</string>
+    <string name="kitesdk_Email">E-mail</string>
+    <string name="kitesdk_End_Session">Afslut session</string>
+    <string name="kitesdk_Flip">Vend</string>
+    <string name="kitesdk_Free">Gratis</string>
+    <string name="kitesdk_ITEM">VARE</string>
+    <string name="kitesdk_Keep">Behold</string>
+    <string name="kitesdk_Loading">Loading</string>
+    <string name="kitesdk_Loading_catalogue">Loading katalog</string>
+    <string name="kitesdk_Log_Out">Log ud</string>
+    <string name="kitesdk_Next">Næste</string>
+    <string name="kitesdk_No_Results">Ingen resultater</string>
+    <string name="kitesdk_OK">OK</string>
+    <string name="kitesdk_Order_Id">Ordre Id</string>
+    <string name="kitesdk_ORDER_ID">ORDRE ID</string>
+    <string name="kitesdk_Order_Summary">Ordre opsumering</string>
+    <string name="kitesdk_ORDER_SUMMARY">ORDRE OPSUMERING</string>
+    <string name="kitesdk_Oops_">Ups!</string>
+    <string name="kitesdk_Pay">Betal</string>
+    <string name="kitesdk_Payment_Id">Betalings Id</string>
+    <string name="kitesdk_PAYMENT_ID">BETALINGS ID</string>
+    <string name="kitesdk_PRICE">PRIS</string>
+    <string name="kitesdk_print_these">Print disse</string>
+    <string name="kitesdk_Processing_">Arbejder…</string>
+    <string name="kitesdk_Promotional_Discount">Promotions rabat</string>
+    <string name="kitesdk_Remove">Fjern</string>
+    <string name="kitesdk_Rotate">Roter</string>
+    <string name="kitesdk_Quantity">Antal</string>
+    <string name="kitesdk_QUANTITY">ANTAL</string>
+    <string name="kitesdk_Retry">Forsøg igen</string>
+    <string name="kitesdk_Save">Gem</string>
+    <string name="kitesdk_Select_Image">Vælg billede</string>
+    <string name="kitesdk_Shipping">Forsendelse</string>
+    <string name="kitesdk_Size">Størrelse</string>
+    <string name="kitesdk_Total">Total</string>
+
+    <string name="kitesdk_image_source_device">Kamera</string>
+    <string name="kitesdk_image_source_instagram">Instagram</string>
+    <string name="kitesdk_image_source_facebook">Facebook</string>
+    <string name="kitesdk_image_source_from_phone">Upload fra telefon</string>
+
+    <string name="kitesdk_select_photo_from_device">Vælg foto fra kamera</string>
+    <string name="kitesdk_select_photo_from_instagram">Vælg foto fra Instagram</string>
+    <string name="kitesdk_select_photo_from_facebook">Vælg foto fra Facebook</string>
+    <string name="kitesdk_upload_photo_from_phone">Upload foto fra telefon</string>
+
+    <string name="kitesdk_destination_description_gbr">UK</string>
+    <string name="kitesdk_destination_description_europe">Europa</string>
+    <string name="kitesdk_destination_description_rest_of_world">Resten af verden</string>
+
+    <string name="kitesdk_placeholder_message">Flere elementer\nkommer snart!</string>
+    <string name="kitesdk_order_success_banner_message">Vi har modtaget\ndin bestilling</string>
+    <string name="kitesdk_order_failure_banner_message">Ups\nNoget gik galt\nPrøv igen nedenfor</string>
+    <string name="kitesdk_order_failure_message">Noget gik galt.\nPrøv venligst igen.</string>
+
+    <string name="kitesdk_product_quantity_format_string">Pakke med %d</string>
+    <string name="kitesdk_product_overview_guarantee_text" formatted="false">Vi er overbeviste om, at du vil være mere end tilfreds med vores produkter. Men bare i tilfælde, tilbyder vi en fuld refusion, hvis du ikke er 100% tilfredse - selv om det er bare en dårlig dag.</string>
+
+    <string name="kitesdk_product_free_shipping">gratis</string>
+    <string name="kitesdk_product_shipping_summary_format_string">Forsendelse: %s</string>
+
+    <string name="kitesdk_product_free_worldwide_shipping">Fri forsendelse til hele verden</string>
+
+    <string name="kitesdk_product_overview_guarantee_title">Kviltetsgaranti</string>
+
+    <string name="kitesdk_product_overview_start_button_text">Begynd at skabe</string>
+
+    <string name="kitesdk_age_selection_empty_message">Tilføj billeder ved at trykke\npå ikonerne ovenfor</string>
+
+    <string name="kitesdk_edit_border_text_hint">Tilføj tekst her</string>
+
+    <string name="kitesdk_multi_page_instructions_html"><![CDATA[<b>Klik</b> på billedet for at redigere,<br><b>Hold</b> for at genbestille.]]></string>
+
+    <string name="kitesdk_address_book_empty">Adressebogen er tom</string>
+
+    <string name="kitesdk_image_source_prompt">Tilføj billeder ved at klikke på en af mulighederne</string>
+
+    <string name="kitesdk_image_selection_pack_title_format_string" tools:ignore="PluralsCandidate">#%1$d Pakke med %2$d %3$s</string>
+
+    <string name="kitesdk_image_selection_clear_photos_format_string">Fjern %s</string>
+
+    <string name="kitesdk_edit_image_prompt_text">Flyt billedet</string>
+
+    <string name="kitesdk_image_selection_proceed_button_text">Gennemgang &amp; redigere</string>
+
+    <string name="kitesdk_review_and_edit_title_format_string">%1$d / %2$d</string>
+    <string name="kitesdk_review_and_edit_proceed_button_text">Bekræft</string>
+
+    <string name="kitesdk_edit_image_title">Rediger billede</string>
+
+    <string name="kitesdk_basket_empty">Kurven er tom</string>
+    <string name="kitesdk_basket_left_button_text">Fortsæt indkøb</string>
+    <string name="kitesdk_basket_right_button_text">Tjek ud</string>
+
+    <string name="kitesdk_address_hint_text_recipient">Navn</string>
+    <string name="kitesdk_address_hint_text_line_1">Linje 1</string>
+    <string name="kitesdk_address_hint_text_line_2">Linje 2</string>
+    <string name="kitesdk_address_hint_text_city">By</string>
+    <string name="kitesdk_address_hint_text_county_or_state">Region</string>
+    <string name="kitesdk_address_hint_text_postcode_or_zip">Postnummer</string>
+
+    <string name="kitesdk_shipping_delivery_address_button_text">Vælg leveringsadresse</string>
+    <string name="kitesdk_shipping_phone_hint_text">Telefonnummer</string>
+    <string name="kitesdk_shipping_email_reason">Din e-mail er påkrævet, så vi kan sende dig ordrebekræftelses opdateringer.</string>
+    <string name="kitesdk_shipping_phone_reason">Dit telefonnummer er påkrævet i tilfælde af, at der skulle opstå problemer med leveringen.</string>
+    <string name="kitesdk_shipping_proceed_button_text">@string/kitesdk_Done</string>
+
+    <string name="kitesdk_address_search_prompt">Søg efter ovenstående adresse</string>
+
+    <string name="kitesdk_address_search_hint_format_string">Søg %1$s</string>
+    <string name="kitesdk_address_search_empty_results">Søg efter ovenstående adresse</string>
+    <string name="kitesdk_address_search_dialog_title">Henter detaljer</string>
+    <string name="kitesdk_address_search_dialog_message">Henter adressedetaljer</string>
+    <string name="kitesdk_address_search_no_results">Ingen resultater fundet</string>
+
+    <string name="kitesdk_button_text_edit_address">Rediger adresse</string>
+    <string name="kitesdk_button_text_delete_address">Slet adresses</string>
+
+    <string name="kitesdk_address_edit_proceed_button_text">Gem</string>
+
+    <string name="kitesdk_powered_by">drevet af Kite.ly</string>
+
+    <string name="kitesdk_payment_promo_hint">Tilbudskode</string>
+    <string name="kitesdk_payment_promo_button_text_apply">Tilføj</string>
+    <string name="kitesdk_payment_promo_button_text_clear">Slet</string>
+    <string name="kitesdk_payment_credit_card_button_text">Kreditkort</string>
+    <string name="kitesdk_payment_credit_card_button_text_free">Bestil gratis!</string>
+    <string name="kitesdk_payment_paypal_button_text">PayPal</string>
+
+    <string name="kitesdk_stripe_error_invalid_card_details">Ugyldige kortoplysninger</string>
+    <string name="kitesdk_stripe_error_create_object">Kan ikke oprette Stripe objekt</string>
+    <string name="kitesdk_stripe_error_retrieve_token">Kan ikke hente Stripe token</string>
+
+    <string name="kitesdk_send_email_chooser_title">Send e-maill</string>
+
+    <string name="kitesdk_feedback_email_recipient">info@kite.ly</string>
+    <string name="kitesdk_feedback_email_subject">Kite Android App Support</string>
+    <string name="kitesdk_feedback_email_text">Fortæl os dit fulde navn:\n\nGiv enhver kupon kode, der bruges i din transaktion:\n\nHvad er dit telefonnummer (hvis vi har brug for at ringe og diskutere dit problem)?\n\nHvad er det problem, du har med Kite Sample app?\n\nHvilke Android-enhed (telefon / tablet) bruger du?\n\n================================\n\nMange tak.\nVi vil være sikker på at komme tilbage til dig lige så snart vi kan.\nKite Team</string>
+
+    <string name="kitesdk_Card_Number">Kortnummer</string>
+    <string name="kitesdk_Expires">Udløber</string>
+    <string name="kitesdk_CVV">CVV</string>
+
+    <string name="kitesdk_card_error_invalid_number">Ugyldigt kortnummer</string>
+    <string name="kitesdk_card_error_invalid_expiry_date">Ugyldig udløbsdato</string>
+    <string name="kitesdk_card_error_invalid_cvv">Ugyldig CVV</string>
+
+    <string name="kitesdk_order_submission_message_uploading">Uploader billeder</string>
+    <string name="kitesdk_order_submission_message_posted">Uploadet</string>
+    <string name="kitesdk_order_submission_message_received">Modtaget</string>
+    <string name="kitesdk_order_submission_message_accepted">Accepteret</string>
+    <string name="kitesdk_order_submission_message_validated">Valideret</string>
+    <string name="kitesdk_order_submission_message_processed">Forarbejdet</string>
+
+    <string name="kitesdk_alert_dialog_title_order_submission_error">Ordreindsendelses fejl</string>
+    <string name="kitesdk_order_timeout_message">Din ordre fremstår ikke som bearbejdet endnu. Det kan skyldes at serverne er travle og at betalingen derfor tager lang tid.\n\nPrøv igen senere.</string>
+
+    <string name="kitesdk_alert_dialog_title_order_cancelled">Ordren er annulleret</string>
+    <string name="kitesdk_alert_dialog_message_order_cancelled">Noget gik galt - din ordre ser ud til at være blevet annulleret under indsendelsen.</string>
+
+    <string name="kitesdk_alert_dialog_message_server_offline_maintenance">Serveren er i øjeblikket offline til vedligeholdelse.</string>
+    <string name="kitesdk_alert_dialog_message_server_returned_html">Serveren returnerede et ugyldigt (HTML) svar. Dette sker normalt, når serveren ikke er tilgængelig.</string>
+
+    <string name="kitesdk_scan_qr_code">Scan QR-koden</string>
+    <string name="kitesdk_scan_qr_code_instructions">Venligst scanne QR-koden ved hjælp af et \nQR læser app på din enhed.</string>
+    <string name="kitesdk_scan_qr_code_alternate_instructions">Alternativt skrive følgende URL i din mobiltelefon browserens adresselinje:</string>
+
+    <string name="kitesdk_action_settings">Indstillinger</string>
+    <string name="kitesdk_title_activity_checkout">Forsendelses detaljer</string>
+    <string name="kitesdk_title_activity_order_receipt">Ordremodtagelse</string>
+    <string name="kitesdk_title_activity_payment">Betaling</string>
+    <string name="kitesdk_title_activity_address_book">Adressebog</string>
+    <string name="kitesdk_add_address">Tilføj adresse</string>
+    <string name="kitesdk_title_activity_address_add">Opret adresse</string>
+    <string name="kitesdk_title_activity_address_edit">Rediger adresse</string>
+    <string name="kitesdk_action_save_address">Gem adresse</string>
+
+    <plurals name="kitesdk_Photo_plurals">
         <item quantity="zero">%d Billeder</item>
         <item quantity="one">%d Billede</item>
         <item quantity="two">%d Billeder</item>
@@ -324,7 +323,7 @@
         <item quantity="other">%d Billeder</item>
     </plurals>
 
-    <plurals name="photo_plurals">
+    <plurals name="kitesdk_photo_plurals">
         <item quantity="zero">%d billeder</item>
         <item quantity="one">%d billede</item>
         <item quantity="two">%d billeder</item>

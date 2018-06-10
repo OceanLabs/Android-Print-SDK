@@ -919,14 +919,8 @@ public class ImageLoadRequest
 
         mSource = newSource;
 
-          if ( mIsHighPriority )
-            {
-            return ( BitmapFactory.decodeFile(imageFilePath) );
-            }
-          else
-            {
-            return ( newSource.load() );
-            }
+        return ( newSource.load() );
+
         }
       else
         {

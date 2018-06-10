@@ -257,12 +257,12 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
     KiteSDK kiteSDK = KiteSDK.getInstance( this );
 
 
-    setTitle( R.string.title_basket );
+    setTitle( R.string.kitesdk_title_basket);
 
-    setLeftText( R.string.basket_left_button_text );
+    setLeftText( R.string.kitesdk_basket_left_button_text);
     setLeftColourRes( R.color.basket_left_button );
 
-    setRightText( R.string.basket_right_button_text );
+    setRightText( R.string.kitesdk_basket_right_button_text);
     setRightColourRes( R.color.basket_right_button );
 
 
@@ -415,7 +415,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
 
     if ( mBasketItemList == null || mBasketItemList.size() < 1 )
       {
-      showErrorDialog( R.string.alert_dialog_title_empty_basket, R.string.alert_dialog_message_empty_basket );
+      showErrorDialog( R.string.kitesdk_alert_dialog_title_empty_basket, R.string.kitesdk_alert_dialog_message_empty_basket);
 
       return;
       }
@@ -425,7 +425,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
 
     if ( mShippingAddress == null || !mShippingAddress.isFilledIn())
       {
-      showErrorDialog( R.string.alert_dialog_title_invalid_delivery_address, R.string.alert_dialog_message_invalid_delivery_address );
+      showErrorDialog( R.string.kitesdk_alert_dialog_title_invalid_delivery_address, R.string.kitesdk_alert_dialog_message_invalid_delivery_address);
 
       return;
       }
@@ -700,7 +700,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
     if(mShippingAddress != null && mShippingAddress.isFilledIn()) {
       mDeliveryAddressTextView.setText(mShippingAddress.toSingleLineText());
     } else {
-      mDeliveryAddressTextView.setText(getString(R.string.shipping_delivery_address_button_text));
+      mDeliveryAddressTextView.setText(getString(R.string.kitesdk_shipping_delivery_address_button_text));
     }
 
     checkRequestPrices();
@@ -731,7 +731,7 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
     // CLear the current prices
     mTotalShippingPriceTextView.setText( null );
     if ( mTotalPriceTextView != null ) mTotalPriceTextView.setText( null );
-    if ( mPayAmountTextView  != null ) mPayAmountTextView.setText( R.string.Pay );
+    if ( mPayAmountTextView  != null ) mPayAmountTextView.setText( R.string.kitesdk_Pay);
 
 
     // Only request the pricing if there is something in the basket
@@ -765,9 +765,9 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
 
     String displayTotalCost = orderPricing.getTotalCost().getDefaultDisplayAmountWithFallback();
 
-    if ( mTotalPriceTextView != null ) mTotalPriceTextView.setText( getString( R.string.Total ) + " " + displayTotalCost );
+    if ( mTotalPriceTextView != null ) mTotalPriceTextView.setText( getString( R.string.kitesdk_Total) + " " + displayTotalCost );
 
-    if ( mPayAmountTextView  != null ) mPayAmountTextView.setText( getString( R.string.Pay ) + " " + displayTotalCost );
+    if ( mPayAmountTextView  != null ) mPayAmountTextView.setText( getString( R.string.kitesdk_Pay) + " " + displayTotalCost );
     }
 
 
@@ -929,11 +929,11 @@ public class BasketActivity extends AKiteActivity implements ICatalogueConsumer,
             if ( orderQuantity <= 1 )
               {
               displayModalDialog(
-                      R.string.alert_dialog_title_remove_item,
-                      R.string.alert_dialog_message_remove_item,
-                      R.string.Remove,
+                      R.string.kitesdk_alert_dialog_title_remove_item,
+                      R.string.kitesdk_alert_dialog_message_remove_item,
+                      R.string.kitesdk_Remove,
                       new RemoveItemRunnable( mBasketItem ),
-                      R.string.Keep,
+                      R.string.kitesdk_Keep,
                       null );
 
               return;

@@ -175,7 +175,7 @@ public class DevicePhotoPickerActivity extends AImagePickerActivity
     super.onCreate( savedInstanceState );
 
 
-    setTitle( R.string.title_device_photo_picker );
+    setTitle( R.string.kitesdk_title_device_photo_picker);
     }
 
 

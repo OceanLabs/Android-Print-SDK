@@ -74,7 +74,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/basket_item_product_label_size"
                 android:textColor="@color/basket_light"
-                android:text="@string/Edit"/>
+                android:text="@string/kitesdk_Edit"/>
         </LinearLayout>
     </FrameLayout>
 

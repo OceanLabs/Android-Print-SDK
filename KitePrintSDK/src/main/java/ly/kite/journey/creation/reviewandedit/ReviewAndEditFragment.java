@@ -48,7 +48,6 @@ import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
 
@@ -148,7 +147,7 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements I
     super.onViewCreated( view );
 
     mGridView         = (GridView)view.findViewById( R.id.grid_view );
-    mForwardsTextView = setForwardsTextViewText( R.string.review_and_edit_proceed_button_text );
+    mForwardsTextView = setForwardsTextViewText( R.string.kitesdk_review_and_edit_proceed_button_text);
 
 
     setForwardsTextViewOnClickListener( this );
@@ -227,11 +226,11 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements I
     // been left at one.
 
     mKiteActivity.displayModalDialog(
-      R.string.alert_dialog_title_delete_photo,
-      R.string.alert_dialog_message_delete_photo,
-      R.string.alert_dialog_delete_photo_confirm_text,
+      R.string.kitesdk_alert_dialog_title_delete_photo,
+      R.string.kitesdk_alert_dialog_message_delete_photo,
+      R.string.kitesdk_alert_dialog_delete_photo_confirm_text,
       new DeleteAssetRunnable( assetIndex ),
-      R.string.alert_dialog_delete_photo_cancel_text,
+      R.string.kitesdk_alert_dialog_delete_photo_cancel_text,
       null
       );
     }
@@ -305,8 +304,15 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements I
            Bitmap originalBitmap = ViewToBitmap.getItemBitmap(mGridView, 0);
            Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace(mKiteActivity, originalBitmap, true);
            Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, cleanBitmap );
-           mImageSpecArrayList.get(0).setPreviewImage( bitmap );
-
+           //Store preview in the first non-null imageSpec element
+           for( int index = 0; index < mImageSpecArrayList.size(); index++ )
+            {
+            if (mImageSpecArrayList.get( index ) != null )
+              {
+              mImageSpecArrayList.get( index ).setPreviewImage( bitmap );
+              break;
+              }
+            }
           ( (ICallback) mKiteActivity ).reOnConfirm();
           }
         }
@@ -353,7 +359,7 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements I
     int quantityPerPack = mProduct.getQuantityPerSheet();
     int numberOfPacks   = ( numberOfImages + ( quantityPerPack - 1 ) ) / quantityPerPack;
 
-    mKiteActivity.setTitle( getString( R.string.review_and_edit_title_format_string, numberOfImages, ( numberOfPacks * quantityPerPack ) ) );
+    mKiteActivity.setTitle( getString( R.string.kitesdk_review_and_edit_title_format_string, numberOfImages, ( numberOfPacks * quantityPerPack ) ) );
     }
 
 
@@ -385,8 +391,15 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements I
       Bitmap originalBitmap = ViewToBitmap.getItemBitmap(mGridView, 0);
       Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace(mKiteActivity, originalBitmap, true);
       Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, cleanBitmap );
-      mImageSpecArrayList.get(0).setPreviewImage( bitmap );
-
+      //Store preview in the first non-null imageSpec element
+      for( int index = 0; index < mImageSpecArrayList.size(); index++ )
+        {
+        if (mImageSpecArrayList.get( index ) != null )
+          {
+          mImageSpecArrayList.get( index ).setPreviewImage( bitmap );
+          break;
+          }
+        }
       ( (ICallback)mKiteActivity ).reOnConfirm();
       }
     }

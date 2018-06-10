@@ -46,22 +46,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import ly.kite.address.Address;
-import ly.kite.ordering.Job;
 import ly.kite.ordering.Order;
 import ly.kite.R;
-import ly.kite.pricing.OrderPricing;
 
 
 ///// Class Declaration /////
@@ -371,7 +361,7 @@ abstract public class AReceiptActivity extends AOrderSubmissionActivity implemen
 
       if ( mCTABarRightTextView != null )
         {
-        mCTABarRightTextView.setText( R.string.Continue_Shopping );
+        mCTABarRightTextView.setText( R.string.kitesdk_Continue_Shopping);
         }
       }
     else
@@ -380,7 +370,7 @@ abstract public class AReceiptActivity extends AOrderSubmissionActivity implemen
 
       if ( mCTABarRightTextView != null )
         {
-        mCTABarRightTextView.setText( R.string.Retry );
+        mCTABarRightTextView.setText( R.string.kitesdk_Retry);
         }
       }
     }

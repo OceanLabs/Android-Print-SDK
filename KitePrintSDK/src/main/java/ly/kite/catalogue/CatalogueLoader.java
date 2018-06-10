@@ -148,7 +148,8 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
   static private final String  JSON_NAME_VALUE_CODE                  = "code";
   static private final String  JSON_NAME_VARIANT_ID                  = "variant_id";
   static private final String  JSON_NAME_WIDTH                       = "width";
-  static private final String JSON_NAME_CATEGORY                     = "product_category";
+  static private final String  JSON_NAME_CATEGORY                    = "product_category";
+  static private final String  JSON_NAME_BLEND_MODE                  = "mask_blend_mode";
 
   static private final int     DEFAULT_IMAGES_PER_PAGE               = 1;
   static private final int     DEFAULT_GRID_SIZE                     = 1;
@@ -553,10 +554,10 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
         boolean                          active             = productJSONObject.optBoolean( JSON_NAME_ACTIVE,         false );
         boolean                          productActive      = productJSONObject.optBoolean( JSON_NAME_PRODUCT_ACTIVE, false );
 
-        String                           productId          = productJSONObject.getString( JSON_NAME_PRODUCT_ID );
+        String                           productId          = productJSONObject .getString( JSON_NAME_PRODUCT_ID );
         String                           productName        = productJSONObject.getString( JSON_NAME_PRODUCT_NAME );
         String                           productDescription = productJSONObject.getString( JSON_NAME_DESCRIPTION );
-        String productCategory = productJSONObject.getString(JSON_NAME_CATEGORY);
+        String                           productCategory    = productJSONObject.getString(JSON_NAME_CATEGORY);
         int                              imagesPerPage      = productJSONObject.optInt( JSON_NAME_IMAGES_PER_PAGE, DEFAULT_IMAGES_PER_PAGE );
         int                              gridCountX         = productJSONObject.optInt( JSON_NAME_GRID_COUNT_X, DEFAULT_GRID_SIZE );
         int                              gridCountY         = productJSONObject.optInt( JSON_NAME_GRID_COUNT_Y, DEFAULT_GRID_SIZE );
@@ -633,6 +634,8 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
         String backgroundImageURLString = productDetailJSONObject.optString( JSON_NAME_BACKGROUND_IMAGE_URL, null );
         String highlightImageURLString  = productDetailJSONObject.optString( JSON_NAME_HIGHLIGHTS_URL,       null );
 
+        // Get mask blend mode
+        String maskBlendMode = productDetailJSONObject.optString( JSON_NAME_BLEND_MODE, null );
 
         // Get any product options
 
@@ -650,7 +653,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
 
         // Create the product and display it
 
-        Product product = new Product( productId, productCode, productName, productType, labelColour, userJourneyType, imagesPerPage )
+        Product product = new Product( productId, productCode, productName, productType, productCategory, labelColour, userJourneyType, imagesPerPage )
                 .setGridSize( gridCountX, gridCountY )
                 .setCost( cost )
                 .setDescription( productDescription )
@@ -658,6 +661,7 @@ public class CatalogueLoader implements HTTPJSONRequest.IJSONResponseListener
                 .setImageURLs( coverPhotoURL, imageURLList )
                 .setLabelColour( labelColour )
                 .setMask( maskURL, maskBleed )
+                .setMaskBlendMode( maskBlendMode )
                 .setSize( size )
                 .setCreationImage( imageAspectRatio, imageBorder )
                 .setProductOptions( productOptionList )

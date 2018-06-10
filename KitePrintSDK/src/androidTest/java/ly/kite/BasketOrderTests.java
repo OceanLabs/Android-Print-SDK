@@ -119,9 +119,7 @@ public class BasketOrderTests extends KiteTestCase
     {
     OrderingDataAgent orderingDataAgent = OrderingDataAgent.getInstance( getContext() );
 
-    KiteSDK.setEncryptionKey("mnk45k3nk5jn4kjn534jkn5kjn34k5j34");
-
-    Product product = new Product( "product_id", "product_code", "Product Name", "Product Type", 0xff000000, UserJourneyType.CALENDAR, 2 );
+    Product product = new Product( "product_id", "product_code", "Product Name", "Product Type","Product category", 0xff000000, UserJourneyType.CALENDAR, 2 );
 
     Catalogue catalogue = new Catalogue();
     catalogue.addProduct( "Group Label", null, product );
@@ -245,9 +243,7 @@ public class BasketOrderTests extends KiteTestCase
   public void testCircle1()
     {
     OrderingDataAgent orderingDataAgent = OrderingDataAgent.getInstance( getContext() );
-    Product product = new Product( "product_id", "product_code", "Product Name", "Product Type", 0xff000000, UserJourneyType.CIRCLE, 2 );
-
-    KiteSDK.setEncryptionKey("mnk45k3nk5jn4kjn534jkn5kjn34k5j34");
+    Product product = new Product( "product_id", "product_code", "Product Name", "Product Type","Product category", 0xff000000, UserJourneyType.CIRCLE, 2 );
 
     Catalogue catalogue = new Catalogue();
     catalogue.addProduct( "Group Label", null, product );
@@ -349,9 +345,7 @@ public class BasketOrderTests extends KiteTestCase
   public void testGreetingCard1()
     {
     OrderingDataAgent orderingDataAgent = OrderingDataAgent.getInstance( getContext() );
-    Product product = new Product( "product_id", "product_code", "Product Name", "Product Type", 0xff000000, UserJourneyType.GREETINGCARD, 4 );
-
-    KiteSDK.setEncryptionKey("mnk45k3nk5jn4kjn534jkn5kjn34k5j34");
+    Product product = new Product( "product_id", "product_code", "Product Name", "Product Type", "Product category", 0xff000000, UserJourneyType.GREETINGCARD, 4 );
 
     Catalogue catalogue = new Catalogue();
     catalogue.addProduct( "Group Label", null, product );
@@ -463,9 +457,7 @@ public class BasketOrderTests extends KiteTestCase
   public void testPhoneCase1()
     {
     OrderingDataAgent orderingDataAgent = OrderingDataAgent.getInstance( getContext() );
-    Product product = new Product( "product_id", "product_code", "A Phone Case", "Phone Case", 0xff000000, UserJourneyType.PHONE_CASE, 1 );
-
-    KiteSDK.setEncryptionKey("mnk45k3nk5jn4kjn534jkn5kjn34k5j34");
+    Product product = new Product( "product_id", "product_code", "A Phone Case", "Phone Case","Product category", 0xff000000, UserJourneyType.PHONE_CASE, 1 );
 
     Catalogue catalogue = new Catalogue();
     catalogue.addProduct( "Phone Cases", null, product );
@@ -577,11 +569,10 @@ public class BasketOrderTests extends KiteTestCase
   public void testPhotobook1()
     {
     OrderingDataAgent orderingDataAgent = OrderingDataAgent.getInstance( getContext() );
-    Product product = new Product( "product_id", "product_code", "Product Name", "Product Type", 0xff000000, UserJourneyType.PHOTOBOOK, 2 );
+    Product product = new Product( "product_id", "product_code", "Product Name", "Product Type","Product category", 0xff000000, UserJourneyType.PHOTOBOOK, 2 );
 
     KiteSDK.IEnvironment environment;
     environment = KiteSDK.DefaultEnvironment.TEST;
-    KiteSDK sdk = KiteSDK.getInstance(getContext(),"mnk45k3nk5jn4kjn534jkn5kjn34k5j34", environment,true,null);
 
     Catalogue catalogue = new Catalogue();
     catalogue.addProduct( "Group Label", null, product );
@@ -682,9 +673,7 @@ public class BasketOrderTests extends KiteTestCase
   public void testPhotobook2()
     {
     OrderingDataAgent orderingDataAgent = OrderingDataAgent.getInstance( getContext() );
-    Product product = new Product( "product_id", "product_code", "Product Name", "Product Type", 0xff000000, UserJourneyType.PHOTOBOOK, 2 );
-
-    KiteSDK.setEncryptionKey("mnk45k3nk5jn4kjn534jkn5kjn34k5j34");
+    Product product = new Product( "product_id", "product_code", "Product Name", "Product Type","Product category", 0xff000000, UserJourneyType.PHOTOBOOK, 2 );
 
     Catalogue catalogue = new Catalogue();
     catalogue.addProduct( "Group Label", null, product );
@@ -804,9 +793,7 @@ public class BasketOrderTests extends KiteTestCase
   public void testRectangle1()
     {
     OrderingDataAgent orderingDataAgent = OrderingDataAgent.getInstance( getContext() );
-    Product product = new Product( "product_id", "product_code", "Product Name", "Product Type", 0xff000000, UserJourneyType.RECTANGLE, 2 );
-
-    KiteSDK.setEncryptionKey("mnk45k3nk5jn4kjn534jkn5kjn34k5j34");
+    Product product = new Product( "product_id", "product_code", "Product Name", "Product Type","Product category", 0xff000000, UserJourneyType.RECTANGLE, 2 );
 
     Catalogue catalogue = new Catalogue();
     catalogue.addProduct( "Group Label", null, product );
@@ -908,9 +895,7 @@ public class BasketOrderTests extends KiteTestCase
   public void testSuccess1()
     {
     OrderingDataAgent orderingDataAgent = OrderingDataAgent.getInstance( getContext() );
-    Product product = new Product( "product_id", "product_code", "Product Name", "Product Type", 0xff000000, UserJourneyType.RECTANGLE, 2 );
-
-    KiteSDK.setEncryptionKey("mnk45k3nk5jn4kjn534jkn5kjn34k5j34");
+    Product product = new Product( "product_id", "product_code", "Product Name", "Product Type","Product category", 0xff000000, UserJourneyType.RECTANGLE, 2 );
 
     Catalogue catalogue = new Catalogue();
     catalogue.addProduct( "Group Label", null, product );

@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <string name="kitesdk_powered_by">"Powered by Kite.ly"</string>
+
+    <string name="kitesdk_unit_centimeters">"centymetry"</string>
+    <string name="kitesdk_unit_inches">"cale"</string>
+    <string name="kitesdk_unit_pixels">"piksele"</string>
+
+    <string name="kitesdk_unit_centimeters_short">"cm"</string>
+    <string name="kitesdk_unit_inches_short">"cale"</string>
+    <string name="kitesdk_unit_pixels_short">"px"</string>
+
+    <string name="kitesdk_month_hint">"MM"</string> 
+    <string name="kitesdk_year_hint">"RRRR"</string> 
+
+    <string name="kitesdk_title_create_phone_case">"Obudowa typu Snap"</string>
+    <string name="kitesdk_title_image_source">"Przejdź do zdjęć"</string>
+    <string name="kitesdk_title_photobook">"Fotoksiążki"</string>
+    <string name="kitesdk_title_calendar">"Kalendarz"</string>
+    <string name="kitesdk_title_poster">"Plakat"</string>
+    <string name="kitesdk_title_basket">"Koszyk"</string>
+    <string name="kitesdk_title_payment_sandbox">"Płatność (TEST)"</string>
+    <string name="kitesdk_title_payment">"Płatność"</string>
+    <string name="kitesdk_title_payment_source_sandbox">"Płatność (TEST)"</string>
+    <string name="kitesdk_title_payment_source">"Płatność"</string>
+    <string name="kitesdk_title_order_history">"Historia zamówień"</string>
+
+    <string name="kitesdk_settings_title_show_notification_messages">"Wiadomości"</string>
+    <string name="kitesdk_settings_title_support">"Obsługa"</string>
+    <string name="kitesdk_settings_title_privacy">"Polityka prywatności"</string>
+    <string name="kitesdk_settings_title_terms">"Warunki"</string>
+    <string name="kitesdk_settings_title_legal">"Legalne"</string>
+    <string name="kitesdk_settings_title_licences">"Licencja Open Source"</string>
+    <string name="kitesdk_settings_summary_licences">"Licencja Open Source"</string>
+    <string name="kitesdk_settings_title_build_version">"Wersja"</string>
+
+    <string name="kitesdk_alert_dialog_title_pack_not_full_format_string">"Wybrano: %s"</string>
+    <string name="kitesdk_alert_dialog_message_pack_not_full_format_string" tools:ignore="PluralsCandidate">"Możesz dodać jeszcze %d bez wpływu na cenę"</string>
+
+    <string name="kitesdk_alert_dialog_title_oops">"Oeps!"</string>
+    <string name="kitesdk_alert_dialog_message_pricing_format_string">"Wystąpił problem z Twoim żądaniem:\n%s"</string>
+
+    <string name="kitesdk_alert_dialog_title_error_retrieving_products">"Ups"</string>
+    <string name="kitesdk_alert_dialog_message_error_retrieving_products">"Brak połączenia z Internetem."</string>
+
+    <string name="kitesdk_alert_dialog_title_product_not_found">"Ups"</string>
+    <string name="kitesdk_alert_dialog_message_product_not_found">"Brak połączenia z Internetem."</string>
+
+    <string name="kitesdk_alert_dialog_title_delete_photo">"Usunąć zdjęcie?"</string>
+    <string name="kitesdk_alert_dialog_message_delete_photo">"Czy na pewno chcesz usunąć to zdjęcie?"</string>
+    <string name="kitesdk_alert_dialog_delete_photo_cancel_text">"Zachowaj"</string>
+    <string name="kitesdk_alert_dialog_delete_photo_confirm_text">"Usuń"</string>
+
+    <string name="kitesdk_alert_dialog_message_no_images_selected">"Wybierz jakieś obrazy."</string>
+
+    <string name="kitesdk_alert_dialog_message_no_recipient">"Podaj nazwisko odbiorcy."</string>
+    <string name="kitesdk_alert_dialog_message_no_line1">"Wypełnij linijkę 1 adresu."</string>
+    <string name="kitesdk_alert_dialog_message_no_postal_code">"Wprowadź kod pocztowy."</string>
+    <string name="kitesdk_alert_dialog_message_no_email_address">"Podaj adres e-mail."</string>
+    <string name="kitesdk_alert_dialog_message_no_city">"Wprowadź miasto."</string>
+
+    <string name="kitesdk_alert_dialog_title_invalid_delivery_address">"Nieprawidłowy adres dostawy"</string>
+    <string name="kitesdk_alert_dialog_message_invalid_delivery_address">"Wybierz adres dostawy."</string>
+
+    <string name="kitesdk_alert_dialog_title_invalid_email_address">"Nieprawidłowy adres e-mail"</string>
+    <string name="kitesdk_alert_dialog_message_invalid_email_address">"Podaj prawidłowy adres e-mail."</string>
+
+    <string name="kitesdk_alert_dialog_title_invalid_phone_number">"Ups"</string>
+    <string name="kitesdk_alert_dialog_message_invalid_phone_number">"Podaj prawidłowy numer telefonu."</string>
+
+    <string name="kitesdk_alert_dialog_message_connectivity">"Brak połączenia z Internetem."</string>
+
+    <string name="kitesdk_alert_dialog_message_processing">"Chwileczkę…"</string>
+
+    <string name="kitesdk_alert_dialog_title_end_customer_session">"Zakończ sesję"</string>
+    <string name="kitesdk_alert_dialog_message_end_customer_session">"Czy na pewno chcesz zakończyć sesję?"</string>
+
+    <string name="kitesdk_alert_dialog_title_remove_item">"Usuń pozycję"</string>
+    <string name="kitesdk_alert_dialog_message_remove_item">"Potwierdź, że chcesz usunąć tę pozycję z koszyka."</string>
+
+    <string name="kitesdk_alert_dialog_title_empty_basket">"Opróżnij koszyk"</string>
+    <string name="kitesdk_alert_dialog_message_empty_basket">"Twój koszyk jest pusty. Dodaj jakąś pozycję przed przejściem do kasy."</string>
+
+    <string name="kitesdk_alert_dialog_message_uploading_images">"Przesyłanie obrazów"</string>
+
+    <string name="kitesdk_alert_dialog_message_unable_to_store_card">"Nie można zapisać karty"</string>
+    <string name="kitesdk_alert_dialog_message_no_payment_id">"Nie znaleziono identyfikatora płatności w dowodzie płatności"</string>
+    <string name="kitesdk_alert_dialog_message_no_proof_of_payment">"Nie znaleziono dowodu płatności w potwierdzeniu płatności"</string>
+    <string name="kitesdk_alert_dialog_message_no_paypal_confirmation">"Nie otrzymano potwierdzenia płatności z serwisu PayPal"</string>
+    <string name="kitesdk_alert_dialog_message_card_expired">"Niestety, wygląda na to, że karta straciła ważność. Spróbuj ponownie."</string>
+    <string name="kitesdk_alert_dialog_message_card_not_recognised">"Niestety, nie można rozpoznać karty. W razie potrzeby spróbuj ponownie wprowadzić dane karty ręcznie."</string>
+
+    <string name="kitesdk_alert_dialog_item_pay_with_new_card">"Zapłać inną kartą"</string>
+    <string name="kitesdk_alert_dialog_item_pay_with_existing_card_format_string">"Zapłać kartą z końcówką numeru %1$s"</string>
+
+    <string name="kitesdk_log_out_warning">"Automatyczne\nwylogowywanie"</string>
+
+    <string name="kitesdk_progress_dialog_title_add_to_basket">"Dodaj do koszyka"</string>
+    <string name="kitesdk_progress_dialog_title_updating_basket">"Aktualizowanie koszyka"</string>
+
+    <string name="kitesdk_add_more">"Dodaj więcej"</string>
+    <string name="kitesdk_Cancel">"Anuluj"</string>
+    <string name="kitesdk_Choose_Delivery_Address">"Wybierz adres dostawy"</string>
+    <string name="kitesdk_Continue_Shopping">"Kontynuuj zakupy"</string>
+    <string name="kitesdk_Country">"Kraj"</string>
+    <string name="kitesdk_Description">"Opis"</string>
+    <string name="kitesdk_Details">"Szczegóły"</string>
+    <string name="kitesdk_Done">"Gotowe"</string>
+    <string name="kitesdk_Edit">"Edytuj"</string>
+    <string name="kitesdk_Email">"E-mail"</string>
+    <string name="kitesdk_End_Session">"Zakończ sesję"</string>
+    <string name="kitesdk_Flip">"Odwróć"</string>
+    <string name="kitesdk_Free">"Bezpłatna"</string>
+    <string name="kitesdk_ITEM">"POZYCJA"</string>
+    <string name="kitesdk_Keep">"Zachowaj"</string>
+    <string name="kitesdk_Loading">"Wczytywanie"</string>
+    <string name="kitesdk_Loading_catalogue">"Wczytywanie katalogu"</string>
+    <string name="kitesdk_Log_Out">"Wyloguj się"</string>
+    <string name="kitesdk_Next">"Dalej"</string>
+    <string name="kitesdk_Next_Customer">"Dalej"</string>
+    <string name="kitesdk_No_Results">"Brak wyników"</string>
+    <string name="kitesdk_OK">"OK"</string>
+    <string name="kitesdk_Order_Id">"Identyfikator zamówienia"</string>
+    <string name="kitesdk_ORDER_ID">"IDENTYFIKATOR ZAMÓWIENIA"</string>
+    <string name="kitesdk_Order_Summary">"Podsumowanie zamówienia"</string>
+    <string name="kitesdk_ORDER_SUMMARY">"PODSUMOWANIE ZAMÓWIENIA"</string>
+    <string name="kitesdk_Oops_">"Ups"</string>
+    <string name="kitesdk_Pay">"Zapłać"</string>
+    <string name="kitesdk_Payment_Id">"Identyfikator płatności"</string>
+    <string name="kitesdk_PAYMENT_ID">"IDENTYFIKATOR PŁATNOŚCI"</string>
+    <string name="kitesdk_PRICE">"CENA"</string>
+    <string name="kitesdk_print_these">"Wydrukuj"</string>
+    <string name="kitesdk_Processing_">"Przetwarzanie…"</string>
+    <string name="kitesdk_Promotional_Discount">"Zniżka promocyjna"</string>
+    <string name="kitesdk_Remove">"Usuń"</string>
+    <string name="kitesdk_Rotate">"Obróć"</string>
+    <string name="kitesdk_Quantity">"Liczba"</string>
+    <string name="kitesdk_QUANTITY">"LICZBA"</string>
+    <string name="kitesdk_Retry">"Spróbuj ponownie"</string>
+    <string name="kitesdk_Save">"Zapisz"</string>
+    <string name="kitesdk_Select_Image">"Wybierz obraz"</string>
+    <string name="kitesdk_Shipping">"Wysyłka"</string>
+    <string name="kitesdk_Size">"Rozmiar"</string>
+    <string name="kitesdk_Total">"Suma"</string>
+
+    <string name="kitesdk_image_source_device">"Aparat"</string>
+    <string name="kitesdk_image_source_instagram">"Instagram"</string>
+    <string name="kitesdk_image_source_facebook">"Facebook"</string>
+    <string name="kitesdk_image_source_from_phone">"Wyślij z telefonu"</string>
+
+    <string name="kitesdk_select_photo_from_device">"Wybierz zdjęcie z aparatu"</string>
+    <string name="kitesdk_select_photo_from_instagram">"Wybierz zdjęcie z Instagrama"</string>
+    <string name="kitesdk_select_photo_from_facebook">"Wybierz zdjęcie z Facebooka"</string>
+    <string name="kitesdk_upload_photo_from_phone">"Wyślij zdjęcie z telefonu"</string>
+
+    <string name="kitesdk_destination_description_gbr">"Wielka Brytania"</string>
+    <string name="kitesdk_destination_description_europe">"Europa"</string>
+    <string name="kitesdk_destination_description_rest_of_world">"Cały świat"</string>
+
+    <string name="kitesdk_placeholder_message">"Więcej pozycji\njuż wkrótce!"</string>
+
+    <string name="kitesdk_order_success_banner_message">"Otrzymaliśmy Twoje\nzamówienie"</string>
+    <string name="kitesdk_order_failure_banner_message">"Coś poszło nie tak.\nSpróbuj ponownie poniżej."</string>
+    <string name="kitesdk_order_failure_message">"Coś poszło nie tak.\nSpróbuj ponownie."</string>
+
+    <string name="kitesdk_product_quantity_format_string">"Pakiet %d"</string>
+
+    <string name="kitesdk_product_free_shipping">"Bezpłatna"</string>
+    <string name="kitesdk_product_shipping_summary_format_string">"Od %s"</string>
+
+    <string name="kitesdk_product_free_worldwide_shipping">"Darmowa dostawa w dowolne miejsce na świecie"</string>
+
+    <string name="kitesdk_product_overview_guarantee_title">"Gwarancja jakości"</string>
+    <string name="kitesdk_product_overview_guarantee_text" formatted="false">"Jesteśmy przekonani, że nasze produkty z nawiązką spełnią Twoje oczekiwania. Jednak na wszelki wypadek zapewniamy zwrot pełnej kwoty zakupu, jeśli coś będzie nie tak, np. będziesz mieć zły dzień."</string>
+
+    <string name="kitesdk_product_overview_start_button_text">"Zacznij tworzyć"</string>
+
+    <string name="kitesdk_image_selection_empty_message">"Dodawaj zdjęcia poprzez\ndotykanie powyższych ikon"</string>
+
+    <string name="kitesdk_edit_border_text_hint">"Tu możesz dodać tekst"</string>
+
+    <string name="kitesdk_multi_page_instructions_html">"<![CDATA[<b>Dotknij</b> zdjęcia, aby je edytować.<br><b>Przytrzymaj</b> zdjęcie, aby zmienić kolejność.]]>"</string>
+
+    <string name="kitesdk_address_book_empty">"Książka adresowa jest pusta"</string>
+
+    <string name="kitesdk_image_source_prompt">"Dodaj zdjęcia poprzez dotknięcie jednej z opcji"</string>
+
+    <string name="kitesdk_image_selection_pack_title_format_string" tools:ignore="PluralsCandidate">"Pakiet #%1$d z %2$d %3$s"</string>
+
+    <string name="kitesdk_image_selection_clear_photos_format_string">"Wyczyść: %s"</string>
+
+    <string name="kitesdk_edit_image_prompt_text">"Zmień położenie zdjęcia"</string>
+
+    <string name="kitesdk_image_selection_proceed_button_text">"Przeglądaj i edytuj"</string>
+
+    <string name="kitesdk_review_and_edit_title_format_string">"%1$d / %2$d"</string>
+    <string name="kitesdk_review_and_edit_proceed_button_text">"Potwierdź"</string>
+
+    <string name="kitesdk_edit_image_title">"Edytuj obraz"</string>
+
+    <string name="kitesdk_basket_empty">"Koszyk jest pusty"</string>
+    <string name="kitesdk_basket_left_button_text">"Kontynuuj zakupy"</string>
+    <string name="kitesdk_basket_right_button_text">"Sprawdź"</string>
+
+    <string name="kitesdk_address_hint_text_recipient">"Imię i nazwisko"</string>
+    <string name="kitesdk_address_hint_text_line_1">"Pierwszy wiersz adresu"</string>
+    <string name="kitesdk_address_hint_text_line_2">"Drugi wiersz adresu"</string>
+    <string name="kitesdk_address_hint_text_city">"Miejscowość"</string>
+    <string name="kitesdk_address_hint_text_county_or_state">"Kraj/województwo"</string>
+    <string name="kitesdk_address_hint_text_postcode_or_zip">"Kod pocztowy"</string>
+
+    <string name="kitesdk_shipping_delivery_address_button_text">Wybierz adres dostawy</string>
+    <string name="kitesdk_shipping_phone_hint_text">"Telefon"</string>
+    <string name="kitesdk_shipping_email_reason">"Musisz podać adres e-mail, na który wyślemy potwierdzenie i aktualizacje dotyczące Twojego zamówienia."</string>
+    <string name="kitesdk_shipping_phone_reason">"Musisz podać numer telefonu, na wypadek gdyby wystąpiły problemy z dostawą."</string>
+
+    <string name="kitesdk_address_search_prompt">"Wyszukaj powyższe adresy"</string>
+
+    <string name="kitesdk_address_search_hint_format_string">"Wyszukaj %1$s"</string>
+    <string name="kitesdk_address_search_empty_results">"Wyszukaj powyższe adresy"</string>
+    <string name="kitesdk_address_search_dialog_title">"Pobieranie danych"</string>
+    <string name="kitesdk_address_search_dialog_message">"Pobieranie adresu"</string>
+    <string name="kitesdk_address_search_no_results">"Brak wyników"</string>
+
+    <string name="kitesdk_button_text_edit_address">"Edytuj adres"</string>
+    <string name="kitesdk_button_text_delete_address">"Usuń adres"</string>
+
+    <string name="kitesdk_address_edit_proceed_button_text">"Zapisz"</string>
+
+    <string name="kitesdk_payment_promo_hint">"Kod promocji"</string>
+    <string name="kitesdk_payment_promo_button_text_apply">"Zastosuj"</string>
+    <string name="kitesdk_payment_promo_button_text_clear">"Wyczyść"</string>
+    <string name="kitesdk_payment_credit_card_button_text">"Karta kredytowa"</string>
+    <string name="kitesdk_payment_credit_card_button_text_free">"Bezpłatna"</string>
+    <string name="kitesdk_payment_paypal_button_text">"PayPal"</string>
+
+    <string name="kitesdk_stripe_error_invalid_card_details">"Nieprawidłowe dane karty"</string>
+    <string name="kitesdk_stripe_error_create_object">"Nie można pobrać tokena Stripe"</string>
+    <string name="kitesdk_stripe_error_retrieve_token">"Nie można pobrać tokena Stripe"</string>
+
+    <string name="kitesdk_send_email_chooser_title">"Wyślij e-mail"</string>
+
+    <string name="kitesdk_Card_Number">"Numer karty"</string>
+    <string name="kitesdk_Expires">"Data ważności"</string>
+    <string name="kitesdk_CVV">"CVV"</string>
+
+    <string name="kitesdk_card_error_invalid_number">"Nieprawidłowy numer karty"</string>
+    <string name="kitesdk_card_error_invalid_expiry_date">"Nieprawidłowa data ważności"</string>
+    <string name="kitesdk_card_error_invalid_cvv">"Nieprawidłowy kod weryfikacyjny"</string>
+
+    <string name="kitesdk_order_submission_message_uploading">"Przesyłanie obrazów"</string>
+    <string name="kitesdk_order_submission_message_posted">"Opublikowane"</string>
+    <string name="kitesdk_order_submission_message_received">"Odebrane"</string>
+    <string name="kitesdk_order_submission_message_accepted">"Zatwierdzone"</string>
+    <string name="kitesdk_order_submission_message_validated">"Zweryfikowane"</string>
+    <string name="kitesdk_order_submission_message_processed">"Przetworzone"</string>
+
+
+    <string name="kitesdk_alert_dialog_title_order_submission_error">"Błąd przesyłania zamówienia"</string>
+    <string name="kitesdk_order_timeout_message">"Wygląda na to, że Twoje zamówienie nie zostało jeszcze przetworzone. Być może serwery są obecnie zajęte i przetworzenie płatności zajmuje więcej czasu. Spróbuj później."</string>
+
+    <string name="kitesdk_alert_dialog_title_order_cancelled">"Anulowano zamówienie"</string>
+    <string name="kitesdk_alert_dialog_message_order_cancelled">"Coś poszło nie tak. Wygląda na to, że Twoje zamówienie zostało anulowane podczas przesyłania."</string>
+
+    <string name="kitesdk_alert_dialog_message_server_offline_maintenance">"Serwer jest obecnie niedostępny z uwagi na prace konserwacyjne."</string>
+    <string name="kitesdk_alert_dialog_message_server_returned_html">"Nieprawidłowa odpowiedź serwera (HTML). Zwykle dochodzi do tego, gdy serwer jest niedostępny."</string>
+
+    <string name="kitesdk_scan_qr_code">"Zeskanuj kod QR"</string>
+    <string name="kitesdk_scan_qr_code_instructions">"Zeskanuj kod QR za pomocą aplikacji\nczytnika QR w urządzeniu."</string>
+    <string name="kitesdk_scan_qr_code_alternate_instructions">"Możesz też wpisać poniższy adres URL w pasku adresu przeglądarki urządzenia przenośnego:"</string>
+
+    <string name="kitesdk_action_settings">"Ustawienia"</string>
+    <string name="kitesdk_title_activity_checkout">"Sprawdź"</string>
+    <string name="kitesdk_title_activity_order_receipt">"Odbiór"</string>
+    <string name="kitesdk_title_activity_payment">"Płatność"</string>
+    <string name="kitesdk_title_activity_address_book">"Książka adresowa"</string>
+
+    <string name="kitesdk_add_address">"Adres toevoegen"</string>
+    <string name="kitesdk_title_activity_address_add">"Dodaj adres"</string>
+    <string name="kitesdk_title_activity_address_edit">"Edytuj adres"</string>
+    <string name="kitesdk_action_save_address">"Zapisz adres"</string>
+
+    <plurals name="kitesdk_Photo_plurals">
+        <item quantity="zero">"%d zdjęć"</item>
+        <item quantity="one">"%d zdjęcie"</item>
+        <item quantity="two">"%d zdjęcia"</item>
+        <item quantity="few">"%d zdjęć"</item>
+        <item quantity="many">"%d zdjęć"</item>
+        <item quantity="other">"%d zdjęcia"</item>
+    </plurals>
+
+    <plurals name="kitesdk_photo_plurals">
+        <item quantity="zero">"%d zdjęć"</item>
+        <item quantity="one">"%d zdjęcie"</item>
+        <item quantity="two">"%d zdjęcia"</item>
+        <item quantity="few">"%d zdjęć"</item>
+        <item quantity="many">"%d zdjęć"</item>
+        <item quantity="other">"%d zdjęcia"</item>
+    </plurals>
+
+</resources>

@@ -55,7 +55,6 @@ import java.util.List;
 import ly.kite.KiteSDK;
 import ly.kite.journey.UserJourneyType;
 import ly.kite.ordering.ImageSpec;
-import ly.kite.util.Asset;
 import ly.kite.catalogue.Product;
 import ly.kite.util.AssetFragment;
 import ly.kite.widget.CheckableImageContainerFrame;
@@ -436,7 +435,7 @@ public class ImageSelectionAdaptor extends RecyclerView.Adapter<ImageSelectionAd
 
     // Add the title
 
-    String title = mContext.getString( R.string.image_selection_pack_title_format_string, mPackCount, mImagesPerPack, mProduct.getName() );
+    String title = mContext.getString( R.string.kitesdk_image_selection_pack_title_format_string, mPackCount, mImagesPerPack, mProduct.getName() );
 
     putItem( mFilledItemCount, new Item( title ) );
 

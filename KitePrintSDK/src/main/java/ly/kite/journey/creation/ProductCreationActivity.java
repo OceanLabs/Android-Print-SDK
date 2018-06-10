@@ -256,11 +256,11 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
       Log.e( LOG_TAG, "No intent found" );
 
       displayModalDialog(
-              R.string.alert_dialog_title_no_intent,
-              R.string.alert_dialog_message_no_intent,
+              R.string.kitesdk_alert_dialog_title_no_intent,
+              R.string.kitesdk_alert_dialog_message_no_intent,
               NO_BUTTON,
               null,
-              R.string.Cancel,
+              R.string.kitesdk_Cancel,
               new FinishRunnable()
       );
 
@@ -293,11 +293,11 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
       Log.e( LOG_TAG, "No product found" );
 
       displayModalDialog(
-        R.string.alert_dialog_title_no_product,
-        R.string.alert_dialog_message_no_product,
+        R.string.kitesdk_alert_dialog_title_no_product,
+        R.string.kitesdk_alert_dialog_message_no_product,
         NO_BUTTON,
         null,
-        R.string.Cancel,
+        R.string.kitesdk_Cancel,
         new FinishRunnable()
         );
 
@@ -831,13 +831,13 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
 
     if ( mInEditMode )
       {
-      showProgressDialog( R.string.progress_dialog_title_updating_basket );
+      showProgressDialog( R.string.kitesdk_progress_dialog_title_updating_basket);
 
       orderingDataAgent.replaceItem( mBasketItemId, mProduct, mOptionMap, imageSpecList, mOrderQuantity, this );
       }
     else
       {
-      showProgressDialog( R.string.progress_dialog_title_add_to_basket );
+      showProgressDialog( R.string.kitesdk_progress_dialog_title_add_to_basket);
 
       orderingDataAgent.addItem( mProduct, mOptionMap, imageSpecList, this );
       }

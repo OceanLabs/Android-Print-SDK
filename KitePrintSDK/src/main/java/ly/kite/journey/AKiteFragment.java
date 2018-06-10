@@ -443,7 +443,7 @@ abstract public class AKiteFragment extends Fragment
     {
     if ( mProgressDialogFragment == null )
       {
-      mProgressDialogFragment = IndeterminateProgressDialogFragment.newInstance( this, R.string.Loading_catalogue );
+      mProgressDialogFragment = IndeterminateProgressDialogFragment.newInstance( this, R.string.kitesdk_Loading_catalogue);
 
       mProgressDialogFragment.show( this, cancelListener );
       }

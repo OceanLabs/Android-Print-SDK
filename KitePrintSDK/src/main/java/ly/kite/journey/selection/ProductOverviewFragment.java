@@ -206,11 +206,11 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
       Log.e( TAG, "No arguments found" );
 
       mKiteActivity.displayModalDialog(
-        R.string.alert_dialog_title_no_arguments,
-        R.string.alert_dialog_message_no_arguments,
+        R.string.kitesdk_alert_dialog_title_no_arguments,
+        R.string.kitesdk_alert_dialog_message_no_arguments,
         AKiteActivity.NO_BUTTON,
         null,
-        R.string.Cancel,
+        R.string.kitesdk_Cancel,
         mKiteActivity.new FinishRunnable()
         );
 
@@ -225,11 +225,11 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
       Log.e( TAG, "No product id found" );
 
       mKiteActivity.displayModalDialog(
-              R.string.alert_dialog_title_product_not_found,
-              R.string.alert_dialog_message_product_not_found,
+              R.string.kitesdk_alert_dialog_title_product_not_found,
+              R.string.kitesdk_alert_dialog_message_product_not_found,
               AKiteActivity.NO_BUTTON,
               null,
-              R.string.Cancel,
+              R.string.kitesdk_Cancel,
               mKiteActivity.new FinishRunnable()
       );
 
@@ -590,7 +590,7 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
 
     SingleUnitSize                   size             = mProduct.getSizeWithFallback( UnitOfLength.CENTIMETERS );
     boolean                          formatAsInt      = size.getWidth() == (int) size.getWidth() && size.getHeight() == (int) size.getHeight();
-    String                           sizeFormatString = getString( formatAsInt ? R.string.product_size_format_string_int : R.string.product_size_format_string_float );
+    String                           sizeFormatString = getString( formatAsInt ? R.string.kitesdk_product_size_format_string_int : R.string.kitesdk_product_size_format_string_float);
     String                           sizeString       = String.format( sizeFormatString, size.getWidth(), size.getHeight(), size.getUnit().shortString( mKiteActivity ) );
 
     int                              quantityPerSheet = mProduct.getQuantityPerSheet();
@@ -685,7 +685,7 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
         {
         quantityLayout.setVisibility( View.VISIBLE );
 
-        quantityTextView.setText( getString( R.string.product_quantity_format_string, quantityPerSheet ) );
+        quantityTextView.setText( getString( R.string.kitesdk_product_quantity_format_string, quantityPerSheet ) );
         }
       else
         {
@@ -720,11 +720,11 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
 
       if ( freeShippingEverywhere )
         {
-        summaryShippingTextView.setText( R.string.product_free_worldwide_shipping );
+        summaryShippingTextView.setText( R.string.kitesdk_product_free_worldwide_shipping);
         }
       else
         {
-        summaryShippingTextView.setText( getString( R.string.product_shipping_summary_format_string, shippingCosts.getDisplayCost( locale ) ) );
+        summaryShippingTextView.setText( getString( R.string.kitesdk_product_shipping_summary_format_string, shippingCosts.getDisplayCost( locale ) ) );
         }
       }
 
@@ -756,7 +756,7 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
           {
           // Add the shipping destination
 
-          String formatString = getString( R.string.product_shipping_destination_format_string );
+          String formatString = getString( R.string.kitesdk_product_shipping_destination_format_string);
 
           shippingCostsStringBuilder
                   .append( String.format( formatString, singleDestinationShippingCost.getDestinationDescription( getActivity() ) ) )
@@ -779,7 +779,7 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
 
           String costString = ( singleCurrencyCost.isNonZero()
                   ? singleCurrencyCost.getDisplayAmountForLocale( locale )
-                  : getString( R.string.product_free_shipping ) );
+                  : getString( R.string.kitesdk_product_free_shipping) );
 
           shippingCostsStringBuilder.append( costString );
           }
@@ -793,7 +793,7 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
 
     if ( mProceedOverlayTextView != null )
       {
-      mProceedOverlayTextView.setText( R.string.product_overview_start_button_text );
+      mProceedOverlayTextView.setText( R.string.kitesdk_product_overview_start_button_text);
 
       setThemeColour( mCatalogue.getPrimaryThemeColour(), mProceedOverlayTextView );
       }
@@ -802,7 +802,7 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
       {
       if ( mThemableDrawerStartView instanceof TextView )
         {
-        ( (TextView)mThemableDrawerStartView ).setText( R.string.product_overview_start_button_text );
+        ( (TextView)mThemableDrawerStartView ).setText( R.string.kitesdk_product_overview_start_button_text);
         }
 
       setThemeColour( mCatalogue.getPrimaryThemeColour(), mThemableDrawerStartView );
@@ -810,7 +810,7 @@ public class ProductOverviewFragment extends AProductSelectionFragment implement
 
     if ( mCTABarRightTextView != null )
       {
-      mCTABarRightTextView.setText( R.string.product_overview_start_button_text );
+      mCTABarRightTextView.setText( R.string.kitesdk_product_overview_start_button_text);
 
       mCTABarRightTextView.setOnClickListener( this );
       }

@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textSize="20sp"
-            android:text="@string/scan_qr_code"/>
+            android:text="@string/kitesdk_scan_qr_code"/>
 
         <ly.kite.widget.CustomTypefaceTextView
             android:layout_marginTop="10dp"
@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textSize="16sp"
-            android:text="@string/scan_qr_code_instructions"/>
+            android:text="@string/kitesdk_scan_qr_code_instructions"/>
 
         <ly.kite.widget.QRCodeView
             android:id="@+id/qr_code_view"
@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textSize="16sp"
-            android:text="@string/scan_qr_code_alternate_instructions"/>
+            android:text="@string/kitesdk_scan_qr_code_alternate_instructions"/>
 
         <FrameLayout
             android:layout_marginTop="10dp"

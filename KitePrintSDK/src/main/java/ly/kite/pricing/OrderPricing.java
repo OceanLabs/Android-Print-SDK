@@ -79,6 +79,7 @@ public class OrderPricing implements Parcelable
   private static final String  JSON_NAME_TOTAL               = "total";
   private static final String  JSON_NAME_TOTAL_PRODUCT_COST  = "total_product_cost";
   private static final String  JSON_NAME_TOTAL_SHIPPING_COST = "total_shipping_cost";
+  private static final String  JSON_NAME_CURRENCY_USED       = "currency_used";
 
   private static final String  JSON_VALUE_NULL               = "null";
 
@@ -371,6 +372,15 @@ public class OrderPricing implements Parcelable
    *****************************************************/
   public String getPricingJSONString()
     {
+      try
+        {
+        String currencyUsed = mLineItemArrayList.get(0).mProductCost.getDefaultAmountWithFallback().getCurrencyCode();
+        mOrderPricingJSONObject.put( JSON_NAME_CURRENCY_USED, currencyUsed );
+        }
+      catch ( Exception e )
+        {
+        Log.e( LOG_TAG, "Could not add current currency to json" );
+        }
     return ( mOrderPricingJSONObject.toString() );
     }
 
@@ -610,6 +620,24 @@ public class OrderPricing implements Parcelable
       return ( mProductCost );
       }
 
+    }
+
+    /*****************************************************
+     *
+     * Returns the currency code that will be used
+     *
+     *****************************************************/
+    public String getCurrencyUsed()
+    {
+      try
+        {
+        return mOrderPricingJSONObject.getString(JSON_NAME_CURRENCY_USED);
+        }
+      catch ( Exception e )
+        {
+        Log.i( LOG_TAG, "Used currency not found for order!");
+        }
+        return null;
     }
 
     /*****************************************************

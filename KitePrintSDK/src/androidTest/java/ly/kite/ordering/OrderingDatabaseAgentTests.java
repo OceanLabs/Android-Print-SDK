@@ -101,7 +101,7 @@ public class OrderingDatabaseAgentTests extends KiteTestCase
     {
     OrderingDatabaseAgent databaseAgent = new OrderingDatabaseAgent( getContext(), null );
 
-    Product product = new Product( "product_id", "product_code", "Product Name", "Product Type", 0xff000000, UserJourneyType.RECTANGLE, 1 );
+    Product product = new Product( "product_id", "product_code", "Product Name", "Product Type","Product category", 0xff000000, UserJourneyType.RECTANGLE, 1 );
 
     Catalogue catalogue = new Catalogue();
     catalogue.addProduct( "Group Label", null, product );

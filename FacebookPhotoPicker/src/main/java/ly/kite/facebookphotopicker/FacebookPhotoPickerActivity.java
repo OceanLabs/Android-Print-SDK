@@ -50,7 +50,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -281,10 +280,10 @@ public class FacebookPhotoPickerActivity extends AImagePickerActivity implements
     CancelListener cancelListener = new CancelListener();
 
     new AlertDialog.Builder( this )
-        .setTitle( R.string.title_facebook_alert_dialog )
-        .setMessage( getString( R.string.message_facebook_alert_dialog, exception.toString() ) )
-        .setPositiveButton( R.string.button_text_retry, retryListener )
-        .setNegativeButton( R.string.button_text_cancel, cancelListener )
+        .setTitle( R.string.kitesdk_title_facebook_alert_dialog)
+        .setMessage( getString( R.string.kitesdk_message_facebook_alert_dialog, exception.toString() ) )
+        .setPositiveButton( R.string.kitesdk_button_text_retry, retryListener )
+        .setNegativeButton( R.string.kitesdk_button_text_cancel, cancelListener )
         .setOnCancelListener( cancelListener )
         .create()
       .show();
@@ -312,7 +311,7 @@ public class FacebookPhotoPickerActivity extends AImagePickerActivity implements
 
     if ( depth == 0 )
       {
-      setTitle( R.string.title_facebook_photo_picker );
+      setTitle( R.string.kitesdk_title_facebook_photo_picker);
 
       mFacebookAgent.resetAlbums();
 

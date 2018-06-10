@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="title_facebook_alert_dialog">"Oops"</string>
-    <string name="message_facebook_alert_dialog">"Si è verificato un errore. Riprova:\n%1$s"</string>
+    <string name="kitesdk_title_facebook_photo_picker">"Facebook"</string>
 
-    <string name="button_text_retry">"Riprova"</string>
-    <string name="button_text_cancel">"Annulla"</string>
+    <string name="kitesdk_title_facebook_alert_dialog">"Oops"</string>
+    <string name="kitesdk_message_facebook_alert_dialog">"Si è verificato un errore. Riprova:\n%1$s"</string>
+
+    <string name="kitesdk_button_text_retry">"Riprova"</string>
+    <string name="kitesdk_button_text_cancel">"Annulla"</string>
 
 </resources>

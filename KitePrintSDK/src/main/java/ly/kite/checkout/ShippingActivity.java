@@ -45,7 +45,6 @@ import android.os.Parcelable;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.Spannable;
-import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.URLSpan;
@@ -208,14 +207,14 @@ public class ShippingActivity extends AShippingActivity implements View.OnClickL
       mForwardsTextView = (TextView)findViewById( R.id.proceed_overlay_text_view );
       }
 
-    mForwardsTextView.setText( R.string.shipping_proceed_button_text );
+    mForwardsTextView.setText( R.string.kitesdk_shipping_proceed_button_text);
 
 
     // Set up Privacy Policy and Terms of Use links
 
     TextView mPrivacyTermsTextView = findViewById(R.id.privacy_terms_text);
 
-    String html = getString(R.string.privacy_terms_text_html, getResources().getString(R.string.url_terms_of_use), getResources().getString(R.string.url_privacy_policy));
+    String html = getString(R.string.kitesdk_privacy_terms_text_html, getResources().getString(R.string.kitesdk_url_terms_of_use), getResources().getString(R.string.kitesdk_url_privacy_policy));
     Spannable result = (Spannable) Html.fromHtml(html);
 
     for (URLSpan u: result.getSpans(0, result.length(), URLSpan.class)) {
@@ -350,7 +349,7 @@ public class ShippingActivity extends AShippingActivity implements View.OnClickL
     if(shippingAddress != null && shippingAddress.isFilledIn()) {
       mAddressPickerButton.setText(shippingAddress.toMultiLineText());
     } else {
-      mAddressPickerButton.setText( getString(R.string.shipping_delivery_address_button_text));
+      mAddressPickerButton.setText( getString(R.string.kitesdk_shipping_delivery_address_button_text));
     }
     }
 
@@ -381,7 +380,7 @@ public class ShippingActivity extends AShippingActivity implements View.OnClickL
 
     if ( mShippingAddress == null )
       {
-      showErrorDialog( R.string.alert_dialog_title_invalid_delivery_address, R.string.alert_dialog_message_invalid_delivery_address );
+      showErrorDialog( R.string.kitesdk_alert_dialog_title_invalid_delivery_address, R.string.kitesdk_alert_dialog_message_invalid_delivery_address);
 
       return;
       }
@@ -395,7 +394,7 @@ public class ShippingActivity extends AShippingActivity implements View.OnClickL
 
     if ( ! isEmailValid( email ) )
       {
-      showErrorDialog( R.string.alert_dialog_title_invalid_email_address, R.string.alert_dialog_message_invalid_email_address );
+      showErrorDialog( R.string.kitesdk_alert_dialog_title_invalid_email_address, R.string.kitesdk_alert_dialog_message_invalid_email_address);
 
       return;
       }
@@ -416,7 +415,7 @@ public class ShippingActivity extends AShippingActivity implements View.OnClickL
 
       if ( phone == null || phone.trim().length() < 5 )
         {
-        showErrorDialog( R.string.alert_dialog_title_invalid_phone_number, R.string.alert_dialog_message_invalid_phone_number );
+        showErrorDialog( R.string.kitesdk_alert_dialog_title_invalid_phone_number, R.string.kitesdk_alert_dialog_message_invalid_phone_number);
 
         return;
         }

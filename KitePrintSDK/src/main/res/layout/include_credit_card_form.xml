@@ -26,14 +26,14 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     style="@style/KiteSDKFormFieldLabelText"
-                    android:text="@string/Card_Number"/>
+                    android:text="@string/kitesdk_Card_Number"/>
                 <ly.kite.widget.CustomTypefaceEditText
                     android:id="@+id/card_number_edit_text"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     style="@style/KiteSDKFormFieldEntryText"
                     android:inputType="number"
-                    android:hint="@string/credit_card_number_hint"/>
+                    android:hint="@string/kitesdk_credit_card_number_hint"/>
             </LinearLayout>
 
 
@@ -66,7 +66,7 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     style="@style/KiteSDKFormFieldLabelText"
-                    android:text="@string/Expires"/>
+                    android:text="@string/kitesdk_Expires"/>
 
                 <LinearLayout
                     android:layout_width="fill_parent"
@@ -80,7 +80,7 @@
                         android:layout_height="fill_parent"
                         style="@style/KiteSDKFormFieldEntryText"
                         android:inputType="number"
-                        android:hint="@string/month_hint"/>
+                        android:hint="@string/kitesdk_month_hint"/>
 
                     <ly.kite.widget.CustomTypefaceTextView
                         android:layout_width="0dp"
@@ -97,7 +97,7 @@
                         android:layout_height="fill_parent"
                         style="@style/KiteSDKFormFieldEntryText"
                         android:inputType="number"
-                        android:hint="@string/year_hint"/>
+                        android:hint="@string/kitesdk_year_hint"/>
 
                 </LinearLayout>
 
@@ -122,7 +122,7 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     style="@style/KiteSDKFormFieldLabelText"
-                    android:text="@string/CVV"/>
+                    android:text="@string/kitesdk_CVV"/>
 
                 <ly.kite.widget.CustomTypefaceEditText
                     android:id="@+id/cvv_edit_text"
@@ -130,7 +130,7 @@
                     android:layout_height="wrap_content"
                     style="@style/KiteSDKFormFieldEntryText"
                     android:inputType="number"
-                    android:hint="@string/cvv_hint"/>
+                    android:hint="@string/kitesdk_cvv_hint"/>
 
             </LinearLayout>
 

@@ -53,7 +53,6 @@ import android.util.Log;
 
 import ly.kite.R;
 import ly.kite.devicephotopicker.DevicePhotoPicker;
-import ly.kite.instagramphotopicker.InstagramPhotoPicker;
 import ly.kite.util.Asset;
 
 
@@ -119,9 +118,9 @@ public class DeviceImageSource extends AImageSource
     {
     super( R.color.image_source_background_device,
            R.drawable.ic_image_source_device,
-           R.string.image_source_device,
+           R.string.kitesdk_image_source_device,
            R.id.add_image_from_device,
-           R.string.select_photo_from_device );
+           R.string.kitesdk_select_photo_from_device);
     }
 
 

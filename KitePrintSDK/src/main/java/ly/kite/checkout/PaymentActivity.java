@@ -259,11 +259,11 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
 
     if ( kiteSDK.getPayPalEnvironment().equals( PayPalConfiguration.ENVIRONMENT_SANDBOX ) )
       {
-      setTitle( R.string.title_payment_sandbox );
+      setTitle( R.string.kitesdk_title_payment_sandbox);
       }
     else
       {
-      setTitle( R.string.title_payment );
+      setTitle( R.string.kitesdk_title_payment);
       }
 
 
@@ -369,11 +369,11 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
 
     displayModalDialog
       (
-      R.string.alert_dialog_title_oops,
-      getString( R.string.alert_dialog_message_pricing_format_string, exception.getMessage() ),
-      R.string.Retry,
+      R.string.kitesdk_alert_dialog_title_oops,
+      getString( R.string.kitesdk_alert_dialog_message_pricing_format_string, exception.getMessage() ),
+      R.string.kitesdk_Retry,
       new RetrievePricingRunnable(),
-      R.string.Cancel,
+      R.string.kitesdk_Cancel,
       new FinishRunnable()
       );
     }
@@ -517,7 +517,7 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
       mPromoEditText.setEnabled( true );
       mPromoEditText.setTextColor( getResources().getColor( R.color.payment_promo_code_text_error ) );
 
-      mPromoTextView.setText( R.string.payment_promo_button_text_clear );
+      mPromoTextView.setText( R.string.kitesdk_payment_promo_button_text_clear);
 
       mPromoActionClearsCode = true;
 
@@ -546,7 +546,7 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
         {
         mPromoEditText.setEnabled( false );
 
-        mPromoTextView.setText( R.string.payment_promo_button_text_clear );
+        mPromoTextView.setText( R.string.kitesdk_payment_promo_button_text_clear);
 
         mPromoActionClearsCode = true;
         }
@@ -554,7 +554,7 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
         {
         mPromoEditText.setEnabled( true );
 
-        mPromoTextView.setText( R.string.payment_promo_button_text_apply );
+        mPromoTextView.setText( R.string.kitesdk_payment_promo_button_text_apply);
 
         mPromoActionClearsCode = false;
         }
@@ -641,7 +641,7 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
       mPromoEditText.setEnabled( true );
       mPromoEditText.setText( null );
 
-      mPromoTextView.setText( R.string.payment_promo_button_text_apply );
+      mPromoTextView.setText( R.string.kitesdk_payment_promo_button_text_apply);
       mPromoTextView.setEnabled( false );
 
       mPromoActionClearsCode = false;
@@ -729,7 +729,7 @@ public class PaymentActivity extends AOrderSubmissionActivity implements Pricing
       setPromoButtonEnabledState();
 
       // Change the button text back to Apply (even if we disable the button because the code is blank)
-      mPromoTextView.setText( R.string.payment_promo_button_text_apply );
+      mPromoTextView.setText( R.string.kitesdk_payment_promo_button_text_apply);
 
       mPromoActionClearsCode = false;
       }

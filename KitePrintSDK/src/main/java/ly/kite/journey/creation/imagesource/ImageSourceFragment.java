@@ -54,7 +54,6 @@ import ly.kite.R;
 import ly.kite.journey.AImageSource;
 import ly.kite.journey.ImageSourceAdaptor;
 import ly.kite.journey.creation.AProductCreationFragment;
-import ly.kite.ordering.ImageSpec;
 import ly.kite.util.Asset;
 import ly.kite.catalogue.Product;
 
@@ -151,7 +150,7 @@ public class ImageSourceFragment extends AProductCreationFragment implements Ada
     {
     super.onTop();
 
-    mKiteActivity.setTitle( R.string.title_image_source );
+    mKiteActivity.setTitle( R.string.kitesdk_title_image_source);
     }
 
 

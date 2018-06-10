@@ -110,7 +110,7 @@ public class KiteSDK
   static public  final boolean DISPLAY_PRODUCTS                                    = false;
 
 
-  static public  final String SDK_VERSION                                          = "5.8.6";
+  static public  final String SDK_VERSION                                          = "5.8.7";
 
   static public  final String IMAGE_CATEGORY_APP                                   = "app";
   static public  final String IMAGE_CATEGORY_PRODUCT_ITEM                          = "product_item";
@@ -186,7 +186,7 @@ public class KiteSDK
 
   static public final int    ACTIVITY_REQUEST_CODE_FIRST                           = 10;
 
-  static public String ENCRYPTION_KEY = "TQdZ6I0KwWQjpNYyAbHGPYWRVMMcgUbWuE0JC0MA"; // use static encryption key for now.
+  static public String ENCRYPTION_KEY = "TQdZ6I0KwWQjpNYyAbHGPYWRVMMcgUbWuE0JC0MA";// Add own key or set string to "OFF" to disable
 
   ////////// Static Variable(s) //////////
 

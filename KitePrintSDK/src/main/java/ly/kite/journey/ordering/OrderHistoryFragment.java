@@ -58,7 +58,6 @@ import org.json.JSONObject;
 import java.util.List;
 
 import ly.kite.R;
-import ly.kite.app.IndeterminateProgressDialogFragment;
 import ly.kite.catalogue.Catalogue;
 import ly.kite.catalogue.CatalogueLoaderFragment;
 import ly.kite.catalogue.ICatalogueConsumer;
@@ -188,11 +187,11 @@ public class OrderHistoryFragment extends AKiteFragment implements AdapterView.O
     // Display an error dialog
     ( (AKiteActivity)getActivity() ).displayModalDialog
             (
-                    R.string.alert_dialog_title_error_retrieving_products,
-                    R.string.alert_dialog_message_error_retrieving_products,
-                    R.string.Retry,
+                    R.string.kitesdk_alert_dialog_title_error_retrieving_products,
+                    R.string.kitesdk_alert_dialog_message_error_retrieving_products,
+                    R.string.kitesdk_Retry,
                     new RequestCatalogueRunnable(),
-                    R.string.Cancel,
+                    R.string.kitesdk_Cancel,
                     new FinishRunnable()
             );
     }
