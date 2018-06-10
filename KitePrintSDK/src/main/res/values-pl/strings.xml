@@ -14,7 +14,6 @@
     <string name="kitesdk_month_hint">"MM"</string> 
     <string name="kitesdk_year_hint">"RRRR"</string> 
 
-    <string name="kitesdk_title_choose_product_group">"Drukarnia"</string>
     <string name="kitesdk_title_create_phone_case">"Obudowa typu Snap"</string>
     <string name="kitesdk_title_image_source">"Przejdź do zdjęć"</string>
     <string name="kitesdk_title_photobook">"Fotoksiążki"</string>

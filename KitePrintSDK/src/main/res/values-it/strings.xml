@@ -14,7 +14,6 @@
     <string name="kitesdk_month_hint">MM</string>
     <string name="kitesdk_year_hint">AAAA</string>
 
-    <string name="kitesdk_title_choose_product_group">Print shop</string>
     <string name="kitesdk_title_create_phone_case">Crea custodia per telefono</string>
     <string name="kitesdk_title_image_source">Scegli foto</string>
     <string name="kitesdk_title_photobook">Album foto</string>

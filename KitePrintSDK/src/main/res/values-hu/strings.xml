@@ -14,7 +14,6 @@
     <string name="kitesdk_month_hint">"HH"</string> 
     <string name="kitesdk_year_hint">"ÉÉÉÉ"</string> 
 
-    <string name="kitesdk_title_choose_product_group">"Nyomatbolt"</string>
     <string name="kitesdk_title_create_phone_case">"Snap tokok"</string>
     <string name="kitesdk_title_image_source">"Fényképek elérése"</string>
     <string name="kitesdk_title_photobook">"Fotóalbumhoz"</string>

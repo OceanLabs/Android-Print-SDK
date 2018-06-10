@@ -12,7 +12,6 @@
     <string name="kitesdk_month_hint">MM</string>
     <string name="kitesdk_year_hint">ÅÅÅÅ</string>
 
-    <string name="kitesdk_title_choose_product_group">Trykkeri</string>
     <string name="kitesdk_title_create_phone_case">Lav mobiletui</string>
     <string name="kitesdk_title_image_source">Vælg billeder</string>
     <string name="kitesdk_title_photobook">Fotobog</string>

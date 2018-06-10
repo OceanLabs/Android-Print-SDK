@@ -15,7 +15,6 @@
     <string name="kitesdk_month_hint">MM</string>
     <string name="kitesdk_year_hint">AAAA</string>
 
-    <string name="kitesdk_title_choose_product_group">Printshop</string>
     <string name="kitesdk_title_create_phone_case">Créer une coque de smartphone</string>
     <string name="kitesdk_title_image_source">Sélectionner les photos</string>
     <string name="kitesdk_title_calendar">Calendrier</string>
