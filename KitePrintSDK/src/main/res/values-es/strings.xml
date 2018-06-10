@@ -14,7 +14,6 @@
     <string name="kitesdk_month_hint">MM</string>
     <string name="kitesdk_year_hint">AAAA</string>
 
-    <string name="kitesdk_title_choose_product_group">Imprenta</string>
     <string name="kitesdk_title_create_phone_case">Crear fundas para móviles</string>
     <string name="kitesdk_title_image_source">Elija Fotos</string>
     <string name="kitesdk_title_photobook">Àlbum de fotos</string>

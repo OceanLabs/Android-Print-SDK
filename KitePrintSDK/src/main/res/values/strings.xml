@@ -22,7 +22,7 @@
     <string name="kitesdk_year_hint">YYYY</string>
     <string name="kitesdk_cvv_hint" translatable="false">123</string>
 
-    <string name="kitesdk_title_choose_product_group">Print Shop</string>
+    <string name="kitesdk_title_choose_product_group" translatable="false">Print Shop</string>
     <string name="kitesdk_title_create_phone_case">Create Phone Case</string>
     <string name="kitesdk_title_image_source">Choose Photos</string>
     <string name="kitesdk_title_photobook">Photobook</string>

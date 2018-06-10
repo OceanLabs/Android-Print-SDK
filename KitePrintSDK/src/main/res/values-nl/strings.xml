@@ -14,7 +14,6 @@
     <string name="kitesdk_month_hint">"mm"</string>
     <string name="kitesdk_year_hint">"jj"</string>
 
-    <string name="kitesdk_title_choose_product_group">"Printshop"</string>
     <string name="kitesdk_title_create_phone_case">"Telefoonhoesje"</string>
     <string name="kitesdk_title_image_source">"Toegang tot foto's"</string>
     <string name="kitesdk_title_photobook">"Fotoalbum"</string>
