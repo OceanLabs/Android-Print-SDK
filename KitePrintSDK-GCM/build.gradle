@@ -38,7 +38,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-gcm:15.0.1'
 
     //api project(':KitePrintSDK')
-    api 'ly.kite:kite-print-sdk:5.8.6'
+    api 'ly.kite:kite-print-sdk:5.8.7'
 }
 
 // Uncomment before uploading archives

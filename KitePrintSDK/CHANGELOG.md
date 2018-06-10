@@ -1,6 +1,18 @@
+### 5.8.7 (2018-06-10)
+- Added: Hungarian and Polish!
+- Added: Resources are now prefixed with kitesdk_ to avoid translation conflicts in the app
+- Added: Backdated the CHANGELOG.md to the start of 2017, added dates
+- Fixed: Localisation inconsistencies with the Order History where the product name for a previously stored order wouldn't update, and the currency used to pay would. These have now been corrected 
+- Fixed: SDK version returned in request so the dashboard shows the correct number (instead of v1.0)
+- Fixed: Transparency on some of the new foreground images which previous rendered as white
+- Fixed: Crash that was caused when a collage poster, photobook or calendar had no first image
+- Fixed: Crash in the SampleApp with the Order History button when no API key has been provided
+- Fixed: Crash that occurs when images are selected on older devices with lower memory
+- Fixed: Invalid es_LG locales now default to es_ES
+
 ### 5.8.6 (2018-05-18)
-- Added: GPDR Update - Any tracking that could allow Kite to identify a user either directly or indirectly has now been removed from tracking entirely, to ensure all integrations are compliant with GPDR.
-- Added: Kite analytics reporting has been disabled by default, if you would like to allow Kite to track analytics to help us further improve our SDK experience, you can re-enable it with kiteSDK.setKiteAnalyticsEnabled(true) in the configureSDK.
+- Added: GPDR Update - Any tracking that could allow Kite to identify a user either directly or indirectly has now been removed from tracking entirely, to ensure all integrations are compliant with GPDR
+- Added: Kite analytics reporting has been disabled by default, if you would like to allow Kite to track analytics to help us further improve our SDK experience, you can re-enable it with kiteSDK.setKiteAnalyticsEnabled(true) in the configureSDK
 - Added: Privacy policy and terms of use links added to the checkout process
 - Added: The basket now shows the product previews
 - Added: Posters now preview in slightly higher quality making them easier to see

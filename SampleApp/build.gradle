@@ -70,12 +70,12 @@ dependencies {
     // Uncomment *one* of these depending on whether you want push messaging support
     implementation project(':KitePrintSDK')
     //implementation project(':KitePrintSDK-GCM')
-    //implementation 'ly.kite:kite-print-sdk:5.8.6'
-    //implementation 'ly.kite:kite-print-sdk-gcm:5.8.5'
+    //implementation 'ly.kite:kite-print-sdk:5.8.7'
+    //implementation 'ly.kite:kite-print-sdk-gcm:5.8.7'
 
     // Uncomment if you want Facebook support
     //implementation project(':FacebookPhotoPicker')
-    //implementation 'ly.kite:facebook-photo-picker:5.8.5'
+    //implementation 'ly.kite:facebook-photo-picker:5.8.7'
 
     // Uncomment these if you want leak detection (and it works for you)
     //debugCompile 'com.squareup.leakcanary:leakcanary-android:1.3.1'

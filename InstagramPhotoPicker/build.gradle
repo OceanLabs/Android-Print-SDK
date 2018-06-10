@@ -28,7 +28,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     //api project(':ImagePicker')
-    api 'ly.kite:image-picker:5.8.5'
+    api 'ly.kite:image-picker:5.8.7'
 }
 
 // Uncomment before uploading archives
