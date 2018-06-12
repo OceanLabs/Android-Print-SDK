@@ -3,4 +3,6 @@
 
     <string name="kitesdk_title_device_photo_picker">Fotovælger</string>
 
+    <string name="kitesdk_title_camera_folder">Kamera</string>
+
 </resources>
