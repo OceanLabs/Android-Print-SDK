@@ -337,6 +337,10 @@ public class DevicePhotoPickerActivity extends AImagePickerActivity
     @Override
     public void newImage( int id, String bucketId, String bucketDisplayName, String imageURLString )
       {
+      if (bucketDisplayName.equals("Camera")){  // translates the default camera folder name if untranslated
+        bucketDisplayName = getString(R.string.kitesdk_title_camera_folder);
+      }
+
       if ( ! bucketDisplayName.equals( mPreviousBucketDisplayName ) )
         {
         mBucketList.add( new Bucket( bucketId, bucketDisplayName, imageURLString ) );
