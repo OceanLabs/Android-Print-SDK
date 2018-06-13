@@ -1064,7 +1064,7 @@ public class KiteSDK
    *****************************************************/
   public boolean haveInstagramCredentials()
     {
-    return ( getInstagramClientId() != null && getInstagramRedirectURI() != null );
+    return ( !getInstagramClientId().equals("REPLACE_ME") && !getInstagramRedirectURI().equals("REPLACE_ME") );
     }
 
 
