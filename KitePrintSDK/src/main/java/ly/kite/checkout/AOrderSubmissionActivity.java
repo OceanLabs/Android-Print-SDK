@@ -75,7 +75,6 @@ abstract public class AOrderSubmissionActivity extends AKiteActivity implements 
   ////////// Static Variable(s) //////////
 
   static private boolean mRunsInBackground = false;
-  static private boolean mHasConfigurationChanged = false;
 
 
   ////////// Member Variable(s) //////////
@@ -139,7 +138,7 @@ abstract public class AOrderSubmissionActivity extends AKiteActivity implements 
     {
      super.onResume();
      mRunsInBackground = false;
-     if( mOrderSubmissionFragment != null && !mHasConfigurationChanged)
+     if( mOrderSubmissionFragment != null && !mOrderSubmissionFragment.isAdded())
       {
        mOrderSubmissionFragment.show(getFragmentManager(), "OrderSubmissionFragment");
       }
@@ -151,12 +150,6 @@ abstract public class AOrderSubmissionActivity extends AKiteActivity implements 
     super.onPause();
     mRunsInBackground = true;
     }
-
-  @Override
-  public void onConfigurationChanged(Configuration newConfig) {
-    super.onConfigurationChanged(newConfig);
-    mHasConfigurationChanged = true;
-  }
 
     ////////// OrderSubmitter.IProgressListener Method(s) //////////
 
