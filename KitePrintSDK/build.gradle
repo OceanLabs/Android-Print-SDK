@@ -20,7 +20,7 @@ android {
     useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
-        minSdkVersion 14
+        minSdkVersion 16
         targetSdkVersion 27
         versionName '1.0'
         versionCode 107
@@ -51,7 +51,7 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.google.zxing:core:3.2.1'
 
-    api 'com.paypal.sdk:paypal-android-sdk:2.13.3'
+    api 'com.paypal.sdk:paypal-android-sdk:2.15.3'
     api 'com.stripe:stripe-android:7.0.0'
 
     //api project(':DevicePhotoPicker')

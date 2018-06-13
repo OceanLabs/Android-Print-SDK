@@ -32,7 +32,7 @@ android {
     defaultConfig {
         applicationId "ly.kite.sample"
 
-        minSdkVersion 14  // Change the min version to 15 if including Facebook support
+        minSdkVersion 16
         targetSdkVersion 27
 
         versionCode 300
