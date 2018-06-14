@@ -78,9 +78,9 @@ public class FacebookImageSource extends AImageSource
      * images.
      *
      *****************************************************/
-    public void onPick( Fragment fragment, int maxImageCount )
+    public void onPick( Fragment fragment, int addedAssetCount, boolean supportsMultiplePacks, int packSize, int maxImageCount )
     {
-        FacebookPhotoPicker.startPhotoPickerForResult( fragment, maxImageCount, getActivityRequestCode() );
+        FacebookPhotoPicker.startPhotoPickerForResult( fragment, addedAssetCount, supportsMultiplePacks, packSize, maxImageCount, getActivityRequestCode() );
     }
 
 

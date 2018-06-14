@@ -102,6 +102,17 @@ public class DevicePhotoPicker
 
   /*****************************************************
    *
+   * Starts the photo picker with unknown product selection.
+   *
+   *****************************************************/
+  static public void startPhotoPickerForResult( Activity activity, int maxImageCount, int activityRequestCode )
+    {
+    DevicePhotoPickerActivity.startForResult( activity, 0, false, 0, maxImageCount, activityRequestCode );
+    }
+
+
+  /*****************************************************
+   *
    * Returns an array of picked photos.
    *
    *****************************************************/
