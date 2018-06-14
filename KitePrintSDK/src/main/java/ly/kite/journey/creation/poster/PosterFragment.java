@@ -335,14 +335,14 @@ public class PosterFragment extends AProductCreationFragment implements PosterAd
           {
           //retrieve preview image and add it to ImageSpec list
           Bitmap originalBitmap = ViewToBitmap.getFullBitmap(mPosterView);
-          Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace(originalBitmap);
-          Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, cleanBitmap );
+          Bitmap resizedBitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, originalBitmap );
+          Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace( resizedBitmap );
           //Store preview in the first non-null imageSpec element
           for( int index = 0; index < mImageSpecArrayList.size(); index++ )
             {
             if (mImageSpecArrayList.get( index ) != null )
               {
-              mImageSpecArrayList.get( index ).setPreviewImage( bitmap );
+              mImageSpecArrayList.get( index ).setPreviewImage( cleanBitmap );
               break;
               }
             }
@@ -746,15 +746,15 @@ public class PosterFragment extends AProductCreationFragment implements PosterAd
     public void run()
       {
       Bitmap originalBitmap = ViewToBitmap.getFullBitmap(mPosterView);
-      Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace(originalBitmap);
-      Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, cleanBitmap );
+      Bitmap resizedBitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, originalBitmap );
+      Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace( resizedBitmap );
 
       //Store preview in the first non-null imageSpec element
       for( int index = 0; index < mImageSpecArrayList.size(); index++ )
         {
         if (mImageSpecArrayList.get( index ) != null )
           {
-          mImageSpecArrayList.get( index ).setPreviewImage( bitmap );
+          mImageSpecArrayList.get( index ).setPreviewImage( cleanBitmap );
           break;
           }
         }
