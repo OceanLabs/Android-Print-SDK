@@ -424,7 +424,7 @@ public class InstagramPhotoPickerActivity extends AImagePickerActivity implement
    *****************************************************/
   public void setToolbarName()
     {
-    String defaultTitle = getResources().getString( R.string.title_instagram_photo_picker );
+    String defaultTitle = getResources().getString( R.string.kitesdk_title_instagram_photo_picker );
     if( mPackSize == 1 || ( mMaxImageCount == 0 && !mSupportsMultiplePacks ))
       {
       setTitle( defaultTitle );
