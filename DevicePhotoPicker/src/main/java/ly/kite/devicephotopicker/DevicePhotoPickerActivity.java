@@ -259,7 +259,7 @@ public class DevicePhotoPickerActivity extends AImagePickerActivity
 
       //Log.d( LOG_TAG, "id = " + id + ", bucketId = " + bucketId + ", bucketDisplayName = " + bucketDisplayName + ", data = " + data + ", imageUri = " + imageUri.toString() );
 
-      if ( data != null && data.startsWith( "/" ) )
+        if ( data != null && data.startsWith("/") && (data.endsWith(".jpg") || data.endsWith("jpeg") || data.endsWith("png")))
         {
         imageReceiver.newImage( id, bucketId, bucketDisplayName, "file://" + data );
         }
