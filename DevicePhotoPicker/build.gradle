@@ -32,8 +32,8 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    //implementation project(':ImagePicker')
-    implementation 'ly.kite:image-picker:5.8.7'
+    implementation project(':ImagePicker')
+//    implementation 'ly.kite:image-picker:5.8.7'
 }
 
 // Uncomment before uploading archives

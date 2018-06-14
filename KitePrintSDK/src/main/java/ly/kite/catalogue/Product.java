@@ -1108,6 +1108,30 @@ public class Product implements IGroupOrProduct, Parcelable
 
   /*****************************************************
    *
+   * Returns TRUE if the product gets split into multiple
+   * packs if more images that a pack contains are added
+   *
+   *****************************************************/
+  public boolean hasMultiplePackSupport()
+    {
+    switch (mUserJourneyType)
+      {
+      case PHOTOBOOK:
+      case POSTER:
+      case CALENDAR:
+      case PHONE_CASE:
+        return false;
+
+      case GREETINGCARD:
+        return true;
+
+      default:
+        return true;
+      }
+    }
+
+  /*****************************************************
+   *
    * Returns a log-displayable string representing this
    * product.
    *

@@ -260,6 +260,7 @@ public class InstagramAgent
     public void iaOnError( Exception exception );
     public void iaOnCancel();
     public void iaOnPhotosSuccess( List<InstagramPhoto> photoList, boolean morePhotos );
+    public void onSelectedItemsChanged( int selectedItemsCount );
     }
 
 
@@ -630,6 +631,7 @@ public class InstagramAgent
     @Override
     public int getSelectedCount( LinkedHashMap<String,ISelectableItem> selectableItemTable )
       {
+      mCallback.onSelectedItemsChanged( selectableItemTable.size());
       return ( selectableItemTable.containsKey( mId ) ? 1 : 0 );
       }
 

@@ -51,6 +51,7 @@ import ly.kite.checkout.ICreditCardAgent;
 import ly.kite.checkout.IOrderSubmissionResultListener;
 import ly.kite.checkout.ShippingActivity;
 import ly.kite.checkout.StripeCreditCardAgent;
+import ly.kite.facebookphotopicker.FacebookImageSource;
 import ly.kite.instagramphotopicker.InstagramImageSource;
 import ly.kite.journey.AImageSource;
 import ly.kite.journey.DeviceImageSource;
@@ -183,7 +184,7 @@ public class SDKCustomiser
    *****************************************************/
   public AImageSource[] getImageSources()
     {
-    return ( new AImageSource[] { new DeviceImageSource(), new InstagramImageSource() } );
+    return ( new AImageSource[] { new DeviceImageSource(), new InstagramImageSource(), new FacebookImageSource()} );
     }
 
 

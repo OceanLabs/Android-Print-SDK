@@ -109,7 +109,7 @@ public class FromPhoneImageSource extends AImageSource
    * images.
    *
    *****************************************************/
-  public void onPick( Fragment fragment, int maxImageCount )
+  public void onPick( Fragment fragment, int addedAssetCount, boolean supportsMultiplePacks, int packSize, int startingIndex )
     {
     // Start the photo from phone fragment
 

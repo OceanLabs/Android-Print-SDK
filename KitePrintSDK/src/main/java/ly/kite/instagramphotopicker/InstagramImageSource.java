@@ -157,7 +157,7 @@ public class InstagramImageSource extends AImageSource
    * images.
    *
    *****************************************************/
-  public void onPick( Fragment fragment, int maxImageCount )
+  public void onPick( Fragment fragment, int addedAssetCount, boolean supportsMultiplePacks, int packSize, int maxImageCount )
     {
     // Clicking on the Instagram image source starts our Instagram image picker library
 
@@ -166,7 +166,8 @@ public class InstagramImageSource extends AImageSource
     String instagramClientId    = kiteSDK.getInstagramClientId();
     String instagramRedirectURI = kiteSDK.getInstagramRedirectURI();
 
-    InstagramPhotoPicker.startPhotoPickerForResult( fragment, instagramClientId, instagramRedirectURI, maxImageCount, getActivityRequestCode() );
+    InstagramPhotoPicker.startPhotoPickerForResult( fragment, instagramClientId, instagramRedirectURI, addedAssetCount,
+        supportsMultiplePacks, packSize, maxImageCount, getActivityRequestCode() );
     }
 
 

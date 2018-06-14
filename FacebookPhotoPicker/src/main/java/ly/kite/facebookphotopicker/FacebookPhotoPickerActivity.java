@@ -64,14 +64,14 @@ import ly.kite.imagepicker.AImagePickerActivity;
  * This activity is the Facebook photo picker.
  *
  *****************************************************/
-public class FacebookPhotoPickerActivity extends AImagePickerActivity implements FacebookAgent.ICallback
+public class FacebookPhotoPickerActivity extends AImagePickerActivity implements FacebookAgent.ICallback, AImagePickerActivity.ICallback
   {
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
   static private final String  LOG_TAG                = "FacebookPhotoPickerA...";
 
-  static private final String  INTENT_EXTRA_NAME_MAX_IMAGE_COUNT = "ly.kite.maxImageCount";
+  static private final String  INTENT_EXTRA_NAME_MAX_IMAGE_COUNT = "ly.kite.addedAssetCount";
 
 
   ////////// Static Variable(s) //////////
@@ -87,6 +87,13 @@ public class FacebookPhotoPickerActivity extends AImagePickerActivity implements
 
   private FacebookAgent.Album                  mCurrentAlbum;
 
+  private static int                           mAddedAssetCount;
+  private static int                           mPackSize;
+  private static int                           mSelectedImageCount;
+  private static int                           mMaxImageCount;
+  private static boolean                       mSupportsMultiplePacks;
+  private static String                        mSelectedBucketName;
+
 
   ////////// Static Initialiser(s) //////////
 
@@ -99,11 +106,21 @@ public class FacebookPhotoPickerActivity extends AImagePickerActivity implements
    * image coung added as an extra.
    *
    *****************************************************/
-  static private Intent getIntent( Context context, int maxImageCount )
+  static private Intent getIntent( Context context,  int addedAssetCount, boolean supportsMultiplePacks, int packSize, int maxImageCount )
     {
     Intent intent = new Intent( context, FacebookPhotoPickerActivity.class );
 
-    addExtras( intent, maxImageCount );
+    mMaxImageCount         = maxImageCount;
+    mPackSize              = packSize;
+    mAddedAssetCount       = addedAssetCount;
+    mSupportsMultiplePacks = supportsMultiplePacks;
+    mSelectedImageCount    = 0;
+
+    if( supportsMultiplePacks )
+      {
+      mMaxImageCount = 0;
+      }
+    addExtras( intent, mMaxImageCount );
 
     return ( intent );
     }
@@ -115,9 +132,10 @@ public class FacebookPhotoPickerActivity extends AImagePickerActivity implements
    * activity.
    *
    *****************************************************/
-  static public void startForResult( Activity activity, int maxImageCount, int activityRequestCode )
+  static public void startForResult( Activity activity, int addedAssetCount, boolean supportsMultiplePacks,
+                                     int packSize, int maxImageCount, int activityRequestCode )
     {
-    Intent intent = getIntent( activity, maxImageCount );
+    Intent intent = getIntent( activity, addedAssetCount, supportsMultiplePacks, packSize, maxImageCount );
 
     activity.startActivityForResult( intent, activityRequestCode );
     }
@@ -129,9 +147,10 @@ public class FacebookPhotoPickerActivity extends AImagePickerActivity implements
    * fragment.
    *
    *****************************************************/
-  static public void startForResult( Fragment fragment, int maxImageCount, int activityRequestCode )
+  static public void startForResult( Fragment fragment,  int addedAssetCount, boolean supportsMultiplePacks,
+                                     int packSize, int maxImageCount, int activityRequestCode )
     {
-    Intent intent = getIntent( fragment.getActivity(), maxImageCount );
+    Intent intent = getIntent( fragment.getActivity(), addedAssetCount, supportsMultiplePacks, packSize, maxImageCount );
 
     fragment.startActivityForResult( intent, activityRequestCode );
     }
@@ -158,6 +177,10 @@ public class FacebookPhotoPickerActivity extends AImagePickerActivity implements
   protected void onCreate( Bundle savedInstanceState )
     {
     mFacebookAgent = FacebookAgent.getInstance( this );
+
+    setDefaultToolbarName();
+    //register sthe AImagePickerActivity callback
+    setCallback( this );
 
     super.onCreate( savedInstanceState );
     }
@@ -311,7 +334,8 @@ public class FacebookPhotoPickerActivity extends AImagePickerActivity implements
 
     if ( depth == 0 )
       {
-      setTitle( R.string.kitesdk_title_facebook_photo_picker);
+      mSelectedBucketName = null;
+      setDefaultToolbarName();
 
       mFacebookAgent.resetAlbums();
 
@@ -324,7 +348,8 @@ public class FacebookPhotoPickerActivity extends AImagePickerActivity implements
 
       if ( album != null )
         {
-        setTitle( album.getLabel() );
+        mSelectedBucketName = album.getLabel();
+        setToolbarName();
 
         mFacebookAgent.resetPhotos();
 
@@ -339,6 +364,73 @@ public class FacebookPhotoPickerActivity extends AImagePickerActivity implements
     {
     if      ( depth == 0 ) mFacebookAgent.getAlbums( this );
     else if ( depth == 1 ) mFacebookAgent.getPhotos( null, this );
+    }
+
+  /*****************************************************
+   *
+   * Sets the toolbar name taking containing the number
+   * of selected pictures and the default title
+   *
+   *****************************************************/
+  public void setDefaultToolbarName()
+    {
+    String defaultTitle = getResources().getString( R.string.kitesdk_title_facebook_photo_picker );
+    if( mPackSize == 1 || ( mMaxImageCount == 0 && !mSupportsMultiplePacks ))
+      {
+      setTitle( defaultTitle );
+      }
+    else
+      {
+      int totalImagesUsed = mSelectedImageCount;
+      int outOf = mMaxImageCount;
+
+      if ( mSupportsMultiplePacks )
+        {
+        totalImagesUsed += mAddedAssetCount;
+        if( totalImagesUsed > 0 )
+          {
+          outOf = (int) (Math.ceil((double) totalImagesUsed / mPackSize) * mPackSize);
+          }
+        else
+          {
+          outOf = mPackSize;
+          }
+        }
+      setTitle( "[" + totalImagesUsed + "/" + outOf + "] " + defaultTitle );
+      }
+    }
+
+  /*****************************************************
+   *
+   * Sets the toolbar name taking containing the number
+   * of selected pictures and bucket name
+   *
+   *****************************************************/
+  public void setToolbarName()
+    {
+    if( mPackSize == 1 || ( mMaxImageCount == 0 && !mSupportsMultiplePacks ))
+      {
+      setTitle( mSelectedBucketName );
+      }
+    else
+      {
+      int totalImagesUsed = mSelectedImageCount;
+      int outOf = mMaxImageCount;
+
+      if ( mSupportsMultiplePacks )
+        {
+        totalImagesUsed += mAddedAssetCount;
+        if( totalImagesUsed > 0 )
+          {
+          outOf = (int) (Math.ceil((double) totalImagesUsed / mPackSize) * mPackSize);
+          }
+        else
+          {
+          outOf = mPackSize;
+          }
+        }
+      setTitle( "[" + totalImagesUsed + "/" + outOf + "] " + mSelectedBucketName );
+      }
     }
 
 
@@ -364,6 +456,26 @@ public class FacebookPhotoPickerActivity extends AImagePickerActivity implements
       }
     }
 
+  ////////// AImagePicker.ICallback Method(s) //////////
+
+  /*****************************************************
+   *
+   * Called when the selected image count changes
+   *
+   *****************************************************/
+  @Override
+  public void onSelectedCountChanged(int selectedImageCount)
+    {
+      mSelectedImageCount = selectedImageCount;
+      if ( mSelectedBucketName == null )
+        {
+        setDefaultToolbarName();
+        }
+      else
+        {
+        setToolbarName();
+        }
+    }
 
   ////////// Inner Class(es) //////////
 

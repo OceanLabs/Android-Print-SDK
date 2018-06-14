@@ -43,6 +43,7 @@ import android.widget.Toast;
 
 import ly.kite.SDKCustomiser;
 import ly.kite.checkout.IOrderSubmissionResultListener;
+import ly.kite.facebookphotopicker.FacebookImageSource;
 import ly.kite.instagramphotopicker.InstagramImageSource;
 import ly.kite.journey.AImageSource;
 import ly.kite.journey.DeviceImageSource;
@@ -101,14 +102,14 @@ public class SampleSDKCustomiser extends SDKCustomiser
 
   /*****************************************************
    *
-   * Returns the image sources.
+   * Returns specific image sources.
    *
    *****************************************************/
-  public AImageSource[] getImageSources()
-    {
-    return ( new AImageSource[] { new DeviceImageSource(), new InstagramImageSource(), new FromPhoneImageSource() } );
-    //return ( new AImageSource[] { new DeviceImageSource() } );
-    }
+//  public AImageSource[] getImageSources()
+//    {
+//    return ( new AImageSource[] { new DeviceImageSource(), new InstagramImageSource(), new FromPhoneImageSource() } );
+//    //return ( new AImageSource[] { new DeviceImageSource() } );
+//    }
 
 
   /*****************************************************

@@ -81,9 +81,10 @@ public class DevicePhotoPicker
    * Starts the photo picker.
    *
    *****************************************************/
-  static public void startPhotoPickerForResult( Activity activity, int maxImageCount, int activityRequestCode )
+  static public void startPhotoPickerForResult( Activity activity, int addedAssetCount, boolean supportsMultiplePacks,
+                                                int packSize, int maxImageCount, int activityRequestCode )
     {
-    DevicePhotoPickerActivity.startForResult( activity, maxImageCount, activityRequestCode );
+    DevicePhotoPickerActivity.startForResult( activity, addedAssetCount, supportsMultiplePacks, packSize, maxImageCount, activityRequestCode );
     }
 
 
@@ -92,9 +93,21 @@ public class DevicePhotoPicker
    * Starts the photo picker.
    *
    *****************************************************/
-  static public void startPhotoPickerForResult( Fragment fragment, int maxImageCount, int activityRequestCode )
+  static public void startPhotoPickerForResult( Fragment fragment, int addedAssetCount, boolean supportsMultiplePacks,
+                                                int packSize, int maxImageCount, int activityRequestCode )
     {
-    DevicePhotoPickerActivity.startForResult( fragment, maxImageCount, activityRequestCode );
+    DevicePhotoPickerActivity.startForResult( fragment, addedAssetCount, supportsMultiplePacks, packSize, maxImageCount, activityRequestCode );
+    }
+
+
+  /*****************************************************
+   *
+   * Starts the photo picker with unknown product selection.
+   *
+   *****************************************************/
+  static public void startPhotoPickerForResult( Activity activity, int maxImageCount, int activityRequestCode )
+    {
+    DevicePhotoPickerActivity.startForResult( activity, 0, false, 0, maxImageCount, activityRequestCode );
     }
 
 

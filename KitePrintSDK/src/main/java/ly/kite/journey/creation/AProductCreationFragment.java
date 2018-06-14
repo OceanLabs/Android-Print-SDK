@@ -271,7 +271,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
     // Check for add image
 
-    if ( onCheckAddImageOptionItem( item, getMaxAddImageCount() ) )
+    if ( onCheckAddImageOptionItem( item, getNumberOfImagesUsed(), getMaxAddImageCount() ) )
       {
       return ( true );
       }
@@ -349,7 +349,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
   @Override
   public boolean onMenuItemClick( MenuItem item )
     {
-    if ( onCheckAddImageOptionItem( item, getMaxAddImageCount() ) )
+    if ( onCheckAddImageOptionItem( item, getNumberOfImagesUsed(), getMaxAddImageCount() ) )
       {
       return ( true );
       }
@@ -396,7 +396,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
     if ( imageSourceCount > 1 ) return ( true );
 
-    if ( imageSourceCount == 1 && launchImagePicker ) pickImage( imageSourceArrayList.get( 0 ), getMaxAddImageCount() );
+    if ( imageSourceCount == 1 && launchImagePicker ) pickImage( imageSourceArrayList.get( 0 ), getNumberOfImagesUsed(), getMaxAddImageCount() );
 
     return ( false );
     }
@@ -813,12 +813,12 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
   /*****************************************************
    *
-   * Calls the supplied image pikcer.
+   * Calls the supplied image picker.
    *
    *****************************************************/
-  private void pickImage( AImageSource imageSource, int maxImageCount )
+  private void pickImage( AImageSource imageSource, int addedAssetCount, int maxImageCount )
     {
-    imageSource.onPick( this, maxImageCount );
+    imageSource.onPick( this, addedAssetCount , mProduct.hasMultiplePackSupport(), mProduct.getQuantityPerSheet(), maxImageCount );
 
     Analytics.getInstance( mKiteActivity ).trackImagePickerScreenViewed();
     }
@@ -829,7 +829,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
    * Called when an item in the options menu is selected.
    *
    *****************************************************/
-  final protected boolean onCheckAddImageOptionItem( MenuItem item, int maxImageCount )
+  final protected boolean onCheckAddImageOptionItem( MenuItem item, int addedAssetCount, int maxImageCount )
     {
     int itemId = item.getItemId();
 
@@ -840,7 +840,7 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
     if ( imageSource != null )
       {
-      pickImage( imageSource, maxImageCount );
+      pickImage( imageSource, addedAssetCount, maxImageCount );
 
       return ( true );
       }
@@ -857,10 +857,30 @@ abstract public class AProductCreationFragment extends    AKiteFragment
    * unlimited images to be picked.
    *
    *****************************************************/
-  protected int getMaxAddImageCount()
+  protected int getNumberOfImagesUsed()
     {
-    return ( AImageSource.UNLIMITED_IMAGES );
+    return ( getTotalImagesUsedCount() );
     }
+
+
+  /*****************************************************
+   *
+   *  Returns the  number of images already added
+   * to the product
+   *
+   *****************************************************/
+  protected int getTotalImagesUsedCount()
+    {
+    int imagesAdded = 0;
+    int index = 0;
+
+    for ( ; index < mImageSpecArrayList.size(); index ++ )
+      {
+      if ( mImageSpecArrayList.get( index ) != null ) imagesAdded ++;
+      }
+
+  return ( imagesAdded );
+   }
 
 
   /*****************************************************
@@ -889,6 +909,19 @@ abstract public class AProductCreationFragment extends    AKiteFragment
 
 
     return ( remainingCapacity );
+    }
+
+
+   /*****************************************************
+    *
+    * Returns the maximum number of images required when
+    * adding images. The default implementation allows
+    * unlimited images to be picked.
+    *
+    *****************************************************/
+  protected int getMaxAddImageCount()
+    {
+    return ( AImageSource.UNLIMITED_IMAGES );
     }
 
 

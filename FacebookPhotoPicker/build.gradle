@@ -35,8 +35,8 @@ dependencies {
 
     implementation 'com.facebook.android:facebook-android-sdk:4.7.0'
 
-    //implementation project(':ImagePicker')
-    implementation 'ly.kite:image-picker:5.8.7'
+    implementation project(':ImagePicker')
+//    implementation 'ly.kite:image-picker:5.8.7'
 }
 
 // Uncomment before uploading archives

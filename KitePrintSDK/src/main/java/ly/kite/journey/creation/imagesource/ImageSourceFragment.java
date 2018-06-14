@@ -168,7 +168,8 @@ public class ImageSourceFragment extends AProductCreationFragment implements Ada
       {
       AImageSource imageSource = (AImageSource)mImageSourceGridView.getItemAtPosition( position );
 
-      imageSource.onPick( this, mProduct.getUserJourneyType().usesSingleImage() );
+      imageSource.onPick( this, mProduct.getUserJourneyType().usesSingleImage(),
+          mProduct.hasMultiplePackSupport(), mProduct.getQuantityPerSheet(), position );
       }
     }
 

@@ -195,6 +195,20 @@ public class PosterFragment extends AProductCreationFragment implements PosterAd
    *
    *****************************************************/
   @Override
+  protected int getNumberOfImagesUsed()
+    {
+    // Limit the number of images selectable, if the image source supports it.x
+    return ( getTotalImagesUsedCount() );
+    }
+
+
+  /*****************************************************
+   *
+   * Called to find out the maximum number of images we
+   * want to select.
+   *
+   *****************************************************/
+  @Override
   protected int getMaxAddImageCount()
     {
     // Limit the number of images selectable, if the image source supports it.
