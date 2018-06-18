@@ -224,11 +224,11 @@ public class PhoneCaseFragment extends AEditImageFragment
     {
     // Fetch the preview image and resize it
     Bitmap originalBitmap = mEditableImageContainerFrame.getPreviewBitmap();
-    Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace(originalBitmap);
-    Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, cleanBitmap );
-    mImageSpecArrayList.get(0).setPreviewImage( bitmap );
+    Bitmap resizedBitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, originalBitmap );
+    Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace( resizedBitmap );
+    mImageSpecArrayList.get(0).setPreviewImage( cleanBitmap );
 
-    assetFragment.setAssetPreviewBitmap(ViewToBitmap.resizeAsPreviewImage(mKiteActivity, bitmap));
+    assetFragment.setAssetPreviewBitmap(cleanBitmap);
 
     if ( assetFragment != null && mKiteActivity instanceof ICallback )
       {

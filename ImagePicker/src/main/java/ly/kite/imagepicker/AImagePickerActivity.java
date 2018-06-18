@@ -81,6 +81,8 @@ abstract public class AImagePickerActivity extends Activity implements ImagePick
 
   private   MenuItem             mDoneActionItem;
 
+  private   ICallback            mCallback;
+
 
   ////////// Static Initialiser(s) //////////
 
@@ -227,7 +229,22 @@ abstract public class AImagePickerActivity extends Activity implements ImagePick
   @Override
   public void onSelectedCountChanged( int oldCount, int newCount )
     {
+    //Callback only used by FacebookPhotoPicker
+    if( mCallback != null )
+      {
+      mCallback.onSelectedCountChanged( newCount );
+      }
     mDoneActionItem.setVisible( newCount > 0 );
+    }
+
+  /*****************************************************
+   *
+   * Registers a callback
+   *
+   *****************************************************/
+  public void setCallback( ICallback callback )
+    {
+      mCallback = callback;
     }
 
 
@@ -265,8 +282,14 @@ abstract public class AImagePickerActivity extends Activity implements ImagePick
 
   /*****************************************************
    *
-   * ...
+   * An agent responsible for selection information
    *
    *****************************************************/
+  public interface ICallback
+    {
+    //Facebook is lacking it's own counter so this will be used
+    //to set the correct counter for the toolbar
+    public void onSelectedCountChanged( int selectedImageCount );
+    }
 
   }

@@ -110,7 +110,7 @@ public class KiteSDK
   static public  final boolean DISPLAY_PRODUCTS                                    = false;
 
 
-  static public  final String SDK_VERSION                                          = "5.8.7";
+  static public  final String SDK_VERSION                                          = "5.8.8";
 
   static public  final String IMAGE_CATEGORY_APP                                   = "app";
   static public  final String IMAGE_CATEGORY_PRODUCT_ITEM                          = "product_item";
@@ -148,6 +148,7 @@ public class KiteSDK
 
   static private final String PARAMETER_NAME_INSTAGRAM_CLIENT_ID                   = "instagram_client_id";
   static private final String PARAMETER_NAME_INSTAGRAM_REDIRECT_URI                = "instagram_redirect_uri";
+  static private final String PARAMETER_NAME_FACEBOOK_APP_ID                       = "facebook_app_id";
 
   static private final String PARAMETER_NAME_SDK_CUSTOMISER_CLASS_NAME             = "sdk_customiser_class_name";
 
@@ -862,6 +863,8 @@ public class KiteSDK
 
     setEnvironment( apiKey, environment );
 
+    setFacebookCredentials(mApplicationContext.getResources().getString(R.string.facebook_app_id));
+
     // *Don't* clear session assets here, because we can get reinitialised between creating the
     // session asset directory and saving images in it - especially when cropping images prior
     // to upload!
@@ -1055,6 +1058,19 @@ public class KiteSDK
     return ( this );
     }
 
+  /*****************************************************
+   *
+   * Sets the Facebook developer credentials. Doing
+   * this enables Facebook as an image source
+   *
+   *****************************************************/
+  public KiteSDK setFacebookCredentials( String appId )
+    {
+    setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_FACEBOOK_APP_ID,    appId );
+
+    return ( this );
+    }
+
 
   /*****************************************************
   /*****************************************************
@@ -1064,9 +1080,18 @@ public class KiteSDK
    *****************************************************/
   public boolean haveInstagramCredentials()
     {
-    return ( getInstagramClientId() != null && getInstagramRedirectURI() != null );
+    return ( getInstagramClientId() != null && getInstagramRedirectURI() != null &&
+        !getInstagramClientId().equals("REPLACE_ME") && !getInstagramRedirectURI().equals("REPLACE_ME") );
     }
-
+  /*****************************************************
+   *
+   * Returns true if we have Facebook credentials.
+   *
+   *****************************************************/
+  public boolean haveFacebookCredentials()
+  {
+  return ( getFacebookAppID() != null && !getFacebookAppID().equals("Override with your Facebook app id"));
+  }
 
   /*****************************************************
    *
@@ -1117,7 +1142,7 @@ public class KiteSDK
    *****************************************************/
   public String getInstagramClientId()
     {
-    return ( getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_INSTAGRAM_CLIENT_ID, null ) );
+    return ( getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_INSTAGRAM_CLIENT_ID, "REPLACE_ME" ) );
     }
 
 
@@ -1129,7 +1154,18 @@ public class KiteSDK
    *****************************************************/
   public String getInstagramRedirectURI()
     {
-    return ( getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_INSTAGRAM_REDIRECT_URI, null ) );
+      return ( getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_INSTAGRAM_REDIRECT_URI, "REPLACE_ME" ) );
+    }
+
+  /*****************************************************
+   *
+   * Returns the Facebook app id or null if one has
+   * not been set.
+   *
+   *****************************************************/
+  private String getFacebookAppID()
+    {
+      return ( getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_FACEBOOK_APP_ID, "Override with your Facebook app id" ) );
     }
 
 

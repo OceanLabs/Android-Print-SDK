@@ -195,6 +195,20 @@ public class PosterFragment extends AProductCreationFragment implements PosterAd
    *
    *****************************************************/
   @Override
+  protected int getNumberOfImagesUsed()
+    {
+    // Limit the number of images selectable, if the image source supports it.x
+    return ( getTotalImagesUsedCount() );
+    }
+
+
+  /*****************************************************
+   *
+   * Called to find out the maximum number of images we
+   * want to select.
+   *
+   *****************************************************/
+  @Override
   protected int getMaxAddImageCount()
     {
     // Limit the number of images selectable, if the image source supports it.
@@ -321,14 +335,14 @@ public class PosterFragment extends AProductCreationFragment implements PosterAd
           {
           //retrieve preview image and add it to ImageSpec list
           Bitmap originalBitmap = ViewToBitmap.getFullBitmap(mPosterView);
-          Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace(originalBitmap);
-          Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, cleanBitmap );
+          Bitmap resizedBitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, originalBitmap );
+          Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace( resizedBitmap );
           //Store preview in the first non-null imageSpec element
           for( int index = 0; index < mImageSpecArrayList.size(); index++ )
             {
             if (mImageSpecArrayList.get( index ) != null )
               {
-              mImageSpecArrayList.get( index ).setPreviewImage( bitmap );
+              mImageSpecArrayList.get( index ).setPreviewImage( cleanBitmap );
               break;
               }
             }
@@ -732,15 +746,15 @@ public class PosterFragment extends AProductCreationFragment implements PosterAd
     public void run()
       {
       Bitmap originalBitmap = ViewToBitmap.getFullBitmap(mPosterView);
-      Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace(originalBitmap);
-      Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, cleanBitmap );
+      Bitmap resizedBitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, originalBitmap );
+      Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace( resizedBitmap );
 
       //Store preview in the first non-null imageSpec element
       for( int index = 0; index < mImageSpecArrayList.size(); index++ )
         {
         if (mImageSpecArrayList.get( index ) != null )
           {
-          mImageSpecArrayList.get( index ).setPreviewImage( bitmap );
+          mImageSpecArrayList.get( index ).setPreviewImage( cleanBitmap );
           break;
           }
         }

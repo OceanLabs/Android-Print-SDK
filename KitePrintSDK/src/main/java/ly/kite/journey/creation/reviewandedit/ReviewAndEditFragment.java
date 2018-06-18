@@ -302,14 +302,14 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements I
           {
            //Get preview image
            Bitmap originalBitmap = ViewToBitmap.getItemBitmap(mGridView, 0);
-           Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace(mKiteActivity, originalBitmap, true);
-           Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, cleanBitmap );
+           Bitmap resizedBitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, originalBitmap );
+           Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace( resizedBitmap );
            //Store preview in the first non-null imageSpec element
            for( int index = 0; index < mImageSpecArrayList.size(); index++ )
             {
             if (mImageSpecArrayList.get( index ) != null )
               {
-              mImageSpecArrayList.get( index ).setPreviewImage( bitmap );
+              mImageSpecArrayList.get( index ).setPreviewImage( cleanBitmap );
               break;
               }
             }
@@ -389,14 +389,14 @@ public class ReviewAndEditFragment extends AProductCreationFragment implements I
       {
       //Get preview image
       Bitmap originalBitmap = ViewToBitmap.getItemBitmap(mGridView, 0);
-      Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace(mKiteActivity, originalBitmap, true);
-      Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, cleanBitmap );
+      Bitmap resizedBitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, originalBitmap );
+      Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace( resizedBitmap );
       //Store preview in the first non-null imageSpec element
       for( int index = 0; index < mImageSpecArrayList.size(); index++ )
         {
         if (mImageSpecArrayList.get( index ) != null )
           {
-          mImageSpecArrayList.get( index ).setPreviewImage( bitmap );
+          mImageSpecArrayList.get( index ).setPreviewImage( cleanBitmap );
           break;
           }
         }

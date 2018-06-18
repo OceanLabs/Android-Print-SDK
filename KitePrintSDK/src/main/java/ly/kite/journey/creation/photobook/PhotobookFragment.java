@@ -207,6 +207,19 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
 
   /*****************************************************
    *
+   * Called to find out the number of images we
+   * already added.
+   *
+   *****************************************************/
+  @Override
+  protected int getNumberOfImagesUsed()
+    {
+    return ( getTotalImagesUsedCount());
+    }
+
+
+  /*****************************************************
+   *
    * Called to find out the maximum number of images we
    * want to select.
    *
@@ -336,14 +349,14 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
           {
           // Get the cover view as preview image
           Bitmap originalBitmap = ViewToBitmap.getItemBitmap( mPhotobookView, 0 );
-          Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace(originalBitmap);
-          Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, cleanBitmap );
+          Bitmap resizedBitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, originalBitmap );
+          Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace( resizedBitmap );
           //Store preview in the first non-null imageSpec element
           for( int index = 0; index < mImageSpecArrayList.size(); index++ )
             {
             if ( mImageSpecArrayList.get( index ) != null )
               {
-              mImageSpecArrayList.get( index ).setPreviewImage( bitmap );
+              mImageSpecArrayList.get( index ).setPreviewImage( cleanBitmap );
               break;
               }
           }
@@ -753,14 +766,14 @@ public class PhotobookFragment extends AProductCreationFragment implements Photo
       {
       // Get the cover view as preview image
       Bitmap originalBitmap = ViewToBitmap.getItemBitmap( mPhotobookView, 0 );
-      Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace(originalBitmap);
-      Bitmap bitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, cleanBitmap );
+      Bitmap resizedBitmap = ViewToBitmap.resizeAsPreviewImage( mKiteActivity, originalBitmap );
+      Bitmap cleanBitmap = ViewToBitmap.removeBitmapBlankSpace( resizedBitmap );
       //Store preview in the first non-null imageSpec element
         for( int index = 0; index < mImageSpecArrayList.size(); index++ )
           {
           if ( mImageSpecArrayList.get(index) != null )
             {
-            mImageSpecArrayList.get( index ).setPreviewImage( bitmap );
+            mImageSpecArrayList.get( index ).setPreviewImage( cleanBitmap );
             break;
             }
           }

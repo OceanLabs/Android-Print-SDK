@@ -104,7 +104,7 @@ public class OrderSubmissionFragment extends ARetainedDialogFragment implements 
           OrderSubmissionFragment orderSubmissionFragment = new OrderSubmissionFragment();
 
           // When the app runs in background "show" causes the app to crash , so check before
-          if( !activity.isRunningInBackground() )
+          if( !activity.isRunningInBackground() && !orderSubmissionFragment.isAdded())
             {
             orderSubmissionFragment.show( activity.getFragmentManager() , TAG );
             }

@@ -3,4 +3,6 @@
 
     <string name="kitesdk_title_device_photo_picker">Parcourir les photos</string>
 
+    <string name="kitesdk_title_camera_folder">Appareil photo</string>
+
 </resources>

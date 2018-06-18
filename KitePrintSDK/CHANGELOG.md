@@ -1,3 +1,16 @@
+### 5.8.8 (2018-06-18)
+- Added: Counter for multi-image selection (squares/collages etc) to help the user keep track of how many images have been selected so far
+- Updated: minSDK is now 16, due to PayPal requirements
+- Updated: Facebook selection is now an integral part of the SDK offering
+- Updated: Camera folder is now localised
+- Removed: The QR code image picker journey from the sample app, the integration still exists for special integrations that use it, but the journey is incomplete and unnecessary for mobile
+- Fixed: Images now filter by png/jpeg/jpg, previously other file types would show up (such as gifs) in the image pickers and cause a crash when used (Picasso does not support)
+- Fixed: Default image pickers are Device/Instagram/Facebook, if credentials are not provided for any of them, the option does not appear an no longer needs to be set manually
+- Fixed: Fragment crash that sometimes still occurs when the app is put into the background during checkout
+- Fixed: Payment screen reloads properly again on orientation change
+- Fixed: On certain phones, sometimes the product editor would become unresponsive when adding the product to the basket, now it should process fine
+- Fixed: OOM crash that occurs on the review and edit screen when using a low memory device
+
 ### 5.8.7 (2018-06-10)
 - Added: Hungarian and Polish!
 - Added: Resources are now prefixed with kitesdk_ to avoid translation conflicts in the app

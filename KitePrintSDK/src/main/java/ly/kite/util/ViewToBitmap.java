@@ -89,9 +89,10 @@ public class ViewToBitmap {
      *
      *****************************************************/
     public static Bitmap resizeBitmap(Bitmap bitmap, int width, int height) {
-        if(height == -1 && width == -1) {
+        if( (height == -1 && width == -1) || bitmap == null) {
             return bitmap;
         }
+
         if(width == -1) {
             float ratio = ((float) bitmap.getWidth()) / (float) (bitmap.getHeight());
             int newWidth =  (int) (ratio * height);
