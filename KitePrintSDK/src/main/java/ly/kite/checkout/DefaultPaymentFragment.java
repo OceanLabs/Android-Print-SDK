@@ -47,13 +47,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.wallet.AutoResolveHelper;
+import com.google.android.gms.wallet.CardRequirements;
+import com.google.android.gms.wallet.IsReadyToPayRequest;
+import com.google.android.gms.wallet.PaymentDataRequest;
+import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
+import com.google.android.gms.wallet.PaymentsClient;
+import com.google.android.gms.wallet.TransactionInfo;
+import com.google.android.gms.wallet.Wallet;
+import com.google.android.gms.wallet.WalletConstants;
 import com.paypal.android.sdk.payments.PayPalPayment;
 import com.paypal.android.sdk.payments.PaymentConfirmation;
 import com.paypal.android.sdk.payments.ProofOfPayment;
 import com.paypal.android.sdk.payments.ShippingAddress;
 
+import java.util.Arrays;
 import ly.kite.KiteSDK;
 import ly.kite.address.Address;
 import ly.kite.catalogue.MultipleCurrencyAmounts;
@@ -77,6 +89,7 @@ public class DefaultPaymentFragment extends APaymentFragment
   static private final String  LOG_TAG                          = "DefaultPaymentFragment";
 
   static private final int     ACTIVITY_REQUEST_CODE_PAYPAL     = 23;
+  static private final int ACTIVITY_REQUEST_CODE_GOOGLE_PAY     = 27;
 
   //static private final String CARD_IO_TOKEN = "f1d07b66ad21407daf153c0ac66c09d7";
 
@@ -96,6 +109,7 @@ public class DefaultPaymentFragment extends APaymentFragment
   private ImageButton       mPayPalButton;
   private Button            mCreditCardButton;
 
+  private PaymentsClient    mPaymentsClient;
   private ICreditCardAgent  mCreditCardAgent;
 
 
@@ -150,14 +164,14 @@ public class DefaultPaymentFragment extends APaymentFragment
 
     // Determine what payment options are available
 
-    mGooglePayAvailable = false;
+    mGooglePayAvailable = true; // KiteSDK.getInstance( getActivity() ).getGooglePayPaymentsAvailable();
     mPayPalAvailable = KiteSDK.getInstance( getActivity() ).getPayPalPaymentsAvailable();
 
 
     // Set up the buttons
 
     if ( mGooglePayAvailable ){
-      mGooglePayButton.setOnClickListener( this );
+      startGooglePayClient();
     } else {
       mGooglePayButton.setVisibility( View.GONE );
     }
@@ -354,6 +368,57 @@ public class DefaultPaymentFragment extends APaymentFragment
 
     return ( null );
     }
+
+
+  /*****************************************************
+   *
+   * Starts the Google Pay payments client.
+   *
+   *****************************************************/
+  public void startGooglePayClient()
+  {
+    int walletConstant = WalletConstants.ENVIRONMENT_TEST;
+
+    mPaymentsClient = Wallet.getPaymentsClient(getActivity(), new Wallet.WalletOptions.Builder()
+      .setEnvironment(walletConstant)
+      .build());
+
+    // Checks if Google Pay is ready to pay
+
+    IsReadyToPayRequest request =
+      IsReadyToPayRequest.newBuilder()
+        .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_CARD)
+        .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_TOKENIZED_CARD)
+        .build();
+    Task<Boolean> task = mPaymentsClient.isReadyToPay(request);
+    task.addOnCompleteListener(
+      new OnCompleteListener<Boolean>() {
+        public void onComplete(Task<Boolean> task) {
+          try {
+            setGooglePayAvailable(task.getResult(ApiException.class));
+          } catch (ApiException exception) {
+            exception.getStatusCode();
+            setGooglePayAvailable(false);
+          }
+        }
+      });
+
+  }
+
+
+  /*****************************************************
+   *
+   * Sets availability of Google Pay.
+   *
+   *****************************************************/
+  private void setGooglePayAvailable(boolean available) {
+    if (available) {
+      mGooglePayButton.setOnClickListener( this );
+      mGooglePayButton.setVisibility(View.VISIBLE);
+    } else {
+      mGooglePayButton.setVisibility(View.GONE);
+    }
+  }
 
 
   /*****************************************************
