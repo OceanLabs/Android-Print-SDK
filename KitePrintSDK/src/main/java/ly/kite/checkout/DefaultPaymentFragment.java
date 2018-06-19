@@ -169,9 +169,9 @@ public class DefaultPaymentFragment extends APaymentFragment
     mCreditCardButton = view.findViewById( R.id.credit_card_button );
 
 
-    // Determine what payment options are available
+    // Determine what payment options are available / enabled
 
-    mGooglePayAvailable = true; // KiteSDK.getInstance( getActivity() ).getGooglePayPaymentsAvailable();
+    mGooglePayAvailable = KiteSDK.getInstance( getActivity() ).getGooglePayPaymentsEnabled();
     mPayPalAvailable = KiteSDK.getInstance( getActivity() ).getPayPalPaymentsAvailable();
 
 
