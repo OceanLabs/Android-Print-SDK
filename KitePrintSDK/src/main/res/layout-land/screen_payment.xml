@@ -1,95 +1,51 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
-
-    <LinearLayout
-        android:layout_gravity="top"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:orientation="vertical">
-
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
         <!-- Two-column content -->
 
         <LinearLayout
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.0"
-            android:orientation="horizontal">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:background="@color/basket_list_background">
 
             <!-- Left column -->
 
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_height="match_parent"
                 android:layout_weight="0.5"
-                android:layout_height="fill_parent"
-                android:orientation="vertical"
-                android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:paddingRight="@dimen/activity_horizontal_margin">
+                android:layout_width="0dp">
 
-                <ListView
-                    android:id="@+id/order_summary_list_view"
-                    android:layout_gravity="top"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1.0"
-                    android:divider="@android:color/transparent"
-                    android:dividerHeight="0dp"/>
+                <include layout="@layout/include_payment_items"/>
 
             </LinearLayout>
 
+            <!-- Separator -->
+
+            <View
+                android:layout_width="2dp"
+                android:layout_height="match_parent"
+                android:background="@color/basket_list_shipping_separator"/>
 
             <!-- Right column -->
 
-            <FrameLayout
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_weight="0.5"
-                android:layout_height="fill_parent"
-                android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:paddingRight="@dimen/activity_horizontal_margin">
+                android:layout_height="match_parent"
+                android:background="@color/basket_order_background">
 
                 <FrameLayout
                     android:id="@+id/payment_fragment_container"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"/>
-
-                <LinearLayout
-                    android:id="@+id/container_promo_code"
-                    android:layout_gravity="bottom"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <ly.kite.widget.CustomTypefaceEditText
-                        android:id="@+id/promo_edit_text"
-                        android:layout_width="wrap_content"
-                        android:layout_weight="1.0"
-                        android:layout_height="match_parent"
-                        android:hint="@string/kitesdk_payment_promo_hint"
-                        android:textColor="@color/payment_promo_code_text_default"
-                        android:singleLine="true"
-                        android:imeOptions="actionDone"/>
-                    <ly.kite.widget.CustomTypefaceButton
-                        android:id="@+id/promo_text_view"
-                        android:layout_marginLeft="20dp"
-                        android:layout_width="wrap_content"
-                        android:layout_weight="0.0"
-                        android:layout_height="match_parent"
-                        android:background="@null"
-                        android:enabled="false"
-                        android:onClick="onPromoButtonClicked"
-                        android:text="@string/kitesdk_payment_promo_button_text_apply"
-                        android:textColor="@color/apply_button"/>
-                </LinearLayout>
+                    android:layout_margin="@dimen/activity_horizontal_margin"/>
 
-            </FrameLayout>
+            </LinearLayout>
 
         </LinearLayout>
-
-    </LinearLayout>
-
 
     <ProgressBar
         android:id="@+id/progress_bar"
