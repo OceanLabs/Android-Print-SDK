@@ -42,6 +42,7 @@ package ly.kite.checkout;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,12 +50,15 @@ import android.widget.Button;
 import android.widget.ImageButton;
 
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.wallet.AutoResolveHelper;
 import com.google.android.gms.wallet.CardRequirements;
 import com.google.android.gms.wallet.IsReadyToPayRequest;
+import com.google.android.gms.wallet.PaymentData;
 import com.google.android.gms.wallet.PaymentDataRequest;
+import com.google.android.gms.wallet.PaymentMethodToken;
 import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
 import com.google.android.gms.wallet.PaymentsClient;
 import com.google.android.gms.wallet.TransactionInfo;
@@ -64,6 +68,9 @@ import com.paypal.android.sdk.payments.PayPalPayment;
 import com.paypal.android.sdk.payments.PaymentConfirmation;
 import com.paypal.android.sdk.payments.ProofOfPayment;
 import com.paypal.android.sdk.payments.ShippingAddress;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Arrays;
 import ly.kite.KiteSDK;
@@ -300,8 +307,41 @@ public class DefaultPaymentFragment extends APaymentFragment
         }
 
       return;
-      }
 
+    } else if ( requestCode == ACTIVITY_REQUEST_CODE_GOOGLE_PAY ) {
+      switch ( resultCode ) {
+        case Activity.RESULT_OK:
+          PaymentData paymentData = PaymentData.getFromIntent( data );
+
+          if ( paymentData != null ) {
+            PaymentMethodToken token = paymentData.getPaymentMethodToken();
+
+            if ( token != null ) {
+              try {
+                final String stripeToken = new JSONObject( token.getToken() ).getString( "id" );
+                getPaymentActivity().submitOrderForPrinting( stripeToken, null, PaymentMethod.GOOGLE_PAY );
+              } catch ( JSONException e ) {
+                Log.i( LOG_TAG, "Error: " + e );
+              }
+            } else {
+              showErrorDialog( R.string.kitesdk_alert_dialog_message_no_payment_id );
+            }
+          } else {
+            showErrorDialog( R.string.kitesdk_alert_dialog_message_no_proof_of_payment );
+          }
+          break;
+
+        case Activity.RESULT_CANCELED:
+          break;
+
+        case AutoResolveHelper.RESULT_ERROR:
+          Status status = AutoResolveHelper.getStatusFromIntent( data );
+          if ( status != null ) Log.e( LOG_TAG, status.toString() );
+          break;
+        default:
+          // Do nothing.
+      }
+    }
 
     if ( mCreditCardAgent != null ) mCreditCardAgent.onActivityResult( requestCode, resultCode, data );
 
