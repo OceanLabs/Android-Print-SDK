@@ -417,7 +417,13 @@ public class DefaultPaymentFragment extends APaymentFragment
    *****************************************************/
   public void startGooglePayClient()
   {
-    int walletConstant = WalletConstants.ENVIRONMENT_TEST;
+    int walletConstant;
+
+    if (KiteSDK.getInstance(getActivity()).getEnvironmentName().equals("Live")){
+      walletConstant = WalletConstants.ENVIRONMENT_PRODUCTION;
+    } else {
+      walletConstant = WalletConstants.ENVIRONMENT_TEST;
+    }
 
     mPaymentsClient = Wallet.getPaymentsClient(getActivity(), new Wallet.WalletOptions.Builder()
       .setEnvironment(walletConstant)
