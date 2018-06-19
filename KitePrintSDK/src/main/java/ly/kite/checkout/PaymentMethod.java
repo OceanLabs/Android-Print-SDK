@@ -51,6 +51,7 @@ public enum PaymentMethod
   {
   PAYPAL       ( "PayPal",       "PAYPAL" ),
   CREDIT_CARD  ( "Credit Card",  "CREDIT_CARD" ),
+  GOOGLE_PAY   ( "Google Pay",   "GOOGLE_PAY" ),
   FREE         ( "Free",         "FREE" ),
   PAY_AT_TILL  ( "Pay At Till",  "PAY_AT_TILL" );
 

@@ -462,9 +462,19 @@ public class DefaultPaymentFragment extends APaymentFragment
    * Called when pay by Google Pay is clicked.
    *
    *****************************************************/
-  public void onGooglePayClicked(View view) {
+  public void onGooglePayClicked( View view ) {
 
+    final SingleCurrencyAmounts totalCost = getTotalCost();
+    if (totalCost != null) {
+      PaymentDataRequest request = createPaymentDataRequest(totalCost.getAmount().toString(),
+          totalCost.getCurrencyCode());
+      if (request != null) {
+        AutoResolveHelper.resolveTask( mPaymentsClient.loadPaymentData(request),
+            getPaymentActivity(), ACTIVITY_REQUEST_CODE_GOOGLE_PAY);
+      }
+    }
   }
+
 
   /*****************************************************
    *
@@ -476,6 +486,48 @@ public class DefaultPaymentFragment extends APaymentFragment
     {
     getPaymentActivity().submitOrderForPrinting( authorisationProofOfPaymentFrom( paymentId ), accountId, paymentMethod );
     }
+
+
+  /*****************************************************
+   *
+   * Creates a PaymentDataRequest for Google Pay.
+   *
+   *****************************************************/
+
+  public PaymentDataRequest createPaymentDataRequest(String amount, String currencyCode) {
+    PaymentDataRequest.Builder request =
+        PaymentDataRequest.newBuilder()
+            .setTransactionInfo(
+                TransactionInfo.newBuilder()
+                    .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
+                    .setTotalPrice(amount)
+                    .setCurrencyCode(currencyCode)
+                    .build())
+            .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_CARD)
+            .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_TOKENIZED_CARD)
+            .setCardRequirements(
+                CardRequirements.newBuilder()
+                    .addAllowedCardNetworks(
+                        Arrays.asList(
+                            WalletConstants.CARD_NETWORK_AMEX,
+                            WalletConstants.CARD_NETWORK_DISCOVER,
+                            WalletConstants.CARD_NETWORK_VISA,
+                            WalletConstants.CARD_NETWORK_MASTERCARD))
+                    .build());
+
+    PaymentMethodTokenizationParameters params =
+        PaymentMethodTokenizationParameters.newBuilder()
+            .setPaymentMethodTokenizationType(
+                WalletConstants.PAYMENT_METHOD_TOKENIZATION_TYPE_PAYMENT_GATEWAY)
+            .addParameter("gateway", "stripe")
+            .addParameter("stripe:publishableKey", KiteSDK.getInstance(getActivity()).getStripePublicKey())
+            .addParameter("stripe:version", "5.0.0")
+            .build();
+
+    request.setPaymentMethodTokenizationParameters(params);
+
+    return request.build();
+  }
 
 
   ////////// Inner Class(es) //////////
