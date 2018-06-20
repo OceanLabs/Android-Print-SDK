@@ -52,8 +52,10 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 
 ///// Class Declaration /////
@@ -109,21 +111,89 @@ public class Asset implements Parcelable
 
   ////////// Member Variable(s) //////////
 
-  private Type       mType;
-  private Uri        mImageURI;
-  private URL        mRemoteURL;
-  private int        mBitmapResourceId;
-  private Bitmap     mBitmap;
-  private Bitmap     mPreviewBitmap;
-  private String     mImageFilePath;
-  private byte[]     mImageBytes;
-  private MIMEType   mMIMEType;
+  private Type                mType;
+  private Uri                 mImageURI;
+  private URL                 mRemoteURL;
+  private Map<String, String> mURLHeaderMap;
+  private int                 mBitmapResourceId;
+  private Bitmap              mBitmap;
+  private Bitmap              mPreviewBitmap;
+  private String              mImageFilePath;
+  private byte[]              mImageBytes;
+  private MIMEType            mMIMEType;
 
 
   ////////// Static Initialiser(s) //////////
 
 
   ////////// Static Method(s) //////////
+
+
+  /*****************************************************
+   *
+   * Creates and returns a new asset corresponding to the
+   * supplied URL and headers.
+   *
+   * @param urlHeaderMap - headers for the URL request
+   *
+   * !!! URL must end in .jpg ,.jpeg or .png ; else it will throw illegal argument exception
+   *     Alternatively create( stringUrl, Map<String,String> , MIMEType) can be used to provide
+   *     the format manually in case the URL does not contain it
+   *
+   *  ex:  Map<String, String> headers = new HashMap<>();
+   *       headers.put( "Authorization", "auth_key_1234abc" );
+   *       assetArrayList.add( Asset.create( "http://kyte.ly/some_image.jpg", headers ) );
+   *
+   *      (Example above not actually functional)
+   *
+   *****************************************************/
+  static public Asset create( String url, Map<String, String> urlHeaderMap )
+    {
+    try
+      {
+      Asset asset = new Asset( new URL( url )) ;
+      asset.setURLHeaderMap( urlHeaderMap );
+      return asset;
+      }
+    catch ( MalformedURLException e )
+      {
+      Log.e( LOG_TAG, "Could not parse string to URL" );
+      return null;
+      }
+    }
+
+
+  /*****************************************************
+   *
+   * Creates and returns a new asset corresponding to the
+   * supplied URL, headers and MIMEType.
+   *
+   * @param urlHeaderMap - headers for the URL request
+   *
+   * @param mimeType - format of the image , it can either be JPEG OR PNG
+   *
+   *  ex:  Map<String, String> headers = new HashMap<>();
+   *       headers.put( "Authorization", "auth_key_1234abc" );
+   *       assetArrayList.add( Asset.create( "http://kyte.ly/url?id=abc123", headers, MIMEType.JPEG ) );
+   *
+   *      (Example above not actually functional)
+   *
+   *****************************************************/
+  static public Asset create( String url, Map<String, String> urlHeaderMap, MIMEType mimeType )
+    {
+    try
+      {
+      Asset asset = new Asset( new URL( url ), mimeType );
+      asset.setURLHeaderMap( urlHeaderMap );
+      return asset;
+      }
+    catch ( MalformedURLException e )
+      {
+      Log.e( LOG_TAG, "Could not parse string to URL" );
+      return null;
+      }
+    }
+
 
   /*****************************************************
    *
@@ -493,10 +563,56 @@ public class Asset implements Parcelable
     mBitmapResourceId = sourceParcel.readInt();
     mImageFilePath    = sourceParcel.readString();
     mMIMEType         = MIMEType.fromString( sourceParcel.readString() );
+    mURLHeaderMap     = readHeaderMap( sourceParcel );
     }
 
 
   ////////// Parcelable Method(s) //////////
+
+  /*****************************************************
+   *
+   * Writes a map to a parcel
+   *
+   *****************************************************/
+  public void writeHeaderMap ( Parcel parcel, Map<String, String > map )
+    {
+    if( map != null )
+      {
+      parcel.writeInt( map.size()) ;
+      for ( Map.Entry<String, String> e : map.entrySet() )
+        {
+        parcel.writeString( e.getKey() );
+        parcel.writeString( e.getValue() );
+        }
+      }
+    else
+      {
+      parcel.writeInt( 0 );
+      }
+    }
+
+  /*****************************************************
+   *
+   * Reads a map from a parcel
+   *
+   *****************************************************/  
+  public Map<String, String> readHeaderMap( Parcel parcel )
+    {
+    Map<String, String> map = new HashMap<>();
+    try
+      {
+      int size = parcel.readInt();
+      for ( int i = 0; i < size; i++ )
+        {
+        map.put( parcel.readString(), parcel.readString() );
+        }
+      }
+    catch ( Exception e )
+      {
+        //fallthrough
+      }
+    return map;
+    }
 
   @Override
   public int describeContents()
@@ -517,6 +633,7 @@ public class Asset implements Parcelable
     targetParcel.writeInt( mBitmapResourceId );
     targetParcel.writeString( mImageFilePath );
     targetParcel.writeString( mMIMEType != null ? mMIMEType.mimeTypeString() : null );
+    writeHeaderMap( targetParcel, mURLHeaderMap );
     }
 
 
@@ -593,6 +710,17 @@ public class Asset implements Parcelable
     if ( mType != Type.REMOTE_URL ) throw ( new IllegalStateException( "The remote URL has been requested, but the asset type is: " + mType ) );
 
     return ( mRemoteURL );
+    }
+
+
+  /*****************************************************
+   *
+   * Returns the URL headers map
+   *
+   *****************************************************/
+  public Map<String, String> getURLHeaderMap()
+    {
+    return mURLHeaderMap;
     }
 
 
@@ -699,6 +827,17 @@ public class Asset implements Parcelable
     {
       this.mPreviewBitmap = bitmap;
     }
+
+  /*****************************************************
+   *
+   *  Sets the URL headers.
+   *
+   *****************************************************/
+  public void setURLHeaderMap ( Map<String,String> urlHeaderMap )
+    {
+    this.mURLHeaderMap = urlHeaderMap;
+    }
+
 
   /*****************************************************
    *

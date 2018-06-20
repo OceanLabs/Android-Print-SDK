@@ -58,11 +58,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
 import ly.kite.KiteSDK;
@@ -819,7 +821,18 @@ public class AssetHelper
 
       case REMOTE_URL:
 
-        inputStream = asset.getRemoteURL().openStream();
+          HttpURLConnection urlConnection = ( HttpURLConnection ) asset.getRemoteURL().openConnection();
+          Map<String, String> headerMap = asset.getURLHeaderMap();
+
+          if( headerMap != null )
+          {
+              for ( Map.Entry<String, String> entry : headerMap.entrySet() )
+              {
+                  urlConnection.setRequestProperty( entry.getKey(), entry.getValue() );
+              }
+          }
+
+          inputStream = urlConnection.getInputStream();
 
         break;
 
@@ -1033,7 +1046,7 @@ public class AssetHelper
 
       case REMOTE_URL:
 
-        imageRequestBuilder.load( asset.getRemoteURL(), KiteSDK.IMAGE_CATEGORY_SESSION_ASSET );
+        imageRequestBuilder.load( asset.getRemoteURL(), asset.getURLHeaderMap(), KiteSDK.IMAGE_CATEGORY_SESSION_ASSET );
 
         return;
 
