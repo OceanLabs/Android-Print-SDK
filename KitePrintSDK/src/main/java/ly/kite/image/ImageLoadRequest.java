@@ -45,6 +45,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Map;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -861,13 +862,16 @@ public class ImageLoadRequest
    *****************************************************/
   private class URLSource extends ASource implements FileDownloader.ICallback
     {
-    private URL     mSourceURL;
-    private String  mImageCategory;
+    private URL                 mSourceURL;
+    private Map<String, String> mHeaderMap;
+
+    private String              mImageCategory;
 
 
-    URLSource( URL url, String imageCategory )
+    URLSource( URL url, Map<String, String>  headerMap, String imageCategory )
       {
       mSourceURL     = url;
+      mHeaderMap     = headerMap;
       mImageCategory = imageCategory;
       }
 
@@ -928,7 +932,7 @@ public class ImageLoadRequest
         if ( mTarget != null ) mTarget.onImageDownloading();
 
         // Make a request to download the image, and use us as the callback.
-        FileDownloader.getInstance( mApplicationContext ).requestFileDownload( mSourceURL, imageDirectory, imageFile, this );
+        FileDownloader.getInstance( mApplicationContext ).requestFileDownload( mSourceURL, mHeaderMap, imageDirectory, imageFile, this );
         }
 
 
@@ -1299,6 +1303,28 @@ public class ImageLoadRequest
      *****************************************************/
     public Builder load( URL url, String imageCategory )
       {
+      return load( url, null, imageCategory );
+      }
+
+
+    /*****************************************************
+     *
+     * Sets the source of the image as a URL.
+     *
+     *****************************************************/
+    public Builder loadURL( String urlString, String imageCategory ) throws MalformedURLException
+      {
+      return loadURL( urlString , null, imageCategory );
+      }
+
+
+    /*****************************************************
+     *
+     * Sets the source of the image as a URL with headers
+     *
+     *****************************************************/
+    public Builder load( URL url, Map<String, String>  headerMap, String imageCategory )
+      {
       // If there is a mapping between the URL and a resource id that
       // we should use - change the source.
 
@@ -1311,7 +1337,7 @@ public class ImageLoadRequest
         }
       else
         {
-        setSource( new URLSource( url, imageCategory ) );
+        setSource( new URLSource( url, headerMap, imageCategory ) );
         }
 
 
@@ -1321,12 +1347,12 @@ public class ImageLoadRequest
 
     /*****************************************************
      *
-     * Sets the source of the image as a URL.
+     * Sets the source of the image as a URL with headers
      *
      *****************************************************/
-    public Builder loadURL( String urlString, String imageCategory ) throws MalformedURLException
+    public Builder loadURL( String urlString, Map<String, String>  headerMap, String imageCategory ) throws MalformedURLException
       {
-      return ( load( new URL( urlString ), imageCategory ) );
+      return ( load( new URL( urlString ), headerMap, imageCategory ) );
       }
 
 

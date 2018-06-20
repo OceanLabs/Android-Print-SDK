@@ -50,6 +50,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -120,7 +121,7 @@ public class FileDownloader
    * @return Exception, if an exception was thrown
    *
    *****************************************************/
-  static public Exception download( URL sourceURL, File targetDirectory, File targetFile )
+  static public Exception download( URL sourceURL, Map<String, String> headerMap, File targetDirectory, File targetFile )
     {
     // Make sure the directory exists
     targetDirectory.mkdirs();
@@ -143,7 +144,17 @@ public class FileDownloader
 
       tempTargetFile = File.createTempFile( targetFile.getName(), ".tmp" );
 
-      inputStream = sourceURL.openStream();
+      HttpURLConnection urlConnection = ( HttpURLConnection ) sourceURL.openConnection();
+
+      if( headerMap != null )
+        {
+        for ( Map.Entry<String, String> entry : headerMap.entrySet() )
+          {
+          urlConnection.setRequestProperty( entry.getKey(), entry.getValue() );
+          }
+        }
+
+      inputStream = urlConnection.getInputStream();
 
       fileOutputStream = new FileOutputStream( tempTargetFile );
 
@@ -250,13 +261,13 @@ public class FileDownloader
    * Must be called on the UI thread.
    *
    *****************************************************/
-  public void requestFileDownload( URL sourceURL, File targetDirectory, File targetFile, boolean forceDownload, ICallback callback )
+  public void requestFileDownload( URL sourceURL, Map<String, String>  headerMap, File targetDirectory, File targetFile, boolean forceDownload, ICallback callback )
     {
     if ( mInProgressDownloadTasks.get( sourceURL ) == null )
       {
       // No in-progress task downloading this file, let's kick one off
 
-      DownloaderTask downloaderTask = new DownloaderTask( sourceURL, targetDirectory, targetFile, forceDownload, callback );
+      DownloaderTask downloaderTask = new DownloaderTask( sourceURL, headerMap, targetDirectory, targetFile, forceDownload, callback );
 
       mInProgressDownloadTasks.put( sourceURL, downloaderTask );
 
@@ -279,9 +290,9 @@ public class FileDownloader
    * Must be called on the UI thread.
    *
    *****************************************************/
-  public void requestFileDownload( URL sourceURL, File targetDirectory, File targetFile, ICallback callback )
+  public void requestFileDownload( URL sourceURL, Map<String, String>  headerMap, File targetDirectory, File targetFile, ICallback callback )
     {
-    requestFileDownload( sourceURL, targetDirectory, targetFile, false, callback );
+    requestFileDownload( sourceURL, headerMap, targetDirectory, targetFile, false, callback );
     }
 
 
@@ -307,16 +318,18 @@ public class FileDownloader
    *****************************************************/
   private class DownloaderTask extends AsyncTask< Void, Void, Exception >
     {
-    private final URL              mSourceURL;
-    private final File             mTargetDirectory;
-    private final File             mTargetFile;
-    private final boolean          mForceDownload;
-    private final List<ICallback>  mCallbacks;
+    private final URL                  mSourceURL;
+    private final Map<String, String>  mHeaderMap;
+    private final File                 mTargetDirectory;
+    private final File                 mTargetFile;
+    private final boolean              mForceDownload;
+    private final List<ICallback>      mCallbacks;
 
 
-    public DownloaderTask( URL sourceURL, File targetDirectory, File targetFile, boolean forceDownload, ICallback callback )
+    public DownloaderTask( URL sourceURL, Map<String, String>  headerMap, File targetDirectory, File targetFile, boolean forceDownload, ICallback callback )
       {
       mSourceURL       = sourceURL;
+      mHeaderMap       = headerMap;
       mTargetDirectory = targetDirectory;
       mTargetFile      = targetFile;
       mForceDownload   = forceDownload;
@@ -342,7 +355,7 @@ public class FileDownloader
       {
       if (  mForceDownload || ( ! mTargetFile.exists() ) )
         {
-        return ( download( mSourceURL, mTargetDirectory, mTargetFile ) );
+        return ( download( mSourceURL, mHeaderMap, mTargetDirectory, mTargetFile ) );
         }
 
       return ( null );

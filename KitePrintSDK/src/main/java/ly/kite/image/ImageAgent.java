@@ -51,7 +51,6 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.Locale;
 
 import ly.kite.KiteSDK;
 import ly.kite.util.Asset;
