@@ -105,11 +105,11 @@ public class SampleSDKCustomiser extends SDKCustomiser
    * Returns specific image sources.
    *
    *****************************************************/
-//  public AImageSource[] getImageSources()
-//    {
-//    return ( new AImageSource[] { new DeviceImageSource(), new InstagramImageSource(), new FromPhoneImageSource() } );
-//    //return ( new AImageSource[] { new DeviceImageSource() } );
-//    }
+  public AImageSource[] getImageSources()
+    {
+    // Default:
+    return ( new AImageSource[] { new DeviceImageSource(), new InstagramImageSource(), new FacebookImageSource()} );
+    }
 
 
   /*****************************************************
@@ -124,7 +124,7 @@ public class SampleSDKCustomiser extends SDKCustomiser
       @Override
       public void onOrderSubmissionSuccess( Order sanitisedOrder )
         {
-        Toast.makeText( getContext(), "Order success: " + sanitisedOrder.getReceipt(), Toast.LENGTH_SHORT ).show();
+        // Toast.makeText( getContext(), "Order success: " + sanitisedOrder.getReceipt(), Toast.LENGTH_SHORT ).show();
         }
       } );
     }
