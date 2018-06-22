@@ -39,12 +39,10 @@ package ly.kite.journey.creation.calendar;
 
 ///// Import(s) /////
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -95,6 +93,7 @@ public class CalendarAdaptor extends RecyclerView.Adapter
   private int                                        mImagesPerMonth;
   private int                                        mGridCountX;
   private int                                        mGridCountY;
+  private int                                        mStartMonth;
 
   private LayoutInflater                             mLayoutInflator;
 
@@ -115,7 +114,7 @@ public class CalendarAdaptor extends RecyclerView.Adapter
 
   ////////// Constructor(s) //////////
 
-  CalendarAdaptor( Activity activity, Product product, ArrayList<ImageSpec> imageSpecArrayList, IListener listener )
+  CalendarAdaptor( Activity activity, Product product, ArrayList<ImageSpec> imageSpecArrayList, IListener listener, int startMonth )
     {
     mActivity                   = activity;
     mProduct                    = product;
@@ -125,6 +124,7 @@ public class CalendarAdaptor extends RecyclerView.Adapter
     mGridCountX                 = mProduct.getGridCountX();
     mGridCountY                 = mProduct.getGridCountY();
     mImagesPerMonth             = mGridCountX * mGridCountY;
+    mStartMonth                 = startMonth;
 
     mLayoutInflator             = activity.getLayoutInflater();
 
@@ -259,8 +259,16 @@ public class CalendarAdaptor extends RecyclerView.Adapter
 
     if ( calendarImageURLString != null && calendarImageURLString.size() >= CalendarFragment.MONTHS_PER_YEAR )
       {
+      // Remap indexes to correct month orders
+      int positionWithOffset = position + mStartMonth;
+
+      if( positionWithOffset >= calendarImageURLString.size() )
+        {
+        positionWithOffset = positionWithOffset - calendarImageURLString.size();
+        }
+
       Picasso.with( mActivity )
-              .load( calendarImageURLString.get( position ) )
+              .load( calendarImageURLString.get( positionWithOffset ) )
               .into( pageViewHolder.assetImageView );
       }
     }
@@ -286,6 +294,17 @@ public class CalendarAdaptor extends RecyclerView.Adapter
       }
 
     return ( null );
+    }
+
+
+  /*****************************************************
+   *
+   * Sets the starting month
+   *
+   *****************************************************/
+  public void setStartMonth( int startMonth )
+    {
+    mStartMonth = startMonth;
     }
 
 

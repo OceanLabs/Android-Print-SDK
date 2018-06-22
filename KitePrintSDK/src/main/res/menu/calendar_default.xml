@@ -1,0 +1,11 @@
+<menu
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/calendar_menu_item"
+        android:icon="@drawable/ic_calendar_startdate"
+        android:showAsAction="always"
+        tools:ignore="AppCompatResource,MenuTitle"/>
+
+</menu>

@@ -42,6 +42,7 @@ package ly.kite.journey;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
@@ -63,6 +64,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -72,6 +74,8 @@ import org.json.JSONObject;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
@@ -1092,6 +1096,40 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
             null
             );
     }
+
+  /*****************************************************
+   *
+   * Displays the date selection dialog
+   *
+   *****************************************************/
+  public DatePickerDialog showDatePickerDialog( DatePickerDialog.OnDateSetListener listener, GregorianCalendar currentStartMonth )
+    {
+    DatePickerDialog dialog = new DatePickerDialog( this, R.style.DatePickerDialogTheme, listener, currentStartMonth.get( Calendar.YEAR ),
+            currentStartMonth.get( Calendar.MONTH ), currentStartMonth.get( Calendar.DAY_OF_MONTH ) );
+    dialog.setTitle( R.string.kitesdk_start_from );
+    try
+      {
+      java.lang.reflect.Field[] datePickerDialogFields = dialog.getClass().getDeclaredFields();
+      for ( java.lang.reflect.Field datePickerDialogField : datePickerDialogFields )
+        {
+        if ( datePickerDialogField.getName().equals( "mDatePicker" ) )
+          {
+          datePickerDialogField.setAccessible( true );
+          DatePicker datePicker = ( DatePicker ) datePickerDialogField.get( dialog );
+          // Hide day selection
+          datePicker.findViewById( getResources().getIdentifier( "day", "id", "android" ) ).setVisibility( View.GONE );
+          }
+        }
+      }
+    catch ( Exception ex )
+      {
+      //fallthrough
+      }
+    dialog.show();
+    return dialog;
+    }
+
+
 
 
   /*****************************************************
