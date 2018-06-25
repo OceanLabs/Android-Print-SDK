@@ -773,7 +773,7 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
       mStartDate.set( Calendar.DAY_OF_MONTH, 1 );
       }
 
-    SimpleDateFormat dateFormatter = new SimpleDateFormat( "MMMM yyyy" );
+    SimpleDateFormat dateFormatter = new SimpleDateFormat( "MMM yyyy" );
 
     dateFormatter.setCalendar( mStartDate );
     String startDateString = dateFormatter.format( mStartDate.getTime() );
