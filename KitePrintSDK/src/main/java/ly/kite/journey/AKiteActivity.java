@@ -45,6 +45,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -1097,39 +1098,20 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
             );
     }
 
+
   /*****************************************************
    *
    * Displays the date selection dialog
    *
    *****************************************************/
-  public DatePickerDialog showDatePickerDialog( DatePickerDialog.OnDateSetListener listener, GregorianCalendar currentStartMonth )
+  public CustomDatePickerDialog showDatePickerDialog(DatePickerDialog.OnDateSetListener listener, GregorianCalendar currentStartMonth )
     {
-    DatePickerDialog dialog = new DatePickerDialog( this, R.style.DatePickerDialogTheme, listener, currentStartMonth.get( Calendar.YEAR ),
+    CustomDatePickerDialog dialog = new CustomDatePickerDialog( this, R.style.DatePickerDialogTheme, listener, currentStartMonth.get( Calendar.YEAR ),
             currentStartMonth.get( Calendar.MONTH ), currentStartMonth.get( Calendar.DAY_OF_MONTH ) );
-    dialog.setTitle( R.string.kitesdk_start_from );
-    try
-      {
-      java.lang.reflect.Field[] datePickerDialogFields = dialog.getClass().getDeclaredFields();
-      for ( java.lang.reflect.Field datePickerDialogField : datePickerDialogFields )
-        {
-        if ( datePickerDialogField.getName().equals( "mDatePicker" ) )
-          {
-          datePickerDialogField.setAccessible( true );
-          DatePicker datePicker = ( DatePicker ) datePickerDialogField.get( dialog );
-          // Hide day selection
-          datePicker.findViewById( getResources().getIdentifier( "day", "id", "android" ) ).setVisibility( View.GONE );
-          }
-        }
-      }
-    catch ( Exception ex )
-      {
-      //fallthrough
-      }
+    dialog.setPermanentTitle( getResources().getString( R.string.kitesdk_start_from ) );
     dialog.show();
     return dialog;
     }
-
-
 
 
   /*****************************************************
@@ -1845,6 +1827,39 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
 
     }
 
+
+    /*****************************************************
+     *
+     * A custom date picker dialog.
+     *
+     *****************************************************/
+    protected class CustomDatePickerDialog extends DatePickerDialog
+    {
+      private CharSequence mTitle;
+
+      CustomDatePickerDialog( Context context, int theme, OnDateSetListener listener, int year, int month, int day )
+      {
+        super( context, theme, listener, year, month, day );
+
+        // Remove the calendar view and date toggle
+        getDatePicker().setCalendarViewShown(false);
+        getDatePicker().findViewById( getResources().getIdentifier( "day", "id", "android" ) ).setVisibility( View.GONE );
+      }
+
+      private void setPermanentTitle(CharSequence title)
+      {
+        mTitle = title;
+        setTitle(mTitle);
+      }
+
+      @Override
+      public void onDateChanged(DatePicker view, int year, int month, int day)
+      {
+        super.onDateChanged(view, year, month, day);
+        setTitle(mTitle);
+      }
+
+    }
 
   }
 
