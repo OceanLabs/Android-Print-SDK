@@ -269,6 +269,8 @@ public class CalendarAdaptor extends RecyclerView.Adapter
 
       Picasso.with( mActivity )
               .load( calendarImageURLString.get( positionWithOffset ) )
+              .fit()
+              .centerInside()
               .into( pageViewHolder.assetImageView );
       }
     }
