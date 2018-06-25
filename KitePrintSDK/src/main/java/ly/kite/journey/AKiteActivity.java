@@ -1108,7 +1108,7 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
     {
     CustomDatePickerDialog dialog = new CustomDatePickerDialog( this, R.style.DatePickerDialogTheme, listener, currentStartMonth.get( Calendar.YEAR ),
             currentStartMonth.get( Calendar.MONTH ), currentStartMonth.get( Calendar.DAY_OF_MONTH ) );
-    dialog.setPermanentTitle( getResources().getString( R.string.kitesdk_start_from ) );
+    dialog.setPermanentTitle( getResources().getString( R.string.kitesdk_start_date ) );
     dialog.show();
     return dialog;
     }

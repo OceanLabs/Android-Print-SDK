@@ -285,6 +285,7 @@
     <string name="kitesdk_title_activity_address_add">"Adres invoeren"</string>
     <string name="kitesdk_title_activity_address_edit">"Adres bewerken"</string>
     <string name="kitesdk_action_save_address">"Adres opslaan"</string>
+    <string name="kitesdk_start_date">Begin datum</string>
 
     <plurals name="kitesdk_Photo_plurals">
         <item quantity="zero">"%d foto's"</item>

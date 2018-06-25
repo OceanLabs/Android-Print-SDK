@@ -310,6 +310,7 @@
     <string name="kitesdk_title_activity_address_add">Créer une nouvelle adresse</string>
     <string name="kitesdk_title_activity_address_edit">Modifier l\'adresse</string>
     <string name="kitesdk_action_save_address">Enregistrer adresse</string>
+    <string name="kitesdk_start_date">Date de début</string>
 
     <string name="kitesdk_scan_qr_code">Scannez le code QR</string>
     <string name="kitesdk_scan_qr_code_instructions">S\'il vous plaît scanner le code QR en utilisant un lecteur app QR sur votre appareil.</string>

@@ -359,7 +359,7 @@
     <string name="kitesdk_title_activity_address_add">Enter Address</string>
     <string name="kitesdk_title_activity_address_edit">Edit Address</string>
     <string name="kitesdk_action_save_address">Save Address</string>
-    <string name="kitesdk_start_from">Start from</string>
+    <string name="kitesdk_start_date">Start date</string>
 
     <plurals name="kitesdk_Photo_plurals">
         <item quantity="zero">%d Photos</item>

@@ -308,6 +308,7 @@
     <string name="kitesdk_title_activity_address_add">Inserisci indirizzo</string>
     <string name="kitesdk_title_activity_address_edit">Modifica indirizzo</string>
     <string name="kitesdk_action_save_address">Salva Indirizzo</string>
+    <string name="kitesdk_start_date">Data d\'inizio</string>
 
     <string name="kitesdk_scan_qr_code">Scansiona QR code</string>
     <string name="kitesdk_scan_qr_code_instructions">Scansiona il QR code tramite una\napp per lettura QR code sul tuo dispositivo</string>
