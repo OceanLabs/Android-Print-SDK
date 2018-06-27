@@ -31,7 +31,7 @@ Use print to unlock hidden revenue streams and add value for your users. *In und
 
 ## Requirements
 
-* Android API Level 14 - Android 4.0 (ICE_CREAM_SANDWICH)
+* Android API Level 16 - Android 4.1 (JELLY_BEAN)
 
 ## Installation
 ### Eclipse
