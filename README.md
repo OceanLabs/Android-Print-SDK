@@ -113,12 +113,12 @@ You can build your own UI if you don't want to use or customize the provided che
 1. [Create a print order](docs/create_print_order.md) representing the product(s) you wish to have printed and posted
 2. [Set the shipping address](docs/shipping.md) to which the order will be delivered
 3. [Take payment from the user](docs/payment.md) for the order and submit it to our servers for printing and posting
-4. [Register your payment details](https://www.kite.ly/accounts/billing/) with us so that we can pay you when your users place orders
+4. [Register your payment details](https://www.kite.ly/settings/billing/) with us so that we can pay you when your users place orders
 
 ## Credentials & Environments
 Your mobile app integration requires different API Key values for each environment: Live and Test (Sandbox).
 
-You can find your Kite Print API credentials under the [Credentials](https://www.kite.ly/accounts/credentials/) section of the development dashboard.
+You can find your Kite Print API credentials under the [Credentials](https://www.kite.ly/settings/credentials/) section of the development dashboard.
 
 ### Sandbox
 
@@ -137,7 +137,7 @@ Logging in to our [Developer Dashboard](https://www.kite.ly/) allow's you to dyn
 * These docs in the SDK, which include an overview of usage, step-by-step integration instructions, and sample code
 * The sample app included in this SDK
 * Source files are thoroughly documented; refer to them as needed for extra details about any given class or parameter
-* The [Kite Print API & SDK Developer Docs](https://www.kite.ly/docs/1.1/), which cover error codes and optional server-side integration instructions
+* The [Kite Print API & SDK Developer Docs](https://www.kite.ly/docs/), which cover error codes and optional server-side integration instructions
 
 
 ### Push Notifications
