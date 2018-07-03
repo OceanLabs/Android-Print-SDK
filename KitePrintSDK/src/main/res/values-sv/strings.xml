@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <string name="kitesdk_powered_by">"Powered by Kite.ly"</string>
+
+    <string name="kitesdk_unit_centimeters">"centimeter"</string>
+    <string name="kitesdk_unit_inches">"tum"</string>
+    <string name="kitesdk_unit_pixels">"pixlar"</string>
+
+    <string name="kitesdk_unit_centimeters_short">"cm"</string>
+    <string name="kitesdk_unit_inches_short">"i"</string>
+    <string name="kitesdk_unit_pixels_short">"px"</string>
+
+    <string name="kitesdk_month_hint">"MM"</string> 
+    <string name="kitesdk_year_hint">"ÅÅÅÅ"</string> 
+
+    <string name="kitesdk_title_choose_product_group">"Print Shop"</string>
+    <string name="kitesdk_title_create_phone_case">"Snap case"</string>
+    <string name="kitesdk_title_image_source">"Åtkomst till foton"</string>
+    <string name="kitesdk_title_photobook">"Fotobok"</string>
+    <string name="kitesdk_title_calendar">"Kalender"</string>
+    <string name="kitesdk_title_poster">"Affisch"</string>
+    <string name="kitesdk_title_basket">"Varukorg"</string>
+    <string name="kitesdk_title_payment_sandbox">"Betalning (TEST)"</string>
+    <string name="kitesdk_title_payment">"Betalning"</string>
+    <string name="kitesdk_title_payment_source_sandbox">"Betalning (TEST)"</string>
+    <string name="kitesdk_title_payment_source">"Betalning"</string>
+    <string name="kitesdk_title_order_history">"Orderhistorik"</string>
+
+    <string name="kitesdk_settings_title_show_notification_messages">"Meddelanden"</string>
+    <string name="kitesdk_settings_title_support">"Support"</string>
+    <string name="kitesdk_settings_title_privacy">"Sekretesspolicy"</string>
+    <string name="kitesdk_settings_title_terms">"Villkor"</string>
+    <string name="kitesdk_settings_title_legal">"Juridik"</string>
+    <string name="kitesdk_settings_title_licences">"Licenser med öppen källkod"</string>
+    <string name="kitesdk_settings_summary_licences">"Licenser med öppen källkod"</string>
+    <string name="kitesdk_settings_title_build_version">"Version"</string>
+
+    <string name="kitesdk_alert_dialog_title_pack_not_full_format_string">"Du har valt %s"</string>
+    <string name="kitesdk_alert_dialog_message_pack_not_full_format_string" tools:ignore="PluralsCandidate">"Du kan lägga till ytterligare %d för samma pris"</string>
+
+    <string name="kitesdk_alert_dialog_title_oops">"Oeps!"</string>
+    <string name="kitesdk_alert_dialog_message_pricing_format_string">"Ett problem uppstod med din begäran.:\n%s"</string>
+
+    <string name="kitesdk_alert_dialog_title_error_retrieving_products">"Hoppsan!"</string>
+    <string name="kitesdk_alert_dialog_message_error_retrieving_products">"Internet-anslutningen verkar vara offline."</string>
+
+    <string name="kitesdk_alert_dialog_title_product_not_found">"Hoppsan!"</string>
+    <string name="kitesdk_alert_dialog_message_product_not_found">"Internet-anslutningen verkar vara offline."</string>
+
+    <string name="kitesdk_alert_dialog_title_delete_photo">"Vill du ta bort fotot?"</string>
+    <string name="kitesdk_alert_dialog_message_delete_photo">"Är du säker på att du vill ta bort fotot?"</string>
+    <string name="kitesdk_alert_dialog_delete_photo_cancel_text">"Behåll"</string>
+    <string name="kitesdk_alert_dialog_delete_photo_confirm_text">"Radera"</string>
+
+    <string name="kitesdk_alert_dialog_message_no_images_selected">"Välj några bilder."</string>
+
+    <string name="kitesdk_alert_dialog_message_no_recipient">"Ange ett mottagarnamn."</string>
+    <string name="kitesdk_alert_dialog_message_no_line1">"Fyll i Rad 1 för adressen."</string>
+    <string name="kitesdk_alert_dialog_message_no_postal_code">"Ange ditt postnummer."</string>
+    <string name="kitesdk_alert_dialog_message_no_email_address">"Ange en e-postadress."</string>
+    <string name="kitesdk_alert_dialog_message_no_city">"Fyll i din stad."</string>
+
+    <string name="kitesdk_alert_dialog_title_invalid_delivery_address">"Ogiltig leveransadress"</string>
+    <string name="kitesdk_alert_dialog_message_invalid_delivery_address">"Välj en leveransadress."</string>
+
+    <string name="kitesdk_alert_dialog_title_invalid_email_address">"Ogiltig e-postadress"</string>
+    <string name="kitesdk_alert_dialog_message_invalid_email_address">"Ange en giltig e-postadress."</string>
+
+    <string name="kitesdk_alert_dialog_title_invalid_phone_number">"Ogiltigt telefonnummer"</string>
+    <string name="kitesdk_alert_dialog_message_invalid_phone_number">"Ange ett giltigt telefonnummer."</string>
+
+    <string name="kitesdk_alert_dialog_message_connectivity">"Internet-anslutningen verkar vara offline."</string>
+
+    <string name="kitesdk_alert_dialog_message_processing">"Ett ögonblick ..."</string>
+
+    <string name="kitesdk_alert_dialog_title_end_customer_session">"Avsluta session"</string>
+    <string name="kitesdk_alert_dialog_message_end_customer_session">"Är du säker på att du vill avsluta sessionen?"</string>
+
+    <string name="kitesdk_alert_dialog_title_remove_item">"Ta bort artikel"</string>
+    <string name="kitesdk_alert_dialog_message_remove_item">"Bekräfta att du vill ta bort den här artikeln från varukorgen."</string>
+
+    <string name="kitesdk_alert_dialog_title_empty_basket">"Töm varukorgen"</string>
+    <string name="kitesdk_alert_dialog_message_empty_basket">"Varukorgen är tom. Lägg till en artikel innan du fortsätter till kassan."</string>
+
+    <string name="kitesdk_alert_dialog_message_uploading_images">"Överför bilder"</string>
+
+    <string name="kitesdk_alert_dialog_message_unable_to_store_card">"Det gick inte att spara kortuppgifter"</string>
+    <string name="kitesdk_alert_dialog_message_no_payment_id">"Inget betalnings-ID finns i betalningsbeviset"</string>
+    <string name="kitesdk_alert_dialog_message_no_proof_of_payment">"Inget betalningsbevis hittades i betalningsbekräftelsen"</string>
+    <string name="kitesdk_alert_dialog_message_no_paypal_confirmation">"Ingen betalningsbekräftelse mottagen från PayPal"</string>
+    <string name="kitesdk_alert_dialog_message_card_expired">"Det verkar som om kortet har gått ut. Försök igen."</string>
+    <string name="kitesdk_alert_dialog_message_card_not_recognised">"Vi kunde tyvärr inte känna igen kortet. Försök att manuellt ange dina kortuppgifter igen vid behov."</string>
+
+    <string name="kitesdk_alert_dialog_item_pay_with_new_card">"Betala med nytt kort"</string>
+    <string name="kitesdk_alert_dialog_item_pay_with_existing_card_format_string">"Betala med kort som slutar med %1$s"</string>
+
+    <string name="kitesdk_log_out_warning">"Du loggas ut\nautomatiskt"</string>
+
+    <string name="kitesdk_progress_dialog_title_add_to_basket">"Lägg till i varukorgen"</string>
+    <string name="kitesdk_progress_dialog_title_updating_basket">"Uppdatera varukorgen"</string>
+
+    <string name="kitesdk_add_more">"Lägg till fler"</string>
+    <string name="kitesdk_Cancel">"Avbryt"</string>
+    <string name="kitesdk_Choose_Delivery_Address">"Välj leveransadress"</string>
+    <string name="kitesdk_Continue_Shopping">"Fortsätt handla"</string>
+    <string name="kitesdk_Country">"Land"</string>
+    <string name="kitesdk_Description">"Beskrivning"</string>
+    <string name="kitesdk_Details">"Detaljer"</string>
+    <string name="kitesdk_Done">"Klart"</string>
+    <string name="kitesdk_Edit">"Redigera"</string>
+    <string name="kitesdk_Email">"E-postadress"</string>
+    <string name="kitesdk_End_Session">"Avsluta session"</string>
+    <string name="kitesdk_Flip">"Vänd"</string>
+    <string name="kitesdk_Free">"Kostnadsfri"</string>
+    <string name="kitesdk_ITEM">"ARTIKEL"</string>
+    <string name="kitesdk_Keep">"Behåll"</string>
+    <string name="kitesdk_Loading">"Läser in"</string>
+    <string name="kitesdk_Loading_catalogue">"Läser in katalog"</string>
+    <string name="kitesdk_Log_Out">"Logga ut"</string>
+    <string name="kitesdk_Next">"Nästa"</string>
+    <string name="kitesdk_Next_Customer">"Nästa"</string>
+    <string name="kitesdk_No_Results">"Hittade inga resultat"</string>
+    <string name="kitesdk_OK">"OK"</string>
+    <string name="kitesdk_Order_Id">"Beställnings-ID"</string>
+    <string name="kitesdk_ORDER_ID">"BESTÄLLNINGS-ID"</string>
+    <string name="kitesdk_Order_Summary">"Beställningssammanfattning"</string>
+    <string name="kitesdk_ORDER_SUMMARY">"BESTÄLLNINGSSAMMANFATTNING"</string>
+    <string name="kitesdk_Oops_">"Hoppsan!"</string>
+    <string name="kitesdk_Pay">"Betala"</string>
+    <string name="kitesdk_Payment_Id">"Betalnings-id"</string>
+    <string name="kitesdk_PAYMENT_ID">"BETALNINGS-ID"</string>
+    <string name="kitesdk_PRICE">"PRIS"</string>
+    <string name="kitesdk_print_these">"Skriv ut dessa"</string>
+    <string name="kitesdk_Processing_">"Bearbetning…"</string>
+    <string name="kitesdk_Promotional_Discount">"Kampanjrabatt"</string>
+    <string name="kitesdk_Remove">"Ta bort"</string>
+    <string name="kitesdk_Rotate">"Rotera"</string>
+    <string name="kitesdk_Quantity">"Antal"</string>
+    <string name="kitesdk_QUANTITY">"ANTAL"</string>
+    <string name="kitesdk_Retry">"Försök igen"</string>
+    <string name="kitesdk_Save">"Spara"</string>
+    <string name="kitesdk_Select_Image">"Välj bild"</string>
+    <string name="kitesdk_Shipping">"Frakt"</string>
+    <string name="kitesdk_Size">"Storlek"</string>
+    <string name="kitesdk_Total">"Total"</string>
+
+    <string name="kitesdk_image_source_device">"Kamera"</string>
+    <string name="kitesdk_image_source_instagram">"Instagram"</string>
+    <string name="kitesdk_image_source_facebook">"Facebook"</string>
+    <string name="kitesdk_image_source_from_phone">"Överför från telefon"</string>
+
+    <string name="kitesdk_select_photo_from_device">"Välj kamerafoto"</string>
+    <string name="kitesdk_select_photo_from_instagram">"Välj Instagram-foto"</string>
+    <string name="kitesdk_select_photo_from_facebook">"Välj Facebook-foto"</string>
+    <string name="kitesdk_upload_photo_from_phone">"Överför foto från telefonen"</string>
+
+    <string name="kitesdk_destination_description_gbr">"Storbritannien"</string>
+    <string name="kitesdk_destination_description_europe">"Europa"</string>
+    <string name="kitesdk_destination_description_rest_of_world">"Över hela världen"</string>
+
+    <string name="kitesdk_placeholder_message">"Fler artiklar\nkommer snart!"</string>
+
+    <string name="kitesdk_order_success_banner_message">"Vi har tagit emot\ndin beställning"</string>
+    <string name="kitesdk_order_failure_banner_message">"Något gick fel.\nFörsök igen nedan."</string>
+    <string name="kitesdk_order_failure_message">"Något gick fel.\nFörsök igen."</string>
+
+    <string name="kitesdk_product_quantity_format_string">"Förpackning med %d"</string>
+
+    <string name="kitesdk_product_free_shipping">"Kostnadsfri"</string>
+    <string name="kitesdk_product_shipping_summary_format_string">"Från %s"</string>
+
+    <string name="kitesdk_product_free_worldwide_shipping">"Gratis frakt över hela världen"</string>
+
+    <string name="kitesdk_product_overview_guarantee_title">"Kvalitetsgaranti"</string>
+    <string name="kitesdk_product_overview_guarantee_text" formatted="false">"Vi är övertygade om att du kommer att bli mer än nöjda med våra produkter. Men för säkerhets skull erbjuder vi full återbetalning om du inte är 100 % nöjd – även om det bara är en dålig dag."</string>
+
+    <string name="kitesdk_product_overview_start_button_text">"Börja skapa"</string>
+
+    <string name="kitesdk_image_selection_empty_message">"Lägg till foton genom att trycka\npå ikonerna ovan"</string>
+
+    <string name="kitesdk_edit_border_text_hint">"Lägg till text här"</string>
+
+    <string name="kitesdk_multi_page_instructions_html">"<![CDATA[<b>Tryck</b> på bilden för att redigera.<br><b>Tryck</b> ned för att sortera.]]>"</string>
+
+    <string name="kitesdk_address_book_empty">"Adressbok tom"</string>
+
+    <string name="kitesdk_image_source_prompt">"Lägg till foton genom att trycka på ett av alternativen"</string>
+
+    <string name="kitesdk_image_selection_pack_title_format_string" tools:ignore="PluralsCandidate">"#%1$d förpackning av %2$d %3$s"</string>
+
+    <string name="kitesdk_image_selection_clear_photos_format_string">"Ta bort %s"</string>
+
+    <string name="kitesdk_edit_image_prompt_text">"Ändra fotots position"</string>
+
+    <string name="kitesdk_image_selection_proceed_button_text">"Granska och redigera"</string>
+
+    <string name="kitesdk_review_and_edit_title_format_string">"%1$d / %2$d"</string>
+    <string name="kitesdk_review_and_edit_proceed_button_text">"Bekräfta"</string>
+
+    <string name="kitesdk_edit_image_title">"Redigera bilder"</string>
+
+    <string name="kitesdk_basket_empty">"Varukorgen är tom"</string>
+    <string name="kitesdk_basket_left_button_text">"Fortsätt handla"</string>
+    <string name="kitesdk_basket_right_button_text">"Gå till kassan"</string>
+
+    <string name="kitesdk_address_hint_text_recipient">"Namn"</string>
+    <string name="kitesdk_address_hint_text_line_1">"Adressrad 1"</string>
+    <string name="kitesdk_address_hint_text_line_2">"Adressrad 2"</string>
+    <string name="kitesdk_address_hint_text_city">"Stad"</string>
+    <string name="kitesdk_address_hint_text_county_or_state">"Län/region"</string>
+    <string name="kitesdk_address_hint_text_postcode_or_zip">"Postnummer"</string>
+
+    <string name="kitesdk_shipping_delivery_address_button_text">Välj leveransadress</string>
+    <string name="kitesdk_shipping_phone_hint_text">"Telefon"</string>
+    <string name="kitesdk_shipping_email_reason">"Din e-postadress krävs så att vi kan skicka uppdateringar med orderbekräftelse."</string>
+    <string name="kitesdk_shipping_phone_reason">"Du måste ange ditt telefonnummer utifall det uppstår leveransproblem."</string>
+
+    <string name="kitesdk_address_search_prompt">"Sök efter adresser ovan"</string>
+
+    <string name="kitesdk_address_search_hint_format_string">"Sök efter %1$s"</string>
+    <string name="kitesdk_address_search_empty_results">"Sök efter adresser ovan"</string>
+    <string name="kitesdk_address_search_dialog_title">"Hämtar detaljer"</string>
+    <string name="kitesdk_address_search_dialog_message">"Hämtar adressinformation"</string>
+    <string name="kitesdk_address_search_no_results">"Hittade inga resultat"</string>
+
+    <string name="kitesdk_button_text_edit_address">"Redigera adress"</string>
+    <string name="kitesdk_button_text_delete_address">"Radera adress"</string>
+
+    <string name="kitesdk_address_edit_proceed_button_text">"Spara"</string>
+
+    <string name="kitesdk_payment_promo_hint">"Kampanjkod"</string>
+    <string name="kitesdk_payment_promo_button_text_apply">"Ansök"</string>
+    <string name="kitesdk_payment_promo_button_text_clear">"Rensa"</string>
+    <string name="kitesdk_payment_credit_card_button_text">"Kreditkort"</string>
+    <string name="kitesdk_payment_credit_card_button_text_free">"Kostnadsfri"</string>
+    <string name="kitesdk_payment_paypal_button_text">"PayPal"</string>
+
+    <string name="kitesdk_stripe_error_invalid_card_details">"Ogiltiga kortuppgifter"</string>
+    <string name="kitesdk_stripe_error_create_object">"Det gick inte att hämta Stripe-token"</string>
+    <string name="kitesdk_stripe_error_retrieve_token">"Det gick inte att hämta Stripe-token"</string>
+
+    <string name="kitesdk_send_email_chooser_title">"Skicka e-post"</string>
+
+    <string name="kitesdk_Card_Number">"Kortnummer"</string>
+    <string name="kitesdk_Expires">"Går ut"</string>
+    <string name="kitesdk_CVV">"CVV"</string>
+
+    <string name="kitesdk_card_error_invalid_number">"Ogiltigt kortnummer"</string>
+    <string name="kitesdk_card_error_invalid_expiry_date">"Ogiltigt utgångsdatum"</string>
+    <string name="kitesdk_card_error_invalid_cvv">"Ogiltig verifikationsvärde"</string>
+
+    <string name="kitesdk_order_submission_message_uploading">"Överför bilder"</string>
+    <string name="kitesdk_order_submission_message_posted">"Postad"</string>
+    <string name="kitesdk_order_submission_message_received">"Mottagen"</string>
+    <string name="kitesdk_order_submission_message_accepted">"Accepterad"</string>
+    <string name="kitesdk_order_submission_message_validated">"Validerad"</string>
+    <string name="kitesdk_order_submission_message_processed">"Bearbetad"</string>
+
+
+    <string name="kitesdk_alert_dialog_title_order_submission_error">"Fel vid beställningssändning"</string>
+    <string name="kitesdk_order_timeout_message">"Din beställning verkar inte har bearbetats än. Det kan hända att servrarna är upptagna och betalningen helt enkelt tar tid. Försök igen senare."</string>
+
+    <string name="kitesdk_alert_dialog_title_order_cancelled">"Beställning makulerad"</string>
+    <string name="kitesdk_alert_dialog_message_order_cancelled">"Något gick fel – din beställning verkar ha avbrutits vid sändningen."</string>
+
+    <string name="kitesdk_alert_dialog_message_server_offline_maintenance">"Servern är för tillfället nere för underhåll."</string>
+    <string name="kitesdk_alert_dialog_message_server_returned_html">"Servern returnerade ett ogiltigt (HTML) svar. Detta händer vanligtvis när servern är otillgänglig."</string>
+
+    <string name="kitesdk_scan_qr_code">"Skanna QR-kod"</string>
+    <string name="kitesdk_scan_qr_code_instructions">"Skanna QR-koden med hjälp av en\nQR-läsarapp på din enhet."</string>
+    <string name="kitesdk_scan_qr_code_alternate_instructions">"Du kan också skriva in följande webbadress i webbläsarens adressfält på mobilen:"</string>
+
+    <string name="kitesdk_action_settings">"Inställningar"</string>
+    <string name="kitesdk_title_activity_checkout">"Frakt"</string>
+    <string name="kitesdk_title_activity_order_receipt">"Mottagande"</string>
+    <string name="kitesdk_title_activity_payment">"Betalning"</string>
+    <string name="kitesdk_title_activity_address_book">"Adressbok"</string>
+
+    <string name="kitesdk_add_address">"Adres toevoegen"</string>
+    <string name="kitesdk_title_activity_address_add">"Lägg till adress"</string>
+    <string name="kitesdk_title_activity_address_edit">"Redigera adress"</string>
+    <string name="kitesdk_action_save_address">"Spara adress"</string>
+
+    <plurals name="kitesdk_Photo_plurals">
+        <item quantity="zero">"%d Foton"</item>
+        <item quantity="one">"%d Foto"</item>
+        <item quantity="two">"%d Foton"</item>
+        <item quantity="few">"%d Foton"</item>
+        <item quantity="many">"%d Foton"</item>
+        <item quantity="other">"%d foton"</item>
+    </plurals>
+
+    <plurals name="kitesdk_photo_plurals">
+        <item quantity="zero">"%d foton"</item>
+        <item quantity="one">"%d foto"</item>
+        <item quantity="two">"%d foton"</item>
+        <item quantity="few">"%d foton"</item>
+        <item quantity="many">"%d foton"</item>
+        <item quantity="other">"%d foton"</item>
+    </plurals>
+
+</resources>
