@@ -42,6 +42,8 @@ package ly.kite.sample;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.Manifest;
 import android.app.Activity;
@@ -49,6 +51,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -244,9 +247,20 @@ public class MainActivity extends ADeepLinkableActivity
       assetArrayList.add( Asset.create( "http://psps.s3.amazonaws.com/sdk_static/2.jpg" ) );
       assetArrayList.add( Asset.create( "http://psps.s3.amazonaws.com/sdk_static/3.jpg" ) );
       assetArrayList.add( Asset.create( "http://psps.s3.amazonaws.com/sdk_static/4.jpg" ) );
+
+      // If authentication is required the following methods can be used:
+      //    Asset.create( stringURL, headerMap) ); //for URL that contains the image format at the end
+      // or
+      //    Asset.create( stringURL, headerMap , Asset.MIMEType.[JPEG/PNG]) ); //for URL that does not contain the image format at the end
+      //
+      // example:
+      //   Map<String, String> headerMap = new HashMap<>();
+      //   headerMap.put( "Authorization", "auth_key_1234abc" );
+      //   assetArrayList.add( Asset.create( "http://kyte.ly/url?id=abc123", headerMap , Asset.MIMEType.JPEG) );
       }
     catch ( Exception ex )
       {
+        Log.e(LOG_TAG, "Encountered error while adding assets: " + ex.getMessage());
       }
 
     fullJourney( assetArrayList );
@@ -327,6 +341,17 @@ public class MainActivity extends ADeepLinkableActivity
     // Set Kite analytics, by default this is off
 
     kiteSDK.setKiteAnalyticsEnabled(false);
+
+
+    // Add this in if you want to use Google Pay, DO NOT deploy the option
+    // in PRODUCTION until your app has been enabled/whitelisted by the
+    // Google API team via review here otherwise is WILL NOT WORK:
+    // https://services.google.com/fb/forms/googlepayAPIenable/
+
+    // For more details on the Google Pay process:
+    // https://developers.google.com/pay/api/android/overview
+
+    //  kiteSDK.setGooglePayPaymentsEnabled(true);
 
 
     return ( kiteSDK );

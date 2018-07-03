@@ -3,6 +3,6 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content">
 
-    <include layout="@layout/include_cta_bar_divided"/>
+    <include layout="@layout/include_payment_options"/>
 
 </FrameLayout>

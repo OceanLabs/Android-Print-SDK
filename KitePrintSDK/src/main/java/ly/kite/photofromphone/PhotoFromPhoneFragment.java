@@ -419,7 +419,7 @@ public class PhotoFromPhoneFragment extends DialogFragment
 
       File file = mAsset.getImageFile();
 
-      FileDownloader.getInstance( getActivity() ).requestFileDownload( mDownloadURL, file.getParentFile(), file, this );
+      FileDownloader.getInstance( getActivity() ).requestFileDownload( mDownloadURL, mAsset.getURLHeaderMap(), file.getParentFile(), file, this );
       }
 
 

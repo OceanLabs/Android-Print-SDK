@@ -23,7 +23,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 27
         versionName '1.0'
-        versionCode 108
+        versionCode 111
     }
 
     sourceSets {
@@ -50,16 +50,17 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:27.1.0'
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.google.zxing:core:3.2.1'
+    implementation 'com.google.android.gms:play-services-wallet:15.0.1'
 
     api 'com.paypal.sdk:paypal-android-sdk:2.15.3'
     api 'com.stripe:stripe-android:7.0.0'
 
     // api project(':DevicePhotoPicker')
-    api 'ly.kite:device-photo-picker:5.8.8'
+    api 'ly.kite:device-photo-picker:5.8.9'
     // implementation project(':InstagramPhotoPicker' )
-    implementation 'ly.kite:instagram-photo-picker:5.8.8'
+    implementation 'ly.kite:instagram-photo-picker:5.8.9'
     // implementation project(':FacebookPhotoPicker')
-    implementation 'ly.kite:facebook-photo-picker:5.8.8'
+    implementation 'ly.kite:facebook-photo-picker:5.8.9'
 }
 
 // Exclude PayPal card scanning libs from package

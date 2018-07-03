@@ -110,7 +110,7 @@ public class KiteSDK
   static public  final boolean DISPLAY_PRODUCTS                                    = false;
 
 
-  static public  final String SDK_VERSION                                          = "5.8.8";
+  static public  final String SDK_VERSION                                          = "5.8.9";
 
   static public  final String IMAGE_CATEGORY_APP                                   = "app";
   static public  final String IMAGE_CATEGORY_PRODUCT_ITEM                          = "product_item";
@@ -144,6 +144,7 @@ public class KiteSDK
   static private final String PARAMETER_NAME_STRIPE_ACCOUNT_ID                     = "stripe_account_id";
 
   static private final String PARAMETER_NAME_LOCKED_CURRENCY_CODE                  = "locked_currency_code";
+  static private final String PARAMETER_NAME_GOOGLE_PAY_PAYMENTS_ENABLED           = "google_pay_payments_available";
   static private final String PARAMETER_NAME_PAYPAL_PAYMENTS_AVAILABLE             = "paypal_payments_available";
 
   static private final String PARAMETER_NAME_INSTAGRAM_CLIENT_ID                   = "instagram_client_id";
@@ -1491,6 +1492,30 @@ public class KiteSDK
     {
     return ( getStringSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_LOCKED_CURRENCY_CODE, null ) );
     }
+
+
+  /*****************************************************
+   *
+   * Enables Google Pay payments. By default this is
+   * turned off.
+   *
+   *****************************************************/
+  public KiteSDK setGooglePayPaymentsEnabled( Boolean enabled )
+  {
+    setSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_GOOGLE_PAY_PAYMENTS_ENABLED, enabled );
+
+    return ( this );
+  }
+
+  /*****************************************************
+   *
+   * Returns true if Google Pay payments are available.
+   *
+   *****************************************************/
+  public boolean getGooglePayPaymentsEnabled()
+  {
+    return ( getBooleanSDKParameter( Scope.APP_SESSION, PARAMETER_NAME_GOOGLE_PAY_PAYMENTS_ENABLED, false ) );
+  }
 
 
   /*****************************************************

@@ -1,3 +1,10 @@
+### 5.8.9 (2018-07-03)
+- Added: Google Pay! The additional payment option will not show up by default as a process needs to be followed in order to activate it for production needs. Details [here](https://github.com/OceanLabs/Android-Print-SDK/blob/master/docs/google_pay.md)
+- Added: You can now add an authentication header to any images you provide directly to the SDK. See the Sample App for an example of this
+- Updated: The payment page UI has been updated to make space for the Google Pay option, make sure your layouts are compatible with the changes if you've created a custom view
+- Fixed: An issue with photobook parameters that caused problems when ordering
+- Fixed: The collage poster images no longer all refresh when a single image is moved around
+
 ### 5.8.8 (2018-06-18)
 - Added: Counter for multi-image selection (squares/collages etc) to help the user keep track of how many images have been selected so far
 - Updated: minSDK is now 16, due to PayPal requirements

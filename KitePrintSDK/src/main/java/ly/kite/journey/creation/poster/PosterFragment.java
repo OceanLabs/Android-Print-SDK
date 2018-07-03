@@ -695,7 +695,8 @@ public class PosterFragment extends AProductCreationFragment implements PosterAd
         mImageSpecArrayList.set( mDraggedImageIndex, dropImageSpec );
 
 
-        mPosterAdaptor.notifyDataSetChanged();
+        mPosterAdaptor.notifyItemChanged( mDraggedImageIndex );
+        mPosterAdaptor.notifyItemChanged( dropImageIndex );
         }
       }
 

@@ -55,6 +55,7 @@ import android.util.Log;
 import ly.kite.KiteSDK;
 import ly.kite.R;
 import ly.kite.analytics.Analytics;
+import ly.kite.catalogue.ProductOption;
 import ly.kite.journey.creation.calendar.CalendarFragment;
 import ly.kite.journey.creation.poster.PosterFragment;
 import ly.kite.journey.creation.reviewandedit.EditBorderTextImageFragment;
@@ -481,6 +482,41 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
   @Override
   public void pbOnNext()
     {
+    //set options map for new type of photobooks , if that's the case
+    List<ProductOption> optionList = mProduct.getOptionList();
+    if ( optionList != null )
+      {
+      for( ProductOption option : optionList )
+        {
+        //check if there is a finish option
+        if( option.getCode().equals( "finish" ) )
+          {
+          //default should be matte ,if not available pick first option
+          String finishOption = "matte";
+          boolean hasMatte = false;
+          for( ProductOption.Value value : option.getValueList() )
+            {
+            if( value.getCode().equals( "matte" ) )
+              {
+              hasMatte = true;
+              break;
+              }
+            }
+          if( !hasMatte )
+            {
+            List<ProductOption.Value> valueList = option.getValueList();
+            if( valueList != null && valueList.size() > 0 )
+              {
+              finishOption = valueList.get(0).getCode();
+              }
+            }
+
+          mOptionMap.put( "finish", finishOption );
+          mOptionMap.put( "spine_color", "#ffffff" );
+          break;
+        }
+      }
+    }
     onNewBasketItem( mImageSpecArrayList );
     }
 

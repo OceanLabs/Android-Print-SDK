@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <string name="kitesdk_powered_by">""</string>
+
+    <string name="kitesdk_unit_centimeters">"cm"</string>
+    <string name="kitesdk_unit_inches">"palce"</string>
+    <string name="kitesdk_unit_pixels">"pixelov"</string>
+
+    <string name="kitesdk_unit_centimeters_short">"cm"</string>
+    <string name="kitesdk_unit_inches_short">"in"</string>
+    <string name="kitesdk_unit_pixels_short">"px"</string>
+
+    <string name="kitesdk_month_hint">"MM"</string> 
+    <string name="kitesdk_year_hint">"RRRR"</string> 
+
+    <string name="kitesdk_title_choose_product_group">"Print Shop"</string>
+    <string name="kitesdk_title_create_phone_case">"Puzdro Snap"</string>
+    <string name="kitesdk_title_image_source">"Prejsť na fotografie"</string>
+    <string name="kitesdk_title_photobook">"Fotokniha"</string>
+    <string name="kitesdk_title_calendar">"Kalendár"</string>
+    <string name="kitesdk_title_poster">"Plagát"</string>
+    <string name="kitesdk_title_basket">"Košík"</string>
+    <string name="kitesdk_title_payment_sandbox">"Platba (TEST)"</string>
+    <string name="kitesdk_title_payment">"Platba"</string>
+    <string name="kitesdk_title_payment_source_sandbox">"Platba (TEST)"</string>
+    <string name="kitesdk_title_payment_source">"Platba"</string>
+    <string name="kitesdk_title_order_history">"História objednávok"</string>
+
+    <string name="kitesdk_settings_title_show_notification_messages">"Správy"</string>
+    <string name="kitesdk_settings_title_support">"Podpora"</string>
+    <string name="kitesdk_settings_title_privacy">"Zásady ochrany osobných údajov"</string>
+    <string name="kitesdk_settings_title_terms">"Zmluvné podmienky"</string>
+    <string name="kitesdk_settings_title_legal">"Právne informácie"</string>
+    <string name="kitesdk_settings_title_licences">"Licencie Open Source"</string>
+    <string name="kitesdk_settings_summary_licences">"Licencie Open Source"</string>
+    <string name="kitesdk_settings_title_build_version">"Verzia"</string>
+
+    <string name="kitesdk_alert_dialog_title_pack_not_full_format_string">"Vybrali ste: %s"</string>
+    <string name="kitesdk_alert_dialog_message_pack_not_full_format_string" tools:ignore="PluralsCandidate">"Za rovnakú cenu môžete pridať uvedený počet ďalších: %d"</string>
+
+    <string name="kitesdk_alert_dialog_title_oops">"Oeps!"</string>
+    <string name="kitesdk_alert_dialog_message_pricing_format_string">"Vyskytli sa problémy:\n%s"</string>
+
+    <string name="kitesdk_alert_dialog_title_error_retrieving_products">"Ospravedlňujeme sa!"</string>
+    <string name="kitesdk_alert_dialog_message_error_retrieving_products">"Internetové pripojenie je zrejme prerušené."</string>
+
+    <string name="kitesdk_alert_dialog_title_product_not_found">"Ospravedlňujeme sa!"</string>
+    <string name="kitesdk_alert_dialog_message_product_not_found">"Internetové pripojenie je zrejme prerušené."</string>
+
+    <string name="kitesdk_alert_dialog_title_delete_photo">"Odstrániť fotografiu?"</string>
+    <string name="kitesdk_alert_dialog_message_delete_photo">"Naozaj chcete odstrániť túto fotografiu?"</string>
+    <string name="kitesdk_alert_dialog_delete_photo_cancel_text">"Ponechať"</string>
+    <string name="kitesdk_alert_dialog_delete_photo_confirm_text">"Odstrániť"</string>
+
+    <string name="kitesdk_alert_dialog_message_no_images_selected">"Vyberte niekoľko obrázkov."</string>
+
+    <string name="kitesdk_alert_dialog_message_no_recipient">"Zadajte meno príjemcu."</string>
+    <string name="kitesdk_alert_dialog_message_no_line1">"Vyplňte 1. riadok adresy."</string>
+    <string name="kitesdk_alert_dialog_message_no_postal_code">"Vyplňte PSČ."</string>
+    <string name="kitesdk_alert_dialog_message_no_email_address">"Zadajte e-mailovú adresu."</string>
+    <string name="kitesdk_alert_dialog_message_no_city">"Vyplňte mesto."</string>
+
+    <string name="kitesdk_alert_dialog_title_invalid_delivery_address">"Neplatná doručovacia adresa"</string>
+    <string name="kitesdk_alert_dialog_message_invalid_delivery_address">"Vyberte doručovaciu adresu."</string>
+
+    <string name="kitesdk_alert_dialog_title_invalid_email_address">"Neplatná e-mailová adresa"</string>
+    <string name="kitesdk_alert_dialog_message_invalid_email_address">"Zadajte platnú e-mailovú adresu."</string>
+
+    <string name="kitesdk_alert_dialog_title_invalid_phone_number">"Neplatné telefónne číslo"</string>
+    <string name="kitesdk_alert_dialog_message_invalid_phone_number">"Zadajte platné telefónne číslo."</string>
+
+    <string name="kitesdk_alert_dialog_message_connectivity">"Internetové pripojenie je zrejme prerušené."</string>
+
+    <string name="kitesdk_alert_dialog_message_processing">"Chvíľku strpenia…"</string>
+
+    <string name="kitesdk_alert_dialog_title_end_customer_session">"Ukončiť reláciu"</string>
+    <string name="kitesdk_alert_dialog_message_end_customer_session">"Naozaj chcete ukončiť reláciu?"</string>
+
+    <string name="kitesdk_alert_dialog_title_remove_item">"Odstrániť položku"</string>
+    <string name="kitesdk_alert_dialog_message_remove_item">"Potvrďte, či chcete túto položku odstrániť z košíka."</string>
+
+    <string name="kitesdk_alert_dialog_title_empty_basket">"Vyprázdniť košík"</string>
+    <string name="kitesdk_alert_dialog_message_empty_basket">"Košík je momentálne prázdny. Skôr než prejdete na platbu, pridajte doň nejakú položku."</string>
+
+    <string name="kitesdk_alert_dialog_message_uploading_images">"Nahrávajú sa obrázky"</string>
+
+    <string name="kitesdk_alert_dialog_message_unable_to_store_card">"Kartu sa nepodarilo uložiť"</string>
+    <string name="kitesdk_alert_dialog_message_no_payment_id">"V doklade o platbe sa nenašlo žiadne ID platby"</string>
+    <string name="kitesdk_alert_dialog_message_no_proof_of_payment">"V potvrdení o platbe sa nenašlo žiadne ID platby"</string>
+    <string name="kitesdk_alert_dialog_message_no_paypal_confirmation">"Zo služby PayPal sme nedostali potvrdenie o platbe"</string>
+    <string name="kitesdk_alert_dialog_message_card_expired">"Ľutujeme, platnosť tejto karty zrejme vypršala. Skúste to znova."</string>
+    <string name="kitesdk_alert_dialog_message_card_not_recognised">"Ľutujeme, vašu kartu sa nám nepodarilo rozpoznať. V prípade potreby to skúste znova tak, že manuálne zadáte podrobnosti karty."</string>
+
+    <string name="kitesdk_alert_dialog_item_pay_with_new_card">"Zaplatiť novou kartou"</string>
+    <string name="kitesdk_alert_dialog_item_pay_with_existing_card_format_string">"Zaplatiť kartou končiacou sa na %1$s"</string>
+
+    <string name="kitesdk_log_out_warning">"Automaticky\nvás odhlásime"</string>
+
+    <string name="kitesdk_progress_dialog_title_add_to_basket">"Pridať do košíka"</string>
+    <string name="kitesdk_progress_dialog_title_updating_basket">"Aktualizuje sa košík"</string>
+
+    <string name="kitesdk_add_more">"Pridať ďalšie"</string>
+    <string name="kitesdk_Cancel">"Zrušiť"</string>
+    <string name="kitesdk_Choose_Delivery_Address">"Vyberte doručovaciu adresu"</string>
+    <string name="kitesdk_Continue_Shopping">"Pokračovať v nákupe"</string>
+    <string name="kitesdk_Country">"Krajina"</string>
+    <string name="kitesdk_Description">"Popis"</string>
+    <string name="kitesdk_Details">"Podrobnosti"</string>
+    <string name="kitesdk_Done">"Hotovo"</string>
+    <string name="kitesdk_Edit">"Upraviť"</string>
+    <string name="kitesdk_Email">"E-mailová adresa"</string>
+    <string name="kitesdk_End_Session">"Ukončiť reláciu"</string>
+    <string name="kitesdk_Flip">"Prevrátiť"</string>
+    <string name="kitesdk_Free">"Zdarma"</string>
+    <string name="kitesdk_ITEM">"POLOŽKA"</string>
+    <string name="kitesdk_Keep">"Ponechať"</string>
+    <string name="kitesdk_Loading">"Načítava sa"</string>
+    <string name="kitesdk_Loading_catalogue">"Načítava sa katalóg"</string>
+    <string name="kitesdk_Log_Out">"Odhlásiť sa"</string>
+    <string name="kitesdk_Next">"Ďalej"</string>
+    <string name="kitesdk_Next_Customer">"Ďalej"</string>
+    <string name="kitesdk_No_Results">"Nenašli sa žiadne výsledky"</string>
+    <string name="kitesdk_OK">"OK"</string>
+    <string name="kitesdk_Order_Id">"ID objednávky"</string>
+    <string name="kitesdk_ORDER_ID">"ID OBJEDNÁVKY"</string>
+    <string name="kitesdk_Order_Summary">"Súhrn objednávky"</string>
+    <string name="kitesdk_ORDER_SUMMARY">"SÚHRN OBJEDNÁVKY"</string>
+    <string name="kitesdk_Oops_">"Ospravedlňujeme sa!"</string>
+    <string name="kitesdk_Pay">"Zaplatiť"</string>
+    <string name="kitesdk_Payment_Id">"ID platby"</string>
+    <string name="kitesdk_PAYMENT_ID">"ID PLATBY"</string>
+    <string name="kitesdk_PRICE">"CENA</string>
+    <string name="kitesdk_print_these">"Vytlačiť tieto"</string>
+    <string name="kitesdk_Processing_">"Spracováva sa…"</string>
+    <string name="kitesdk_Promotional_Discount">"Propagačná zľava"</string>
+    <string name="kitesdk_Remove">"Odstrániť"</string>
+    <string name="kitesdk_Rotate">"Otočiť"</string>
+    <string name="kitesdk_Quantity">"Množstvo"</string>
+    <string name="kitesdk_QUANTITY">"MNOŽSTVO]"</string>
+    <string name="kitesdk_Retry">"Skúsiť znova"</string>
+    <string name="kitesdk_Save">"Uložiť"</string>
+    <string name="kitesdk_Select_Image">"Vybrať obrázok"</string>
+    <string name="kitesdk_Shipping">"Dodanie"</string>
+    <string name="kitesdk_Size">"Veľkosť"</string>
+    <string name="kitesdk_Total">"Celkom"</string>
+
+    <string name="kitesdk_image_source_device">"Fotoaparát"</string>
+    <string name="kitesdk_image_source_instagram">"Instagram"</string>
+    <string name="kitesdk_image_source_facebook">"Facebook"</string>
+    <string name="kitesdk_image_source_from_phone">"Nahrať z telefónu"</string>
+
+    <string name="kitesdk_select_photo_from_device">"Vybrať fotografiu vo fotoaparáte"</string>
+    <string name="kitesdk_select_photo_from_instagram">"Vybrať fotografia na Instagrame"</string>
+    <string name="kitesdk_select_photo_from_facebook">"Vybrať fotografiu na Facebooku"</string>
+    <string name="kitesdk_upload_photo_from_phone">"Nahrať fotografiu z telefónu"</string>
+
+    <string name="kitesdk_destination_description_gbr">"UK"</string>
+    <string name="kitesdk_destination_description_europe">"Európa"</string>
+    <string name="kitesdk_destination_description_rest_of_world">"Svet"</string>
+
+    <string name="kitesdk_placeholder_message">"Čoskoro pribudnú\nďalšie položky!"</string>
+
+    <string name="kitesdk_order_success_banner_message">"Prijali sme\nvašu objednávku"</string>
+    <string name="kitesdk_order_failure_banner_message">"Vyskytla sa chyba.\nNižšie to skúste znova."</string>
+    <string name="kitesdk_order_failure_message">"Vyskytla sa chyba.\nSkúste to znova."</string>
+
+    <string name="kitesdk_product_quantity_format_string">"Balík %d"</string>
+
+    <string name="kitesdk_product_free_shipping">"Zdarma"</string>
+    <string name="kitesdk_product_shipping_summary_format_string">"Od %s"</string>
+
+    <string name="kitesdk_product_free_worldwide_shipping">"Dodanie zdarma na celom svete"</string>
+
+    <string name="kitesdk_product_overview_guarantee_title">"Záruka kvality"</string>
+    <string name="kitesdk_product_overview_guarantee_text" formatted="false">"Sme si istí, že s našimi produktmi budete nadmieru spokojný/-á. Pre istotu však ponúkame možnosť vrátenia plnej sumy pre prípad, že by vaša spokojnosť nebola stopercentná – aj keby ste práve mali jednoducho zlý deň."</string>
+
+    <string name="kitesdk_product_overview_start_button_text">"Začať tvoriť"</string>
+
+    <string name="kitesdk_image_selection_empty_message">"Klepnutím na ikony vyššie\npridajte fotografie"</string>
+
+    <string name="kitesdk_edit_border_text_hint">"Tu zadajte text"</string>
+
+    <string name="kitesdk_multi_page_instructions_html">"<![CDATA[<b>Klepnutím</b> na obrázok ho môžete upraviť.<br><b>Pridržaním</b> zmeníte poradie.]]>"</string>
+
+    <string name="kitesdk_address_book_empty">"Adresár je prázdny"</string>
+
+    <string name="kitesdk_image_source_prompt">"Pridajte fotografie klepnutím na niektorú z možností"</string>
+
+    <string name="kitesdk_image_selection_pack_title_format_string" tools:ignore="PluralsCandidate">"%1$d. balík – %2$d x %3$s"</string>
+
+    <string name="kitesdk_image_selection_clear_photos_format_string">"Odstrániť: %s"</string>
+
+    <string name="kitesdk_edit_image_prompt_text">"Premiestnite fotografiu"</string>
+
+    <string name="kitesdk_image_selection_proceed_button_text">"Skontrolovať a upraviť"</string>
+
+    <string name="kitesdk_review_and_edit_title_format_string">"%1$d / %2$d"</string>
+    <string name="kitesdk_review_and_edit_proceed_button_text">"Potvrdiť"</string>
+
+    <string name="kitesdk_edit_image_title">"Upraviť obrázok"</string>
+
+    <string name="kitesdk_basket_empty">"Košík je prázdny"</string>
+    <string name="kitesdk_basket_left_button_text">"Pokračovať v nákupe"</string>
+    <string name="kitesdk_basket_right_button_text">"Overovanie"</string>
+
+    <string name="kitesdk_address_hint_text_recipient">"Názov"</string>
+    <string name="kitesdk_address_hint_text_line_1">"1. riadok adresy"</string>
+    <string name="kitesdk_address_hint_text_line_2">"2. riadok adresy"</string>
+    <string name="kitesdk_address_hint_text_city">"Mesto"</string>
+    <string name="kitesdk_address_hint_text_county_or_state">"Krajina/štát"</string>
+    <string name="kitesdk_address_hint_text_postcode_or_zip">"PSČ/ZIP"</string>
+
+    <string name="kitesdk_shipping_delivery_address_button_text">Vyberte doručovaciu adresu</string>
+    <string name="kitesdk_shipping_phone_hint_text">"Telefón"</string>
+    <string name="kitesdk_shipping_email_reason">"Váš e-mail potrebujeme na to, aby sme vám mohli poslať správy s potvrdením objednávky."</string>
+    <string name="kitesdk_shipping_phone_reason">"Váš telefón potrebujeme pre prípad, že sa vyskytnú nejaké problémy s doručením."</string>
+
+    <string name="kitesdk_address_search_prompt">"Vyššie vyhľadajte adresy"</string>
+
+    <string name="kitesdk_address_search_hint_format_string">"Vyhľadať %1$s"</string>
+    <string name="kitesdk_address_search_empty_results">"Vyššie vyhľadajte adresy"</string>
+    <string name="kitesdk_address_search_dialog_title">"Načítavajú sa podrobnosti"</string>
+    <string name="kitesdk_address_search_dialog_message">"Načítavajú sa podrobnosti adresy"</string>
+    <string name="kitesdk_address_search_no_results">"Nenašli sa žiadne výsledky"</string>
+
+    <string name="kitesdk_button_text_edit_address">"Upraviť adresu"</string>
+    <string name="kitesdk_button_text_delete_address">"Odstrániť adresu"</string>
+
+    <string name="kitesdk_address_edit_proceed_button_text">"Uložiť"</string>
+
+    <string name="kitesdk_payment_promo_hint">"Propagačný kód"</string>
+    <string name="kitesdk_payment_promo_button_text_apply">"Prihláste sa"</string>
+    <string name="kitesdk_payment_promo_button_text_clear">"Vymazať"</string>
+    <string name="kitesdk_payment_credit_card_button_text">"Kreditná karta"</string>
+    <string name="kitesdk_payment_credit_card_button_text_free">"Zdarma"</string>
+    <string name="kitesdk_payment_paypal_button_text">"PayPal"</string>
+
+    <string name="kitesdk_stripe_error_invalid_card_details">"Neplatné podrobnosti karty"</string>
+    <string name="kitesdk_stripe_error_create_object">"Nepodarilo sa načítať token Stripe"</string>
+    <string name="kitesdk_stripe_error_retrieve_token">"Nepodarilo sa načítať token Stripe"</string>
+
+    <string name="kitesdk_send_email_chooser_title">"Odoslať e-mail"</string>
+
+    <string name="kitesdk_Card_Number">"Číslo karty"</string>
+    <string name="kitesdk_Expires">"Platnosť vyprší"</string>
+    <string name="kitesdk_CVV">"CVV"</string>
+
+    <string name="kitesdk_card_error_invalid_number">"Neplatné číslo karty"</string>
+    <string name="kitesdk_card_error_invalid_expiry_date">"Neplatný dátum vypršania platnosti"</string>
+    <string name="kitesdk_card_error_invalid_cvv">"Neplatná hodnota overenia"</string>
+
+    <string name="kitesdk_order_submission_message_uploading">"Nahrávajú sa obrázky"</string>
+    <string name="kitesdk_order_submission_message_posted">"Zverejnené"</string>
+    <string name="kitesdk_order_submission_message_received">"Prijaté"</string>
+    <string name="kitesdk_order_submission_message_accepted">"Akceptované"</string>
+    <string name="kitesdk_order_submission_message_validated">"Overené"</string>
+    <string name="kitesdk_order_submission_message_processed">"Spracované"</string>
+
+
+    <string name="kitesdk_alert_dialog_title_order_submission_error">"Chyba pri odoslaní objednávky"</string>
+    <string name="kitesdk_order_timeout_message">"Vaša objednávka zrejme zatiaľ nebola spracovaná. Možno sú servery momentálne zaneprázdnené a platba jednoducho trvá dlhšie. Skúste to znova neskôr."</string>
+
+    <string name="kitesdk_alert_dialog_title_order_cancelled">"Objednávka zrušená"</string>
+    <string name="kitesdk_alert_dialog_message_order_cancelled">"Vyskytol sa problém – vaša objednávka bola zrejme počas odosielania zrušená."</string>
+
+    <string name="kitesdk_alert_dialog_message_server_offline_maintenance">"Server je momentálne offline kvôli údržbe."</string>
+    <string name="kitesdk_alert_dialog_message_server_returned_html">"Server vrátil neplatnú (HTML) odpoveď. Zvyčajne sa to stáva, keď server nie je k dispozícii."</string>
+
+    <string name="kitesdk_scan_qr_code">"Naskenujte QR kód"</string>
+    <string name="kitesdk_scan_qr_code_instructions">"Pomocou aplikácie s čítačkou QR kódov vo\nvašom zariadení naskenujte QR kód."</string>
+    <string name="kitesdk_scan_qr_code_alternate_instructions">"Prípadne do panela s adresou v mobilnom prehliadači zadajte nasledujúcu webovú adresu:"</string>
+
+    <string name="kitesdk_action_settings">"Nastavenia"</string>
+    <string name="kitesdk_title_activity_checkout">"Dodanie"</string>
+    <string name="kitesdk_title_activity_order_receipt">"Potvrdenie"</string>
+    <string name="kitesdk_title_activity_payment">"Platba"</string>
+    <string name="kitesdk_title_activity_address_book">"Adresár"</string>
+
+    <string name="kitesdk_add_address">"Adres toevoegen"</string>
+    <string name="kitesdk_title_activity_address_add">"Pridať adresu"</string>
+    <string name="kitesdk_title_activity_address_edit">"Upraviť adresu"</string>
+    <string name="kitesdk_action_save_address">"Uložiť adresu"</string>
+
+    <plurals name="kitesdk_Photo_plurals">
+        <item quantity="zero">"%d fotografií"</item>
+        <item quantity="one">"%d fotografia"</item>
+        <item quantity="two">"%d fotografie"</item>
+        <item quantity="few">"%d fotografie"</item>
+        <item quantity="many">"%d fotografie"</item>
+        <item quantity="other">"%d fotografií"</item>
+    </plurals>
+
+    <plurals name="kitesdk_photo_plurals">
+        <item quantity="zero">"%d fotografií"</item>
+        <item quantity="one">"%d fotografia"</item>
+        <item quantity="two">"%d fotografie"</item>
+        <item quantity="few">"%d fotografie"</item>
+        <item quantity="many">"%d fotografie"</item>
+        <item quantity="other">"%d fotografií"</item>
+    </plurals>
+
+</resources>
