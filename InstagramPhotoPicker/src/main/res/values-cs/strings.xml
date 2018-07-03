@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="title_instagram_photo_picker">"Instagram"</string>
+    <string name="title_instagram_login">"Přihlášení"</string>
+
+    <string name="instagram_error_title">"Jejda"</string>
+    <string name="instagram_error_message">"Něco se pokazilo. Zkuste to prosím znovu:\n%1$s"</string>
+
+    <string name="button_text_retry">"Zkusit znovu"</string>
+    <string name="button_text_cancel">"Storno"</string>
+</resources>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="kitesdk_title_facebook_photo_picker">"Facebook"</string>
+
+    <string name="kitesdk_title_facebook_alert_dialog">"Jejda"</string>
+    <string name="kitesdk_message_facebook_alert_dialog">"Něco se pokazilo. Zkuste to prosím znovu:\n%1$s"</string>
+
+    <string name="kitesdk_button_text_retry">"Zkusit znovu"</string>
+    <string name="kitesdk_button_text_cancel">"Storno"</string>
+
+</resources>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="kitesdk_title_instagram_photo_picker">"Instagram"</string>
+    <string name="kitesdk_title_instagram_login">"Prihlásiť sa"</string>
+
+    <string name="kitesdk_instagram_error_title">"Ospravedlňujeme sa"</string>
+    <string name="kitesdk_instagram_error_message">"Vyskytla sa chyba. Skúste to znova:\n%1$s"</string>
+
+    <string name="kitesdk_button_text_retry">"Skúsiť znova"</string>
+    <string name="kitesdk_button_text_cancel">"Zrušiť"</string>
+</resources>

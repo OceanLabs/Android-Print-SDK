@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="kitesdk_title_facebook_photo_picker">"Facebook"</string>
+
+    <string name="kitesdk_title_facebook_alert_dialog">"Ups"</string>
+    <string name="kitesdk_message_facebook_alert_dialog">"Ocorreu um erro. Tente novamente:\n%1$s"</string>
+
+    <string name="kitesdk_button_text_retry">"Tentar novamente"</string>
+    <string name="kitesdk_button_text_cancel">"Cancelar"</string>
+
+</resources>
