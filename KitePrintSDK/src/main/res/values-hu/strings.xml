@@ -280,6 +280,7 @@
     <string name="kitesdk_title_activity_address_add">"Cím hozzáadása"</string>
     <string name="kitesdk_title_activity_address_edit">"Cím szerkesztése"</string>
     <string name="kitesdk_action_save_address">"Cím mentése"</string>
+    <string name="kitesdk_start_date">Kezdő dátum</string>
 
     <plurals name="kitesdk_Photo_plurals">
         <item quantity="zero">"%d fénykép"</item>

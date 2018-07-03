@@ -281,6 +281,7 @@
     <string name="kitesdk_title_activity_address_add">"Legg til adresse"</string>
     <string name="kitesdk_title_activity_address_edit">"Rediger adresse"</string>
     <string name="kitesdk_action_save_address">"Lagre adresse"</string>
+    <string name="kitesdk_start_date">"Startdato"</string>
 
     <plurals name="kitesdk_Photo_plurals">
         <item quantity="zero">"%d bilder"</item>

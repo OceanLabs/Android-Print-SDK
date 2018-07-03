@@ -313,6 +313,7 @@
     <string name="kitesdk_title_activity_address_add">Opret adresse</string>
     <string name="kitesdk_title_activity_address_edit">Rediger adresse</string>
     <string name="kitesdk_action_save_address">Gem adresse</string>
+    <string name="kitesdk_start_date">Start dato</string>
 
     <plurals name="kitesdk_Photo_plurals">
         <item quantity="zero">%d Billeder</item>

@@ -541,8 +541,13 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
    *
    *****************************************************/
   @Override
-  public void calOnNext()
+  public void calOnNext( int startMonth, int startYear )
     {
+    // Month count starts from 0 so add 1
+    startMonth++;
+    // Set start date options in map
+    mOptionMap.put( "start_month", String.valueOf( startMonth ) );
+    mOptionMap.put( "start_year", String.valueOf( startYear ) );
     onNewBasketItem( mImageSpecArrayList );
     }
 
@@ -695,7 +700,20 @@ public class ProductCreationActivity extends AKiteActivity implements IImageSpec
     switch ( mProduct.getUserJourneyType() )
       {
       case CALENDAR:
-        addFragment( CalendarFragment.newInstance( mProduct ), CalendarFragment.TAG );
+        CalendarFragment calendarFragment = CalendarFragment.newInstance( mProduct );
+        //set start date if available
+        if( mOptionMap != null )
+          {
+          String startMonthString = mOptionMap.get( "start_month" );
+          String startYearString = mOptionMap.get( "start_year" );
+
+          if( startMonthString != null && startYearString != null )
+            {
+            calendarFragment.setStartDate ( Integer.valueOf( startMonthString ) - 1, Integer.valueOf( startYearString ) ) ;
+            }
+          }
+
+        addFragment( calendarFragment, CalendarFragment.TAG );
         break;
 
       case CIRCLE:

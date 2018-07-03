@@ -317,6 +317,7 @@
     <string name="kitesdk_title_activity_address_add">Ingresa la direccion</string>
     <string name="kitesdk_title_activity_address_edit">Editar dirección</string>
     <string name="kitesdk_action_save_address">Guardar dirección</string>
+    <string name="kitesdk_start_date">Fecha de inicio</string>
 
     <plurals name="kitesdk_Photo_plurals">
         <item quantity="zero">%d Fotos</item>

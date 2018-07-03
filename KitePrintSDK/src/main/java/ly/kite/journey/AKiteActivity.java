@@ -42,8 +42,10 @@ package ly.kite.journey;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -63,6 +65,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -72,6 +75,8 @@ import org.json.JSONObject;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import ly.kite.KiteSDK;
 import ly.kite.R;
@@ -79,6 +84,7 @@ import ly.kite.SDKCustomiser;
 import ly.kite.app.APermissionsRequestingActivity;
 import ly.kite.catalogue.CatalogueLoader;
 import ly.kite.image.ImageAgent;
+import ly.kite.journey.creation.calendar.CalendarFragment;
 import ly.kite.journey.creation.imagesource.ImageSourceFragment;
 import ly.kite.util.StringUtils;
 import ly.kite.widget.CustomTypefaceSpan;
@@ -1096,6 +1102,21 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
 
   /*****************************************************
    *
+   * Displays the date selection dialog
+   *
+   *****************************************************/
+  public CustomDatePickerDialog showDatePickerDialog(DatePickerDialog.OnDateSetListener listener, GregorianCalendar currentStartMonth )
+    {
+    CustomDatePickerDialog dialog = new CustomDatePickerDialog( this, R.style.DatePickerDialogTheme, listener, currentStartMonth.get( Calendar.YEAR ),
+            currentStartMonth.get( Calendar.MONTH ), currentStartMonth.get( Calendar.DAY_OF_MONTH ) );
+    dialog.setPermanentTitle( getResources().getString( R.string.kitesdk_start_date ) );
+    dialog.show();
+    return dialog;
+    }
+
+
+  /*****************************************************
+   *
    * Displays an error dialog.
    *
    *****************************************************/
@@ -1807,6 +1828,56 @@ public abstract class AKiteActivity extends APermissionsRequestingActivity
 
     }
 
+
+    /*****************************************************
+     *
+     * A custom date picker dialog.
+     *
+     *****************************************************/
+    protected class CustomDatePickerDialog extends DatePickerDialog
+    {
+      private CharSequence mTitle;
+
+      CustomDatePickerDialog( Context context, int theme, OnDateSetListener listener, int year, int month, int day )
+        {
+        super( context, theme, listener, year, month, day );
+
+        // Remove the calendar view and date toggle
+        getDatePicker().setCalendarViewShown(false);
+        getDatePicker().findViewById( getResources().getIdentifier( "day", "id", "android" ) ).setVisibility( View.GONE );
+        // Set min date to January one year ago
+        GregorianCalendar minDate = getStartOfCurrentYear();
+        minDate.add( Calendar.YEAR, -1 );
+        // Set max date to the last day of December 3 years ahead
+        GregorianCalendar maxDate = getStartOfCurrentYear();
+        maxDate.add( Calendar.YEAR, 4 );
+        maxDate.add( Calendar.DAY_OF_YEAR, -1 );
+        getDatePicker().setMinDate( minDate.getTimeInMillis() );
+        getDatePicker().setMaxDate( maxDate.getTimeInMillis() );
+        }
+
+      private GregorianCalendar getStartOfCurrentYear()
+        {
+          GregorianCalendar calendar = new GregorianCalendar();
+          calendar.set( Calendar.MONTH, Calendar.JANUARY );
+          calendar.set( Calendar.DAY_OF_MONTH, 1 );
+          return  calendar;
+        }
+
+      private void setPermanentTitle( CharSequence title )
+        {
+        mTitle = title;
+        setTitle( mTitle );
+        }
+
+      @Override
+      public void onDateChanged( DatePicker view, int year, int month, int day )
+        {
+        super.onDateChanged( view, year, month, day );
+        setTitle( mTitle );
+        }
+
+    }
 
   }
 

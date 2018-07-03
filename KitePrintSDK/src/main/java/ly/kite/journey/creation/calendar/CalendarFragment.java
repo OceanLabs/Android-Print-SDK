@@ -39,10 +39,15 @@ package ly.kite.journey.creation.calendar;
 
 ///// Import(s) /////
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import android.app.ActionBar;
+import android.app.DatePickerDialog;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -54,6 +59,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.TextView;
 
 import ly.kite.journey.AImageSource;
@@ -80,8 +86,9 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
                                                                           AImageSource.IAssetConsumer,
                                                                           IUpdatedImageListener,
                                                                           View.OnDragListener,
-                                                                          ActionMode.Callback
-  {
+                                                                          ActionMode.Callback,
+                                                                          DatePickerDialog.OnDateSetListener
+{
   ////////// Static Constant(s) //////////
 
   @SuppressWarnings( "unused" )
@@ -97,6 +104,7 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
 
   private ExtendedRecyclerView  mCalendarView;
   private CalendarAdaptor       mCalendarAdaptor;
+  private GregorianCalendar     mStartDate;
 
   private int                   mAddImageIndex;
 
@@ -145,6 +153,41 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
     super.onCreate( savedInstanceState );
 
     setHasOptionsMenu( true );
+
+    if( savedInstanceState != null )
+      {
+      int startMonth = savedInstanceState.getInt( "start_month", -1 );
+      int startYear = savedInstanceState.getInt( "start_year", -1 );
+      if( startMonth != -1 && startYear != -1 )
+        {
+        setStartDate( startMonth, startYear );
+        }
+      }
+
+    setToolbarDateInterval();
+    }
+
+  @Override
+  public void onSaveInstanceState( Bundle outState )
+    {
+    super.onSaveInstanceState( outState );
+
+    if ( outState != null )
+      {
+      outState.putInt( "start_month", mStartDate.get( Calendar.MONTH ) );
+      outState.putInt( "start_year", mStartDate.get( Calendar.YEAR ) );
+      }
+    }
+
+  /*****************************************************
+   *
+   * Called the first time the options menu is created.
+   *
+   *****************************************************/
+    @Override
+    public void onCreateOptionsMenu( Menu menu, MenuInflater menuInflator )
+    {
+      onCreateOptionsMenu( menu, menuInflator, R.menu.calendar_default );
     }
 
 
@@ -346,7 +389,7 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
               }
             }
 
-          ( (ICallback)mKiteActivity ).calOnNext();
+          ( (ICallback)mKiteActivity ).calOnNext( mStartDate.get( Calendar.MONTH ), mStartDate.get( Calendar.YEAR ) );
           }
         }
       }
@@ -634,6 +677,45 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
 
   /*****************************************************
    *
+   * Called when a contextual item is chosen.
+   *
+   *****************************************************/
+  @Override
+  protected boolean onCheckCustomOptionItem( MenuItem item )
+    {
+    if ( item.getItemId() == R.id.calendar_menu_item )
+      {
+      mKiteActivity.showDatePickerDialog( this, mStartDate );
+      return ( true );
+
+      }
+    return ( false );
+    }
+
+  /*****************************************************
+   *
+   * Called when a date is set in the dialog
+   *
+   *****************************************************/
+  @Override
+  public void onDateSet( DatePicker view, int year, int month, int dayOfMonth )
+    {
+    // Only refresh adaptor if the month order has changed
+    if ( month != ( mStartDate.get( Calendar.MONTH ) ) )
+      {
+      mStartDate = new GregorianCalendar( year, month, dayOfMonth );
+      mCalendarAdaptor.setStartMonth( month );
+      mCalendarAdaptor.notifyDataSetChanged();
+      }
+    else
+      {
+      mStartDate = new GregorianCalendar( year, month, dayOfMonth );
+      }
+    setToolbarDateInterval();
+    }
+
+  /*****************************************************
+   *
    * Called when the user exits action mode.
    *
    *****************************************************/
@@ -653,17 +735,60 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
 
   /*****************************************************
    *
+   * Set start date
+   *
+   *****************************************************/
+  public void setStartDate( int startMonth, int startYear )
+  {
+    mStartDate = new GregorianCalendar( startYear, startMonth, 1 );
+  }
+  /*****************************************************
+   *
    * Sets up the calendar view.
    *
    *****************************************************/
   private void setUpCalendarView()
     {
-    mCalendarAdaptor = new CalendarAdaptor( mKiteActivity, mProduct, mImageSpecArrayList, this );
+    mCalendarAdaptor = new CalendarAdaptor( mKiteActivity, mProduct, mImageSpecArrayList, this, mStartDate.get( Calendar.MONTH ) );
 
     mCalendarView.setAdapter( mCalendarAdaptor );
 
 
     restoreView( mCalendarView );
+    }
+
+  /*****************************************************
+   *
+   * Sets the subtitle to the calendar interval
+   *
+   *****************************************************/
+  private void setToolbarDateInterval()
+    {
+    if ( mStartDate == null )
+      {
+      //Set default value to January of next year
+      mStartDate = new GregorianCalendar();
+      mStartDate.add( Calendar.YEAR, 1 );
+      mStartDate.set( Calendar.MONTH, Calendar.JANUARY );
+      mStartDate.set( Calendar.DAY_OF_MONTH, 1 );
+      }
+
+    SimpleDateFormat dateFormatter = new SimpleDateFormat( "MMM yyyy" );
+
+    dateFormatter.setCalendar( mStartDate );
+    String startDateString = dateFormatter.format( mStartDate.getTime() );
+
+    GregorianCalendar endDate = ( GregorianCalendar ) mStartDate.clone();
+    endDate.add( Calendar.MONTH, 11) ;
+    dateFormatter.setCalendar( endDate );
+    String endDateString = dateFormatter.format( endDate.getTime() );
+
+    //Set new interval as toolbar subtitle
+    ActionBar actionBar = mKiteActivity.getActionBar();
+    if ( actionBar != null )
+      {
+      actionBar.setSubtitle( startDateString + " - " + endDateString );
+      }
     }
 
 
@@ -749,7 +874,7 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
   public interface ICallback
     {
     public void calOnEdit( int assetIndex );
-    public void calOnNext();
+    public void calOnNext( int startMonth, int startYear );
     }
 
 
@@ -776,7 +901,7 @@ public class CalendarFragment extends AProductCreationFragment implements Calend
           break;
           }
         }
-      ( (ICallback)mKiteActivity ).calOnNext();
+      ( (ICallback)mKiteActivity ).calOnNext( mStartDate.get( Calendar.MONTH ), mStartDate.get( Calendar.YEAR ) );
       }
     }
 
