@@ -33,7 +33,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // implementation project(':ImagePicker')
-    implementation 'ly.kite:image-picker:5.8.8'
+    implementation 'ly.kite:image-picker:5.8.9'
 }
 
 // Uncomment before uploading archives
