@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_margin="8dp">
+
+    <ImageButton
+        android:id="@+id/google_pay_button"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@drawable/payment_button"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:src="@drawable/ic_google_pay"
+        android:layout_marginBottom="8dp"
+        android:padding="12dp"/>
+
+    <ImageButton
+        android:id="@+id/paypal_button"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@drawable/payment_button"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:src="@drawable/ic_paypal"
+        android:layout_marginBottom="8dp"
+        android:padding="12dp"/>
+
+    <ly.kite.widget.CustomTypefaceButton
+        android:id="@+id/credit_card_button"
+        android:layout_width="fill_parent"
+        android:layout_height="48dp"
+        android:background="@drawable/payment_button"
+        android:text="@string/kitesdk_payment_credit_card_button_text"
+        android:textColor="#515151"
+        android:textSize="@dimen/control_label_text_size"
+        style="?android:attr/borderlessButtonStyle"/>
+
+</LinearLayout>

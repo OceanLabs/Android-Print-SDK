@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_weight="0.5"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginBottom="@dimen/activity_vertical_margin">
+
+        <ListView
+            android:id="@+id/order_summary_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="0dp"/>
+
+    </LinearLayout>
+
+    <!-- Separator -->
+
+    <View
+        android:layout_height="1dp"
+        android:layout_width="match_parent"
+        android:background="@color/basket_list_shipping_separator"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"/>
+
+    <LinearLayout
+        android:id="@+id/container_promo_code"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <ly.kite.widget.CustomTypefaceEditText
+            android:id="@+id/promo_edit_text"
+            android:layout_width="wrap_content"
+            android:layout_weight="1.0"
+            android:layout_height="match_parent"
+            android:hint="@string/kitesdk_payment_promo_hint"
+            android:textColor="@color/payment_promo_code_text_default"
+            android:singleLine="true"
+            android:imeOptions="actionDone"/>
+
+        <ly.kite.widget.CustomTypefaceButton
+            android:id="@+id/promo_text_view"
+            android:layout_marginLeft="20dp"
+            android:layout_width="wrap_content"
+            android:layout_weight="0.0"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:enabled="false"
+            android:onClick="onPromoButtonClicked"
+            android:text="@string/kitesdk_payment_promo_button_text_apply"
+            android:textColor="@color/apply_button"/>
+    </LinearLayout>
+
+</LinearLayout>
