@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <string name="kitesdk_powered_by">"Yhteistyössä Kite.ly"</string>
+
+    <string name="kitesdk_unit_centimeters">"senttimetriä"</string>
+    <string name="kitesdk_unit_inches">"tuumaa"</string>
+    <string name="kitesdk_unit_pixels">"pikseliä"</string>
+
+    <string name="kitesdk_unit_centimeters_short">"cm"</string>
+    <string name="kitesdk_unit_inches_short">"in"</string>
+    <string name="kitesdk_unit_pixels_short">"px"</string>
+
+    <string name="kitesdk_month_hint">"KK"</string> 
+    <string name="kitesdk_year_hint">"VVVV"</string> 
+
+    <string name="kitesdk_title_choose_product_group">"Print Shop"</string>
+    <string name="kitesdk_title_create_phone_case">"Snap-suojakuori"</string>
+    <string name="kitesdk_title_image_source">"Avaa kuvat"</string>
+    <string name="kitesdk_title_photobook">"Kuvakirja"</string>
+    <string name="kitesdk_title_calendar">"Kalenteri"</string>
+    <string name="kitesdk_title_poster">"Juliste"</string>
+    <string name="kitesdk_title_basket">"Ostoskori"</string>
+    <string name="kitesdk_title_payment_sandbox">"Maksu (TESTI)"</string>
+    <string name="kitesdk_title_payment">"Maksu"</string>
+    <string name="kitesdk_title_payment_source_sandbox">"Maksu (TESTI)"</string>
+    <string name="kitesdk_title_payment_source">"Maksu"</string>
+    <string name="kitesdk_title_order_history">"Tilaushistoria"</string>
+
+    <string name="kitesdk_settings_title_show_notification_messages">"Viestien"</string>
+    <string name="kitesdk_settings_title_support">"Tuki"</string>
+    <string name="kitesdk_settings_title_privacy">"Tietosuojakäytäntö"</string>
+    <string name="kitesdk_settings_title_terms">"Käyttöehdot"</string>
+    <string name="kitesdk_settings_title_legal">"Oikeudelliset tiedot"</string>
+    <string name="kitesdk_settings_title_licences">"Avoimen lähdekoodin lisenssit"</string>
+    <string name="kitesdk_settings_summary_licences">"Avoimen lähdekoodin lisenssit"</string>
+    <string name="kitesdk_settings_title_build_version">"Versio"</string>
+
+    <string name="kitesdk_alert_dialog_title_pack_not_full_format_string">"Olet valinnut %s"</string>
+    <string name="kitesdk_alert_dialog_message_pack_not_full_format_string" tools:ignore="PluralsCandidate">"Voit tilata %d lisää samaan hintaan"</string>
+
+    <string name="kitesdk_alert_dialog_title_oops">"Oeps!"</string>
+    <string name="kitesdk_alert_dialog_message_pricing_format_string">"Pyynnön käsittely epäonnistui:\n%s"</string>
+
+    <string name="kitesdk_alert_dialog_title_error_retrieving_products">"Hups!"</string>
+    <string name="kitesdk_alert_dialog_message_error_retrieving_products">"Internetyhteys ei toimi."</string>
+
+    <string name="kitesdk_alert_dialog_title_product_not_found">"Hups!"</string>
+    <string name="kitesdk_alert_dialog_message_product_not_found">"Internetyhteys ei toimi."</string>
+
+    <string name="kitesdk_alert_dialog_title_delete_photo">"Poistetaanko kuva?"</string>
+    <string name="kitesdk_alert_dialog_message_delete_photo">"Haluatko varmasti poistaa tämän kuvan?"</string>
+    <string name="kitesdk_alert_dialog_delete_photo_cancel_text">"Pidä"</string>
+    <string name="kitesdk_alert_dialog_delete_photo_confirm_text">"Poista"</string>
+
+    <string name="kitesdk_alert_dialog_message_no_images_selected">"Valitse kuvia."</string>
+
+    <string name="kitesdk_alert_dialog_message_no_recipient">"Kirjoita vastaanottajan nimi."</string>
+    <string name="kitesdk_alert_dialog_message_no_line1">"Täytä osoiterivi 1."</string>
+    <string name="kitesdk_alert_dialog_message_no_postal_code">"Anna postinumerosi."</string>
+    <string name="kitesdk_alert_dialog_message_no_email_address">"Anna sähköpostiosoite."</string>
+    <string name="kitesdk_alert_dialog_message_no_city">"Anna kaupunkisi."</string>
+
+    <string name="kitesdk_alert_dialog_title_invalid_delivery_address">"Virheellinen toimitusosoite"</string>
+    <string name="kitesdk_alert_dialog_message_invalid_delivery_address">"Valitse toimitusosoite."</string>
+
+    <string name="kitesdk_alert_dialog_title_invalid_email_address">"Virheellinen sähköpostiosoite"</string>
+    <string name="kitesdk_alert_dialog_message_invalid_email_address">"Anna kelvollinen sähköpostiosoite."</string>
+
+    <string name="kitesdk_alert_dialog_title_invalid_phone_number">"Virheellinen puhelinnumero"</string>
+    <string name="kitesdk_alert_dialog_message_invalid_phone_number">"Anna kelvollinen puhelinnumero."</string>
+
+    <string name="kitesdk_alert_dialog_message_connectivity">"Internetyhteys ei toimi."</string>
+
+    <string name="kitesdk_alert_dialog_message_processing">"Pieni hetki…"</string>
+
+    <string name="kitesdk_alert_dialog_title_end_customer_session">"Lopeta istunto"</string>
+    <string name="kitesdk_alert_dialog_message_end_customer_session">"Haluatko varmasti lopettaa tämän istunnon?"</string>
+
+    <string name="kitesdk_alert_dialog_title_remove_item">"Poista tuote"</string>
+    <string name="kitesdk_alert_dialog_message_remove_item">"Vahvista, että haluat poistaa tämän tuotteen ostoskorista."</string>
+
+    <string name="kitesdk_alert_dialog_title_empty_basket">"Tyhjä ostoskori"</string>
+    <string name="kitesdk_alert_dialog_message_empty_basket">"Ostoskorisi on tyhjä. Lisää tuotteita ostoskoriin, ennen kuin menet kassalle."</string>
+
+    <string name="kitesdk_alert_dialog_message_uploading_images">"Ladataan kuvia"</string>
+
+    <string name="kitesdk_alert_dialog_message_unable_to_store_card">"Kortin tallennus ei onnistu"</string>
+    <string name="kitesdk_alert_dialog_message_no_payment_id">"Maksutunnusta ei löydetty kuitista"</string>
+    <string name="kitesdk_alert_dialog_message_no_proof_of_payment">"Kuittia ei löydetty maksuvahvistuksesta"</string>
+    <string name="kitesdk_alert_dialog_message_no_paypal_confirmation">"PayPalilta ei saatu maksuvahvistusta"</string>
+    <string name="kitesdk_alert_dialog_message_card_expired">"Käyttämäsi kortti on vanhentunut. Yritä uudelleen."</string>
+    <string name="kitesdk_alert_dialog_message_card_not_recognised">"Emme tunnistaneet korttiasi. Yritä uudelleen ja anna kortin tiedot tarvittaessa manuaalisesti."</string>
+
+    <string name="kitesdk_alert_dialog_item_pay_with_new_card">"Maksa uudella kortilla"</string>
+    <string name="kitesdk_alert_dialog_item_pay_with_existing_card_format_string">"Maksa kortilla, jonka loppuosa on %1$s"</string>
+
+    <string name="kitesdk_log_out_warning">"Sinut kirjataan\nulos automaattisesti"</string>
+
+    <string name="kitesdk_progress_dialog_title_add_to_basket">"Lisää ostoskoriin"</string>
+    <string name="kitesdk_progress_dialog_title_updating_basket">"Päivitetään ostoskoria"</string>
+
+    <string name="kitesdk_add_more">"Lisää enemmän"</string>
+    <string name="kitesdk_Cancel">"Peruuta"</string>
+    <string name="kitesdk_Choose_Delivery_Address">"Valitse toimitusosoite"</string>
+    <string name="kitesdk_Continue_Shopping">"Jatka tuotteiden selaamista"</string>
+    <string name="kitesdk_Country">"Maa"</string>
+    <string name="kitesdk_Description">"Kuvaus"</string>
+    <string name="kitesdk_Details">"Tiedot"</string>
+    <string name="kitesdk_Done">"Valmis"</string>
+    <string name="kitesdk_Edit">"Muokkaa"</string>
+    <string name="kitesdk_Email">"Sähköposti"</string>
+    <string name="kitesdk_End_Session">"Lopeta istunto"</string>
+    <string name="kitesdk_Flip">"Käännä vaakasuorassa"</string>
+    <string name="kitesdk_Free">"Ilmainen"</string>
+    <string name="kitesdk_ITEM">"TUOTE"</string>
+    <string name="kitesdk_Keep">"Pidä"</string>
+    <string name="kitesdk_Loading">"Ladataan"</string>
+    <string name="kitesdk_Loading_catalogue">"Ladataan kuvastoa"</string>
+    <string name="kitesdk_Log_Out">"Kirjaudu ulos"</string>
+    <string name="kitesdk_Next">"Seuraava"</string>
+    <string name="kitesdk_Next_Customer">"Seuraava"</string>
+    <string name="kitesdk_No_Results">"Tuloksia ei löytynyt."</string>
+    <string name="kitesdk_OK">"OK"</string>
+    <string name="kitesdk_Order_Id">"Tilausnumero"</string>
+    <string name="kitesdk_ORDER_ID">"TILAUSNUMERO"</string>
+    <string name="kitesdk_Order_Summary">"Tilauksen yhteenveto"</string>
+    <string name="kitesdk_ORDER_SUMMARY">"TILAUKSEN YHTEENVETO"</string>
+    <string name="kitesdk_Oops_">"Hups!"</string>
+    <string name="kitesdk_Pay">"Maksa"</string>
+    <string name="kitesdk_Payment_Id">"Maksutunnus"</string>
+    <string name="kitesdk_PAYMENT_ID">"MAKSUTUNNUS"</string>
+    <string name="kitesdk_PRICE">"HINTA"</string>
+    <string name="kitesdk_print_these">"Tulosta nämä"</string>
+    <string name="kitesdk_Processing_">"Käsitellään…"</string>
+    <string name="kitesdk_Promotional_Discount">"Kampanja-alennus"</string>
+    <string name="kitesdk_Remove">"Poista"</string>
+    <string name="kitesdk_Rotate">"Kierrä"</string>
+    <string name="kitesdk_Quantity">"Määrä"</string>
+    <string name="kitesdk_QUANTITY">"MÄÄRÄ"</string>
+    <string name="kitesdk_Retry">"Yritä uudelleen"</string>
+    <string name="kitesdk_Save">"Tallenna"</string>
+    <string name="kitesdk_Select_Image">"Valitse kuva"</string>
+    <string name="kitesdk_Shipping">"Toimitus"</string>
+    <string name="kitesdk_Size">"Koko"</string>
+    <string name="kitesdk_Total">"Yhteensä"</string>
+
+    <string name="kitesdk_image_source_device">"Kamera"</string>
+    <string name="kitesdk_image_source_instagram">"Instagram"</string>
+    <string name="kitesdk_image_source_facebook">"Facebook"</string>
+    <string name="kitesdk_image_source_from_phone">"Lataa puhelimesta"</string>
+
+    <string name="kitesdk_select_photo_from_device">"Valitse kuva kamerasta"</string>
+    <string name="kitesdk_select_photo_from_instagram">"Valitse kuva Instagramista"</string>
+    <string name="kitesdk_select_photo_from_facebook">"Valitse kuva Facebookista"</string>
+    <string name="kitesdk_upload_photo_from_phone">"Lataa kuva puhelimesta"</string>
+
+    <string name="kitesdk_destination_description_gbr">"Iso-Britannia"</string>
+    <string name="kitesdk_destination_description_europe">"Eurooppa"</string>
+    <string name="kitesdk_destination_description_rest_of_world">"Koko maailma"</string>
+
+    <string name="kitesdk_placeholder_message">"Lisää tuotteita\ntulossa pian!"</string>
+
+    <string name="kitesdk_order_success_banner_message">"Olemme vastaanottaneet\ntilauksesi"</string>
+    <string name="kitesdk_order_failure_banner_message">"Jokin meni vikaan.\nYritä uudelleen alla."</string>
+    <string name="kitesdk_order_failure_message">"Jokin meni vikaan.\nYritä uudelleen."</string>
+
+    <string name="kitesdk_product_quantity_format_string">"Pakkaus: %d"</string>
+
+    <string name="kitesdk_product_free_shipping">"Ilmainen"</string>
+    <string name="kitesdk_product_shipping_summary_format_string">"Alkaen %s"</string>
+
+    <string name="kitesdk_product_free_worldwide_shipping">"Ilmainen toimitus kaikkialle maailmaan"</string>
+
+    <string name="kitesdk_product_overview_guarantee_title">"Laatutakuu"</string>
+    <string name="kitesdk_product_overview_guarantee_text" formatted="false">"Olemme varmoja, että tuotteemme täyttävät odotuksesi. Jos kuitenkaan et ole täysin tyytyväinen tuotteisiin, saat rahasi takaisin – olipa syy mikä tahansa."</string>
+
+    <string name="kitesdk_product_overview_start_button_text">"Aloita tuotteen luominen"</string>
+
+    <string name="kitesdk_image_selection_empty_message">"Lisää kuvia napauttamalla\nyllä olevia kuvakkeita"</string>
+
+    <string name="kitesdk_edit_border_text_hint">"Lisää teksti tähän"</string>
+
+    <string name="kitesdk_multi_page_instructions_html">"<![CDATA[Muokkaa <b>napauttamalla</b> kuvaa.<br>Tee uusi tilaus <b>painamalla pitkään.</b>]]>"</string>
+
+    <string name="kitesdk_address_book_empty">"Osoitekirja on tyhjä"</string>
+
+    <string name="kitesdk_image_source_prompt">"Lisää kuvia napauttamalla jotakin vaihtoehdoista"</string>
+
+    <string name="kitesdk_image_selection_pack_title_format_string" tools:ignore="PluralsCandidate">"#%1$d paketti / %2$d x %3$s"</string>
+
+    <string name="kitesdk_image_selection_clear_photos_format_string">"Tyhjennä %s"</string>
+
+    <string name="kitesdk_edit_image_prompt_text">"Siirrä kuvaa"</string>
+
+    <string name="kitesdk_image_selection_proceed_button_text">"Tarkista ja muokkaa"</string>
+
+    <string name="kitesdk_review_and_edit_title_format_string">"%1$d / %2$d"</string>
+    <string name="kitesdk_review_and_edit_proceed_button_text">"Vahvista"</string>
+
+    <string name="kitesdk_edit_image_title">"Muokkaa kuvaa"</string>
+
+    <string name="kitesdk_basket_empty">"Ostoskori on tyhjä"</string>
+    <string name="kitesdk_basket_left_button_text">"Jatka tuotteiden selaamista"</string>
+    <string name="kitesdk_basket_right_button_text">"Kassalle"</string>
+
+    <string name="kitesdk_address_hint_text_recipient">"Nimi"</string>
+    <string name="kitesdk_address_hint_text_line_1">"Osoiterivi 1"</string>
+    <string name="kitesdk_address_hint_text_line_2">"Osoiterivi 2"</string>
+    <string name="kitesdk_address_hint_text_city">"Kaupunki"</string>
+    <string name="kitesdk_address_hint_text_county_or_state">"Alue/osavaltio"</string>
+    <string name="kitesdk_address_hint_text_postcode_or_zip">"Postinumero"</string>
+
+    <string name="kitesdk_shipping_delivery_address_button_text">Valitse toimitusosoite</string>
+    <string name="kitesdk_shipping_phone_hint_text">"Puhelin"</string>
+    <string name="kitesdk_shipping_email_reason">"Tarvitsemme sähköpostiosoitteesi, jotta voimme lähettää sinulle vahvistuksen ja tietoja tilauksen etenemisestä."</string>
+    <string name="kitesdk_shipping_phone_reason">"Tarvitsemme puhelinnumerosi toimitusongelmien varalta."</string>
+
+    <string name="kitesdk_address_search_prompt">"Hae osoitteita ylhäältä"</string>
+
+    <string name="kitesdk_address_search_hint_format_string">"Etsi %1$s"</string>
+    <string name="kitesdk_address_search_empty_results">"Hae osoitteita ylhäältä"</string>
+    <string name="kitesdk_address_search_dialog_title">"Haetaan tietoja"</string>
+    <string name="kitesdk_address_search_dialog_message">"Haetaan osoitetietoja"</string>
+    <string name="kitesdk_address_search_no_results">"Tuloksia ei löytynyt."</string>
+
+    <string name="kitesdk_button_text_edit_address">"Muokkaa osoitetta"</string>
+    <string name="kitesdk_button_text_delete_address">"Poista osoite"</string>
+
+    <string name="kitesdk_address_edit_proceed_button_text">"Tallenna"</string>
+
+    <string name="kitesdk_payment_promo_hint">"Alennuskoodi"</string>
+    <string name="kitesdk_payment_promo_button_text_apply">"Käytä"</string>
+    <string name="kitesdk_payment_promo_button_text_clear">"Tyhjennä"</string>
+    <string name="kitesdk_payment_credit_card_button_text">"Luottokortti"</string>
+    <string name="kitesdk_payment_credit_card_button_text_free">"Ilmainen"</string>
+    <string name="kitesdk_payment_paypal_button_text">"PayPal"</string>
+
+    <string name="kitesdk_stripe_error_invalid_card_details">"Virheelliset korttitiedot"</string>
+    <string name="kitesdk_stripe_error_create_object">"Stripe-tunnisteen haku epäonnistui"</string>
+    <string name="kitesdk_stripe_error_retrieve_token">"Stripe-tunnisteen haku epäonnistui"</string>
+
+    <string name="kitesdk_send_email_chooser_title">"Lähetä sähköpostia"</string>
+
+    <string name="kitesdk_Card_Number">"Kortin numero"</string>
+    <string name="kitesdk_Expires">"Vanhentuu"</string>
+    <string name="kitesdk_CVV">"CVV"</string>
+
+    <string name="kitesdk_card_error_invalid_number">"Virheellinen kortin numero"</string>
+    <string name="kitesdk_card_error_invalid_expiry_date">"Virheellinen vanhenemisajankohta"</string>
+    <string name="kitesdk_card_error_invalid_cvv">"Virheellinen vahvistusarvo"</string>
+
+    <string name="kitesdk_order_submission_message_uploading">"Ladataan kuvia"</string>
+    <string name="kitesdk_order_submission_message_posted">"Julkaistu"</string>
+    <string name="kitesdk_order_submission_message_received">"Vastaanotettu"</string>
+    <string name="kitesdk_order_submission_message_accepted">"Hyväksytty"</string>
+    <string name="kitesdk_order_submission_message_validated">"Vahvistettu"</string>
+    <string name="kitesdk_order_submission_message_processed">"Käsitelty"</string>
+
+
+    <string name="kitesdk_alert_dialog_title_order_submission_error">"Tilauksen lähetysvirhe"</string>
+    <string name="kitesdk_order_timeout_message">"Tilaustasi ei ole vielä käsitelty. Maksun käsittely voi kestää, jos palvelimet ovat varattuja. Yritä myöhemmin uudestaan."</string>
+
+    <string name="kitesdk_alert_dialog_title_order_cancelled">"Tilaus peruutettu"</string>
+    <string name="kitesdk_alert_dialog_message_order_cancelled">"Jokin meni vikaan – tilauksesi on peruutettu lähetyksen aikana."</string>
+
+    <string name="kitesdk_alert_dialog_message_server_offline_maintenance">"Palvelin on poissa käytöstä huollon takia."</string>
+    <string name="kitesdk_alert_dialog_message_server_returned_html">"Palvelin lähetti virheellisen (HTML) vastauksen. Tämä tarkoittaa yleensä sitä, että palvelin ei ole käytettävissä."</string>
+
+    <string name="kitesdk_scan_qr_code">"Skannaa QR-koodi"</string>
+    <string name="kitesdk_scan_qr_code_instructions">"Skannaa QR-koodi käyttämällä laitteesee\nasennettua QR-lukusovellusta."</string>
+    <string name="kitesdk_scan_qr_code_alternate_instructions">"Voit myös kirjoittaa seuraavan URL-osoitteen mobiiliselaimesi osoitekenttään:"</string>
+
+    <string name="kitesdk_action_settings">"Asetukset"</string>
+    <string name="kitesdk_title_activity_checkout">"Toimitus"</string>
+    <string name="kitesdk_title_activity_order_receipt">"Kuitti"</string>
+    <string name="kitesdk_title_activity_payment">"Maksu"</string>
+    <string name="kitesdk_title_activity_address_book">"Osoitekirja"</string>
+
+    <string name="kitesdk_add_address">"Adres toevoegen"</string>
+    <string name="kitesdk_title_activity_address_add">"Lisää osoite"</string>
+    <string name="kitesdk_title_activity_address_edit">"Muokkaa osoitetta"</string>
+    <string name="kitesdk_action_save_address">"Tallenna osoite"</string>
+
+    <plurals name="kitesdk_Photo_plurals">
+        <item quantity="zero">"%d kuvaa"</item>
+        <item quantity="one">"%d kuva"</item>
+        <item quantity="two">"%d kuvaa"</item>
+        <item quantity="few">"%d kuvaa"</item>
+        <item quantity="many">"%d kuvaa"</item>
+        <item quantity="other">"%d kuvaa"</item>
+    </plurals>
+
+    <plurals name="kitesdk_photo_plurals">
+        <item quantity="zero">"%d kuvaa"</item>
+        <item quantity="one">"%d kuva"</item>
+        <item quantity="two">"%d kuvaa"</item>
+        <item quantity="few">"%d kuvaa"</item>
+        <item quantity="many">"%d kuvaa"</item>
+        <item quantity="other">"%d kuvaa"</item>
+    </plurals>
+
+</resources>

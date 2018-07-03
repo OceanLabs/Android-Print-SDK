@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="kitesdk_title_facebook_photo_picker">"Facebook"</string>
+
+    <string name="kitesdk_title_facebook_alert_dialog">"Hups"</string>
+    <string name="kitesdk_message_facebook_alert_dialog">"Jokin meni vikaan. Yritä uudelleen:\n%1$s"</string>
+
+    <string name="kitesdk_button_text_retry">"Yritä uudelleen"</string>
+    <string name="kitesdk_button_text_cancel">"Peruuta"</string>
+
+</resources>
