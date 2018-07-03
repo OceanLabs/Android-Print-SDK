@@ -343,6 +343,17 @@ public class MainActivity extends ADeepLinkableActivity
     kiteSDK.setKiteAnalyticsEnabled(false);
 
 
+    // Add this in if you want to use Google Pay, DO NOT deploy the option
+    // in PRODUCTION until your app has been enabled/whitelisted by the
+    // Google API team via review here otherwise is WILL NOT WORK:
+    // https://services.google.com/fb/forms/googlepayAPIenable/
+
+    // For more details on the Google Pay process:
+    // https://developers.google.com/pay/api/android/overview
+
+    //  kiteSDK.setGooglePayPaymentsEnabled(true);
+
+
     return ( kiteSDK );
     }
 
