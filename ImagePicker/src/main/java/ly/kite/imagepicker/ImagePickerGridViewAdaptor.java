@@ -39,23 +39,19 @@ package ly.kite.imagepicker;
 
 ///// Import(s) /////
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
 import android.content.Context;
-import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 
 ///// Class Declaration /////
@@ -198,7 +194,7 @@ public class ImagePickerGridViewAdaptor extends RecyclerView.Adapter<ImagePicker
 
 
     // Load and resize the image using Picasso
-    holder.item.loadThumbnailImageInto( mContext, holder.imageView );
+    holder.item.loadThumbnailImageInto( holder.imageView );
 
     // Set the view holder as the the click listener for the view
     holder.itemView.setOnClickListener( holder );

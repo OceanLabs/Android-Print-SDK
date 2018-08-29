@@ -39,11 +39,8 @@ package ly.kite.imagepicker;
 
 ///// Import(s) /////
 
-import android.content.Context;
 import android.widget.ImageView;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 
 
@@ -70,7 +67,7 @@ public interface IImagePickerItem
    * Returns the URL of a thumbnail image for the item.
    *
    *****************************************************/
-  public void loadThumbnailImageInto( Context context, ImageView imageView );
+  public void loadThumbnailImageInto( ImageView imageView );
 
 
   /*****************************************************
