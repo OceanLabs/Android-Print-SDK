@@ -39,17 +39,6 @@ package ly.kite.facebookphotopicker;
 
 ///// Import(s) /////
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -71,6 +60,17 @@ import com.facebook.HttpMethod;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 import ly.kite.imagepicker.IImagePickerItem;
 import ly.kite.imagepicker.ISelectableItem;
@@ -1138,7 +1138,7 @@ public class FacebookAgent
 
           if ( photo != null )
             {
-            photo.loadThumbnailImageInto( mActivity, mTargetImageView );
+            photo.loadThumbnailImageInto( mTargetImageView );
             }
           }
         catch ( JSONException je )
@@ -1209,7 +1209,7 @@ public class FacebookAgent
       }
 
     @Override
-    public void loadThumbnailImageInto( Context context, ImageView imageView )
+    public void loadThumbnailImageInto( ImageView imageView )
       {
       getPhoto( mCoverPhotoId, imageView );
       }
@@ -1392,13 +1392,13 @@ public class FacebookAgent
       }
 
     @Override
-    public void loadThumbnailImageInto( Context context, ImageView imageView )
+    public void loadThumbnailImageInto( ImageView imageView )
       {
       if ( imageView == null ) return;
 
       URL bestImageURL = getBestImageURL( imageView.getWidth(), imageView.getHeight() );
 
-      Picasso.with( context )
+      Picasso.get()
               .load( bestImageURL.toString() )
               .resizeDimen( R.dimen.ip_image_default_resize_width, R.dimen.ip_image_default_resize_height )
               .centerCrop()

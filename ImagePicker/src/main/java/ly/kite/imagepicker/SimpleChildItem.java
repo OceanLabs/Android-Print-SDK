@@ -39,7 +39,6 @@ package ly.kite.imagepicker;
 
 ///// Import(s) /////
 
-import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.widget.ImageView;
@@ -128,9 +127,9 @@ public class SimpleChildItem implements IImagePickerItem, ISelectableItem
    *
    *****************************************************/
   @Override
-  public void loadThumbnailImageInto( Context context, ImageView imageView )
+  public void loadThumbnailImageInto( ImageView imageView )
     {
-    Picasso.with( context )
+    Picasso.get()
             .load( mURLString )
             .resizeDimen( R.dimen.ip_image_default_resize_width, R.dimen.ip_image_default_resize_height )
             .centerCrop()

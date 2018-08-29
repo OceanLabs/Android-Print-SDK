@@ -521,9 +521,9 @@ public class DevicePhotoPickerActivity extends AImagePickerActivity implements T
       }
 
     @Override
-    public void loadThumbnailImageInto( Context context, ImageView imageView )
+    public void loadThumbnailImageInto( ImageView imageView )
       {
-      Picasso.with( context )
+      Picasso.get()
               .load( mImageURLString )
               .fit()
               .centerCrop()
@@ -626,9 +626,9 @@ public class DevicePhotoPickerActivity extends AImagePickerActivity implements T
 
 
     @Override
-    public void loadThumbnailImageInto( Context context, ImageView imageView )
+    public void loadThumbnailImageInto( ImageView imageView )
       {
-      Picasso.with( context )
+      Picasso.get()
               .load( mImageURLString )
               .fit()
               .centerCrop()

@@ -39,36 +39,32 @@ package ly.kite.instagramphotopicker;
 
 ///// Import(s) /////
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.os.Parcel;
 import android.util.Log;
 import android.widget.ImageView;
+
+import com.squareup.picasso.Picasso;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import com.squareup.picasso.Picasso;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 import ly.kite.imagepicker.IImagePickerItem;
 import ly.kite.imagepicker.ISelectableItem;
@@ -596,13 +592,13 @@ public class InstagramAgent
       }
 
     @Override
-    public void loadThumbnailImageInto( Context context, ImageView imageView )
+    public void loadThumbnailImageInto( ImageView imageView )
       {
       if ( imageView == null ) return;
 
       URL bestImageURL = getBestImageURL( imageView.getWidth(), imageView.getHeight() );
 
-      Picasso.with( context )
+      Picasso.get()
               .load( bestImageURL.toString() )
               .resizeDimen( R.dimen.ip_image_default_resize_width, R.dimen.ip_image_default_resize_height )
               .centerCrop()

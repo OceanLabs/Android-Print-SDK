@@ -39,12 +39,10 @@ package ly.kite.journey.creation.calendar;
 
 ///// Import(s) /////
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,9 +58,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import ly.kite.R;
-import ly.kite.ordering.ImageSpec;
 import ly.kite.catalogue.Product;
 import ly.kite.image.ImageAgent;
+import ly.kite.ordering.ImageSpec;
 import ly.kite.util.AssetFragment;
 import ly.kite.widget.CheckableImageContainerFrame;
 
@@ -259,7 +257,7 @@ public class CalendarAdaptor extends RecyclerView.Adapter
 
     if ( calendarImageURLString != null && calendarImageURLString.size() >= CalendarFragment.MONTHS_PER_YEAR )
       {
-      Picasso.with( mActivity )
+      Picasso.get()
               .load( calendarImageURLString.get( position ) )
               .into( pageViewHolder.assetImageView );
       }
